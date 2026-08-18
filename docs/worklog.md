@@ -946,3 +946,43 @@ fichier en place. Les paliers de Maîtrise I/II/III de Gueule Vide
 (notes de la recette : résidu, double mâchoire, dévoration) restent hors
 scope de cette passe (mandat explicite : pas encore). Totem du Vide
 (Phase 1.6) toujours en pause côté Milan.
+
+## 2026-08-18 — Blocage palette résolu : `data/palettes/invocateur_vide.json` reçu
+
+Fichier enregistré tel quel (aucune valeur inventée) : `palette_id:
+"invocateur_vide"`, notes précisant que cette palette est la signature
+visuelle **commune à tous les pouvoirs volés de la Classe Invocateur**
+(Totem du Vide ET Gueule Vide la partagent, "ne pas diversifier entre
+pouvoirs de même Classe d'origine" — la reconnaissance de la source du
+pouvoir passe par cette identité constante, exception §2.5 du doc VFX).
+4 rôles : allié/bleu pâle système (72% V) → `groundRing`, signature 1/
+gris-lilas désaturé (55% V) → `runicStamp`, signature 2 (matière Ink)/
+noir d'encre (24% V) → `fractureLine`, intermédiaire/gris cendre (40% V)
+→ `shardBurst`.
+
+Le mécanisme de résolution écrit lors du chantier précédent
+(`VfxRecipeRegistry._resolve_color`, correspondance sur le champ
+`usage`) a fonctionné du premier coup, sans aucun changement de code :
+les 4 correspondances attendues se résolvent correctement (vérifié par
+inspection directe des pixels sur une capture 4×, `groundRing` nettement
+plus clair que `runicStamp`, `fractureLine` nettement plus sombre que le
+gris de repli précédent). `impactFlashFrame` reste blanc quasi-plein par
+conception — cette primitive est toujours grayscale indépendamment du
+pouvoir (mêmes conventions que le flash du combo de Cendre), aucune
+correspondance de rôle recherchée pour elle, comportement normal.
+
+Non-régression : `scripts/run_vfx_recipe_smoke_test.sh` (4/4) et
+`scripts/run_gameplay_smoke_test.sh` (16/16) relancés après ajout du
+fichier — aucune régression.
+
+Batch complet de 18 captures relancé (3 états × fond neutre/chargé ×
+1×/2×/4×), remplace les captures en gris de repli. Manifests
+`gueule_vide_{spawn,attack,expire}.json` mis à jour : `palette_status`
+documente les couleurs réellement appliquées, `known_limitation` réduit
+à la seule limite réelle restante (pas de fragmentation littérale du
+sprite créature en gouttes d'encre — compensée par `shardBurst`, déjà
+noté précédemment, non lié à la palette).
+
+`quality_labels.jsonl` toujours vide. Gueule Vide (créature + VFX +
+gameplay + captures aux vraies couleurs) est maintenant complet et prêt
+pour verdict Milan.

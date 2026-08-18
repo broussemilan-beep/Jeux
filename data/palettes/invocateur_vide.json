@@ -1,0 +1,10 @@
+{
+  "palette_id": "invocateur_vide",
+  "notes": "Signature visuelle de tout pouvoir volé à la Classe Invocateur (exception section 2.5 du doc VFX). Réutilisée telle quelle par Totem du Vide et Gueule Vide — ne pas diversifier entre pouvoirs de même Classe d'origine, la reconnaissance de la source du pouvoir passe par cette identité constante. Valeurs V (HSV %) dans la bande VFX autorisée 20-92%, à ajuster par l'artiste sans sortir de cette bande.",
+  "roles": [
+    { "role": "allié (convention gameplay, non contournable)", "name": "bleu pâle système", "value_percent": 72, "usage": "groundRing, fines bordures/reflets sur l'objet ou la créature" },
+    { "role": "signature 1 (identité émotionnelle de la Classe volée)", "name": "gris-lilas désaturé", "value_percent": 55, "usage": "corps principal du runicStamp, silhouette de l'objet/créature" },
+    { "role": "signature 2 (matière Ink)", "name": "noir d'encre", "value_percent": 24, "usage": "fractureLine, parties profondes, impacts, désintégration" },
+    { "role": "intermédiaire", "name": "gris cendre", "value_percent": 40, "usage": "transitions, smokePuff, shardBurst" }
+  ]
+}
