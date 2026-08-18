@@ -1,7 +1,12 @@
 # §12.3 : exclut tout contenu reconstructible.
 .godot/
 *.translation
-export_presets.cfg
+
+# EXCEPTION (docs/worklog.md, build de test tactile web) :
+# export_presets.cfg encode des choix non triviaux à reproduire pour le
+# preset "Web" (thread_support=false, obligatoire pour tourner sur
+# GitHub Pages qui ne sert pas les en-têtes COOP/COEP) — le garder
+# versionné évite de les redécouvrir à chaque re-export.
 
 # Caches d'atlas temporaires (scripts/build_atlas.py écrira ici plus tard).
 assets/staging/*

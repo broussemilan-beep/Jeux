@@ -85,6 +85,9 @@ func _physics_process(_delta: float) -> void:
 	if Input.is_action_just_pressed("power1") and not stats.is_dead() and _power1_cooldown_remaining <= 0:
 		_cast_gueule_vide()
 
+	if Input.is_action_just_pressed("dash"):
+		play_dash()
+
 	if _combo_step > 0:
 		velocity = Vector2.ZERO
 		_advance_combo()
@@ -109,6 +112,8 @@ func _handle_movement() -> void:
 	velocity = input_dir * stats.move_speed_px
 	if input_dir.length_squared() > 0.0001:
 		facing = input_dir.normalized()
+		if facing.x != 0.0:
+			_sprite.flip_h = facing.x < 0.0
 
 	if not _action_lock and not stats.is_dead():
 		_sprite.play("deplacement" if input_dir.length_squared() > 0.0001 else "idle")

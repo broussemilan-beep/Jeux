@@ -1,0 +1,93 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/ui/virtual_joystick.gd" id="1"]
+
+[sub_resource type="CircleShape2D" id="1"]
+radius = 26.0
+
+[node name="TouchControls" type="CanvasLayer"]
+
+[node name="Joystick" type="Control" parent="."]
+script = ExtResource("1")
+offset_left = 10.0
+offset_top = 230.0
+offset_right = 110.0
+offset_bottom = 330.0
+
+[node name="Base" type="ColorRect" parent="Joystick"]
+offset_right = 100.0
+offset_bottom = 100.0
+color = Color(0.4, 0.4, 0.45, 0.35)
+
+[node name="Knob" type="ColorRect" parent="Joystick/Base"]
+offset_left = 32.0
+offset_top = 32.0
+offset_right = 68.0
+offset_bottom = 68.0
+color = Color(0.85, 0.85, 0.9, 0.55)
+
+[node name="ButtonAttack" type="TouchScreenButton" parent="."]
+position = Vector2(580, 260)
+shape = SubResource("1")
+shape_centered = true
+shape_visible = false
+action = "attack"
+
+[node name="Visual" type="Polygon2D" parent="ButtonAttack"]
+color = Color(0.75, 0.2, 0.2, 0.5)
+polygon = PackedVector2Array(26, 0, 18.4, 18.4, 0, 26, -18.4, 18.4, -26, 0, -18.4, -18.4, 0, -26, 18.4, -18.4)
+
+[node name="Label" type="Label" parent="ButtonAttack"]
+offset_left = -24.0
+offset_top = -10.0
+offset_right = 24.0
+offset_bottom = 10.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "ATK"
+
+[node name="ButtonPower1" type="TouchScreenButton" parent="."]
+position = Vector2(460, 260)
+shape = SubResource("1")
+shape_centered = true
+shape_visible = false
+action = "power1"
+
+[node name="Visual" type="Polygon2D" parent="ButtonPower1"]
+color = Color(0.2, 0.3, 0.75, 0.5)
+polygon = PackedVector2Array(26, 0, 18.4, 18.4, 0, 26, -18.4, 18.4, -26, 0, -18.4, -18.4, 0, -26, 18.4, -18.4)
+
+[node name="Label" type="Label" parent="ButtonPower1"]
+offset_left = -24.0
+offset_top = -10.0
+offset_right = 24.0
+offset_bottom = 10.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "PWR"
+
+[node name="ButtonDash" type="TouchScreenButton" parent="."]
+position = Vector2(520, 305)
+shape = SubResource("1")
+shape_centered = true
+shape_visible = false
+action = "dash"
+
+[node name="Visual" type="Polygon2D" parent="ButtonDash"]
+color = Color(0.3, 0.65, 0.3, 0.5)
+polygon = PackedVector2Array(26, 0, 18.4, 18.4, 0, 26, -18.4, 18.4, -26, 0, -18.4, -18.4, 0, -26, 18.4, -18.4)
+
+[node name="Label" type="Label" parent="ButtonDash"]
+offset_left = -24.0
+offset_top = -10.0
+offset_right = 24.0
+offset_bottom = 10.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "DASH"

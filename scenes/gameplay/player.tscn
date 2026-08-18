@@ -19,3 +19,7 @@ offset = Vector2(0, -44)
 sprite_frames = ExtResource("2")
 animation = &"idle"
 autoplay = "idle"
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position_smoothing_enabled = true
+position_smoothing_speed = 8.0

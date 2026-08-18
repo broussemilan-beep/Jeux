@@ -1,0 +1,28 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/gameplay/player.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/enemy.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/ui/touch_controls.tscn" id="3"]
+
+[node name="TestArena" type="Node2D"]
+
+[node name="Floor" type="ColorRect" parent="."]
+offset_left = -400.0
+offset_top = -300.0
+offset_right = 1000.0
+offset_bottom = 900.0
+color = Color(0.16, 0.18, 0.15, 1)
+
+[node name="Player" parent="." instance=ExtResource("1")]
+position = Vector2(300, 300)
+
+[node name="Enemy1" parent="." instance=ExtResource("2")]
+position = Vector2(364, 300)
+
+[node name="Enemy2" parent="." instance=ExtResource("2")]
+position = Vector2(450, 220)
+
+[node name="Enemy3" parent="." instance=ExtResource("2")]
+position = Vector2(160, 420)
+
+[node name="TouchControls" parent="." instance=ExtResource("3")]

@@ -1030,3 +1030,102 @@ explicite du correctif v1→v2 et de la vérification pixel.
 `quality_labels.jsonl` toujours vide. Gueule Vide reste complet et prêt
 pour verdict Milan, cette fois avec la signature de Classe réellement
 visible.
+
+## 2026-08-18 — Build de test tactile web (feel, pas premium) — exception ponctuelle export web
+
+Milan n'a qu'un iPhone, aucun ordinateur — un vrai build iOS natif est
+impossible pour l'instant (Xcode nécessite macOS). Pour débloquer un
+test immédiat du *feel* (poids du combo, lisibilité de Gueule Vide,
+sensation du dash), exception ponctuelle à la règle "pas d'export web"
+du mandat, sur demande explicite : `grep -rl "GPUParticles"
+src/vfx/primitives/*.gd` confirme qu'aucune primitive actuelle n'utilise
+`GPUParticles2D` (toutes dessinent via `_draw()`/`draw_arc`/polygones
+immédiats) — la raison technique documentée en `project.godot`
+(§0/§11.1 : "Compatibility ne supporte pas les GPUParticles, silencieux,
+sans erreur") ne s'applique donc pas encore à ce projet. **Exception
+temporaire, à réévaluer dès qu'une vraie primitive `GPUParticles2D` est
+introduite** — à ce moment-là, soit elle est exclue de l'export web,
+soit l'export web est retiré. Le renderer `mobile` du projet
+(`project.godot`, natif/mobile) n'a pas été changé — seul l'export web
+lui-même force `gl_compatibility` en interne (WebGL2 ne supporte pas
+Vulkan/le renderer Mobile, aucune alternative côté navigateur en
+Godot 4.3), ce qui est indépendant et sans effet sur les futurs builds
+natifs. Ce build web est un outil de test rapide, pas le pipeline de
+production (mandat §0 inchangé).
+
+Livré :
+- **Contrôles tactiles** : `src/ui/virtual_joystick.gd` (joystick
+  virtuel zone gauche, pilote `ui_left/right/up/down` via
+  `Input.action_press(action, strength)` — aucun changement requis dans
+  `Player._handle_movement()`, qui lisait déjà ces actions génériques ;
+  fonctionne aussi à la souris/drag pour tester depuis un navigateur
+  desktop) + `scenes/ui/touch_controls.tscn` (3 `TouchScreenButton` zone
+  droite : attaque/pouvoir1/dash, forme de détection `CircleShape2D`
+  sans texture, visuel `Polygon2D`+`Label` minimal, `shape_visible=false`
+  car le polygone fait déjà office de visuel).
+- **Dash câblé** : action `dash` dans `project.godot` (Shift gauche —
+  `physical_keycode=4194325`, `location=1` pour restreindre à la touche
+  gauche spécifiquement + bouton tactile), `Player._physics_process()`
+  appelle `play_dash()` sur `just_pressed` (méthode déjà existante mais
+  jamais câblée à une entrée, respecte `_action_lock` comme
+  hurt/dash l'exigeaient déjà).
+- **Flip horizontal minimal** : `player.gd`, une ligne dans
+  `_handle_movement()` — `_sprite.flip_h = facing.x < 0.0` quand
+  `facing.x` est non-nul. Ne corrige pas le mouvement vers le haut
+  (aucune frame dédiée), évite juste que gauche/droite paraissent
+  cassés avec le seul sprite sud existant.
+- **`scenes/gameplay/test_arena.tscn`** : Player + 3 Enemy à distances
+  variées (64/comparable/~300px, directions différentes) + sol
+  (`ColorRect`) + `TouchControls`. `Camera2D` ajoutée directement dans
+  `scenes/gameplay/player.tscn` (enfant du Player, `position_smoothing_
+  enabled=true`) plutôt que dans la scène de test — suit le joueur dans
+  n'importe quelle scène qui l'utilise, pas seulement celle-ci.
+  `project.godot` : `run/main_scene` pointé dessus.
+- **Export web** : `export_presets.cfg` (désormais versionné, voir
+  `.gitignore` — exception documentée localement, ce fichier encode des
+  choix non triviaux à ne pas redécouvrir). `variant/thread_support=
+  false` **volontairement** : GitHub Pages ne sert pas les en-têtes
+  COOP/COEP nécessaires à `SharedArrayBuffer`, un build threadé y
+  resterait bloqué à l'écran de chargement. Templates d'export
+  `web_nothreads_{debug,release}.zip` (Godot 4.3.stable) installés dans
+  `~/.local/share/godot/export_templates/4.3.stable/` (non versionnés,
+  environnement local). Export réalisé avec
+  `godot4 --headless --rendering-driver vulkan --export-release "Web"
+  docs/index.html` sous xvfb (même contrainte d'environnement que les
+  captures, voir plus haut dans ce fichier). Sortie dans `docs/index.*`
+  (`.html`, `.js`, `.wasm` ~34 Mo, `.pck` ~350 Ko, icônes) — `.wasm`/
+  `.pck` ajoutés à `.gitattributes` (LFS, même convention que les PNG).
+  `docs/.nojekyll` ajouté pour éviter tout traitement Jekyll de GitHub
+  Pages sur les fichiers exportés.
+
+Vérification (pas seulement "ça exporte sans erreur") :
+- `scripts/run_gameplay_smoke_test.sh` : 16/16, aucune régression du
+  dash/flip_h sur le squelette gameplay existant.
+- Capture headless de `test_arena.tscn` (native, `--rendering-driver
+  vulkan`) : layout correct (joueur centré, 3 ennemis à distances
+  variées, joystick + 3 boutons visibles).
+- **Chargement réel du build exporté** dans Chromium headless
+  (Playwright, `--use-gl=swiftshader`) servi en local : la console du
+  moteur confirme `OpenGL API OpenGL ES 3.0 (WebGL 2.0...) -
+  Compatibility` — la bascule Mobile→Compatibility prédite par le
+  mandat pour le web est bien réelle, mais **aucune erreur, aucun crash,
+  rendu visuellement identique à la capture native** (attendu : aucune
+  primitive VFX ne dépend de GPUParticles). Test interactif : drag de
+  souris sur le joystick → le perso se déplace réellement à l'écran
+  (capture avant/pendant comparée), clic sur le bouton ATK → aucune
+  erreur, caméra qui suit le joueur confirmée fonctionnelle après le
+  déplacement.
+- Aucun problème visuel réel détecté — pas de retour nécessaire avant
+  livraison, conformément à l'instruction reçue ("si un test visuel
+  révèle un vrai problème... documente-le et reviens vers moi").
+
+Hébergement : GitHub Pages sur `broussemilan-beep/jeux`, source
+"Deploy from a branch" → `main` → `/docs`. **Activation manuelle
+requise côté Milan/l'utilisateur** — aucun outil de cette session ne
+donne accès aux réglages du dépôt (Settings → Pages), seulement au
+contenu des fichiers ; l'activation en une fois dans l'UI GitHub est le
+seul geste restant, l'export lui-même est déjà poussé et prêt.
+
+Rappel transmis avec la livraison : ce test juge le *feel*, pas le
+rendu (une seule direction, VFX simples, pas de décor/son/post-render)
+— pas encore "premium", volontairement.

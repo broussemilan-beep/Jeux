@@ -12,7 +12,7 @@ config_version=5
 
 config/name="Rank Zero"
 config/features=PackedStringArray("4.3", "Mobile")
-run/main_scene=""
+run/main_scene="res://scenes/gameplay/test_arena.tscn"
 
 [autoload]
 
@@ -59,6 +59,15 @@ power1={
 ]
 }
 
+; Build de test tactile (feel du combo/dash/Gueule Vide sur iPhone,
+; voir docs/worklog.md) — touche Shift gauche au clavier, bouton
+; tactile dash côté web/mobile. Câblée dans Player.play_dash().
+dash={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194325,"key_label":0,"unicode":0,"location":1,"echo":false,"script":null)
+]
+}
+
 [physics]
 
 ; §0 : "60 ticks/s. Toutes les durées d'animation/VFX s'expriment en
@@ -79,6 +88,14 @@ common/physics_ticks_per_second=60
 ; plutôt qu'un saut de simulation invisible ; cohérent avec l'exigence
 ; de déterminisme du mandat (§13.4 "seed fixe → même sortie").
 common/max_physics_steps_per_frame=1
+
+[input_devices]
+
+; Build de test tactile (docs/worklog.md) : permet de vérifier les
+; TouchScreenButton/joystick virtuel depuis un navigateur desktop avant
+; l'export réel sur iPhone. Sans effet sur le tactile natif (le vrai
+; test se fait sur l'appareil de Milan).
+pointing/emulate_touch_from_mouse=true
 
 [rendering]
 
