@@ -1,16 +1,32 @@
 extends CharacterBody2D
 class_name Player
-## Personnage jouable minimal — mouvement 8 directions + stats + les 5
-## animations de base (Phase 1.3 : idle/déplacement/dash/hurt/mort,
-## `AnimatedSprite2D` + `SpriteFrames` cuits par
-## scripts/cook_character_frames.py, direction sud uniquement pour
-## l'instant — voir docs/worklog.md). Pas de combo (Phase 1.4).
+## Personnage jouable — mouvement 8 directions + stats + animations de
+## base (Phase 1.3) + combo léger 3 coups (Phase 1.4). `AnimatedSprite2D`
+## + `SpriteFrames` cuits par scripts/cook_character_frames.py, direction
+## sud uniquement pour l'instant — voir docs/worklog.md.
 ##
-## Entrée : actions UI par défaut de Godot (ui_left/right/up/down, liées
-## aux flèches par défaut) plutôt qu'un input map dédié — aucune exigence
-## de contrôles réels dans le mandat Phase 1 (touche tactile, remap, etc.
-## sont hors scope ici), et ce choix évite d'éditer project.godot pour un
-## mapping qui sera de toute façon revu quand l'UI/contrôles arriveront.
+## Entrée : actions UI par défaut de Godot (ui_left/right/up/down) pour le
+## mouvement — aucune exigence de contrôles réels dans le mandat Phase 1.
+## Une action dédiée "attack" existe dans project.godot (espace + clic
+## gauche) car le combo, lui, a besoin d'un input propre à détecter au
+## tick près (just_pressed), ce que les actions ui_* génériques ne
+## garantissent pas aussi proprement pour du timing de combat.
+
+const AttackAnimName := ["coup1", "coup2", "coup3"]
+
+## Timeline d'un coup, en ticks (60/s) — §6.2 du doc VFX donne des
+## fourchettes pour les VFX/animations premium (anticipation 25-40%,
+## release 5-12%, recovery 35-55%) ; ces chiffres respectent ces
+## proportions pour un coup léger rapide (26 ticks ≈ 0,43s/coup).
+const ANTICIPATION_TICKS := 8
+const RELEASE_TICKS := 4
+const RECOVERY_TICKS := 14
+## Fenêtre de chaînage (mandat Phase 1.4 : "fenêtre de chaînage sur les
+## derniers ticks de chaque RECOVERY") — dernier tiers de la recovery.
+const CHAIN_WINDOW_TICKS := 6
+
+const ATTACK_RANGE_PX := 48.0  # ~1.5m, GameConstants.PX_PER_METER
+const ATTACK_DAMAGE := 10.0
 
 @export var stats: Stats = Stats.new()
 
@@ -21,11 +37,21 @@ class_name Player
 var facing: Vector2 = Vector2.DOWN
 
 ## Verrouille l'animation de mouvement (idle/déplacement) pendant qu'une
-## action ponctuelle (hurt/dash/mort) joue — sinon _physics_process
-## écraserait la pose dès la frame suivante. Levé par
-## _on_sprite_animation_finished(), jamais par un timer (durée réelle de
-## l'animation, pas une estimation à côté).
+## action ponctuelle (hurt/dash/mort/combo) joue — sinon _physics_process
+## écraserait la pose dès la frame suivante. Pour hurt/dash, levé par
+## _on_sprite_animation_finished(). Pour le combo, la timeline en ticks
+## ci-dessus est SEULE responsable du verrou (_end_combo()) — le combo ne
+## doit jamais dépendre du timing de lecture du sprite, qui est une
+## horloge séparée (§16.3 : ne pas fusionner deux minuteries distinctes).
 var _action_lock: bool = false
+
+## 0 = pas d'attaque en cours. 1-3 = quel coup du combo joue actuellement.
+var _combo_step: int = 0
+enum ComboPhase { NONE, ANTICIPATION, RELEASE, RECOVERY }
+var _combo_phase: int = ComboPhase.NONE
+var _combo_tick: int = 0
+var _attack_queued: bool = false
+var _hit_applied_this_release: bool = false
 
 @onready var _sprite: AnimatedSprite2D = $AnimatedSprite2D
 
@@ -35,6 +61,23 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
+	if Input.is_action_just_pressed("attack"):
+		_attack_queued = true
+
+	if _combo_step > 0:
+		velocity = Vector2.ZERO
+		_advance_combo()
+	elif _attack_queued and not stats.is_dead() and not _action_lock:
+		_attack_queued = false
+		velocity = Vector2.ZERO
+		_start_attack(1)
+	else:
+		_handle_movement()
+
+	move_and_slide()
+
+
+func _handle_movement() -> void:
 	var input_dir := Vector2(
 		Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left"),
 		Input.get_action_strength("ui_down") - Input.get_action_strength("ui_up")
@@ -46,10 +89,75 @@ func _physics_process(_delta: float) -> void:
 	if input_dir.length_squared() > 0.0001:
 		facing = input_dir.normalized()
 
-	move_and_slide()
-
 	if not _action_lock and not stats.is_dead():
 		_sprite.play("deplacement" if input_dir.length_squared() > 0.0001 else "idle")
+
+
+func _start_attack(step: int) -> void:
+	_combo_step = step
+	_combo_phase = ComboPhase.ANTICIPATION
+	_combo_tick = 0
+	_hit_applied_this_release = false
+	_action_lock = true
+	_sprite.play(AttackAnimName[step - 1])
+
+
+## Timeline déclarative du coup courant — ANTICIPATION -> RELEASE (frappe
+## au premier tick) -> RECOVERY (fenêtre de chaînage sur les derniers
+## CHAIN_WINDOW_TICKS). Ne dépend jamais de la durée réelle de lecture du
+## sprite, uniquement des compteurs de ticks ci-dessous — sinon changer la
+## fps d'une anim de coup déréglerait silencieusement le combat.
+func _advance_combo() -> void:
+	_combo_tick += 1
+	match _combo_phase:
+		ComboPhase.ANTICIPATION:
+			if _combo_tick >= ANTICIPATION_TICKS:
+				_combo_phase = ComboPhase.RELEASE
+				_combo_tick = 0
+		ComboPhase.RELEASE:
+			if _combo_tick == 1 and not _hit_applied_this_release:
+				_try_hit()
+				_hit_applied_this_release = true
+			if _combo_tick >= RELEASE_TICKS:
+				_combo_phase = ComboPhase.RECOVERY
+				_combo_tick = 0
+		ComboPhase.RECOVERY:
+			var chain_window_start := RECOVERY_TICKS - CHAIN_WINDOW_TICKS
+			if _combo_tick >= chain_window_start and _combo_step < AttackAnimName.size() and _attack_queued:
+				_attack_queued = false
+				_start_attack(_combo_step + 1)
+				return
+			if _combo_tick >= RECOVERY_TICKS:
+				_end_combo()
+
+
+func _end_combo() -> void:
+	_combo_step = 0
+	_combo_phase = ComboPhase.NONE
+	_combo_tick = 0
+	_attack_queued = false
+	_action_lock = false
+
+
+## Un seul coup = une seule cible (mandat : "combo léger", pas une
+## attaque en zone — ça, c'est le Totem). Réutilise Targeting, déjà
+## éprouvé par le Totem/smoke test, plutôt que d'inventer une seconde
+## recherche de cible.
+func _try_hit() -> void:
+	var target: Node = Targeting.nearest_enemy_in_radius(get_tree(), global_position, ATTACK_RANGE_PX)
+	if target == null:
+		return
+	target.take_damage(ATTACK_DAMAGE, global_position)
+	# impactFlashFrame + recoil sur chaque coup (mandat Phase 1.4). Le
+	# recoil est déjà porté par Enemy.take_damage() (§4 : réaction de la
+	# cible, jamais une primitive de l'attaquant) — ici on ne pose QUE le
+	# flash d'impact, seule primitive qui appartient au coup lui-même.
+	VfxDirector.spawn("impactFlashFrame", {
+		"seed": 0,
+		"origin": target.global_position,
+		"lifetime_ticks": 2,
+		"overdraw_cost": 12.0,
+	})
 
 
 func is_dead() -> bool:
@@ -75,6 +183,8 @@ func play_dash() -> void:
 
 
 func _on_sprite_animation_finished() -> void:
+	if _combo_step > 0:
+		return  # le combo gère son propre verrou via sa timeline de ticks (_end_combo())
 	if _sprite.animation == "mort":
 		return  # reste sur la dernière frame, jamais reverrouillé sur idle
 	_action_lock = false
@@ -82,5 +192,8 @@ func _on_sprite_animation_finished() -> void:
 
 func die() -> void:
 	stats.hp = 0.0
+	_combo_step = 0
+	_combo_phase = ComboPhase.NONE
+	_attack_queued = false
 	_action_lock = true
 	_sprite.play("mort")

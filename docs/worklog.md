@@ -474,3 +474,136 @@ verdict humain donné, aucun `accept` auto-attribué (§13.2/§16), conforme
 Toujours Phase 1.4 (combo 3 coups) — inchangé. Cette session n'a ajouté
 aucun contenu de gameplay, uniquement finalisé/documenté/nettoyé
 l'existant pour la review externe.
+
+---
+
+## 2026-08-18 (suite) — Phase 1.4 (combo léger 3 coups)
+
+Note de Milan : le pouvoir du Totem du Vide va changer (nouvelle version
+à venir) — Phase 1.5/1.6 restent donc en pause, seul le combo avance.
+
+### Fait
+
+- 3 animations PixelLab pour Cendre (`coup1`/`coup2`/`coup3`, direction
+  sud uniquement — même discipline batch §5.3 que Phase 1.3), trajectoire
+  et pose distinctes par coup comme demandé : frappe avant courte
+  (coup1), retournement/dos de main (coup2), frappe lourde à deux mains
+  overhead (coup3).
+  - `coup3` a nécessité un re-roll : le premier essai avait un halo/burst
+    de lumière blanche parasite (frames 3-4) sans rapport avec la
+    demande, et une jambe levée qui lisait comme un coup de pied ou un
+    sort plutôt qu'une frappe à deux mains — prompt reformulé en
+    excluant explicitement magie/lueur ("no magic, no glow, no light
+    effects"). Le résultat retenu est bien meilleur mais garde un très
+    léger halo résiduel autour de la tête sur 1-2 frames — accepté
+    (discipline anti-boucle, pas de second re-roll), signalé pour
+    arbitrage Milan plutôt que retenté silencieusement.
+  - Détail complet (prompts, group IDs, raisons de rejet) dans
+    `data/pixellab_usage.jsonl`.
+- `scripts/cook_character_frames.py` et `scripts/build_sprite_frames.py`
+  relancés avec les 8 animations ensemble (les 5 de Phase 1.3 + les 3
+  nouvelles) pour que `cendre_frames.tres` et le manifeste cuit restent
+  complets — **écart trouvé** : un run intermédiaire du script de cuisson
+  avec seulement `coup1`/`coup2` en argument avait écrasé
+  `cendre_frames_cooked.json` et fait disparaître les 5 animations Phase
+  1.3 du manifeste (les PNG traités eux-mêmes étaient intacts sur
+  disque, seul le manifeste était tronqué) — corrigé en relançant le
+  script avec les 8 noms d'animation ensemble.
+- **Machine à états du combo dans `player.gd`** (`ANTICIPATION` ->
+  `RELEASE` (frappe au premier tick) -> `RECOVERY`), en ticks purs (60/s,
+  jamais liée à la durée réelle de lecture du sprite — deux horloges
+  séparées, §16.3) :
+  - `ANTICIPATION_TICKS=8`, `RELEASE_TICKS=4`, `RECOVERY_TICKS=14`,
+    `CHAIN_WINDOW_TICKS=6` (derniers ticks de la recovery, mandat :
+    "fenêtre de chaînage sur les derniers ticks de chaque RECOVERY").
+  - Un appui sur "attack" pendant l'anticipation/release d'un coup reste
+    en mémoire (`_attack_queued`) et n'est consommé qu'à l'ouverture de
+    la fenêtre — bufferisation volontaire (feel standard, pas un bug).
+  - Chaque coup applique dégâts (`ATTACK_DAMAGE=10.0`) + recul sur
+    l'ennemi le plus proche en portée (`Targeting.nearest_enemy_in_radius`,
+    déjà éprouvé par le Totem) et pose `impactFlashFrame`
+    (`VfxDirector.spawn`) — le recul reste porté par
+    `Enemy.take_damage()` (mandat : "pas une primitive du coup, une
+    réaction de l'ennemi"), le coup ne pose QUE le flash d'impact.
+  - Le 3e coup n'ouvre pas de fenêtre de chaînage (`_combo_step <
+    AttackAnimName.size()` dans la condition) — combo fixe à 3, jamais
+    une boucle infinie.
+  - Nouvelle action input `attack` (espace + clic gauche) ajoutée à
+    `project.godot` — **écart trouvé** : la syntaxe `Object(Type,
+    prop=val,...)` que j'avais écrite pour les `InputEventKey`/
+    `InputEventMouseButton` intégrés a fait planter le parsing complet
+    du fichier projet (`Expected property name as string`) au premier
+    lancement headless suivant. La syntaxe correcte pour un littéral
+    `Object(...)` dans le format texte de Godot est `"prop":val` (guillemets
+    + deux-points), pas `prop=val` (réservé aux assignations de clé de
+    section top-level) — corrigé, reproduit et vérifié.
+- `tools/capture_scene.gd` étendu avec `--mode=character` (déjà fait
+  juste avant cette entrée de worklog, réutilisé tel quel ici) pour les
+  captures `hero_combo_1/2/3.png` — 3 nouveaux manifests §12.5
+  (`assets/manifests/hero_combo_{1,2,3}.json`), même statut
+  `validated_auto:false` que les 5 animations Phase 1.3 (même violation
+  de bande de valeur, tête du personnage — voir `hero_idle.json` pour le
+  détail, non re-décrit ici).
+
+### Écart trouvé et corrigé (bug de test, pas de gameplay)
+
+Le premier passage des nouveaux checks de smoke test faisait **tourner
+Godot indéfiniment sans jamais imprimer de résultat** (même classe de
+symptôme que le bug Phase 1.2 : script en échec de parsing -> `_ready()`
+du nœud racine ne tourne jamais -> `quit()` jamais appelé -> le moteur
+reste assis à afficher un écran vide). Cause réelle, différente cette
+fois : une expression lambda `func(): return A and B` répartie sur deux
+lignes physiques dans `tools/smoke_test_gameplay.gd` — `Expected closing
+")" after call arguments` à la recompilation du script. Corrigé en
+gardant chaque lambda `_wait_until(...)` sur une ligne logique unique
+(extraction d'une variable intermédiaire pour ne pas dépasser une
+longueur raisonnable). Reproduit et vérifié : le process tournait
+toujours à pleine charge CPU après 2m37 sans sortie avant le fix, 0
+process godot restant après.
+
+Séparément (bug de synchronisation dans le TEST, pas dans le jeu) : le
+check "retour à idle après recovery complète" lisait l'animation UNE
+frame trop tôt — `_end_combo()` remet `_combo_step` à 0 mais ne pousse
+pas elle-même l'anim "idle" (c'est `_handle_movement()` qui le fait, au
+`_physics_process` SUIVANT, les deux branches étant mutuellement
+exclusives dans le même appel). Corrigé en ajoutant un
+`await get_tree().physics_frame` avant de lire l'anim finale.
+
+### Preuve — Phase 1.4, reproductible
+
+```
+scripts/run_gameplay_smoke_test.sh
+# → 11/11 checks, dont les 5 nouveaux :
+#   attack_input_starts_coup1, combo_hit_damages_enemy_in_range,
+#   combo_hit_applies_recoil_to_enemy, chain_window_press_advances_to_coup2,
+#   combo_returns_to_idle_after_full_recovery_without_input
+```
+
+Les checks sondent l'état réel (`_wait_until`, boucle qui interroge
+`_combo_step`/`_combo_phase`/`_combo_tick` jusqu'à condition vraie, comme
+`capture_scene.gd` sonde `VfxDirector.get_current_tick()` en Phase 0)
+plutôt que de compter des `await physics_frame` à l'aveugle — même
+discipline que le reste du projet après le bug de course découvert en
+Phase 0.
+
+### Limite connue, non bloquante
+
+- Toujours direction sud uniquement pour les 3 nouveaux coups (7
+  directions × 8 animations restantes désormais, batch futur).
+- `coup3` garde un très léger halo résiduel (voir plus haut) — signalé,
+  pas corrigé sans arbitrage Milan.
+- Le Totem du Vide (Phase 1.5/1.6) est en pause — nouvelle version du
+  pouvoir annoncée par Milan, pas encore reçue.
+
+### Branché / testé
+
+Combo jouable de bout en bout (attack -> coup1 -> [chaînage] -> coup2 ->
+[chaînage] -> coup3 -> retour idle), dégâts+recul+impactFlashFrame réels
+sur un ennemi en portée — prouvé par exécution réelle headless (11/11),
+pas supposé.
+
+### Prochain pas
+
+En attente de la nouvelle version du Totem du Vide (Milan). Rien à
+démarrer côté Phase 1.5/1.6 avant réception. Phase 1.7 (captures/gates/
+manifest finaux) reste après le Totem.

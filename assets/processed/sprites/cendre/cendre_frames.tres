@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=29 format=3]
+[gd_resource type="SpriteFrames" load_steps=44 format=3]
 
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle/0.png" id="2"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle/1.png" id="3"]
@@ -28,6 +28,21 @@
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/dash/2.png" id="27"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/dash/3.png" id="28"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/dash/4.png" id="29"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/0.png" id="30"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/1.png" id="31"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/2.png" id="32"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/3.png" id="33"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/4.png" id="34"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/0.png" id="35"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/1.png" id="36"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/2.png" id="37"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/3.png" id="38"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/4.png" id="39"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/0.png" id="40"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/1.png" id="41"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/2.png" id="42"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/3.png" id="43"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/4.png" id="44"]
 
 [resource]
 animations = [{
@@ -138,5 +153,65 @@ animations = [{
 }],
 "loop": false,
 "name": &"dash",
+"speed": 15.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("30")
+}, {
+"duration": 1.0,
+"texture": ExtResource("31")
+}, {
+"duration": 1.0,
+"texture": ExtResource("32")
+}, {
+"duration": 1.0,
+"texture": ExtResource("33")
+}, {
+"duration": 1.0,
+"texture": ExtResource("34")
+}],
+"loop": false,
+"name": &"coup1",
+"speed": 15.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("35")
+}, {
+"duration": 1.0,
+"texture": ExtResource("36")
+}, {
+"duration": 1.0,
+"texture": ExtResource("37")
+}, {
+"duration": 1.0,
+"texture": ExtResource("38")
+}, {
+"duration": 1.0,
+"texture": ExtResource("39")
+}],
+"loop": false,
+"name": &"coup2",
+"speed": 15.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("40")
+}, {
+"duration": 1.0,
+"texture": ExtResource("41")
+}, {
+"duration": 1.0,
+"texture": ExtResource("42")
+}, {
+"duration": 1.0,
+"texture": ExtResource("43")
+}, {
+"duration": 1.0,
+"texture": ExtResource("44")
+}],
+"loop": false,
+"name": &"coup3",
 "speed": 15.0
 }]

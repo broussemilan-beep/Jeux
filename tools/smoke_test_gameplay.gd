@@ -38,8 +38,26 @@ func _ready() -> void:
 	await _check_damage_and_recoil()
 	await _check_death()
 	await _check_movement()
+	await _check_combo()
 
 	_report()
+
+
+## Sonde un état réel dans une boucle plutôt que de compter des
+## `await physics_frame` un par un — même discipline que
+## tools/capture_scene.gd (docs/worklog.md, Phase 0) : l'ordre entre la
+## reprise d'un `await physics_frame` et le `_physics_process` d'un AUTRE
+## nœud pour ce même pas n'est pas garanti, compter les réveils comme des
+## ticks serait faux d'un cran, silencieusement. Retourne false (jamais
+## une boucle infinie) si la condition n'est jamais atteinte.
+func _wait_until(predicate: Callable, max_ticks: int = 400) -> bool:
+	var n := 0
+	while not predicate.call():
+		if n >= max_ticks:
+			return false
+		await get_tree().physics_frame
+		n += 1
+	return true
 
 
 func _check_targeting() -> void:
@@ -108,6 +126,90 @@ func _check_movement() -> void:
 		"name": "sprite_animation_switches_idle_deplacement_idle",
 		"pass": anim_before == "idle" and anim_during == "deplacement" and anim_after_stop == "idle",
 		"detail": {"anim_before": anim_before, "anim_during": anim_during, "anim_after_stop": anim_after_stop},
+	})
+
+
+## Phase 1.4 : combo léger 3 coups — attack déclenche coup1, la fenêtre
+## de chaînage sur les derniers ticks de RECOVERY avance vers coup2 sur
+## un second appui, le coup applique dégâts+recul (mandat : "ce n'est pas
+## une primitive du coup, c'est la réaction de l'ennemi"), et le combo
+## revient seul à idle après une pleine recovery sans nouvel appui —
+## Enemy.take_damage() et Targeting sont déjà éprouvés par les checks
+## précédents, on ne les reteste pas ici, seulement la timeline du combo.
+func _check_combo() -> void:
+	var enemy := EnemyScene.instantiate()
+	enemy.name = "EnemyForCombo"
+	enemy.global_position = _player.global_position + Vector2(30, 0)  # < ATTACK_RANGE_PX (48px)
+	add_child(enemy)
+	await get_tree().physics_frame  # laisser le groupe "enemies" se peupler
+
+	var sprite: AnimatedSprite2D = _player.get_node("AnimatedSprite2D")
+	var hp_before: float = enemy.stats.hp
+
+	Input.action_press("attack")
+	await get_tree().physics_frame
+	Input.action_release("attack")
+	var started: bool = await _wait_until(func(): return _player._combo_step == 1, 10)
+	var anim_step1: String = sprite.animation
+
+	var hit_landed: bool = await _wait_until(
+		func(): return enemy.stats.hp < hp_before,
+		Player.ANTICIPATION_TICKS + Player.RELEASE_TICKS + 5)
+	var hp_after_hit: float = enemy.stats.hp
+	var enemy_pos_at_hit: Vector2 = enemy.global_position
+
+	# Laisser quelques ticks au recul (Enemy._physics_process) pour
+	# bouger visiblement avant de le mesurer.
+	for i in range(8):
+		await get_tree().physics_frame
+	var enemy_pos_after_recoil: Vector2 = enemy.global_position
+
+	var chain_window_start: int = Player.RECOVERY_TICKS - Player.CHAIN_WINDOW_TICKS
+	var window_open: bool = await _wait_until(
+		func(): return _player._combo_step == 1 and _player._combo_phase == Player.ComboPhase.RECOVERY and _player._combo_tick >= chain_window_start,
+		Player.RECOVERY_TICKS + 5)
+	Input.action_press("attack")
+	await get_tree().physics_frame
+	Input.action_release("attack")
+	var chained: bool = await _wait_until(func(): return _player._combo_step == 2, 10)
+	var anim_step2: String = sprite.animation
+
+	var ended: bool = await _wait_until(
+		func(): return _player._combo_step == 0,
+		Player.ANTICIPATION_TICKS + Player.RELEASE_TICKS + Player.RECOVERY_TICKS + 10)
+	# _end_combo() ne pousse pas l'anim "idle" elle-même — c'est
+	# _handle_movement() qui le fait, au PROCHAIN _physics_process une
+	# fois _combo_step revenu à 0 (les deux ne peuvent pas courir dans le
+	# même appel, la branche est choisie en tête de _physics_process avant
+	# que _advance_combo() ne remette _combo_step à 0). Un tick de plus
+	# avant de lire l'anim, sinon lecture une frame trop tôt.
+	await get_tree().physics_frame
+	var anim_final: String = sprite.animation
+
+	_checks.append({
+		"name": "attack_input_starts_coup1",
+		"pass": started and anim_step1 == "coup1",
+		"detail": {"started": started, "anim": anim_step1},
+	})
+	_checks.append({
+		"name": "combo_hit_damages_enemy_in_range",
+		"pass": hit_landed and is_equal_approx(hp_before - hp_after_hit, Player.ATTACK_DAMAGE),
+		"detail": {"hit_landed": hit_landed, "hp_before": hp_before, "hp_after": hp_after_hit},
+	})
+	_checks.append({
+		"name": "combo_hit_applies_recoil_to_enemy",
+		"pass": enemy_pos_after_recoil.x > enemy_pos_at_hit.x + 1.0,
+		"detail": {"pos_at_hit": str(enemy_pos_at_hit), "pos_after_recoil": str(enemy_pos_after_recoil)},
+	})
+	_checks.append({
+		"name": "chain_window_press_advances_to_coup2",
+		"pass": window_open and chained and anim_step2 == "coup2",
+		"detail": {"window_open": window_open, "chained": chained, "anim": anim_step2},
+	})
+	_checks.append({
+		"name": "combo_returns_to_idle_after_full_recovery_without_input",
+		"pass": ended and anim_final == "idle",
+		"detail": {"ended": ended, "combo_step": _player._combo_step, "anim": anim_final},
 	})
 
 

@@ -96,6 +96,57 @@
         48,
         92
       ]
+    },
+    "coup1": {
+      "frames": [
+        "assets/processed/sprites/cendre/coup1/0.png",
+        "assets/processed/sprites/cendre/coup1/1.png",
+        "assets/processed/sprites/cendre/coup1/2.png",
+        "assets/processed/sprites/cendre/coup1/3.png",
+        "assets/processed/sprites/cendre/coup1/4.png"
+      ],
+      "canvas": [
+        96,
+        96
+      ],
+      "anchor_px": [
+        48,
+        92
+      ]
+    },
+    "coup2": {
+      "frames": [
+        "assets/processed/sprites/cendre/coup2/0.png",
+        "assets/processed/sprites/cendre/coup2/1.png",
+        "assets/processed/sprites/cendre/coup2/2.png",
+        "assets/processed/sprites/cendre/coup2/3.png",
+        "assets/processed/sprites/cendre/coup2/4.png"
+      ],
+      "canvas": [
+        96,
+        96
+      ],
+      "anchor_px": [
+        48,
+        92
+      ]
+    },
+    "coup3": {
+      "frames": [
+        "assets/processed/sprites/cendre/coup3/0.png",
+        "assets/processed/sprites/cendre/coup3/1.png",
+        "assets/processed/sprites/cendre/coup3/2.png",
+        "assets/processed/sprites/cendre/coup3/3.png",
+        "assets/processed/sprites/cendre/coup3/4.png"
+      ],
+      "canvas": [
+        96,
+        96
+      ],
+      "anchor_px": [
+        48,
+        92
+      ]
     }
   }
 }
