@@ -88,16 +88,26 @@ func _check_death() -> void:
 
 
 func _check_movement() -> void:
+	var sprite: AnimatedSprite2D = _player.get_node("AnimatedSprite2D")
+	var anim_before: String = sprite.animation
 	var pos_before: Vector2 = _player.global_position
 	Input.action_press("ui_right")
 	for i in range(6):
 		await get_tree().physics_frame
+	var anim_during: String = sprite.animation
 	Input.action_release("ui_right")
+	await get_tree().physics_frame
 	var pos_after: Vector2 = _player.global_position
+	var anim_after_stop: String = sprite.animation
 	_checks.append({
 		"name": "player_moves_right_on_input_and_updates_facing",
 		"pass": pos_after.x > pos_before.x + 1.0 and _player.facing == Vector2.RIGHT,
 		"detail": {"pos_before": str(pos_before), "pos_after": str(pos_after), "facing": str(_player.facing)},
+	})
+	_checks.append({
+		"name": "sprite_animation_switches_idle_deplacement_idle",
+		"pass": anim_before == "idle" and anim_during == "deplacement" and anim_after_stop == "idle",
+		"detail": {"anim_before": anim_before, "anim_during": anim_during, "anim_after_stop": anim_after_stop},
 	})
 
 

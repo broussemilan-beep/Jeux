@@ -257,3 +257,96 @@ déplace et met à jour son `facing` sous une entrée simulée.
 Phase 1.3 : animations de base (idle/déplacement/dash/hurt/mort) pour
 Cendre, pose-to-pose (§6.1/6.2/6.3), remplacement du Sprite2D statique du
 Player par un vrai AnimationPlayer.
+
+---
+
+## 2026-08-18 (suite) — Phase 1.3 (animations de base)
+
+### Fait
+
+- 5 animations PixelLab pour Cendre, **direction sud uniquement** pour ce
+  premier passage (discipline batch §5.3 : couvrir les 8 directions ×
+  5 animations dépasserait 5 appels et exige une estimation présentée à
+  Milan — remis à un batch ultérieur, une fois le style validé) :
+  - `idle` (template `breathing-idle`, 4f), `deplacement` (template
+    `walk`, 6f), `hurt` (template `taking-punch`, 6f) : acceptées à la
+    première passe.
+  - `mort` et `dash` : le premier essai ne lisait pas comme l'action
+    demandée (`falling-back-death` ressemblait à une garde de combat,
+    pas une chute ; le dash ressemblait à un changement de posture
+    accroupie, pas un sprint). Re-roll en mode v3 custom avec des
+    descriptions plus explicites (§16.3 "vérifier avant de déclarer
+    fini" — pas d'acceptation automatique). `mort` : nette après re-roll
+    (titube → s'effondre → reste au sol). `dash` : mieux mais encore
+    imparfait (lecture "fente basse dynamique" plutôt qu'un sprint net) —
+    accepté comme résultat de base (pas de boucle de re-roll indéfinie),
+    signalé pour le verdict Milan.
+  - Journal complet (y compris le test-sonde rejeté et les 2 groupes
+    supprimés via `delete_animation`) dans `data/pixellab_usage.jsonl`.
+- **Écart d'exécution constaté** : le canvas de sortie change de taille
+  entre animations (32×64 pour idle/marche/hurt, 88×88 pour mort/dash —
+  le mode v3 custom élargit le canvas selon l'amplitude du mouvement).
+  Or `AnimatedSprite2D` n'a qu'UN SEUL `offset`, appliqué à toutes les
+  frames de toutes les animations : sans normalisation, changer
+  d'animation aurait fait sauter les pieds du personnage.
+  Corrigé par un vrai script de pipeline, `scripts/cook_character_frames.py` :
+  calcule la bbox alpha de chaque frame source, recadre sur un canvas
+  commun (96×96) avec le pivot bas-centre (§6.3) toujours au même pixel.
+  Sortie dans `assets/processed/sprites/cendre/<anim>/` + manifeste
+  `assets/manifests/cendre_frames_cooked.json`. C'est la première vraie
+  utilisation de la distinction `source/` (brut PixelLab) vs
+  `processed/` (cuit pour le jeu) posée en Phase 0 (§12.1).
+- `SpriteFrames` généré (`assets/processed/sprites/cendre/cendre_frames.tres`,
+  28 frames sur 5 animations) et câblé sur `scenes/gameplay/player.tscn`
+  via un `AnimatedSprite2D` (remplace le `Sprite2D` statique), avec
+  `offset = Vector2(0, -44)` calculé pour aligner le pivot cuit sur
+  l'origine du nœud.
+- `player.gd` : bascule idle/déplacement automatique selon le mouvement,
+  plus `play_hurt()`/`play_dash()`/`die()` — pas encore appelés par du
+  vrai gameplay dans cette tranche (aucun système n'inflige de dégâts au
+  joueur, hors scope Phase 1), mais prêts pour quand le combat réel
+  câblera dessus. Un verrou `_action_lock` empêche `_physics_process`
+  d'écraser une animation ponctuelle (hurt/dash) en cours ; levé par le
+  signal `animation_finished`, jamais par un minuteur à côté.
+
+### Preuve — Phase 1.3, reproductible
+
+```
+scripts/run_gameplay_smoke_test.sh
+# → 6/6 checks, dont "sprite_animation_switches_idle_deplacement_idle"
+#   (idle -> deplacement sous entrée -> idle au relâchement)
+```
+
+Vérification visuelle en plus des checks logiques (`tools/capture_player_pose.gd`,
+même technique de capture headless que Phase 0) : ligne de sol dessinée
+au Y du nœud Player, capture des 5 animations, mesure programmatique
+(numpy) du rang de pixel des pieds vs la ligne de sol — **alignement au
+pixel près sur les 5 animations**, y compris `mort`/`dash` malgré leur
+canvas source différent (88×88 vs 32×64), preuve que le pivot cuit par
+`cook_character_frames.py` fonctionne réellement, pas juste "à l'œil".
+
+### Limite connue, non bloquante
+
+- Seule la direction sud existe (7 directions × 5 animations restantes,
+  batch futur avec estimation Milan).
+- Timing simplifié : une frame = une durée uniforme par animation (fps
+  fixe), pas encore le détail §6.2 (anticipation 25-40%/release
+  5-12%/impact hold/recovery 35-55% avec frames taguées). Le manifeste
+  cuit (`cendre_frames_cooked.json`) donne déjà canvas+ancre par frame ;
+  le tagging de phase reste à ajouter quand le combo (Phase 1.4) aura
+  besoin de fenêtres de hitbox précises.
+- `dash` accepté avec réserve (silhouette pas franchement "sprint") —
+  à trancher par Milan, pas par moi, avec les autres captures.
+
+### Branché / testé
+
+`scenes/gameplay/player.tscn` charge `AnimatedSprite2D` +
+`cendre_frames.tres`, joue `idle` par défaut, bascule sur `deplacement`
+sous entrée — prouvé par exécution réelle headless (smoke test 6/6 +
+capture visuelle mesurée), pas supposé.
+
+### Prochain pas
+
+Phase 1.4 : combo léger 3 coups chaînés (fenêtre de chaînage sur les
+derniers ticks de chaque RECOVERY, variation de pose/trajectoire par
+coup, `impactFlashFrame` + `recoil` sur chaque coup).

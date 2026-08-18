@@ -1,0 +1,101 @@
+{
+  "character": "cendre",
+  "out_canvas": [
+    96,
+    96
+  ],
+  "anchor_px": [
+    48,
+    92
+  ],
+  "animations": {
+    "idle": {
+      "frames": [
+        "assets/processed/sprites/cendre/idle/0.png",
+        "assets/processed/sprites/cendre/idle/1.png",
+        "assets/processed/sprites/cendre/idle/2.png",
+        "assets/processed/sprites/cendre/idle/3.png"
+      ],
+      "canvas": [
+        96,
+        96
+      ],
+      "anchor_px": [
+        48,
+        92
+      ]
+    },
+    "deplacement": {
+      "frames": [
+        "assets/processed/sprites/cendre/deplacement/0.png",
+        "assets/processed/sprites/cendre/deplacement/1.png",
+        "assets/processed/sprites/cendre/deplacement/2.png",
+        "assets/processed/sprites/cendre/deplacement/3.png",
+        "assets/processed/sprites/cendre/deplacement/4.png",
+        "assets/processed/sprites/cendre/deplacement/5.png"
+      ],
+      "canvas": [
+        96,
+        96
+      ],
+      "anchor_px": [
+        48,
+        92
+      ]
+    },
+    "hurt": {
+      "frames": [
+        "assets/processed/sprites/cendre/hurt/0.png",
+        "assets/processed/sprites/cendre/hurt/1.png",
+        "assets/processed/sprites/cendre/hurt/2.png",
+        "assets/processed/sprites/cendre/hurt/3.png",
+        "assets/processed/sprites/cendre/hurt/4.png",
+        "assets/processed/sprites/cendre/hurt/5.png"
+      ],
+      "canvas": [
+        96,
+        96
+      ],
+      "anchor_px": [
+        48,
+        92
+      ]
+    },
+    "mort": {
+      "frames": [
+        "assets/processed/sprites/cendre/mort/0.png",
+        "assets/processed/sprites/cendre/mort/1.png",
+        "assets/processed/sprites/cendre/mort/2.png",
+        "assets/processed/sprites/cendre/mort/3.png",
+        "assets/processed/sprites/cendre/mort/4.png",
+        "assets/processed/sprites/cendre/mort/5.png",
+        "assets/processed/sprites/cendre/mort/6.png"
+      ],
+      "canvas": [
+        96,
+        96
+      ],
+      "anchor_px": [
+        48,
+        92
+      ]
+    },
+    "dash": {
+      "frames": [
+        "assets/processed/sprites/cendre/dash/0.png",
+        "assets/processed/sprites/cendre/dash/1.png",
+        "assets/processed/sprites/cendre/dash/2.png",
+        "assets/processed/sprites/cendre/dash/3.png",
+        "assets/processed/sprites/cendre/dash/4.png"
+      ],
+      "canvas": [
+        96,
+        96
+      ],
+      "anchor_px": [
+        48,
+        92
+      ]
+    }
+  }
+}
