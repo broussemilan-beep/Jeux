@@ -350,3 +350,127 @@ capture visuelle mesurée), pas supposé.
 Phase 1.4 : combo léger 3 coups chaînés (fenêtre de chaînage sur les
 derniers ticks de chaque RECOVERY, variation de pose/trajectoire par
 coup, `impactFlashFrame` + `recoil` sur chaque coup).
+
+---
+
+## 2026-08-18 (suite) — Finalisation pour review externe (Claude conception)
+
+Demande explicite de Milan : que son reviewer conception inspecte tout
+depuis git plutôt que via des screenshots. Pas de nouveau contenu — push
+complet + captures standardisées + nettoyage + manifests, sur l'état
+Phase 1.1-1.3 déjà en place.
+
+### Fait — 1. Push complet + vérification LFS
+
+- Rien à committer côté code au moment de la demande (Phase 1.3 déjà
+  poussée en `f47226c`) — la vérification a donc porté sur l'intégrité
+  du push précédent, pas sur du contenu nouveau à ce stade.
+- `git lfs push origin main --all` relancé explicitement : **63/63
+  objets LFS uploadés** (le call est idempotent — confirme qu'ils sont
+  bien sur le serveur, pas seulement des pointeurs locaux résolus).
+- Visibilité du repo vérifiée via l'outil de session (pas de requête API
+  GitHub anonyme fiable dans ce sandbox, le proxy sortant la bloque) :
+  **`broussemilan-beep/Jeux`, `visibility: public`, `can_push: true`**.
+- URL : https://github.com/broussemilan-beep/Jeux
+
+### Fait — 2. Captures standardisées (`captures/phase1/`)
+
+Extension de la scène de capture existante plutôt qu'une scène
+parallèle (`tools/capture_scene.gd` gagne un `--mode=character` à côté
+du `--mode=primitive` de Phase 0 — même technique pause+3×process_frame,
+un seul point d'entrée, cf. commentaire en tête du fichier). Écart trouvé
+en cours de route : sans précaution, `Player._physics_process` (bascule
+auto idle/déplacement) écrasait l'animation demandée (hurt/dash/mort)
+dès qu'un `await physics_frame` s'écoulait pendant la capture — corrigé
+en ne laissant tourner AUCUNE physique pour ce mode (l'état posé
+manuellement suffit, le rendu n'en a pas besoin).
+
+5 captures produites, fond neutre (gris projet, aucun décor), frame
+représentative choisie à l'œil par animation (pas systématiquement la
+frame 0, qui est souvent une pose neutre peu lisible en capture unique) :
+
+| Fichier | Anim | Frame capturée | Pourquoi |
+|---|---|---|---|
+| `hero_idle.png` | idle | 0 | boucle de respiration, toute frame est représentative |
+| `hero_walk.png` | deplacement | 3 | foulée la plus large de la marche |
+| `hero_dash.png` | dash | 4 | pose la plus dynamique (fente + cape) |
+| `hero_hurt.png` | hurt | 3 | pic de recul visible |
+| `hero_death.png` | mort | 6 | état final, allongé au sol |
+
+**Totem du Vide (spawn/attack/expire) : PAS ENCORE IMPLÉMENTÉ.** Phase
+1.5 (moteur de recettes VFX + 4 primitives manquantes) et Phase 1.6
+(script d'orchestration du Totem) n'ont pas démarré — voir tâches #184
+et #185. Aucune capture `totem_*` livrée : pas de solution de repli
+livrée à la place, conformément à la consigne. De même, `hero_combo_1/2/3`
+n'existent pas : Phase 1.4 (combo 3 coups) n'a pas démarré non plus.
+
+Les captures ne passent PAS par Git LFS (fichiers de quelques Ko,
+contrairement aux assets sources/traités) — décision délibérée pour
+rester simple, GitHub les affiche nativement de toute façon. Un
+`captures/.gdignore` empêche Godot de les traiter comme des ressources
+de jeu à importer (elles ne sont référencées par aucune scène).
+
+### Fait — 3. Nettoyage
+
+- **Réclamation "F_L incrusté sur une frame d'attaque" : NON RETROUVÉE.**
+  Inspection visuelle exhaustive à fort zoom (×3 à ×6) de TOUTES les
+  frames existantes — `reference.png`, les 8 rotations, et les 4-7
+  frames de chacune des 5 animations (idle/déplacement/hurt/mort/dash),
+  cuites ET sources — aucun texte, watermark ou artefact incrusté nulle
+  part. Par ailleurs, **aucune frame d'attaque/combo n'existe encore
+  dans ce dépôt** (Phase 1.4 pas démarrée) : la description ("frame
+  d'attaque") ne correspond à rien de généré ici. Hypothèse la plus
+  probable : confusion avec les anciens assets FRACTURE (`game/`, projet
+  abandonné) ou une autre capture non versionnée. À clarifier avec
+  Milan plutôt que de fabriquer un correctif pour un fichier qui
+  n'existe pas.
+- **"Sheet de test 8 poses quasi identiques" : identifié comme le set de
+  8 rotations directionnelles (`assets/source/pixellab/cendre/rotations/`),
+  PAS un reste de génération non trié.** C'est le tour de personnage
+  canonique (§5.3) dont dérivent toutes les animations — conservé,
+  documenté explicitement dans le nouveau manifest `hero_turnaround.json`
+  pour éviter toute confusion future. Aucun fichier de travail temporaire
+  trouvé dans le dépôt (arborescence complète auditée : aucun sheet de
+  probe, aucun test PixelLab jeté n'a jamais été committé — les essais
+  rejetés vivent uniquement dans `data/pixellab_usage.jsonl` en tant que
+  journal, jamais comme fichier image).
+- Nettoyage réel effectué : suppression de `tools/capture_player_pose.gd`
+  et `.tscn` (outil de vérification de pivot Phase 1.3, remplacé par le
+  `--mode=character` officiel de `capture_scene.gd` — un seul outil de
+  capture, pas deux qui se recouvrent).
+
+### Fait — 4. Manifests (§12.5) + statut qualité
+
+6 nouveaux fichiers manifest, un par asset (§12.2 "une recette = un
+fichier") : `assets/manifests/hero_{idle,walk,dash,hurt,death,turnaround}.json`.
+
+**Écart trouvé en vérifiant plutôt qu'en supposant** : j'ai fait tourner
+`scripts/validate_pixels.py --category character` sur toutes les frames
+traitées (pas juste survolé à l'œil) — **échec systématique sur les 5
+animations** (~20 pixels sur 450-1030 selon la frame). Cause unique et
+commune : le sommet du crâne chauve du personnage atteint ~91-92% de
+Value (HSV), au-dessus de la borne haute de la bande "character"
+(15-88%, §3). Même violation sur toutes les animations (racine commune :
+la tête, pas un défaut par frame/animation). **Non corrigé ici** — je
+n'ai pas retouché les pixels : c'est un choix qui touche la direction
+artistique (couper la valeur du crâne, ou ajuster la bande elle-même)
+et Milan doit trancher, pas moi silencieusement. Chaque manifest porte
+`"validated_auto": false` avec le détail exact de la violation.
+
+Corrigé au passage (trouvé en construisant les manifests, pas cherché
+exprès) : l'animation `mort` tournait à 8 fps, qui ne divise pas 60 —
+7,5 ticks/frame, impossible à exprimer en ticks entiers (§0). Recalée à
+6 fps (10 ticks/frame). Nouveau script `scripts/build_sprite_frames.py`
+qui refuse maintenant toute fps ne divisant pas 60 exactement, pour que
+ça ne puisse plus se reproduire silencieusement. Non-régression
+reconfirmée (smoke test 6/6) après le changement.
+
+`data/labels/quality_labels.jsonl` : **toujours vide, 0 octet** — aucun
+verdict humain donné, aucun `accept` auto-attribué (§13.2/§16), conforme
+à la consigne explicite.
+
+### Prochain pas
+
+Toujours Phase 1.4 (combo 3 coups) — inchangé. Cette session n'a ajouté
+aucun contenu de gameplay, uniquement finalisé/documenté/nettoyé
+l'existant pour la review externe.

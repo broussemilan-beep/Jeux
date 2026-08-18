@@ -1,0 +1,19 @@
+{
+  "asset_id": "hero_turnaround",
+  "kind": "character_rotation_set",
+  "source": "pixellab",
+  "pixellab_character_id": "f6b77b57-c482-4e1e-8919-ada684110e08",
+  "character": "cendre",
+  "note": "Set des 8 rotations directionnelles generees par create_character(mode='v3', reference_image=...) a partir du panneau FACE du turnaround fourni par Milan. Ce n'est PAS un fichier de test/rebut - c'est le tour de personnage canonique dont derivent toutes les animations (identite/silhouette/palette verifiees coherentes entre les 8 vues, section 5.3).",
+  "palette_id": null,
+  "importance_tier": 1,
+  "license": "internal",
+  "reference_source": "assets/source/pixellab/cendre/reference.png (crop du panneau FACE du turnaround Milan, downscale+quantifie pour tenir sous la limite de troncature base64 constatee dans ce client MCP)",
+  "frames": 8,
+  "directions": ["south", "south-west", "west", "north-west", "north", "north-east", "east", "south-east"],
+  "cell": [32, 64],
+  "source_frames_dir": "assets/source/pixellab/cendre/rotations/",
+  "validated_auto": false,
+  "validated_auto_detail": "scripts/validate_pixels.py --category character non lance sur ce set specifique (le crane pale releve sur hero_idle.json s'applique probablement de la meme facon ici, meme personnage/meme tete, mais pas verifie frame par frame pour ce fichier).",
+  "human_label_ref": null
+}
