@@ -1,0 +1,14 @@
+{
+  "id": "power.totem_du_vide.expire",
+  "family": "summon_expire",
+  "importance_tier": 2,
+  "layers": [
+    { "type": "consequence", "primitive": "smokePuff", "start_tick": 0, "end_tick": 15 }
+  ],
+  "dissipation_profile": { "value_mult": 0.5, "saturation_mult": 0.5, "opacity_mult": 0.4, "duration_ticks": 15 },
+  "palette_id": "totem_du_vide",
+  "feedback": "none",
+  "sfx_markers": [ { "tick": 0, "event": "totem_expire" } ],
+  "limits": { "particles": 10, "sprites": 1, "persistent_ticks": 15, "overdraw_budget": 0.4 },
+  "notes": "Déclenchée à l'expiration naturelle (6s) OU à la destruction (PV=0), les deux conditions sont valides côté gameplay. Variantes de Maîtrise (même recette de base, ajouts par le script, pas de nouvel asset) : Maîtrise I = ajouter un groundRing basse opacité qui persiste 1,5s après ce smokePuff (trace d'encre au sol). Maîtrise III = ajouter shardBurst en overlay sur cette recette (petite explosion de fragments, dégâts légers en zone)."
+}

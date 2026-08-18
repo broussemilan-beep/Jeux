@@ -157,3 +157,103 @@ UNE compétence complète (8 couches, 4-6 primitives, `impactFlashFrame`
 + `recoil` obligatoires), SFX placeholder. Rien de tout ça ne démarre
 sans direction de contenu (personnage/pouvoir/lore) — hors scope de ce
 document (§1, §16.6), à recevoir séparément.
+
+---
+
+## 2026-08-18 — Phase 1 (tranche verticale), en cours
+
+Direction de contenu reçue de Milan : turnaround perso (4 vues + palette
+en couches) et 3 recettes + 1 palette pour une compétence "Totem du Vide".
+Entrée dans le §15 enfin possible.
+
+### Fait — 1.1 Personnage PixelLab
+
+- Turnaround (image 4 panneaux FACE/3-4/PROFIL/DOS + swatches palette,
+  pas un sprite isolé) recadré et downscale (panneau FACE, fond neutre
+  conservé) en `assets/source/pixellab/cendre/reference.png` — c'est la
+  référence canonique exigée par §5.3, jamais le panneau brut multi-vues.
+- `create_character(mode="v3", reference_image_base64=..., size=48,
+  n_directions=8)` → personnage "Cendre" (id `f6b77b57-...`), 8 rotations
+  téléchargées dans `assets/source/pixellab/cendre/rotations/`.
+- Cohérence entre vues (§5.3) vérifiée à l'œil : les 8 rotations composées
+  côte à côte gardent silhouette/capuche/harnais/palette cohérents.
+- Écart d'exécution : `reference_image_base64` tronque silencieusement
+  au-delà d'environ 1-2 Ko dans ce client MCP (3020 caractères → image
+  corrompue côté serveur PixelLab, alors que `reference_image_url`
+  n'était pas utilisable faute d'hébergement public). Contourné par
+  quantification de couleurs (palette réduite à 16 couleurs) + downscale
+  du crop pour rester sous ce seuil — qualité suffisante pour une
+  génération v3 reference-image (le modèle réinterprète de toute façon
+  la silhouette/style, pas un exact recopiage pixel).
+- Journal d'usage (§5.3) : `data/pixellab_usage.jsonl`, y compris le
+  test-sonde jeté ("Cendre_test", marqué `rejected`) qui a servi à trouver
+  ce seuil de troncature avant de lancer la vraie génération.
+- Statut : **`generated_awaiting_milan_verdict`** — pas encore de verdict
+  humain (§13.2). À soumettre avec les captures animation/combo/pouvoir
+  (Phase 1.7) avant toute généralisation, comme demandé.
+- Recettes + palette Totem du Vide sauvegardées telles que fournies dans
+  `data/recipes/power.totem_du_vide.{spawn,attack,expire}.json` et
+  `data/palettes/totem_du_vide.json` — pas encore résolues par du code
+  (Phase 1.5).
+
+### Fait — 1.2 Squelette gameplay minimal
+
+- `src/gameplay/game_constants.gd` : une seule constante pour l'instant
+  (`PX_PER_METER = 32.0`) — convertit les distances en mètres du mandat
+  ("rayon 3m") en pixels, à partir de la taille de corps §0 (~48px ≈
+  1,5m). Centralisé pour ne jamais recopier ce chiffre en dur ailleurs.
+- `src/gameplay/stats.gd` (`Resource`) : hp/max_hp/int_stat/move_speed_px.
+  INT est déjà là car le Totem (Phase 1.6) doit scaler ses dégâts dessus.
+- `src/gameplay/targeting.gd` : `nearest_enemy_in_radius()`, statique,
+  réutilisable par n'importe quel pouvoir futur — écrit une fois pour
+  répondre littéralement à "ennemi le plus proche en zone" du mandat
+  Totem, pas seulement pour lui.
+- `src/gameplay/enemy.gd` / `player.gd` (`CharacterBody2D`) + scènes
+  `scenes/gameplay/{enemy,player}.tscn`. Player porte déjà la rotation
+  "south" de Cendre en Sprite2D statique (provisoire — Phase 1.3 la
+  remplace par de l'animation réelle). Enemy est un placeholder
+  géométrique (pas d'art ennemi reçu, hors scope §1/§16.6) mais porte
+  déjà `take_damage()` + un vrai recul physique (`recoil`, §4 : "recul
+  visible de la cible... réaction de l'ennemi, pas une primitive du
+  pouvoir") — nécessaire dès maintenant pour que Phase 1.6 (Totem) ait
+  quelque chose à appeler.
+- Hitbox = `CapsuleShape2D` posée à la main, jamais dérivée du sprite
+  (cohérent avec le test hitbox/visuel §2).
+
+### Écart trouvé et corrigé (Phase 1.2)
+
+Un `.png` ajouté au dépôt hors éditeur (téléchargé via `curl`, comme les
+rotations PixelLab) n'a pas de fichier `.import` compagnon. Constaté par
+exécution réelle : référencer une telle image dans une `.tscn` ne se
+contente pas d'échouer proprement — ça avorte en cours de route le scan
+qui enregistre les `class_name` du projet (les autres scripts, sans
+rapport avec la texture, perdaient soudain la résolution de `Stats`,
+`Player`, etc.), le script racine de la scène de test ne chargeait donc
+plus, `_ready()` ne tournait jamais, et Godot restait assis à tourner
+sans jamais quitter — un hang silencieux à pleine charge CPU, aucun
+message d'erreur visible en surface (il fallait lire les logs en
+entier). Corrigé : passage `godot4 --headless --rendering-driver vulkan
+--import` (import forcé de toutes les ressources, silencieux, quitte
+seul) ajouté SYSTÉMATIQUEMENT avant toute exécution de scène dans
+`scripts/run_gameplay_smoke_test.sh` ET `scripts/capture_headless.sh` —
+ce dernier n'avait pas encore été touché par ce problème en Phase 0
+(aucun asset externe alors) mais le sera dès la première capture Phase 1
+avec de l'art PixelLab dedans.
+
+### Preuve — 1.2, reproductible
+
+```
+scripts/run_gameplay_smoke_test.sh
+# → SMOKE_TEST_RESULT {"all_pass":true,"checks":[...5 checks...]}
+```
+5/5 vérifications passent : ciblage plus-proche-en-zone (ignore une
+cible hors rayon), `take_damage()` réduit les PV du bon montant, le
+recul pousse la cible dans la direction opposée à l'attaquant, des
+dégâts léthaux marquent l'ennemi mort ET libèrent le nœud, le joueur se
+déplace et met à jour son `facing` sous une entrée simulée.
+
+### Prochain pas
+
+Phase 1.3 : animations de base (idle/déplacement/dash/hurt/mort) pour
+Cendre, pose-to-pose (§6.1/6.2/6.3), remplacement du Sprite2D statique du
+Player par un vrai AnimationPlayer.

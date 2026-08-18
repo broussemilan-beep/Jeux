@@ -35,6 +35,16 @@ if ! command -v "$GODOT_BIN" >/dev/null 2>&1; then
 	exit 1
 fi
 
+# ÉCART DOCUMENTÉ (docs/worklog.md, Phase 1.2) : un .png ajouté hors
+# éditeur (assets PixelLab téléchargés via curl) n'a pas de ".import" —
+# sans ce passage d'import forcé, le symptôme n'est PAS une erreur propre
+# mais un hang silencieux (le scan de classes avorte en cours de route,
+# le script racine de la scène ne charge plus, _ready() ne tourne jamais,
+# Godot reste assis sans jamais quitter). Voir run_gameplay_smoke_test.sh
+# pour le détail complet de ce qui a été observé.
+xvfb-run --auto-servernum --server-args="-screen 0 1024x768x24" \
+	"$GODOT_BIN" --path "$REPO_ROOT" --headless --rendering-driver vulkan --import
+
 xvfb-run --auto-servernum --server-args="-screen 0 1024x768x24" \
 	"$GODOT_BIN" --path "$REPO_ROOT" --rendering-driver vulkan \
 	res://tools/capture_scene.tscn -- "$@"

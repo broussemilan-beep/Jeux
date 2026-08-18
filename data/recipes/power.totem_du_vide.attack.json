@@ -1,0 +1,15 @@
+{
+  "id": "power.totem_du_vide.attack",
+  "family": "totem_attack",
+  "importance_tier": 2,
+  "layers": [
+    { "type": "contact", "primitive": "fractureLine",     "start_tick": 0, "end_tick": 6 },
+    { "type": "contact", "primitive": "impactFlashFrame", "start_tick": 4, "end_tick": 6 }
+  ],
+  "dissipation_profile": null,
+  "palette_id": "totem_du_vide",
+  "feedback": "light",
+  "sfx_markers": [ { "tick": 5, "event": "totem_attack_hit" } ],
+  "limits": { "particles": 6, "sprites": 2, "persistent_ticks": 6, "overdraw_budget": 0.3 },
+  "notes": "Déclenchée par le script du totem toutes les 1,2s (72 ticks) sur l'ennemi le plus proche en zone. IMPORTANT : la cible touchée doit jouer son sous-composant recoil (section 4 du doc VFX) — pas une primitive du totem, une réaction de l'ennemi. Maîtrise II : sur toutes les 3 attaques réussies, rejouer cette recette une seconde fois vers une cible proche avec intensity réduite (dégâts réduits côté gameplay, pas de nouvel asset)."
+}

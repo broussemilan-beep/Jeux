@@ -1,0 +1,10 @@
+{
+  "palette_id": "totem_du_vide",
+  "notes": "Valeurs V (HSV %) proposées comme point de départ, à ajuster par l'artiste — doivent rester dans la bande VFX 20-92% (section 3 du doc VFX), jamais 0% ni 100%.",
+  "roles": [
+    { "role": "allié (convention gameplay, non contournable)", "name": "bleu pâle système", "value_percent": 72, "usage": "groundRing (spawn), fine bordure du totem" },
+    { "role": "signature 1 (identité émotionnelle du pouvoir)", "name": "gris-lilas désaturé", "value_percent": 55, "usage": "corps du runicStamp, silhouette du totem" },
+    { "role": "signature 2 (matière Ink)", "name": "noir d'encre", "value_percent": 24, "usage": "fractureLine, parties profondes du totem, impacts" },
+    { "role": "intermédiaire", "name": "gris cendre", "value_percent": 40, "usage": "transition entre gris-lilas et noir d'encre, smokePuff" }
+  ]
+}
