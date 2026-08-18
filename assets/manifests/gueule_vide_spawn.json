@@ -12,7 +12,7 @@
   "direction": "south",
   "note_direction": "seule la direction sud existe pour l'instant (discipline batch section 5.3), meme convention que Cendre",
   "palette_id": "invocateur_vide",
-  "palette_status": "Recue et cablee (data/palettes/invocateur_vide.json). groundRing en bleu pale systeme (72% V, role allie), runicStamp en gris-lilas desature (55% V, signature 1) - resolus automatiquement par VfxRecipeRegistry._resolve_color via correspondance sur le champ usage, aucun changement de code necessaire. Recapture effectuee.",
+  "palette_status": "Recue et cablee (data/palettes/invocateur_vide.json v2). groundRing en bleu pale systeme (72% V / 212 deg hue / 18% sat, role allie), runicStamp en gris-lilas desature (55% V / 278 deg hue / 14% sat, signature 1) - resolus automatiquement par VfxRecipeRegistry._resolve_color via correspondance sur le champ usage, aucun changement de code necessaire. CORRECTIF v2 : la v1 du fichier palette n'avait que value_percent (hue/sat absents -> gris neutre pur en jeu malgre des V corrects) ; v2 ajoute hue_deg/saturation_percent sur les 4 roles. Verifie pixel-exact sur capture de controle (groundRing (151,166,184) = 72%V/18%S/212.7 deg, runicStamp (133,121,140) = 54.9%V/13.6%S/277.9 deg, correspondance exacte a la v2). Recapture complete (18 fichiers) effectuee avec la palette v2.",
   "importance_tier": 2,
   "license": "internal",
   "seed": null,

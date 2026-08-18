@@ -986,3 +986,47 @@ noté précédemment, non lié à la palette).
 `quality_labels.jsonl` toujours vide. Gueule Vide (créature + VFX +
 gameplay + captures aux vraies couleurs) est maintenant complet et prêt
 pour verdict Milan.
+
+## 2026-08-18 — Correctif v2 palette `invocateur_vide.json` : hue/saturation manquants en v1
+
+Milan a renvoyé une v2 du fichier `data/palettes/invocateur_vide.json`
+avec une note explicite dans le fichier lui-même : la v1 ne portait que
+`value_percent` sur les 4 rôles, sans `hue_deg` ni `saturation_percent`.
+`VfxRecipeRegistry._resolve_color` retombait donc sur ses valeurs de
+repli (`hue_deg: 0.0`, `saturation_percent: 0.0`) pour ces deux champs
+absents — la Value affichée était correcte (bleu pâle plus clair que
+gris-lilas, etc., comme rapporté à l'entrée précédente) mais rendue en
+gris pur, sans aucune teinte : la signature visuelle de Classe
+Invocateur était donc invisible en jeu malgré des couleurs
+nominalement « correctes ». Aucun bug côté code : `_resolve_color`
+utilisait déjà `.get("hue_deg", 0.0)` / `.get("saturation_percent",
+0.0)` avec des valeurs de repli sensées ; seule la donnée manquait.
+
+v2 ajoute `hue_deg` et `saturation_percent` aux 4 rôles (bleu pâle
+système 212°/18%, gris-lilas désaturé 278°/14%, noir d'encre 250°/10%,
+gris cendre 230°/6% — teintes volontairement basses en saturation pour
+rester « quasi imperceptible » comme spécifié à l'origine, mais non
+nulles). Fichier enregistré tel quel (aucune valeur inventée).
+
+Vérification pixel-exacte (pas seulement confiance dans le contenu du
+fichier) : capture de contrôle tick=3/échelle=4/fond neutre, scan de la
+région pour tous les pixels non-fond, histogramme de fréquence pour
+isoler les deux teintes dessinées. `groundRing` → `(151,166,184)` =
+72,2% V / 18,0% S / 212,7° H (cible 72/18/212 ✓). `runicStamp` →
+`(133,121,140)` = 54,9% V / 13,6% S / 277,9° H (cible 55/14/278 ✓).
+Correspondance exacte aux deux décimales près.
+
+Non-régression : `scripts/run_vfx_recipe_smoke_test.sh` (4/4) et
+`scripts/run_gameplay_smoke_test.sh` (16/16) relancés après l'écriture
+de la v2 — aucune régression, aucun changement de code nécessaire.
+
+Batch complet de 18 captures relancé (3 états × fond neutre/chargé ×
+1×/2×/4×) avec la palette v2, remplace les captures v1 (qui portaient
+déjà les bonnes Values mais sans teinte visible). Manifests
+`gueule_vide_{spawn,attack,expire}.json` mis à jour : `palette_status`
+documente désormais hue/saturation en plus de Value, avec mention
+explicite du correctif v1→v2 et de la vérification pixel.
+
+`quality_labels.jsonl` toujours vide. Gueule Vide reste complet et prêt
+pour verdict Milan, cette fois avec la signature de Classe réellement
+visible.

@@ -12,7 +12,7 @@
   "direction": "south",
   "note_direction": "seule la direction sud existe pour l'instant (discipline batch section 5.3), meme convention que Cendre",
   "palette_id": "invocateur_vide",
-  "palette_status": "Recue et cablee (data/palettes/invocateur_vide.json). shardBurst en gris cendre (40% V, role intermediaire) - resolu via la correspondance 'shardBurst' dans le champ usage du role. Recapture effectuee.",
+  "palette_status": "Recue et cablee (data/palettes/invocateur_vide.json v2). shardBurst en gris cendre (40% V / 230 deg hue / 6% sat, role intermediaire) - resolu via la correspondance 'shardBurst' dans le champ usage du role. CORRECTIF v2 : hue_deg/saturation_percent ajoutes sur les 4 roles (absents en v1, repli gris neutre). Recapture complete (18 fichiers) effectuee avec la palette v2.",
   "importance_tier": 2,
   "license": "internal",
   "seed": null,
