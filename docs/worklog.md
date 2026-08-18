@@ -765,3 +765,184 @@ captures sont soumises pour review, pas acceptées.
 Les 4 corrections + la standardisation des captures sont poussées.
 Toujours en attente de la nouvelle version du Totem du Vide (Milan)
 avant Phase 1.5/1.6.
+
+## 2026-08-18 — Phase 1.5 : Gueule Vide (INVOCATEUR) + moteur de recettes VFX
+
+Mandat : implémenter le pouvoir "Gueule Vide" (INVOCATEUR) à partir de la
+fiche de référence fournie (turnaround face/3-4/profil/dos + fiche
+comportement/couches/palette), `data/recipes/power.gueule_vide.cast.json`
+tel quel, cast unique 42 ticks, pas d'énergie/mana (hors scope Rank
+Zero). Ce mandat active de fait la Phase 1.5 en attente (#184 :
+`vfx_recipe_registry.gd` + 4 primitives manquantes) — Gueule Vide en est
+le premier vrai consommateur, à la place du Totem (toujours en pause).
+
+### Blocage partiel signalé, non résolu
+
+`data/palettes/invocateur_vide.json` était mentionné comme "fichier
+joint" dans le mandat mais n'a **jamais été effectivement attaché** —
+seuls `power.gueule_vide.cast.json` et l'image de référence sont
+arrivés (vérifié dans le dossier d'uploads). Signalé au début du
+chantier plutôt que de fabriquer les valeurs de palette à l'œil sur les
+pastilles de la fiche ("tels quels" du mandat implique un fichier
+autoritaire, pas une réinvention). Conséquence : les couches VFX de la
+recette (groundRing/runicStamp/fractureLine/shardBurst) tournent en gris
+neutre de repli — voir plus bas, le mécanisme de résolution est prêt et
+n'aura besoin d'aucun changement de code une fois le fichier reçu.
+
+### 1. Référence créature
+
+Panneau FACE de la fiche recadré (`assets/source/pixellab/gueule_vide/
+reference.png`), downscale 24×22px/8 couleurs — même discipline que
+Cendre (§5.3), sous le seuil de troncature base64 (~700 chars, dans la
+marge du seuil ~1-2KB déjà mesuré).
+
+### 2. Créature + animation (2 appels PixelLab, aucun re-roll)
+
+`create_character` (mode v3, reference_image, 8 directions — canvas
+effectif 24×24px, a hérité les dimensions de la référence malgré
+`size=40` demandé, sans conséquence puisque `cook_character_frames.py`
+normalise le canvas ensuite ; pas de re-roll pour ce détail mineur).
+
+`animate_character` (mode v3, direction sud uniquement, 6 frames,
+`keep_first_frame=false`) : une seule action_description couvrant les 4
+phases de la recette (formation / gueule ouverte-préparation / morsure /
+désintégration, §6.1). Résultat accepté à la première passe — lecture
+claire des 4 beats (frames 0-1 formation, frame 2 préparation gueule
+fermée, frame 3 morsure gueule grande ouverte, frames 4-5 bascule/
+affaissement). Pas de fragmentation littérale en gouttes d'encre sur le
+sprite (une silhouette figée de PixelLab ne peut pas vraiment "exploser"
+en particules) — compensé par la couche VFX `shardBurst` plutôt qu'un
+re-roll inutile.
+
+Cuit sur canvas 48×48 (`cook_character_frames.py`, foot-margin 4px,
+ancre [24,44]) puis `build_sprite_frames.py` (fps nominal nécessaire au
+schéma de l'outil, `sprite.pause()` + `frame` piloté au tick près côté
+script — voir plus bas, jamais la lecture fps autonome).
+`validate_pixels.py --category character` : 6/6 frames OK, 0 violation.
+
+### 3. Moteur de recettes VFX — `src/vfx/vfx_recipe_registry.gd`
+
+Nouvel autoload (après `VfxDirector` dans `project.godot`). Résout une
+recette JSON (`data/recipes/<id>.json`) en timeline de spawns
+`VfxDirector.spawn()`, tick-driven — chaque couche respecte son propre
+`start_tick`/`end_tick` relatif au début du run (§8.1), jamais un burst
+instantané de tout à `t=0`. `play(recipe_id, params)` retourne un
+`run_id` (0 si recette introuvable), `is_running(run_id)` pour sonder
+l'état.
+
+Résolution palette : chaque rôle de `data/palettes/<palette_id>.json`
+porte un champ `usage` en texte libre qui **nomme** les primitives qu'il
+colore (convention déjà en place dans `totem_du_vide.json`, ex.
+"groundRing (spawn), fine bordure du totem"). La registry fait
+correspondre chaque couche à son rôle en cherchant le nom de la
+primitive dans ce texte (insensible à la casse) — aucune modification du
+schéma recette/palette pour ajouter un champ de mapping qui n'existe pas
+aujourd'hui. Palette manquante ou rôle non trouvé → repli gris neutre
+50% V désaturé (jamais un crash, jamais hors bande VFX 20-92%), un seul
+avertissement par (recette, primitive), jamais en boucle par tick.
+
+Ce que la registry ne fait délibérément PAS : dégâts, recul, animation
+du lanceur, SFX — tout ça reste côté script gameplay de l'entité qui
+joue le pouvoir, sur SA PROPRE horloge de ticks (même principe que le
+recul du combo : "pas une primitive de la recette").
+
+### 4. Les 4 primitives manquantes (§7.1)
+
+- `ground_ring.gd` — "anneau au sol cassé ou incomplet" : cercle en
+  segments avec 2-3 coupures seedées (jamais un anneau plein).
+- `runic_stamp.gd` — "glyphe/empreinte de sol" : cercle central +
+  5-7 branches de longueur irrégulière (matière ink, §7.2 : "masses
+  irrégulières"), apparaît vite et reste statique (contraste avec
+  fractureLine qui progresse).
+- `fracture_line.gd` — "fissure segmentée qui progresse" : chemin en
+  zigzag seedé, segments révélés progressivement tick après tick (pas
+  d'apparition d'un coup).
+- `shard_burst.gd` — "fragmentation orientée" : éclats triangulaires
+  partant en cône dirigé (jamais isotrope, §4), pas un système de
+  particules GPU.
+
+Toutes les 4 : mêmes conventions qu'`impact_flash_frame.gd` (contrat
+`configure(params)`/`tick(ticks_elapsed)`, `MIN/MAX_VALUE_HSV` clampés
+20-92%), acceptent `value_percent`/`hue_deg`/`saturation_percent`
+(résolus par la registry, jamais une couleur en dur — contrairement à
+`impactFlashFrame` qui EST toujours un flash blanc quel que soit le
+pouvoir). Enregistrées dans `VfxDirector._registry`.
+
+### Preuve — reproductible
+
+```
+scripts/run_vfx_recipe_smoke_test.sh
+# → 4/4 checks (fixture volontaire : power.totem_du_vide.attack +
+#   palette totem_du_vide, déjà dans le dépôt, indépendants de Gueule
+#   Vide — prouve le MÉCANISME générique, pas une recette précise) :
+#   play_unknown_recipe_returns_zero, recipe_run_starts_spawns_both_
+#   layers_then_finishes, palette_resolution_matches_usage_text,
+#   unresolved_primitive_falls_back_to_neutral_gray
+
+scripts/run_gameplay_smoke_test.sh
+# → 16/16 checks (11 précédents + 5 nouveaux) :
+#   power1_input_spawns_gueule_vide_creature,
+#   power1_cooldown_blocks_immediate_second_cast,
+#   gueule_vide_contact_damages_enemy_in_range,
+#   gueule_vide_contact_applies_recoil_to_enemy,
+#   gueule_vide_creature_frees_itself_after_cast
+```
+
+### 5. Créature/pouvoir — `src/gameplay/powers/gueule_vide.gd`
+
+`Node2D` autonome (pas `CharacterBody2D` — ne bouge pas, pas de
+collision). `_ready()` : joue le sprite en pause, `frame=0`, démarre
+`VfxRecipeRegistry.play("power.gueule_vide.cast", ...)`.
+`_physics_process()` : incrémente son propre tick, pose
+`sprite.frame` via une table de bornes cumulées `[5,9,15,21,32,42]`
+(6 frames pour des phases de durées inégales — le pas fps uniforme de
+`build_sprite_frames.py` ne peut pas exprimer ça, même discipline que le
+combo : "les ticks sont la seule autorité", jamais la lecture fps
+autonome d'`AnimatedSprite2D`). Au tick de contact (20, `sfx_markers` de
+la recette), résout la cible via `Targeting.nearest_enemy_in_radius` et
+appelle `Enemy.take_damage()` — recul porté par l'ennemi, pas une
+primitive (mandat, section 4). `queue_free()` à 42 ticks — cast unique,
+jamais de répétition, jamais d'entité persistante.
+
+`Player` : action d'entrée `power1` (touche E), cooldown 360 ticks (6s).
+`_cast_gueule_vide()` instancie la créature à 3m devant le joueur
+(facing), pose le cooldown. N'utilise PAS `_action_lock` — rien dans le
+mandat n'exige d'immobiliser le joueur pendant les 0,7s du cast.
+
+### 6. Capture standardisée — extension `capture_scene.gd`
+
+Nouveau `--mode=power` : instancie une scène de pouvoir
+(`scenes/gameplay/powers/<power>.tscn`), laisse la physique RÉELLE
+tourner (sonde `instance.get_current_tick()`, même technique que
+`--mode=primitive` avec `VfxDirector.get_current_tick()`) jusqu'au tick
+cible, gèle, capture — nécessaire car le mode `character` ne gère pas
+une entité qui se détruit elle-même en fin de vie. 3 états × 2 fonds ×
+3 échelles = 18 captures (`captures/phase1/gueule_vide_{spawn,attack,
+expire}*.png`, ticks 3/20/40) : `groundRing`+`runicStamp` visibles à la
+formation, `fractureLine`+`impactFlashFrame` au contact, `shardBurst` à
+la désintégration — toutes en gris de repli (palette manquante, voir
+plus haut).
+
+### Manifests
+
+`assets/manifests/gueule_vide_{spawn,attack,expire}.json` — nouveau
+`kind: "power_capture"`, `validated_auto: true` (la créature/le
+mécanisme sont corrects et testés), `palette_status` documente
+explicitement le blocage et pointe vers le fichier manquant,
+`known_limitation` résume ce qui reste à refaire une fois la palette
+reçue (recapture seule, zéro changement de code).
+
+### quality_labels.jsonl
+
+Toujours vide. Aucun verdict humain auto-attribué.
+
+### Prochain pas
+
+En attente de `data/palettes/invocateur_vide.json` pour recapturer avec
+les vraies couleurs (bleu-gris pâle / lilas-gris pâle / gris moyen /
+gris foncé / charbon, d'après la légende de la fiche) — aucun changement
+de code nécessaire, seulement relancer le batch de captures une fois le
+fichier en place. Les paliers de Maîtrise I/II/III de Gueule Vide
+(notes de la recette : résidu, double mâchoire, dévoration) restent hors
+scope de cette passe (mandat explicite : pas encore). Totem du Vide
+(Phase 1.6) toujours en pause côté Milan.

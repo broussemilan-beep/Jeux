@@ -28,6 +28,16 @@ const CHAIN_WINDOW_TICKS := 6
 const ATTACK_RANGE_PX := 48.0  # ~1.5m, GameConstants.PX_PER_METER
 const ATTACK_DAMAGE := 10.0
 
+const GueuleVideScene := preload("res://scenes/gameplay/powers/gueule_vide.tscn")
+
+## Invocation "Gueule Vide" (INVOCATEUR, data/recipes/power.gueule_vide.cast.json) :
+## "Portée d'invocation : 4m". La créature apparaît à une distance fixe
+## (3m) dans l'axe du regard (facing), laissant sa propre zone d'attaque
+## (~1,5m) porter le reste de la portée totale sans la dépasser.
+## "Cooldown suggéré : 6s" -> 360 ticks @ 60/s.
+const POWER1_SPAWN_DISTANCE_PX := 96.0  # GameConstants.meters_to_px(3.0)
+const POWER1_COOLDOWN_TICKS := 360  # 6s @ 60/s
+
 @export var stats: Stats = Stats.new()
 
 ## Direction de face courante (8 valeurs), utile aux futures frames
@@ -53,6 +63,11 @@ var _combo_tick: int = 0
 var _attack_queued: bool = false
 var _hit_applied_this_release: bool = false
 
+## Gueule Vide n'utilise PAS _action_lock : l'invocation (0,7s) n'immobilise
+## pas le joueur (rien dans le mandat ne l'exige, contrairement au combo/
+## dash) — seul un cooldown la borne dans le temps.
+var _power1_cooldown_remaining: int = 0
+
 @onready var _sprite: AnimatedSprite2D = $AnimatedSprite2D
 
 
@@ -61,8 +76,14 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
+	if _power1_cooldown_remaining > 0:
+		_power1_cooldown_remaining -= 1
+
 	if Input.is_action_just_pressed("attack"):
 		_attack_queued = true
+
+	if Input.is_action_just_pressed("power1") and not stats.is_dead() and _power1_cooldown_remaining <= 0:
+		_cast_gueule_vide()
 
 	if _combo_step > 0:
 		velocity = Vector2.ZERO
@@ -158,6 +179,24 @@ func _try_hit() -> void:
 		"lifetime_ticks": 2,
 		"overdraw_cost": 12.0,
 	})
+
+
+## Invocation "Gueule Vide" — instancie la créature en avant du joueur
+## (facing), démarre son cast (42 ticks, autonome — voir gueule_vide.gd),
+## pose le cooldown. N'appelle pas VfxRecipeRegistry directement : c'est
+## la créature elle-même qui joue sa recette, ce script ne fait qu'un
+## spawn de gameplay, comme Player._try_hit() spawne juste
+## impactFlashFrame sans piloter le reste du VFX.
+func _cast_gueule_vide() -> void:
+	_power1_cooldown_remaining = POWER1_COOLDOWN_TICKS
+	var dir := facing
+	if dir.length_squared() < 0.0001:
+		dir = Vector2.DOWN
+	dir = dir.normalized()
+
+	var creature: Node2D = GueuleVideScene.instantiate()
+	creature.global_position = global_position + dir * POWER1_SPAWN_DISTANCE_PX
+	get_parent().add_child(creature)
 
 
 func is_dead() -> bool:

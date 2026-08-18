@@ -21,6 +21,9 @@ run/main_scene=""
 ; VfxDirector : le director consulte le budget dès son premier spawn.
 VfxBudget="*res://src/vfx/vfx_budget.gd"
 VfxDirector="*res://src/vfx/vfx_director.gd"
+; VfxRecipeRegistry après VfxDirector : elle appelle VfxDirector.spawn()
+; pour chaque couche résolue, jamais l'inverse.
+VfxRecipeRegistry="*res://src/vfx/vfx_recipe_registry.gd"
 
 [display]
 
@@ -43,6 +46,16 @@ attack={
 "deadzone": 0.5,
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":32,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 , Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":1,"position":Vector2(0, 0),"global_position":Vector2(0, 0),"factor":1.0,"button_index":1,"canceled":false,"pressed":false,"double_click":false,"script":null)
+]
+}
+
+; Invocation "Gueule Vide" (pouvoir INVOCATEUR) — touche E, premier
+; emplacement de pouvoir ("power1"), même discipline que "attack" :
+; juste ce qu'il faut pour un déclenchement just_pressed testable en
+; headless, pas de remap/tactile (hors scope Phase 1).
+power1={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":69,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
 

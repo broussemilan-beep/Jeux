@@ -6,7 +6,7 @@ extends Node2D
 ## (get_viewport().get_texture().get_image().save_png()) [...] Lancée par
 ## scripts/capture_headless.sh."
 ##
-## Deux modes, un seul point d'entrée (jamais deux scènes de capture qui
+## Trois modes, un seul point d'entrée (jamais deux scènes de capture qui
 ## dupliqueraient la technique pause+3×process_frame ci-dessous) :
 ##
 ## --mode=primitive (par défaut, Phase 0) : capture UNE primitive nommée
@@ -32,6 +32,17 @@ extends Node2D
 ##   généré procéduralement (_make_loaded_background), pas un asset final.
 ##   À remplacer par un vrai décor quand Phase 2+ apportera des tuiles.
 ##
+## --mode=power (Phase 1.5+) : instancie une scène de pouvoir
+##   (res://scenes/gameplay/powers/<power>.tscn), laisse la physique RÉELLE
+##   tourner jusqu'à un tick donné (la créature pilote son propre cast en
+##   autonome, contrairement au mode character qui pose juste une frame
+##   figée), gèle puis capture — nécessaire ici car le mode character ne
+##   gère pas une entité qui se détruit elle-même (queue_free) en fin de vie.
+##   --power=gueule_vide            nom de la scène (scenes/gameplay/powers/<power>.tscn)
+##   --tick=2                       tick physique auquel capturer (< durée totale du cast)
+##   --background=neutral|loaded, --scale=1|2|4  mêmes conventions que character.
+##   --out=/chemin/absolu/sortie.png
+##
 ## Voir CLAUDE.md "Environnement de capture — écart documenté" : cette
 ## scène elle-même ne sait rien de xvfb/Vulkan logiciel — c'est
 ## scripts/capture_headless.sh qui choisit COMMENT lancer Godot. Ce
@@ -46,8 +57,68 @@ func _ready() -> void:
 	var mode: String = args.get("mode", "primitive")
 	if mode == "character":
 		await _run_character_capture(args)
+	elif mode == "power":
+		await _run_power_capture(args)
 	else:
 		await _run_primitive_capture(args)
+
+
+func _run_power_capture(args: Dictionary) -> void:
+	var power_name: String = args.get("power", "")
+	var target_tick: int = int(args.get("tick", "2"))
+	var out_path: String = args.get("out", "")
+	var background: String = args.get("background", "neutral")
+	var scale: int = int(args.get("scale", "1"))
+	if power_name == "" or out_path == "":
+		push_error("capture_scene[power]: --power et --out sont requis.")
+		get_tree().quit(1)
+		return
+
+	var scene_path := "res://scenes/gameplay/powers/%s.tscn" % power_name
+	if not ResourceLoader.exists(scene_path):
+		push_error("capture_scene[power]: scène introuvable '%s'." % scene_path)
+		get_tree().quit(1)
+		return
+
+	if background == "loaded":
+		add_child(_make_loaded_background())
+
+	var power_scene: PackedScene = load(scene_path)
+	var instance: Node2D = power_scene.instantiate()
+	instance.global_position = Vector2(320, 260)
+	add_child(instance)
+
+	# Physique RÉELLE (pas de pause avant le tick cible) : la créature
+	# avance sa propre horloge en autonome — même sondage que
+	# _run_primitive_capture() pour VfxDirector.get_current_tick(), avec
+	# la même course déjà trouvée en Phase 0 (l'ordre entre la reprise
+	# d'un `await physics_frame` et le `_physics_process` d'un AUTRE nœud
+	# pour ce même pas n'est pas garanti).
+	while is_instance_valid(instance) and instance.get_current_tick() < target_tick:
+		await get_tree().physics_frame
+
+	if not is_instance_valid(instance):
+		push_warning("capture_scene[power]: '%s' s'est libéré avant le tick %d (durée de vie trop courte)." % [power_name, target_tick])
+
+	await _freeze_and_wait_render()
+
+	var img: Image = get_viewport().get_texture().get_image()
+	if scale > 1:
+		img.resize(img.get_width() * scale, img.get_height() * scale, Image.INTERPOLATE_NEAREST)
+	var err := _save_png(img, out_path)
+
+	var report := {
+		"save_err": err,
+		"out_path": out_path,
+		"size": [img.get_width(), img.get_height()],
+		"mode": "power",
+		"power": power_name,
+		"tick": target_tick,
+		"background": background,
+		"scale": scale,
+	}
+	print("CAPTURE_RESULT ", JSON.stringify(report))
+	get_tree().quit(0 if err == OK else 1)
 
 
 func _run_character_capture(args: Dictionary) -> void:

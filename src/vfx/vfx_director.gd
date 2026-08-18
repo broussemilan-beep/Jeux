@@ -42,6 +42,10 @@ var _active: Dictionary = {}
 ## sans fichier réel derrière (pas de placeholder).
 var _registry: Dictionary = {
 	"impactFlashFrame": "res://src/vfx/primitives/impact_flash_frame.gd",
+	"groundRing": "res://src/vfx/primitives/ground_ring.gd",
+	"runicStamp": "res://src/vfx/primitives/runic_stamp.gd",
+	"fractureLine": "res://src/vfx/primitives/fracture_line.gd",
+	"shardBurst": "res://src/vfx/primitives/shard_burst.gd",
 }
 
 ## Journal en mémoire de chaque spawn — §8.2 "journalise seed + recette

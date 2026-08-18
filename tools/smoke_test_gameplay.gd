@@ -39,6 +39,7 @@ func _ready() -> void:
 	await _check_death()
 	await _check_movement()
 	await _check_combo()
+	await _check_gueule_vide()
 
 	_report()
 
@@ -210,6 +211,88 @@ func _check_combo() -> void:
 		"name": "combo_returns_to_idle_after_full_recovery_without_input",
 		"pass": ended and anim_final == "idle",
 		"detail": {"ended": ended, "combo_step": _player._combo_step, "anim": anim_final},
+	})
+
+
+## Phase 1.5 : invocation "Gueule Vide" — appui sur "power1" fait
+## apparaître la créature (scenes/gameplay/powers/gueule_vide.tscn) devant
+## le joueur, elle joue son propre cast (42 ticks) et applique
+## dégâts+recul sur la cible en zone au tick de contact — "pas une
+## primitive de la recette", porté par Enemy.take_damage() comme le
+## combo. Le cooldown (6s = 360 ticks) bloque un second appui immédiat.
+## VfxDirector/VfxRecipeRegistry sont déjà éprouvés par
+## tools/smoke_test_vfx_recipe.gd, on ne reteste pas leur mécanique ici,
+## seulement l'intégration gameplay (spawn, cooldown, dégât/recul, fin de
+## vie de la créature).
+func _check_gueule_vide() -> void:
+	_player.facing = Vector2.RIGHT
+	var spawn_pos: Vector2 = _player.global_position + Vector2.RIGHT * Player.POWER1_SPAWN_DISTANCE_PX
+
+	var enemy := EnemyScene.instantiate()
+	enemy.name = "EnemyForGueuleVide"
+	enemy.global_position = spawn_pos + Vector2(20, 0)  # dans ATTACK_RANGE_PX (48px) de la créature
+	add_child(enemy)
+	await get_tree().physics_frame  # laisser le groupe "enemies" se peupler
+
+	var hp_before: float = enemy.stats.hp
+
+	Input.action_press("power1")
+	await get_tree().physics_frame
+	Input.action_release("power1")
+
+	var creature: GueuleVide = null
+	var spawned: bool = await _wait_until(func():
+		for child in get_children():
+			if child is GueuleVide:
+				creature = child
+				return true
+		return false
+	, 10)
+
+	var cooldown_armed: bool = _player._power1_cooldown_remaining > 0
+	# Un second appui immédiat ne doit RIEN spawner de plus tant que le
+	# cooldown court — jamais un deuxième cast gratuit en un tick.
+	Input.action_press("power1")
+	await get_tree().physics_frame
+	Input.action_release("power1")
+	var creature_count_after_second_press := 0
+	for child in get_children():
+		if child is GueuleVide:
+			creature_count_after_second_press += 1
+
+	var hit_landed: bool = await _wait_until(func(): return enemy.stats.hp < hp_before, GueuleVide.CONTACT_TICK + 5)
+	var hp_after_hit: float = enemy.stats.hp
+
+	for i in range(8):
+		await get_tree().physics_frame
+	var enemy_pos_after_recoil: Vector2 = enemy.global_position
+
+	var creature_finished: bool = await _wait_until(func(): return spawned and not is_instance_valid(creature), GueuleVide.TOTAL_TICKS + 10)
+
+	_checks.append({
+		"name": "power1_input_spawns_gueule_vide_creature",
+		"pass": spawned and cooldown_armed,
+		"detail": {"spawned": spawned, "cooldown_remaining": _player._power1_cooldown_remaining},
+	})
+	_checks.append({
+		"name": "power1_cooldown_blocks_immediate_second_cast",
+		"pass": creature_count_after_second_press == 1,
+		"detail": {"creature_count_after_second_press": creature_count_after_second_press},
+	})
+	_checks.append({
+		"name": "gueule_vide_contact_damages_enemy_in_range",
+		"pass": hit_landed and is_equal_approx(hp_before - hp_after_hit, GueuleVide.ATTACK_DAMAGE),
+		"detail": {"hit_landed": hit_landed, "hp_before": hp_before, "hp_after": hp_after_hit},
+	})
+	_checks.append({
+		"name": "gueule_vide_contact_applies_recoil_to_enemy",
+		"pass": enemy_pos_after_recoil.x > spawn_pos.x + 20.0 + 1.0,
+		"detail": {"enemy_pos_after_recoil": str(enemy_pos_after_recoil)},
+	})
+	_checks.append({
+		"name": "gueule_vide_creature_frees_itself_after_cast",
+		"pass": creature_finished,
+		"detail": {"creature_finished": creature_finished},
 	})
 
 
