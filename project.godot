@@ -1,0 +1,72 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Rank Zero"
+config/features=PackedStringArray("4.3", "Mobile")
+run/main_scene=""
+
+[autoload]
+
+; Autoloads globaux — §8.2 du doc : "VfxDirector.spawn(...)" est appelé
+; comme un singleton, jamais instancié à la main. VfxBudget avant
+; VfxDirector : le director consulte le budget dès son premier spawn.
+VfxBudget="*res://src/vfx/vfx_budget.gd"
+VfxDirector="*res://src/vfx/vfx_director.gd"
+
+[display]
+
+; §0 : résolution native 640×360, upscale entier uniquement.
+window/size/viewport_width=640
+window/size/viewport_height=360
+window/size/mode=0
+window/stretch/mode="viewport"
+window/stretch/aspect="keep"
+window/stretch/scale_mode="integer"
+window/handheld/orientation="landscape"
+
+[physics]
+
+; §0 : "60 ticks/s. Toutes les durées d'animation/VFX s'expriment en
+; ticks (1 tick ≈ 16,6 ms)." physics_process tourne à ce pas fixe —
+; c'est notre horloge de tick, jamais _process (variable).
+common/physics_ticks_per_second=60
+
+; Trouvé pendant la validation Phase 0 (docs/worklog.md) : la valeur par
+; défaut (8) autorise un RATTRAPAGE en rafale — après un retard réel
+; (démarrage, compilation shader, hoquet thermique §11.3), le moteur peut
+; exécuter plusieurs ticks physiques dans UNE SEULE frame rendue pour
+; rattraper le temps perdu. Un impactFlashFrame de 1-2 ticks (§4) peut
+; alors naître et mourir entre deux frames réellement dessinées — un VFX
+; qui disparaît silencieusement, exactement la classe de bug que §11.1
+; dénonce pour les particules invisibles. Plafonné à 1 : la simulation
+; ralentit plutôt que de sauter des ticks — jamais un état court-vécu
+; escamoté. Coût accepté : ralentissement perçu sous charge extrême
+; plutôt qu'un saut de simulation invisible ; cohérent avec l'exigence
+; de déterminisme du mandat (§13.4 "seed fixe → même sortie").
+common/max_physics_steps_per_frame=1
+
+[rendering]
+
+; §0 et §11.1 : renderer Mobile fixé dès le premier commit — le
+; Compatibility ne supporte pas les GPUParticles (silencieux, sans
+; erreur). Jamais Forward+ (le mandat ne le demande pas, plus lourd).
+renderer/rendering_method="mobile"
+renderer/rendering_method.mobile="mobile"
+
+; §0 : filtre Nearest, mipmaps désactivés (pixel art net, budget mémoire
+; mobile). Filtre par défaut au niveau projet ; chaque import de texture
+; doit aussi désactiver mipmaps individuellement (§11.2) — pas de
+; réglage projet global pour ça, c'est par asset.
+textures/canvas_textures/default_texture_filter=0
+
+; §11.2 : compression ETC2 (Android) / ASTC (iOS) à l'import.
+textures/vram_compression/import_etc2_astc=true

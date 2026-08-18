@@ -1,0 +1,21 @@
+{
+  "_comment": "docs/ARCHITECTURE_VFX_v3.md §3. Bande = [min, max] en V (HSV), pourcent. scripts/validate_pixels.py lit CE fichier — jamais de valeur en dur dans le code. Ajustable ici uniquement.",
+  "categories": {
+    "ui": {
+      "bands": [[0, 12], [94, 100]],
+      "notes": "Seule catégorie autorisée aux extrêmes."
+    },
+    "character": {
+      "bands": [[15, 88]],
+      "notes": "Personnages / ennemis. Outline sombre autorisé jusqu'à 13."
+    },
+    "vfx": {
+      "bands": [[20, 92]],
+      "notes": "Jamais 0% ni 100% — collision UI/décor."
+    },
+    "decor": {
+      "bands": [[15, 60]],
+      "notes": "Le décor ne dépasse jamais la valeur d'un VFX actif."
+    }
+  }
+}

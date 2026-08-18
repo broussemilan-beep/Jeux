@@ -1,0 +1,2 @@
+assets/processed/**/*.png filter=lfs diff=lfs merge=lfs -text
+assets/source/**/*.png filter=lfs diff=lfs merge=lfs -text

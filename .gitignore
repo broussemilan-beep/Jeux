@@ -1,0 +1,13 @@
+# §12.3 : exclut tout contenu reconstructible.
+.godot/
+*.translation
+export_presets.cfg
+
+# Caches d'atlas temporaires (scripts/build_atlas.py écrira ici plus tard).
+assets/staging/*
+!assets/staging/.gitkeep
+
+# Sorties de capture locales non versionnées — seules les captures
+# APPROUVÉES (référencées dans data/labels/quality_labels.jsonl) sont
+# commitées, jamais un dossier de sortie brut (§13.3).
+/captures_local/
