@@ -10,6 +10,12 @@ extends Node2D
 ## d'écrire ce test, voir docs/worklog.md). Ce test prouve le MÉCANISME
 ## générique de la registry, pas une recette précise.
 
+## Addendum A, §A.5 — fixture réelle (pas totem_du_vide) car le bug
+## corrigé était spécifique à ce script : la seed venait de
+## Time.get_ticks_usec(), l'horloge murale, cassant le gate "seed fixe ->
+## même sortie" (§13.4 du v3).
+const GueuleVideScene := preload("res://scenes/gameplay/powers/gueule_vide.tscn")
+
 var _checks: Array[Dictionary] = []
 
 
@@ -18,6 +24,10 @@ func _ready() -> void:
 	await _check_timeline_and_cleanup()
 	await _check_palette_resolution()
 	await _check_fallback_no_match()
+	await _check_recipe_registry_seed_is_deterministic()
+	await _check_gueule_vide_seed_is_fixed_not_wallclock()
+	_check_budget_degrades_decorative_layer()
+	_check_budget_never_refuses_protected_layer()
 
 	var all_pass: bool = true
 	for c in _checks:
@@ -93,4 +103,104 @@ func _check_fallback_no_match() -> void:
 		"name": "unresolved_primitive_falls_back_to_neutral_gray",
 		"pass": is_equal_approx(color.get("value_percent", -1.0), 50.0) and is_equal_approx(color.get("saturation_percent", -1.0), 0.0),
 		"detail": color,
+	})
+
+
+## Addendum A, §A.5 : "aucune source de hasard non seedée dans le chemin
+## VFX". Preuve de bout en bout registry -> director -> primitives :
+## deux runs de la MÊME recette avec la MÊME seed explicite doivent
+## produire le même spawn_log (mêmes primitives, mêmes seeds, même
+## ordre) — le mécanisme générique, indépendant de Gueule Vide.
+func _check_recipe_registry_seed_is_deterministic() -> void:
+	VfxDirector.clear_log()
+	VfxRecipeRegistry.play("power.totem_du_vide.attack", {
+		"origin": Vector2(320, 180), "seed": 7777, "direction": Vector2.RIGHT,
+	})
+	await _wait_until(func(): return VfxDirector.spawn_log.size() >= 2, 10)
+	var log1: Array = _log_signature(VfxDirector.spawn_log)
+
+	VfxDirector.clear_log()
+	VfxRecipeRegistry.play("power.totem_du_vide.attack", {
+		"origin": Vector2(320, 180), "seed": 7777, "direction": Vector2.RIGHT,
+	})
+	await _wait_until(func(): return VfxDirector.spawn_log.size() >= 2, 10)
+	var log2: Array = _log_signature(VfxDirector.spawn_log)
+
+	_checks.append({
+		"name": "recipe_registry_same_seed_produces_identical_spawn_log",
+		"pass": log1.size() >= 2 and log1 == log2,
+		"detail": {"log1": log1, "log2": log2},
+	})
+
+
+## Addendum A, §A.5 : régression ciblée sur le bug réel — gueule_vide.gd
+## passait Time.get_ticks_usec() comme seed. Deux invocations séparées
+## par un vrai écart de ticks physiques (donc de temps réel) doivent
+## produire la MÊME seed dans le spawn_log ; si l'horloge murale revenait,
+## cet écart suffirait à les rendre différentes.
+func _check_gueule_vide_seed_is_fixed_not_wallclock() -> void:
+	VfxDirector.clear_log()
+	var cast1: Node2D = GueuleVideScene.instantiate()
+	add_child(cast1)
+	await _wait_until(func(): return VfxDirector.spawn_log.size() >= 2, 10)
+	var seeds1: Array = _log_signature(VfxDirector.spawn_log)
+	if is_instance_valid(cast1):
+		cast1.queue_free()
+
+	for i in range(15):
+		await get_tree().physics_frame
+
+	VfxDirector.clear_log()
+	var cast2: Node2D = GueuleVideScene.instantiate()
+	add_child(cast2)
+	await _wait_until(func(): return VfxDirector.spawn_log.size() >= 2, 10)
+	var seeds2: Array = _log_signature(VfxDirector.spawn_log)
+	if is_instance_valid(cast2):
+		cast2.queue_free()
+
+	_checks.append({
+		"name": "gueule_vide_seed_is_fixed_not_wallclock",
+		"pass": seeds1.size() >= 2 and seeds1 == seeds2,
+		"detail": {"seeds_cast1": seeds1, "seeds_cast2": seeds2},
+	})
+
+
+## (primitive, seed) par entrée, dans l'ordre — assez pour comparer deux
+## exécutions sans dépendre de champs non déterministes par nature
+## (origin/zone_idx dépendent de la position, pas de la seed).
+func _log_signature(log: Array[Dictionary]) -> Array:
+	var sig: Array = []
+	for entry in log:
+		sig.append([entry["primitive"], entry["seed"]])
+	return sig
+
+
+## Addendum A, §A.2 : ordre de dégradation — une couche DÉGRADABLE qui
+## dépasse le plafond souple d'overdraw d'une zone est refusée (retirée
+## entièrement, faute de primitive capable d'un rendu "à moitié").
+## Zone 11 (coin bas-droit, x:480-640/y:240-360) — inutilisée par les
+## autres checks de ce fichier, aucune contamination d'état.
+func _check_budget_degrades_decorative_layer() -> void:
+	var verdict: Dictionary = VfxBudget.can_spawn({
+		"particles": 0, "overdraw": 999.0, "zone_idx": 11, "degradable": true,
+	})
+	_checks.append({
+		"name": "budget_refuses_degradable_layer_over_soft_cap",
+		"pass": verdict["ok"] == false,
+		"detail": verdict,
+	})
+
+
+## Même zone, même overdraw excessif, mais couche PROTÉGÉE — "plancher
+## intouchable" (étape 7) : ne doit JAMAIS être refusée pour ce plafond
+## souple, contrairement à avant l'Addendum A où can_spawn() ne
+## distinguait pas protégé/dégradable et pouvait refuser les deux.
+func _check_budget_never_refuses_protected_layer() -> void:
+	var verdict: Dictionary = VfxBudget.can_spawn({
+		"particles": 0, "overdraw": 999.0, "zone_idx": 11, "degradable": false,
+	})
+	_checks.append({
+		"name": "budget_never_refuses_protected_layer_over_soft_cap",
+		"pass": verdict["ok"] == true,
+		"detail": verdict,
 	})

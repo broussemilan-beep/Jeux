@@ -3,16 +3,22 @@
   "family": "invocation_burst",
   "importance_tier": 2,
   "layers": [
-    { "type": "anticipation", "primitive": "groundRing",       "start_tick": 0,  "end_tick": 9 },
-    { "type": "core",         "primitive": "runicStamp",       "start_tick": 0,  "end_tick": 9 },
-    { "type": "contact",      "primitive": "fractureLine",     "start_tick": 15, "end_tick": 21 },
-    { "type": "contact",      "primitive": "impactFlashFrame", "start_tick": 19, "end_tick": 21 },
-    { "type": "consequence",  "primitive": "shardBurst",       "start_tick": 27, "end_tick": 42 }
+    { "type": "anticipation", "primitive": "groundRing",       "start_tick": 0,  "end_tick": 9,  "degradable": false },
+    { "type": "core",         "primitive": "runicStamp",       "start_tick": 0,  "end_tick": 9,  "degradable": false },
+    { "type": "contact",      "primitive": "fractureLine",     "start_tick": 15, "end_tick": 21, "degradable": false },
+    { "type": "contact",      "primitive": "impactFlashFrame", "start_tick": 19, "end_tick": 21, "degradable": false },
+    { "type": "consequence",  "primitive": "shardBurst",       "start_tick": 27, "end_tick": 42, "degradable": true }
   ],
   "dissipation_profile": { "value_mult": 0.5, "saturation_mult": 0.5, "opacity_mult": 0.4, "duration_ticks": 15 },
   "palette_id": "invocateur_vide",
   "feedback": "light",
   "sfx_markers": [ { "tick": 20, "event": "gueule_vide_bite" } ],
   "limits": { "particles": 16, "sprites": 6, "persistent_ticks": 42, "overdraw_budget": 0.7 },
-  "notes": "Cast unique de 42 ticks (0,7s) — pas une entité persistante comme le totem, une seule timeline complète. Créature = asset animé dédié (pas une primitive), 4-6 frames pose-to-pose : formation (0-9t) / gueule ouverte-préparation (9-15t) / morsure=RELEASE+IMPACT (15-21t) / désintégration=RECOVERY (21-42t), conventions section 6.1. Recul (recoil) obligatoire sur la cible touchée à l'impact (section 4), pas une primitive de ce recette. Une seule attaque, pas de répétition. Maîtrise I (résidu) : ajouter fractureLine basse intensité persistant ~1s après l'impact. Maîtrise II (double mâchoire) : dupliquer fractureLine+impactFlashFrame quasi simultané, intensité réduite, cible secondaire proche. Maîtrise III (dévoration) : intensifier shardBurst (rayon + dégâts légers en zone) au moment de la désintégration. Les 3 paliers réutilisent les primitives existantes, aucun nouvel asset."
+  "lifecycle": {
+    "cancellable_before": "release",
+    "owner_death_policy": "finish_core_then_stop_secondary",
+    "scene_change_policy": "stop_immediately",
+    "max_lifetime_ticks": 48
+  },
+  "notes": "Cast unique de 42 ticks (0,7s) — pas une entité persistante comme le totem, une seule timeline complète. Créature = asset animé dédié (pas une primitive), 4-6 frames pose-to-pose : formation (0-9t) / gueule ouverte-préparation (9-15t) / morsure=RELEASE+IMPACT (15-21t) / désintégration=RECOVERY (21-42t), conventions section 6.1. Recul (recoil) obligatoire sur la cible touchée à l'impact (section 4), pas une primitive de ce recette. Une seule attaque, pas de répétition. Maîtrise I (résidu) : ajouter fractureLine basse intensité persistant ~1s après l'impact. Maîtrise II (double mâchoire) : dupliquer fractureLine+impactFlashFrame quasi simultané, intensité réduite, cible secondaire proche. Maîtrise III (dévoration) : intensifier shardBurst (rayon + dégâts légers en zone) au moment de la désintégration. Les 3 paliers réutilisent les primitives existantes, aucun nouvel asset. degradable (Addendum A §A.1) : groundRing/runicStamp = ANTICIPATION/ACTION CORE protégées ; fractureLine/impactFlashFrame = CONTACT protégée (primaire impactFlashFrame+recul) ; shardBurst = CONSEQUENCE dégradable, seule couche que finish_core_then_stop_secondary coupe net."
 }

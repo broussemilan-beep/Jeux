@@ -74,6 +74,7 @@ func play(recipe_id: String, params: Dictionary) -> int:
 	end_tick = maxi(end_tick, max_end_tick)
 
 	var run := {
+		"id": run_id,
 		"recipe_id": recipe_id,
 		"recipe": recipe,
 		"palette_id": recipe.get("palette_id", ""),
@@ -100,9 +101,42 @@ func get_elapsed_ticks(run_id: int) -> int:
 
 ## Arrête la PLANIFICATION de nouvelles couches (les primitives déjà
 ## spawnées gardent leur propre durée de vie via VfxDirector — ce n'est
-## pas un cleanup forcé, cf. VfxDirector.cleanup_all() pour ça).
+## pas un cleanup forcé). Pour un vrai nettoyage immédiat (Addendum A,
+## §A.4 : timeout / mort du propriétaire / changement de scène — pas
+## seulement le timeout), voir cancel() ci-dessous.
 func stop(run_id: int) -> void:
 	_active.erase(run_id)
+
+
+## Addendum A, §A.4 — nettoyage réel d'un run, déclenché par une des
+## trois voies de `lifecycle` (le timeout naturel n'a PAS besoin de
+## cancel() : chaque couche s'éteint déjà proprement via sa propre
+## lifetime_ticks quand elle atteint son end_tick).
+##
+## `degrade_only=false` ("stop_immediately", ou annulation avant
+## "release") : arrête toute planification future ET libère
+## immédiatement tout ce qui est déjà spawné pour ce run, protégé ou
+## non — plus rien ne survit.
+##
+## `degrade_only=true` ("finish_core_then_stop_secondary") : les couches
+## PROTÉGÉES (`degradable: false`, A.1) déjà spawnées ou pas encore
+## lancées continuent normalement jusqu'à leur propre fin ; seules les
+## couches DÉGRADABLES sont annulées — celles déjà spawnées sont
+## libérées tout de suite, celles pas encore lancées ne le seront
+## jamais (marquées "gérées" pour que _spawn_due_layers() les ignore).
+func cancel(run_id: int, degrade_only: bool = false) -> void:
+	var run: Dictionary = _active.get(run_id, {})
+	if not degrade_only:
+		_active.erase(run_id)
+		VfxDirector.cleanup_run(run_id, false)
+		return
+
+	if not run.is_empty():
+		var layers: Array = run["recipe"].get("layers", [])
+		for i in layers.size():
+			if bool(layers[i].get("degradable", true)):
+				run["spawned"][i] = true
+	VfxDirector.cleanup_run(run_id, true)
 
 
 func _spawn_due_layers(run: Dictionary) -> void:
@@ -126,6 +160,8 @@ func _spawn_due_layers(run: Dictionary) -> void:
 			"origin": run["origin"],
 			"direction": run["direction"],
 			"lifetime_ticks": lifetime,
+			"run_id": run["id"],
+			"degradable": bool(layer.get("degradable", true)),
 		}
 		spawn_params.merge(color_params)
 		VfxDirector.spawn(primitive_name, spawn_params)

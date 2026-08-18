@@ -183,6 +183,9 @@ func _try_hit() -> void:
 		"origin": target.global_position,
 		"lifetime_ticks": 2,
 		"overdraw_cost": 12.0,
+		# Addendum A §A.1/§A.2 : CONTACT protégée (primaire impactFlashFrame
+		# + recul) — ne se sacrifie jamais sous pression de budget.
+		"degradable": false,
 	})
 
 
@@ -202,6 +205,7 @@ func _cast_gueule_vide() -> void:
 	var creature: Node2D = GueuleVideScene.instantiate()
 	creature.global_position = global_position + dir * POWER1_SPAWN_DISTANCE_PX
 	get_parent().add_child(creature)
+	creature.set_owner_stats(stats)
 
 
 func is_dead() -> bool:

@@ -10,6 +10,7 @@ extends Node2D
 
 const PlayerScene := preload("res://scenes/gameplay/player.tscn")
 const EnemyScene := preload("res://scenes/gameplay/enemy.tscn")
+const GueuleVideScene := preload("res://scenes/gameplay/powers/gueule_vide.tscn")
 
 var _player: Player
 var _enemy_near: Enemy
@@ -40,6 +41,7 @@ func _ready() -> void:
 	await _check_movement()
 	await _check_combo()
 	await _check_gueule_vide()
+	await _check_gueule_vide_owner_death_policy()
 
 	_report()
 
@@ -291,6 +293,60 @@ func _check_gueule_vide() -> void:
 	})
 	_checks.append({
 		"name": "gueule_vide_creature_frees_itself_after_cast",
+		"pass": creature_finished,
+		"detail": {"creature_finished": creature_finished},
+	})
+
+
+## Addendum A, §A.4 : "owner_death_policy": "finish_core_then_stop_secondary"
+## — instance dédiée (pas _player, déjà exercé/mort ailleurs dans cette
+## suite) pour isoler ce scénario. Position loin des autres checks pour
+## ne pas partager de zone d'écran VfxBudget avec eux.
+func _check_gueule_vide_owner_death_policy() -> void:
+	VfxDirector.clear_log()
+	var owner_stats := Stats.new()
+	var creature: Node2D = GueuleVideScene.instantiate()
+	creature.global_position = Vector2(500, 260)
+	add_child(creature)
+	creature.set_owner_stats(owner_stats)
+
+	# Laisser groundRing/runicStamp (start_tick=0, protégées, A.1) spawner
+	# avant de tuer le propriétaire.
+	var protected_spawned_before_death: bool = await _wait_until(func(): return VfxDirector.spawn_log.size() >= 2, 10)
+
+	owner_stats.apply_damage(owner_stats.max_hp)  # émet `died`
+	var freed_immediately: bool = not is_instance_valid(creature)  # NE DOIT PAS arriver
+
+	# Avancer jusqu'après le start_tick=27 (dégradable, shardBurst) sans
+	# qu'elle apparaisse dans le spawn_log — "stop_secondary".
+	var shard_burst_spawned: bool = await _wait_until(func():
+		for entry in VfxDirector.spawn_log:
+			if entry["primitive"] == "shardBurst":
+				return true
+		return false
+	, 35)
+
+	# weakref() plutôt qu'une capture directe de `creature` dans ce 3e
+	# lambda : GDScript logge une erreur "Lambda capture ... was freed"
+	# quand un Object capturé se libère PENDANT que le même Callable est
+	# encore rappelé par _wait_until() sur les frames suivantes — inoffensif
+	# (le check reste correct) mais bruyant ; weakref().get_ref() évite le
+	# problème proprement, c'est l'idiome Godot prévu pour ce cas.
+	var creature_ref: WeakRef = weakref(creature)
+	var creature_finished: bool = await _wait_until(func(): return creature_ref.get_ref() == null, GueuleVide.TOTAL_TICKS + 10)
+
+	_checks.append({
+		"name": "gueule_vide_owner_death_keeps_creature_alive",
+		"pass": protected_spawned_before_death and not freed_immediately,
+		"detail": {"protected_spawned_before_death": protected_spawned_before_death, "freed_immediately": freed_immediately},
+	})
+	_checks.append({
+		"name": "gueule_vide_owner_death_cancels_degradable_layer",
+		"pass": not shard_burst_spawned,
+		"detail": {"shard_burst_spawned": shard_burst_spawned},
+	})
+	_checks.append({
+		"name": "gueule_vide_finishes_normally_despite_owner_death",
 		"pass": creature_finished,
 		"detail": {"creature_finished": creature_finished},
 	})

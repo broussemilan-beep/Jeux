@@ -19,6 +19,10 @@ const RECIPE_ID := "power.gueule_vide.cast"
 
 ## docs/recipes/power.gueule_vide.cast.json, "notes" — bornes des 4
 ## phases (§6.1) et tick de contact (sfx_markers, tick=20, "morsure").
+## TOTAL_TICKS reste sous le plafond de sécurité "lifecycle.
+## max_lifetime_ticks" (48, "42 + marge") de la recette — seule cette
+## classe incrémente _tick, aucun système de pause/étourdissement
+## n'existe encore côté gameplay qui pourrait le dépasser.
 const FORMATION_END_TICK := 9
 const PREP_END_TICK := 15
 const BITE_END_TICK := 21
@@ -33,6 +37,13 @@ const CONTACT_TICK := 20
 const ATTACK_RANGE_PX := 48.0
 const ATTACK_DAMAGE := 10.0
 
+## Addendum A, §A.5 : "aucune source de hasard non seedée dans le chemin
+## VFX" — l'horloge murale (Time.get_ticks_usec(), l'ancien code d'ici)
+## rend compare_reference.py inutilisable et casse le gate "seed fixe ->
+## même sortie" (§13.4 du v3). Valeur fixe en attendant un vrai système
+## de seed de run côté gameplay (compteur d'événement, seed de run...).
+const CAST_SEED := 44103
+
 ## 6 frames pose-to-pose (mandat : "4-6 frames") couvrant les 4 phases :
 ## formation (2 frames), préparation (1), morsure (1), désintégration
 ## (2). Bornes cumulées en ticks — jamais la fps autonome
@@ -45,6 +56,8 @@ const FRAME_TICK_BOUNDS: Array[int] = [5, 9, 15, 21, 32, 42]
 var _tick: int = 0
 var _recipe_run_id: int = 0
 var _contact_resolved: bool = false
+var _natural_end: bool = false
+var _owner_stats: Stats = null
 
 
 func _ready() -> void:
@@ -53,9 +66,46 @@ func _ready() -> void:
 	_sprite.frame = 0
 	_recipe_run_id = VfxRecipeRegistry.play(RECIPE_ID, {
 		"origin": global_position,
-		"seed": Time.get_ticks_usec() % 100000,
+		"seed": CAST_SEED,
 		"direction": Vector2.RIGHT,
 	})
+
+
+## Addendum A, §A.4, "owner_death_policy". À appeler juste après avoir
+## ajouté cette scène à l'arbre (voir Player._cast_gueule_vide()) — la
+## créature observe la mort de son invocateur sans lui être asservie.
+func set_owner_stats(stats: Stats) -> void:
+	_owner_stats = stats
+	if _owner_stats != null and not _owner_stats.died.is_connected(_on_owner_died):
+		_owner_stats.died.connect(_on_owner_died)
+
+
+## "owner_death_policy": "finish_core_then_stop_secondary" — "la
+## créature termine sa morsure même si le joueur meurt (elle a été
+## arrachée au monde, elle n'est pas liée à lui)". La créature (ce
+## script) continue donc sa propre timeline normalement ; seules les
+## couches VFX dégradables de la recette (A.1) sont coupées net, les
+## protégées vont au bout de leur vie.
+func _on_owner_died() -> void:
+	VfxRecipeRegistry.cancel(_recipe_run_id, true)
+
+
+## "cancellable_before": "release" — annulable jusqu'à la fin de la
+## préparation (avant PREP_END_TICK, la morsure), plus après. Rien ne
+## l'appelle encore (aucun système d'interruption/étourdissement
+## n'existe côté gameplay) — la brique est posée pour quand ce sera le
+## cas, sans en construire l'usage maintenant (§16.1).
+func can_cancel() -> bool:
+	return _tick < PREP_END_TICK
+
+
+func cancel_cast() -> bool:
+	if not can_cancel():
+		return false
+	VfxRecipeRegistry.cancel(_recipe_run_id, false)
+	_natural_end = false
+	queue_free()
+	return true
 
 
 func _physics_process(_delta: float) -> void:
@@ -67,7 +117,19 @@ func _physics_process(_delta: float) -> void:
 		_resolve_contact()
 
 	if _tick >= TOTAL_TICKS:
+		_natural_end = true
 		queue_free()
+
+
+## "scene_change_policy": "stop_immediately" — quitte l'arbre pour
+## n'importe quelle raison AUTRE que sa propre fin naturelle (changement
+## de scène qui libère toute la branche, libération externe) => aucune
+## couche VFX de cette recette ne doit lui survivre. La fin naturelle
+## (timeout, TOTAL_TICKS) n'a pas besoin de ce nettoyage forcé : chaque
+## couche s'éteint déjà proprement via sa propre lifetime_ticks.
+func _exit_tree() -> void:
+	if not _natural_end:
+		VfxRecipeRegistry.cancel(_recipe_run_id, false)
 
 
 func _frame_for_tick(tick: int) -> int:

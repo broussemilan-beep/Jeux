@@ -3,13 +3,13 @@
   "family": "summon_spawn",
   "importance_tier": 2,
   "layers": [
-    { "type": "anticipation", "primitive": "groundRing",  "start_tick": 0, "end_tick": 8 },
-    { "type": "core",         "primitive": "runicStamp",  "start_tick": 4, "end_tick": 22 }
+    { "type": "anticipation", "primitive": "groundRing",  "start_tick": 0, "end_tick": 8,  "degradable": false },
+    { "type": "core",         "primitive": "runicStamp",  "start_tick": 4, "end_tick": 22, "degradable": false }
   ],
   "dissipation_profile": null,
   "palette_id": "totem_du_vide",
   "feedback": "none",
   "sfx_markers": [ { "tick": 4, "event": "totem_spawn" } ],
   "limits": { "particles": 12, "sprites": 2, "persistent_ticks": 22, "overdraw_budget": 0.6 },
-  "notes": "Déclenché une seule fois à la pose. groundRing = zone de placement, très discret. runicStamp = matérialisation du totem, motif volontairement incomplet."
+  "notes": "Déclenché une seule fois à la pose. groundRing = zone de placement, très discret. runicStamp = matérialisation du totem, motif volontairement incomplet. degradable (Addendum A §A.1) : groundRing = ANTICIPATION protégée (seule couche d'anticipation), runicStamp = ACTION CORE protégée."
 }

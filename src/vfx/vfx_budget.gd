@@ -80,12 +80,29 @@ func estimate_overdraw_cost(size_px: float, opacity: float, layers: int) -> floa
 
 ## Vérifie AVANT de dépenser — jamais spawn puis rollback, un budget
 ## refusé ne doit laisser aucune trace. `cost` = { particles, overdraw,
-## zone_idx }. Retourne { ok: bool, reason: String } — jamais juste un
-## bool nu : un refus silencieux est indiagnosticable en jeu réel.
+## zone_idx, degradable }. Retourne { ok: bool, reason: String } — jamais
+## juste un bool nu : un refus silencieux est indiagnosticable en jeu réel.
+##
+## Addendum A, §A.2 — ordre de dégradation quand le plafond souple
+## d'overdraw par zone est dépassé : `degradable` (A.1) est le seul
+## levier disponible avec les primitives actuelles (aucune n'accepte de
+## paramètre de qualité réduite, voir §A.6 "pas à implémenter
+## maintenant") — une couche décorative qui dépasse est retirée
+## entièrement (étapes 1-2 de l'ordre : particules/débris décoratifs,
+## faute de pouvoir la dessiner "à moitié"). Une couche PROTÉGÉE
+## (`degradable: false`) ne se voit jamais refuser ce plafond souple —
+## "plancher intouchable" (étape 7) : BODY, ACTION CORE, CONTACT
+## primaire, lisibilité de hitbox et feedback essentiel passent toujours,
+## quitte à dépasser l'estimation d'overdraw (avertissement loggué pour
+## calibrer les plafonds plus tard, jamais un refus silencieux). Les
+## plafonds DURS de particules ci-dessus restent appliqués même aux
+## couches protégées : ce sont des garde-fous anti-emballement (bug),
+## pas un budget de compétition créative pour l'écran.
 func can_spawn(cost: Dictionary) -> Dictionary:
 	var particles: int = cost.get("particles", 0)
 	var overdraw: float = cost.get("overdraw", 0.0)
 	var zone_idx: int = cost.get("zone_idx", 0)
+	var degradable: bool = cost.get("degradable", true)
 
 	if particles > PARTICLES_PER_EFFECT_MAX:
 		return { "ok": false, "reason": "particles_per_effect_exceeded (%d > %d)" % [particles, PARTICLES_PER_EFFECT_MAX] }
@@ -96,7 +113,10 @@ func can_spawn(cost: Dictionary) -> Dictionary:
 
 	var zone: Dictionary = _zones[zone_idx]
 	if zone["overdraw"] + overdraw > OVERDRAW_PER_ZONE_SOFT_CAP:
-		return { "ok": false, "reason": "overdraw_zone_exceeded (zone %d: %.1f + %.1f > %.1f)" % [zone_idx, zone["overdraw"], overdraw, OVERDRAW_PER_ZONE_SOFT_CAP] }
+		if not degradable:
+			push_warning("VfxBudget.can_spawn: couche protegee au-dela du plafond souple d'overdraw (zone %d: %.1f + %.1f > %.1f) - autorisee quand meme (plancher intouchable, Addendum A §A.2)." % [zone_idx, zone["overdraw"], overdraw, OVERDRAW_PER_ZONE_SOFT_CAP])
+			return { "ok": true, "reason": "" }
+		return { "ok": false, "reason": "overdraw_zone_exceeded_degradable_dropped (zone %d: %.1f + %.1f > %.1f)" % [zone_idx, zone["overdraw"], overdraw, OVERDRAW_PER_ZONE_SOFT_CAP] }
 
 	return { "ok": true, "reason": "" }
 

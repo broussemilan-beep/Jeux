@@ -1129,3 +1129,185 @@ seul geste restant, l'export lui-même est déjà poussé et prêt.
 Rappel transmis avec la livraison : ce test juge le *feel*, pas le
 rendu (une seule direction, VFX simples, pas de décor/son/post-render)
 — pas encore "premium", volontairement.
+
+## 2026-08-18 — Addendum A à ARCHITECTURE_VFX_v3.md (5 points)
+
+Fichier reçu, enregistré tel quel en
+`docs/ARCHITECTURE_VFX_v3_addendum_A.md` (le v3 reste la référence
+principale, l'addendum ajoute 5 points sans rien remplacer). Traité dans
+l'ordre demandé : A.5 (priorité immédiate) d'abord, puis A.4, A.1, A.2,
+A.3, A.6.
+
+### A.5 — Déterminisme de la seed (bug réel, corrigé)
+
+`src/gameplay/powers/gueule_vide.gd` passait `Time.get_ticks_usec() %
+100000` comme seed à `VfxRecipeRegistry.play()` — horloge murale, non
+reproductible, casse le gate "seed fixe -> même sortie" (§13.4 du v3) et
+rend `compare_reference.py` inutilisable sur ce pouvoir. Remplacé par
+une constante fixe `CAST_SEED := 44103` (valeur arbitraire, en attendant
+un vrai système de seed de run côté gameplay comme le suggère
+l'addendum). Aucune autre source de hasard non seedée trouvée dans le
+chemin VFX : les 4 primitives à RNG (`ground_ring.gd`, `runic_stamp.gd`,
+`fracture_line.gd`, `shard_burst.gd`) seedaient déjà correctement depuis
+`params.seed` (jamais `randomize()`), et `VfxDirector`/
+`VfxRecipeRegistry` propagent `run["seed"]` tel quel à chaque couche
+sans y mélanger de valeur temporelle.
+
+Check ajouté à `tools/smoke_test_vfx_recipe.gd` (mandat : "ajoute un
+check au smoke test VFX qui vérifie qu'aucune source de hasard non
+seedée n'existe dans le chemin VFX") :
+- `recipe_registry_same_seed_produces_identical_spawn_log` — deux runs
+  de `power.totem_du_vide.attack` avec la même seed explicite (7777)
+  produisent un `spawn_log` (primitive+seed, dans l'ordre) strictement
+  identique — preuve générique du mécanisme registry -> director ->
+  primitives.
+- `gueule_vide_seed_is_fixed_not_wallclock` — régression ciblée sur le
+  bug réel : deux invocations de `GueuleVide` séparées par 15 ticks
+  physiques réels (donc de temps réel) produisent la MÊME seed dans le
+  spawn_log ; si l'horloge murale revenait, cet écart suffirait à les
+  rendre différentes.
+
+`scripts/run_vfx_recipe_smoke_test.sh` : 6/6, `scripts/
+run_gameplay_smoke_test.sh` : 16/16, aucune régression.
+
+### A.4 — Cycle de vie (timeout / mort du propriétaire / changement de scène)
+
+Avant : seul le timeout existait (chaque couche s'éteint via sa propre
+`lifetime_ticks`). Ajouté :
+
+- `VfxDirector` : chaque spawn enregistré porte désormais `run_id`
+  (0 = spawn direct hors recette, ex. `Player._try_hit()` — jamais une
+  collision avec un vrai run_id, `VfxRecipeRegistry` commence à 1) et
+  `degradable` (voir A.1). Nouvelle méthode `cleanup_run(run_id,
+  only_degradable)` — nettoyage forcé scopé à UN run (jamais
+  `cleanup_all()`, qui tuerait aussi les couches d'autres pouvoirs
+  actifs).
+- `VfxRecipeRegistry` : nouvelle méthode `cancel(run_id, degrade_only)`.
+  `degrade_only=false` : stoppe toute planification + libère
+  immédiatement tout ce qui est déjà spawné, protégé ou non
+  ("stop_immediately", ou annulation avant "release"). `degrade_only=
+  true` : seules les couches dégradables sont annulées (déjà spawnées
+  -> libérées tout de suite ; pas encore lancées -> jamais lancées) ; les
+  couches protégées continuent normalement jusqu'à leur propre fin
+  ("finish_core_then_stop_secondary").
+- `gueule_vide.gd` :
+  - `set_owner_stats(stats)` (appelée par `Player._cast_gueule_vide()`
+    juste après l'instanciation) connecte `stats.died` ->
+    `_on_owner_died()` -> `VfxRecipeRegistry.cancel(_recipe_run_id,
+    true)`. La créature elle-même NE s'arrête PAS ("elle a été arrachée
+    au monde, elle n'est pas liée à lui", addendum) — sa propre boucle
+    de ticks continue normalement, seules les couches VFX dégradables
+    (shardBurst) sont coupées net.
+  - `_exit_tree()` avec un flag `_natural_end` (posé juste avant le
+    `queue_free()` du timeout normal) : si le nœud quitte l'arbre pour
+    toute AUTRE raison (changement de scène, libération externe),
+    `VfxRecipeRegistry.cancel(_recipe_run_id, false)` — nettoyage
+    complet ("scene_change_policy: stop_immediately"). La fin naturelle
+    n'a pas besoin de ce nettoyage forcé (chaque couche s'éteint déjà
+    proprement toute seule), donc pas de coupure prématurée du dernier
+    tick de fade de shardBurst dans le cas normal.
+  - `can_cancel()` / `cancel_cast()` : "cancellable_before: release" —
+    annulable jusqu'à `PREP_END_TICK`. Rien n'appelle encore
+    `cancel_cast()` (aucun système d'interruption/étourdissement
+    n'existe côté gameplay) — la brique est posée pour quand ce sera le
+    cas, sans construire l'usage maintenant (§16.1 du v3).
+  - `max_lifetime_ticks: 48` (recette) : documenté en commentaire près
+    de `TOTAL_TICKS := 42` plutôt que codé en garde supplémentaire — un
+    garde qui ne peut jamais se déclencher (seule cette classe
+    incrémente `_tick`, aucun système de pause n'existe encore) serait
+    du code mort.
+  - Bloc `lifecycle` ajouté à `data/recipes/power.gueule_vide.cast.json`
+    avec les 4 valeurs proposées par l'addendum, telles quelles.
+
+Checks ajoutés à `tools/smoke_test_gameplay.gd` (propriétaire dédié —
+`Stats.new()` isolé, pas `_player` déjà mort/exercé ailleurs dans la
+suite) : `gueule_vide_owner_death_keeps_creature_alive` (les couches
+protégées sont déjà spawnées, la créature ne se libère pas
+immédiatement), `gueule_vide_owner_death_cancels_degradable_layer`
+(shardBurst, start_tick=27, n'apparaît jamais dans le spawn_log même en
+attendant après ce tick), `gueule_vide_finishes_normally_despite_owner_
+death` (la créature termine quand même sa propre timeline). Un `weakref()`
+a été nécessaire sur la 3e assertion (capturer directement `creature`
+dans un `Callable` réévalué sur plusieurs frames après sa libération
+fait logger une erreur moteur "Lambda capture ... was freed" —
+inoffensive mais bruyante ; `weakref().get_ref() == null` est l'idiome
+Godot prévu pour ce cas, evite le message).
+
+### A.1 — Couches protégées vs dégradables
+
+Champ `degradable` (bool) ajouté à chaque couche des 4 recettes
+existantes, selon le tableau de l'addendum (type de couche -> protégée/
+dégradable) :
+- `power.gueule_vide.cast.json` : groundRing/runicStamp (ANTICIPATION
+  seule couche = primaire/ACTION CORE) protégées, fractureLine/
+  impactFlashFrame (CONTACT) protégées, shardBurst (CONSEQUENCE)
+  dégradable.
+- `power.totem_du_vide.attack.json` : fractureLine/impactFlashFrame
+  (CONTACT, primaire impactFlashFrame+recul) protégées.
+- `power.totem_du_vide.spawn.json` : groundRing (ANTICIPATION)
+  protégée, runicStamp (ACTION CORE) protégée.
+- `power.totem_du_vide.expire.json` : smokePuff (CONSEQUENCE)
+  dégradable.
+
+Étendu aussi au seul spawn direct hors recette du jeu :
+`Player._try_hit()` marque son `impactFlashFrame` (flash du combo)
+`degradable: false` — CONTACT protégée, même règle que dans les
+recettes.
+
+### A.2 — Ordre de dégradation dans VfxBudget
+
+`VfxBudget.can_spawn()` mesurait déjà (overdraw par zone, particules)
+mais ne distinguait rien à couper en priorité — un refus était un refus,
+protégé ou pas. Avec les primitives actuelles, aucune n'accepte de
+paramètre de qualité réduite (§A.6 de l'addendum : pas à implémenter
+maintenant), donc le seul levier honnête est binaire : spawn entier ou
+rien — l'ordre en 6 étapes de l'addendum (particules décoratives,
+débris, dissipation, trails, fusion d'instances, distortion/screen
+slices) collapse en un seul geste possible aujourd'hui ("couper le
+décoratif entièrement"), documenté comme tel plutôt que simulé avec des
+paramètres qui ne changeraient rien au rendu réel. Implémenté :
+- Couche dégradable qui dépasse `OVERDRAW_PER_ZONE_SOFT_CAP` -> refusée
+  (retirée entièrement), comportement déjà existant mais maintenant
+  documenté comme le mécanisme de dégradation lui-même plutôt qu'un
+  simple refus de budget.
+- Couche protégée (`degradable: false`) -> **jamais refusée** pour ce
+  plafond souple, quitte à le dépasser (avertissement loggué pour
+  calibrer plus tard) — "plancher intouchable" (étape 7), qui n'existait
+  pas avant : un `impactFlashFrame` ou une fractureLine de contact
+  pouvaient jusqu'ici être silencieusement refusés sous pression de
+  budget, en violation directe de la règle "ne peut jamais... supprimer
+  impactFlashFrame sur un impact majeur, ni le recul".
+- Les plafonds DURS de particules (`PARTICLES_PER_EFFECT_MAX`/
+  `PARTICLES_TOTAL_MAX`) restent appliqués même aux couches protégées —
+  garde-fou anti-emballement (bug), pas un budget de compétition
+  créative pour l'écran, distinction volontaire.
+
+Checks ajoutés à `tools/smoke_test_vfx_recipe.gd` (appel direct de
+`VfxBudget.can_spawn()`, zone 11 inutilisée par les autres checks du
+fichier) : `budget_refuses_degradable_layer_over_soft_cap`,
+`budget_never_refuses_protected_layer_over_soft_cap`.
+
+### A.3 — Marqueurs d'animation
+
+Aucun changement de code : "les recettes existantes en start_tick
+restent valides, ne les réécris pas" — aucune n'a été touchée. Le
+mandat n'exige rien de plus tant qu'aucune NOUVELLE animation d'action
+n'est en cours d'écriture (le prochain candidat naturel serait Totem du
+Vide/Phase 1.6, toujours en pause en attendant la refonte de Milan) —
+convention notée pour ce moment-là : le manifeste cuit d'une nouvelle
+animation devra exposer les 5 marqueurs (`visual_anticipation_start`,
+`visual_release`, `visual_contact`, `visual_recovery_start`,
+`visual_end`) et les couches de sa recette pourront démarrer sur
+`start_marker` plutôt que `start_tick` absolu.
+
+### A.6 — Niveaux de qualité
+
+Rien à faire — explicitement "pas à implémenter maintenant" dans
+l'addendum. Reste dans `docs/ARCHITECTURE_VFX_v3_addendum_A.md` comme
+référence pour plus tard (profiling sur appareil réel).
+
+### Vérification globale
+
+`scripts/run_vfx_recipe_smoke_test.sh` : 8/8 (4 existants + 2 seed A.5 +
+2 budget A.2). `scripts/run_gameplay_smoke_test.sh` : 19/19 (16
+existants + 3 owner-death A.4). `quality_labels.jsonl` toujours vide.

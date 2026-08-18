@@ -109,6 +109,7 @@ func spawn(primitive_name: String, params: Dictionary) -> Node:
 		"particles": params.get("particles", 0),
 		"overdraw": overdraw_cost,
 		"zone_idx": zone_idx,
+		"degradable": params.get("degradable", true),
 	}
 	var verdict: Dictionary = VfxBudget.can_spawn(cost)
 	if not verdict["ok"]:
@@ -128,6 +129,11 @@ func spawn(primitive_name: String, params: Dictionary) -> Node:
 		"lifetime_ticks": max(1, int(params.get("lifetime_ticks", 1))),
 		"ticks_elapsed": 0,
 		"zone_idx": zone_idx,
+		# run_id=0 : spawn direct hors recette (ex. Player._try_hit()),
+		# jamais un vrai run_id de VfxRecipeRegistry (celle-ci commence à
+		# 1) — aucune collision possible avec cleanup_run()/A.4.
+		"run_id": int(params.get("run_id", 0)),
+		"degradable": bool(params.get("degradable", true)),
 	}
 
 	spawn_log.append({
@@ -158,6 +164,24 @@ func _free_spawn(instance_id: int) -> void:
 ## à l'appelant de le dire).
 func cleanup_all() -> void:
 	for instance_id in _active.keys().duplicate():
+		_free_spawn(instance_id)
+
+
+## Addendum A, §A.4 — nettoyage forcé scopé à UN run de recette (jamais
+## tout le VFX en cours comme cleanup_all(), qui tuerait aussi les
+## couches d'autres pouvoirs actifs). `only_degradable=true` : ne libère
+## que les couches marquées `degradable` (A.1) — utilisé pour
+## "owner_death_policy: finish_core_then_stop_secondary" (les couches
+## protégées vont au bout de leur propre durée de vie). `false` : tout
+## libérer sans distinction — "scene_change_policy: stop_immediately" et
+## une annulation complète avant "release" (cancellable_before).
+func cleanup_run(run_id: int, only_degradable: bool = false) -> void:
+	for instance_id in _active.keys().duplicate():
+		var entry: Dictionary = _active.get(instance_id)
+		if entry == null or int(entry.get("run_id", 0)) != run_id:
+			continue
+		if only_degradable and not bool(entry.get("degradable", true)):
+			continue
 		_free_spawn(instance_id)
 
 
