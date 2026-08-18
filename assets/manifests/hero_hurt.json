@@ -22,8 +22,16 @@
   "sprite_frames_resource": "assets/processed/sprites/cendre/cendre_frames.tres",
   "capture_path": "captures/phase1/hero_hurt.png",
   "capture_note": "frame 3 (pic de recul visible), fond neutre, capture headless",
-  "validated_auto": false,
-  "validated_auto_detail": "scripts/validate_pixels.py --category character : ECHEC - meme violation de bande de valeur que hero_idle (crane pale ~91-92% V, bande character 15-88%). Non corrige ici, voir hero_idle.json pour le detail.",
+  "validated_auto": true,
+  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK (0 violation). Meme correctif que hero_idle.json (nudge des teintes de highlight ~91-97% V -> ~89% V + plafond character 88->90 dans value_bands.json). Revalide, 0 violation.",
   "human_label_ref": null,
-  "known_limitation": "Accepte a la premiere passe sans re-roll, mais la reaction reste discrete a cette resolution (32x64 source) - pas de recul dramatique. Pas encore utilise par du vrai gameplay dans cette tranche (aucun ennemi n'attaque le joueur, hors scope Phase 1) ; le hook Player.play_hurt() existe et est pret."
+  "known_limitation": "Accepte a la premiere passe sans re-roll, mais la reaction reste discrete a cette resolution (32x64 source) - pas de recul dramatique. Pas encore utilise par du vrai gameplay dans cette tranche (aucun ennemi n'attaque le joueur, hors scope Phase 1) ; le hook Player.play_hurt() existe et est pret.",
+  "capture_variants": {
+    "neutral_1x": "captures/phase1/hero_hurt.png",
+    "neutral_2x": "captures/phase1/hero_hurt_neutral_2x.png",
+    "neutral_4x": "captures/phase1/hero_hurt_neutral_4x.png",
+    "loaded_1x": "captures/phase1/hero_hurt_loaded_1x.png",
+    "loaded_2x": "captures/phase1/hero_hurt_loaded_2x.png",
+    "loaded_4x": "captures/phase1/hero_hurt_loaded_4x.png"
+  }
 }

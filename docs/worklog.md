@@ -607,3 +607,161 @@ pas supposé.
 En attente de la nouvelle version du Totem du Vide (Milan). Rien à
 démarrer côté Phase 1.5/1.6 avant réception. Phase 1.7 (captures/gates/
 manifest finaux) reste après le Totem.
+
+## 2026-08-18 — Corrections review externe (Claude, conception) sur Phase 1
+
+Retour de review sur les captures Phase 1 poussées précédemment : 4
+corrections demandées, reprises sur l'existant uniquement (aucun nouveau
+contenu). Consigne explicite : éviter un 3e re-roll PixelLab sur
+dash/coup3 (2 tentatives déjà consommées, voir `data/pixellab_usage.jsonl`)
+— privilégier la retouche manuelle des frames déjà générées.
+
+### 1. Dash — cape symétrique corrigée
+
+`hero_dash.png` montrait la cape se déployer en éventail symétrique des
+deux côtés du personnage (lecture "ailes"), contredisant le principe de
+design (cape asymétrique = lisibilité de la direction du dash). Inspection
+pixel par pixel des 5 frames sources (`assets/source/pixellab/cendre/
+animations/dash/`) : frames 0 et 1 déjà correctes (cape naturellement
+asymétrique), frames 2/3/4 montraient un vrai double-lobe quasi-miroir
+(ex. frame 2 : extension gauche jusqu'à x=19, droite jusqu'à x=67, quasi
+symétrique autour du centre du corps x≈43).
+
+Correction : édition pixel directe (script Python/PIL, pas d'Aseprite
+disponible dans cet environnement headless — même résultat, effacement
+ciblé de pixels identifiés par inspection ASCII/coordonnées) sur les
+frames 2/3/4 — le lobe de cape du côté le plus court a été effacé
+(mis à `alpha=0`), ne laissant que le côté déjà présent et plus long
+comme traînée asymétrique. Un fragment de cape isolé (déconnecté du
+reste, résidu de l'effacement) a également été nettoyé sur la frame 2.
+Aucun appel PixelLab. Re-cuit (`cook_character_frames.py`) et recapturé.
+
+### 2. Combo_2 — tache jaune/beige sur le crâne
+
+Non détectée jusqu'ici, absente du journal/worklog. Scan systématique
+(pas juste visuel) des 5 frames sources de `coup2/` pour toute teinte à
+teinte non-neutre (HSV hue hors gris) : une seule couleur incriminée,
+`(216,213,191)` — un ton "highlight de peau" que PixelLab réutilise par
+endroits (visible aussi ponctuellement sur les mains/pieds dans d'autres
+frames de la même animation), présente sur 4/5 frames (14 pixels au
+total, concentrés sur le crâne/visage frame 3 — celle utilisée pour la
+capture). Hors de la palette grise/désaturée stricte du personnage.
+
+Correction : désaturation exacte de cette teinte vers son équivalent gris
+neutre de même Value (`(216,216,216)`), toutes occurrences dans les 5
+frames. Revalidé visuellement (crop 12× de la zone tête) : plus de tache.
+
+### 3. Combo_3 — halo plus important que rapporté
+
+Le journal (entrée du re-roll) décrivait "léger halo résiduel sur 1-2
+frames" — la capture montrait en réalité une aréole blanche couvrant une
+bonne partie de la tête sur la frame utilisée (frame 3), largement plus
+grave que rapporté. Inspection individuelle des 5 frames (pas seulement
+celle choisie pour la capture) :
+
+- frame 0 : propre ;
+- frame 1 : petit reflet de tête dans la norme établie (même taille que
+  le highlight présent sur les autres animations, ex. frame 2 de
+  `coup2`) — pas un défaut ;
+- frame 2 : propre, **aucun halo** ;
+- frame 3 : vraie aréole blanche ovale, ~13×13px, couvrant la majorité
+  de la tête (rows 21-33 quasi entièrement à V≥88%) ;
+- frame 4 : bande blanche horizontale plate (~22×4px) traversant le
+  visage, rows 27-30.
+
+Frame 2 étant propre, elle devient la nouvelle référence de capture
+(`hero_combo_3.json` : `capture_note` mis à jour, ancienne frame 3
+documentée comme non-choisie). Frames 3 et 4 également retouchées en
+pixel direct (pas seulement contournées) puisqu'elles restent jouées en
+jeu réel, pas seulement en capture statique : les pixels à Value ≥ 200
+ont été recolorés vers la teinte de capuche déjà utilisée ailleurs sur
+le personnage (`(110,111,115)`), en suivant le contour du cluster sombre
+réel (contour interpolé ligne par ligne à partir des pixels non-halo
+adjacents), pas un rectangle arbitraire — un premier essai avec une boîte
+rectangulaire donnait un résultat trop artificiel (tête "carrée"), refait
+proprement en suivant la silhouette. Aucun appel PixelLab (0/1 re-roll
+consommé sur ce correctif, discipline anti-boucle respectée).
+
+### 4. Crâne — plafond de bande de valeur relevé (§3)
+
+Root cause identifiée par scan exhaustif (pas seulement le crâne) :
+`validate_pixels.py --category character` échouait systématiquement
+(67 violations sur `idle` frame 0 seule, cappées à 20 dans le rapport —
+limite du sampling du script, pas du vrai total) à cause d'un highlight
+"presque blanc" (~91-97% V) réutilisé par PixelLab **sur tout le
+personnage** (crâne, torse, jambes/pieds) — pas seulement la tête comme
+supposé initialement dans les manifests Phase 1.3. Teintes en cause :
+`(234,233,232)`, `(248,248,248)`, `(248,245,240)`, `(248,248,246)`,
+`(246,245,243)` (+ 2 variantes déjà sous 90% laissées inchangées).
+
+Correction en deux temps, comme demandé (pixel + plafond, pas la bande
+générale) :
+
+1. **Pixel** : chaque teinte incriminée nudgée de 2-4% de Value vers
+   ~89%, en préservant teinte/saturation (mise à l'échelle proportionnelle
+   RGB), toutes occurrences dans les 8 animations sources (idle,
+   deplacement, dash, hurt, mort, coup1, coup2, coup3) — 3104 pixels au
+   total. Changement imperceptible à l'œil (`(234,233,232)` →
+   `(227,226,225)`, par ex.).
+2. **Plafond** : `data/palettes/value_bands.json`, catégorie `character`
+   uniquement, bande relevée de `[15,88]` à `[15,90]` pour admettre la
+   marge post-nudge (~89% < 90%). `ui`/`vfx`/`decor` non touchées.
+
+Re-cuit (`cook_character_frames.py`, les 8 animations ensemble) + rebuild
+`cendre_frames.tres` (`build_sprite_frames.py`, mêmes fps que Phase 1.4 :
+idle=6 deplacement=10 hurt=12 mort=6 dash=15 coup1=15 coup2=15 coup3=15).
+Revalidé avec `validate_pixels.py --category character` sur les 43 frames
+des 8 animations : **0 violation partout**, `validated_auto: true` dans
+les 8 manifests concernés.
+
+### Non-régression vérifiée
+
+`scripts/run_gameplay_smoke_test.sh` relancé après tous les correctifs
+(les changements ne touchent que l'art et `value_bands.json`, pas
+`player.gd`/`enemy.gd`) : **11/11 checks toujours au vert**, aucune
+régression gameplay.
+
+### Extension `tools/capture_scene.gd` — fond neutre/chargé + échelles
+
+Le mandat §13.2 précise "fond neutre + fond chargé, 1×/2×/4×" pour les
+captures soumises au verdict — la première livraison Phase 1 n'avait
+livré que fond neutre 1×, incomplet. `capture_scene.gd` (mode
+`--mode=character`) étendu avec deux nouveaux paramètres CLI :
+
+- `--background=neutral|loaded` : `neutral` = comportement existant
+  (couleur de fond par défaut du viewport, `(76,76,76)`) ; `loaded` =
+  damier de test généré procéduralement (`_make_loaded_background()`,
+  deux tons proches de la bande "decor", motif déterministe, aucun RNG)
+  — **aucun décor de jeu réel n'existe encore en Phase 1** (pas de
+  tuiles/salle), documenté explicitement en commentaire de tête de
+  fichier et ici : à remplacer par un vrai décor quand Phase 2+ apportera
+  des tuiles. Ce n'est pas un livrable, c'est un test de lisibilité.
+- `--scale=1|2|4` : upscale `Image.INTERPOLATE_NEAREST` post-capture
+  (jamais de filtrage flou sur du pixel art, §12.4).
+
+Bug de compilation trouvé en cours de route : `var vw := ProjectSettings.
+get_setting(...)` échoue au chargement (`GDScript::reload`, "variable
+type is being inferred from a Variant value... Warning treated as
+error") — `get_setting` retourne `Variant`, l'inférence `:=` ne suffit
+pas sous les réglages stricts de ce projet. Fix : typage explicite
+(`var vw: int = ProjectSettings.get_setting(...)`).
+
+Batch complet relancé pour les 8 livrables Phase 1 (idle/walk/dash/hurt/
+death/combo_1/combo_2/combo_3) × 2 fonds × 3 échelles = 48 captures,
+toutes avec `save_err:0` (vérifié via grep sur le batch). Fichier
+`<asset>.png` (fond neutre, 1×) conservé comme référence principale de
+`capture_path` pour compatibilité ; 5 variantes ajoutées par asset
+(`<asset>_neutral_2x.png`, `_neutral_4x.png`, `_loaded_1x.png`,
+`_loaded_2x.png`, `_loaded_4x.png`), référencées dans le nouveau champ
+`capture_variants` de chaque manifest.
+
+### quality_labels.jsonl
+
+Toujours vide. Aucun verdict humain auto-attribué — les nouvelles
+captures sont soumises pour review, pas acceptées.
+
+### Prochain pas
+
+Les 4 corrections + la standardisation des captures sont poussées.
+Toujours en attente de la nouvelle version du Totem du Vide (Milan)
+avant Phase 1.5/1.6.

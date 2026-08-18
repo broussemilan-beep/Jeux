@@ -23,10 +23,18 @@
   "processed_frames_dir": "assets/processed/sprites/cendre/coup3/",
   "sprite_frames_resource": "assets/processed/sprites/cendre/cendre_frames.tres",
   "capture_path": "captures/phase1/hero_combo_3.png",
-  "capture_note": "frame 3, pose finale de la frappe (jambes ecartees, buste penche)",
+  "capture_note": "frame 2 (changee depuis la review externe - la frame 3, utilisee initialement, montrait une aureole blanche couvrant une bonne partie de la tete, bien plus large que le 'leger halo residuel' rapporte au moment du re-roll ; frame 2 est propre, sans halo, retenue comme nouvelle reference de capture)",
   "combo": {"step": 3, "of": 3, "chain_window_ticks": 0, "recovery_ticks": 14, "anticipation_ticks": 8, "release_ticks": 4, "damage": 10.0, "attack_range_px": 48.0, "note_chain_window": "dernier coup du combo - pas de fenetre de chainage, section 4 de player.gd (_advance_combo) exclut explicitement le 3e coup"},
-  "validated_auto": false,
-  "validated_auto_detail": "scripts/validate_pixels.py --category character : ECHEC - meme violation de bande de valeur que hero_idle (crane pale ~91-92% V, bande character 15-88%). Non corrige ici, voir hero_idle.json pour le detail.",
+  "validated_auto": true,
+  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK sur les 5 frames (0 violation). Meme correctif value-band que hero_idle.json. Correctif halo (review externe, docs/worklog.md) : les 5 frames sources ont ete inspectees individuellement (pas seulement celle choisie pour la capture) - frames 0 et 2 propres, frame 1 dans la norme (petit reflet de tete deja present sur les autres animations), frames 3 et 4 montraient un vrai defaut (grosse aureole blanche couvrant la tete sur la frame 3, bande blanche horizontale sur le visage frame 4). Frame 2 (propre) devient la reference de capture. Frames 3 et 4 retouchees en pixel direct (recoloration des pixels >200 de Value vers la teinte de capuche existante ~110,111,115, suivant le contour du cluster sombre reel plutot qu'un rectangle) - pas de 3e re-roll PixelLab.",
   "human_label_ref": null,
-  "known_limitation": "Premier essai rejete (halo/lueur blanche parasite + pose qui lisait comme un coup de pied/effet magique plutot qu'une frappe a deux mains - groupe supprime via delete_animation, voir data/pixellab_usage.jsonl). Re-roll accepte mais garde un leger halo residuel autour de la tete sur 1-2 frames (tres attenue par rapport au premier essai) - signale pour arbitrage Milan, pas de second re-roll (discipline anti-boucle)."
+  "known_limitation": "Premier essai rejete (halo/lueur blanche parasite + pose qui lisait comme un coup de pied/effet magique plutot qu'une frappe a deux mains - groupe supprime via delete_animation, voir data/pixellab_usage.jsonl). Re-roll accepte ; l'ampleur reelle du halo residuel (frames 3/4) etait plus importante que rapporte au moment du re-roll - corrige par retouche pixel plutot qu'un 2e re-roll (voir validated_auto_detail). La frappe elle-meme (silhouette/pose) n'a pas ete retouchee, seul le halo.",
+  "capture_variants": {
+    "neutral_1x": "captures/phase1/hero_combo_3.png",
+    "neutral_2x": "captures/phase1/hero_combo_3_neutral_2x.png",
+    "neutral_4x": "captures/phase1/hero_combo_3_neutral_4x.png",
+    "loaded_1x": "captures/phase1/hero_combo_3_loaded_1x.png",
+    "loaded_2x": "captures/phase1/hero_combo_3_loaded_2x.png",
+    "loaded_4x": "captures/phase1/hero_combo_3_loaded_4x.png"
+  }
 }

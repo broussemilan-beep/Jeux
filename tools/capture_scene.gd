@@ -21,9 +21,16 @@ extends Node2D
 ##   --anim=idle                    nom d'animation (SpriteFrames du Player)
 ##   --frame=0                      index de frame à capturer dans cette animation
 ##   --out=/chemin/absolu/sortie.png
+##   --background=neutral|loaded    §13.2 "fond neutre + fond chargé" (def. neutral)
+##   --scale=1|2|4                  §13.2 "1×/2×/4×" (def. 1), upscale NEAREST post-capture
 ##   Pas de RNG ici (frames PixelLab pré-cuites, pas de primitive
 ##   procédurale) donc --seed n'a pas de sens ; la traçabilité vient du
 ##   character_id/animation_group_id loggés dans data/pixellab_usage.jsonl.
+##
+##   "fond chargé" (§13.2) : aucun décor de jeu réel n'existe encore en
+##   Phase 1 (pas de tuiles/salle) — matérialisé ici par un damier de test
+##   généré procéduralement (_make_loaded_background), pas un asset final.
+##   À remplacer par un vrai décor quand Phase 2+ apportera des tuiles.
 ##
 ## Voir CLAUDE.md "Environnement de capture — écart documenté" : cette
 ## scène elle-même ne sait rien de xvfb/Vulkan logiciel — c'est
@@ -47,10 +54,15 @@ func _run_character_capture(args: Dictionary) -> void:
 	var anim_name: String = args.get("anim", "idle")
 	var frame_index: int = int(args.get("frame", "0"))
 	var out_path: String = args.get("out", "")
+	var background: String = args.get("background", "neutral")
+	var scale: int = int(args.get("scale", "1"))
 	if out_path == "":
 		push_error("capture_scene[character]: --out manquant, rien à écrire.")
 		get_tree().quit(1)
 		return
+
+	if background == "loaded":
+		add_child(_make_loaded_background())
 
 	var player := PlayerScene.instantiate()
 	player.global_position = Vector2(320, 260)
@@ -72,6 +84,8 @@ func _run_character_capture(args: Dictionary) -> void:
 	await _freeze_and_wait_render()
 
 	var img: Image = get_viewport().get_texture().get_image()
+	if scale > 1:
+		img.resize(img.get_width() * scale, img.get_height() * scale, Image.INTERPOLATE_NEAREST)
 	var err := _save_png(img, out_path)
 
 	var report := {
@@ -82,9 +96,34 @@ func _run_character_capture(args: Dictionary) -> void:
 		"anim": anim_name,
 		"frame": frame_index,
 		"frame_count": sprite.sprite_frames.get_frame_count(anim_name),
+		"background": background,
+		"scale": scale,
 	}
 	print("CAPTURE_RESULT ", JSON.stringify(report))
 	get_tree().quit(0 if err == OK else 1)
+
+
+## "fond chargé" (§13.2) : damier de test généré procéduralement — aucun
+## décor de jeu réel n'existe encore en Phase 1 (voir note de tête de
+## fichier). Motif déterministe (aucun RNG), deux tons neutres proches de
+## la bande "decor" (data/palettes/value_bands.json) pour rester dans
+## l'esprit d'un fond de jeu sans prétendre en être un.
+func _make_loaded_background() -> Sprite2D:
+	var vw: int = ProjectSettings.get_setting("display/window/size/viewport_width", 640)
+	var vh: int = ProjectSettings.get_setting("display/window/size/viewport_height", 360)
+	var img := Image.create(vw, vh, false, Image.FORMAT_RGBA8)
+	const CELL := 16
+	var tone_a := Color8(58, 56, 62, 255)
+	var tone_b := Color8(84, 80, 74, 255)
+	for y in range(vh):
+		for x in range(vw):
+			var cell_index := (x / CELL) + (y / CELL)
+			img.set_pixel(x, y, tone_a if cell_index % 2 == 0 else tone_b)
+	var sprite := Sprite2D.new()
+	sprite.centered = false
+	sprite.position = Vector2.ZERO
+	sprite.texture = ImageTexture.create_from_image(img)
+	return sprite
 
 
 func _run_primitive_capture(args: Dictionary) -> void:

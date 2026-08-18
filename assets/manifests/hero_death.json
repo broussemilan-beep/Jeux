@@ -24,8 +24,16 @@
   "sprite_frames_resource": "assets/processed/sprites/cendre/cendre_frames.tres",
   "capture_path": "captures/phase1/hero_death.png",
   "capture_note": "frame 6 (etat final, allonge au sol), fond neutre, capture headless",
-  "validated_auto": false,
-  "validated_auto_detail": "scripts/validate_pixels.py --category character : ECHEC - meme violation de bande de valeur que hero_idle (crane pale ~91-92% V, bande character 15-88%). Non corrige ici, voir hero_idle.json pour le detail.",
+  "validated_auto": true,
+  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK (0 violation). Meme correctif que hero_idle.json (nudge des teintes de highlight ~91-97% V -> ~89% V + plafond character 88->90 dans value_bands.json). Revalide, 0 violation.",
   "human_label_ref": null,
-  "known_limitation": "Ceci est deja un re-roll (le premier essai, template 'falling-back-death', lisait comme une garde de combat et non une chute - groupe supprime via delete_animation, voir data/pixellab_usage.jsonl). Le resultat retenu est net (titube -> s'effondre -> reste au sol)."
+  "known_limitation": "Ceci est deja un re-roll (le premier essai, template 'falling-back-death', lisait comme une garde de combat et non une chute - groupe supprime via delete_animation, voir data/pixellab_usage.jsonl). Le resultat retenu est net (titube -> s'effondre -> reste au sol).",
+  "capture_variants": {
+    "neutral_1x": "captures/phase1/hero_death.png",
+    "neutral_2x": "captures/phase1/hero_death_neutral_2x.png",
+    "neutral_4x": "captures/phase1/hero_death_neutral_4x.png",
+    "loaded_1x": "captures/phase1/hero_death_loaded_1x.png",
+    "loaded_2x": "captures/phase1/hero_death_loaded_2x.png",
+    "loaded_4x": "captures/phase1/hero_death_loaded_4x.png"
+  }
 }

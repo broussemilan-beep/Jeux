@@ -25,7 +25,15 @@
   "capture_path": "captures/phase1/hero_combo_2.png",
   "capture_note": "frame 3, cape/silhouette la plus dynamique de l'animation",
   "combo": {"step": 2, "of": 3, "chain_window_ticks": 6, "recovery_ticks": 14, "anticipation_ticks": 8, "release_ticks": 4, "damage": 10.0, "attack_range_px": 48.0},
-  "validated_auto": false,
-  "validated_auto_detail": "scripts/validate_pixels.py --category character : ECHEC - meme violation de bande de valeur que hero_idle (crane pale ~91-92% V, bande character 15-88%). Non corrige ici, voir hero_idle.json pour le detail.",
-  "human_label_ref": null
+  "validated_auto": true,
+  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK sur les 5 frames (0 violation). Meme correctif value-band que hero_idle.json. Correctif supplementaire (review externe, docs/worklog.md) : tache jaune/beige (#D8D5BF, hors palette grise/desaturee stricte) sur le crane, presente sur 4/5 frames (1,2,3,4 - 14 pixels au total, meme teinte 'highlight de peau' que PixelLab reutilise ponctuellement) non detectee au premier passage. Retouche pixel directe (desaturation vers l'equivalent gris neutre de meme Value, aucun tirage PixelLab), toutes occurrences dans les 5 frames sources.",
+  "human_label_ref": null,
+  "capture_variants": {
+    "neutral_1x": "captures/phase1/hero_combo_2.png",
+    "neutral_2x": "captures/phase1/hero_combo_2_neutral_2x.png",
+    "neutral_4x": "captures/phase1/hero_combo_2_neutral_4x.png",
+    "loaded_1x": "captures/phase1/hero_combo_2_loaded_1x.png",
+    "loaded_2x": "captures/phase1/hero_combo_2_loaded_2x.png",
+    "loaded_4x": "captures/phase1/hero_combo_2_loaded_4x.png"
+  }
 }

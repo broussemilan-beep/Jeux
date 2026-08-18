@@ -23,7 +23,15 @@
   "sprite_frames_resource": "assets/processed/sprites/cendre/cendre_frames.tres",
   "capture_path": "captures/phase1/hero_walk.png",
   "capture_note": "frame 3 (foulee la plus large, plus lisible qu'une pose neutre en capture statique), fond neutre, capture headless",
-  "validated_auto": false,
-  "validated_auto_detail": "scripts/validate_pixels.py --category character : ECHEC - meme violation de bande de valeur que hero_idle (crane pale ~91-92% V, bande character 15-88%). Non corrige ici, voir hero_idle.json pour le detail.",
-  "human_label_ref": null
+  "validated_auto": true,
+  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK (0 violation). Meme correctif que hero_idle.json (nudge des teintes de highlight ~91-97% V -> ~89% V + plafond character 88->90 dans value_bands.json). Revalide, 0 violation.",
+  "human_label_ref": null,
+  "capture_variants": {
+    "neutral_1x": "captures/phase1/hero_walk.png",
+    "neutral_2x": "captures/phase1/hero_walk_neutral_2x.png",
+    "neutral_4x": "captures/phase1/hero_walk_neutral_4x.png",
+    "loaded_1x": "captures/phase1/hero_walk_loaded_1x.png",
+    "loaded_2x": "captures/phase1/hero_walk_loaded_2x.png",
+    "loaded_4x": "captures/phase1/hero_walk_loaded_4x.png"
+  }
 }

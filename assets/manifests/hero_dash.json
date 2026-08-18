@@ -23,8 +23,16 @@
   "sprite_frames_resource": "assets/processed/sprites/cendre/cendre_frames.tres",
   "capture_path": "captures/phase1/hero_dash.png",
   "capture_note": "frame 4 (pose la plus dynamique - la fente basse/cape deployee), fond neutre, capture headless",
-  "validated_auto": false,
-  "validated_auto_detail": "scripts/validate_pixels.py --category character : ECHEC - meme violation de bande de valeur que hero_idle (crane pale ~91-92% V, bande character 15-88%). Non corrige ici, voir hero_idle.json pour le detail.",
+  "validated_auto": true,
+  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK (0 violation). Meme correctif value-band que hero_idle.json. Correctif supplementaire (review externe, docs/worklog.md) : la cape se deployait symetriquement des deux cotes du personnage sur les frames 2/3/4 (lecture 'ailes', contredit le principe cape-asymetrique = lisibilite de la direction du dash). Retouche manuelle en Aseprite-equivalent (edition pixel directe des frames sources assets/source/pixellab/cendre/animations/dash/{2,3,4}.png, pas de nouveau tirage PixelLab - 2 re-rolls deja consommes sur dash) : le lobe de cape symetrique du cote oppose a ete efface, ne laissant que la trainee asymetrique deja presente de l'autre cote. Re-cuit (cook_character_frames.py) et recapture.",
   "human_label_ref": null,
-  "known_limitation": "Ceci est deja un re-roll (le premier essai lisait comme un changement de posture accroupie, pas un sprint - groupe supprime via delete_animation, voir data/pixellab_usage.jsonl). Le resultat retenu est mieux mais reste imparfait : lecture 'fente basse dynamique' plutot qu'un vrai sprint net. Accepte comme resultat de base (pas de boucle de re-roll indefinie), signale pour arbitrage Milan plutot que retente silencieusement."
+  "known_limitation": "Ceci est deja un re-roll PixelLab (le premier essai lisait comme un changement de posture accroupie, pas un sprint - groupe supprime via delete_animation, voir data/pixellab_usage.jsonl). Le resultat retenu reste imparfait : lecture 'fente basse dynamique' plutot qu'un vrai sprint net. La symetrie 'ailes' (frames 2/3/4) a ete corrigee par retouche pixel (voir validated_auto_detail) sans 3e re-roll PixelLab ; la silhouette generale du sprint (pas la cape) reste telle quelle, signalee pour arbitrage Milan.",
+  "capture_variants": {
+    "neutral_1x": "captures/phase1/hero_dash.png",
+    "neutral_2x": "captures/phase1/hero_dash_neutral_2x.png",
+    "neutral_4x": "captures/phase1/hero_dash_neutral_4x.png",
+    "loaded_1x": "captures/phase1/hero_dash_loaded_1x.png",
+    "loaded_2x": "captures/phase1/hero_dash_loaded_2x.png",
+    "loaded_4x": "captures/phase1/hero_dash_loaded_4x.png"
+  }
 }

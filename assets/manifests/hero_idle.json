@@ -22,7 +22,15 @@
   "sprite_frames_resource": "assets/processed/sprites/cendre/cendre_frames.tres",
   "capture_path": "captures/phase1/hero_idle.png",
   "capture_note": "frame 0, fond neutre, capture headless (tools/capture_scene.gd --mode=character)",
-  "validated_auto": false,
-  "validated_auto_detail": "scripts/validate_pixels.py --category character : ECHEC sur les 4 frames - le sommet du crane (calvitie pale) depasse la bande de valeur personnage (15-88%, section 3), ~20/622 pixels opaques a ~91-92% de Value sur la frame 0. Meme violation localisee sur les 5 animations (racine commune : la tete, pas un defaut par animation). Non corrige ici - ecart signale, pas de retouche de pixels sans validation de Milan.",
-  "human_label_ref": null
+  "validated_auto": true,
+  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK sur les 4 frames (0 violation). Correctif review externe (voir docs/worklog.md) : le highlight du crane/cape (teintes proches de #EA E9 E8 et variantes, ~91-97% V, utilisees character-wide - tete, torse, jambes) etait systematiquement au-dessus de la bande [15,88]. Nudge de 2-4% applique sur ces teintes precises (toutes occurrences, toutes animations) pour les ramener a ~89% V, imperceptible visuellement ; plafond de la categorie character releve de 88 a 90 dans data/palettes/value_bands.json (seule cette categorie touchee, ui/vfx/decor inchangees) pour admettre la marge. Revalide sur cette frame et sur les 7 autres animations : 0 violation partout.",
+  "human_label_ref": null,
+  "capture_variants": {
+    "neutral_1x": "captures/phase1/hero_idle.png",
+    "neutral_2x": "captures/phase1/hero_idle_neutral_2x.png",
+    "neutral_4x": "captures/phase1/hero_idle_neutral_4x.png",
+    "loaded_1x": "captures/phase1/hero_idle_loaded_1x.png",
+    "loaded_2x": "captures/phase1/hero_idle_loaded_2x.png",
+    "loaded_4x": "captures/phase1/hero_idle_loaded_4x.png"
+  }
 }

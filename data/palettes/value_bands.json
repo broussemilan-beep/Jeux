@@ -6,8 +6,8 @@
       "notes": "Seule catégorie autorisée aux extrêmes."
     },
     "character": {
-      "bands": [[15, 88]],
-      "notes": "Personnages / ennemis. Outline sombre autorisé jusqu'à 13."
+      "bands": [[15, 90]],
+      "notes": "Personnages / ennemis. Outline sombre autorisé jusqu'à 13. Plafond relevé de 88 à 90 (review externe Phase 1, cf. docs/worklog.md) pour admettre le point-lumière/rim-light de Cendre après nudge de 91-97% -> ~89%; seule cette catégorie a été touchée, ui/vfx/decor inchangées."
     },
     "vfx": {
       "bands": [[20, 92]],

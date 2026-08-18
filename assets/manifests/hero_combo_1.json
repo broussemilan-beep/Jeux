@@ -25,7 +25,15 @@
   "capture_path": "captures/phase1/hero_combo_1.png",
   "capture_note": "frame 4 (bras tendu, pose de frappe nette) - la frame 3 avait un halo/anneau blanc parasite pres de la main, evitee pour la capture de reference",
   "combo": {"step": 1, "of": 3, "chain_window_ticks": 6, "recovery_ticks": 14, "anticipation_ticks": 8, "release_ticks": 4, "damage": 10.0, "attack_range_px": 48.0},
-  "validated_auto": false,
-  "validated_auto_detail": "scripts/validate_pixels.py --category character : ECHEC - meme violation de bande de valeur que hero_idle (crane pale ~91-92% V, bande character 15-88%). Non corrige ici, voir hero_idle.json pour le detail.",
-  "human_label_ref": null
+  "validated_auto": true,
+  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK (0 violation). Meme correctif que hero_idle.json (nudge des teintes de highlight ~91-97% V -> ~89% V + plafond character 88->90 dans value_bands.json). Revalide, 0 violation.",
+  "human_label_ref": null,
+  "capture_variants": {
+    "neutral_1x": "captures/phase1/hero_combo_1.png",
+    "neutral_2x": "captures/phase1/hero_combo_1_neutral_2x.png",
+    "neutral_4x": "captures/phase1/hero_combo_1_neutral_4x.png",
+    "loaded_1x": "captures/phase1/hero_combo_1_loaded_1x.png",
+    "loaded_2x": "captures/phase1/hero_combo_1_loaded_2x.png",
+    "loaded_4x": "captures/phase1/hero_combo_1_loaded_4x.png"
+  }
 }
