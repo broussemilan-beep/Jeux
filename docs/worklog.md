@@ -1649,3 +1649,117 @@ Pas encore fait : C1/C2 (Gueule Vide), régénération personnage (A),
 captures standardisées finales et redeploy web (validation). Pose
 "buste penché" du dash hors scope (nécessite de nouvelles frames
 d'art, tâche A). `quality_labels.jsonl` toujours vide.
+
+## 2026-08-19 — C1 : conclusion d'enquête + correctif, invisibilité VFX Gueule Vide
+
+### Enquête (demandée avant toute modification)
+
+Le diagnostic externe affirmait qu'il manquait l'anticipation et le
+résidu de disparition sur Gueule Vide. Vérification sur les données
+réelles (`data/recipes/power.gueule_vide.cast.json`) : **c'est faux au
+niveau des données**. La recette contient déjà `groundRing` +
+`runicStamp` (ticks 0-9, soit 15 ticks avant le contact au tick 19-21)
+et `shardBurst` (27-42). Ces couches existent et sont bien planifiées
+par `VfxRecipeRegistry` (déjà éprouvé par
+`scripts/run_vfx_recipe_smoke_test.sh`). Le vrai problème est donc
+qu'elles sont **invisibles à l'écran**, pas absentes.
+
+Question posée par le mandat : échelle trop petite ? opacité trop
+faible ? dessinées derrière la créature (z-index) ? couleurs trop
+proches du fond ?
+
+- **z-index** : écarté. `groundRing` (z_index=10), `runicStamp` (20),
+  `fractureLine` (90), `impactFlashFrame` (100) — ordre cohérent avec
+  §9.3, et la créature (`AnimatedSprite2D` dans une scène séparée, pas
+  de z_index explicite donc 0 par défaut) est nécessairement DERRIÈRE
+  ces couches, pas devant. Pas un bug de superposition.
+- **Opacité** : écarté comme cause primaire. `groundRing`/`runicStamp`
+  restent à alpha=1.0 sur la majorité de leur durée de vie (fade
+  seulement sur les 25-30% finaux) — ni l'un ni l'autre n'est
+  transparent par défaut.
+- **Échelle** : cause réelle, ET un bug de plumbing derrière. Lu
+  `src/vfx/vfx_recipe_registry.gd::_spawn_due_layers()` : cette
+  fonction ne transmettait à `VfxDirector.spawn()` QUE `seed` / `origin`
+  / `direction` / `lifetime_ticks` / `run_id` / `degradable` + la
+  couleur résolue — **aucun autre champ du layer JSON**, y compris
+  `scale_px` (primitives) ou `count`/`speed_px_per_tick`
+  (`shardBurst`). Une recette ne pouvait donc JAMAIS régler la taille
+  d'une primitive, même en l'écrivant dans son JSON — un bug de
+  plumbing générique, pas spécifique à Gueule Vide, découvert en
+  enquêtant sur ce ticket. `data/recipes/power.gueule_vide.cast.json`
+  ne définit d'ailleurs aucun `scale_px` sur ses layers — même si le
+  bug avait été absent, rien ne demandait une taille différente du
+  défaut (`groundRing` 24px de rayon, `runicStamp` 20px, `shardBurst`
+  8 éclats à 3px/tick) sur une créature déjà petite (~0,8m).
+- **Couleurs trop proches du fond** : cause réelle, documentée par la
+  palette elle-même. `data/palettes/invocateur_vide.json`, champ
+  `notes` : "Teintes tenues volontairement basses en saturation
+  (10-18%) pour rester 'quasi imperceptible' comme spécifié à
+  l'origine, mais non nulles." C'est un choix DÉLIBÉRÉ (identité de
+  Classe volée, §2.5, partagée avec Totem du Vide — "ne pas diversifier
+  entre pouvoirs de même Classe d'origine") et non une erreur, mais en
+  pratique "quasi imperceptible" a débordé en "imperceptible" une fois
+  combiné à la petite échelle ci-dessus.
+
+**Conclusion** : deux causes qui se cumulent, ni l'une ni l'autre n'est
+un bug de z-index/opacité/absence de couche. (1) Un bug de plumbing
+réel et générique (recette → primitive ne transmet pas `scale_px`/
+`count`/etc.) qui empêche toute recette de régler la taille d'une
+primitive. (2) Une saturation de palette déjà basse par choix
+documenté, dont l'effet cumulé avec la petite échelle par défaut
+dépasse le seuil de lisibilité en jeu réel (confirmé visuellement par
+capture headless — vue caméra réelle en jeu, cast en cours : anneau au
+sol à peine visible en pointillés, créature minuscule).
+
+### Correctif appliqué
+
+1. **`src/vfx/vfx_recipe_registry.gd`, `_spawn_due_layers()`** : transmet
+   maintenant tout champ additionnel du layer JSON (hors les clés déjà
+   gérées explicitement — `type`/`primitive`/`start_tick`/`end_tick`/
+   `degradable`) tel quel dans `spawn_params`, générique, pas spécifique
+   à Gueule Vide — corrige le bug de plumbing pour TOUTES les recettes
+   futures, pas seulement celle-ci.
+2. **`data/recipes/power.gueule_vide.cast.json`** : `scale_px` explicite
+   sur `groundRing` (24→36px) et `runicStamp` (20→32px, +50-60%) ;
+   `count` (8→10) et `speed_px_per_tick` (3.0→4.5) sur `shardBurst` —
+   valeurs de départ à ressentir, pas un dogme, cohérentes avec le test
+   d'échelle créature à venir (C2, tâche séparée : "teste une échelle un
+   peu supérieure").
+3. **`data/palettes/invocateur_vide.json`** : saturation doublée sur les
+   4 rôles (18→30, 14→26, 10→20, 6→16) — reste nettement en-dessous
+   d'une saturation VFX "normale" (mes primitives autorisent jusqu'à
+   100%), conserve l'esprit "identité discrète" du choix d'origine,
+   mais ne redescend plus sous le seuil de perceptibilité. **Décision
+   assumée, pas neutre** : ce palette est PARTAGÉ avec Totem du Vide
+   (§2.5, même notes) — ce correctif change donc aussi son rendu, pas
+   seulement celui de Gueule Vide. Signalé ici explicitement plutôt que
+   laissé comme effet de bord silencieux ; à revalider par capture si
+   Totem du Vide est repris (tâche #185, encore en attente).
+
+Aucune nouvelle couche ajoutée par-dessus des couches déjà présentes
+mais invisibles, comme demandé — uniquement des corrections sur les
+couches existantes (taille, transmission des paramètres, saturation).
+
+### Vérification visuelle (avant/après)
+
+Réutilisé le script de capture headless de la vue de jeu réelle (même
+technique que l'enquête initiale : `test_arena.tscn`, caméra Player,
+échelle native 1x). Capture au tick 3 (formation, groundRing+runicStamp
+actifs) avant/après correctif :
+
+- **Avant** : anneau au sol en pointillés fins, presque invisible ;
+  runicStamp visible mais ténu.
+- **Après** : anneau nettement plus épais et net, glyphe runique
+  clairement lisible (étoile à branches visible, pas juste une tache).
+
+Capture supplémentaire au tick 30 (shardBurst actif, contact déjà
+passé) : éclats visibles mais restent discrets à cette échelle de
+caméra — cohérent avec le fait que `shardBurst` est une couche
+CONSEQUENCE (dissipation), moins prioritaire que
+groundRing/runicStamp pour la lisibilité immédiate du cast, et que la
+petite taille de la créature (~0,8m) limite encore l'impression
+d'ensemble — sujet de C2 (tâche séparée), pas re-corrigé ici pour ne
+pas empiéter sur cette tâche.
+
+27/27 checks gameplay, 8/8 vfx recipe (déjà revérifiés ci-dessus après
+le correctif, aucune régression).

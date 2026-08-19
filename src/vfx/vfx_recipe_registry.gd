@@ -41,6 +41,11 @@ var _warned_missing_role: Dictionary = {}  # "<recipe_id>/<primitive>" -> true
 var _active: Dictionary = {}
 var _next_run_id: int = 1
 
+## Clés de layer déjà gérées explicitement par _spawn_due_layers() —
+## tout le reste est transmis tel quel au spawn (voir plus bas, trouvé
+## en enquêtant sur C1, invisibilité VFX Gueule Vide).
+const _RESERVED_LAYER_KEYS := ["type", "primitive", "start_tick", "end_tick", "degradable"]
+
 
 func _physics_process(_delta: float) -> void:
 	# Même gel que VfxDirector (§9.1) : aucune nouvelle couche ne se
@@ -168,6 +173,16 @@ func _spawn_due_layers(run: Dictionary) -> void:
 			"degradable": bool(layer.get("degradable", true)),
 		}
 		spawn_params.merge(color_params)
+		# C1 (docs/worklog.md) : avant ce correctif, une recette ne pouvait
+		# JAMAIS régler la taille/le nombre d'une primitive (scale_px,
+		# count, speed_px_per_tick...) — seuls les champs ci-dessus
+		# atteignaient VfxDirector.spawn(). Transmission générique de tout
+		# champ additionnel du layer JSON, jamais listé au cas par cas
+		# (sinon chaque nouvelle primitive redemanderait un correctif ici).
+		for key in layer.keys():
+			if key in _RESERVED_LAYER_KEYS:
+				continue
+			spawn_params[key] = layer[key]
 		VfxDirector.spawn(primitive_name, spawn_params)
 
 

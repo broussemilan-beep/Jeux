@@ -3,11 +3,11 @@
   "family": "invocation_burst",
   "importance_tier": 2,
   "layers": [
-    { "type": "anticipation", "primitive": "groundRing",       "start_tick": 0,  "end_tick": 9,  "degradable": false },
-    { "type": "core",         "primitive": "runicStamp",       "start_tick": 0,  "end_tick": 9,  "degradable": false },
+    { "type": "anticipation", "primitive": "groundRing",       "start_tick": 0,  "end_tick": 9,  "degradable": false, "scale_px": 36 },
+    { "type": "core",         "primitive": "runicStamp",       "start_tick": 0,  "end_tick": 9,  "degradable": false, "scale_px": 32 },
     { "type": "contact",      "primitive": "fractureLine",     "start_tick": 15, "end_tick": 21, "degradable": false },
     { "type": "contact",      "primitive": "impactFlashFrame", "start_tick": 19, "end_tick": 21, "degradable": false },
-    { "type": "consequence",  "primitive": "shardBurst",       "start_tick": 27, "end_tick": 42, "degradable": true }
+    { "type": "consequence",  "primitive": "shardBurst",       "start_tick": 27, "end_tick": 42, "degradable": true, "count": 10, "speed_px_per_tick": 4.5 }
   ],
   "dissipation_profile": { "value_mult": 0.5, "saturation_mult": 0.5, "opacity_mult": 0.4, "duration_ticks": 15 },
   "palette_id": "invocateur_vide",
