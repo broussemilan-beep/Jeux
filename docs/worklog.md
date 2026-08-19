@@ -1555,3 +1555,97 @@ cette suite, seulement par le smoke test gameplay ci-dessus).
 Pas encore fait dans ce lot : B4 (refonte du dash), C1/C2 (Gueule
 Vide), régénération personnage (A), captures standardisées finales et
 redeploy web (validation). `quality_labels.jsonl` toujours vide.
+
+## 2026-08-19 — B4 : refonte du dash (anticipation/ease-out/recovery/traînée/shake)
+
+Constat du mandat : `play_dash()` (avant cette entrée) ne contenait
+**aucune logique de déplacement** — un simple `_sprite.play("dash")`.
+Le mouvement réel pendant la pose "dash" restait entièrement porté par
+`_handle_movement()` (vitesse normale d'input), qui continue de
+tourner tant que `_combo_step == 0` sans regarder `_action_lock` sauf
+pour le choix d'anim. D'où le "se lit comme une téléportation" du
+retour Milan : la pose dash s'affichait sans qu'aucun déplacement
+dédié ne l'accompagne.
+
+### Timeline (`src/gameplay/player.gd`, `DashPhase`)
+
+Même discipline tick-driven que le combo (`_advance_dash()`, jamais
+dépendante de la durée de lecture du sprite) :
+
+- **ANTICIPATION** (2 ticks) : vélocité nulle — bref "planté" avant le
+  départ. Mandat : "buste penché, centre de gravité bas" — non
+  réalisable ici (aucune nouvelle frame d'art, cette session ne touche
+  pas aux animations, voir tâche A) ; seule la partie mécanique (pause
+  avant le burst) est implémentée. Noté explicitement, pas laissé
+  silencieux.
+- **MOVE** (5 ticks) : burst de `DASH_DISTANCE_PX` (80px, ~2,5m — point
+  de départ à ressentir, pas un dogme) réparti par ease-out quadratique
+  (plein régime au premier tick, décroît ensuite) — "vitesse max avec
+  ease-out" du mandat.
+- **RECOVERY** (4 ticks) : glissade qui décélère linéairement vers 0
+  (`DASH_RECOVERY_INITIAL_SPEED_PX_S`, même schéma que le recul
+  d'`Enemy._physics_process`) — jamais un arrêt net.
+
+**Exception documentée au §6.2** (mandat : "assume-la explicitement
+dans le worklog plutôt que de la laisser passer silencieusement") :
+découpage 2/5/4 ticks repris du diagnostic externe, soit 5/11 ≈ 45% de
+"release" — largement hors de la bande 5-12% du doc pour une VFX/anim
+premium classique. Accepté comme exception légitime : pour un dash,
+**le déplacement EST le release**, pas un appui visuel bref pendant
+qu'une autre couche porte le mouvement — la sémantique du §6.2 ne
+s'applique pas au même objet ici.
+
+### Traînée (2 after-images, mandat : "opacité ~50% puis ~20%")
+
+`_spawn_dash_afterimage()` — **volontairement PAS une primitive
+`VfxDirector`** : le contrat `configure()`/seed générique (§7.1) décrit
+des formes procédurales, pas la texture/frame COURANTE du sprite du
+joueur, une donnée que seul `Player` possède. Implémenté comme un
+`Sprite2D` autonome (texture + frame + flip_h copiés depuis
+`AnimatedSprite2D`), parenté au même parent que `Player` (jamais à
+`Player` lui-même, sinon il suivrait son mouvement au lieu de rester
+visuellement "planté" derrière), fondu via `Tween` puis
+`queue_free()`. Hors du périmètre VfxDirector/VfxBudget par choix — ce
+n'est pas une couche de recette (§8.2).
+
+### Shake
+
+`CombatFeedback.trigger_shake("light", _dash_direction)` déclenché dès
+`play_dash()`, avant même le premier tick d'ANTICIPATION — "shake light
+dès le premier tick" du mandat, axe opposé au déplacement (même
+inversion que pour le combo, portée par `CombatFeedback` lui-même).
+
+### Vérification
+
+`scripts/run_gameplay_smoke_test.sh` étendu de 5 nouveaux checks
+(`dash_input_starts_dash_and_plays_dash_anim`,
+`dash_blocks_attack_input_while_locked`,
+`dash_shake_visible_from_early_ticks`,
+`dash_spawns_two_afterimage_ghosts`,
+`dash_displaces_player_by_roughly_dash_distance_then_unlocks`) pilotant
+un vrai input de dash et mesurant le déplacement réel — pas seulement
+que le code compile.
+
+Deux problèmes trouvés et corrigés en écrivant ce test, tous deux dans
+le TEST lui-même, pas dans le code de jeu :
+1. `_check_combo_tier_feedback()` (ajouté en B3) ne ramène pas le
+   joueur à idle avant de rendre la main (contrairement à `_check_combo()`,
+   qui elle attend explicitement `_combo_step == 0`) — `_check_dash()`
+   démarrait donc parfois pendant que `_action_lock` était encore vrai
+   (fin de RECOVERY du coup 3), et `play_dash()` se faisait rejeter par
+   son propre garde. Corrigé en attendant `not _action_lock` en tête de
+   `_check_dash()`.
+2. Positionner le joueur à `(200, 180)` pour tester le dash le faisait
+   percuter la `CollisionShape2D` d'un ennemi laissé par un check
+   précédent (`EnemyForTierFeedback`, même zone Y) — `move_and_slide()`
+   arrêtait le dash après ~7px, un faux négatif de collision et non un
+   bug de la timeline de déplacement. Corrigé en testant à `(200, 600)`,
+   loin de tout autre nœud de la suite.
+
+27/27 checks gameplay, 8/8 vfx recipe, aucune régression sur les
+checks existants.
+
+Pas encore fait : C1/C2 (Gueule Vide), régénération personnage (A),
+captures standardisées finales et redeploy web (validation). Pose
+"buste penché" du dash hors scope (nécessite de nouvelles frames
+d'art, tâche A). `quality_labels.jsonl` toujours vide.

@@ -41,6 +41,7 @@ func _ready() -> void:
 	await _check_movement()
 	await _check_combo()
 	await _check_combo_tier_feedback()
+	await _check_dash()
 	await _check_gueule_vide()
 	await _check_gueule_vide_owner_death_policy()
 
@@ -313,6 +314,104 @@ func _check_combo_tier_feedback() -> void:
 		"name": "combo_tier3_hitstop_medium_longer_than_tier1_with_shake",
 		"pass": hit3_landed and frozen_ticks_3 == 2 and frozen_ticks_3 > frozen_ticks_1 and shake_seen_tier3,
 		"detail": {"hit_landed": hit3_landed, "frozen_ticks": frozen_ticks_3, "shake_seen": shake_seen_tier3},
+	})
+
+
+## B4 : refonte du dash (anticipation/ease-out/recovery/traînée/shake) —
+## vérifie que le dash déplace réellement le joueur (contrairement à
+## l'ancien play_dash(), qui ne faisait que jouer une animation sans
+## aucune logique de déplacement — "se lit comme une téléportation"),
+## verrouille les autres actions pendant sa timeline, déclenche un shake
+## dès les premiers ticks et pose sa traînée de 2 after-images.
+func _check_dash() -> void:
+	# _check_combo_tier_feedback() ne vide pas le combo jusqu'à idle (elle
+	# s'arrête juste après le coup 3, contrairement à _check_combo() qui,
+	# elle, attend explicitement le retour à _combo_step == 0) — attendre
+	# ici que _action_lock retombe avant de tester le dash, sinon
+	# play_dash() se fait rejeter par son propre garde (_action_lock).
+	await _wait_until(func(): return not _player._action_lock, Player.RECOVERY_TICKS + 5)
+
+	# y=600, loin des ennemis des checks précédents (tous autour de
+	# y=180) — sinon le dash percute leur CollisionShape2D et
+	# move_and_slide() l'arrête après quelques pixels, un faux négatif
+	# de collision, pas un bug de la timeline de déplacement elle-même.
+	_player.global_position = Vector2(200, 600)
+	_player.velocity = Vector2.ZERO
+	_player.facing = Vector2.RIGHT
+	var sprite: AnimatedSprite2D = _player.get_node("AnimatedSprite2D")
+	var pos_before: Vector2 = _player.global_position
+
+	var sprite2d_count_before := 0
+	for child in _player.get_parent().get_children():
+		if child is Sprite2D:
+			sprite2d_count_before += 1
+
+	Input.action_press("dash")
+	await get_tree().physics_frame
+	Input.action_release("dash")
+	var started: bool = await _wait_until(func(): return _player._dash_phase != Player.DashPhase.NONE, 5)
+	var anim_during: String = sprite.animation
+
+	# Pendant le dash (verrouillé), un appui "attack" ne doit PAS démarrer
+	# le combo — le dash garde la priorité, _action_lock bloque l'attaque.
+	Input.action_press("attack")
+	await get_tree().physics_frame
+	Input.action_release("attack")
+	var combo_started_during_dash: bool = _player._combo_step > 0
+
+	# Shake actif dès les premiers ticks (mandat : "shake light dès le
+	# premier tick") — même mécanique de lecture que
+	# _check_combo_tier_feedback().
+	var shake_seen := false
+	for i in range(3):
+		if CombatFeedback.get_shake_offset() != Vector2.ZERO:
+			shake_seen = true
+		await get_tree().physics_frame
+
+	# Les 2 after-images (mandat) sont posées pendant MOVE — les compter
+	# une fois MOVE écoulé (juste avant qu'un Tween de fondu ne commence à
+	# en libérer), pas trop tard sinon elles ont déjà pu s'éteindre
+	# (DASH_AFTERIMAGE_FADE_SEC ≈ 9 ticks après leur propre spawn).
+	await _wait_until(
+		func(): return _player._dash_phase == Player.DashPhase.RECOVERY or _player._dash_phase == Player.DashPhase.NONE,
+		Player.DASH_ANTICIPATION_TICKS + Player.DASH_MOVE_TICKS + 5)
+	var sprite2d_count_mid := 0
+	for child in _player.get_parent().get_children():
+		if child is Sprite2D:
+			sprite2d_count_mid += 1
+
+	var ended: bool = await _wait_until(
+		func(): return _player._dash_phase == Player.DashPhase.NONE,
+		Player.DASH_RECOVERY_TICKS + 5)
+	var pos_after: Vector2 = _player.global_position
+	var action_unlocked_after: bool = not _player._action_lock
+
+	_checks.append({
+		"name": "dash_input_starts_dash_and_plays_dash_anim",
+		"pass": started and anim_during == "dash",
+		"detail": {"started": started, "anim": anim_during},
+	})
+	_checks.append({
+		"name": "dash_blocks_attack_input_while_locked",
+		"pass": not combo_started_during_dash,
+		"detail": {"combo_started_during_dash": combo_started_during_dash},
+	})
+	_checks.append({
+		"name": "dash_shake_visible_from_early_ticks",
+		"pass": shake_seen,
+		"detail": {"shake_seen": shake_seen},
+	})
+	_checks.append({
+		"name": "dash_spawns_two_afterimage_ghosts",
+		"pass": sprite2d_count_mid - sprite2d_count_before == 2,
+		"detail": {"before": sprite2d_count_before, "mid": sprite2d_count_mid},
+	})
+	_checks.append({
+		"name": "dash_displaces_player_by_roughly_dash_distance_then_unlocks",
+		"pass": ended and action_unlocked_after
+			and pos_after.x > pos_before.x + Player.DASH_DISTANCE_PX * 0.9
+			and pos_after.x < pos_before.x + Player.DASH_DISTANCE_PX * 1.6,
+		"detail": {"pos_before": str(pos_before), "pos_after": str(pos_after), "ended": ended, "action_unlocked_after": action_unlocked_after},
 	})
 
 

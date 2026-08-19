@@ -51,6 +51,42 @@ const COMBO_TIER_FEEDBACK := [
 	{"hitstop": "medium", "recoil_px": 14.0, "shake": "light", "arc_slash": false},
 ]
 
+## Timeline du dash, en ticks (60/s) — mandat combat (B4) : "se lit
+## actuellement comme une téléportation : pas de compression avant
+## départ, pas de traînée, arrêt trop net." Découpage repris du
+## diagnostic externe (2 anticipation / 5 déplacement / 4 recovery,
+## 11 ticks ≈ 0,18s) — EXCEPTION EXPLICITE au §6.2 du doc VFX
+## (bande "release" attendue 5-12%) : ici le déplacement EST le
+## release (5/11 ≈ 45%), pas un simple appui visuel bref pendant qu'une
+## autre couche porte le mouvement. Documentée dans docs/worklog.md
+## plutôt que passée sous silence, comme demandé.
+const DASH_ANTICIPATION_TICKS := 2
+const DASH_MOVE_TICKS := 5
+const DASH_RECOVERY_TICKS := 4
+
+## Distance totale parcourue pendant DASH_MOVE_TICKS — point de départ à
+## ressentir, pas un dogme (même réserve que les autres valeurs de
+## tuning de cette session). ~2,5m, un peu court du 3m de portée
+## d'invocation (POWER1_SPAWN_DISTANCE_PX) pour rester un déplacement
+## d'esquive, pas un remplacement du mouvement normal.
+const DASH_DISTANCE_PX := 80.0
+## Vitesse de glissade au sol en tout début de RECOVERY, décroît vers 0
+## de façon linéaire sur DASH_RECOVERY_TICKS (même schéma que le recul
+## d'Enemy._physics_process, réutilisé ici côté joueur).
+const DASH_RECOVERY_INITIAL_SPEED_PX_S := 220.0
+
+## Traînée : 2 after-images (mandat : "opacité ~50% puis ~20%"), posées
+## à des ticks distincts de la phase MOUVEMENT pour qu'elles apparaissent
+## décalées dans l'espace derrière le joueur, pas superposées au même
+## endroit. Chaque ghost s'éteint ensuite tout seul (voir
+## _spawn_dash_afterimage()) — ce n'est PAS une primitive VfxDirector
+## (contrat seed/configure générique, §7.1) : une after-image lit la
+## texture/frame COURANTE du sprite du joueur, une donnée que seul
+## Player possède, pas quelque chose qu'une recette JSON peut décrire.
+const DASH_AFTERIMAGE_TICKS: Array[int] = [1, 3]
+const DASH_AFTERIMAGE_OPACITIES: Array[float] = [0.5, 0.2]
+const DASH_AFTERIMAGE_FADE_SEC := 0.15
+
 const GueuleVideScene := preload("res://scenes/gameplay/powers/gueule_vide.tscn")
 
 ## Invocation "Gueule Vide" (INVOCATEUR, data/recipes/power.gueule_vide.cast.json) :
@@ -71,11 +107,12 @@ var facing: Vector2 = Vector2.DOWN
 
 ## Verrouille l'animation de mouvement (idle/déplacement) pendant qu'une
 ## action ponctuelle (hurt/dash/mort/combo) joue — sinon _physics_process
-## écraserait la pose dès la frame suivante. Pour hurt/dash, levé par
-## _on_sprite_animation_finished(). Pour le combo, la timeline en ticks
-## ci-dessus est SEULE responsable du verrou (_end_combo()) — le combo ne
-## doit jamais dépendre du timing de lecture du sprite, qui est une
-## horloge séparée (§16.3 : ne pas fusionner deux minuteries distinctes).
+## écraserait la pose dès la frame suivante. Pour hurt, levé par
+## _on_sprite_animation_finished(). Pour le combo ET le dash (B4), la
+## timeline en ticks ci-dessous est SEULE responsable du verrou
+## (_end_combo()/_end_dash()) — aucun des deux ne doit dépendre du
+## timing de lecture du sprite, qui est une horloge séparée (§16.3 : ne
+## pas fusionner deux minuteries distinctes).
 var _action_lock: bool = false
 
 ## 0 = pas d'attaque en cours. 1-3 = quel coup du combo joue actuellement.
@@ -85,6 +122,14 @@ var _combo_phase: int = ComboPhase.NONE
 var _combo_tick: int = 0
 var _attack_queued: bool = false
 var _hit_applied_this_release: bool = false
+
+## NONE = pas de dash en cours. Timeline déclarative (B4), même
+## discipline que le combo ci-dessus.
+enum DashPhase { NONE, ANTICIPATION, MOVE, RECOVERY }
+var _dash_phase: int = DashPhase.NONE
+var _dash_tick: int = 0
+var _dash_direction: Vector2 = Vector2.ZERO
+var _dash_recovery_velocity: Vector2 = Vector2.ZERO
 
 ## Gueule Vide n'utilise PAS _action_lock : l'invocation (0,7s) n'immobilise
 ## pas le joueur (rien dans le mandat ne l'exige, contrairement au combo/
@@ -119,7 +164,9 @@ func _physics_process(_delta: float) -> void:
 	if Input.is_action_just_pressed("dash"):
 		play_dash()
 
-	if _combo_step > 0:
+	if _dash_phase != DashPhase.NONE:
+		_advance_dash()
+	elif _combo_step > 0:
 		velocity = Vector2.ZERO
 		_advance_combo()
 	elif _attack_queued and not stats.is_dead() and not _action_lock:
@@ -276,16 +323,117 @@ func play_hurt() -> void:
 	_sprite.play("hurt")
 
 
+## Direction du dash : l'input courant s'il y en a un (esquive dirigée,
+## standard pour ce type d'action), sinon `facing` (dash "en avant" à
+## l'arrêt) — jamais une direction nulle.
 func play_dash() -> void:
 	if stats.is_dead() or _action_lock:
 		return
+	var input_dir := Vector2(
+		Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left"),
+		Input.get_action_strength("ui_down") - Input.get_action_strength("ui_up")
+	)
+	var dir := input_dir
+	if dir.length_squared() < 0.0001:
+		dir = facing
+	if dir.length_squared() < 0.0001:
+		dir = Vector2.DOWN
+	_dash_direction = dir.normalized()
+
 	_action_lock = true
+	_dash_phase = DashPhase.ANTICIPATION
+	_dash_tick = 0
 	_sprite.play("dash")
+	if _dash_direction.x != 0.0:
+		_sprite.flip_h = _dash_direction.x < 0.0
+
+	# "shake light dès le premier tick, axe opposé au déplacement" —
+	# déclenché ici, au tout premier tick de l'action (l'anticipation),
+	# pas seulement au moment où le déplacement démarre.
+	CombatFeedback.trigger_shake("light", _dash_direction)
+
+
+## Timeline déclarative du dash (B4) — ANTICIPATION (bref arrêt, buste
+## "planté" avant le départ) -> MOVE (burst avec ease-out, DASH_DISTANCE_PX
+## répartis sur DASH_MOVE_TICKS, pas une téléportation en un seul tick)
+## -> RECOVERY (glissade qui décélère au sol, jamais un arrêt nul). Même
+## discipline que _advance_combo() : ne dépend jamais de la durée réelle
+## de lecture du sprite.
+func _advance_dash() -> void:
+	_dash_tick += 1
+	match _dash_phase:
+		DashPhase.ANTICIPATION:
+			velocity = Vector2.ZERO
+			if _dash_tick >= DASH_ANTICIPATION_TICKS:
+				_dash_phase = DashPhase.MOVE
+				_dash_tick = 0
+		DashPhase.MOVE:
+			var progress_before: float = _ease_out_quad(float(_dash_tick - 1) / DASH_MOVE_TICKS)
+			var progress_after: float = _ease_out_quad(float(_dash_tick) / DASH_MOVE_TICKS)
+			var step_px: float = (progress_after - progress_before) * DASH_DISTANCE_PX
+			velocity = _dash_direction * (step_px * Engine.physics_ticks_per_second)
+			var afterimage_idx := DASH_AFTERIMAGE_TICKS.find(_dash_tick)
+			if afterimage_idx != -1:
+				_spawn_dash_afterimage(DASH_AFTERIMAGE_OPACITIES[afterimage_idx])
+			if _dash_tick >= DASH_MOVE_TICKS:
+				_dash_phase = DashPhase.RECOVERY
+				_dash_tick = 0
+				_dash_recovery_velocity = _dash_direction * DASH_RECOVERY_INITIAL_SPEED_PX_S
+		DashPhase.RECOVERY:
+			velocity = _dash_recovery_velocity
+			_dash_recovery_velocity = _dash_recovery_velocity.move_toward(
+				Vector2.ZERO, DASH_RECOVERY_INITIAL_SPEED_PX_S / DASH_RECOVERY_TICKS)
+			if _dash_tick >= DASH_RECOVERY_TICKS:
+				_end_dash()
+
+
+## Décélération quadratique (rapide puis qui s'adoucit) — "vitesse max
+## avec ease-out" du mandat : plein régime dès le premier tick de MOVE,
+## puis chaque tick suivant couvre un peu moins de distance.
+func _ease_out_quad(x: float) -> float:
+	var c: float = clampf(x, 0.0, 1.0)
+	return 1.0 - (1.0 - c) * (1.0 - c)
+
+
+func _end_dash() -> void:
+	_dash_phase = DashPhase.NONE
+	_dash_tick = 0
+	velocity = Vector2.ZERO
+	_action_lock = false
+
+
+## Fantôme de traînée (B4) — PAS une primitive VfxDirector (§7.1, contrat
+## seed/configure générique) : copie la texture/frame COURANTE du sprite
+## du joueur, une donnée que seul Player possède. `Sprite2D` autonome,
+## parenté au même parent que Player (jamais à Player lui-même, sinon il
+## suivrait son mouvement au lieu de rester "planté" derrière lui) —
+## s'éteint tout seul via un Tween sur son opacité, jamais géré par
+## VfxDirector/VfxBudget (ce n'est pas dans leur périmètre, §8.2).
+func _spawn_dash_afterimage(opacity: float) -> void:
+	var texture: Texture2D = _sprite.sprite_frames.get_frame_texture(_sprite.animation, _sprite.frame)
+	if texture == null:
+		return
+	var ghost := Sprite2D.new()
+	ghost.texture = texture
+	ghost.offset = _sprite.offset
+	ghost.flip_h = _sprite.flip_h
+	ghost.z_index = _sprite.z_index - 1
+	ghost.modulate = Color(1.0, 1.0, 1.0, opacity)
+	# add_child() AVANT de fixer global_position : le calcul global_position
+	# a besoin de la transform du parent, indisponible tant que le nœud
+	# n'est pas encore dans l'arbre.
+	get_parent().add_child(ghost)
+	ghost.global_position = _sprite.global_position
+	var tween: Tween = ghost.create_tween()
+	tween.tween_property(ghost, "modulate:a", 0.0, DASH_AFTERIMAGE_FADE_SEC)
+	tween.finished.connect(ghost.queue_free)
 
 
 func _on_sprite_animation_finished() -> void:
 	if _combo_step > 0:
 		return  # le combo gère son propre verrou via sa timeline de ticks (_end_combo())
+	if _dash_phase != DashPhase.NONE:
+		return  # le dash gère son propre verrou via sa timeline de ticks (_end_dash())
 	if _sprite.animation == "mort":
 		return  # reste sur la dernière frame, jamais reverrouillé sur idle
 	_action_lock = false
@@ -296,5 +444,6 @@ func die() -> void:
 	_combo_step = 0
 	_combo_phase = ComboPhase.NONE
 	_attack_queued = false
+	_dash_phase = DashPhase.NONE
 	_action_lock = true
 	_sprite.play("mort")
