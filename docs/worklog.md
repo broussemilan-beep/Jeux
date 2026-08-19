@@ -2088,6 +2088,16 @@ sur les captures avec fond chargé (grille de référence horizontale).
 avec le détail horodaté de chaque étape. `data/labels/quality_labels.jsonl`
 toujours vide (aucune évaluation automatisée de qualité posée).
 
-**A9 — état.** Reste : commit, push, redeploy du build web (`docs/`)
-pour que Milan puisse retester le feel — c'est la suite immédiate de
-cette entrée.
+**A9 — commit, push, redeploy.** Export web régénéré (`godot4
+--headless --export-release "Web" docs/index.html`, xvfb + Vulkan
+logiciel — même contrainte d'environnement documentée dans CLAUDE.md)
+depuis l'état intégré ci-dessus (personnage régénéré A1-A8 + feedback
+combat B1-B4 + Gueule Vide C1-C2, déjà en place avant cette entrée).
+Commit `c18d3f0` (190 fichiers : les 8 animations, le gate,
+`cook_character_frames.py`, `docs/index.html`/`docs/index.pck`),
+poussé sur `main`. Le dépôt a été renommé `jeux` → `Jeux` côté GitHub
+entre-temps (redirection silencieuse détectée au push) — l'URL Pages
+valide est désormais `https://broussemilan-beep.github.io/Jeux/`
+(J majuscule) ; page vérifiée en ligne après déploiement, "Rank Zero"
+charge correctement. Mandat A (chantier personnage) et B/C (feedback
+combat, Gueule Vide) intégralement clos.
