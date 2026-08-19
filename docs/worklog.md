@@ -1311,3 +1311,148 @@ référence pour plus tard (profiling sur appareil réel).
 `scripts/run_vfx_recipe_smoke_test.sh` : 8/8 (4 existants + 2 seed A.5 +
 2 budget A.2). `scripts/run_gameplay_smoke_test.sh` : 19/19 (16
 existants + 3 owner-death A.4). `quality_labels.jsonl` toujours vide.
+
+## 2026-08-19 — Audit discipline reference-image (§5.3) sur Cendre, avant régénération
+
+Demande : avant de relancer une régénération complète du personnage sur
+une nouvelle référence, auditer les 8 feuilles d'animation source
+actuelles (`assets/source/pixellab/cendre/animations/{idle,deplacement,
+dash,hurt,mort,coup1,coup2,coup3}/*.png`, 42 frames) contre
+`assets/source/pixellab/cendre/reference.png` — proportions, palette,
+cohérence de silhouette — pour savoir si §5.3 a vraiment été respecté
+partout ou si certains lots ont dérivé, avant de reproduire la même
+méthode. **Audit uniquement : aucune régénération, aucune retouche.**
+
+Méthode : mesure programmatique (bounding-box du personnage par frame,
+alpha pour les frames animées, seuil de distance couleur pour
+`reference.png` qui n'a pas de fond transparent) + inspection visuelle
+directe de chaque frame à fort grossissement (nearest-neighbor ×6 à
+×14, sans lissage) + relecture du journal `data/pixellab_usage.jsonl`
+pour savoir ce qui avait déjà été signalé/corrigé.
+
+### Ce qui a été vérifié comme sain
+
+- **Silhouette générale et gabarit** : tête chauve/sans capuche
+  relevée, harnais à sangles croisées sur le torse, robe/tunique
+  longue à fente, cape asymétrique (un seul pan) — cohérents avec
+  `reference.png` sur les 8 animations, dans leurs poses neutres ou
+  calmes (idle, déplacement, hurt, frame 0 de dash/mort/coup1-3).
+  Hauteur absolue du personnage en pose neutre mesurée à 59-62px selon
+  les frames, remarquablement stable malgré deux formats de canvas
+  source différents (voir plus bas) — pas de dérive d'échelle globale
+  détectée.
+- **Palette** : scan systématique des 43 frames pour toute couleur dont
+  la saturation dépasse 12% (la palette du personnage est censée rester
+  quasi grise/désaturée) — 7 des 8 animations ne contiennent aucune
+  teinte notable, cohérent avec la discipline stricte. Seule
+  exception : voir "deplacement" ci-dessous.
+- **create_character (identité de base)** : les 8 rotations
+  (`rotations/*.png`) restent cohérentes entre elles (déjà vérifié à
+  l'époque, reconfirmé ici à l'œil) — la dérive identifiée dans cet
+  audit est spécifique aux animations, pas au personnage de base.
+
+### Dérives trouvées — non documentées dans le journal PixelLab
+
+**1. `coup1` et `coup2` : la tête perd son identité "chauve/sans visage" en cours de frappe**
+
+`reference.png` et toutes les poses calmes (idle, déplacement, hurt,
+dash, mort, frame 0 des 3 coups) montrent une tête chauve, lisse, sans
+trait de visage dessiné — juste une forme pâle arrondie. À partir de la
+frame 1-2 de `coup1` et `coup2`, la capuche remonte et un **visage
+détaillé apparaît** (yeux, parfois nez visibles) encadré de mèches
+sombres qui lisent comme des cheveux, pas comme le rabat de capuche
+plat vu ailleurs — net et non ambigu sur `coup2/1.png`, `coup2/2.png`,
+`coup2/3.png`, `coup2/4.png` (visage net à chaque frame) ; présent mais
+moins marqué sur `coup1/2.png`-`coup1/3.png`. Ni `reference.png` ni
+aucune autre animation ne montre jamais de visage dessiné — c'est une
+identité que le personnage n'a nulle part ailleurs. Jamais signalé dans
+`data/pixellab_usage.jsonl` (les entrées coup1/coup2 ne notent que la
+tache jaune sur coup2, déjà corrigée en pixel direct — cf. entrée du
+2026-08-18T21:15:00Z).
+
+**2. `coup3` : l'ancien correctif "halo" a changé la couleur, pas la forme**
+
+Le journal (entrée du 2026-08-18T21:15:00Z) documente un halo
+blanc trop étendu sur `coup3` frames 3-4, corrigé par recoloration
+pixel directe vers la teinte de capuche. En zoomant sur les frames
+actuelles : la capuche remonte bien avec un visage visible (même
+phénomène que coup1/coup2, pas rapporté comme tel à l'époque — décrit
+uniquement comme un "halo"), et surtout **une barre rectangulaire grise
+plate flotte toujours juste sous la tête** sur `coup3/3.png` et
+`coup3/4.png`, détachée du contour du corps. Cohérent avec un correctif
+qui a recoloré les pixels trop clairs sans corriger la forme
+géométrique sous-jacente — la silhouette reste fausse même si la
+couleur est rentrée dans la bande.
+
+**3. Artefacts de rendu isolés, non documentés**
+
+- `coup1/3.png` : un grand disque blanc plein, net et circulaire, posé
+  près de la main/cape — ne correspond à aucun élément de pose demandé
+  (`action_description` ne mentionne ni halo ni objet). Jamais signalé.
+- `coup2/1.png` et `coup1/3.png` : petites taches blanches en forme
+  d'éclat/étincelle flottant à côté du personnage (2-4 pixels
+  regroupés), sans rapport avec la description de pose. Jamais signalé.
+
+**4. `deplacement` : seule animation à porter une teinte de fond bleu-violet**
+
+Scan de saturation : `deplacement` est la SEULE des 8 animations où une
+couleur non grise apparaît de façon systématique — `(34, 31, 42)`,
+teinte ~256° (bleu-violet), saturation ~26%, présente sur les 6 frames
+(73 à 97 pixels par frame), répartie sur presque toute la hauteur du
+personnage (y=9 à y=58 sur un canvas de 64px) — donc un choix
+d'ombrage de base pour tout ce lot, pas un pixel isolé. Les 7 autres
+animations utilisent un ombrage strictement neutre (gris) au même
+endroit anatomique. Écart subtil (jamais détecté par
+`validate_pixels.py --category character`, qui ne contrôle que la
+bande de Value, pas la teinte) mais réel et mesurable — un lot généré
+dans une session légèrement différente de teinte de base.
+
+**5. Deux conventions de canvas différentes entre lots, jamais harmonisées**
+
+`idle`/`deplacement`/`hurt` sortent sur un canvas portrait 32×64 (proche
+du ratio de `reference.png`, 46×96). `dash`/`mort`/`coup1`/`coup2`/
+`coup3` sortent tous sur un canvas carré 88×88, et partagent une frame 0
+avec une bounding-box strictement identique `(29,13,58,75)` sur les 5 —
+autrement dit ces 5 animations partagent littéralement la même image de
+pose neutre en frame 0 (comportement normal d'`animate_character` sur
+un `character_id` déjà établi, pas une anomalie en soi), mais le lot
+1.3 (idle/déplacement/hurt) et les lots 1.3-suite/1.4 (dash/mort/coup1-3)
+n'ont pas été demandés avec les mêmes paramètres de canvas. Sans
+conséquence visible après cuisson (`cook_character_frames.py`
+normalise tout vers 96×96, ancre 48/92, voir
+`assets/manifests/cendre_frames_cooked.json`), mais un signal que la
+discipline d'appel n'a pas été strictement identique d'un batch à
+l'autre.
+
+**6. Pose déjà signalée, reconfirmée : `dash` ne lit toujours pas comme un sprint**
+
+Déjà noté au moment de l'acceptation (`accepted_with_reservation`,
+entrée du 2026-08-18T18:20:00Z) : les frames 3-4 de `dash` montrent un
+large écart de jambes statique avec cape en éventail plutôt qu'une
+foulée de course avec les deux pieds décollés du sol. Reconfirmé à
+l'inspection — pas une dérive de proportions du personnage (le gabarit
+reste correct), mais une dérive de lisibilité de pose qui persiste
+telle quelle depuis l'acceptation.
+
+### Interprétation pour la régénération à venir
+
+La discipline reference-image (§5.3, `create_character` avec
+`reference_source` explicite) a bien été respectée pour établir
+l'identité de base — le gabarit, le harnais, la robe, la cape restent
+fidèles à `reference.png` partout. La dérive observée est ailleurs :
+`animate_character` (qui ne repasse PAS l'image de référence, seulement
+le `character_id`) laisse le générateur libre d'improviser des détails
+absents du personnage établi (visage, cheveux) dès qu'une pose devient
+assez dynamique pour dégager la capuche — un angle mort de la
+discipline actuelle, qui ne couvre que le premier appel
+(`create_character`), pas les animations qui en dérivent. À anticiper
+sur la régénération : soit contraindre plus explicitement
+`action_description` à répéter "bald, featureless face, hood never
+fully back" pour les poses dynamiques, soit prévoir une passe de
+vérification tête-par-tête sur chaque frame acceptée plutôt qu'un
+contrôle uniquement sur la première frame de chaque animation (ce qui
+semble avoir été le mode de vérification jusqu'ici, vu que la dérive
+n'a été détectée sur aucune des 3 combos malgré son ampleur).
+
+Aucune correction appliquée ici — audit seul, comme demandé.
+`quality_labels.jsonl` toujours vide.
