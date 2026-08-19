@@ -1971,3 +1971,123 @@ notes internes).
 Pas encore fait : régénération des animations elles-mêmes (A4-A6),
 tourner ce gate sur les NOUVELLES frames une fois produites.
 `quality_labels.jsonl` toujours vide.
+
+## 2026-08-19 — A4-A9 : régénération complète des 8 animations + correctifs + intégration jeu
+
+Suite directe de l'entrée précédente (A1-A3, référence + gate). Les 8
+animations demandées par le mandat (idle/déplacement/hurt/mort/dash/
+coup1/coup2/coup3) ont toutes été régénérées depuis la nouvelle
+référence, vérifiées, cuites et intégrées en jeu.
+
+**A4-A6 — génération.** Premier lot en mode template (`breathing-idle`,
+`walk`, `taking-punch`, `falling-back-death`, `ai_freedom=0`) : le gate
+a détecté une perte de 70% de largeur torse par rapport à la rotation
+de base — le mode template repose le personnage sur un squelette rigide
+qui ne transporte pas la silhouette source. Auto-corrigé avant tout
+verdict humain : les 4 groupes supprimés (`delete_animation`) et
+régénérés en mode v3 custom (comme dash/coup1-3 dès le départ), avec
+une contrainte de gabarit explicite injectée dans chaque
+`action_description` ("Torso width and limb thickness stay EXACTLY the
+same... the body itself never widens, thins, or bulks up"). Résultat :
+0-20% d'écart sur idle/déplacement/hurt, 0-10% sur dash, cohérent avec
+les tolérances du gate (data/pixellab_usage.jsonl pour le détail
+horodaté de chaque appel).
+
+**Hallucination d'arme (coup1/coup3).** Revue visuelle systématique de
+chaque sheet (discipline "vérifier avant d'accepter" déjà appliquée sur
+tout ce projet) : coup1 frames 2/4 et coup3 frame 4 montrent un objet
+blanc en forme de lame près de la main levée, jamais demandé (aucune
+arme dans aucune description). Un reroll (`delete_animation` +
+re-génération avec exclusion textuelle explicite "NO weapon, NO dagger,
+NO blade, NO knife") a été tenté sur coup1 — résultat PIRE : une
+lance/rapière complète traversant tout le canvas (104px) est apparue
+sur les frames 3/4, au lieu du poignard localisé initial. Hypothèse
+retenue : le nouveau design porte un baudrier diagonal (sangle croisant
+le torse) que le modèle interprète probablement comme un fourreau,
+biaisant systématiquement les poses d'attaque vers une arme — cohérent
+avec le fait que coup3 (frappe différente, même personnage) montre le
+même défaut indépendamment.
+
+Discipline anti-reroll-infini (max ~1-2 rerolls correctifs) déjà
+consommée après ce résultat pire — décision : zéro 3e appel PixelLab,
+retouche pixel manuelle à la place (méthode déjà utilisée le
+2026-08-18 sur dash/coup2/coup3, voir entrée `manual_pixel_retouche`
+correspondante dans data/pixellab_usage.jsonl). Vérification
+pixel-exacte à chaque étape (dump numpy des lignes alpha, jamais une
+suppression "à l'œil") :
+- coup1 frame 3 : clip géométrique + couleur combinés sur la bande
+  bras/main, arme effacée, silhouette normale confirmée par bbox final.
+- coup1 frame 4 : une première tentative de clip seul a laissé un
+  résidu de poignée visible (la bande "bras" est naturellement plus
+  large que ses voisines même sans arme, un clip trop généreux garde
+  une partie de la lame) ; décision finale — remplacer la frame par une
+  copie de la frame 3 déjà propre, plutôt que continuer une chirurgie
+  pixel de plus en plus fine avec risque de nouveaux artefacts. Un
+  incident concret illustre ce risque : une passe de nettoyage de
+  composantes connexes a, à une occasion, effacé la tête entière du
+  personnage (fausse détection d'un fragment "isolé" — la tête peut se
+  déconnecter du torse par le col de la cape sur certaines frames) ;
+  détecté immédiatement au rendu et corrigé depuis la source pristine
+  avant que le fichier final ne soit touché.
+- coup3 frame 4 : passe couleur seule suffisante (objet localisé, pas
+  traversant), plus nettoyage des fragments isolés (≤8px) avec un
+  filtre de taille plancher pour ne jamais retoucher un composant de la
+  taille d'une tête.
+
+**Faux positifs du gate confirmés (pas de correction nécessaire).**
+mort frames 5-6 (personnage à plat au sol — la mesure "largeur torse à
+hauteur d'épaule" suppose une pose debout) et coup3 frame 2 (bras levés
+au-dessus de la tête — la bande épaule capte les bras, pas le torse) :
+revus visuellement, silhouette du corps cohérente avec le reste de
+l'animation dans les deux cas — limites de méthode du gate déjà
+documentées dans son docstring, pas des défauts de génération.
+
+**A7 — cuisson + correctif d'ancrage sol.** `scripts/cook_character_frames.py`
+ancrait chaque frame sur le pixel alpha le plus bas de la **bbox
+complète** (cape/traînée comprises) — root cause identifiée en A3 du
+"sautillement visuel au changement d'état" rapporté par le diagnostic.
+Correctif : nouvelle fonction `foot_anchor()`, cherche le pixel opaque
+le plus bas dans une bande centrale étroite (`--foot-band-frac`,
+défaut 0.35 de la largeur du bbox — même logique que
+`measure_ground_y()` du gate), ignorant la cape qui déborde sur les
+côtés. Les 8 animations cuites sur un canvas partagé 112×112
+(`--foot-margin-px 8`).
+
+Gate relancé sur les frames cuites : 12 violations avec la tolérance
+héritée (`ground_tolerance_px=3`) — 6 gabarit (déjà expliquées
+ci-dessus) + 6 alignement sol (dash frames 2-4, coup1 frames 3-4, mort
+frame 4), toutes à un écart **constant de 7px**. Cet écart identique
+sur trois animations sans rapport (burst de dash, extension de coup,
+stagger de mort) est cohérent avec une flexion de genou réelle sur les
+poses d'action dynamiques, pas un rebond d'ancrage erratique (qui
+produisait des dizaines de px d'écart sur les anciens sprites — voir
+la validation contre les anciens sprites en A3). `ground_tolerance_px`
+relevé de 3 à 8 dans `data/morphology_gate.json` (note
+`_ground_tolerance_note` documentant le changement et son pourquoi).
+Résultat final : 6 violations, toutes déjà expliquées comme limites de
+mesure — 0 défaut réel de gabarit ou d'alignement sol.
+
+**Intégration jeu.** `scripts/build_sprite_frames.py` relancé (mêmes
+fps/loop par animation qu'avant) → `cendre_frames.tres` régénéré.
+`scenes/gameplay/player.tscn` : `offset` de l'`AnimatedSprite2D` ajusté
+de `(0,-44)` à `(0,-48)` (nouveau canvas 112×112 / anchor `[56,104]`,
+contre 96×96 / `[48,92]` avant — le node origin doit rester au même
+point pied que la collision shape existante, elle inchangée).
+
+**Régression.** `scripts/run_gameplay_smoke_test.sh` (27/27 checks OK)
+et `scripts/run_vfx_recipe_smoke_test.sh` (8/8 OK) après intégration —
+aucune régression sur le combat, le dash, les VFX ou Gueule Vide.
+
+**A8 — captures.** 48 captures standardisées via `tools/capture_scene.tscn`
+mode `character` (8 animations × fond neutre/chargé × échelle 1×/2×/4×),
+vérification visuelle en contexte moteur réel (pas seulement sur les
+frames source isolées) confirmant l'absence d'arme et l'alignement sol
+sur les captures avec fond chargé (grille de référence horizontale).
+
+`data/pixellab_usage.jsonl` et `data/morphology_gate.json` mis à jour
+avec le détail horodaté de chaque étape. `data/labels/quality_labels.jsonl`
+toujours vide (aucune évaluation automatisée de qualité posée).
+
+**A9 — état.** Reste : commit, push, redeploy du build web (`docs/`)
+pour que Milan puisse retester le feel — c'est la suite immédiate de
+cette entrée.

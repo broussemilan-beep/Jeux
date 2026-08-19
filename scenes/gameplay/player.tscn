@@ -15,7 +15,7 @@ position = Vector2(0, -24)
 shape = SubResource("1")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-offset = Vector2(0, -44)
+offset = Vector2(0, -48)
 sprite_frames = ExtResource("2")
 animation = &"idle"
 autoplay = "idle"

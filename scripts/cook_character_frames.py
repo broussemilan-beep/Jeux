@@ -39,6 +39,29 @@ def alpha_bbox(img: Image.Image) -> tuple[int, int, int, int] | None:
     return alpha.getbbox()
 
 
+def foot_anchor(img: Image.Image, bbox: tuple[int, int, int, int], foot_band_frac: float) -> tuple[int, int]:
+    """Point d'ancrage pied = pixel opaque le plus bas dans une bande centrale
+    etroite (foot_band_frac de la largeur du bbox), PAS le bas du bbox complet.
+
+    Bug corrige (docs/worklog.md, tache A7) : une cape/trainee qui deborde sous
+    les bottes dans certaines frames (dash, coups avec pose dynamique) faisait
+    ancrer sur ce pan de tissu plutot que sur les pieds reels, d'ou le
+    "sautillement visuel au changement d'etat" du diagnostic externe - le point
+    d'ancrage bougeait verticalement d'une frame a l'autre alors que les pieds,
+    eux, restaient au meme endroit.
+    """
+    left, top, right, bottom = bbox
+    foot_x = (left + right) // 2
+    band_half = max(1, int((right - left) * foot_band_frac / 2))
+    x_lo, x_hi = max(0, foot_x - band_half), min(img.width, foot_x + band_half)
+    alpha = img.split()[-1]
+    px = alpha.load()
+    for y in range(bottom, top - 1, -1):
+        if any(px[x, y] > 0 for x in range(x_lo, x_hi)):
+            return foot_x, y
+    return foot_x, bottom
+
+
 def main() -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--character", required=True)
@@ -46,6 +69,9 @@ def main() -> int:
     p.add_argument("--out-canvas", required=True, help="WxH, e.g. 96x96")
     p.add_argument("--foot-margin-px", type=int, default=4,
                     help="Distance entre les pieds et le bas du canvas (marge pour ombre/anim future).")
+    p.add_argument("--foot-band-frac", type=float, default=0.35,
+                    help="Largeur de la bande centrale (fraction du bbox) utilisee pour reperer les pieds, "
+                         "ignorant la cape/trainee qui deborde sur les cotes (docs/worklog.md, tache A7).")
     p.add_argument("--repo-root", default=os.getcwd())
     args = p.parse_args()
 
@@ -76,9 +102,7 @@ def main() -> int:
                 # Frame entierement transparente (ne devrait pas arriver) - centrer tel quel.
                 foot_x, foot_y = img.width // 2, img.height
             else:
-                left, top, right, bottom = bbox
-                foot_x = (left + right) // 2
-                foot_y = bottom
+                foot_x, foot_y = foot_anchor(img, bbox, args.foot_band_frac)
 
             canvas = Image.new("RGBA", (out_w, out_h), (0, 0, 0, 0))
             paste_x = anchor_x - foot_x
