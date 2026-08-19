@@ -1763,3 +1763,101 @@ pas empiéter sur cette tâche.
 
 27/27 checks gameplay, 8/8 vfx recipe (déjà revérifiés ci-dessus après
 le correctif, aucune régression).
+
+## 2026-08-19 — C2 : échelle créature, cycle de morsure, hit-stop d'impact
+
+### Échelle de la créature
+
+Comparaison visuelle (capture headless, `AnimatedSprite2D` isolé à
+1.0x/1.15x/1.3x zoom caméra 1x — le zoom réel du jeu, pas un
+grossissement artificiel — à côté d'un rectangle-repère au gabarit du
+joueur) : même à 1.3x (haut de la fourchette proposée par le
+diagnostic externe, 1.15-1.3x), la créature reste nettement moins de
+la moitié de la hauteur du joueur — aucun risque de "monstre massif"
+à cette échelle. Retenu **1.3x**, appliqué comme `scale` sur
+`AnimatedSprite2D` dans `scenes/gameplay/powers/gueule_vide.tscn`
+(purement visuel — `GueuleVide` n'a pas de `CollisionShape2D`, le
+ciblage reste géométrique via `ATTACK_RANGE_PX`, non affecté).
+
+### Cycle de morsure — retiming, pas de nouvel art
+
+Inspection visuelle des 6 frames existantes
+(`assets/processed/sprites/gueule_vide/cast/*.png`) : le commentaire de
+phase du code ("morsure=RELEASE+IMPACT, 15-21t") laissait supposer que
+la frame affichée à ce moment montrait la morsure elle-même — faux.
+Frame 3 est la pose "mâchoire grande ouverte" (silhouette étirée
+verticalement) ; frame 4 est la pose "crocs visibles, mâchoire qui se
+referme" — la VRAIE morsure. Avec `FRAME_TICK_BOUNDS` inchangé
+([5,9,15,21,32,42]), frame 3 restait affichée PENDANT ET APRÈS
+`CONTACT_TICK`(20) : les crocs (frame 4) n'apparaissaient qu'à partir
+du tick 22, après les dégâts, jamais au moment de l'impact — cause
+probable du "mâchoire jamais assez grande ouverte, claquement peu
+lisible" du retour.
+
+Retimé en `src/gameplay/powers/gueule_vide.gd` :
+`FRAME_TICK_BOUNDS = [5, 9, 13, 19, 27, 42]` (était `[5, 9, 15, 21, 32,
+42]`). Frame 3 (grande ouverture) tient plus longtemps avant l'impact
+(14-19) et bascule PILE sur `CONTACT_TICK` vers frame 4 (crocs) — la
+transition de pose coïncide avec les dégâts, `impactFlashFrame`
+(19-21, déjà dans la recette, inchangé) souligne le même instant.
+Frame 5 hérite d'une fenêtre longue (28-42, 15 ticks) pour une
+désintégration lisible plutôt qu'un flash. Seul le mapping frame↔tick
+a changé — `CONTACT_TICK`/`PREP_END_TICK` et les couches VFX de la
+recette (déjà correctes, C1) restent inchangés. Vérifié par capture
+headless à 5 ticks (17/19/20/21/24) : frame 3 tient jusqu'au tick 19,
+frame 4 (crocs) apparaît dès le tick 20, confirmant la coïncidence
+recherchée.
+
+### Hit-stop à l'impact
+
+`_resolve_contact()` (`gueule_vide.gd`) déclenche maintenant
+`CombatFeedback.trigger_hitstop("medium")` quand un coup touche —
+medium, pas heavy comme le proposait le diagnostic externe : Gueule
+Vide est explicitement `importance_tier` 2/6
+(`data/recipes/power.gueule_vide.cast.json`), un heavy viderait le
+plafond réservé aux compétences majeures (même logique que
+l'escalade adoucie du combo, B3).
+
+### Bug réel trouvé en câblant ce hit-stop : ordre des autoloads
+
+En ajoutant ce déclencheur, `gueule_vide_owner_death_cancels_
+degradable_layer` (smoke test, en place depuis Addendum A) s'est mis à
+échouer : le `shardBurst` d'un run déjà DÉGRADÉ (propriétaire mort
+avant, `VfxRecipeRegistry.cancel(..., true)` appelé) spawnait quand
+même — mais avec un `origin` prouvant qu'il venait en réalité d'un
+run PRÉCÉDENT (le cast normal de `_check_gueule_vide()`), pas de
+celui sous test. Traqué par instrumentation temporaire
+(`VfxRecipeRegistry.get_elapsed_ticks()` vs `GueuleVide._tick`) :
+cette créature précédente terminait sa vie propre (`_tick=42`,
+`queue_free()`) alors que son PROPRE run VFX n'avait atteint que
+`elapsed_ticks=41` — un dé-sync d'1 tick entre les deux horloges d'une
+même entité.
+
+Cause : `project.godot` listait les autoloads dans l'ordre `VfxBudget,
+VfxDirector, VfxRecipeRegistry, CombatFeedback`. Godot traite les
+autoloads dans cet ordre PUIS les nœuds de scène réguliers. Sur le
+tick où un gel passe de 1 à 0 : `VfxRecipeRegistry`/`VfxDirector`
+(traités AVANT `CombatFeedback` ce tick) lisent encore l'ANCIENNE
+valeur de `is_frozen()` (gelé) et sautent un tick de plus, tandis que
+les nœuds de scène (`Player`, `GueuleVide` — traités APRÈS tous les
+autoloads, donc après le décompte de `CombatFeedback` CE MÊME tick)
+lisent déjà la valeur fraîche (dégelé) et avancent. Résultat : à
+CHAQUE hit-stop déclenché, un dé-sync asymétrique d'1 tick entre "ce
+qu'une entité fait" et "ce que sa propre recette VFX croit avoir
+fait". Invisible tant qu'aucun test ne comparait les deux horloges
+d'une même entité sur toute sa durée de vie — B1-B3 avaient déjà des
+hit-stops mais rien qui dépendait d'un alignement tick-exact
+entité/recette sur 40+ ticks après coup.
+
+Corrigé en plaçant `CombatFeedback` EN PREMIER dans `[autoload]` —
+son décompte est à jour avant que quiconque d'autre (autoload ou nœud
+de scène) ne lise `is_frozen()` ce tick-là, éliminant la dépendance à
+l'ordre. Documenté en détail dans `project.godot` lui-même (pas
+seulement ici) pour que la prochaine réorganisation d'autoloads ne
+la réintroduise pas par inadvertance.
+
+### Vérification
+
+27/27 checks gameplay (`gueule_vide_owner_death_cancels_degradable_
+layer` revient à `pass:true`), 8/8 vfx recipe. Instrumentation de
+debug temporaire retirée avant commit.

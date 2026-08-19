@@ -49,7 +49,26 @@ const CAST_SEED := 44103
 ## (2). Bornes cumulées en ticks — jamais la fps autonome
 ## d'AnimatedSprite2D (qui ne peut pas exprimer des phases de durées
 ## inégales avec le pas fps uniforme de build_sprite_frames.py).
-const FRAME_TICK_BOUNDS: Array[int] = [5, 9, 15, 21, 32, 42]
+##
+## C2 (docs/worklog.md) : retimé depuis [5, 9, 15, 21, 32, 42].
+## Inspection visuelle des 6 frames (assets/processed/sprites/
+## gueule_vide/cast/*.png) : frame 3 est la pose "mâchoire grande
+## ouverte" (silhouette étirée verticalement), PAS frame 2 comme le
+## laissait supposer le seul commentaire de phase — et frame 4 est la
+## pose "crocs visibles, mâchoire qui se referme", pas une frame de
+## désintégration. Avec les anciennes bornes, frame 3 restait affichée
+## PENDANT ET APRÈS CONTACT_TICK (20) : la morsure elle-même (frame 4,
+## crocs) n'apparaissait qu'à partir du tick 22, après coup, jamais au
+## moment de l'impact — d'où "mâchoire jamais assez grande ouverte,
+## claquement peu lisible" du retour. Retimé pour que frame 3 (grande
+## ouverture) tienne PLUS LONGTEMPS avant l'impact (14-19, contre une
+## fenêtre utile de 16-19 avant) et bascule PILE sur CONTACT_TICK vers
+## frame 4 (crocs, "claquement brutal" simultané aux dégâts) ; frame 5
+## hérite d'une fenêtre longue (28-42, 15 ticks) pour une désintégration
+## qui reste lisible plutôt qu'un simple flash. N'a changé QUE le
+## mapping frame<->tick — CONTACT_TICK/PREP_END_TICK et les couches VFX
+## de la recette (déjà correctes, C1) restent inchangés.
+const FRAME_TICK_BOUNDS: Array[int] = [5, 9, 13, 19, 27, 42]
 
 @onready var _sprite: AnimatedSprite2D = $AnimatedSprite2D
 
@@ -149,6 +168,11 @@ func _resolve_contact() -> void:
 	if target == null:
 		return
 	target.take_damage(ATTACK_DAMAGE, global_position)
+	# C2 (docs/worklog.md) : hit-stop medium à l'impact, pas heavy comme
+	# le proposait le diagnostic externe — Gueule Vide est explicitement
+	# importance_tier 2/6 (data/recipes/power.gueule_vide.cast.json), un
+	# heavy ici viderait le plafond réservé aux compétences majeures.
+	CombatFeedback.trigger_hitstop("medium")
 
 
 ## Tick courant du cast — utile aux tests/captures (même contrat que
