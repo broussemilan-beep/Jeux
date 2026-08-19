@@ -1,0 +1,10 @@
+{
+  "_notes": "Config du gate scripts/validate_morphology.py — mandat régénération Cendre (docs/worklog.md, tâche A). Jamais de seuil en dur dans le script, même discipline que data/palettes/value_bands.json pour validate_pixels.py. baseline_animation=idle : idle est la pose neutre canonique du personnage (jamais une pose d'action), le point de départ naturel du gabarit — voir le diagnostic externe lui-même ('en idle le perso est filiforme'), qui prend idle comme référence implicite. Tolérances de départ larges (20-25%) — resserrer une fois le premier lot de frames régénérées observé, documenter tout changement ici.",
+  "baseline_animation": "idle",
+  "baseline_frame_index": 0,
+  "shoulder_band_frac": 0.20,
+  "foot_band_frac": 0.35,
+  "head_tolerance_pct": 20.0,
+  "torso_tolerance_pct": 25.0,
+  "ground_tolerance_px": 3
+}

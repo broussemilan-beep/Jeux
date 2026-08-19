@@ -1861,3 +1861,113 @@ la réintroduise pas par inadvertance.
 27/27 checks gameplay (`gueule_vide_owner_death_cancels_degradable_
 layer` revient à `pass:true`), 8/8 vfx recipe. Instrumentation de
 debug temporaire retirée avant commit.
+
+## 2026-08-19 — A1-A3 : nouvelle référence Cendre + gate de gabarit automatisé
+
+### A1 — Référence remplacée, ancienne archivée
+
+Nouvelle référence reçue de Milan (turnaround FACE/3-4/PROFIL/DOS,
+1672×941, même concept — crâne chauve pâle, aucun emblème, cape
+asymétrique déchirée, harnais croisé — mais morphologie nettement plus
+épaisse et plus de détail de couches que l'ancienne). Même discipline
+que la référence v1 (§5.3, worklog Phase 1.1) :
+
+- Panneau FACE recadré (auto-crop sur seuil de fond, marge 10px),
+  label texte exclu.
+- **Écart d'exécution reconfirmé** (déjà rencontré en Phase 1.1) :
+  `reference_image_base64` tronque silencieusement au-delà d'environ
+  3000 caractères base64 dans ce client MCP. Sweep downscale×quantize
+  (hauteurs 80-130px, 6-16 couleurs, `dither=None` + `optimize=True`)
+  pour trouver le plus grand format lisible sous ce seuil avec marge
+  de sécurité : retenu 80px de haut, 6 couleurs, 2400 caractères b64
+  (marge confortable sous les ~3020 caractères qui avaient corrompu la
+  v1). Silhouette (asymétrie cape, harnais croisé, tête chauve, bottes
+  épaisses) reste lisible à cette taille — vérifié visuellement avant
+  adoption, PixelLab v3 reference-image réinterprète de toute façon le
+  style/la silhouette, pas un recopiage pixel exact (même constat que
+  Phase 1.1).
+- **3 fichiers conservés** (aucune suppression, comme demandé) :
+  `reference_v1_archive.png` (ancienne référence, le sprite fin
+  d'origine), `reference_v2_turnaround_raw.png` (le panneau 4 vues
+  complet reçu, haute résolution, pour toute re-dérivation future si
+  la contrainte base64 change), `reference.png` (nouveau, le crop
+  quantifié ci-dessus, celui que PixelLab consommera réellement).
+
+### A2 — Gabarit : mesure sur la référence hi-res, PUIS calibration sur idle cuit
+
+Tentative initiale : mesurer largeur torse/tête en pixels absolus
+directement sur `reference_v2_turnaround_raw.png` (haute résolution).
+Écartée après mesure : la cape de ce personnage enveloppe le torse
+sans espace de fond entre les deux à la plupart des hauteurs (mesure
+de "largeur du run central contigu" testée, résultats incohérents
+d'une bande de hauteur à l'autre — 95px puis 210px puis 124px sur des
+bandes adjacentes, la cape et le torse ne forment qu'une seule masse
+silhouette). **Conclusion : aucune séparation cape/corps fiable par
+seuil de fond ou géométrie pure sur ce design** (cape qui enveloppe,
+pas qui flanque avec un espace visible) — noté explicitement plutôt
+que de bricoler un seuil qui semblerait marcher par hasard sur un cas
+et pas les autres.
+
+Décision : le gabarit AUTORITAIRE n'est pas une valeur absolue figée
+depuis la référence hi-res (qui de toute façon change d'échelle une
+fois passée par PixelLab + `cook_character_frames.py`, canvas 96×96)
+mais **dérivé automatiquement de la frame 0 de l'animation idle**, une
+fois régénérée — idle est la pose neutre canonique (jamais une pose
+d'action), le point de départ naturel, cohérent avec le diagnostic
+externe lui-même qui prend idle comme référence implicite ("en idle le
+perso est filiforme"). Voir A3 : le gate calcule ce baseline lui-même
+à chaque exécution, aucune valeur à maintenir à la main.
+
+### A3 — Gate automatisé (`scripts/validate_morphology.py`)
+
+Nouveau script, même discipline que `scripts/validate_pixels.py`
+(config JSON externe `data/morphology_gate.json`, jamais de seuil en
+dur, rapport JSON, code de sortie 0/1, `--selftest` synthétique).
+
+Deux familles de vérification par frame, comparées à la frame 0
+d'idle :
+1. **Largeur tête** : bbox du blob le plus haut jusqu'au premier
+   rétrécissement marqué (le cou) — fiable, la cape ne recouvre jamais
+   le sommet du crâne sur ce personnage.
+2. **Largeur torse** : largeur totale de la silhouette à hauteur
+   d'épaule (bande étroite juste sous la tête). **Limite assumée et
+   documentée dans le script lui-même** : ne sépare pas cape et corps
+   par couleur (voir A2) — mesure la largeur TOTALE à cette hauteur
+   précise, choisie parce que c'est la zone où la cape (ancrée aux
+   épaules) a le moins de raison de s'évaser radicalement d'une pose à
+   l'autre. Approximation assumée, pas une élimination parfaite du
+   confondant cape.
+3. **Alignement sol** (bonus, couvre aussi le point 5 du mandat) :
+   position Y du pixel non-transparent le plus bas DANS UNE BANDE
+   CENTRALE ÉTROITE (35% de la largeur du canvas, centrée) — exclut
+   une cape qui traînerait sur les côtés. Root cause identifiée en
+   lisant `cook_character_frames.py` : ce script ancre chaque frame
+   sur le pixel alpha le plus bas de la frame ENTIÈRE (bbox complète,
+   pas de bande centrale) — si un pan de cape ou une traînée descend
+   sous les bottes dans une frame d'action, ce point de fixation n'est
+   PAS le pied, et la frame se retrouve décalée verticalement une fois
+   collée sur ce faux ancrage : c'est très probablement la cause
+   mécanique exacte du "sautillement visuel au changement d'état" du
+   diagnostic — pas encore corrigé dans `cook_character_frames.py`
+   lui-même (prévu en A7, une fois les nouvelles frames disponibles
+   pour vérifier si le phénomène se reproduit avec le nouveau design).
+
+**Vérification que le gate détecte réellement le défaut rapporté**
+(mandat : "il faut qu'il devienne détectable") : exécuté contre
+`assets/manifests/cendre_frames_cooked.json` (l'ANCIEN jeu de sprites,
+avant toute régénération). Résultat : 33 violations, concentrées très
+majoritairement sur coup1/coup2/coup3/dash — déviations de largeur
+torse de 30% à 260%, déviations de largeur tête de 80% à 160%, TOUTES
+sur des frames d'action, JAMAIS sur idle (0 violation sur idle,
+cohérent avec "en idle le perso est filiforme" du diagnostic). Le gate
+reproduit exactement le symptôme rapporté sur les données réelles,
+pas seulement sur le cas synthétique du `--selftest`.
+
+Tolérances de départ (20% tête, 25% torse, 3px alignement sol) — larges
+volontairement pour un premier passage, à resserrer une fois le
+premier lot de frames régénérées observé (`data/morphology_gate.json`,
+notes internes).
+
+Pas encore fait : régénération des animations elles-mêmes (A4-A6),
+tourner ce gate sur les NOUVELLES frames une fois produites.
+`quality_labels.jsonl` toujours vide.
