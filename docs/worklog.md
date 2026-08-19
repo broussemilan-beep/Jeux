@@ -1456,3 +1456,102 @@ n'a été détectée sur aucune des 3 combos malgré son ampleur).
 
 Aucune correction appliquée ici — audit seul, comme demandé.
 `quality_labels.jsonl` toujours vide.
+
+## 2026-08-19 — B1-B3 : hit-stop, camera shake, feedback par tier de combo
+
+Constat du mandat (retour Milan + diagnostic externe) : zéro hit-stop et
+zéro camera shake dans `src/` avant cette entrée — seul le recul
+existait (`enemy.gd`). Cause principale du "les coups n'ont aucun
+poids". §9.1/§9.2 d'`ARCHITECTURE_VFX_v3.md` spécifient les deux
+mécaniques mais aucune n'était implémentée.
+
+### B1/B2 — `src/gameplay/combat_feedback.gd` (nouvel autoload)
+
+Hit-stop : 5 profils (§9.1, `HITSTOP_MS`), ms convertis en ticks
+(60/s) par arrondi au tick le plus proche. Implémentation en **time
+scale local**, jamais `Engine.time_scale` (§9.1 : "sinon l'UI gèle
+aussi") — un compteur de ticks gelés que chaque nœud de combat
+(`Player`, `Enemy`, `VfxDirector`, `VfxRecipeRegistry`, `GueuleVide`)
+consulte lui-même via `CombatFeedback.is_frozen()` en tête de son
+`_physics_process()`, avec retour anticipé. `CombatFeedback` ne se
+consulte jamais lui-même — il est la source de vérité du gel, pas un
+nœud qui s'y soumet.
+
+Camera shake : 3 niveaux (§9.2, `SHAKE_PROFILES`), axe fixe opposé à la
+direction de l'attaque (jamais de bruit isotrope), amplitude qui
+décroît linéairement (`decay`) modulée par une oscillation. Lu chaque
+tick par `Player` via `CombatFeedback.get_shake_offset()`, appliqué à
+`Camera2D.offset`, **avant** le retour anticipé sur `is_frozen()` — le
+shake continue de s'animer pendant un hit-stop, ce qui fait partie de
+ce qui vend l'impact.
+
+**Bug trouvé et corrigé en câblant B3** : la formule d'oscillation
+utilisait `sin(t * TAU * 2.0)` (2 cycles complets sur la durée totale).
+Pour le profil `"light"` (4 ticks), ce découpage échantillonne
+l'oscillation À CHAQUE tick exactement sur un passage par zéro du
+sinus (`sin(nπ) = 0` pour tout entier n, et 4 ticks = exactement un
+demi-cycle par tick) — `get_shake_offset()` valait donc **zéro à
+chaque tick, systématiquement**, pour ce profil précis. `trigger_shake
+("light", ...)` ne bougeait jamais visiblement la caméra, en silence
+(aucun test n'existait encore pour l'exercer — B2 ne branchait que le
+gel, pas encore de vrai déclencheur de shake "light"). Confirmé
+numériquement avant correction (voir détail des valeurs échantillonnées
+pour light/medium/heavy). Corrigé en passant `sin` → `cos` : même
+enveloppe de décroissance, mais non-nul sur les 3 profils (light/medium
+/heavy) et donne en prime un premier tick à pleine amplitude,
+cohérent avec "shake dès le premier tick" (mandat dash, B4 à venir).
+`medium`/`heavy` n'étaient pas affectés (leur nombre de ticks n'aligne
+pas les échantillons sur les zéros du sinus).
+
+### B3 — `src/vfx/primitives/arc_slash.gd` + feedback par tier de combo
+
+Nouvelle primitive VFX `arcSlash` (§7.1, "croissant anguleux
+directionnel"), enregistrée dans `VfxDirector._registry`. Couche
+CONTACT (z_index 95, juste sous `impactFlashFrame`), même contrat que
+les 5 primitives existantes.
+
+Escalade des 3 coups de base (`src/gameplay/player.gd`,
+`COMBO_TIER_FEEDBACK`), volontairement adoucie par rapport à la
+proposition du diagnostic externe ("heavy sur coup 3") : ce sont des
+attaques de BASE, un heavy dès le coup 3 viderait le plafond réservé
+aux tiers 5-6 futurs, contraire au principe d'escalade du doc.
+
+- Coup 1 : hit-stop `light` (1 tick), recul 4px, pas de shake.
+- Coup 2 : hit-stop `light`, recul 8px, spawn `arcSlash` (2 ticks).
+- Coup 3 : hit-stop `medium` (2 ticks), recul 14px, shake `light`.
+
+**Décision documentée (mandat : "assume-la explicitement dans le
+worklog")** : le mandat demandait un hit-stop "light-medium" pour le
+coup 2 et un shake "light-medium" pour le coup 3, mais
+`CombatFeedback` n'expose que les paliers discrets du doc (§9.1 : 5
+profils de hit-stop, §9.2 : 3 niveaux de shake) — aucun palier
+intermédiaire n'existe. À 60 ticks/s (`TICK_MS` ≈ 16,667ms), `light`
+arrondit déjà à 1 tick et `medium` à 2 ticks : il n'existe aucune
+valeur entière DISTINCTE entre les deux pour matérialiser un
+"light-medium" de hit-stop — même limite pour "light" vs un
+hypothétique "light-medium" de shake, les paliers de `SHAKE_PROFILES`
+n'ayant pas de valeur intermédiaire non plus. Choix retenu, dans
+l'esprit même de l'escalade demandée : **arrondir vers le bas** sur
+toute ambiguïté de palier plutôt que vers le haut — un coup de base
+reste un coup de base, jamais un plafond consommé par avance sur les
+tiers 5-6.
+
+### Vérification
+
+`scripts/run_gameplay_smoke_test.sh` étendu avec 3 nouveaux checks
+(`combo_tier1_hitstop_light_no_shake`, `combo_tier2_spawns_arc_slash`,
+`combo_tier3_hitstop_medium_longer_than_tier1_with_shake`) qui pilotent
+les 3 coups du combo via de vrais inputs et vérifient l'escalade
+observable (durée de gel via `CombatFeedback.is_frozen()` interrogé en
+boucle, présence d'`arcSlash` dans `VfxDirector.spawn_log`, décalage de
+caméra non nul) plutôt que de simplement vérifier que le code compile
+— c'est ce test qui a révélé le bug du shake `sin` ci-dessus (shake
+`light` du coup 1 correctement absent, mais le shake `light` du coup 3
+restait aussi invisible avant la correction `cos`). 22/22 checks
+passent après correctif. `scripts/run_vfx_recipe_smoke_test.sh` :
+8/8, aucune régression (nouvelle primitive `arcSlash` non exercée par
+cette suite, seulement par le smoke test gameplay ci-dessus).
+
+Pas encore fait dans ce lot : B4 (refonte du dash), C1/C2 (Gueule
+Vide), régénération personnage (A), captures standardisées finales et
+redeploy web (validation). `quality_labels.jsonl` toujours vide.

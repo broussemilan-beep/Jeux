@@ -24,6 +24,10 @@ VfxDirector="*res://src/vfx/vfx_director.gd"
 ; VfxRecipeRegistry après VfxDirector : elle appelle VfxDirector.spawn()
 ; pour chaque couche résolue, jamais l'inverse.
 VfxRecipeRegistry="*res://src/vfx/vfx_recipe_registry.gd"
+; CombatFeedback (§9.1/§9.2, hit-stop + camera shake) : aucune dépendance
+; sur les 3 autres, ordre indifférent — placé après par lisibilité (VFX
+; d'abord, feedback de combat ensuite).
+CombatFeedback="*res://src/gameplay/combat_feedback.gd"
 
 [display]
 

@@ -46,6 +46,7 @@ var _registry: Dictionary = {
 	"runicStamp": "res://src/vfx/primitives/runic_stamp.gd",
 	"fractureLine": "res://src/vfx/primitives/fracture_line.gd",
 	"shardBurst": "res://src/vfx/primitives/shard_burst.gd",
+	"arcSlash": "res://src/vfx/primitives/arc_slash.gd",
 }
 
 ## Journal en mémoire de chaque spawn — §8.2 "journalise seed + recette
@@ -61,6 +62,12 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
+	# §9.1 : "Le freeze conserve les particules déjà nées et stoppe
+	# seulement ce qui vend le poids du coup" — les couches déjà à
+	# l'écran restent visibles à leur dernier état dessiné (aucun
+	# queue_redraw ici), juste immobiles, ni détruites ni avancées.
+	if CombatFeedback.is_frozen():
+		return
 	_tick_counter += 1
 	# Copie des clés : _free_spawn() mute _active pendant l'itération,
 	# itérer directement sur _active.keys() en live serait indéfini.

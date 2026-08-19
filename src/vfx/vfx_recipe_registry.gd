@@ -43,6 +43,10 @@ var _next_run_id: int = 1
 
 
 func _physics_process(_delta: float) -> void:
+	# Même gel que VfxDirector (§9.1) : aucune nouvelle couche ne se
+	# programme pendant un hit-stop, tout reste en phase.
+	if CombatFeedback.is_frozen():
+		return
 	for run_id in _active.keys().duplicate():
 		var run: Dictionary = _active.get(run_id)
 		if run == null:

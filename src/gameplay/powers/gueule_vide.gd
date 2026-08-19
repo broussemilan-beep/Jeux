@@ -109,6 +109,8 @@ func cancel_cast() -> bool:
 
 
 func _physics_process(_delta: float) -> void:
+	if CombatFeedback.is_frozen():
+		return
 	_tick += 1
 	_sprite.frame = _frame_for_tick(_tick)
 

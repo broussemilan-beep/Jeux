@@ -40,6 +40,7 @@ func _ready() -> void:
 	await _check_death()
 	await _check_movement()
 	await _check_combo()
+	await _check_combo_tier_feedback()
 	await _check_gueule_vide()
 	await _check_gueule_vide_owner_death_policy()
 
@@ -213,6 +214,105 @@ func _check_combo() -> void:
 		"name": "combo_returns_to_idle_after_full_recovery_without_input",
 		"pass": ended and anim_final == "idle",
 		"detail": {"ended": ended, "combo_step": _player._combo_step, "anim": anim_final},
+	})
+
+
+## Compte les ticks pendant lesquels CombatFeedback reste gelé À PARTIR
+## de maintenant — utile pour distinguer "light" (1 tick, 12ms arrondi)
+## de "medium" (2 ticks, 25ms arrondi) sans dépendre d'un accès privé à
+## CombatFeedback, seulement de son API publique is_frozen().
+func _drain_frozen_ticks() -> int:
+	var n := 0
+	while CombatFeedback.is_frozen():
+		await get_tree().physics_frame
+		n += 1
+	return n
+
+
+## B3 : feedback de combat par tier de combo (hit-stop/shake/arcSlash,
+## src/gameplay/player.gd, COMBO_TIER_FEEDBACK) — vérifie que l'escalade
+## réelle correspond au mandat (coup1 léger sans shake, coup2 avec
+## arcSlash, coup3 avec un hit-stop plus long ET un shake visible),
+## jamais juste que le code compile. CombatFeedback/VfxDirector sont déjà
+## éprouvés par ailleurs (smoke_test_vfx_recipe.gd) — on ne reteste que
+## l'intégration combo -> feedback ici.
+func _check_combo_tier_feedback() -> void:
+	var enemy := EnemyScene.instantiate()
+	enemy.name = "EnemyForTierFeedback"
+	enemy.global_position = _player.global_position + Vector2(30, 0)
+	add_child(enemy)
+	await get_tree().physics_frame  # laisser le groupe "enemies" se peupler
+
+	# Coup 1 — hit-stop light (1 tick), pas de shake, pas d'arcSlash.
+	var hp_before_1: float = enemy.stats.hp
+	Input.action_press("attack")
+	await get_tree().physics_frame
+	Input.action_release("attack")
+	await _wait_until(func(): return _player._combo_step == 1, 10)
+	var hit1_landed: bool = await _wait_until(
+		func(): return enemy.stats.hp < hp_before_1,
+		Player.ANTICIPATION_TICKS + Player.RELEASE_TICKS + 5)
+	var frozen_ticks_1: int = await _drain_frozen_ticks()
+	var shake_seen_tier1 := false
+	for i in range(6):
+		if CombatFeedback.get_shake_offset() != Vector2.ZERO:
+			shake_seen_tier1 = true
+		await get_tree().physics_frame
+
+	# Chaîner vers coup 2 dans la fenêtre de chaînage (même mécanique que
+	# _check_combo()) — coup2 doit poser une couche arcSlash (2 ticks).
+	VfxDirector.clear_log()
+	var chain_window_start: int = Player.RECOVERY_TICKS - Player.CHAIN_WINDOW_TICKS
+	await _wait_until(
+		func(): return _player._combo_step == 1 and _player._combo_phase == Player.ComboPhase.RECOVERY and _player._combo_tick >= chain_window_start,
+		Player.RECOVERY_TICKS + 5)
+	var hp_before_2: float = enemy.stats.hp
+	Input.action_press("attack")
+	await get_tree().physics_frame
+	Input.action_release("attack")
+	await _wait_until(func(): return _player._combo_step == 2, 10)
+	var hit2_landed: bool = await _wait_until(
+		func(): return enemy.stats.hp < hp_before_2,
+		Player.ANTICIPATION_TICKS + Player.RELEASE_TICKS + 5)
+	var arc_slash_spawned := false
+	for entry in VfxDirector.spawn_log:
+		if entry["primitive"] == "arcSlash":
+			arc_slash_spawned = true
+
+	# Chaîner vers coup 3 — hit-stop medium (2 ticks, plus long que coup1)
+	# ET shake visible (contrairement à coup1).
+	await _wait_until(
+		func(): return _player._combo_step == 2 and _player._combo_phase == Player.ComboPhase.RECOVERY and _player._combo_tick >= chain_window_start,
+		Player.RECOVERY_TICKS + 5)
+	var hp_before_3: float = enemy.stats.hp
+	Input.action_press("attack")
+	await get_tree().physics_frame
+	Input.action_release("attack")
+	await _wait_until(func(): return _player._combo_step == 3, 10)
+	var hit3_landed: bool = await _wait_until(
+		func(): return enemy.stats.hp < hp_before_3,
+		Player.ANTICIPATION_TICKS + Player.RELEASE_TICKS + 5)
+	var frozen_ticks_3: int = await _drain_frozen_ticks()
+	var shake_seen_tier3 := false
+	for i in range(6):
+		if CombatFeedback.get_shake_offset() != Vector2.ZERO:
+			shake_seen_tier3 = true
+		await get_tree().physics_frame
+
+	_checks.append({
+		"name": "combo_tier1_hitstop_light_no_shake",
+		"pass": hit1_landed and frozen_ticks_1 == 1 and not shake_seen_tier1,
+		"detail": {"hit_landed": hit1_landed, "frozen_ticks": frozen_ticks_1, "shake_seen": shake_seen_tier1},
+	})
+	_checks.append({
+		"name": "combo_tier2_spawns_arc_slash",
+		"pass": hit2_landed and arc_slash_spawned,
+		"detail": {"hit_landed": hit2_landed, "arc_slash_spawned": arc_slash_spawned},
+	})
+	_checks.append({
+		"name": "combo_tier3_hitstop_medium_longer_than_tier1_with_shake",
+		"pass": hit3_landed and frozen_ticks_3 == 2 and frozen_ticks_3 > frozen_ticks_1 and shake_seen_tier3,
+		"detail": {"hit_landed": hit3_landed, "frozen_ticks": frozen_ticks_3, "shake_seen": shake_seen_tier3},
 	})
 
 

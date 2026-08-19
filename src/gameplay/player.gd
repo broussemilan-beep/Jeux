@@ -28,6 +28,29 @@ const CHAIN_WINDOW_TICKS := 6
 const ATTACK_RANGE_PX := 48.0  # ~1.5m, GameConstants.PX_PER_METER
 const ATTACK_DAMAGE := 10.0
 
+## Feedback par tier de combo (mandat combat, escalade des 3 coups de
+## base — délibérément adoucie sous le "heavy sur coup 3" du diagnostic
+## externe : "ce sont des attaques de BASE, si elles tapent déjà en
+## heavy il ne reste rien pour les tiers 5-6, contraire au principe
+## d'escalade du doc").
+##
+## Décision de gabarit (à documenter dans docs/worklog.md) : le mandat
+## demande "light-medium" pour le hit-stop du coup 2 et le shake du
+## coup 3, mais CombatFeedback n'expose que les 5/3 profils discrets du
+## doc (§9.1/§9.2) — pas de palier intermédiaire. À 60 ticks/s
+## (CombatFeedback.TICK_MS ≈ 16,667 ms), "light" arrondit déjà à 1 tick
+## et "medium" à 2 ticks : il n'existe aucune valeur entière DISTINCTE
+## entre les deux pour matérialiser un "light-medium" de hit-stop. Choix
+## retenu, dans l'esprit même de l'escalade demandée : arrondir vers le
+## BAS (jamais vers le haut) sur toute ambiguïté de palier — un tier
+## en-dessous de la couverture pleine reste un tier de base, jamais un
+## plafond consommé par avance sur les tiers 5-6 futurs.
+const COMBO_TIER_FEEDBACK := [
+	{"hitstop": "light", "recoil_px": 4.0, "shake": "", "arc_slash": false},
+	{"hitstop": "light", "recoil_px": 8.0, "shake": "", "arc_slash": true},
+	{"hitstop": "medium", "recoil_px": 14.0, "shake": "light", "arc_slash": false},
+]
+
 const GueuleVideScene := preload("res://scenes/gameplay/powers/gueule_vide.tscn")
 
 ## Invocation "Gueule Vide" (INVOCATEUR, data/recipes/power.gueule_vide.cast.json) :
@@ -69,6 +92,7 @@ var _hit_applied_this_release: bool = false
 var _power1_cooldown_remaining: int = 0
 
 @onready var _sprite: AnimatedSprite2D = $AnimatedSprite2D
+@onready var _camera: Camera2D = $Camera2D
 
 
 func _ready() -> void:
@@ -76,6 +100,13 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
+	# Le shake continue de s'appliquer PENDANT un hit-stop (c'est en
+	# partie ce qui vend l'impact) — lu avant le retour anticipé
+	# ci-dessous, jamais après.
+	_camera.offset = CombatFeedback.get_shake_offset()
+	if CombatFeedback.is_frozen():
+		return
+
 	if _power1_cooldown_remaining > 0:
 		_power1_cooldown_remaining -= 1
 
@@ -173,7 +204,16 @@ func _try_hit() -> void:
 	var target: Node = Targeting.nearest_enemy_in_radius(get_tree(), global_position, ATTACK_RANGE_PX)
 	if target == null:
 		return
-	target.take_damage(ATTACK_DAMAGE, global_position)
+	var tier: Dictionary = COMBO_TIER_FEEDBACK[_combo_step - 1]
+	target.take_damage(ATTACK_DAMAGE, global_position, tier["recoil_px"])
+
+	# Hit-stop + shake (mandat combat, B1-B3) : local aux nœuds de combat
+	# via CombatFeedback (§9.1), jamais Engine.time_scale. Direction du
+	# shake = `facing` (l'attaque), CombatFeedback inverse lui-même l'axe.
+	CombatFeedback.trigger_hitstop(tier["hitstop"])
+	if tier["shake"] != "":
+		CombatFeedback.trigger_shake(tier["shake"], facing)
+
 	# impactFlashFrame + recoil sur chaque coup (mandat Phase 1.4). Le
 	# recoil est déjà porté par Enemy.take_damage() (§4 : réaction de la
 	# cible, jamais une primitive de l'attaquant) — ici on ne pose QUE le
@@ -187,6 +227,19 @@ func _try_hit() -> void:
 		# + recul) — ne se sacrifie jamais sous pression de budget.
 		"degradable": false,
 	})
+
+	# arcSlash sur le coup 2 seulement (mandat : "arc visuel bref sur 2
+	# ticks") — trace du geste qui a touché, couche CONTACT protégée au
+	# même titre que impactFlashFrame ci-dessus.
+	if tier["arc_slash"]:
+		VfxDirector.spawn("arcSlash", {
+			"seed": 0,
+			"origin": target.global_position,
+			"direction": facing,
+			"lifetime_ticks": 2,
+			"scale_px": 28.0,
+			"degradable": false,
+		})
 
 
 ## Invocation "Gueule Vide" — instancie la créature en avant du joueur

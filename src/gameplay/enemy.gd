@@ -20,6 +20,8 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
+	if CombatFeedback.is_frozen():
+		return
 	if _recoil_ticks_remaining > 0:
 		_recoil_ticks_remaining -= 1
 		velocity = _recoil_velocity
