@@ -19,6 +19,18 @@ shader_type canvas_item;
 //   - reste (pixelisation par blocs, dithering Bayer 4x4 sur les zones de
 //     transition ombre/lumière, contour par détection de bords Sobel) :
 //     conservé à l'identique, seul le nom des uniforms a été gardé.
+//   - toutes les lectures de TEXTURE passées de `texture()` à
+//     `textureLod(..., 0.0)` — bug trouvé en testant : l'UV bloqué par
+//     paquets de `pixelation` (`pixel_uv`, identique pour tout un bloc de
+//     8x8 texels) crée un saut énorme de dérivée d'écran exactement à la
+//     frontière entre deux blocs. La sélection automatique de mip level
+//     de `texture()` se base sur cette dérivée — à ces frontières, Godot
+//     choisit un mip très flou (moyenne d'un grand voisinage), qui pour
+//     un objet fin sur fond clair (un bras) "bavait" sa couleur sur une
+//     zone bien plus large que sa vraie silhouette ("ailes" observées
+//     autour des bras, disparues avec ce correctif ; le torse, plus
+//     épais, encaissait le même bug sans que ça se voie autant).
+//     `textureLod(..., 0.0)` force le mip 0 partout, élimine la cause.
 
 uniform int target_x_pixel_count : hint_range(8, 256) = 64;
 uniform int target_y_pixel_count : hint_range(8, 256) = 64;
@@ -72,14 +84,14 @@ vec3 quantize_color(vec3 color) {
 
 vec3 detect_edges(sampler2D tex, vec2 uv, vec2 tex_size) {
 	vec2 texel = 1.0 / tex_size;
-	vec3 tl = texture(tex, uv + vec2(-texel.x, -texel.y)).rgb;
-	vec3 tc = texture(tex, uv + vec2(0.0, -texel.y)).rgb;
-	vec3 tr = texture(tex, uv + vec2(texel.x, -texel.y)).rgb;
-	vec3 ml = texture(tex, uv + vec2(-texel.x, 0.0)).rgb;
-	vec3 mr = texture(tex, uv + vec2(texel.x, 0.0)).rgb;
-	vec3 bl = texture(tex, uv + vec2(-texel.x, texel.y)).rgb;
-	vec3 bc = texture(tex, uv + vec2(0.0, texel.y)).rgb;
-	vec3 br = texture(tex, uv + vec2(texel.x, texel.y)).rgb;
+	vec3 tl = textureLod(tex, uv + vec2(-texel.x, -texel.y), 0.0).rgb;
+	vec3 tc = textureLod(tex, uv + vec2(0.0, -texel.y), 0.0).rgb;
+	vec3 tr = textureLod(tex, uv + vec2(texel.x, -texel.y), 0.0).rgb;
+	vec3 ml = textureLod(tex, uv + vec2(-texel.x, 0.0), 0.0).rgb;
+	vec3 mr = textureLod(tex, uv + vec2(texel.x, 0.0), 0.0).rgb;
+	vec3 bl = textureLod(tex, uv + vec2(-texel.x, texel.y), 0.0).rgb;
+	vec3 bc = textureLod(tex, uv + vec2(0.0, texel.y), 0.0).rgb;
+	vec3 br = textureLod(tex, uv + vec2(texel.x, texel.y), 0.0).rgb;
 	vec3 gx = -tl + tr - 2.0 * ml + 2.0 * mr - bl + br;
 	vec3 gy = -tl - 2.0 * tc - tr + bl + 2.0 * bc + br;
 	return sqrt(gx * gx + gy * gy);
@@ -99,11 +111,11 @@ float get_bayer_matrix(ivec2 pos) {
 
 vec3 detect_shadow_transitions(sampler2D tex, vec2 uv, vec2 tex_size) {
 	vec2 texel = 1.0 / tex_size;
-	vec3 center = texture(tex, uv).rgb;
-	vec3 right = texture(tex, uv + vec2(texel.x, 0.0)).rgb;
-	vec3 down = texture(tex, uv + vec2(0.0, texel.y)).rgb;
-	vec3 left = texture(tex, uv + vec2(-texel.x, 0.0)).rgb;
-	vec3 up = texture(tex, uv + vec2(0.0, -texel.y)).rgb;
+	vec3 center = textureLod(tex, uv, 0.0).rgb;
+	vec3 right = textureLod(tex, uv + vec2(texel.x, 0.0), 0.0).rgb;
+	vec3 down = textureLod(tex, uv + vec2(0.0, texel.y), 0.0).rgb;
+	vec3 left = textureLod(tex, uv + vec2(-texel.x, 0.0), 0.0).rgb;
+	vec3 up = textureLod(tex, uv + vec2(0.0, -texel.y), 0.0).rgb;
 	float lum_center = dot(center, vec3(0.299, 0.587, 0.114));
 	float lum_right = dot(right, vec3(0.299, 0.587, 0.114));
 	float lum_down = dot(down, vec3(0.299, 0.587, 0.114));
@@ -146,7 +158,7 @@ void fragment() {
 		pixel_uv = floor(UV / pixel_size) * pixel_size + pixel_size * 0.5;
 	}
 
-	vec4 tex_color = texture(TEXTURE, pixel_uv);
+	vec4 tex_color = textureLod(TEXTURE, pixel_uv, 0.0);
 	vec3 color = tex_color.rgb;
 
 	// Quantifier le Value APRÈS désaturation (pas les 3 canaux RGB

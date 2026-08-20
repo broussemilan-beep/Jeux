@@ -3398,3 +3398,70 @@ construire le comparatif final à 3 voies (Voie A telle quelle, Voie B
 — résultat de son mandat séparé Addendum C.6, à récupérer sans le
 dupliquer, Voie C). Si non validé : itérer le rendu idle seul, ne pas
 continuer vers l'animation tant que non résolu.
+
+## 2026-08-20 — Bake-off Animation, Voie C v2 (verdict Milan : "pas pareil")
+
+Milan sur le premier rendu idle (checkpoint précédent) : "Non il n'est
+pas pareil fais un model pareil." Toujours GARDE-FOU 1 — toujours
+aucune frame d'animation, on reste sur l'itération du rendu idle seul
+jusqu'à ce qu'il colle au design.
+
+### Fait
+
+**Proxy enrichi** (`cendre_lowpoly.gd`) : le mannequin nu (sphère +
+capsules) manquait tous les éléments qui identifient Cendre. Ajout,
+toujours en primitives : col sombre, jupe de tunique en cloche (ourlet
+dépenaillé du turnaround), ceinture + pochette en cuir, bras + gants,
+bottes distinctes du pantalon. Une tentative de harnais en sangles
+croisées (X, boîtes plates tournées) a été retirée : à la caméra 3/4
+utilisée ici, la copie "derrière" débordait de la silhouette côté
+caméra plutôt que rester cachée, lisant comme des ailes greffées sur
+les épaules — pas essentiel à la lecture d'ensemble, laissé de côté
+plutôt que forcé.
+
+**Deux bugs réels trouvés en itérant, pas en devinant :**
+- Les bras (capsules fines) lisaient comme des pavés plats détachés du
+  corps ("ailes") une fois passés dans le pipeline de quantification.
+  Isolé méthodiquement (désactivation successive harnais -> bras ->
+  shader -> dithering/outline -> pixelisation -> quantification) :
+  le rendu 3D BRUT (avant tout post-traitement) montrait des bras fins
+  et corrects — la géométrie n'était jamais en cause. Le vrai problème :
+  à 64px final, une capsule assez épaisse n'a pas assez de résolution
+  pour montrer son propre arrondi, elle lit comme un rectangle plat.
+  Corrigé en amincissant les bras et en les rentrant près du torse
+  (silhouette lisible plutôt que "réaliste").
+- En chemin, un bug de shader réel trouvé et corrigé quand même (indépendant
+  du problème "bras") : `texture(TEXTURE, pixel_uv)` sur un UV bloqué par
+  paquets de pixelisation crée un saut de dérivée d'écran énorme à la
+  frontière de chaque bloc, ce qui fait choisir à Godot un mip level flou
+  à ces frontières — `textureLod(..., 0.0)` partout dans le shader force
+  le mip 0 et élimine la cause. Gardé même si ce n'était pas la cause du
+  "bras aplati" (un vrai bug de rendu, pas de raison de le laisser).
+
+**Gate gabarit re-cassé puis re-réparé** : agrandir le torse a d'abord
+semblé la bonne piste (largeur mesurée insuffisante), mais la largeur
+ne bougeait pas du tout en changeant le rayon du torse — la bande de
+mesure (20% sous le sommet de la tête) tombait encore dans la zone du
+cou/col, AVANT le sommet arrondi du torse, quel que soit son rayon.
+Diagnostiqué en imprimant la largeur mesurée ligne par ligne (comme le
+fait le gate lui-même) plutôt qu'en re-devinant à l'aveugle. Corrigé
+en rapprochant le sommet du torse de la tête (`TORSO_HEIGHT` 0.26 ->
+0.48), pas en élargissant.
+
+**Gates automatiques : à nouveau `ok: true` sur les deux** (gabarit
+vs baseline réelle, bande de Value character) — toujours aucun
+jugement esthétique automatisé, uniquement des mesures géométriques/
+colorimétriques exactes.
+
+**Nettoyage** : fonction de harnais retirée (code mort), matériau de
+bandage inutilisé retiré, commentaires de debug consolidés.
+
+### STOP — en attente du nouveau verdict de Milan
+
+Toujours aucune animation. Nouveau rendu idle + comparatif envoyés.
+
+### Prochain pas
+
+Identique au checkpoint précédent : si validé, passer aux 3 animations
+du périmètre ; si toujours pas validé, continuer d'itérer le rendu
+idle seul.

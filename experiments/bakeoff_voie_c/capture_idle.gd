@@ -37,6 +37,7 @@ func _ready() -> void:
 	var color_steps: int = int(args.get("color_steps", "8"))
 	var dither_amount: float = float(args.get("dither_amount", "0.35"))
 	var outline_thickness: float = float(args.get("outline_thickness", "3.0"))
+	var target_pixels: int = int(args.get("target_pixels", "64"))
 
 	var sub_viewport := SubViewport.new()
 	sub_viewport.size = Vector2i(internal_res, internal_res)
@@ -85,8 +86,8 @@ func _ready() -> void:
 
 	var shader_mat := ShaderMaterial.new()
 	shader_mat.shader = PixelShader
-	shader_mat.set_shader_parameter("target_x_pixel_count", 64)
-	shader_mat.set_shader_parameter("target_y_pixel_count", 64)
+	shader_mat.set_shader_parameter("target_x_pixel_count", target_pixels)
+	shader_mat.set_shader_parameter("target_y_pixel_count", target_pixels)
 	shader_mat.set_shader_parameter("color_steps", color_steps)
 	shader_mat.set_shader_parameter("target_saturation", 0.10)
 	shader_mat.set_shader_parameter("dither_amount", dither_amount)
@@ -102,7 +103,8 @@ func _ready() -> void:
 	display.texture = sub_viewport.get_texture()
 	display.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	display.size = Vector2(internal_res, internal_res)
-	display.material = shader_mat
+	if args.get("no_shader", "0") != "1":  # DEBUG isolation — bypasse le shader pour voir la géométrie 3D brute
+		display.material = shader_mat
 	sub_viewport_2d.add_child(display)
 
 	for i in range(6):
