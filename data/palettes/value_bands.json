@@ -14,8 +14,8 @@
       "notes": "Jamais 0% ni 100% — collision UI/décor."
     },
     "decor": {
-      "bands": [[15, 60]],
-      "notes": "Le décor ne dépasse jamais la valeur d'un VFX actif."
+      "bands": [[15, 78]],
+      "notes": "MANDAT NUIT phase 1 (Addendum C) : plafond relevé de 60 à 78 pour admettre un monde éclairé/coloré (CanvasModulate chaud + PointLight2D torches, gate_premiere.tscn/outpost.tscn) au lieu de la palette étouffante d'origine. Mesuré sur capture réelle : sol ambiant ~24-37% V, halo de sol autour d'une torche ~jusqu'à 78% en bord de glow. Le cœur direct d'une source de lumière (pixel de la torche elle-même, pas le sol qu'elle éclaire) peut dépasser ce plafond — traité comme un point-lumière/vfx actif, pas comme du décor plat, même logique que le rim-light de la bande character ci-dessus. Toujours strictement sous le plafond character (90) et vfx (92)."
     }
   }
 }

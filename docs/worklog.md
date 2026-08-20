@@ -3874,3 +3874,85 @@ diagnostic). Aucune dépense supplémentaire cette tranche.
 `gate_manifest_meshy.json` n'a pas besoin de mise à jour (il ne couvre
 que l'idle, pas les actions — inchangé). Pas de nouvelle action engagée
 au-delà de ce remplacement, en attente de la suite décidée par Milan.
+
+## 2026-08-20/21 — MANDAT NUIT reçu, régime d'exécution autonome activé
+
+Milan a transmis `MANDAT NUIT — Rank Zero V1` (régime exceptionnel,
+suspend le STOP-entre-tâches habituel dans les limites strictes du
+document — sécurité, aucun verdict qualité auto-attribué, plafonds de
+crédits, réversibilité, gates honnêtes) + `RANK_ZERO_POWER_SKILL_BIBLE
+_v0.4.docx`. 5 phases dans l'ordre décroissant de priorité. Ce qui suit
+documente la Phase 1, exécutée en premier comme demandé (elle ne coûte
+rien et corrige le retour le plus direct de Milan : « on dirait un jeu
+de 1999 »).
+
+### PHASE 1 — Éclairage et couleur (Addendum C), 0 crédit
+
+**Constat de départ** : `Backdrop` de `outpost.tscn`/`gate_premiere.
+tscn` en `ColorRect` plat désaturé (ex. `Color(0.16, 0.18, 0.15)`),
+aucun `CanvasModulate`, aucun `Light2D`, aucun `LightOccluder2D`. Bande
+`decor` de `value_bands.json` plafonnée à 60% — cohérente avec un monde
+délibérément terne, plus avec l'intention Wizard of Legend/Skul.
+
+**Contrainte non-négociable identifiée avant de coder** : un
+`CanvasModulate` teinte TOUT le canvas où il est posé, y compris Rank
+Zero — or elle doit rester seule en grayscale désaturé (Classe = NONE,
+contraste narratif explicite dans le mandat). Un `CanvasModulate`
+global casserait ça. Solution retenue : `CanvasModulate` chaud posé
+normalement sur la scène, + un shader de contre-poids
+(`src/vfx/shaders/canvas_modulate_compensate.gdshader`, nouveau)
+appliqué UNIQUEMENT sur `AnimatedSprite2D` de Player, qui divise sa
+couleur par la même teinte avant que `CanvasModulate` ne la multiplie
+— `(COLOR / C) * C = COLOR`, donc Rank Zero ressort inchangée quelle
+que soit l'ambiance de la scène. Valeur du contre-poids tenue
+synchronisée avec le `CanvasModulate` de chaque scène (documenté en
+commentaire directement dans les deux `.tscn` — pas de découverte
+dynamique).
+
+**Câblé dans `outpost.tscn` et `gate_premiere.tscn`** (les deux scènes
+réellement dans le chemin de jeu — `test_arena.tscn` n'est référencée
+nulle part comme cible de transition, laissée de côté) :
+- `CanvasModulate` chaud (`Color(1.15-1.18, 1.0, 0.82-0.85)`).
+- `Backdrop` recoloré vers une teinte brun/pierre chaude et plus
+  saturée (au lieu du gris-olive plat).
+- `PointLight2D` + `GradientTexture2D` (radial, généré en `.tres` pur,
+  0 asset externe) : une lumière personnelle douce sur Player, une
+  torche ambrée sur chacune des 3 portes de `gate_premiere.tscn`
+  (Combat/Elite/Boss).
+- `LightOccluder2D` basique sur Player (polygone approximatif de sa
+  capsule de collision — mandat §2 explicite "basique").
+
+**Vérification visuelle** (outil de dev ad-hoc, jamais commité — pas
+un mode de `tools/capture_scene.gd`, celui-ci n'a pas de mode "screen-
+shot de scène complète" et en ajouter un pour un usage ponctuel aurait
+été une usine avant produit) : rendu réel via `xvfb-run` + Vulkan
+logiciel, capture de `gate_premiere.tscn` à deux positions caméra.
+Confirmé par échantillonnage de pixels :
+- Rank Zero reste grayscale (RGB quasi neutre sur sa tunique/peau) —
+  le contre-poids fonctionne.
+- Sol ambiant : V ≈ 24-37% (mesuré). Halo de sol près d'une torche :
+  jusqu'à ≈78%. Cœur direct de la torche (le pixel de la source
+  elle-même, pas ce qu'elle éclaire) : V ≈ 92-96% — au-dessus de tout
+  plafond decor/character, traité comme un point-lumière actif (même
+  logique que le rim-light déjà documenté sur la bande `character`),
+  pas comme un défaut à corriger.
+
+**`value_bands.json`** : bande `decor` relevée de `[15,60]` à
+`[15,78]`, documentée avec les valeurs mesurées ci-dessus et la
+distinction lumière-source vs. décor-éclairé. Toujours strictement
+sous `character` (90) et `vfx` (92).
+
+**Régression** : `scripts/run_gameplay_smoke_test.sh` relancé après les
+changements — **60/60 checks passent** (`all_pass: true`), aucune
+régression sur combat/dash/pouvoirs/boss/UI.
+
+**Build web exporté et redéployé** (`godot4 --headless --rendering-
+driver vulkan --export-release "Web" docs/index.html`, sortie dans
+`docs/index.*`) — commit à suivre immédiatement, comme demandé
+("commit + push après CHAQUE phase, redéployer à la fin de la phase
+1").
+
+**Non fait dans cette phase** (hors scope Addendum C, réservé aux
+phases suivantes) : palette réelle du décor/ennemis (Phase 2/3, via
+PixelLab/Meshy), `test_arena.tscn` laissé tel quel (scène orpheline,
+non prioritaire).
