@@ -3798,11 +3798,53 @@ isolée (genou, coude).
 **Coût** : 0 crédit (téléchargement d'une animation déjà payée avec le
 rig). Solde inchangé, 1054/1100.
 
-### STOP — étape 2 terminée, en attente de confirmation avant l'étape 3
+### Complément — test d'une vraie animation de dash linéaire avant le remesh
 
-Point 1 et 2 du protocole complétés et documentés. L'étape 3 (remesh à
-densité plus élevée, ~80-100k faces, sous la limite de rig 320k) n'est
-PAS engagée : coût réel à confirmer avant tout lancement, comme
-demandé. `cendre_running.glb` téléchargé et gardé dans
-`experiments/bakeoff_voie_c/meshy_output/` (gitignore, non commité,
-même discipline que les autres GLB bruts).
+Milan a demandé de vérifier dans la bibliothèque Meshy s'il existe une
+entrée plus proche d'un vrai dash (élan/sprint linéaire, sans rotation
+du corps) avant d'engager un remesh — Roll_Dodge est une esquive
+roulée, pas un dash. Recherche dans `docs.meshy.ai/en/api/animation-
+library` : famille distincte « WalkAndRun/Running » avec plusieurs
+entrées de charge/élan linéaire (`509 Lean_Forward_Sprint`, `510
+Standard_Forward_Charge`, `516 slide_light`, etc.), séparée de la
+famille roll/tumble (`158-164 Roll_Dodge (1-4)`, `459
+Run_Jump_and_Roll`). Retenu **`510 Standard_Forward_Charge`** — entrée
+générique (pas liée à une arme spécifique comme `Rifle_Charge`/
+`Bow_Charge`), correspondant exactement à « élan vers l'avant, pas de
+rotation ».
+
+Testé (3cr, pré-autorisé dans la demande de Milan) : `POST /openapi/
+v1/animations` avec `action_id=510` sur le rig déjà payé. Résultat
+téléchargé (`cendre_charge.glb`), capturé à `anim_time=0.1` (avant que
+le **vrai root motion** — le personnage se déplace réellement hors du
+cadre caméra fixe au fil de l'animation, contrairement à Roll_Dodge qui
+pivote sur place — ne sorte la pose du cadre). Rendu à travers le
+pipeline shader complet, comparé dans
+`diagnostic_blur_v2_charge_test.png` (dash/Roll_Dodge, combo/Left_Slash,
+running t=0.17, charge/Standard_Forward_Charge, tous au même pipeline).
+
+**Résultat** : `Standard_Forward_Charge` est **net**, comparable en
+qualité à running/idle/marche — aucun flou. Confirme précisément
+l'hypothèse : le flou n'apparaît QUE sur Roll_Dodge (rotation complète
+du corps), jamais sur un mouvement linéaire même avec flexion
+d'articulation marquée.
+
+**Recommandation** : le remesh (étape 3) n'est probablement pas
+nécessaire — le vrai correctif est de remplacer la source d'animation
+du dash (`Roll_Dodge` → `Standard_Forward_Charge`) plutôt que de payer
+pour une densité de maillage plus élevée qui ne traiterait pas la cause
+réelle (rotation complète, pas résolution du mesh). Décision de
+remplacer la capture dash déjà committée laissée à Milan — pas fait
+unilatéralement ici.
+
+**Coût de ce complément** : 3cr (cumul session 49cr, toujours sous le
+seuil 100cr). Solde vérifié : 1051/1100.
+
+### STOP — en attente de la décision de Milan
+
+`cendre_running.glb` et `cendre_charge.glb` téléchargés, gardés dans
+`experiments/bakeoff_voie_c/meshy_output/` (gitignore, non commités,
+même discipline que les autres GLB bruts). Le remesh (étape 3) n'est
+PAS engagé — devenu probablement inutile au vu du résultat charge, mais
+la décision finale (remesh quand même / remplacer dash par charge /
+autre) revient à Milan.
