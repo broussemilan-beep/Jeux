@@ -317,11 +317,33 @@ func _handle_movement() -> void:
 	velocity = input_dir * stats.move_speed_px
 	if input_dir.length_squared() > 0.0001:
 		facing = input_dir.normalized()
-		if facing.x != 0.0:
-			_sprite.flip_h = facing.x < 0.0
 
 	if not _action_lock and not stats.is_dead():
-		_sprite.play("deplacement" if input_dir.length_squared() > 0.0001 else "idle")
+		# E (mandat production v1 §6) : art réel par direction pour idle/
+		# déplacement (8 rotations PixelLab, plus de flip_h ici — contrairement
+		# au combo/dash/esquive qui restent "sud" seul + flip_h, hors scope
+		# de cette brique, §6 "dash/combo/esquive si budget PixelLab, sinon
+		# flag"). flip_h à false explicitement : sans ça la valeur laissée
+		# par la dernière attaque (_start_attack, qui se flip elle-même
+		# indépendamment depuis ce fix) doublerait le miroir sur un art
+		# ouest déjà dessiné tel quel.
+		_sprite.flip_h = false
+		var suffix := _direction_suffix(facing)
+		_sprite.play(("deplacement_" if input_dir.length_squared() > 0.0001 else "idle_") + suffix)
+
+
+## Snappe une direction sur le compas à 8 branches le plus proche, dans la
+## même convention que les rotations PixelLab (south/south_east/east/...) —
+## Y+ = bas = sud (convention écran Godot, cohérente avec DodgeDirection/
+## facing par défaut = Vector2.DOWN = "south").
+static func _direction_suffix(dir: Vector2) -> String:
+	if dir.length_squared() < 0.0001:
+		return "south"
+	const SUFFIXES := ["east", "south_east", "south", "south_west", "west", "north_west", "north", "north_east"]
+	var octant: int = int(round(rad_to_deg(dir.angle()) / 45.0)) % 8
+	if octant < 0:
+		octant += 8
+	return SUFFIXES[octant]
 
 
 func _start_attack(step: int) -> void:
@@ -331,6 +353,14 @@ func _start_attack(step: int) -> void:
 	_combo_step_absolute_tick = 0
 	_hit_applied_this_release = false
 	_action_lock = true
+	# Auto-contenu (comme play_dash()/play_dodge()) plutôt que de dépendre du
+	# flip_h laissé par le dernier _handle_movement() : depuis E (§6), ce
+	# dernier remet flip_h à false à CHAQUE tick de mouvement (l'art
+	# idle/déplacement est maintenant dessiné par direction, plus par
+	# miroir) — le combo, encore art "sud" seul, doit se flipper lui-même
+	# pour rester correct face à l'ouest.
+	if facing.x != 0.0:
+		_sprite.flip_h = facing.x < 0.0
 	_sprite.play(AttackAnimName[step - 1])
 
 

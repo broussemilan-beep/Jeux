@@ -17,8 +17,8 @@ shape = SubResource("1")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 offset = Vector2(0, -48)
 sprite_frames = ExtResource("2")
-animation = &"idle"
-autoplay = "idle"
+animation = &"idle_south"
+autoplay = "idle_south"
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position_smoothing_enabled = true

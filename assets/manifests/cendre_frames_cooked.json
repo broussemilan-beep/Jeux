@@ -9,12 +9,12 @@
     92
   ],
   "animations": {
-    "idle": {
+    "idle_south": {
       "frames": [
-        "assets/processed/sprites/cendre/idle/0.png",
-        "assets/processed/sprites/cendre/idle/1.png",
-        "assets/processed/sprites/cendre/idle/2.png",
-        "assets/processed/sprites/cendre/idle/3.png"
+        "assets/processed/sprites/cendre/idle_south/0.png",
+        "assets/processed/sprites/cendre/idle_south/1.png",
+        "assets/processed/sprites/cendre/idle_south/2.png",
+        "assets/processed/sprites/cendre/idle_south/3.png"
       ],
       "canvas": [
         96,
@@ -25,14 +25,252 @@
         92
       ]
     },
-    "deplacement": {
+    "idle_north": {
       "frames": [
-        "assets/processed/sprites/cendre/deplacement/0.png",
-        "assets/processed/sprites/cendre/deplacement/1.png",
-        "assets/processed/sprites/cendre/deplacement/2.png",
-        "assets/processed/sprites/cendre/deplacement/3.png",
-        "assets/processed/sprites/cendre/deplacement/4.png",
-        "assets/processed/sprites/cendre/deplacement/5.png"
+        "assets/processed/sprites/cendre/idle_north/0.png",
+        "assets/processed/sprites/cendre/idle_north/1.png",
+        "assets/processed/sprites/cendre/idle_north/2.png",
+        "assets/processed/sprites/cendre/idle_north/3.png"
+      ],
+      "canvas": [
+        96,
+        96
+      ],
+      "anchor_px": [
+        48,
+        92
+      ]
+    },
+    "idle_east": {
+      "frames": [
+        "assets/processed/sprites/cendre/idle_east/0.png",
+        "assets/processed/sprites/cendre/idle_east/1.png",
+        "assets/processed/sprites/cendre/idle_east/2.png",
+        "assets/processed/sprites/cendre/idle_east/3.png"
+      ],
+      "canvas": [
+        96,
+        96
+      ],
+      "anchor_px": [
+        48,
+        92
+      ]
+    },
+    "idle_west": {
+      "frames": [
+        "assets/processed/sprites/cendre/idle_west/0.png",
+        "assets/processed/sprites/cendre/idle_west/1.png",
+        "assets/processed/sprites/cendre/idle_west/2.png",
+        "assets/processed/sprites/cendre/idle_west/3.png"
+      ],
+      "canvas": [
+        96,
+        96
+      ],
+      "anchor_px": [
+        48,
+        92
+      ]
+    },
+    "idle_south_east": {
+      "frames": [
+        "assets/processed/sprites/cendre/idle_south_east/0.png",
+        "assets/processed/sprites/cendre/idle_south_east/1.png",
+        "assets/processed/sprites/cendre/idle_south_east/2.png",
+        "assets/processed/sprites/cendre/idle_south_east/3.png"
+      ],
+      "canvas": [
+        96,
+        96
+      ],
+      "anchor_px": [
+        48,
+        92
+      ]
+    },
+    "idle_south_west": {
+      "frames": [
+        "assets/processed/sprites/cendre/idle_south_west/0.png",
+        "assets/processed/sprites/cendre/idle_south_west/1.png",
+        "assets/processed/sprites/cendre/idle_south_west/2.png",
+        "assets/processed/sprites/cendre/idle_south_west/3.png"
+      ],
+      "canvas": [
+        96,
+        96
+      ],
+      "anchor_px": [
+        48,
+        92
+      ]
+    },
+    "idle_north_east": {
+      "frames": [
+        "assets/processed/sprites/cendre/idle_north_east/0.png",
+        "assets/processed/sprites/cendre/idle_north_east/1.png",
+        "assets/processed/sprites/cendre/idle_north_east/2.png",
+        "assets/processed/sprites/cendre/idle_north_east/3.png"
+      ],
+      "canvas": [
+        96,
+        96
+      ],
+      "anchor_px": [
+        48,
+        92
+      ]
+    },
+    "idle_north_west": {
+      "frames": [
+        "assets/processed/sprites/cendre/idle_north_west/0.png",
+        "assets/processed/sprites/cendre/idle_north_west/1.png",
+        "assets/processed/sprites/cendre/idle_north_west/2.png",
+        "assets/processed/sprites/cendre/idle_north_west/3.png"
+      ],
+      "canvas": [
+        96,
+        96
+      ],
+      "anchor_px": [
+        48,
+        92
+      ]
+    },
+    "deplacement_south": {
+      "frames": [
+        "assets/processed/sprites/cendre/deplacement_south/0.png",
+        "assets/processed/sprites/cendre/deplacement_south/1.png",
+        "assets/processed/sprites/cendre/deplacement_south/2.png",
+        "assets/processed/sprites/cendre/deplacement_south/3.png",
+        "assets/processed/sprites/cendre/deplacement_south/4.png",
+        "assets/processed/sprites/cendre/deplacement_south/5.png"
+      ],
+      "canvas": [
+        96,
+        96
+      ],
+      "anchor_px": [
+        48,
+        92
+      ]
+    },
+    "deplacement_north": {
+      "frames": [
+        "assets/processed/sprites/cendre/deplacement_north/0.png",
+        "assets/processed/sprites/cendre/deplacement_north/1.png",
+        "assets/processed/sprites/cendre/deplacement_north/2.png",
+        "assets/processed/sprites/cendre/deplacement_north/3.png",
+        "assets/processed/sprites/cendre/deplacement_north/4.png",
+        "assets/processed/sprites/cendre/deplacement_north/5.png"
+      ],
+      "canvas": [
+        96,
+        96
+      ],
+      "anchor_px": [
+        48,
+        92
+      ]
+    },
+    "deplacement_east": {
+      "frames": [
+        "assets/processed/sprites/cendre/deplacement_east/0.png",
+        "assets/processed/sprites/cendre/deplacement_east/1.png",
+        "assets/processed/sprites/cendre/deplacement_east/2.png",
+        "assets/processed/sprites/cendre/deplacement_east/3.png",
+        "assets/processed/sprites/cendre/deplacement_east/4.png",
+        "assets/processed/sprites/cendre/deplacement_east/5.png"
+      ],
+      "canvas": [
+        96,
+        96
+      ],
+      "anchor_px": [
+        48,
+        92
+      ]
+    },
+    "deplacement_west": {
+      "frames": [
+        "assets/processed/sprites/cendre/deplacement_west/0.png",
+        "assets/processed/sprites/cendre/deplacement_west/1.png",
+        "assets/processed/sprites/cendre/deplacement_west/2.png",
+        "assets/processed/sprites/cendre/deplacement_west/3.png",
+        "assets/processed/sprites/cendre/deplacement_west/4.png",
+        "assets/processed/sprites/cendre/deplacement_west/5.png"
+      ],
+      "canvas": [
+        96,
+        96
+      ],
+      "anchor_px": [
+        48,
+        92
+      ]
+    },
+    "deplacement_south_east": {
+      "frames": [
+        "assets/processed/sprites/cendre/deplacement_south_east/0.png",
+        "assets/processed/sprites/cendre/deplacement_south_east/1.png",
+        "assets/processed/sprites/cendre/deplacement_south_east/2.png",
+        "assets/processed/sprites/cendre/deplacement_south_east/3.png",
+        "assets/processed/sprites/cendre/deplacement_south_east/4.png",
+        "assets/processed/sprites/cendre/deplacement_south_east/5.png"
+      ],
+      "canvas": [
+        96,
+        96
+      ],
+      "anchor_px": [
+        48,
+        92
+      ]
+    },
+    "deplacement_south_west": {
+      "frames": [
+        "assets/processed/sprites/cendre/deplacement_south_west/0.png",
+        "assets/processed/sprites/cendre/deplacement_south_west/1.png",
+        "assets/processed/sprites/cendre/deplacement_south_west/2.png",
+        "assets/processed/sprites/cendre/deplacement_south_west/3.png",
+        "assets/processed/sprites/cendre/deplacement_south_west/4.png",
+        "assets/processed/sprites/cendre/deplacement_south_west/5.png"
+      ],
+      "canvas": [
+        96,
+        96
+      ],
+      "anchor_px": [
+        48,
+        92
+      ]
+    },
+    "deplacement_north_east": {
+      "frames": [
+        "assets/processed/sprites/cendre/deplacement_north_east/0.png",
+        "assets/processed/sprites/cendre/deplacement_north_east/1.png",
+        "assets/processed/sprites/cendre/deplacement_north_east/2.png",
+        "assets/processed/sprites/cendre/deplacement_north_east/3.png",
+        "assets/processed/sprites/cendre/deplacement_north_east/4.png",
+        "assets/processed/sprites/cendre/deplacement_north_east/5.png"
+      ],
+      "canvas": [
+        96,
+        96
+      ],
+      "anchor_px": [
+        48,
+        92
+      ]
+    },
+    "deplacement_north_west": {
+      "frames": [
+        "assets/processed/sprites/cendre/deplacement_north_west/0.png",
+        "assets/processed/sprites/cendre/deplacement_north_west/1.png",
+        "assets/processed/sprites/cendre/deplacement_north_west/2.png",
+        "assets/processed/sprites/cendre/deplacement_north_west/3.png",
+        "assets/processed/sprites/cendre/deplacement_north_west/4.png",
+        "assets/processed/sprites/cendre/deplacement_north_west/5.png"
       ],
       "canvas": [
         96,

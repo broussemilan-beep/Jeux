@@ -24,7 +24,14 @@ extends Node2D
 ##
 ## --mode=character (Phase 1.3+) : instancie le Player, joue une
 ##   animation nommée, capture une frame précise de cette animation.
-##   --anim=idle                    nom d'animation (SpriteFrames du Player)
+##   --anim=idle_south               nom d'animation (SpriteFrames du Player) —
+##                                  idle/déplacement sont désormais 8 rotations
+##                                  réelles (E, mandat §6) : idle_south,
+##                                  idle_north, idle_east, idle_west,
+##                                  idle_south_east, idle_south_west,
+##                                  idle_north_east, idle_north_west (et
+##                                  déplacement_<même liste>) — coup1/2/3,
+##                                  dash, hurt, mort restent "sud" seul.
 ##   --frame=0                      index de frame à capturer dans cette animation
 ##   --out=/chemin/absolu/sortie.png
 ##   --background=neutral|loaded    §13.2 "fond neutre + fond chargé" (def. neutral)
@@ -217,7 +224,7 @@ func _run_power_capture(args: Dictionary) -> void:
 
 
 func _run_character_capture(args: Dictionary) -> void:
-	var anim_name: String = args.get("anim", "idle")
+	var anim_name: String = args.get("anim", "idle_south")
 	var frame_index: int = int(args.get("frame", "0"))
 	var out_path: String = args.get("out", "")
 	var background: String = args.get("background", "neutral")

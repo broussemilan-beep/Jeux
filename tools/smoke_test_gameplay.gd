@@ -132,8 +132,14 @@ func _check_movement() -> void:
 		"detail": {"pos_before": str(pos_before), "pos_after": str(pos_after), "facing": str(_player.facing)},
 	})
 	_checks.append({
+		# E (mandat production v1 §6) : art réel par direction depuis
+		# cette tranche — "idle"/"deplacement" simples n'existent plus
+		# comme noms d'anim, remplacés par idle_<dir>/deplacement_<dir>.
+		# facing par défaut = Vector2.DOWN ("south") avant tout mouvement ;
+		# une pression "ui_right" fait facing=RIGHT ("east"), qui RESTE
+		# est après l'arrêt (facing ne se réinitialise jamais tout seul).
 		"name": "sprite_animation_switches_idle_deplacement_idle",
-		"pass": anim_before == "idle" and anim_during == "deplacement" and anim_after_stop == "idle",
+		"pass": anim_before == "idle_south" and anim_during == "deplacement_east" and anim_after_stop == "idle_east",
 		"detail": {"anim_before": anim_before, "anim_during": anim_during, "anim_after_stop": anim_after_stop},
 	})
 
@@ -216,8 +222,11 @@ func _check_combo() -> void:
 		"detail": {"window_open": window_open, "chained": chained, "anim": anim_step2},
 	})
 	_checks.append({
+		# facing hérité de _check_movement() (east, jamais retouché ici,
+		# aucun input directionnel dans ce check) — E (§6) : "idle_east",
+		# plus le simple "idle" d'avant l'art par direction.
 		"name": "combo_returns_to_idle_after_full_recovery_without_input",
-		"pass": ended and anim_final == "idle",
+		"pass": ended and anim_final == "idle_east",
 		"detail": {"ended": ended, "combo_step": _player._combo_step, "anim": anim_final},
 	})
 

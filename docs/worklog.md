@@ -2660,3 +2660,86 @@ tronc commun VFX) : un second exemple d'archétype de cast concret
 `spiral`/`converge`) — les deux archétypes restent à 0 exemple, seuls
 "invocation" (Gueule Vide) et "frappe de zone" (Bras-Faux) en ont un.
 Verdict de Milan attendu avant de pousser plus loin.
+
+---
+
+## 2026-08-20 — E (8 directions idle/déplacement)
+
+"Continue comme le roadmap dis" de Milan — D est fermé (primitives 6-15,
+Bras-Faux complet, esquive logique, archétypes de cast validés par 2
+exemples concrets), passage à E (mandat §6 : "8 directions a minima pour
+idle/déplacement ; dash/combo/esquive si budget PixelLab, sinon flag").
+
+**Découverte clé avant de dépenser quoi que ce soit : le personnage
+Cendre_v3c (`character_id 8596a4ad-...`, canonique depuis R3) a été créé
+avec `n_directions=8` dès le départ (`data/pixellab_usage.jsonl`) — les 8
+rotations statiques existent déjà côté PixelLab, jamais téléchargées ni
+cuites. Seules idle/déplacement avaient besoin d'être ÉTENDUES aux 7
+directions manquantes (elles n'existaient qu'en sud) : 14 générations
+`animate_character` (mode template, `ai_freedom=0`, mêmes templates
+`breathing-idle`/`walk` que la version sud existante), ajoutées aux
+groupes d'animation existants via `animation_group_id` plutôt que de
+recréer des groupes séparés — cohérence de nommage/historique. 1673
+générations disponibles avant, largement suffisant.
+
+**Pipeline de cuisson étendu sans le modifier.** `scripts/cook_character_frames.py`
+et `build_sprite_frames.py` acceptaient déjà `--anim <nom>:<dossier>` en
+argument répété — aucune modification de leur logique n'était nécessaire,
+seulement 16 nouveaux appels (`idle_<direction>`/`deplacement_<direction>`
+× 8) pointant vers 14 nouveaux dossiers `assets/source/pixellab/cendre/animations/<anim>_<direction>/`
+téléchargés via curl (même discipline que Phase 1.1/R3 — urllib donnait
+des 403). coup1/coup2/coup3/dash/hurt/mort restent "sud" seul (hors
+scope de cette brique, mandat §6 : optionnels "si budget PixelLab, sinon
+flag" — flag posé, pas fait maintenant). Canvas partagé 96×96, ancre pieds
+(48,92) inchangés — mêmes réglages que R3, cohérence garantie.
+
+**`player.gd` — sélection de direction, pas de flip_h pour idle/déplacement.**
+Nouvelle fonction statique `_direction_suffix(dir) -> String` : snappe
+n'importe quel `Vector2` sur le compas à 8 branches le plus proche
+(convention PixelLab south/south_east/east/.../north_east, cohérente avec
+Y+ = bas = sud, `facing` par défaut = `Vector2.DOWN`). `_handle_movement()`
+joue désormais `"idle_" + suffix`/`"deplacement_" + suffix` selon `facing`,
+et force `flip_h = false` (l'art est maintenant dessiné par direction, un
+flip par-dessus doublerait le miroir sur un ouest déjà dessiné tel quel).
+
+**Bug de régression évité avant qu'il n'arrive : le combo dépendait du
+flip_h laissé par le dernier mouvement.** `_start_attack()` ne posait
+jamais son propre `flip_h` — il héritait silencieusement de celui que
+`_handle_movement()` venait de poser. Le rendre à `false` systématiquement
+pour idle/déplacement aurait cassé le miroir des coups face à l'ouest (un
+coup1 vers l'ouest se serait dessiné vers l'est). Corrigé en rendant
+`_start_attack()` auto-suffisant (`_sprite.flip_h = facing.x < 0.0` posé
+lui-même, même discipline que `play_dash()`/`play_dodge()` qui le
+faisaient déjà) — repéré à la lecture du code avant tout run, pas par un
+test qui aurait échoué.
+
+**`scenes/gameplay/player.tscn` et `tools/capture_scene.gd` mis à jour.**
+`AnimatedSprite2D.animation`/`autoplay` du Player passent de `"idle"` à
+`"idle_south"` (l'ancien nom n'existe plus — trouvé au premier `--import`,
+`ERROR: Animation 'idle' doesn't exist`, corrigé avant tout run de test).
+Défaut `--anim` de `capture_scene.gd --mode=character` idem.
+
+**2 checks smoke test mis à jour** (pas de nouveaux — la logique de
+sélection de direction est déjà exercée par les checks mouvement/combo
+existants) : `sprite_animation_switches_idle_deplacement_idle` attend
+désormais `idle_south`→`deplacement_east`→`idle_east` (facing par défaut
+sud, mouvement vers la droite = est, facing reste est après l'arrêt —
+jamais réinitialisé tout seul) ; `combo_returns_to_idle_after_full_recovery_without_input`
+attend `idle_east` (facing hérité du check précédent). 42/42 gameplay
+(3 runs consécutifs), 9/9 VFX recipe, aucune régression.
+
+**Vérification visuelle réelle (scratchpad, pas commitée) : montage des 8
+idle + 2 frames déplacement.** Les 8 directions se distinguent clairement
+(face/dos/profils/diagonales cohérents, pieds alignés sur la même ligne
+de sol, aucun artefact de miroir) — confirmé avant de déclarer la brique
+finie, pas seulement "ça compile".
+
+**Web rebuild + commit.**
+
+### Prochain pas
+
+F/G (mini-tileset d'arène / ennemis Crawler-Brute-Ranged) selon
+disponibilité, ou D tranche 4 (second archétype de cast). dash/combo/
+esquive en 8 directions restent flag (E, "si budget PixelLab") — pas
+faits cette tranche, à réévaluer si Milan le demande explicitement.
+Verdict de Milan sur ce build attendu avant de pousser plus loin.
