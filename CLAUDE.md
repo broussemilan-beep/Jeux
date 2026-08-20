@@ -1,17 +1,19 @@
 # Rank Zero — démarrage de session
 
-Démarrage de session : lire `docs/ARCHITECTURE_VFX_v3.md` en entier (décisions
-verrouillées, section 0), puis `docs/worklog.md` (dernière entrée = où on en
-est, quoi de branché, prochain pas).
+**Mandat courant : `docs/PRODUCTION_MANDATE_v1.md`.** Point d'entrée unique
+de la production — gouverne l'exécution autonome jusqu'à épuisement de la
+feuille de route (sa section 6). Hiérarchie des sources de vérité (sa
+section d'intro) : `docs/RANK_ZERO_MASTER_GDD.md` = design (amendé par sa
+section 1 — notamment : suppression de la cape/écharpe) ;
+`docs/ARCHITECTURE_VFX_v3.md` + addendum A = technique ; le mandat lui-même
+= production (séquencement, autonomie, décisions récentes).
+
+Démarrage de session : lire le mandat en entier, puis `docs/worklog.md`
+(dernière entrée = où on en est, quoi de branché, prochain pas).
 
 Ce dépôt est le cerveau du projet (`docs/ARCHITECTURE_VFX_v3.md` §12.2) :
 aucune décision, recette, palette, seed ou verdict qualité n'existe ailleurs
 que dans un fichier versionné ici.
-
-## Ce que ce dépôt n'est PAS (encore)
-
-Aucun système de combat, pouvoir, classe ou lore ne naît de l'architecture
-VFX — elle arrive séparément, validée par Milan (§16.6 du doc).
 
 ## Environnement de capture — écart documenté
 
