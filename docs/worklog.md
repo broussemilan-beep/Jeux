@@ -3621,3 +3621,89 @@ de combo) — soit via la marche déjà obtenue gratuitement + une
 compétence Meshy dédiée, soit via des poses manuelles du rig, à
 préciser avec lui. Comparatif final à 3 voies (A/B/C) une fois les
 trois rendus sur les mêmes 3 actions.
+
+## 2026-08-20 — Bake-off Animation, Voie C v3 : walk + dash + combo (« Go » Milan)
+
+Suite au « Go » de Milan sur le rendu idle : complète le périmètre à 3
+animations du mandat (marche déjà offerte par le rig, + dash + un coup
+de combo), toujours sur le même modèle Meshy déjà généré/riggé/payé
+(aucune nouvelle génération 3D, uniquement des animations sur le rig
+existant + du rendu Godot local).
+
+**Sélection dans la bibliothèque d'animations Meshy** (`/openapi/v1/
+animations` n'accepte pas de description libre — action_id fixe dans
+une bibliothèque de 500+ entrées documentées) :
+- **Dash** : aucune entrée nommée « Dash ». `Roll_Dodge` (esquive
+  roulée, action_id 158) retenu comme le plus proche disponible.
+- **Combo (un coup)** : `Left_Slash` (action_id 97, frappe simple)
+  retenu plutôt que `Punch_Combo`/`Weapon_Combo` (multi-coups), pour
+  rester strictement sur UN coup — périmètre du mandat.
+- Coût : 3cr chacune (confirmé), soit 6cr. Cumulé session : 46cr,
+  toujours sous le seuil d'alerte 100cr — aucune confirmation
+  supplémentaire requise (couvert par le « Go »).
+
+**Extension de `capture_idle_glb.gd`** : ajout d'un bloc de calage de
+pose sur une animation bundlée dans le GLB (`--anim_time`,
+`--anim_name`, `_find_animation_player()` qui parcourt l'arbre pour
+localiser l'`AnimationPlayer`, puis `play()` + `seek(t, true)` +
+`advance(0.0)` pour figer une frame statique précise) — même
+discipline que `capture_scene.gd` en mode « character »
+(`sprite.frame = i; sprite.pause()`) : jamais une capture au hasard du
+timing. `--debug_dump=1` ajouté en prime pour lister les animations
+disponibles et leur durée.
+
+**Choix du temps représentatif par action** (rendu `--no_shader=1`
+brut, plusieurs candidats comparés visuellement, aucun jugement
+esthétique automatisé — juste un choix de la pose la plus lisible) :
+- **Marche** (`walking_man`) : `anim_time=0.27`, cadrage identique à
+  l'idle (`cam_size=2.3, char_center_y=0.83`) — jambe avant engagée,
+  bras en balancier, bien lisible du premier essai.
+- **Dash / Roll_Dodge** (durée 1.867s) : 5 temps essayés
+  (0.2/0.5/0.8/1.1/1.4s) au cadrage `cam_size=2.2, char_center_y=0.5`
+  — au-delà de 0.5s le personnage part en rotation complète (culbute)
+  et sort presque du cadre, illisible. Retenu `anim_time=0.5` (posture
+  accroupie penchée en avant, lisible comme un mouvement d'esquive/
+  dash). Cadrage resserré ensuite (`cam_size=1.8, char_center_y=0.45,
+  char_center_x=0.05`) pour réduire la marge vide — bien mieux centré
+  que le tout premier essai (`cam_size=3.2, char_center_y=0.5`) qui
+  laissait le personnage minuscule dans un coin.
+- **Combo / Left_Slash** (durée 3.2s) : 5 temps essayés
+  (0.5/1.1/1.5/2.0/2.5s) au cadrage `cam_size=2.3,
+  char_center_y=0.83`. `1.1` trop statique/préparatoire ; `0.5`, `2.0`
+  et `2.5` quasi identiques entre eux (lame basse, bras d'appui
+  replié) ; `1.5` nettement plus dynamique (bras libre déployé sur le
+  côté, torse tordu, posture accroupie) — retenu comme frame
+  représentative du coup.
+
+**Limite connue, acceptée délibérément** : le bug d'échelle du mesh
+skinné (aabb calculée quasi nulle, cf. entrée précédente) oblige un
+cadrage manuel par capture ; contrairement à l'idle (soumise au
+GARDE-FOU 1, précision du gate), les poses d'action n'ont pas cette
+exigence — un cadrage « lisible mais imparfait » est accepté sans
+itération supplémentaire (dash notamment : composition asymétrique
+propre à la pose, pas totalement centrée même après resserrage).
+
+**Rendu final** : les 3 poses choisies re-rendues à travers le
+pipeline complet (shader `pixel_quantize.gdshader`, résolution interne
+512, désaturation, dithering, contour Sobel) puis downscale NEAREST
+exact vers 64×64 via `postprocess.py` — même discipline que l'idle.
+Sorties commitées : `meshy_walk_64.png`, `meshy_dash_64.png`,
+`meshy_combo_64.png` (+ leurs `_raw.png` 512px), assemblées dans
+`comparison_meshy_actions.png` (3 colonnes côte à côte, fond gris
+foncé, upscale ×8 NEAREST — pas de baseline Voie A/B équivalente pour
+ces 3 actions précises dans cette fenêtre, donc présentation à 3
+colonnes plutôt qu'un comparatif ligne par ligne). Fichiers
+exploratoires (temps non retenus, debug dumps) nettoyés, non commités
+(§13.3).
+
+**Solde vérifié** (`GET /openapi/v1/balance`, appel gratuit) : 1054/1100
+— cohérent avec 1100 − 46cr cumulés cette session.
+
+### STOP — périmètre Voie C (3 animations) terminé, en attente de la suite décidée par Milan
+
+Les 3 animations prévues par le mandat (idle, marche, dash, un coup de
+combo — techniquement 4, la marche étant offerte gratuitement par le
+rig) sont produites, gate/coûts documentés, rien commité au-delà de ce
+qui est explicitement approuvé. Pas de comparatif final A/B/C engagé
+sans nouvelle direction de Milan (les Voies A et B ne sont pas dans le
+périmètre de cette session).

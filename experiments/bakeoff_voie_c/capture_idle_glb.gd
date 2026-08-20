@@ -63,6 +63,30 @@ func _ready() -> void:
 	world.add_child(character)
 	await get_tree().physics_frame
 
+	# Fige la pose sur une frame précise d'une animation Meshy bundlée dans
+	# le GLB (dash/coup de combo) au lieu de l'idle par défaut — même
+	# discipline que capture_scene.gd en mode "character" (sprite.pause()
+	# sur une frame donnée) : jamais une capture "au hasard" du timing.
+	var anim_time: float = float(args.get("anim_time", "-1.0"))
+	if anim_time >= 0.0:
+		var anim_player := _find_animation_player(character)
+		if anim_player == null:
+			push_error("capture_idle_glb: --anim_time demandé mais aucun AnimationPlayer trouvé.")
+		else:
+			var anim_name: String = args.get("anim_name", "")
+			if anim_name == "":
+				var list := anim_player.get_animation_list()
+				if list.size() > 0:
+					anim_name = list[0]
+			if args.get("debug_dump", "0") == "1":
+				print("AnimationPlayer animations: ", anim_player.get_animation_list())
+				if anim_player.has_animation(anim_name):
+					print("'%s' length: %f s" % [anim_name, anim_player.get_animation(anim_name).length])
+			if anim_player.has_animation(anim_name):
+				anim_player.play(anim_name)
+				anim_player.seek(anim_time, true)
+				anim_player.advance(0.0)
+
 	# Bounding box réelle du modèle importé (pas de total_height exposé
 	# comme sur le proxy primitives) — parcourt tous les MeshInstance3D
 	# pour cadrer la caméra de la même façon que cendre_lowpoly.gd. Pour un
@@ -157,6 +181,16 @@ func _compute_aabb(node: Node) -> AABB:
 	for i in range(1, meshes.size()):
 		result = result.merge(meshes[i].global_transform * meshes[i].get_aabb())
 	return result
+
+
+func _find_animation_player(node: Node) -> AnimationPlayer:
+	if node is AnimationPlayer:
+		return node
+	for child in node.get_children():
+		var found := _find_animation_player(child)
+		if found != null:
+			return found
+	return null
 
 
 func _collect_mesh_instances(node: Node, out: Array[MeshInstance3D]) -> void:
