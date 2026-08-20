@@ -1,16 +1,18 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/gameplay/player.tscn" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/gameplay/enemy.tscn" id="2"]
-[ext_resource type="PackedScene" path="res://scenes/ui/touch_controls.tscn" id="3"]
-[ext_resource type="TileSet" path="res://assets/processed/sprites/world/floor_tileset.tres" id="4"]
-[ext_resource type="Script" path="res://src/world/arena_floor.gd" id="5"]
-[ext_resource type="Shader" path="res://src/vfx/shaders/vignette.gdshader" id="6"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/world/prop_rubble.png" id="7"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/world/prop_debris.png" id="8"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/enemy_crawler.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/enemy_brute.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/enemy_ranged.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/ui/touch_controls.tscn" id="5"]
+[ext_resource type="TileSet" path="res://assets/processed/sprites/world/floor_tileset.tres" id="6"]
+[ext_resource type="Script" path="res://src/world/arena_floor.gd" id="7"]
+[ext_resource type="Shader" path="res://src/vfx/shaders/vignette.gdshader" id="8"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/world/prop_rubble.png" id="9"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/world/prop_debris.png" id="10"]
 
 [sub_resource type="ShaderMaterial" id="1"]
-shader = ExtResource("6")
+shader = ExtResource("8")
 shader_parameter/strength = 0.35
 shader_parameter/inner_radius = 0.35
 shader_parameter/outer_radius = 0.9
@@ -27,32 +29,32 @@ offset_bottom = 900.0
 color = Color(0.16, 0.18, 0.15, 1)
 
 [node name="ArenaFloor" type="TileMapLayer" parent="."]
-tile_set = ExtResource("4")
-script = ExtResource("5")
+tile_set = ExtResource("6")
+script = ExtResource("7")
 
 [node name="PropRubble1" type="Sprite2D" parent="."]
 position = Vector2(220, 340)
-texture = ExtResource("7")
+texture = ExtResource("9")
 
 [node name="PropRubble2" type="Sprite2D" parent="."]
 position = Vector2(520, 380)
 scale = Vector2(-1, 1)
-texture = ExtResource("7")
+texture = ExtResource("9")
 
 [node name="PropDebris1" type="Sprite2D" parent="."]
 position = Vector2(400, 460)
-texture = ExtResource("8")
+texture = ExtResource("10")
 
 [node name="Player" parent="." instance=ExtResource("1")]
 position = Vector2(300, 300)
 
-[node name="Enemy1" parent="." instance=ExtResource("2")]
+[node name="EnemyCrawler" parent="." instance=ExtResource("2")]
 position = Vector2(364, 300)
 
-[node name="Enemy2" parent="." instance=ExtResource("2")]
+[node name="EnemyBrute" parent="." instance=ExtResource("3")]
 position = Vector2(450, 220)
 
-[node name="Enemy3" parent="." instance=ExtResource("2")]
+[node name="EnemyRanged" parent="." instance=ExtResource("4")]
 position = Vector2(160, 420)
 
 [node name="Vignette" type="CanvasLayer" parent="."]
@@ -65,4 +67,4 @@ anchor_bottom = 1.0
 mouse_filter = 2
 color = Color(1, 1, 1, 1)
 
-[node name="TouchControls" parent="." instance=ExtResource("3")]
+[node name="TouchControls" parent="." instance=ExtResource("5")]

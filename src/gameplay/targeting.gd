@@ -58,3 +58,19 @@ static func enemies_in_arc(tree: SceneTree, origin: Vector2, facing: Vector2, ra
 		if angle_to <= half_angle_rad:
 			hits.append(candidate)
 	return hits
+
+
+## Symétrique de nearest_enemy_in_radius() côté ennemis (G, GDD §10) :
+## une seule instance de joueur dans le groupe "player" (contrairement à
+## "enemies", pluriel par nature) — pas de paramètre radius, un ennemi a
+## besoin de la distance exacte pour décider lui-même IDLE/CHASE/ATTAQUE,
+## pas d'un filtre déjà appliqué. Retourne null si absent ou mort, même
+## discipline "vivant" que ci-dessus.
+static func get_player(tree: SceneTree) -> Node:
+	var players: Array = tree.get_nodes_in_group("player")
+	if players.is_empty():
+		return null
+	var candidate: Node = players[0]
+	if candidate.has_method("is_dead") and candidate.is_dead():
+		return null
+	return candidate

@@ -11,6 +11,9 @@ extends Node2D
 const PlayerScene := preload("res://scenes/gameplay/player.tscn")
 const EnemyScene := preload("res://scenes/gameplay/enemy.tscn")
 const GueuleVideScene := preload("res://scenes/gameplay/powers/gueule_vide.tscn")
+const EnemyCrawlerScene := preload("res://scenes/gameplay/enemy_crawler.tscn")
+const EnemyBruteScene := preload("res://scenes/gameplay/enemy_brute.tscn")
+const EnemyRangedScene := preload("res://scenes/gameplay/enemy_ranged.tscn")
 
 var _player: Player
 var _enemy_near: Enemy
@@ -48,6 +51,10 @@ func _ready() -> void:
 	await _check_animation_composer_and_camera()
 	await _check_dodge()
 	await _check_bras_faux()
+	await _check_player_recoils_on_taking_damage()
+	await _check_crawler_chases_and_hits_player()
+	await _check_brute_telegraphs_before_hitting()
+	await _check_ranged_keeps_distance_and_fires_projectile()
 
 	_report()
 
@@ -962,6 +969,147 @@ func _check_bras_faux() -> void:
 	enemy_front.queue_free()
 	enemy_side.queue_free()
 	enemy_outside.queue_free()
+	await get_tree().physics_frame
+
+
+## G (GDD §10) : le recul du joueur sous un coup ennemi manquait jusqu'ici
+## (voir Player.take_damage()) — vérifie sa propre timeline (_hurt_phase),
+## symétrique du recul déjà testé côté Enemy depuis Phase 1.2.
+func _check_player_recoils_on_taking_damage() -> void:
+	await _wait_until(func(): return not _player._action_lock, 60)
+	_player.global_position = Vector2(200, 1500)
+	_player.velocity = Vector2.ZERO
+	_player.stats.hp = 100.0
+
+	var pos_before: Vector2 = _player.global_position
+	_player.take_damage(10.0, pos_before + Vector2(-40, 0), 30.0, 8)
+	await get_tree().physics_frame
+	var pos_next_tick: Vector2 = _player.global_position
+
+	var ended: bool = await _wait_until(func(): return _player._hurt_phase == Player.HurtPhase.NONE, 20)
+	var pos_after: Vector2 = _player.global_position
+	var action_unlocked_after: bool = not _player._action_lock
+
+	_checks.append({
+		"name": "player_recoils_away_from_attacker_on_taking_damage",
+		"pass": pos_next_tick.x > pos_before.x and ended and action_unlocked_after and pos_after.x > pos_before.x,
+		"detail": {
+			"pos_before": str(pos_before), "pos_next_tick": str(pos_next_tick),
+			"pos_after": str(pos_after), "ended": ended, "action_unlocked_after": action_unlocked_after,
+		},
+	})
+
+
+## G (GDD §10/§21, "Crawler : petit, rapide, harcèlement") : vérifie le
+## comportement de bout en bout (détection -> approche -> contact ->
+## dégâts + recul du joueur), pas juste l'appel de fonction — posé hors
+## de son rayon de contact mais dans son rayon d'aggro pour forcer une
+## vraie approche avant le premier coup.
+func _check_crawler_chases_and_hits_player() -> void:
+	await _wait_until(func(): return not _player._action_lock, 60)
+	_player.global_position = Vector2(200, 1700)
+	_player.velocity = Vector2.ZERO
+	_player.stats.hp = 100.0
+
+	var crawler := EnemyCrawlerScene.instantiate()
+	crawler.name = "CrawlerChase"
+	crawler.global_position = _player.global_position + Vector2(120, 0)
+	add_child(crawler)
+	await get_tree().physics_frame
+
+	var dist_before: float = crawler.global_position.distance_to(_player.global_position)
+	var hp_before: float = _player.stats.hp
+
+	var hit: bool = await _wait_until(func(): return _player.stats.hp < hp_before, 300)
+	var hp_after: float = _player.stats.hp
+
+	_checks.append({
+		"name": "crawler_chases_then_hits_player",
+		"pass": hit and dist_before > crawler.attack_range_px and hp_after < hp_before,
+		"detail": {"dist_before": dist_before, "attack_range_px": crawler.attack_range_px, "hp_before": hp_before, "hp_after": hp_after, "hit": hit},
+	})
+	crawler.queue_free()
+	await get_tree().physics_frame
+
+
+## G (GDD §10, "Brute : lent, lourd, grosses attaques télégraphiées") :
+## posé DÉJÀ à portée de contact (isole le timing du télégraphe de
+## l'approche, déjà couverte par le check Crawler ci-dessus) — aucun
+## dégât ne doit tomber avant la fin de `telegraph_ticks`, et le coup qui
+## suit doit être le contact_damage exact de Brute (nettement plus lourd
+## que Crawler, cohérent avec "grosses attaques").
+func _check_brute_telegraphs_before_hitting() -> void:
+	await _wait_until(func(): return not _player._action_lock, 60)
+	_player.global_position = Vector2(200, 1900)
+	_player.velocity = Vector2.ZERO
+	_player.stats.hp = 100.0
+
+	var brute := EnemyBruteScene.instantiate()
+	brute.name = "BruteTelegraph"
+	brute.global_position = _player.global_position + Vector2(40, 0)  # déjà dans attack_range_px (52)
+	add_child(brute)
+	await get_tree().physics_frame
+
+	var reached_telegraph: bool = await _wait_until(func(): return brute._state == Enemy.State.TELEGRAPH, 20)
+	var hp_before: float = _player.stats.hp
+
+	for i in range(brute.telegraph_ticks - 2):
+		await get_tree().physics_frame
+	var hp_still_telegraphing: float = _player.stats.hp
+
+	var hit: bool = await _wait_until(func(): return _player.stats.hp < hp_before, 20)
+	var hp_after: float = _player.stats.hp
+
+	_checks.append({
+		"name": "brute_telegraphs_before_landing_a_heavier_hit",
+		"pass": reached_telegraph and hp_still_telegraphing == hp_before and hit and is_equal_approx(hp_before - hp_after, brute.contact_damage),
+		"detail": {
+			"reached_telegraph": reached_telegraph, "hp_before": hp_before,
+			"hp_still_telegraphing": hp_still_telegraphing, "hp_after": hp_after,
+			"contact_damage": brute.contact_damage,
+		},
+	})
+	brute.queue_free()
+	await get_tree().physics_frame
+
+
+## G (GDD §10, "Ranged : pression à distance") : posé trop proche de sa
+## `preferred_range_px` -> doit d'abord reculer (kiting) plutôt que foncer
+## au contact comme un ennemi de mêlée, puis toucher le joueur par
+## projectile SANS jamais entrer dans sa propre portée de contact
+## (attack_range_px, héritée mais inutilisée par RANGED — sert ici de
+## seuil de preuve "ce n'était pas un contact").
+func _check_ranged_keeps_distance_and_fires_projectile() -> void:
+	await _wait_until(func(): return not _player._action_lock, 60)
+	_player.global_position = Vector2(200, 2100)
+	_player.velocity = Vector2.ZERO
+	_player.stats.hp = 100.0
+
+	var ranged := EnemyRangedScene.instantiate()
+	ranged.name = "RangedKite"
+	ranged.global_position = _player.global_position + Vector2(60, 0)  # < preferred_range_px - range_tolerance_px
+	add_child(ranged)
+	await get_tree().physics_frame
+
+	var dist_start: float = ranged.global_position.distance_to(_player.global_position)
+	for i in range(20):
+		await get_tree().physics_frame
+	var dist_after_kite: float = ranged.global_position.distance_to(_player.global_position)
+
+	var hp_before: float = _player.stats.hp
+	var hit: bool = await _wait_until(func(): return _player.stats.hp < hp_before, 240)
+	var hp_after: float = _player.stats.hp
+	var dist_when_hit: float = ranged.global_position.distance_to(_player.global_position)
+
+	_checks.append({
+		"name": "ranged_retreats_to_preferred_range_then_hits_player_with_projectile",
+		"pass": dist_after_kite > dist_start and hit and hp_after < hp_before and dist_when_hit > ranged.attack_range_px,
+		"detail": {
+			"dist_start": dist_start, "dist_after_kite": dist_after_kite,
+			"hp_before": hp_before, "hp_after": hp_after, "dist_when_hit": dist_when_hit, "hit": hit,
+		},
+	})
+	ranged.queue_free()
 	await get_tree().physics_frame
 
 

@@ -233,11 +233,23 @@ var _bras_faux_tick: int = 0
 var _bras_faux_hit_applied: bool = false
 var _bras_faux_cooldown_remaining: int = 0
 
+## Recul du joueur sous un coup ennemi (G, GDD §10 — voir take_damage()
+## ci-dessous) : même construction qu'Enemy._recoil_ticks_remaining, mais
+## portée par sa propre timeline (ACTIVE/NONE) au lieu d'une simple
+## variable de compte à rebours, pour ne pas se faire écraser par
+## _handle_movement() au tick suivant (§16.3, même piège que dash/dodge —
+## voir le commentaire historique sur take_damage() plus bas).
+enum HurtPhase { NONE, ACTIVE }
+var _hurt_phase: int = HurtPhase.NONE
+var _hurt_ticks_remaining: int = 0
+var _hurt_recoil_velocity: Vector2 = Vector2.ZERO
+
 @onready var _sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var _camera: Camera2D = $Camera2D
 
 
 func _ready() -> void:
+	add_to_group("player")
 	_sprite.animation_finished.connect(_on_sprite_animation_finished)
 	_animation_composer_data = _load_animation_composer_data()
 
@@ -296,6 +308,8 @@ func _physics_process(_delta: float) -> void:
 		_advance_bras_faux()
 	elif _combo_step > 0:
 		_advance_combo()
+	elif _hurt_phase != HurtPhase.NONE:
+		_advance_hurt()
 	elif _attack_queued and not stats.is_dead() and not _action_lock:
 		_attack_queued = false
 		velocity = Vector2.ZERO
@@ -648,18 +662,20 @@ func is_invincible() -> bool:
 
 
 ## Réaction à un coup subi. Même signature qu'Enemy.take_damage() (source_
-## position pour orienter le futur recul, cohérence entre les deux entités
-## qui peuvent encaisser un coup) — MAIS pas encore appelée par du vrai
-## gameplay dans cette tranche verticale (aucun ennemi n'attaque le joueur,
-## hors scope avant G). Le hook existe maintenant pour que l'esquive ait un
-## effet réel à tester (is_invincible() annule le coup ici, pas seulement
-## en théorie) et pour que G n'ait qu'à appeler cette fonction, jamais à
-## réinventer la logique d'i-frames. Recul du joueur volontairement hors
-## scope de cette brique (D, §1.3 — "logique immédiate") : _handle_movement()
-## écrase `velocity` à chaque tick tant qu'aucun état "hurt" à sa propre
-## timeline n'existe côté joueur (contrairement au combo/dash/esquive) ;
-## l'ajouter proprement appartient à G, quand un vrai ennemi attaquera.
-func take_damage(amount: float, _source_position: Vector2) -> void:
+## position + recoil_strength_px/recoil_ticks pour orienter le recul,
+## cohérence entre les deux entités qui peuvent encaisser un coup) —
+## appelée pour de vrai depuis G (Crawler/Brute/Ranged, GDD §10) : le
+## recul manquait jusqu'ici (voir _advance_hurt() ci-dessous, qui règle
+## le piège documenté par le commentaire historique — _handle_movement()
+## écraserait `velocity` au tick suivant sans sa propre timeline).
+##
+## Si le joueur est DÉJÀ engagé dans une autre timeline (combo/dash/
+## esquive/Bras-Faux — `_action_lock` déjà vrai), les dégâts/flash/
+## chiffre/mort s'appliquent quand même, mais SANS superposer un recul
+## cosmétique par-dessus une timeline en cours (le corrompre est pire que
+## l'omettre) — scope volontairement limité pour cette brique G, à
+## reconsidérer si Milan le juge insuffisant en jeu réel.
+func take_damage(amount: float, source_position: Vector2, recoil_strength_px: float = 24.0, recoil_ticks: int = 6) -> void:
 	if stats.is_dead() or is_invincible():
 		return
 	stats.apply_damage(amount)
@@ -667,19 +683,48 @@ func take_damage(amount: float, _source_position: Vector2) -> void:
 	HitResponse.spawn_damage_number(amount, global_position, get_parent())
 	if stats.is_dead():
 		die()
-	else:
-		play_hurt()
+		return
+	if _action_lock:
+		return
+	var away: Vector2 = (global_position - source_position)
+	if away.length_squared() < 0.0001:
+		away = Vector2.RIGHT
+	away = away.normalized()
+	_hurt_recoil_velocity = away * (recoil_strength_px * Engine.physics_ticks_per_second / max(1, recoil_ticks))
+	_hurt_ticks_remaining = recoil_ticks
+	_hurt_phase = HurtPhase.ACTIVE
+	play_hurt()
 
 
-## Réaction à un coup subi — pas encore appelée par du vrai gameplay dans
-## cette tranche verticale (aucun ennemi n'attaque le joueur, hors scope
-## Phase 1), mais l'animation existe et le hook est prêt pour quand le
-## combat réel arrivera.
+## Réaction à un coup subi — pose juste l'animation/le verrou ; le recul
+## lui-même vit dans _advance_hurt() (timeline dédiée, comme dash/dodge).
 func play_hurt() -> void:
 	if stats.is_dead():
 		return
 	_action_lock = true
 	_sprite.play("hurt")
+
+
+## Timeline de recul (G) — même construction que le recul d'Enemy
+## (_recoil_ticks_remaining) : `move_toward` linéaire vers zéro sur les
+## ticks restants, mais posée comme phase à part (ACTIVE/NONE) pour être
+## consultée par le if/elif de _physics_process() AVANT _handle_movement(),
+## qui écraserait sinon `velocity` dès ce même tick si une touche de
+## mouvement est tenue.
+func _advance_hurt() -> void:
+	if _hurt_ticks_remaining > 0:
+		velocity = _hurt_recoil_velocity
+		_hurt_recoil_velocity = _hurt_recoil_velocity.move_toward(Vector2.ZERO, _hurt_recoil_velocity.length() / max(1, _hurt_ticks_remaining))
+		_hurt_ticks_remaining -= 1
+	if _hurt_ticks_remaining <= 0:
+		_end_hurt()
+
+
+func _end_hurt() -> void:
+	_hurt_phase = HurtPhase.NONE
+	_hurt_ticks_remaining = 0
+	velocity = Vector2.ZERO
+	_action_lock = false
 
 
 ## Direction du dash : l'input courant s'il y en a un (esquive dirigée,
@@ -889,6 +934,8 @@ func _on_sprite_animation_finished() -> void:
 		return  # l'esquive gère son propre verrou via sa timeline de ticks (_end_dodge())
 	if _bras_faux_phase != BrasFauxPhase.NONE:
 		return  # Bras-Faux gère son propre verrou via sa timeline de ticks (_end_bras_faux())
+	if _hurt_phase != HurtPhase.NONE:
+		return  # le recul gère son propre verrou via sa timeline de ticks (_end_hurt())
 	if _sprite.animation == "mort":
 		return  # reste sur la dernière frame, jamais reverrouillé sur idle
 	_action_lock = false
@@ -899,6 +946,7 @@ func die() -> void:
 	_combo_step = 0
 	_combo_phase = ComboPhase.NONE
 	_attack_queued = false
+	_hurt_phase = HurtPhase.NONE
 	_dash_phase = DashPhase.NONE
 	_dodge_phase = DodgePhase.NONE
 	_bras_faux_phase = BrasFauxPhase.NONE

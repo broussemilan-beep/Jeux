@@ -1,0 +1,37 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/enemy.gd" id="1"]
+[ext_resource type="Script" path="res://src/gameplay/stats.gd" id="2"]
+
+[sub_resource type="Resource" id="1"]
+script = ExtResource("2")
+max_hp = 45.0
+hp = 45.0
+move_speed_px = 65.0
+
+[sub_resource type="CapsuleShape2D" id="2"]
+radius = 8.0
+height = 30.0
+
+[node name="EnemyRanged" type="CharacterBody2D"]
+script = ExtResource("1")
+stats = SubResource("1")
+archetype = 1
+aggro_radius_px = 260.0
+telegraph_ticks = 16
+attack_recover_ticks = 12
+attack_cooldown_ticks = 46
+hitstop_profile = "light"
+shake_profile = ""
+preferred_range_px = 170.0
+range_tolerance_px = 26.0
+projectile_damage = 7.0
+projectile_speed_px_s = 260.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -15)
+shape = SubResource("2")
+
+[node name="Placeholder" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-8, -46, 8, -46, 8, 0, -8, 0)
+color = Color(0.62, 0.22, 0.12, 1)

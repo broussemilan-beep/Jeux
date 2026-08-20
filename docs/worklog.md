@@ -2860,3 +2860,105 @@ de sol, au lieu de dominer l'écran.
 G (ennemis Crawler/Brute/Ranged) — même gabarit 64×64/48px à respecter
 dès leur génération pour rester cohérent avec Cendre, plutôt que de
 répéter cette erreur. Verdict de Milan sur ce build attendu.
+
+---
+
+## 2026-08-20 — G (Ennemis : Crawler, Brute, Ranged)
+
+Mandat §6, G : "Crawler, Brute, Ranged (GDD §10/§21), discipline
+reference-image, HitResponse natif." Logique avant l'art (même précédent
+que D/Bras-Faux) : IA + dégâts réciproques + télégraphes cette tranche,
+art PixelLab réel flagué pour plus tard — 3 nouveaux personnages à
+générer avec discipline reference-image représente un coût qui mérite
+son propre GATE de vérification visuelle, pas une sous-tâche noyée ici.
+
+### Fait
+
+**Un seul script `enemy.gd` pour les 3 archétypes**, pas 3 classes :
+Crawler et Brute partagent la même logique de contact (`archetype =
+MELEE`), seuls les `@export` numériques changent (vitesse, portées,
+dégâts, tempo du télégraphe) — cohérent avec la discipline anti-
+duplication déjà appliquée ailleurs dans le projet (Stats.gd). Seul
+Ranged bifurque réellement en code (garde ses distances, tire un
+projectile). État minimal : IDLE/CHASE (détection + approche) ->
+TELEGRAPH (immobile, pulse visuel déterministe — le placeholder
+blanchit progressivement, fonction du tick, jamais un Tween temps réel
+qui désync de la simulation à 60 ticks/s) -> exécution du coup en un
+seul tick -> RECOVER -> retour CHASE/IDLE + cooldown.
+
+**Réaction du joueur aux dégâts, jusqu'ici un hook sans appelant réel
+(commentaire historique de `Player.take_damage()`, Phase 1.2 : "l'ajouter
+proprement appartient à G, quand un vrai ennemi attaquera").** Ajout
+d'une timeline `_hurt_phase` (même construction que dash/dodge/Bras-Faux
+: ACTIVE/NONE, `_action_lock` posé et levé par sa propre fin de timeline,
+jamais par le frame de l'animation) portant le recul — sans elle,
+`_handle_movement()` aurait écrasé la vélocité de recul dès le tick
+suivant si une touche de mouvement était tenue, exactement le piège que
+le commentaire historique décrivait. Si le joueur est déjà engagé dans
+une autre timeline au moment du coup, les dégâts/flash/mort s'appliquent
+quand même mais sans recul cosmétique superposé — corrompre une
+timeline en cours aurait été pire que l'omettre, scope assumé pour cette
+brique.
+
+**`Targeting.get_player()`** — symétrique de `nearest_enemy_in_radius()`
+côté ennemis, `Player.add_to_group("player")`. Fonction pure comme le
+reste de `targeting.gd`, jamais une recherche réimplémentée localement.
+
+**RANGED "garde ses distances" pour de vrai, pas juste en commentaire :**
+`_in_attack_window()` refuse le télégraphe tant que le joueur est plus
+proche que `preferred_range_px - range_tolerance_px` — sans ce garde-
+fou, un joueur qui rush au contact déclenchait quand même un tir
+immobile point-blank indiscernable d'un ennemi de mêlée (bug trouvé par
+le nouveau smoke test `ranged_retreats_...`, pas en lisant le code).
+Projectile (`src/gameplay/projectile.gd` + `scenes/gameplay/projectile.tscn`)
+: trajectoire rectiligne fixée une fois à `configure()`, jamais de
+homing — une trajectoire prévisible est ce qui rend un ennemi à
+distance lisible/évitable. Contact = distance simple au joueur, pas
+d'Area2D (cohérent avec les hitboxes géométriques déjà en place).
+
+**Bug de régression trouvé et corrigé avant de déclarer la brique finie :**
+le nouveau `_physics_process()` d'Enemy appelait `move_and_slide()`
+inconditionnellement (au lieu de seulement pendant le recul, comme en
+Phase 1.2). Un `CharacterBody2D` immobile qui l'appelle quand même se
+fait dépénétrer de toute collision existante — cassait silencieusement
+`bras_faux_hits_all_enemies_in_arc_spares_enemy_outside` (3 ennemis
+posés à 30px les uns des autres pour ce test, poussés hors de leur
+position exacte et donc hors de l'arc). Trouvé en relançant le smoke
+test AVANT d'écrire les nouveaux checks G, pas après — corrigé en
+n'appelant `move_and_slide()` que si `velocity != Vector2.ZERO`.
+
+**`enemy.tscn` (le fichier générique) reste le mannequin d'entraînement
+STATIONNAIRE de Phase 1.2** (`aggro_radius_px = 0.0` forcé) : ~10 checks
+existants de `smoke_test_gameplay.gd` en dépendent pour un ennemi
+immobile à position connue. Casser ces checks pour leur donner une IA
+qu'ils n'ont jamais demandée aurait été une régression. L'IA réelle vit
+dans 3 nouvelles scènes dédiées : `enemy_crawler.tscn` (petit/rapide/
+télégraphe court/dégâts faibles/HP bas), `enemy_brute.tscn` (grand/lent/
+télégraphe long ~0,7s/dégâts lourds/HP haut/hitstop-shake "medium"),
+`enemy_ranged.tscn` (silhouette mi-hauteur/kite/projectile). Tailles de
+silhouette différenciées par archétype (petit/imposant/lean), toujours
+famille rouge (GDD : "rouge ennemi, non contournable").
+
+**`test_arena.tscn`** : les 3 anciens `Enemy` stationnaires remplacés
+par un de chaque archétype (`EnemyCrawler`/`EnemyBrute`/`EnemyRanged`).
+
+**4 nouveaux checks smoke test** (46/46, aucune régression sur les 42
+existants) : `player_recoils_away_from_attacker_on_taking_damage`,
+`crawler_chases_then_hits_player`, `brute_telegraphs_before_landing_a_heavier_hit`
+(vérifie explicitement AUCUN dégât pendant le télégraphe, puis le
+dégât exact au tick suivant), `ranged_retreats_to_preferred_range_then_hits_player_with_projectile`.
+
+**Vérification visuelle réelle (script jetable, supprimé après usage,
+même discipline que F) :** les 3 silhouettes se distinguent clairement
+par taille (petite/imposante/mi-hauteur) dans la vraie scène de jeu,
+sol/props/vignette de F toujours intacts.
+
+**Web rebuild + commit.**
+
+### Prochain pas
+
+Art réel des 3 ennemis (PixelLab, discipline reference-image, gabarit
+64×64/~48px dès la génération — ne pas répéter l'erreur d'échelle de
+Cendre) — flagué, hors scope de cette brique. H (vertical slice GDD §21)
+reste la dernière étape du mandat. Verdict de Milan sur ce build attendu
+avant de pousser plus loin.

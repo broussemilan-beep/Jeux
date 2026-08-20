@@ -1,0 +1,36 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/enemy.gd" id="1"]
+[ext_resource type="Script" path="res://src/gameplay/stats.gd" id="2"]
+
+[sub_resource type="Resource" id="1"]
+script = ExtResource("2")
+max_hp = 180.0
+hp = 180.0
+move_speed_px = 45.0
+
+[sub_resource type="CapsuleShape2D" id="2"]
+radius = 14.0
+height = 40.0
+
+[node name="EnemyBrute" type="CharacterBody2D"]
+script = ExtResource("1")
+stats = SubResource("1")
+archetype = 0
+aggro_radius_px = 200.0
+attack_range_px = 52.0
+telegraph_ticks = 42
+attack_recover_ticks = 24
+attack_cooldown_ticks = 50
+contact_damage = 22.0
+contact_recoil_px = 34.0
+hitstop_profile = "medium"
+shake_profile = "medium"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -20)
+shape = SubResource("2")
+
+[node name="Placeholder" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-15, -68, 15, -68, 15, 0, -15, 0)
+color = Color(0.5, 0.12, 0.1, 1)
