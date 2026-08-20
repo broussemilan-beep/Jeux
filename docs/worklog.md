@@ -3465,3 +3465,62 @@ Toujours aucune animation. Nouveau rendu idle + comparatif envoyés.
 Identique au checkpoint précédent : si validé, passer aux 3 animations
 du périmètre ; si toujours pas validé, continuer d'itérer le rendu
 idle seul.
+
+## 2026-08-20 — Investigation d'accès Meshy AI / Tripo AI (pas de génération)
+
+Demande explicite de Milan : vérifier SEULEMENT si cet environnement a
+déjà un accès configuré à Meshy AI (meshy.ai) ou Tripo AI (tripo3d.ai)
+— génération 3D par IA avec auto-rigging — avant tout engagement sur
+un modèle 3D réel de Cendre pour la Voie C. Aucune génération tentée.
+
+### Vérifié
+
+- **Outils MCP connectés** : recherche sur "meshy", "tripo", "3D
+  generation" — aucun outil `mcp__*meshy*` ni `mcp__*tripo*` dans le
+  catalogue disponible (contrairement à PixelLab/SpriteCook, qui ont
+  chacun leurs outils `mcp__pixellab__*` / `mcp__spritecook__*` déjà
+  chargés).
+- **Variables d'environnement** : aucune `MESHY_*` ni `TRIPO_*`, et
+  aucune clé API générique (`*_KEY`/`*_TOKEN`/`*_SECRET`) qui
+  correspondrait à l'un de ces deux services — confirmé qu'il n'existe
+  même pas de `PIXELLAB_API_KEY` en variable d'environnement pour
+  PixelLab non plus : ce projet reçoit ses accès service via des
+  serveurs MCP déjà connectés au niveau plateforme, jamais via une clé
+  brute lisible dans l'environnement. L'absence d'outil MCP EST le
+  signal fiable ici, pas l'absence de variable d'env (qui ne l'aurait
+  jamais été de toute façon, même pour un service connecté).
+- **Credentials/config sur disque** : aucun fichier `.netrc`, aucun
+  dossier de config, aucune mention de ces services nulle part sur le
+  système (recherche large, hors résultats non pertinents — un fichier
+  Lua d'un projet totalement différent contenant le mot "tripod" en
+  chinois, un fuseau horaire "Africa/Tripoli").
+- **Réseau** : `curl` direct vers `api.meshy.ai` et `api.tripo3d.ai`
+  répond HTTP 401 (pas de blocage réseau/proxy, juste "pas de clé") —
+  confirme qu'un abonnement + une clé API à l'un ou l'autre service
+  activerait l'accès techniquement, mais rien de ce genre n'est
+  configuré ici.
+
+### Conclusion
+
+**Aucun accès existant à Meshy AI ni à Tripo AI dans cet
+environnement.** Aucun abonnement Milan connu pour l'un ou l'autre —
+cohérent avec l'absence totale de trace. Pas de contournement tenté
+(pas de compte gratuit créé à la volée, pas de tentative d'accès
+détourné).
+
+**Si Milan veut essayer un modèle 3D généré par IA pour la Voie C**,
+la suite se ferait manuellement, depuis son navigateur : les deux
+outils (meshy.ai, tripo3d.ai) tournent entièrement en ligne, aucun
+logiciel à installer. Générer le modèle low-poly de Cendre là-bas puis
+exporter le fichier (GLB/FBX/OBJ) est hors de portée de CC dans cet
+environnement tant qu'aucun accès n'est configuré (pas de compte, pas
+de clé API, pas de connecteur MCP) — mais une fois le fichier exporté,
+CC peut prendre le relais pour l'intégrer dans la scène Godot de la
+Voie C (remplacement du proxy primitives par le vrai modèle,
+recadrage, pipeline de rendu identique).
+
+### Prochain pas
+
+En attente de décision de Milan : générer manuellement un modèle via
+l'un des deux outils et transmettre le fichier exporté, ou continuer
+sur le proxy primitives (Voie C v2, en attente de verdict séparé).
