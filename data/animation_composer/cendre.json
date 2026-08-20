@@ -1,0 +1,12 @@
+{
+  "_notes": "Donnees AnimationComposer (mandat production v1 §4) pour Cendre. J1 ne consomme que root_motion (les 3 coups) ; squash/lean/afterimages sont poses ici pour J2 mais pas encore lus par le code (docs/worklog.md documentera l'activation). start_tick/end_tick sont relatifs au debut du coup (0 = premier tick d'ANTICIPATION), sur la timeline pleine ANTICIPATION+RELEASE+RECOVERY (8+4+14=26 ticks, player.gd). ease='out_quad' reutilise Player._ease_out_quad(), la meme courbe que le dash (B4) — jamais une nouvelle formule dupliquee.",
+  "coup1": {
+    "root_motion": { "distance_px": 10.0, "start_tick": 6, "end_tick": 10, "ease": "out_quad" }
+  },
+  "coup2": {
+    "root_motion": { "distance_px": 14.0, "start_tick": 6, "end_tick": 11, "ease": "out_quad" }
+  },
+  "coup3": {
+    "root_motion": { "distance_px": 20.0, "start_tick": 5, "end_tick": 12, "ease": "out_quad" }
+  }
+}

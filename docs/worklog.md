@@ -2101,3 +2101,116 @@ valide est désormais `https://broussemilan-beep.github.io/Jeux/`
 (J majuscule) ; page vérifiée en ligne après déploiement, "Rank Zero"
 charge correctement. Mandat A (chantier personnage) et B/C (feedback
 combat, Gueule Vide) intégralement clos.
+
+## 2026-08-20 — Mandat production v1 reçu ; J1 (réponse au coup)
+
+Milan a transmis un nouveau document maître (`docs/PRODUCTION_MANDATE_v1.md`,
+converti depuis son .docx source `docs/RANK_ZERO_MASTER_GDD.md`) qui devient
+le point d'entrée de production — gouverne l'exécution autonome jusqu'à
+épuisement de la feuille de route (sa section 6 : J1→J2→R3→D→E/F/G→H).
+Amendement clé retenu : **suppression définitive de la cape/écharpe
+asymétrique** (contredit le LOCKED du GDD §2/§24, mais le mandat fait
+autorité sur ce point précis, hiérarchie posée dans son intro). Nouvelle
+référence turnaround v3 (sans cape, harnais croisé, tunique courte
+manches) sauvegardée en `assets/source/pixellab/cendre/
+reference_v3_turnaround_raw.png` — R3 (régénération complète) planifiée
+mais pas encore lancée, J1 étant la priorité absolue explicite du mandat.
+
+### J1 — La réponse au coup
+
+**Root motion sur les 3 coups.** Constat du mandat vérifié dans le code
+avant toute correction : `player.gd` mettait bien `velocity = Vector2.ZERO`
+pendant tout le combo — les attaques jouaient strictement sur place.
+Données déclaratives ajoutées dans `data/animation_composer/cendre.json`
+(root_motion par animation : distance_px/start_tick/end_tick/ease, squash/
+lean/afterimages déjà présents dans le schéma mais réservés à J2). Nouveau
+compteur `_combo_step_absolute_tick` (continu sur toute la timeline du
+coup, indépendant des remises à zéro de `_combo_tick` à chaque transition
+de phase) pilote `_apply_combo_root_motion()` : pousse le joueur via
+`velocity` (jamais `position` directe, murs solides par `move_and_slide()`
+déjà appelé une fois par frame) avec la même courbe ease-out-quad que le
+dash (réutilise `_ease_out_quad()`, aucune formule dupliquée). coup1 : 10px
+(6-10) ; coup2 : 14px (6-11) ; coup3 : 20px (5-12, le plus engagé, cohérent
+avec sa description "committed hit").
+
+**Bug de test réel trouvé en câblant le root motion** (pas supposé) :
+`_check_combo_tier_feedback()` échouait sur les 3 checks de hit-stop/
+shake/arcSlash après l'ajout du root motion — investigation a montré que
+`_check_combo()` (test précédent dans la séquence) ne libérait jamais son
+ennemi ("EnemyForCombo", survit à 90/80 PV), qui restait dans l'arbre
+indéfiniment. Sans root motion, ça ne posait jamais problème (le joueur ne
+bougeait pas). Avec : le joueur avance de ~24px cumulés vers cet ennemi
+pendant son propre test, le rapprochant assez pour qu'il devienne PLUS
+PROCHE que le nouvel ennemi placé par le test suivant (toujours à +30px de
+la position COURANTE du joueur) — `Targeting.nearest_enemy_in_radius()`
+ciblait alors silencieusement le mauvais ennemi, et les 3 checks lisaient
+les PV d'un ennemi jamais touché. Corrigé par un `enemy.queue_free()` en
+fin de `_check_combo()` (`tools/smoke_test_gameplay.gd`) — le root motion
+lui-même n'avait pas de bug, c'est l'isolation du test qui était fragile
+et s'appuyait implicitement sur "le joueur ne bouge jamais pendant une
+attaque", une hypothèse que J1 invalide délibérément.
+
+**HitResponse (côté cible), nouvel autoload `src/gameplay/hit_response.gd`.**
+Trois réactions sur `take_damage()`, jamais sur l'attaquant (même principe
+que le recul déjà en place) :
+- **Flash blanc 2 ticks** : shader (`src/vfx/shaders/hit_flash.gdshader`,
+  mix vers blanc proportionnel à `flash_amount`, jamais un remplacement de
+  texture) appliqué au `CanvasItem` de la cible (le `Placeholder` géométrique
+  d'Enemy pour l'instant — un shader s'applique identiquement à une forme
+  géométrique ou un vrai sprite, aucune réécriture attendue quand l'art
+  ennemi arrivera). Bug trouvé en relançant le smoke test : assigner un
+  `Object` déjà libéré (ennemi mort, `Placeholder` parti avec lui) à une
+  variable TYPÉE (`CanvasItem`) déclenche "Trying to assign invalid
+  previously freed instance" AVANT même que `is_instance_valid()` ait pu
+  s'exécuter — corrigé en lisant la valeur brute (`Variant`) d'abord.
+- **Chiffre de dégâts poolé** (`src/gameplay/damage_number.gd`, pool de 16
+  instances créées une fois dans `HitResponse._ready()`, jamais recréées
+  par hit) : monte de 18px et s'efface sur 20 ticks, police = thème par
+  défaut de Godot (aucune police pixel fournie — limite signalée, pas
+  fabriquée).
+- **shardBurst teinté ennemi (rouge, §9 doc VFX "bleu allié / rouge
+  ennemi, non contournable") + décal persistant au sol** à la mort.
+  Décal (`src/gameplay/ground_decal.gd`) : PAS une primitive VfxDirector
+  (durée de vie de plusieurs secondes, pas quelques ticks) — budget suivi
+  via le registre de RÉSIDU dédié de VfxBudget (`register_residue`/
+  `decay_residue`), séparé du ledger d'overdraw des effets actifs.
+  **Bug visuel réel trouvé par capture, PAS par le gate automatisé** (le
+  check smoke test résidu-budget passait — le résidu était bien enregistré
+  — alors que RIEN n'apparaissait à l'écran) : `z_index = -1` sur le décal
+  le faisait dessiner AVANT/SOUS le `Floor` (`ColorRect` opaque z_index=0
+  de `test_arena.tscn`, ajouté en premier), donc invisible en pratique.
+  Corrigé en laissant le z_index par défaut (0) — le décal, ajouté à
+  l'arbre APRÈS le sol, se dessine dessus. Limite connue et acceptée :
+  sans Y-sort (aucun encore dans le projet, arrivera avec F "le monde"),
+  un décor peut passer par-dessus les pieds d'une entité qui le traverse —
+  mineur, jamais un décal invisible. Vérifié par capture headless
+  ciblée (scratchpad, pas commitée) : tache rouge-noir clairement visible
+  au sol après confirmation pixel-exacte (couleur mesurée `(35,24,21)`,
+  exactement le blend attendu contre le fond `(41,46,38)`).
+
+**Hit-stop/shake (mandat : "test exagéré").** Déjà implémenté et vérifié
+B1-B3 (session précédente) — relancé ici sans modification, toujours vert
+(`combo_tier1/2/3_*`, `dash_shake_visible_from_early_ticks`). Aucune
+retouche de valeur nécessaire à ce stade ; à ajuster seulement si Milan le
+signale après avoir retesté le build redéployé.
+
+**Contact visuel Gueule Vide (mandat : "enquête avant retouche").**
+Investigation seule (pas de retouche) : C1/C2 (session précédente) ont
+déjà corrigé l'invisibilité VFX et le timing de morsure/hitstop. Les
+smoke tests `gueule_vide_contact_*` restent verts sans changement. Pas de
+nouveau défaut identifié — retouche de timing non déclenchée, conforme à
+la consigne du mandat de ne pas toucher sans motif trouvé.
+
+**Nouveaux checks smoke test** (`_check_hit_response()`,
+`tools/smoke_test_gameplay.gd`) : déplacement réel du joueur pendant
+coup1 (root motion), flash qui s'applique puis s'efface tout seul,
+chiffre de dégâts poolé actif, résidu de décal enregistré à la mort.
+31/31 checks gameplay au vert (27 précédents + 4 nouveaux), 8/8 VFX
+recipe inchangés.
+
+### Prochain pas
+
+J2 (corps en mouvement — AnimationComposer complet squash/lean/
+afterimages, CameraDirector, smears dash/coup3), puis R3 dès que le
+budget PixelLab est confirmé avec Milan (régénération complète depuis la
+référence sans cape).

@@ -44,6 +44,10 @@ VfxDirector="*res://src/vfx/vfx_director.gd"
 ; VfxRecipeRegistry après VfxDirector : elle appelle VfxDirector.spawn()
 ; pour chaque couche résolue, jamais l'inverse.
 VfxRecipeRegistry="*res://src/vfx/vfx_recipe_registry.gd"
+; HitResponse après VfxDirector/VfxBudget (utilise VfxDirector.spawn pour
+; le shardBurst de mort et VfxBudget pour le décal) — mandat production
+; v1 §4.
+HitResponse="*res://src/gameplay/hit_response.gd"
 
 [display]
 

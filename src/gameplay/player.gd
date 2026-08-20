@@ -123,6 +123,21 @@ var _combo_tick: int = 0
 var _attack_queued: bool = false
 var _hit_applied_this_release: bool = false
 
+## Compteur de ticks absolu depuis le DÉBUT du coup courant (0 à la
+## première frappe de _advance_combo() après _start_attack()), INDÉPENDANT
+## des remises à zéro de `_combo_tick` à chaque transition de phase —
+## root_motion (mandat production v1 §4, données dans
+## data/animation_composer/cendre.json) s'exprime sur cette timeline
+## continue (start_tick/end_tick), pas sur le tick relatif à une seule
+## phase.
+var _combo_step_absolute_tick: int = 0
+
+## data/animation_composer/cendre.json — root_motion (J1) par nom
+## d'animation ; squash/lean/afterimages y sont déjà présents mais pas
+## encore lus (J2, mandat production v1 §4/§6). Chargé une fois au
+## _ready(), jamais relu par tick.
+var _animation_composer_data: Dictionary = {}
+
 ## NONE = pas de dash en cours. Timeline déclarative (B4), même
 ## discipline que le combo ci-dessus.
 enum DashPhase { NONE, ANTICIPATION, MOVE, RECOVERY }
@@ -142,6 +157,18 @@ var _power1_cooldown_remaining: int = 0
 
 func _ready() -> void:
 	_sprite.animation_finished.connect(_on_sprite_animation_finished)
+	_animation_composer_data = _load_animation_composer_data()
+
+
+func _load_animation_composer_data() -> Dictionary:
+	const PATH := "res://data/animation_composer/cendre.json"
+	if not FileAccess.file_exists(PATH):
+		return {}
+	var text: String = FileAccess.get_file_as_string(PATH)
+	var parsed: Variant = JSON.parse_string(text)
+	if parsed is Dictionary:
+		return parsed
+	return {}
 
 
 func _physics_process(_delta: float) -> void:
@@ -167,7 +194,6 @@ func _physics_process(_delta: float) -> void:
 	if _dash_phase != DashPhase.NONE:
 		_advance_dash()
 	elif _combo_step > 0:
-		velocity = Vector2.ZERO
 		_advance_combo()
 	elif _attack_queued and not stats.is_dead() and not _action_lock:
 		_attack_queued = false
@@ -201,6 +227,7 @@ func _start_attack(step: int) -> void:
 	_combo_step = step
 	_combo_phase = ComboPhase.ANTICIPATION
 	_combo_tick = 0
+	_combo_step_absolute_tick = 0
 	_hit_applied_this_release = false
 	_action_lock = true
 	_sprite.play(AttackAnimName[step - 1])
@@ -213,6 +240,8 @@ func _start_attack(step: int) -> void:
 ## fps d'une anim de coup déréglerait silencieusement le combat.
 func _advance_combo() -> void:
 	_combo_tick += 1
+	_combo_step_absolute_tick += 1
+	_apply_combo_root_motion(_combo_step_absolute_tick)
 	match _combo_phase:
 		ComboPhase.ANTICIPATION:
 			if _combo_tick >= ANTICIPATION_TICKS:
@@ -233,6 +262,37 @@ func _advance_combo() -> void:
 				return
 			if _combo_tick >= RECOVERY_TICKS:
 				_end_combo()
+
+
+## Root motion (mandat production v1 §4, "constat fondateur" : "les
+## attaques jouaient sur place, `velocity = 0` pendant le combo") — pousse
+## le joueur en avant (`facing`) sur la fenêtre [start_tick, end_tick] de
+## `data/animation_composer/cendre.json` pour le coup courant, JAMAIS en
+## dehors (velocity remise à zéro par défaut). Via `velocity` uniquement
+## (murs solides via move_and_slide(), déjà appelé une fois par frame en
+## fin de _physics_process — jamais une écriture directe de `position`).
+## Même construction ease-out par différence progress_after-progress_before
+## que _advance_dash() (MOVE) : réutilise _ease_out_quad(), pas une
+## nouvelle courbe dupliquée.
+func _apply_combo_root_motion(abs_tick: int) -> void:
+	velocity = Vector2.ZERO
+	if _combo_step <= 0 or _combo_step > AttackAnimName.size():
+		return
+	var anim_name: String = AttackAnimName[_combo_step - 1]
+	var anim_data: Dictionary = _animation_composer_data.get(anim_name, {})
+	var rm: Dictionary = anim_data.get("root_motion", {})
+	if rm.is_empty():
+		return
+	var start_tick: int = int(rm.get("start_tick", 0))
+	var end_tick: int = int(rm.get("end_tick", 0))
+	var span: int = end_tick - start_tick
+	if span <= 0 or abs_tick < start_tick or abs_tick > end_tick:
+		return
+	var distance_px: float = float(rm.get("distance_px", 0.0))
+	var progress_before: float = _ease_out_quad(float(abs_tick - 1 - start_tick) / span)
+	var progress_after: float = _ease_out_quad(float(abs_tick - start_tick) / span)
+	var step_px: float = (progress_after - progress_before) * distance_px
+	velocity = facing * (step_px * Engine.physics_ticks_per_second)
 
 
 func _end_combo() -> void:

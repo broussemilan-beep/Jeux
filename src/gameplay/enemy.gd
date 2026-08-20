@@ -14,6 +14,13 @@ var _recoil_velocity: Vector2 = Vector2.ZERO
 
 signal hit(amount: float)
 
+## Nœud visuel de la cible — `Placeholder` (Polygon2D géométrique) pour
+## l'instant, mandat production v1 §4 : "shader sur le sprite de la
+## cible" s'applique identiquement à cette forme géométrique, aucune
+## réécriture attendue le jour où un vrai sprite ennemi (G, GDD §10)
+## remplace ce placeholder.
+@onready var _visual: CanvasItem = $Placeholder
+
 
 func _ready() -> void:
 	add_to_group("enemies")
@@ -45,7 +52,17 @@ func take_damage(amount: float, source_position: Vector2, recoil_strength_px: fl
 	var away: Vector2 = (global_position - source_position)
 	if away.length_squared() < 0.0001:
 		away = Vector2.RIGHT
-	_recoil_velocity = away.normalized() * (recoil_strength_px * Engine.physics_ticks_per_second / max(1, recoil_ticks))
+	away = away.normalized()
+	_recoil_velocity = away * (recoil_strength_px * Engine.physics_ticks_per_second / max(1, recoil_ticks))
 	_recoil_ticks_remaining = recoil_ticks
+
+	# HitResponse (mandat production v1 §4) : flash + chiffre de dégâts sur
+	# TOUT coup qui touche, avant le early-return de mort ci-dessous — la
+	# cible qui meurt doit quand même flasher/afficher son dernier chiffre,
+	# jamais les sauter silencieusement.
+	HitResponse.flash_sprite(_visual)
+	HitResponse.spawn_damage_number(amount, global_position, get_parent())
+
 	if is_dead():
+		HitResponse.spawn_death_response(global_position, away, get_parent())
 		queue_free()

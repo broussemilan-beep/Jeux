@@ -44,6 +44,7 @@ func _ready() -> void:
 	await _check_dash()
 	await _check_gueule_vide()
 	await _check_gueule_vide_owner_death_policy()
+	await _check_hit_response()
 
 	_report()
 
@@ -216,6 +217,21 @@ func _check_combo() -> void:
 		"pass": ended and anim_final == "idle",
 		"detail": {"ended": ended, "combo_step": _player._combo_step, "anim": anim_final},
 	})
+
+	# Nettoyage — "EnemyForCombo" survit à ce test (90/80 PV, jamais létal)
+	# et RESTAIT dans l'arbre indéfiniment avant ce correctif : inoffensif
+	# tant que le joueur ne bougeait jamais pendant une attaque, mais le
+	# root motion (mandat production v1 J1) le fait désormais avancer de
+	# quelques px vers cet ennemi à CHAQUE coup — sur ce test, assez pour
+	# que "EnemyForCombo" finisse par être plus proche du joueur que le
+	# nouvel ennemi placé par _check_combo_tier_feedback() (toujours à
+	# +30px de la position COURANTE du joueur), et Targeting.
+	# nearest_enemy_in_radius() ciblait alors silencieusement le mauvais
+	# ennemi — les 3 checks de _check_combo_tier_feedback() lisaient les
+	# PV d'un ennemi jamais touché. Bug de test réel trouvé en câblant le
+	# root motion, pas une supposition (docs/worklog.md).
+	enemy.queue_free()
+	await get_tree().physics_frame
 
 
 ## Compte les ticks pendant lesquels CombatFeedback reste gelé À PARTIR
@@ -548,6 +564,84 @@ func _check_gueule_vide_owner_death_policy() -> void:
 		"name": "gueule_vide_finishes_normally_despite_owner_death",
 		"pass": creature_finished,
 		"detail": {"creature_finished": creature_finished},
+	})
+
+
+## J1 (mandat production v1 §4/§6, "La réponse au coup") : root motion sur
+## les 3 coups + HitResponse (flash/chiffre de dégâts/décal de mort) —
+## vérifie l'intégration réelle, pas juste que le code compile. Player
+## reste immobile hors des fenêtres root_motion (déjà couvert
+## implicitement par _check_combo_tier_feedback, qui n'aurait pas pu
+## viser juste sinon) ; ce check-ci se concentre sur ce que
+## _check_combo_tier_feedback ne teste pas : le déplacement RÉEL du
+## joueur pendant le coup, et le côté CIBLE (flash/chiffre/décal).
+func _check_hit_response() -> void:
+	# --- Root motion : le joueur avance réellement pendant coup1 ---
+	var pos_before_attack: Vector2 = _player.global_position
+	Input.action_press("attack")
+	await get_tree().physics_frame
+	Input.action_release("attack")
+	await _wait_until(func(): return _player._combo_step == 1, 10)
+	# Laisse passer la fenêtre root_motion de coup1 (start_tick=6..end_tick=10,
+	# data/animation_composer/cendre.json) sans qu'un ennemi n'interfère
+	# (aucun dans le rayon ici — seul le déplacement est mesuré).
+	for i in range(12):
+		await get_tree().physics_frame
+	var displacement: float = _player.global_position.x - pos_before_attack.x
+	await _wait_until(func(): return _player._combo_step == 0, 30)
+
+	_checks.append({
+		"name": "root_motion_displaces_player_forward_during_coup1",
+		"pass": displacement > 1.0 and displacement <= 10.5,
+		"detail": {"displacement_px": displacement, "expected_max_px": 10.0},
+	})
+
+	# --- HitResponse côté cible : flash + chiffre + décal de mort ---
+	var enemy := EnemyScene.instantiate()
+	enemy.name = "EnemyForHitResponse"
+	enemy.global_position = _player.global_position + Vector2(30, 0)
+	add_child(enemy)
+	await get_tree().physics_frame
+
+	var visual: CanvasItem = enemy.get_node("Placeholder")
+	var material_before_hit: Material = visual.material
+	enemy.take_damage(10.0, _player.global_position, 4.0, 6)
+	var flash_active_right_after_hit: bool = visual.material != null and visual.material is ShaderMaterial
+
+	var number_spawned := false
+	for n in HitResponse._number_pool:
+		if n.is_active():
+			number_spawned = true
+			break
+
+	# Le flash se lève tout seul après FLASH_TICKS (2) — un tick de plus
+	# par sécurité contre l'ordre autoload/nœud de scène (même prudence
+	# que partout ailleurs dans ce fichier, voir CombatFeedback en tête
+	# de project.godot).
+	for i in range(HitResponse.FLASH_TICKS + 1):
+		await get_tree().physics_frame
+	var flash_cleared_after_ticks: bool = visual.material == material_before_hit
+
+	var zone_idx: int = VfxBudget.zone_index_for(enemy.global_position)
+	var residue_before_death: float = VfxBudget.debug_state()["zones"][zone_idx]["residue"]
+	enemy.take_damage(1000.0, _player.global_position, 4.0, 6)  # létal
+	await get_tree().physics_frame
+	var residue_after_death: float = VfxBudget.debug_state()["zones"][zone_idx]["residue"]
+
+	_checks.append({
+		"name": "hit_response_flash_applies_then_clears",
+		"pass": flash_active_right_after_hit and flash_cleared_after_ticks,
+		"detail": {"flash_active_right_after_hit": flash_active_right_after_hit, "flash_cleared_after_ticks": flash_cleared_after_ticks},
+	})
+	_checks.append({
+		"name": "hit_response_spawns_pooled_damage_number",
+		"pass": number_spawned,
+		"detail": {"number_spawned": number_spawned},
+	})
+	_checks.append({
+		"name": "hit_response_death_registers_ground_decal_residue",
+		"pass": residue_after_death > residue_before_death,
+		"detail": {"residue_before_death": residue_before_death, "residue_after_death": residue_after_death},
 	})
 
 
