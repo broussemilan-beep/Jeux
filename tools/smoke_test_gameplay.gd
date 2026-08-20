@@ -14,6 +14,7 @@ const GueuleVideScene := preload("res://scenes/gameplay/powers/gueule_vide.tscn"
 const EnemyCrawlerScene := preload("res://scenes/gameplay/enemy_crawler.tscn")
 const EnemyBruteScene := preload("res://scenes/gameplay/enemy_brute.tscn")
 const EnemyRangedScene := preload("res://scenes/gameplay/enemy_ranged.tscn")
+const BossGateMawScene := preload("res://scenes/gameplay/boss_gate_maw.tscn")
 
 var _player: Player
 var _enemy_near: Enemy
@@ -57,6 +58,10 @@ func _ready() -> void:
 	await _check_ranged_keeps_distance_and_fires_projectile()
 	_check_stats_add_xp_levels_up()
 	await _check_enemy_death_awards_xp_to_player()
+	await _check_boss_attack_rotation_hits_player_with_all_four_attacks()
+	await _check_boss_slam_spares_player_outside_radius_but_hits_inside()
+	await _check_boss_enrages_at_hp_threshold()
+	await _check_boss_death_awards_xp_reward()
 
 	_report()
 
@@ -1171,6 +1176,164 @@ func _check_enemy_death_awards_xp_to_player() -> void:
 	_checks.append({
 		"name": "enemy_death_awards_xp_to_player",
 		"pass": is_equal_approx(xp_after - xp_before, reward),
+		"detail": {"xp_before": xp_before, "xp_after": xp_after, "xp_reward": reward},
+	})
+
+
+## H2 (GDD §15 : "morsure, charge, projection, frappe au sol") — le boss
+## doit montrer les 4 attaques de sa rotation DANS L'ORDRE, chacune avec
+## ses propres dégâts, pas juste "un ennemi qui touche". Le joueur reste
+## immobile et proche : le recul entre deux coups (jusqu'à 70px pour
+## Projection) ne casse pas le test — le boss retourne en CHASE entre
+## deux attaques et referme la distance avant la suivante, tant que ça
+## reste dans son rayon d'aggro (320px, large marge).
+func _check_boss_attack_rotation_hits_player_with_all_four_attacks() -> void:
+	await _wait_until(func(): return not _player._action_lock, 60)
+	_player.global_position = Vector2(2800, 200)
+	_player.velocity = Vector2.ZERO
+	_player.stats.hp = 200.0
+	_player.stats.max_hp = 200.0
+
+	var boss := BossGateMawScene.instantiate()
+	boss.name = "BossRotationCheck"
+	boss.global_position = _player.global_position + Vector2(45, 0)
+	add_child(boss)
+	await get_tree().physics_frame
+
+	var deltas: Array = []
+	var hp_before: float = _player.stats.hp
+	for i in range(4):
+		var hit: bool = await _wait_until(func(): return _player.stats.hp < hp_before, 400)
+		var hp_after: float = _player.stats.hp
+		deltas.append(hp_before - hp_after if hit else -1.0)
+		hp_before = hp_after
+
+	_checks.append({
+		"name": "boss_attack_rotation_hits_player_with_all_four_attacks_in_order",
+		"pass": is_equal_approx(deltas[0], boss.bite_damage) and is_equal_approx(deltas[1], boss.charge_damage)
+			and is_equal_approx(deltas[2], boss.slam_damage) and is_equal_approx(deltas[3], boss.projection_damage),
+		"detail": {
+			"deltas": deltas,
+			"expected": [boss.bite_damage, boss.charge_damage, boss.slam_damage, boss.projection_damage],
+		},
+	})
+	boss.queue_free()
+	await get_tree().physics_frame
+
+
+## G/H2 : Frappe au sol se déclenche dans une fenêtre large (×1.5 du
+## rayon réel) mais ne touche QUE si le joueur est encore dans le rayon
+## exact au moment de l'impact — vérifie les deux cas séparément
+## (`_attack_index` forcé sur SLAM, même discipline que les tests G qui
+## lisent/écrivent directement l'état interne plutôt que de ré-implémenter
+## une recherche).
+func _check_boss_slam_spares_player_outside_radius_but_hits_inside() -> void:
+	await _wait_until(func(): return not _player._action_lock, 60)
+
+	_player.global_position = Vector2(2800, 600)
+	_player.velocity = Vector2.ZERO
+	_player.stats.hp = 200.0
+	_player.stats.max_hp = 200.0
+	var boss_outside := BossGateMawScene.instantiate()
+	boss_outside.name = "BossSlamOutside"
+	boss_outside.global_position = _player.global_position + Vector2(120, 0)  # < slam_radius_px*1.5 (150, déclenche) mais > slam_radius_px (100, épargné)
+	boss_outside._attack_index = 2  # Attack.SLAM
+	add_child(boss_outside)
+	await get_tree().physics_frame
+	var hp_before_outside: float = _player.stats.hp
+	for i in range(boss_outside.slam_telegraph_ticks + 5):
+		await get_tree().physics_frame
+	var hp_after_outside: float = _player.stats.hp
+	boss_outside.queue_free()
+	await get_tree().physics_frame
+
+	_player.global_position = Vector2(2800, 800)
+	_player.velocity = Vector2.ZERO
+	_player.stats.hp = 200.0
+	var boss_inside := BossGateMawScene.instantiate()
+	boss_inside.name = "BossSlamInside"
+	boss_inside.global_position = _player.global_position + Vector2(50, 0)  # < slam_radius_px -> touche
+	boss_inside._attack_index = 2
+	add_child(boss_inside)
+	await get_tree().physics_frame
+	var hp_before_inside: float = _player.stats.hp
+	var hit_inside: bool = await _wait_until(func(): return _player.stats.hp < hp_before_inside, boss_inside.slam_telegraph_ticks + 10)
+	var hp_after_inside: float = _player.stats.hp
+	boss_inside.queue_free()
+	await get_tree().physics_frame
+
+	_checks.append({
+		"name": "boss_slam_spares_player_outside_radius_but_hits_inside",
+		"pass": is_equal_approx(hp_after_outside, hp_before_outside) and hit_inside
+			and is_equal_approx(hp_before_inside - hp_after_inside, boss_inside.slam_damage),
+		"detail": {
+			"hp_before_outside": hp_before_outside, "hp_after_outside": hp_after_outside,
+			"hp_before_inside": hp_before_inside, "hp_after_inside": hp_after_inside, "hit_inside": hit_inside,
+		},
+	})
+
+
+## H2 (GDD §15 : "phase énervée") : bascule une fois au seuil de PV,
+## resserre le cooldown — pas juste un flag qui ne change rien.
+func _check_boss_enrages_at_hp_threshold() -> void:
+	var boss := BossGateMawScene.instantiate()
+	boss.name = "BossEnrageCheck"
+	boss.global_position = Vector2(2800, 1000)
+	add_child(boss)
+	await get_tree().physics_frame
+
+	var enraged_before: bool = boss._enraged
+	var threshold_hp: float = boss.stats.max_hp * boss.enrage_hp_ratio
+	boss.take_damage(boss.stats.max_hp - threshold_hp + 1.0, boss.global_position + Vector2(-10, 0))
+	# take_damage() pose SON PROPRE recul (_recoil_ticks_remaining, défaut
+	# 6 ticks) — _check_enrage() est gardée derrière le early-return recul
+	# de _physics_process() (comme tout le reste de l'IA), donc un seul
+	# physics_frame ne suffit pas : il faut attendre la fin du recul avant
+	# que la vérification ait seulement une chance de tourner.
+	await _wait_until(func(): return boss._recoil_ticks_remaining <= 0, 20)
+	await get_tree().physics_frame
+
+	var enraged_after: bool = boss._enraged
+	var cooldown_after: int = boss._current_cooldown_ticks()
+
+	_checks.append({
+		"name": "boss_enrages_at_hp_threshold_and_shortens_cooldown",
+		"pass": not enraged_before and enraged_after and cooldown_after == boss.enrage_cooldown_ticks,
+		"detail": {
+			"enraged_before": enraged_before, "enraged_after": enraged_after,
+			"cooldown_after": cooldown_after, "expected_cooldown": boss.enrage_cooldown_ticks,
+		},
+	})
+	boss.queue_free()
+	await get_tree().physics_frame
+
+
+## H1/H2 : récompense de fin de Gate nettement au-dessus d'un ennemi
+## normal (G) — niveau du joueur forcé haut AVANT la mort pour que la
+## grosse récompense (120 XP) ne déclenche pas de montée de niveau qui
+## consommerait le delta d'XP brut (même piège que la boucle de niveaux,
+## vérifié séparément par stats_add_xp_levels_up_in_a_loop_...).
+func _check_boss_death_awards_xp_reward() -> void:
+	await _wait_until(func(): return not _player._action_lock, 60)
+	_player.global_position = Vector2(2800, 1200)
+	_player.stats.level = 10
+	_player.stats.xp = 0.0
+	var xp_before: float = _player.stats.xp
+
+	var boss := BossGateMawScene.instantiate()
+	boss.name = "BossXpReward"
+	boss.global_position = _player.global_position + Vector2(500, 0)
+	add_child(boss)
+	await get_tree().physics_frame
+
+	var reward: float = boss.xp_reward
+	boss.take_damage(99999.0, boss.global_position + Vector2(-10, 0))
+	var xp_after: float = _player.stats.xp
+	await get_tree().physics_frame
+
+	_checks.append({
+		"name": "boss_death_awards_xp_reward_to_player",
+		"pass": is_equal_approx(xp_after - xp_before, reward) and reward > 50.0,
 		"detail": {"xp_before": xp_before, "xp_after": xp_after, "xp_reward": reward},
 	})
 

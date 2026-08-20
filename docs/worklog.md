@@ -3024,3 +3024,79 @@ pleins.
 
 H2 (Boss Gate Maw) selon le plan soumis, ou réordonnancement si Milan le
 demande après verdict sur ce build.
+
+---
+
+## 2026-08-20 — H2 (Boss Gate Maw)
+
+Mandat §6/GDD §15 : "Gate Maw : boss tutoriel, masse organique de Gate
+avec grande gueule ; morsure, charge, projection, frappe au sol, phase
+énervée." Deuxième tranche du plan H soumis (H1 terminé, ce build).
+
+### Fait
+
+**`src/gameplay/boss_gate_maw.gd`** — script dédié, PAS Enemy.gd :
+Crawler/Brute/Ranged partagent un script parce qu'ils sont
+interchangeables au-delà des chiffres ; un boss ne l'est pas ("silhouette
+unique", GDD §15). Rotation **déterministe** [Morsure, Charge, Frappe au
+sol, Projection] — jamais un tirage aléatoire : un boss tutoriel doit
+montrer chaque attaque dans un ordre prévisible, et le garde-fou "seed
+toujours déterministe" (mandat §9) s'applique aussi à une décision de
+combat, pas seulement au chemin VFX ; le plus sûr pour le respecter ici
+est de ne tirer aucun nombre du tout.
+
+**4 attaques, chacune avec sa propre signature :**
+- Morsure : contact court, la plus rapide (télégraphe 20 ticks).
+- Charge : seule attaque qui couvre la distance (déclenche jusqu'à
+  260px), fonce en ligne droite sur 220px pendant le CHARGE_DASH.
+- Frappe au sol : AOE autour du boss, télégraphée par un `groundRing`
+  (primitive VFX EXISTANTE, réutilisée telle quelle — jamais dupliquée)
+  qui montre le rayon exact avant l'impact ; contre-mesure = sortir du
+  cercle avant la fin du télégraphe (34 ticks, le plus long des 4).
+- Projection : dégâts bruts les plus faibles mais LE plus gros recul —
+  sa signature est de repousser, pas de punir.
+
+**Phase énervée** — bascule UNE fois (jamais réversible) sous 40% PV :
+cooldown/recovery resserrés, vitesse ×1.25, teinte de base décalée vers
+le rouge chaud en permanence (tell lisible même hors télégraphe,
+distinct du pulse de télégraphe lui-même).
+
+**2 bugs trouvés par les tests avant tout commit, pas en relisant le
+code :**
+1. `charge_contact_radius_px` était fixé à 40px — exactement la somme
+   des rayons de collision boss (30) + joueur (10). `move_and_slide()`
+   bloque physiquement deux capsules à cette distance ; un seuil ÉGAL
+   à la distance de blocage échoue en permanence dès que le boss a déjà
+   rejoint le joueur avant de charger (ce qui arrive presque toujours,
+   puisqu'il le talonne pendant tout son cooldown). Charge ratait son
+   coup à chaque fois. Corrigé en portant le rayon à 60px, une vraie
+   marge au-delà du contact physique.
+2. Le test de phase énervée ne laissait qu'un seul tick avant de lire
+   `_enraged` — mais `take_damage()` pose son propre recul (défaut 6
+   ticks), et `_check_enrage()` est gardée derrière le early-return de
+   recul de `_physics_process()` comme le reste de l'IA. Corrigé en
+   attendant la fin du recul avant de lire l'état.
+
+**6 nouveaux checks smoke test** (52/52, aucune régression) :
+`boss_attack_rotation_hits_player_with_all_four_attacks_in_order`,
+`boss_slam_spares_player_outside_radius_but_hits_inside`,
+`boss_enrages_at_hp_threshold_and_shortens_cooldown`,
+`boss_death_awards_xp_reward_to_player` (+ les 2 déjà comptés en H1).
+
+**Silhouette placeholder** : blob organique asymétrique (10 points,
+~96×92px), nettement plus grand que Brute (68px) — se lit comme "plus
+dangereux", cohérent avec le reste du roster placeholder (famille
+rouge, GDD "rouge ennemi non contournable"). Art réel flagué, même
+précédent que G.
+
+**Vérification visuelle réelle** (script jetable, supprimé après
+usage) : le `groundRing` de Frappe au sol s'affiche bien comme un
+anneau cassé autour du boss dans la vraie scène, silhouette clairement
+distincte des 3 ennemis normaux.
+
+**Web rebuild + commit.**
+
+### Prochain pas
+
+H3 (structure de la Première Gate) selon le plan, ou réordonnancement
+si Milan le demande après verdict sur ce build.
