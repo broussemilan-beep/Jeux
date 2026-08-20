@@ -2743,3 +2743,70 @@ disponibilité, ou D tranche 4 (second archétype de cast). dash/combo/
 esquive en 8 directions restent flag (E, "si budget PixelLab") — pas
 faits cette tranche, à réévaluer si Milan le demande explicitement.
 Verdict de Milan sur ce build attendu avant de pousser plus loin.
+
+---
+
+## 2026-08-20 — F (Le monde)
+
+Mandat §6, F : "mini-tileset d'arène réel (sol texturé, vignette, props),
+cohérent palette — sans attendre plus de contenu." Scope volontairement
+réduit : pas d'autotiling Wang complet (16 combinaisons de coins à câbler
+dans le système terrain de Godot) — une tuile "pure lower" unique en
+pavage uniforme, seamless avec elle-même par construction. Cohérent avec
+le "sans attendre plus de contenu" du mandat : une salle rectangulaire ne
+justifie pas encore les 15 autres combinaisons de coins.
+
+### Fait
+
+**Génération PixelLab.** `create_topdown_tileset` (sol pierre/gravats,
+`transition_size` ≤0.5 → 16 tuiles) + 2 props via `create_image_pixflux`
+(rubble, debris — 32×32 minimum imposé par l'API, 32×24 refusé). Slicing
+de la tuile "pure lower" via le champ `bounding_box` de l'endpoint
+`/metadata` — jamais `wang_N`/`original_position`, documentés comme
+produisant du banding horizontal si mal utilisés.
+
+**Clamp HSV bande decor.** Les 3 assets (sol, 2 props) échouaient la
+validation `scripts/validate_pixels.py --category decor` (bande [15,60]%
+V) : outlines trop sombres (~9-15%), highlights trop clairs (~99%).
+Clampé via `colorsys` (RGB→HSV→clamp V→RGB). Premier essai aux bornes
+exactes (15/60) encore en échec (14.9% mesuré — arrondi 8-bit au
+roundtrip) → marge de sécurité (16/59), 0 violation ensuite. Même
+discipline que le clamp de R3 sur le personnage.
+
+**Godot : `TileSet`/`TileMapLayer` + props + vignette.**
+`assets/processed/sprites/world/floor_tileset.tres` (atlas mono-tuile
+32×32) + `src/world/arena_floor.gd` (`TileMapLayer` qui remplit un
+rectangle via `set_cell()` en code plutôt qu'un `tile_data` figé — pas de
+salle non rectangulaire à ce stade). 3 `Sprite2D` props dans
+`test_arena.tscn` (`PropRubble1/2` — le 2 mirroré `scale=(-1,1)` pour
+varier sans regénérer —, `PropDebris1`). Vignette : nouveau
+`src/vfx/shaders/vignette.gdshader` (canvas_item, `smoothstep` radial en
+UV, corrigé à l'aspect-ratio du viewport natif 640×360 sinon le dégradé
+serait ovale) posé sur un `ColorRect` plein écran dans un `CanvasLayer`
+dédié, placé avant `TouchControls` dans l'ordre des nœuds pour ne pas
+passer par-dessus l'UI tactile.
+
+**Vérification visuelle réelle (scène de jeu complète, pas une capture
+isolée).** Script jetable `tools/capture_arena_scratch.gd` (instancie
+`test_arena.tscn` au complet + `Camera2D` ad hoc, contrairement à
+`capture_scene.gd` qui isole Player/primitives) — supprimé après usage,
+jamais commité. Confirmé : sol texturé en grille cohérente (pas de
+banding), props rendus comme vraie pixel art (pas de rectangle plein —
+vérifié en relisant les PNG sources après clamp), vignette qui assombrit
+bien les coins (luminance mesurée : coin ~20 vs centre ~86, ratio net).
+Les rectangles rouges visibles dans la capture sont le `Placeholder`
+`Polygon2D` déjà existant d'`enemy.tscn` (art d'ennemi = scope G, pas
+touché ici) — pas un bug introduit par F.
+
+**Régression.** 42/42 gameplay (2 runs, avant et après F), aucun check
+ne touche `test_arena.tscn` directement mais confirme l'absence de
+casse ailleurs dans le projet.
+
+**Web rebuild + commit.**
+
+### Prochain pas
+
+G (ennemis Crawler/Brute/Ranged, HitResponse natif) selon disponibilité,
+ou tranches optionnelles flaguées (dash/combo/esquive 8 directions,
+Bras-Faux transfo bras-faux dédiée). Verdict de Milan sur ce build
+attendu avant de pousser plus loin.
