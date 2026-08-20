@@ -1,12 +1,12 @@
 {
   "character": "cendre",
   "out_canvas": [
-    96,
-    96
+    64,
+    64
   ],
   "anchor_px": [
-    48,
-    92
+    32,
+    61
   ],
   "animations": {
     "idle_south": {
@@ -17,12 +17,12 @@
         "assets/processed/sprites/cendre/idle_south/3.png"
       ],
       "canvas": [
-        96,
-        96
+        64,
+        64
       ],
       "anchor_px": [
-        48,
-        92
+        32,
+        61
       ]
     },
     "idle_north": {
@@ -33,12 +33,12 @@
         "assets/processed/sprites/cendre/idle_north/3.png"
       ],
       "canvas": [
-        96,
-        96
+        64,
+        64
       ],
       "anchor_px": [
-        48,
-        92
+        32,
+        61
       ]
     },
     "idle_east": {
@@ -49,12 +49,12 @@
         "assets/processed/sprites/cendre/idle_east/3.png"
       ],
       "canvas": [
-        96,
-        96
+        64,
+        64
       ],
       "anchor_px": [
-        48,
-        92
+        32,
+        61
       ]
     },
     "idle_west": {
@@ -65,12 +65,12 @@
         "assets/processed/sprites/cendre/idle_west/3.png"
       ],
       "canvas": [
-        96,
-        96
+        64,
+        64
       ],
       "anchor_px": [
-        48,
-        92
+        32,
+        61
       ]
     },
     "idle_south_east": {
@@ -81,12 +81,12 @@
         "assets/processed/sprites/cendre/idle_south_east/3.png"
       ],
       "canvas": [
-        96,
-        96
+        64,
+        64
       ],
       "anchor_px": [
-        48,
-        92
+        32,
+        61
       ]
     },
     "idle_south_west": {
@@ -97,12 +97,12 @@
         "assets/processed/sprites/cendre/idle_south_west/3.png"
       ],
       "canvas": [
-        96,
-        96
+        64,
+        64
       ],
       "anchor_px": [
-        48,
-        92
+        32,
+        61
       ]
     },
     "idle_north_east": {
@@ -113,12 +113,12 @@
         "assets/processed/sprites/cendre/idle_north_east/3.png"
       ],
       "canvas": [
-        96,
-        96
+        64,
+        64
       ],
       "anchor_px": [
-        48,
-        92
+        32,
+        61
       ]
     },
     "idle_north_west": {
@@ -129,12 +129,12 @@
         "assets/processed/sprites/cendre/idle_north_west/3.png"
       ],
       "canvas": [
-        96,
-        96
+        64,
+        64
       ],
       "anchor_px": [
-        48,
-        92
+        32,
+        61
       ]
     },
     "deplacement_south": {
@@ -147,12 +147,12 @@
         "assets/processed/sprites/cendre/deplacement_south/5.png"
       ],
       "canvas": [
-        96,
-        96
+        64,
+        64
       ],
       "anchor_px": [
-        48,
-        92
+        32,
+        61
       ]
     },
     "deplacement_north": {
@@ -165,12 +165,12 @@
         "assets/processed/sprites/cendre/deplacement_north/5.png"
       ],
       "canvas": [
-        96,
-        96
+        64,
+        64
       ],
       "anchor_px": [
-        48,
-        92
+        32,
+        61
       ]
     },
     "deplacement_east": {
@@ -183,12 +183,12 @@
         "assets/processed/sprites/cendre/deplacement_east/5.png"
       ],
       "canvas": [
-        96,
-        96
+        64,
+        64
       ],
       "anchor_px": [
-        48,
-        92
+        32,
+        61
       ]
     },
     "deplacement_west": {
@@ -201,12 +201,12 @@
         "assets/processed/sprites/cendre/deplacement_west/5.png"
       ],
       "canvas": [
-        96,
-        96
+        64,
+        64
       ],
       "anchor_px": [
-        48,
-        92
+        32,
+        61
       ]
     },
     "deplacement_south_east": {
@@ -219,12 +219,12 @@
         "assets/processed/sprites/cendre/deplacement_south_east/5.png"
       ],
       "canvas": [
-        96,
-        96
+        64,
+        64
       ],
       "anchor_px": [
-        48,
-        92
+        32,
+        61
       ]
     },
     "deplacement_south_west": {
@@ -237,12 +237,12 @@
         "assets/processed/sprites/cendre/deplacement_south_west/5.png"
       ],
       "canvas": [
-        96,
-        96
+        64,
+        64
       ],
       "anchor_px": [
-        48,
-        92
+        32,
+        61
       ]
     },
     "deplacement_north_east": {
@@ -255,12 +255,12 @@
         "assets/processed/sprites/cendre/deplacement_north_east/5.png"
       ],
       "canvas": [
-        96,
-        96
+        64,
+        64
       ],
       "anchor_px": [
-        48,
-        92
+        32,
+        61
       ]
     },
     "deplacement_north_west": {
@@ -273,12 +273,12 @@
         "assets/processed/sprites/cendre/deplacement_north_west/5.png"
       ],
       "canvas": [
-        96,
-        96
+        64,
+        64
       ],
       "anchor_px": [
-        48,
-        92
+        32,
+        61
       ]
     },
     "hurt": {
@@ -291,12 +291,12 @@
         "assets/processed/sprites/cendre/hurt/5.png"
       ],
       "canvas": [
-        96,
-        96
+        64,
+        64
       ],
       "anchor_px": [
-        48,
-        92
+        32,
+        61
       ]
     },
     "mort": {
@@ -310,12 +310,12 @@
         "assets/processed/sprites/cendre/mort/6.png"
       ],
       "canvas": [
-        96,
-        96
+        64,
+        64
       ],
       "anchor_px": [
-        48,
-        92
+        32,
+        61
       ]
     },
     "dash": {
@@ -327,12 +327,12 @@
         "assets/processed/sprites/cendre/dash/4.png"
       ],
       "canvas": [
-        96,
-        96
+        64,
+        64
       ],
       "anchor_px": [
-        48,
-        92
+        32,
+        61
       ]
     },
     "coup1": {
@@ -344,12 +344,12 @@
         "assets/processed/sprites/cendre/coup1/4.png"
       ],
       "canvas": [
-        96,
-        96
+        64,
+        64
       ],
       "anchor_px": [
-        48,
-        92
+        32,
+        61
       ]
     },
     "coup2": {
@@ -361,12 +361,12 @@
         "assets/processed/sprites/cendre/coup2/4.png"
       ],
       "canvas": [
-        96,
-        96
+        64,
+        64
       ],
       "anchor_px": [
-        48,
-        92
+        32,
+        61
       ]
     },
     "coup3": {
@@ -378,12 +378,12 @@
         "assets/processed/sprites/cendre/coup3/4.png"
       ],
       "canvas": [
-        96,
-        96
+        64,
+        64
       ],
       "anchor_px": [
-        48,
-        92
+        32,
+        61
       ]
     }
   }

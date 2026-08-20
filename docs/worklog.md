@@ -2810,3 +2810,53 @@ G (ennemis Crawler/Brute/Ranged, HitResponse natif) selon disponibilité,
 ou tranches optionnelles flaguées (dash/combo/esquive 8 directions,
 Bras-Faux transfo bras-faux dédiée). Verdict de Milan sur ce build
 attendu avant de pousser plus loin.
+
+---
+
+## 2026-08-20 — Correctif : échelle de Cendre trop grande
+
+Verdict de Milan sur le build F : "le perso est légèrement trop grand
+pour le monde." Investigation avant tout patch (mesure, pas d'ajustement
+au pif) : `docs/ARCHITECTURE_VFX_v3.md` §0 spécifie noir sur blanc "Perso
+jouable & ennemis standard : 64×64 (corps ~44–52 px de haut). Élites :
+96×96." et `GameConstants.PX_PER_METER` documente explicitement "un corps
+joueur d'environ 48px de haut ... sur un canvas 64×64 ... 32 px/m". Mesure
+réelle des frames cuites de Cendre (bbox alpha) : corps ~78-80px de haut
+sur un canvas 96×96 — Cendre avait été cuit sur le gabarit "Élite" au lieu
+du gabarit standard, d'où l'écart visuel avec le sol (tuiles 32px = 1m)
+que l'œil de Milan a détecté correctement : le perso lisait ~2,4-2,5m au
+lieu du ~1,5m que les distances de gameplay (`meters_to_px`, rayon
+Totem du Vide, etc.) supposent déjà.
+
+**Fix choisi et pourquoi pas l'alternative.** Premier réflexe (`scale`
+sur le node `AnimatedSprite2D` du Player) écarté après lecture de
+`animation_composer.gd` : `apply_squash()` réécrit `sprite.scale` en
+partant de `Vector2.ONE` en dur à chaque frame de squash/lean (dash,
+attaques), et `player.gd` reset `_sprite.scale = Vector2.ONE` comme
+neutre à 3 endroits — un `scale` de base non-ONE sur le node aurait été
+écrasé pendant chaque squash et le perso aurait "sauté" à sa vraie taille
+pendant dash/coups. Fix retenu à la place : redimensionner les pixels
+eux-mêmes (`Image.resize` LANCZOS, facteur 2/3 = 96/64, sur les 113
+frames cuites de `assets/processed/sprites/cendre/`), ramenant le corps à
+~52-53px sur un canvas 64×64 — exactement le gabarit "standard" du doc.
+`player.tscn` : `offset` de l'`AnimatedSprite2D` recalculé pour le nouveau
+canvas (`-48` → `-32`, moitié de 64 au lieu de 96), aucun `scale`
+touché — `Vector2.ONE` reste la vraie taille neutre, cohérent avec
+`animation_composer.gd`. `assets/manifests/cendre_frames_cooked.json`
+mis à jour en cohérence (`out_canvas`/`anchor_px`) — non lu par du code
+au runtime (vérifié par grep), mais le manifest doit rester vrai.
+
+**Vérification.** 42/42 gameplay (le check `dash_applies_squash_and_lean_then_resets`
+confirme `scale_after_dash == (1, 1)`, donc le système squash/lean reste
+cohérent avec la nouvelle taille de base). Capture visuelle jetable dans
+`test_arena.tscn` (script supprimé après usage, même discipline que F) :
+le perso lit maintenant à une échelle humaine crédible à côté des tuiles
+de sol, au lieu de dominer l'écran.
+
+**Web rebuild + commit.**
+
+### Prochain pas
+
+G (ennemis Crawler/Brute/Ranged) — même gabarit 64×64/48px à respecter
+dès leur génération pour rester cohérent avec Cendre, plutôt que de
+répéter cette erreur. Verdict de Milan sur ce build attendu.
