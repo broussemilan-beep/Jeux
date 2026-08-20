@@ -3296,3 +3296,105 @@ Plan H (J1→J2→R3→D→E/F/G→H) terminé en entier. En attente du verdict
 de Milan sur ce build complet avant de proposer la suite (art réel des
 ennemis/boss différé depuis G/H2, ou nouveau contenu au-delà du
 vertical slice).
+
+## 2026-08-20 — Bake-off Animation, Voie C (checkpoint GARDE-FOU 1 — en attente verdict Milan)
+
+Expérience parallèle et bornée (hors plan H, n'interrompt rien) :
+comparer 3 pipelines d'animation (Voie A baseline inchangée, Voie B
+frames doublées PixelLab mandatée séparément — Addendum C.6, pas
+dupliquée ici, Voie C 3D→pixel art) sur un périmètre minuscule avant
+de choisir le pipeline du jeu. Tout le code de cette brique vit dans
+`experiments/bakeoff_voie_c/`, isolé de `src/`/`scenes/` — supprimable
+sans toucher au jeu si Voie C n'est pas retenue.
+
+### Investigation outil (avant tout code)
+
+`github.com/bukkbeek/pixel_renderer` du mandat n'existe pas tel quel —
+le vrai nom est **GodotPixelRenderer** (`bukkbeek/GodotPixelRenderer`,
+confirmé par lecture du dépôt cloné). Constats :
+- Application **GUI pure** (édition à la souris), aucun mode CLI/
+  headless documenté ni trouvé dans le code.
+- Requiert **Godot 4.4+** (notre projet est en 4.3).
+- **MIT**, confirmé (LICENSE, Copyright Bukkbeek).
+
+Décision (conforme au mandat, branche anticipée par lui) : ne PAS
+piloter l'appli à l'aveugle sans écran, ne pas tenter de faire tourner
+un second projet Godot 4.4 en parallèle pour une seule expérience.
+Reprise du SEUL shader (`PixelArt.gdshader` : pixelisation par blocs,
+quantification, dithering Bayer 4x4 sur transitions ombre/lumière,
+contour Sobel), licence MIT = réutilisation libre, adapté dans
+`experiments/bakeoff_voie_c/pixel_quantize.gdshader` — palette 8
+couleurs fixes de l'original retirée (notre palette n'est pas 8
+teintes mais une bande de Value HSV, `data/palettes/value_bands.json`),
+remplacée par une désaturation + quantification du Value REMAPPÉE
+DANS cette bande (V ∈ [16.5,90]%, marge de sécurité au-dessus du
+plancher 15% pour absorber l'arrondi PNG 8-bit) — garantit que CHAQUE
+palier de quantification est légal par construction, pas une
+approximation à corriger a posteriori.
+
+### Modèle 3D
+
+Aucun outil de génération 3D accessible depuis cet environnement (pas
+de MCP dédié type Meshy/Tripo — cherché, absent ; pas de Blender en
+CLI — vérifié, absent). Fallback explicitement prévu par le mandat :
+proxy low-poly construit PAR SCRIPT (`cendre_lowpoly.gd` — sphère
+tête, capsules torse/bras/jambes, aucune modélisation main). Aucun
+détail fin (harnais, sangles, cape) — hors de portée d'un proxy
+primitive, et de toute façon invisible à 64×64 après quantification ;
+volumes/teintes calqués sur le turnaround v3 (crâne pâle, tunique
+grise, pantalon sombre, sans cape).
+
+### GARDE-FOU 1 — rendu idle seul, gate automatique, PAS d'animation
+
+Caméra orthogonale 3/4 (yaw 35°, pitch 18°, cadrage dérivé du gabarit
+réel — voir ci-dessous), SubViewport 3D transparent → shader → second
+SubViewport 2D transparent (lu directement, pas la fenêtre racine :
+le stretch fixe 640×360 du projet letterboxait une lecture via
+`get_viewport()`). Downscale NEAREST exact (512→64, facteur entier,
+zéro lissage) vers le canevas de jeu réel.
+
+**Gate gabarit** (`scripts/validate_morphology.py`, PAS de copie/
+modification du script — un manifeste à 2 frames construit exprès,
+frame 0 = `idle_south/0.png` réel, frame 1 = rendu Voie C, pour que le
+gate existant compare directement) : **`ok: true`, 0 violation**
+(après réduction du rayon de tête, 0.16→0.11 en unités Godot — la
+première passe donnait un écart de tête de 75%, largement hors
+tolérance 20%, corrigé par mesure/itération géométrique, pas par
+jugement esthétique).
+
+**Gate pixels** (`scripts/validate_pixels.py --category character`) :
+**`ok: true`, 0 violation de bande, alpha ok** (après correctif : la
+quantification par CANAL RGB de l'original produisait des bandes de
+teinte visibles — roses/mauves — sur un gris censé rester neutre,
+artefact classique du posterize par canal sur une couleur quasi
+désaturée ; corrigé en quantifiant le Value HSV seul puis en
+reconvertissant, garantissant R=G=B à chaque palier).
+
+**Aucun verdict de qualité automatisé nulle part dans cette brique** —
+les deux gates ci-dessus sont des mesures géométriques/colorimétriques
+exactes (largeur de silhouette en px, bande de Value), jamais un "est-
+ce que ça a l'air bien". `quality_labels.jsonl` n'est pas touché.
+
+**Coût crédits Voie C : zéro** (aucun appel PixelLab) — donnée de
+comparaison actée telle quelle, pas encore comparée aux deux autres
+voies.
+
+### STOP — en attente du verdict de Milan
+
+Conformément au mandat : **aucune frame d'animation produite sur
+Voie C.** Le rendu idle (`experiments/bakeoff_voie_c/out/voie_c_idle_64.png`)
+et un comparatif côte-à-côte avec la référence réelle du jeu
+(`comparison_baseline_vs_voie_c.png`) sont envoyés à Milan. Si le
+rendu ne convient pas à l'œil, on s'arrête ici et on itère sur la
+géométrie/l'éclairage/le shader — pas de frames de marche/dash/coup
+tant que ce premier rendu n'est pas approuvé.
+
+### Prochain pas
+
+Si validé par Milan : rendre les 3 animations du périmètre (marche,
+dash, un coup), vérifier l'absence de scintillement/tremblement de
+pixels en mouvement (artefact documenté de ce type de pipeline),
+construire le comparatif final à 3 voies (Voie A telle quelle, Voie B
+— résultat de son mandat séparé Addendum C.6, à récupérer sans le
+dupliquer, Voie C). Si non validé : itérer le rendu idle seul, ne pas
+continuer vers l'animation tant que non résolu.
