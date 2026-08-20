@@ -69,6 +69,7 @@ func _ready() -> void:
 	await _check_run_state_persists_player_stats_across_new_player_instances()
 	await _check_gate_entrance_detects_player_once_and_targets_the_gate_scene()
 	await _check_gate_premiere_wires_exit_signal_to_a_handler()
+	await _check_character_screen_toggles_open_closed_and_shows_class_none()
 
 	_report()
 
@@ -1587,6 +1588,49 @@ func _check_gate_premiere_wires_exit_signal_to_a_handler() -> void:
 	})
 	mock.queue_free()
 	await get_tree().physics_frame
+
+
+## H5 (GDD §17 : "Écran personnage : NAME/RANK/LEVEL/FOR/AGI/INT/VIT/
+## CLASS/SKILLS/EQUIPMENT... afficher CLASS = NONE"). L'écran lit
+## Input.is_action_just_pressed() dans son propre _process() (pas
+## _physics_process, voir character_screen.gd) — d'où `await
+## process_frame` ici, pas `physics_frame` comme le reste du fichier.
+func _check_character_screen_toggles_open_closed_and_shows_class_none() -> void:
+	var screen: CharacterScreen = load("res://scenes/ui/character_screen.tscn").instantiate()
+	add_child(screen)
+	await get_tree().process_frame
+
+	var closed_before: bool = not screen.is_open()
+
+	Input.action_press("character_screen")
+	await get_tree().process_frame
+	Input.action_release("character_screen")
+	var open_after_press: bool = screen.is_open()
+	await get_tree().process_frame  # laisse _process() peupler les labels depuis _player
+
+	var stats_text: String = screen.get_node("Panel/StatsLabel").text
+	var shows_class_none: bool = stats_text.contains("CLASSE : AUCUNE")
+	var shows_name: bool = stats_text.contains("Rank Zero")
+
+	Input.action_press("character_screen")
+	await get_tree().process_frame
+	Input.action_release("character_screen")
+	var closed_after_second_press: bool = not screen.is_open()
+
+	_checks.append({
+		"name": "character_screen_toggles_open_closed_and_shows_class_none",
+		"pass": (
+			closed_before and open_after_press and shows_class_none and shows_name
+			and closed_after_second_press
+		),
+		"detail": {
+			"closed_before": closed_before, "open_after_press": open_after_press,
+			"shows_class_none": shows_class_none, "shows_name": shows_name,
+			"closed_after_second_press": closed_after_second_press, "stats_text": stats_text,
+		},
+	})
+	screen.queue_free()
+	await get_tree().process_frame
 
 
 func _report() -> void:

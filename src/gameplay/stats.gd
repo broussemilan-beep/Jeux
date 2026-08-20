@@ -21,6 +21,20 @@ class_name Stats
 @export var level: int = 1
 @export var xp: float = 0.0
 
+## H5 (GDD §4/§17 : "4 stats LOCKED : FOR, AGI, INT, VIT", écran
+## personnage "FOR / AGI / INT / VIT"). Contrairement à int_stat plus
+## haut, aucune recette de combat ne lit encore for_stat/agi_stat/
+## vit_stat — mais l'écran personnage lui-même EST le consommateur ici :
+## le GDD verrouille ces 4 stats et exige explicitement leur affichage,
+## donc les laisser absentes serait respecter la lettre de la règle
+## "pas de stat non exercée" en trahissant l'exigence GDD qui l'a posée.
+## Même croissance linéaire par niveau que int_stat (+1/niveau) —
+## câbler un vrai scaling de dégâts (FOR sur Bras-Faux, GDD §7.1) reste
+## un chantier séparé, hors scope de l'écran personnage lui-même.
+@export var for_stat: float = 10.0
+@export var agi_stat: float = 10.0
+@export var vit_stat: float = 10.0
+
 signal died
 signal leveled_up(new_level: int)
 
@@ -58,4 +72,7 @@ func add_xp(amount: float) -> void:
 		max_hp += 10.0
 		hp += 10.0
 		int_stat += 1.0
+		for_stat += 1.0
+		agi_stat += 1.0
+		vit_stat += 1.0
 		leveled_up.emit(level)

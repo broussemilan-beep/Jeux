@@ -3236,3 +3236,63 @@ Player, HUD (PV/niveau/cooldowns) tous corrects ensemble.
 H5 (écran personnage : NOM/RANG/NIVEAU/FOR/AGI/INT/VIT/CLASSE=AUCUNE/
 COMPÉTENCES/ÉQUIPEMENT), dernière tranche du plan H, ou
 réordonnancement si Milan le demande après verdict sur ce build.
+
+## 2026-08-20 — H5 (Écran personnage)
+
+Mandat §6/GDD §17 : "Écran personnage : NAME / RANK / LEVEL / FOR / AGI
+/ INT / VIT / CLASS / SKILLS / EQUIPMENT. Rank Zero doit afficher
+CLASS = NONE et ne jamais recevoir une Classe inventée." Cinquième et
+dernière tranche du plan H — boucle le vertical slice GDD §21.
+
+### Fait
+
+**3 nouvelles stats sur `Stats`** (`for_stat`, `agi_stat`, `vit_stat`,
+défaut 10.0, +1/niveau comme `int_stat` déjà existant) : le GDD verrouille
+4 stats (FOR/AGI/INT/VIT, §4), et l'écran personnage lui-même est le
+premier consommateur réel qui les exige — les ajouter ici respecte la
+discipline "pas de stat non exercée" (documentée dans stats.gd depuis H1)
+plutôt que de la trahir en cachant des stats que le GDD impose d'afficher.
+Câbler un vrai scaling de dégâts dessus (FOR sur Bras-Faux, GDD §7.1)
+reste un chantier séparé, explicitement hors scope de cette brique.
+
+**`CharacterScreen`** (`src/ui/character_screen.gd` +
+`scenes/ui/character_screen.tscn`, nouveau) : panneau plein écran
+basculé par l'action `character_screen` (Tab clavier, bouton tactile
+"PERSO" ajouté à `touch_controls.tscn`). Poll en `_process()`, même
+discipline que `Hud` (un lecteur d'état, jamais un propriétaire).
+NOM/RANG = "Rank Zero"/"Zéro" — pas des valeurs inventées, c'est
+l'identité même du protagoniste dans le GDD (§1/§3 : aucun nom propre,
+connu uniquement par son Rang). COMPÉTENCES affiche les deux
+emplacements déjà câblés (E = Gueule Vide, R = Bras-Faux) — aucun
+système de swap de loadout, hors scope. ÉQUIPEMENT affiche les 4
+catégories du GDD §16 (arme/tenue/accessoires/reliques) toutes vides —
+aucun système de loot n'existe encore ("Boutique/craft/déblocages : à
+préciser", GDD §16) ; afficher un objet inventé aurait été pire que rien.
+Instancié dans `outpost.tscn` ET `gate_premiere.tscn` (disponible partout
+où Player/Hud existent).
+
+**Écart assumé, documenté plutôt que corrigé silencieusement** : le
+panneau reste un overlay semi-transparent, il ne met pas le jeu en pause
+et ne désactive pas les boutons tactiles de combat en dessous — un vrai
+menu pause n'est demandé nulle part dans le mandat/GDD pour cette
+tranche, l'ajouter aurait été une extension de scope non sollicitée.
+
+**1 nouveau check smoke test** (60/60, aucune régression) :
+`character_screen_toggles_open_closed_and_shows_class_none` (ouvre/
+ferme sur pressions successives de l'action, vérifie "Rank Zero" et
+"CLASSE : AUCUNE" dans le texte affiché — via `await process_frame`,
+pas `physics_frame`, parce que l'écran lit son action dans `_process()`).
+
+**Vérification visuelle réelle** (script jetable, supprimé après
+usage) : `outpost.tscn` chargé, action `character_screen` simulée —
+les 4 stats, CLASSE : AUCUNE, les 2 compétences et les 4 emplacements
+d'équipement vides s'affichent tous correctement ensemble.
+
+**Web rebuild + commit.**
+
+### Prochain pas
+
+Plan H (J1→J2→R3→D→E/F/G→H) terminé en entier. En attente du verdict
+de Milan sur ce build complet avant de proposer la suite (art réel des
+ennemis/boss différé depuis G/H2, ou nouveau contenu au-delà du
+vertical slice).

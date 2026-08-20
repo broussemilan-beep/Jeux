@@ -135,3 +135,25 @@ theme_override_font_sizes/font_size = 12
 horizontal_alignment = 1
 vertical_alignment = 1
 text = "PW2"
+
+[node name="ButtonCharacterScreen" type="TouchScreenButton" parent="."]
+position = Vector2(610, 70)
+shape = SubResource("1")
+shape_centered = true
+shape_visible = false
+action = "character_screen"
+
+[node name="Visual" type="Polygon2D" parent="ButtonCharacterScreen"]
+color = Color(0.55, 0.55, 0.6, 0.5)
+polygon = PackedVector2Array(26, 0, 18.4, 18.4, 0, 26, -18.4, 18.4, -26, 0, -18.4, -18.4, 0, -26, 18.4, -18.4)
+
+[node name="Label" type="Label" parent="ButtonCharacterScreen"]
+offset_left = -24.0
+offset_top = -10.0
+offset_right = 24.0
+offset_bottom = 10.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "PERSO"

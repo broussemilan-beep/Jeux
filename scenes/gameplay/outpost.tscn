@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/gameplay/player.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/ui/touch_controls.tscn" id="2"]
@@ -7,6 +7,7 @@
 [ext_resource type="Shader" path="res://src/vfx/shaders/vignette.gdshader" id="5"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="6"]
 [ext_resource type="Script" path="res://src/world/gate_entrance.gd" id="7"]
+[ext_resource type="PackedScene" path="res://scenes/ui/character_screen.tscn" id="8"]
 
 [sub_resource type="ShaderMaterial" id="1"]
 shader = ExtResource("5")
@@ -60,5 +61,7 @@ mouse_filter = 2
 color = Color(1, 1, 1, 1)
 
 [node name="Hud" parent="." instance=ExtResource("6")]
+
+[node name="CharacterScreen" parent="." instance=ExtResource("8")]
 
 [node name="TouchControls" parent="." instance=ExtResource("2")]

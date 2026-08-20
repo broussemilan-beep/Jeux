@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3]
+[gd_scene load_steps=19 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/gameplay/player.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/gameplay/enemy_crawler.tscn" id="2"]
@@ -16,6 +16,7 @@
 [ext_resource type="Script" path="res://src/world/gate_exit.gd" id="14"]
 [ext_resource type="Script" path="res://src/gameplay/stats.gd" id="15"]
 [ext_resource type="Script" path="res://src/world/gate_premiere.gd" id="16"]
+[ext_resource type="PackedScene" path="res://scenes/ui/character_screen.tscn" id="17"]
 
 [sub_resource type="ShaderMaterial" id="1"]
 shader = ExtResource("9")
@@ -181,5 +182,7 @@ mouse_filter = 2
 color = Color(1, 1, 1, 1)
 
 [node name="Hud" parent="." instance=ExtResource("10")]
+
+[node name="CharacterScreen" parent="." instance=ExtResource("17")]
 
 [node name="TouchControls" parent="." instance=ExtResource("6")]
