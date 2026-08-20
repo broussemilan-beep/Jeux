@@ -62,6 +62,10 @@ func _ready() -> void:
 	await _check_boss_slam_spares_player_outside_radius_but_hits_inside()
 	await _check_boss_enrages_at_hp_threshold()
 	await _check_boss_death_awards_xp_reward()
+	await _check_gate_room_locks_until_cleared()
+	await _check_xp_pickup_grants_xp_and_frees_itself()
+	await _check_heal_zone_heals_player_to_full()
+	await _check_gate_exit_emits_signal_on_player_contact()
 
 	_report()
 
@@ -1336,6 +1340,150 @@ func _check_boss_death_awards_xp_reward() -> void:
 		"pass": is_equal_approx(xp_after - xp_before, reward) and reward > 50.0,
 		"detail": {"xp_before": xp_before, "xp_after": xp_after, "xp_reward": reward},
 	})
+
+
+## H3 (GDD §11 : "Entrée → combats → ... → embranchement → Elite →
+## repos → boss → ..."). GateRoom.gd n'a pas de scène packagée dédiée —
+## construit à la main (Enemies/Door en enfants AVANT d'entrer dans
+## l'arbre, pour que _ready() les voie déjà) plutôt que d'ajouter un
+## .tscn jetable pour une seule structure de 3 nœuds.
+func _check_gate_room_locks_until_cleared() -> void:
+	var room := Node2D.new()
+	room.name = "GateRoomCheck"
+	room.set_script(load("res://src/world/gate_room.gd"))
+
+	var enemies_node := Node2D.new()
+	enemies_node.name = "Enemies"
+	var crawler := EnemyCrawlerScene.instantiate()
+	crawler.global_position = Vector2(2800, 2500)
+	enemies_node.add_child(crawler)
+	room.add_child(enemies_node)
+
+	var door := Node2D.new()
+	door.name = "Door"
+	room.add_child(door)
+
+	room.requires_clear = true
+	add_child(room)
+	await get_tree().physics_frame
+
+	var cleared_before: bool = room.is_cleared()
+	var door_present_before: bool = room.has_node("Door")
+
+	crawler.take_damage(9999.0, crawler.global_position + Vector2(-10, 0))
+	await get_tree().physics_frame
+
+	var cleared_after: bool = room.is_cleared()
+	var door_present_after: bool = room.has_node("Door")
+
+	_checks.append({
+		"name": "gate_room_locks_door_until_enemies_cleared_then_opens",
+		"pass": not cleared_before and door_present_before and cleared_after and not door_present_after,
+		"detail": {
+			"cleared_before": cleared_before, "door_present_before": door_present_before,
+			"cleared_after": cleared_after, "door_present_after": door_present_after,
+		},
+	})
+	room.queue_free()
+	await get_tree().physics_frame
+
+
+## H3 (GDD §11 : "loot/événement"/"récompense").
+func _check_xp_pickup_grants_xp_and_frees_itself() -> void:
+	await _wait_until(func(): return not _player._action_lock, 60)
+	_player.global_position = Vector2(200, 2700)
+	_player.stats.level = 10
+	_player.stats.xp = 0.0
+
+	var pickup := Area2D.new()
+	pickup.name = "XpPickupCheck"
+	pickup.set_script(load("res://src/world/xp_pickup.gd"))
+	pickup.xp_amount = 25.0
+	var shape := CollisionShape2D.new()
+	var rect := RectangleShape2D.new()
+	rect.size = Vector2(40, 40)
+	shape.shape = rect
+	pickup.add_child(shape)
+	pickup.global_position = _player.global_position
+	add_child(pickup)
+
+	var xp_before: float = _player.stats.xp
+	# queue_free() est différé (fin de frame), pas instantané : sonder
+	# jusqu'à ce qu'il ait vraiment eu lieu plutôt que fixer un nombre de
+	# frames arbitraire, même discipline que _wait_until partout ailleurs.
+	await _wait_until(func(): return not is_instance_valid(pickup), 20)
+	var xp_after: float = _player.stats.xp
+	var pickup_freed: bool = not is_instance_valid(pickup)
+
+	_checks.append({
+		"name": "xp_pickup_grants_xp_and_frees_itself_on_player_contact",
+		"pass": is_equal_approx(xp_after - xp_before, 25.0) and pickup_freed,
+		"detail": {"xp_before": xp_before, "xp_after": xp_after, "pickup_freed": pickup_freed},
+	})
+
+
+## H3 (GDD §11 : salle "repos" — interprétation documentée dans
+## HealZone.gd).
+func _check_heal_zone_heals_player_to_full() -> void:
+	await _wait_until(func(): return not _player._action_lock, 60)
+	_player.global_position = Vector2(200, 2900)
+	_player.stats.hp = 10.0
+	_player.stats.max_hp = 100.0
+
+	var zone := Area2D.new()
+	zone.name = "HealZoneCheck"
+	zone.set_script(load("res://src/world/heal_zone.gd"))
+	var shape := CollisionShape2D.new()
+	var rect := RectangleShape2D.new()
+	rect.size = Vector2(60, 60)
+	shape.shape = rect
+	zone.add_child(shape)
+	zone.global_position = _player.global_position
+	add_child(zone)
+
+	var hp_before: float = _player.stats.hp
+	await get_tree().physics_frame
+	await get_tree().physics_frame
+	var hp_after: float = _player.stats.hp
+
+	_checks.append({
+		"name": "heal_zone_heals_player_to_full_on_contact",
+		"pass": is_equal_approx(hp_before, 10.0) and is_equal_approx(hp_after, 100.0),
+		"detail": {"hp_before": hp_before, "hp_after": hp_after},
+	})
+	zone.queue_free()
+	await get_tree().physics_frame
+
+
+## H3 (GDD §11/§20 : "sortie" -> signal câblable par H4, voir GateExit.gd).
+func _check_gate_exit_emits_signal_on_player_contact() -> void:
+	await _wait_until(func(): return not _player._action_lock, 60)
+	_player.global_position = Vector2(200, 3100)
+
+	var exit_marker := Area2D.new()
+	exit_marker.name = "GateExitCheck"
+	exit_marker.set_script(load("res://src/world/gate_exit.gd"))
+	var shape := CollisionShape2D.new()
+	var rect := RectangleShape2D.new()
+	rect.size = Vector2(40, 40)
+	shape.shape = rect
+	exit_marker.add_child(shape)
+	exit_marker.global_position = _player.global_position
+	add_child(exit_marker)
+
+	var completed: Array = []
+	exit_marker.gate_completed.connect(func(): completed.append(true))
+
+	await get_tree().physics_frame
+	await get_tree().physics_frame
+
+	_checks.append({
+		"name": "gate_exit_emits_gate_completed_on_player_contact",
+		"pass": completed.size() == 1,
+		"detail": {"completed_count": completed.size()},
+	})
+	exit_marker.queue_free()
+	await get_tree().physics_frame
 
 
 func _report() -> void:

@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://src/gameplay/stats.gd" id="2"]
 
 [sub_resource type="Resource" id="1"]
+resource_local_to_scene = true
 script = ExtResource("2")
 max_hp = 35.0
 hp = 35.0

@@ -3100,3 +3100,67 @@ distincte des 3 ennemis normaux.
 
 H3 (structure de la Première Gate) selon le plan, ou réordonnancement
 si Milan le demande après verdict sur ce build.
+
+---
+
+## 2026-08-20 — H3 (Structure de la Première Gate)
+
+Mandat §6/GDD §11 : "Entrée → combats → loot/événement → embranchement →
+Elite → repos → boss → récompense → sortie." Troisième tranche du plan H.
+`scenes/gameplay/gate_premiere.tscn` devient `run/main_scene` (remplace
+`test_arena.tscn`, gardée comme bac à sable — rien ne la référence
+ailleurs, aucune régression).
+
+### Fait
+
+**9 salles alignées sur un seul niveau continu** (pas de scènes séparées
+à charger : le joueur et le HUD restent le même nœud tout du long, zéro
+persistance d'état à gérer entre changements de scène). `GateRoom`
+(`src/world/gate_room.gd`) verrouille une `Door` enfant tant que TOUS
+les ennemis DE CETTE SALLE (suivis par référence directe, jamais une
+requête sur le groupe global "enemies" — un ennemi d'une autre salle ne
+doit jamais ouvrir/fermer la mauvaise porte) ne sont pas morts. Combat
+(2 Crawler + 1 Ranged), Elite (1 Brute reconfiguré, PV/dégâts/récompense
+relevés — "pattern supplémentaire" du GDD flagué, pas fait), et Boss
+(Gate Maw, H2) verrouillent leur sortie ; Entrée/Loot/Repos/Récompense
+restent toujours ouvertes. Embranchement : deux voies parallèles qui se
+rejoignent, purement spatial (pas de logique de salle).
+
+**3 nouveaux nœuds génériques** (`src/world/`) : `XpPickup` (loot/
+récompense, XP directe au contact — GDD §16 "équipements/matériaux/..."
+reste explicitement TBD, hors scope ici), `HealZone` (salle "repos" —
+interprétation délibérée et documentée du mot lui-même : soin complet
+au contact, une fois, rien de plus inventé), `GateExit` (signal
+`gate_completed`, câblable par H4 quand l'Outpost existera — pas de
+transition de scène inventée vers un hub qui n'existe pas encore).
+
+**Bug sérieux trouvé par le nouveau test de salle, pas en écrivant le
+niveau lui-même :** aucune des 4 scènes d'ennemi (Crawler/Brute/Ranged/
+Boss, depuis G/H2) n'avait `resource_local_to_scene = true` sur son
+sous-ressource `Stats`. Godot met en cache et PARTAGE la même instance
+de Resource entre tous les `instantiate()` d'une même scène tant que ce
+flag n'est pas posé — deux Crawlers dans la même salle Combat de
+`gate_premiere.tscn` auraient donc partagé un seul pool de PV (blesser
+l'un aurait blessé "les deux" identiquement, un bug de gameplay réel,
+silencieux, présent depuis G). Trouvé parce que le test de salle tuait
+un Crawler dans un test PUIS en construisait un autre juste après : le
+second héritait des PV à zéro du premier. Corrigé sur les 4 scènes +
+l'override Elite de cette brique.
+
+**4 nouveaux checks smoke test** (56/56, aucune régression) :
+`gate_room_locks_door_until_enemies_cleared_then_opens`,
+`xp_pickup_grants_xp_and_frees_itself_on_player_contact`,
+`heal_zone_heals_player_to_full_on_contact`,
+`gate_exit_emits_gate_completed_on_player_contact`.
+
+**Vérification visuelle réelle** (script jetable, supprimé après
+usage) : la vraie scène `gate_premiere.tscn` chargée en main_scene,
+porte de la salle Combat visible et bloquant le couloir, 3 ennemis +
+HUD tous corrects ensemble.
+
+**Web rebuild + commit.**
+
+### Prochain pas
+
+H4 (Outpost + boucle de run) ou H5 (écran personnage) selon le plan,
+ou réordonnancement si Milan le demande après verdict sur ce build.
