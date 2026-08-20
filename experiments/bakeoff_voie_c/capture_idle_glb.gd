@@ -87,6 +87,23 @@ func _ready() -> void:
 				anim_player.seek(anim_time, true)
 				anim_player.advance(0.0)
 
+	# Pose de repos RÉELLE (bind pose / T-pose du rig) — indépendante de
+	# tout clip baké. Constaté empiriquement : même `clip0` (le seul clip
+	# du GLB riggé, 0.3s) rejoue en fait une foulée de marche dès t=0, pas
+	# une pose neutre — donc chercher "l'animation la plus courte" ne
+	# suffit pas. Ici on arrête tout AnimationPlayer (au cas où un clip
+	# soit en autoplay) puis on réinitialise chaque Skeleton3D à sa pose
+	# de repos (`reset_bone_poses()`), qui EST la vraie bind pose exportée
+	# par le rig, indépendamment de tout clip.
+	if args.get("rest_pose", "0") == "1":
+		var anim_player_rp := _find_animation_player(character)
+		if anim_player_rp != null:
+			anim_player_rp.stop()
+		var skeletons: Array[Skeleton3D] = []
+		_collect_skeletons(character, skeletons)
+		for skel in skeletons:
+			skel.reset_bone_poses()
+
 	# Bounding box réelle du modèle importé (pas de total_height exposé
 	# comme sur le proxy primitives) — parcourt tous les MeshInstance3D
 	# pour cadrer la caméra de la même façon que cendre_lowpoly.gd. Pour un
@@ -181,6 +198,13 @@ func _compute_aabb(node: Node) -> AABB:
 	for i in range(1, meshes.size()):
 		result = result.merge(meshes[i].global_transform * meshes[i].get_aabb())
 	return result
+
+
+func _collect_skeletons(node: Node, out: Array[Skeleton3D]) -> void:
+	if node is Skeleton3D:
+		out.append(node)
+	for child in node.get_children():
+		_collect_skeletons(child, out)
 
 
 func _find_animation_player(node: Node) -> AnimationPlayer:

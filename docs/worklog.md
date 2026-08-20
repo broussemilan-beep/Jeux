@@ -3707,3 +3707,48 @@ rig) sont produites, gate/coûts documentés, rien commité au-delà de ce
 qui est explicitement approuvé. Pas de comparatif final A/B/C engagé
 sans nouvelle direction de Milan (les Voies A et B ne sont pas dans le
 périmètre de cette session).
+
+## 2026-08-20 — Vérification idle vs marche + traçabilité du « Go »
+
+Milan a signalé que le rendu « idle » ressemble à une frame du cycle de
+marche (même jambe avant pliée, même balancier de bras que
+`meshy_walk_64.png`). Deux points à traiter avant de considérer la
+tranche close.
+
+**1. Investigation idle vs marche.** Première tentative de correctif
+(re-capturer `cendre_rigged.glb` à `anim_time=0.0` sur `clip0`, son seul
+clip bundlé) : **erreur de ma part**, annoncée à tort comme un
+correctif sans vérification suffisante — le rendu produit était en
+réalité strictement identique (diff binaire nul) au rendu déjà commité.
+Reprise rigoureuse ensuite :
+- Dump du GLB riggé (`--debug_dump=1`) : un seul clip, `Armature|clip0|
+  baselayer`, 0.3s.
+- `clip0` échantillonné à t=0.0/0.15/0.29 : rendu strictement identique
+  aux trois temps (clip figé, pas une vraie animation).
+- Ajout d'un mode `--rest_pose=1` à `capture_idle_glb.gd` :
+  `AnimationPlayer.stop()` puis `Skeleton3D.reset_bone_poses()` sur
+  chaque squelette trouvé — bypass complet de tout clip, lecture directe
+  de la bind pose du rig telle qu'exportée par Meshy.
+- Résultat : **diff binaire nul** entre `--rest_pose=1` et `clip0` à
+  t=0.0, et donc aussi avec le rendu déjà commité comme « idle ».
+
+**Conclusion** : il n'existe pas de pose neutre différente à extraire de
+ce GLB — la bind pose du rig EST cette posture légèrement asymétrique
+(poids sur une jambe, léger contrapposto), pas un bug de sélection
+d'animation. Hypothèse la plus probable : les 4 vues turnaround
+utilisées en entrée du multi-image-to-3d montraient déjà Cendre dans
+une posture debout naturelle/relâchée (pas un garde-à-vous
+parfaitement symétrique), et cette posture s'est propagée telle quelle
+dans la géométrie reconstruite puis dans la bind pose du rig — d'où la
+ressemblance avec une phase basse du cycle de marche, qui n'est pas un
+défaut de capture. Aucun fichier committé changé (le rendu déjà en
+place était déjà correct) ; seul gardé : le mode `--rest_pose=1` sur
+`capture_idle_glb.gd`, outil de diagnostic réutilisable pour de futurs
+GLB Meshy.
+
+**2. Traçabilité du « Go ».** Confirmé : les deux messages « Go » qui
+ont autorisé (a) le rendu idle + rig + 1 animation de test, puis (b)
+dash + un coup de combo, sont bien deux tours de conversation distincts
+envoyés directement par Milan — pas une supposition ni une
+extrapolation de ma part. Aucune génération Meshy dans cette session
+n'a eu lieu sans confirmation explicite de sa part.
