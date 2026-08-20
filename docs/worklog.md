@@ -3752,3 +3752,57 @@ dash + un coup de combo, sont bien deux tours de conversation distincts
 envoyés directement par Milan — pas une supposition ni une
 extrapolation de ma part. Aucune génération Meshy dans cette session
 n'a eu lieu sans confirmation explicite de sa part.
+
+## 2026-08-20 — Diagnostic flou dash/combo (suspect 3 : déformation de peau)
+
+Milan a signalé un flou/bavure visible sur les rendus dash et combo
+(mais pas idle/marche), et pointé la déformation de peau aux
+articulations sur poses extrêmes comme cause probable. Protocole en 3
+étapes, dans l'ordre demandé — coût minimal avant tout, pas de nouvelle
+piste (Mixamo etc.) tant que 1-3 ne sont pas épuisés.
+
+**1. Anti-aliasing / motion blur (gratuit).** Vérifié `project.godot`
+section `[rendering]` et le code de `capture_idle_glb.gd` : aucun
+réglage MSAA/FXAA/TAA n'est présent nulle part — le projet tourne sur
+les valeurs par défaut du moteur (désactivées par défaut sur Godot
+4.3). Aucun effet de profondeur de champ (DOF) sur la caméra ni sur
+l'Environment créés par le script. **Confirmé : ni AA ni motion blur
+actifs** — rien à corriger ici, cause écartée.
+
+**2. Pose moins extrême, coût minimal (priorité).** Au lieu de payer
+une nouvelle animation (3cr), récupéré gratuitement `basic_animations.
+running_glb_url` — déjà inclus dans le résultat du rig original (payé
+une fois, 5cr, jamais téléchargé jusqu'ici, seule `walking_glb_url`
+avait été utilisée). `running` : flexion de genou modérée à extrême
+selon le temps choisi, mais **aucune rotation complète du corps**
+(contrairement à Roll_Dodge). Capturé à travers le pipeline shader
+complet (même résolution 512px, mêmes réglages) à deux temps
+(`t=0.17` flexion modérée, `t=0.5` flexion extrême du genou porteur) et
+comparé côte à côte avec `meshy_dash_raw.png` (Roll_Dodge) et
+`meshy_combo_raw.png` (Left_Slash) dans
+`diagnostic_blur_dash_vs_running.png`.
+
+**Résultat net** : dash (Roll_Dodge, rotation complète) est
+visiblement le plus flou/bavé des quatre — silhouette en dégradés mous
+plutôt qu'en blocs de pixellisation nets. Combo (Left_Slash) est
+intermédiaire. **Les deux frames running (y compris à flexion de genou
+extrême) restent nettes**, comparables en qualité à l'idle/la marche.
+**Conclusion : le flou n'est PAS lié à un angle d'articulation extrême
+en général — il est spécifiquement lié à la rotation complète du corps
+(Roll_Dodge)**, cohérent avec l'hypothèse « suspect 3 » de Milan
+(déformation de peau), mais plus précisément localisée : c'est le
+mouvement de rotation/culbute qui semble étirer/déformer le skinning
+autour du torse et des hanches, pas la flexion d'une articulation
+isolée (genou, coude).
+
+**Coût** : 0 crédit (téléchargement d'une animation déjà payée avec le
+rig). Solde inchangé, 1054/1100.
+
+### STOP — étape 2 terminée, en attente de confirmation avant l'étape 3
+
+Point 1 et 2 du protocole complétés et documentés. L'étape 3 (remesh à
+densité plus élevée, ~80-100k faces, sous la limite de rig 320k) n'est
+PAS engagée : coût réel à confirmer avant tout lancement, comme
+demandé. `cendre_running.glb` téléchargé et gardé dans
+`experiments/bakeoff_voie_c/meshy_output/` (gitignore, non commité,
+même discipline que les autres GLB bruts).
