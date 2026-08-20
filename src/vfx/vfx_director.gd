@@ -48,6 +48,14 @@ var _registry: Dictionary = {
 	"shardBurst": "res://src/vfx/primitives/shard_burst.gd",
 	"arcSlash": "res://src/vfx/primitives/arc_slash.gd",
 	"ribbonTrail": "res://src/vfx/primitives/ribbon_trail.gd",
+	"impactStar": "res://src/vfx/primitives/impact_star.gd",
+	"converge": "res://src/vfx/primitives/converge.gd",
+	"spiral": "res://src/vfx/primitives/spiral.gd",
+	"beamSegment": "res://src/vfx/primitives/beam_segment.gd",
+	"smokePuff": "res://src/vfx/primitives/smoke_puff.gd",
+	"dustKick": "res://src/vfx/primitives/dust_kick.gd",
+	"orbital": "res://src/vfx/primitives/orbital.gd",
+	"screenSlash": "res://src/vfx/primitives/screen_slash.gd",
 }
 
 ## Journal en mémoire de chaque spawn — §8.2 "journalise seed + recette

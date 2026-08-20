@@ -28,6 +28,7 @@ func _ready() -> void:
 	await _check_gueule_vide_seed_is_fixed_not_wallclock()
 	_check_budget_degrades_decorative_layer()
 	_check_budget_never_refuses_protected_layer()
+	await _check_all_primitives_spawn_tick_and_cleanup()
 
 	var all_pass: bool = true
 	for c in _checks:
@@ -188,6 +189,38 @@ func _check_budget_degrades_decorative_layer() -> void:
 		"name": "budget_refuses_degradable_layer_over_soft_cap",
 		"pass": verdict["ok"] == false,
 		"detail": verdict,
+	})
+
+
+## D, tranche 3 (primitives 6->15) : couverture générique plutôt que 8
+## checks quasi-identiques copiés-collés — chaque primitive ENREGISTRÉE
+## dans VfxDirector._registry (les 15 du §7.1, pas seulement les 8
+## nouvelles) doit spawn, tourner quelques ticks sans erreur, puis se
+## libérer d'elle-même via le timeout standard du director — la même
+## preuve que _check_timeline_and_cleanup() mais balayée sur tout le
+## registre en une passe, jamais un test par fichier qui dériverait du
+## registre réel (une primitive ajoutée à _registry sans être couverte
+## ici passerait inaperçue).
+func _check_all_primitives_spawn_tick_and_cleanup() -> void:
+	var failures: Array = []
+	var primitive_names: Array = VfxDirector._registry.keys()
+	for primitive_name in primitive_names:
+		VfxDirector.clear_log()
+		var node: Node = VfxDirector.spawn(primitive_name, {
+			"seed": 12345, "origin": Vector2(320, 180), "direction": Vector2.RIGHT,
+			"lifetime_ticks": 3, "overdraw_cost": 1.0,
+		})
+		if node == null:
+			failures.append({"primitive": primitive_name, "reason": "spawn_refused"})
+			continue
+		var freed := await _wait_until(func(): return VfxDirector.get_active_count() == 0, 10)
+		if not freed:
+			failures.append({"primitive": primitive_name, "reason": "did_not_cleanup"})
+
+	_checks.append({
+		"name": "all_registered_primitives_spawn_tick_and_cleanup",
+		"pass": failures.is_empty(),
+		"detail": {"failures": failures, "primitive_count": primitive_names.size()},
 	})
 
 

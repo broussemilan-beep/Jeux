@@ -14,6 +14,12 @@ extends Node2D
 ##   --primitive=impactFlashFrame   nom de primitive (VfxDirector._registry)
 ##   --seed=44102                   seed déterministe (traçabilité replay)
 ##   --tick=1                       tick physique auquel capturer
+##   --lifetime_ticks=2             durée de vie donnée à la primitive (def. 2,
+##                                  §4 "1-2 ticks" d'impactFlashFrame) — augmenter
+##                                  pour capturer un tick significatif d'une
+##                                  primitive à la durée de vie naturellement plus
+##                                  longue (D, tranche 3 : spiral/orbital/etc.),
+##                                  sinon le director la libère avant --tick.
 ##   --out=/chemin/absolu/sortie.png
 ##
 ## --mode=character (Phase 1.3+) : instancie le Player, joue une
@@ -291,6 +297,12 @@ func _run_primitive_capture(args: Dictionary) -> void:
 	var seed_val: int = int(args.get("seed", "0"))
 	var target_tick: int = int(args.get("tick", "1"))
 	var out_path: String = args.get("out", "")
+	# Défaut historique (2) gardé tel quel pour ne rien changer aux appels
+	# existants — certaines primitives (D, tranche 3) ont une durée de vie
+	# naturelle bien plus longue ; --lifetime_ticks permet de capturer un
+	# tick significatif de LEUR propre timeline plutôt que de les figer
+	# artificiellement à 2, ce qui les libérerait avant --tick demandé.
+	var lifetime_ticks: int = int(args.get("lifetime_ticks", "2"))
 
 	if out_path == "":
 		push_error("capture_scene: --out manquant, rien à écrire.")
@@ -305,7 +317,7 @@ func _run_primitive_capture(args: Dictionary) -> void:
 	var node := VfxDirector.spawn(primitive_name, {
 		"seed": seed_val,
 		"origin": origin,
-		"lifetime_ticks": 2,
+		"lifetime_ticks": lifetime_ticks,
 		"overdraw_cost": 12.0,
 	})
 	if node == null:

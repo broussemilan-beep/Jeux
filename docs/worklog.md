@@ -2578,3 +2578,85 @@ beamSegment, etc., `ARCHITECTURE_VFX_v3.md` §7.1) et un second exemple
 d'archétype ("projection avant" ou "canalisation" — les deux restent à 0
 exemple concret). Puis E/F/G en parallèle selon disponibilité, puis H.
 Verdict de Milan sur ce build attendu avant de pousser plus loin dans D.
+
+---
+
+## 2026-08-20 — D, tranche 3 (primitives 6→15, §7.1) + correctif flakiness Bras-Faux
+
+"Okk go" de Milan après verdict sur le build tranche 2 (Bras-Faux). Complète
+la liste des 15 primitives de `ARCHITECTURE_VFX_v3.md` §7.1 — les 7
+premières (impactFlashFrame, groundRing, runicStamp, fractureLine,
+shardBurst, arcSlash, ribbonTrail) existaient déjà ; cette tranche écrit
+les 8 restantes : **impactStar** (étoile asymétrique, CONTACT, silhouette
+secondaire après le flash §9.3), **converge** (fragments qui reviennent
+vers l'origine, ANTICIPATION — l'inverse de shardBurst), **spiral**
+(rotation + aspiration, ACTION CORE), **beamSegment** (rayon en blocs
+DISCRETS avec espaces, ACTION CORE — forme candidate pour un futur
+archétype "projection avant", encore sans exemple concret), **smokePuff**
+(nuage OPAQUE par retrait de blobs un par un, jamais un fondu alpha seul
+— §10.2, CONSEQUENCE), **dustKick** (poussière projetée à l'opposé du
+mouvement au contact sol, CONTACT), **orbital** (instances stables sur
+une ellipse seedée, ACTION CORE), **screenSlash** (lame fine et longue,
+LOCALE malgré le nom — jamais une passe post-render plein écran, §10 —
+réservée aux coups les plus lourds, CONTACT). Chacune suit le contrat
+`configure()/tick()/_draw()` déjà établi, la bande HSV 20-92%, et un
+`z_index` choisi pour occuper une plage encore libre entre les 7
+primitives existantes plutôt que de collisionner (ANTICIPATION 10-19,
+ACTION CORE 20-89, CONTACT 90-99 — voir commentaire de chaque fichier
+pour le rang exact). Toutes enregistrées dans `VfxDirector._registry`
+(`src/vfx/vfx_director.gd`).
+
+**Couverture de test générique plutôt que 8 checks copiés-collés.**
+Nouveau check `all_registered_primitives_spawn_tick_and_cleanup`
+(`tools/smoke_test_vfx_recipe.gd`) : boucle sur TOUT `VfxDirector._registry`
+(15 entrées, pas seulement les 8 nouvelles), spawn chacune, avance
+quelques ticks, vérifie l'auto-libération — la même preuve que
+`_check_timeline_and_cleanup()` mais balayée sur le registre réel, pour
+qu'une primitive ajoutée sans couverture ne passe jamais inaperçue.
+9/9 checks VFX recipe au vert.
+
+**Visuelles, pas seulement "ça compile".** 8 captures individuelles
+(`--mode=primitive`, scratchpad) confirment que chaque primitive produit
+une silhouette distincte et correcte (étoile dentelée, rayon en pointillés,
+lame fine, nuage opaque, essaim orbital, etc.), aucune n'étant vide ou
+blanche. Bug d'outillage trouvé au passage : `capture_scene.gd` fige
+`lifetime_ticks=2` en dur pour le mode `primitive` — les primitives à
+durée de vie plus longue (spiral, orbital...) se libéraient AVANT le tick
+demandé, capture vide. Corrigé en exposant `--lifetime_ticks` (défaut
+inchangé à 2, aucun appel existant affecté).
+
+**Bug réel trouvé et corrigé : flakiness de `bras_faux_input_starts_state_and_plays_placeholder_anim`
+(~1 run sur 4).** Découvert en relançant la suite gameplay plusieurs fois
+par prudence (régression des 8 nouvelles primitives) — pas causé par les
+primitives elles-mêmes (fichiers séparés, aucune n'est touchée par
+`player.gd`/`smoke_test_gameplay.gd`), mais un bug LATENT de la tranche 2
+(Bras-Faux) que la routine "une régression = un run" n'avait jamais
+répété assez de fois pour surprendre. Diagnostiqué par instrumentation
+temporaire (`push_warning`/`print` horodatés au tick physique réel via
+`Engine.get_physics_frames()`, retirés après coup) plutôt que par
+supposition : la pression `dodge` de la sonde "le cooldown bloque une
+seconde esquive immédiate" (fin de `_check_dodge()`) est bien REJETÉE au
+moment voulu (`DODGE_COOLDOWN_TICKS` encore actif), mais son écho "just
+pressed" reste lisible par `Player` plus longtemps que prévu — jusqu'à ce
+que le cooldown de l'esquive s'épuise (~30 ticks plus tard, chronométré
+au tick près sur plusieurs runs identiques), déclenchant alors une VRAIE
+seconde esquive fantôme pile au moment où `_check_bras_faux()` presse
+`power2`. `_action_lock`, consommé par cette esquive imprévue, bloque
+Bras-Faux dès son premier tick (`started: false`). Corrigé par UN tick de
+battement supplémentaire après le relâchement de cette pression-sonde
+(laisse `Player` lire ET consommer l'écho dans la fenêtre où le blocage
+est le comportement attendu, avant de rendre la main au check suivant) —
+12/12 runs consécutifs au vert après correctif, contre l'échec observé
+sur plusieurs des runs précédents. 42/42 checks gameplay, aucune
+régression ailleurs.
+
+**Web rebuild + commit.** `docs/index.html`/`docs/index.pck` régénérés.
+
+### Prochain pas
+
+D, tranche 4 (ou E/F/G si Milan préfère avancer plutôt qu'enrichir le
+tronc commun VFX) : un second exemple d'archétype de cast concret
+("projection avant" via `beamSegment`, ou "canalisation" via
+`spiral`/`converge`) — les deux archétypes restent à 0 exemple, seuls
+"invocation" (Gueule Vide) et "frappe de zone" (Bras-Faux) en ont un.
+Verdict de Milan attendu avant de pousser plus loin.

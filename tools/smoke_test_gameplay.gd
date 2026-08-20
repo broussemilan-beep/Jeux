@@ -808,6 +808,20 @@ func _check_dodge() -> void:
 	Input.action_press("dodge")
 	await get_tree().physics_frame
 	Input.action_release("dodge")
+	# Tick de battement supplémentaire avant de rendre la main (bug réel
+	# trouvé et diagnostiqué par instrumentation ciblée, D tranche 3,
+	# docs/worklog.md) : sans lui, l'écho "just pressed" de CETTE pression
+	# — bloquée ici à raison (DODGE_COOLDOWN_TICKS encore actif) — reste
+	# lisible par Player plus tard que prévu et déclenche une VRAIE
+	# seconde esquive dès que son propre cooldown s'épuise (~30 ticks plus
+	# tard, chronométré au tick près sur plusieurs runs), pile au moment
+	# où _check_bras_faux() presse "power2" : Player consommait alors
+	# _action_lock pour cette esquive fantôme, bloquant Bras-Faux en plein
+	# départ (started=false) un run sur quatre environ. Un pas
+	# supplémentaire ici laisse Player lire ET consommer cet écho
+	# immédiatement, dans la fenêtre où le blocage est le comportement
+	# attendu, plutôt que de le laisser fuiter vers un check ultérieur.
+	await get_tree().physics_frame
 	var dodge_started_during_cooldown: bool = _player._dodge_phase != Player.DodgePhase.NONE
 
 	_checks.append({
