@@ -55,6 +55,8 @@ func _ready() -> void:
 	await _check_crawler_chases_and_hits_player()
 	await _check_brute_telegraphs_before_hitting()
 	await _check_ranged_keeps_distance_and_fires_projectile()
+	_check_stats_add_xp_levels_up()
+	await _check_enemy_death_awards_xp_to_player()
 
 	_report()
 
@@ -1111,6 +1113,66 @@ func _check_ranged_keeps_distance_and_fires_projectile() -> void:
 	})
 	ranged.queue_free()
 	await get_tree().physics_frame
+
+
+## H1 (GDD §17/§20/§21 : "XP, niveau") : logique pure sur Stats, sans
+## scène — même esprit que les checks les plus simples de ce fichier.
+func _check_stats_add_xp_levels_up() -> void:
+	var s := Stats.new()
+	var level_ups: Array = []
+	s.leveled_up.connect(func(new_level: int): level_ups.append(new_level))
+
+	s.add_xp(50.0)  # exactement xp_to_next_level() au niveau 1 -> une montée
+	var level_after_first: int = s.level
+	var xp_after_first: float = s.xp
+	var max_hp_after_first: float = s.max_hp
+
+	s.add_xp(125.0)  # >= xp_to_next_level() au niveau 2 (100) -> une 2e montée EN BOUCLE, reste 25 d'XP
+	var level_after_second: int = s.level
+	var xp_after_second: float = s.xp
+	var max_hp_after_second: float = s.max_hp
+	var int_after_second: float = s.int_stat
+
+	_checks.append({
+		"name": "stats_add_xp_levels_up_in_a_loop_and_carries_remainder",
+		"pass": level_after_first == 2 and is_equal_approx(xp_after_first, 0.0) and is_equal_approx(max_hp_after_first, 110.0)
+			and level_after_second == 3 and is_equal_approx(xp_after_second, 25.0)
+			and is_equal_approx(max_hp_after_second, 120.0) and is_equal_approx(int_after_second, 12.0)
+			and level_ups == [2, 3],
+		"detail": {
+			"level_after_first": level_after_first, "xp_after_first": xp_after_first, "max_hp_after_first": max_hp_after_first,
+			"level_after_second": level_after_second, "xp_after_second": xp_after_second,
+			"max_hp_after_second": max_hp_after_second, "int_after_second": int_after_second,
+			"level_ups": level_ups,
+		},
+	})
+
+
+## H1 (GDD §20 : "combats -> XP/loot/maîtrise") : la mort d'un ennemi
+## doit créditer le joueur, pas juste disparaître.
+func _check_enemy_death_awards_xp_to_player() -> void:
+	await _wait_until(func(): return not _player._action_lock, 60)
+	_player.global_position = Vector2(200, 2300)
+	_player.stats.level = 1
+	_player.stats.xp = 0.0
+	var xp_before: float = _player.stats.xp
+
+	var crawler := EnemyCrawlerScene.instantiate()
+	crawler.name = "CrawlerXpReward"
+	crawler.global_position = _player.global_position + Vector2(500, 0)  # loin, hors aggro -> pas d'IA parasite
+	add_child(crawler)
+	await get_tree().physics_frame
+
+	var reward: float = crawler.xp_reward
+	crawler.take_damage(9999.0, crawler.global_position + Vector2(-10, 0))
+	var xp_after: float = _player.stats.xp
+	await get_tree().physics_frame
+
+	_checks.append({
+		"name": "enemy_death_awards_xp_to_player",
+		"pass": is_equal_approx(xp_after - xp_before, reward),
+		"detail": {"xp_before": xp_before, "xp_after": xp_after, "xp_reward": reward},
+	})
 
 
 func _report() -> void:

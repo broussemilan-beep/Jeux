@@ -1,0 +1,136 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/ui/hud.gd" id="1"]
+
+[node name="Hud" type="CanvasLayer"]
+script = ExtResource("1")
+
+[node name="HpBar" type="Control" parent="."]
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 130.0
+offset_bottom = 40.0
+
+[node name="Background" type="ColorRect" parent="HpBar"]
+offset_right = 120.0
+offset_bottom = 14.0
+color = Color(0.15, 0.05, 0.05, 0.75)
+
+[node name="Fill" type="ColorRect" parent="HpBar"]
+offset_right = 120.0
+offset_bottom = 14.0
+color = Color(0.75, 0.15, 0.15, 1)
+
+[node name="Label" type="Label" parent="HpBar"]
+offset_top = 16.0
+offset_right = 120.0
+offset_bottom = 30.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 10
+text = "100/100"
+
+[node name="LevelLabel" type="Label" parent="."]
+offset_left = 10.0
+offset_top = 44.0
+offset_right = 100.0
+offset_bottom = 60.0
+theme_override_colors/font_color = Color(1, 0.9, 0.6, 1)
+theme_override_font_sizes/font_size = 12
+text = "Niv. 1"
+
+[node name="XpBar" type="Control" parent="."]
+offset_left = 10.0
+offset_top = 62.0
+offset_right = 130.0
+offset_bottom = 68.0
+
+[node name="Background" type="ColorRect" parent="XpBar"]
+offset_right = 120.0
+offset_bottom = 6.0
+color = Color(0.1, 0.1, 0.15, 0.75)
+
+[node name="Fill" type="ColorRect" parent="XpBar"]
+offset_right = 0.0
+offset_bottom = 6.0
+color = Color(0.55, 0.65, 0.9, 1)
+
+[node name="Cooldowns" type="Control" parent="."]
+offset_left = 470.0
+offset_top = 10.0
+offset_right = 630.0
+offset_bottom = 36.0
+
+[node name="Dash" type="ColorRect" parent="Cooldowns"]
+offset_left = 0.0
+offset_right = 26.0
+offset_bottom = 26.0
+color = Color(0.35, 0.5, 0.4, 0.85)
+
+[node name="Label" type="Label" parent="Cooldowns/Dash"]
+offset_right = 26.0
+offset_bottom = 26.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 9
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "DASH"
+
+[node name="Dodge" type="ColorRect" parent="Cooldowns"]
+offset_left = 32.0
+offset_right = 58.0
+offset_bottom = 26.0
+color = Color(0.75, 0.65, 0.2, 0.85)
+
+[node name="Label" type="Label" parent="Cooldowns/Dodge"]
+offset_right = 26.0
+offset_bottom = 26.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 9
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "DDG"
+
+[node name="Overlay" type="ColorRect" parent="Cooldowns/Dodge"]
+offset_right = 26.0
+offset_bottom = 0.0
+color = Color(0, 0, 0, 0.65)
+
+[node name="Power1" type="ColorRect" parent="Cooldowns"]
+offset_left = 64.0
+offset_right = 90.0
+offset_bottom = 26.0
+color = Color(0.2, 0.3, 0.75, 0.85)
+
+[node name="Label" type="Label" parent="Cooldowns/Power1"]
+offset_right = 26.0
+offset_bottom = 26.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 9
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "PWR"
+
+[node name="Overlay" type="ColorRect" parent="Cooldowns/Power1"]
+offset_right = 26.0
+offset_bottom = 0.0
+color = Color(0, 0, 0, 0.65)
+
+[node name="Power2" type="ColorRect" parent="Cooldowns"]
+offset_left = 96.0
+offset_right = 122.0
+offset_bottom = 26.0
+color = Color(0.55, 0.25, 0.55, 0.85)
+
+[node name="Label" type="Label" parent="Cooldowns/Power2"]
+offset_right = 26.0
+offset_bottom = 26.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 9
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "PW2"
+
+[node name="Overlay" type="ColorRect" parent="Cooldowns/Power2"]
+offset_right = 26.0
+offset_bottom = 0.0
+color = Color(0, 0, 0, 0.65)

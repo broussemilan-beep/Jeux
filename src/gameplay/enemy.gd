@@ -56,6 +56,11 @@ const ProjectileScene := preload("res://scenes/gameplay/projectile.tscn")
 @export var projectile_damage: float = 6.0
 @export var projectile_speed_px_s: float = 240.0
 
+## H1 (GDD §20/§21 : "combats -> XP/loot/maîtrise") — TUNABLE, roughly
+## proportionnel au HP/difficulté de chaque archétype (Brute > Ranged >
+## Crawler, mêmes valeurs que les .tscn variantes).
+@export var xp_reward: float = 10.0
+
 var _recoil_ticks_remaining: int = 0
 var _recoil_velocity: Vector2 = Vector2.ZERO
 
@@ -136,6 +141,11 @@ func take_damage(amount: float, source_position: Vector2, recoil_strength_px: fl
 	HitResponse.spawn_damage_number(amount, global_position, get_parent())
 
 	if is_dead():
+		# H1 (GDD §20 : "combats -> XP/loot/maîtrise") — avant queue_free(),
+		# jamais après (Targeting.get_player() ne dépend pas de CET ennemi).
+		var player: Node = Targeting.get_player(get_tree())
+		if player != null:
+			player.stats.add_xp(xp_reward)
 		HitResponse.spawn_death_response(global_position, away, get_parent())
 		queue_free()
 

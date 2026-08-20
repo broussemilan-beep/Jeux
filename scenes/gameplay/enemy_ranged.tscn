@@ -27,6 +27,7 @@ preferred_range_px = 170.0
 range_tolerance_px = 26.0
 projectile_damage = 7.0
 projectile_speed_px_s = 260.0
+xp_reward = 15.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -15)

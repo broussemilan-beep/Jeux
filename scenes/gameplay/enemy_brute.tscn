@@ -26,6 +26,7 @@ contact_damage = 22.0
 contact_recoil_px = 34.0
 hitstop_profile = "medium"
 shake_profile = "medium"
+xp_reward = 30.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -20)

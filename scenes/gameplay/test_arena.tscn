@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/gameplay/player.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/gameplay/enemy_crawler.tscn" id="2"]
@@ -10,6 +10,7 @@
 [ext_resource type="Shader" path="res://src/vfx/shaders/vignette.gdshader" id="8"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/world/prop_rubble.png" id="9"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/world/prop_debris.png" id="10"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="11"]
 
 [sub_resource type="ShaderMaterial" id="1"]
 shader = ExtResource("8")
@@ -66,5 +67,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 color = Color(1, 1, 1, 1)
+
+[node name="Hud" parent="." instance=ExtResource("11")]
 
 [node name="TouchControls" parent="." instance=ExtResource("5")]

@@ -13,7 +13,16 @@ class_name Stats
 @export var int_stat: float = 10.0
 @export var move_speed_px: float = 100.0
 
+## H1 (GDD §17/§20/§21 : "XP, niveau, stats" au HUD, boucle de run) —
+## FOR/AGI/VIT du bloc de stats GDD §17 restent hors de ce fichier tant
+## qu'aucune recette/pouvoir ne les consomme (même discipline que le
+## commentaire ci-dessus pour int_stat/move_speed_px) : les ajouter sans
+## rien qui les lise serait une stat non exercée.
+@export var level: int = 1
+@export var xp: float = 0.0
+
 signal died
+signal leveled_up(new_level: int)
 
 
 func apply_damage(amount: float) -> void:
@@ -26,3 +35,27 @@ func apply_damage(amount: float) -> void:
 
 func is_dead() -> bool:
 	return hp <= 0.0
+
+
+## Formule TUNABLE (H1) — linéaire, simple à vérifier à l'œil : passer du
+## niveau N au niveau N+1 coûte 50*N XP.
+func xp_to_next_level() -> float:
+	return 50.0 * float(level)
+
+
+## En boucle, pas plafonné à une seule montée par appel : un gros gain
+## d'XP (butin de fin de Gate, GDD §20) peut faire sauter plusieurs
+## niveaux d'un coup. Chaque niveau : +10 PV max (soigné d'autant, pas
+## un simple plafond qui grandit sans rien ressentir) + 1 INT (seule
+## stat déjà exercée par une recette réelle, Totem du Vide).
+func add_xp(amount: float) -> void:
+	if amount <= 0.0 or is_dead():
+		return
+	xp += amount
+	while xp >= xp_to_next_level():
+		xp -= xp_to_next_level()
+		level += 1
+		max_hp += 10.0
+		hp += 10.0
+		int_stat += 1.0
+		leveled_up.emit(level)

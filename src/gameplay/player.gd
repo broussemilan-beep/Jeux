@@ -661,6 +661,22 @@ func is_invincible() -> bool:
 	return _dodge_phase == DodgePhase.ACTIVE
 
 
+## H1 (GDD §17, HUD : "compétences équipées... cooldowns") — 0.0 = prêt,
+## 1.0 = vient d'être utilisé. Un getter par cooldown plutôt qu'exposer
+## les compteurs bruts : le HUD lit un ratio, jamais les ticks internes
+## d'une timeline qui ne le regarde pas.
+func get_dodge_cooldown_ratio() -> float:
+	return float(_dodge_cooldown_remaining) / float(DODGE_COOLDOWN_TICKS)
+
+
+func get_power1_cooldown_ratio() -> float:
+	return float(_power1_cooldown_remaining) / float(POWER1_COOLDOWN_TICKS)
+
+
+func get_bras_faux_cooldown_ratio() -> float:
+	return float(_bras_faux_cooldown_remaining) / float(BRAS_FAUX_COOLDOWN_TICKS)
+
+
 ## Réaction à un coup subi. Même signature qu'Enemy.take_damage() (source_
 ## position + recoil_strength_px/recoil_ticks pour orienter le recul,
 ## cohérence entre les deux entités qui peuvent encaisser un coup) —

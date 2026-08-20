@@ -2962,3 +2962,65 @@ Art réel des 3 ennemis (PixelLab, discipline reference-image, gabarit
 Cendre) — flagué, hors scope de cette brique. H (vertical slice GDD §21)
 reste la dernière étape du mandat. Verdict de Milan sur ce build attendu
 avant de pousser plus loin.
+
+---
+
+## 2026-08-20 — H1 (Progression + HUD)
+
+Mandat §7 : "Plan d'implémentation soumis avant de coder le contenu de
+la phase H" — H (GDD §21) bundle une Gate complète, un boss, un hub et
+la couche UI en un seul point de la feuille de route ; trop gros pour
+"une brique par session" (mandat §9). Plan soumis à Milan et découpé en
+5 tranches (H1 Progression+HUD, H2 Boss Gate Maw, H3 Structure Première
+Gate, H4 Outpost+boucle de run, H5 Écran personnage) — Milan a choisi de
+commencer par H1, la fondation dont les autres dépendent (récompenses de
+Gate, mort de boss consomment XP/niveau qui n'existaient pas encore).
+
+### Fait
+
+**`Stats.gd` : niveau + XP, pas une classe `Progression` séparée.** GDD
+§17 exige un bloc de stats complet (FOR/AGI/INT/VIT) mais rien d'autre
+que INT n'est encore consommé par une recette réelle — même discipline
+que le reste du fichier ("pas de stat non exercée"), FOR/AGI/VIT restent
+hors scope. `xp_to_next_level()` formule TUNABLE (50×niveau, linéaire).
+`add_xp()` monte de niveau EN BOUCLE (pas plafonné à une seule montée
+par appel — un gros gain d'XP peut en faire sauter plusieurs d'un coup),
++10 PV max (soigné d'autant) et +1 INT par niveau.
+
+**`Enemy.xp_reward` crédité au joueur à la mort**, avant `queue_free()`
+dans `take_damage()` — `Targeting.get_player()` (déjà posé pour G),
+jamais un nouveau canal de communication Enemy->Player. Valeurs
+TUNABLE par archétype (Crawler 8, Ranged 15, Brute 30 — grossièrement
+proportionnelles au HP/à la difficulté de chacun).
+
+**`src/ui/hud.gd` + `scenes/ui/hud.tscn`** : barre PV (largeur
+proportionnelle à hp/max_hp) + texte, niveau, barre XP, 4 icônes de
+cooldown (Dash/Esquive/Gueule Vide/Bras-Faux). Poll en `_process()`,
+pas un signal par valeur — un HUD lit un état, il ne le possède pas,
+même discipline que VfxDirector/CombatFeedback consultés en singleton.
+3 nouveaux getters sur Player (`get_dodge_cooldown_ratio()` etc.) plutôt
+que d'exposer les compteurs de ticks bruts. Dash n'a pas de cooldown
+chiffré par le mandat/GDD (contrairement à esquive/Gueule Vide/
+Bras-Faux) : son icône reste toujours "prête", sans voile — inventer un
+cooldown non demandé aurait été hors mandat (§9 : "aucune invention...
+au-delà du GDD"). Voile de cooldown calculé par tick (pas un Tween
+temps réel), même discipline que le pulse de télégraphe des ennemis (G).
+
+**2 nouveaux checks smoke test** (48/48, aucune régression) :
+`stats_add_xp_levels_up_in_a_loop_and_carries_remainder` (logique pure
+sur `Stats`, vérifie la boucle ET le reste d'XP reporté), et
+`enemy_death_awards_xp_to_player`.
+
+**Vérification visuelle réelle (script jetable, supprimé après usage) :**
+HUD posé dans un état non-trivial (62/100 PV, niveau 2, esquive en
+cooldown) pour prouver qu'il réagit vraiment à l'état du joueur plutôt
+que d'afficher une valeur figée à la construction — barre PV/XP aux
+bonnes proportions, icône d'esquive visiblement voilée, Dash/Pouvoirs
+pleins.
+
+**Web rebuild + commit.**
+
+### Prochain pas
+
+H2 (Boss Gate Maw) selon le plan soumis, ou réordonnancement si Milan le
+demande après verdict sur ce build.
