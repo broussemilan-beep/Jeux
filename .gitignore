@@ -16,3 +16,12 @@ assets/staging/*
 # APPROUVÉES (référencées dans data/labels/quality_labels.jsonl) sont
 # commitées, jamais un dossier de sortie brut (§13.3).
 /captures_local/
+
+# Clés/secrets — dépôt public, une clé commitée est immédiatement
+# exploitable. La config MCP Meshy (clé incluse) vit en scope "local"
+# de Claude Code (~/.claude.json, hors du dépôt), jamais ici — ce
+# garde-fou reste au cas où un futur .env local serait créé par erreur.
+.env
+.env.*
+*.secret
+
