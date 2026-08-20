@@ -48,6 +48,10 @@ VfxRecipeRegistry="*res://src/vfx/vfx_recipe_registry.gd"
 ; le shardBurst de mort et VfxBudget pour le décal) — mandat production
 ; v1 §4.
 HitResponse="*res://src/gameplay/hit_response.gd"
+; CameraDirector n'a aucune dépendance sur les autres autoloads (il ne
+; consulte que CombatFeedback.is_frozen(), déjà en tête) — ordre non
+; critique, placé en dernier par simplicité (mandat production v1 §4, J2).
+CameraDirector="*res://src/gameplay/camera_director.gd"
 
 [display]
 

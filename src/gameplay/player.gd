@@ -75,17 +75,21 @@ const DASH_DISTANCE_PX := 80.0
 ## d'Enemy._physics_process, réutilisé ici côté joueur).
 const DASH_RECOVERY_INITIAL_SPEED_PX_S := 220.0
 
-## Traînée : 2 after-images (mandat : "opacité ~50% puis ~20%"), posées
-## à des ticks distincts de la phase MOUVEMENT pour qu'elles apparaissent
-## décalées dans l'espace derrière le joueur, pas superposées au même
-## endroit. Chaque ghost s'éteint ensuite tout seul (voir
-## _spawn_dash_afterimage()) — ce n'est PAS une primitive VfxDirector
-## (contrat seed/configure générique, §7.1) : une after-image lit la
-## texture/frame COURANTE du sprite du joueur, une donnée que seul
-## Player possède, pas quelque chose qu'une recette JSON peut décrire.
-const DASH_AFTERIMAGE_TICKS: Array[int] = [1, 3]
-const DASH_AFTERIMAGE_OPACITIES: Array[float] = [0.5, 0.2]
-const DASH_AFTERIMAGE_FADE_SEC := 0.15
+## Traînée (mandat B4/J2 : "opacité ~50% puis ~20%") — ce n'est PAS une
+## primitive VfxDirector (contrat seed/configure générique, §7.1) : une
+## after-image lit la texture/frame COURANTE du sprite du joueur, une
+## donnée que seul Player possède, pas quelque chose qu'une recette JSON
+## peut décrire (voir _spawn_afterimage() plus bas ; QUAND spawner, en
+## revanche, est bien data-driven — _apply_afterimages() ci-dessus).
+## Durée de fondu d'une after-image (Tween, temps réel — cohérent avec
+## _spawn_afterimage() ci-dessous, un effet purement cosmétique, pas un
+## système de combat qui doit rester en ticks purs). Le TIMING de
+## déclenchement (quels ticks, combien, avec quelle opacité de départ)
+## est lui data-driven depuis data/animation_composer/cendre.json (J2,
+## mandat production v1 §4) — migré depuis les anciennes constantes
+## DASH_AFTERIMAGE_TICKS/OPACITIES codées en dur, source unique désormais,
+## et réutilisé par le combo (coup3) en plus du dash.
+const AFTERIMAGE_FADE_SEC := 0.15
 
 const GueuleVideScene := preload("res://scenes/gameplay/powers/gueule_vide.tscn")
 
@@ -146,6 +150,12 @@ var _dash_tick: int = 0
 var _dash_direction: Vector2 = Vector2.ZERO
 var _dash_recovery_velocity: Vector2 = Vector2.ZERO
 
+## Même rôle que _combo_step_absolute_tick : continu sur toute la
+## timeline ANTICIPATION+MOVE+RECOVERY du dash (0 au premier tick),
+## indépendant des remises à zéro de `_dash_tick` par phase — squash/lean/
+## afterimages du dash (J2) s'expriment sur cette timeline continue.
+var _dash_step_absolute_tick: int = 0
+
 ## Gueule Vide n'utilise PAS _action_lock : l'invocation (0,7s) n'immobilise
 ## pas le joueur (rien dans le mandat ne l'exige, contrairement au combo/
 ## dash) — seul un cooldown la borne dans le temps.
@@ -172,10 +182,15 @@ func _load_animation_composer_data() -> Dictionary:
 
 
 func _physics_process(_delta: float) -> void:
-	# Le shake continue de s'appliquer PENDANT un hit-stop (c'est en
-	# partie ce qui vend l'impact) — lu avant le retour anticipé
-	# ci-dessous, jamais après.
-	_camera.offset = CombatFeedback.get_shake_offset()
+	# Le shake ET le punch-zoom continuent de s'appliquer PENDANT un
+	# hit-stop (c'est en partie ce qui vend l'impact) — lus avant le
+	# retour anticipé ci-dessous, jamais après. Lookahead (mandat
+	# production v1 §4, CameraDirector, J2) : direction du dash en cours
+	# uniquement, Vector2.ZERO sinon (get_lookahead_offset() le gère déjà).
+	var lookahead: Vector2 = CameraDirector.get_lookahead_offset(
+		_dash_direction if _dash_phase != DashPhase.NONE else Vector2.ZERO)
+	_camera.offset = CombatFeedback.get_shake_offset() + lookahead
+	_camera.zoom = CameraDirector.get_punch_zoom()
 	if CombatFeedback.is_frozen():
 		return
 
@@ -241,7 +256,11 @@ func _start_attack(step: int) -> void:
 func _advance_combo() -> void:
 	_combo_tick += 1
 	_combo_step_absolute_tick += 1
-	_apply_combo_root_motion(_combo_step_absolute_tick)
+	var anim_data: Dictionary = {}
+	if _combo_step >= 1 and _combo_step <= AttackAnimName.size():
+		anim_data = _animation_composer_data.get(AttackAnimName[_combo_step - 1], {})
+	_apply_combo_root_motion(anim_data, _combo_step_absolute_tick)
+	_apply_squash_lean_afterimages(anim_data, _combo_step_absolute_tick)
 	match _combo_phase:
 		ComboPhase.ANTICIPATION:
 			if _combo_tick >= ANTICIPATION_TICKS:
@@ -274,12 +293,8 @@ func _advance_combo() -> void:
 ## Même construction ease-out par différence progress_after-progress_before
 ## que _advance_dash() (MOVE) : réutilise _ease_out_quad(), pas une
 ## nouvelle courbe dupliquée.
-func _apply_combo_root_motion(abs_tick: int) -> void:
+func _apply_combo_root_motion(anim_data: Dictionary, abs_tick: int) -> void:
 	velocity = Vector2.ZERO
-	if _combo_step <= 0 or _combo_step > AttackAnimName.size():
-		return
-	var anim_name: String = AttackAnimName[_combo_step - 1]
-	var anim_data: Dictionary = _animation_composer_data.get(anim_name, {})
 	var rm: Dictionary = anim_data.get("root_motion", {})
 	if rm.is_empty():
 		return
@@ -295,12 +310,53 @@ func _apply_combo_root_motion(abs_tick: int) -> void:
 	velocity = facing * (step_px * Engine.physics_ticks_per_second)
 
 
+## AnimationComposer (mandat production v1 §4/J2) : squash (impulsion
+## d'échelle, aussi utilisée comme "smear" mandat J2 pour coup3, voir
+## _squash_notes du JSON) + lean (bascule de rotation, réutilise la même
+## fenêtre que root_motion — le lean accompagne le même engagement dans
+## le coup) + afterimages (traînée, réservée à coup3 pour l'instant).
+## `sprite.scale`/`rotation_degrees` sont remis à leur valeur neutre par
+## AnimationComposer lui-même quand `anim_data` est vide ou hors fenêtre —
+## jamais besoin de les réinitialiser ici en plus.
+func _apply_squash_lean_afterimages(anim_data: Dictionary, abs_tick: int) -> void:
+	AnimationComposer.apply_squash(_sprite, anim_data.get("squash", []), abs_tick)
+	var rm: Dictionary = anim_data.get("root_motion", {})
+	AnimationComposer.apply_lean(_sprite, float(anim_data.get("lean_deg", 0.0)), facing,
+		int(rm.get("start_tick", 0)), int(rm.get("end_tick", 0)), abs_tick)
+	_apply_afterimages(anim_data, abs_tick)
+
+
+## `afterimages` (data/animation_composer/cendre.json, _afterimages_notes) :
+## { count, start_tick, spacing_ticks, opacities } — spawn un fantôme à
+## chaque tick start_tick + i*spacing_ticks pour i in [0, count).
+func _apply_afterimages(anim_data: Dictionary, abs_tick: int) -> void:
+	var ai: Dictionary = anim_data.get("afterimages", {})
+	if ai.is_empty():
+		return
+	var count: int = int(ai.get("count", 0))
+	var start_tick: int = int(ai.get("start_tick", 0))
+	var spacing: int = maxi(1, int(ai.get("spacing_ticks", 1)))
+	var opacities: Array = ai.get("opacities", [])
+	for i in count:
+		if abs_tick == start_tick + i * spacing:
+			var opacity: float = float(opacities[i]) if i < opacities.size() else 0.3
+			_spawn_afterimage(opacity)
+			return
+
+
 func _end_combo() -> void:
 	_combo_step = 0
 	_combo_phase = ComboPhase.NONE
 	_combo_tick = 0
 	_attack_queued = false
 	_action_lock = false
+	# Garde-fou : squash/lean (J2) devraient déjà être retombés à neutre
+	# avant la fin de la timeline (fenêtres toujours closes bien avant
+	# RECOVERY_TICKS dans data/animation_composer/cendre.json), mais un
+	# oubli de configuration future ne doit jamais laisser le sprite figé
+	# étiré/penché en idle.
+	_sprite.scale = Vector2.ONE
+	_sprite.rotation_degrees = 0.0
 
 
 ## Un seul coup = une seule cible (mandat : "combo léger", pas une
@@ -320,6 +376,12 @@ func _try_hit() -> void:
 	CombatFeedback.trigger_hitstop(tier["hitstop"])
 	if tier["shake"] != "":
 		CombatFeedback.trigger_shake(tier["shake"], facing)
+
+	# CameraDirector (mandat production v1 §4/J2) : punch-zoom sur les
+	# impacts "medium+" — mêmes seuils que le hit-stop existant (jamais un
+	# 2e système de seuils dupliqué), "light" exclu.
+	if tier["hitstop"] != "light" and tier["hitstop"] != "none":
+		CameraDirector.trigger_punch()
 
 	# impactFlashFrame + recoil sur chaque coup (mandat Phase 1.4). Le
 	# recoil est déjà porté par Enemy.take_damage() (§4 : réaction de la
@@ -403,6 +465,7 @@ func play_dash() -> void:
 	_action_lock = true
 	_dash_phase = DashPhase.ANTICIPATION
 	_dash_tick = 0
+	_dash_step_absolute_tick = 0
 	_sprite.play("dash")
 	if _dash_direction.x != 0.0:
 		_sprite.flip_h = _dash_direction.x < 0.0
@@ -421,6 +484,12 @@ func play_dash() -> void:
 ## de lecture du sprite.
 func _advance_dash() -> void:
 	_dash_tick += 1
+	_dash_step_absolute_tick += 1
+	var dash_data: Dictionary = _animation_composer_data.get("dash", {})
+	AnimationComposer.apply_squash(_sprite, dash_data.get("squash", []), _dash_step_absolute_tick)
+	AnimationComposer.apply_lean(_sprite, float(dash_data.get("lean_deg", 0.0)), _dash_direction,
+		int(dash_data.get("lean_start_tick", 0)), int(dash_data.get("lean_end_tick", 0)), _dash_step_absolute_tick)
+	_apply_afterimages(dash_data, _dash_step_absolute_tick)
 	match _dash_phase:
 		DashPhase.ANTICIPATION:
 			velocity = Vector2.ZERO
@@ -432,9 +501,6 @@ func _advance_dash() -> void:
 			var progress_after: float = _ease_out_quad(float(_dash_tick) / DASH_MOVE_TICKS)
 			var step_px: float = (progress_after - progress_before) * DASH_DISTANCE_PX
 			velocity = _dash_direction * (step_px * Engine.physics_ticks_per_second)
-			var afterimage_idx := DASH_AFTERIMAGE_TICKS.find(_dash_tick)
-			if afterimage_idx != -1:
-				_spawn_dash_afterimage(DASH_AFTERIMAGE_OPACITIES[afterimage_idx])
 			if _dash_tick >= DASH_MOVE_TICKS:
 				_dash_phase = DashPhase.RECOVERY
 				_dash_tick = 0
@@ -460,16 +526,20 @@ func _end_dash() -> void:
 	_dash_tick = 0
 	velocity = Vector2.ZERO
 	_action_lock = false
+	# Même garde-fou que _end_combo() ci-dessus.
+	_sprite.scale = Vector2.ONE
+	_sprite.rotation_degrees = 0.0
 
 
-## Fantôme de traînée (B4) — PAS une primitive VfxDirector (§7.1, contrat
+## Fantôme de traînée (B4, généralisé au combo en J2 — voir
+## _apply_afterimages()) — PAS une primitive VfxDirector (§7.1, contrat
 ## seed/configure générique) : copie la texture/frame COURANTE du sprite
 ## du joueur, une donnée que seul Player possède. `Sprite2D` autonome,
 ## parenté au même parent que Player (jamais à Player lui-même, sinon il
 ## suivrait son mouvement au lieu de rester "planté" derrière lui) —
 ## s'éteint tout seul via un Tween sur son opacité, jamais géré par
 ## VfxDirector/VfxBudget (ce n'est pas dans leur périmètre, §8.2).
-func _spawn_dash_afterimage(opacity: float) -> void:
+func _spawn_afterimage(opacity: float) -> void:
 	var texture: Texture2D = _sprite.sprite_frames.get_frame_texture(_sprite.animation, _sprite.frame)
 	if texture == null:
 		return
@@ -485,7 +555,7 @@ func _spawn_dash_afterimage(opacity: float) -> void:
 	get_parent().add_child(ghost)
 	ghost.global_position = _sprite.global_position
 	var tween: Tween = ghost.create_tween()
-	tween.tween_property(ghost, "modulate:a", 0.0, DASH_AFTERIMAGE_FADE_SEC)
+	tween.tween_property(ghost, "modulate:a", 0.0, AFTERIMAGE_FADE_SEC)
 	tween.finished.connect(ghost.queue_free)
 
 

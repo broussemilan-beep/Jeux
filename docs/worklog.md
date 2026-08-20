@@ -2214,3 +2214,103 @@ J2 (corps en mouvement — AnimationComposer complet squash/lean/
 afterimages, CameraDirector, smears dash/coup3), puis R3 dès que le
 budget PixelLab est confirmé avec Milan (régénération complète depuis la
 référence sans cape).
+
+## 2026-08-20 — J2 (le corps en mouvement)
+
+Mandat production v1 §4/§6 — "Go" de Milan après le rapport J1.
+
+**AnimationComposer, nouveau module pur `src/gameplay/animation_composer.gd`
+(`class_name AnimationComposer`, `RefCounted`, aucun état interne).**
+Applique squash et lean depuis les données déclaratives de
+`data/animation_composer/cendre.json` — GDD §18 : "les compétences ne
+doivent pas être codées comme des exceptions individuelles". Les deux
+transformations partagent la même philosophie "exagérer puis redescendre"
+(matrice §3) : une rampe ease-out-quad sur `EASE_TICKS` (3) en montée ET en
+descente. `apply_squash()` prend le premier keyframe dont la fenêtre
+couvre le tick courant et interpole `sprite.scale` vers sa cible ; `apply_
+lean()` fait une rampe symétrique de `rotation_degrees` sur une fenêtre
+`[start_tick, end_tick]`, signée par la direction de `facing`. Les
+after-images restent hors de ce module (comme root_motion) : seul
+l'appelant (Player) possède la donnée nécessaire pour copier la texture/
+frame courante dans un nouveau nœud.
+Bug trouvé et corrigé par relecture avant tout run (jamais exécuté cassé) :
+erreur de précédence d'opérateur dans `apply_lean()` — la division était
+hors de l'appel à `ease_out_quad()` au lieu d'être dans son argument
+(`1.0 - ease_out_quad(x) / y` au lieu de `1.0 - ease_out_quad(x / y)`).
+
+**CameraDirector, nouvel autoload `src/gameplay/camera_director.gd`.**
+Deux effets lus par Player à chaque tick, appliqués sur SA `Camera2D` (même
+principe que CombatFeedback pour le shake — un seul point de vérité
+tick-driven, jamais de Tween temps réel) :
+- **Punch-zoom** : +2,5% de zoom sur 3 ticks, déclenché explicitement par
+  `_try_hit()` sur les mêmes seuils que le hit-stop existant ("medium+",
+  jamais "light"/"none") — pas un second système de seuils dupliqué. Un
+  déclenchement pendant un punch déjà actif relance à pleine intensité
+  (jamais additif, même politique que `CombatFeedback.trigger_hitstop()`).
+- **Lookahead** : décalage fixe (16px) dans la direction du dash en cours,
+  lu directement par Player, pas d'état à faire décroître ici (contrairement
+  au punch, une direction qui change tick par tick n'a pas de timeline
+  propre à ce nœud).
+
+**Migration des données du dash** (`data/animation_composer/cendre.json`,
+entrée `"dash"`) : l'ancien `DASH_AFTERIMAGE_TICKS`/`DASH_AFTERIMAGE_
+OPACITIES` codés en dur dans `player.gd` sont supprimés, remplacés par un
+déclencheur générique (`_apply_afterimages()`) partagé entre combo et dash,
+plus squash/lean pour le dash lui-même (absent avant J2).
+
+**Câblage Player** (`src/gameplay/player.gd`) : nouveau compteur de tick
+absolu par action (`_dash_step_absolute_tick`, même pattern que le combo
+depuis J1) pour exprimer squash/lean/afterimages sur une timeline continue
+par action plutôt que des ticks relatifs à la phase. `_physics_process()`
+lit `CameraDirector.get_lookahead_offset()`/`get_punch_zoom()` chaque tick
+et les applique sur `_camera.offset`/`.zoom`, avant le retour anticipé
+`is_frozen()`. `_end_combo()`/`_end_dash()` remettent défensivement
+`scale`/`rotation_degrees` à neutre.
+
+**Nouveau bug de non-isolation de test, même famille que celui de J1
+("EnemyForCombo").** Le nouveau check `camera_punch_zoom_triggers_on_
+medium_hit_not_light` (`_check_animation_composer_and_camera()`) lisait
+systématiquement `(1,1)` pour les trois zooms testés, y compris juste après
+le coup3. Diagnostic par prints ciblés (pas par supposition) : `enemy.
+stats.hp` valait encore 100 juste avant coup3 — les coups 1 et 2 de CE
+test n'avaient jamais touché leur propre ennemi. Cause : `_check_gueule_
+vide()` (test précédent dans la séquence) ne libérait jamais son ennemi
+("EnemyForGueuleVide", positionné près de `_player.global_position` au
+moment de CE test, dans la même zone y=600 que tous les tests suivants) —
+il restait dans le groupe "enemies" indéfiniment. `Targeting.nearest_
+enemy_in_radius()` ciblait silencieusement ce résidu au lieu du nouvel
+ennemi du test (le combo avance quand même sur un swing à vide, LOT A —
+rien ne plante, juste aucun dégât ne tombe sur la bonne cible), et le
+`_wait_until(hp < hp_before, ...)` consommait tout son budget de ticks en
+pure perte : par le temps où il abandonnait, le punch (déclenché sur le
+MAUVAIS ennemi, plus tôt dans la fenêtre d'attente) avait déjà entièrement
+décru. Corrigé par un `enemy.queue_free()` en fin de `_check_gueule_
+vide()`, même remède que J1. Un deuxième bug de test, sans rapport, a été
+corrigé au passage dans la même fonction : `hp < 100.0` en dur au lieu de
+capturer `hp_before_tier3` juste avant le coup3 — un simple copier-coller
+du J1 qui ne tenait pas compte du fait que l'ennemi de CE test avait déjà
+encaissé les coups 1 et 2.
+
+**Pitfall GDScript récurrent, re-rencontré et re-corrigé.** Deux lambdas
+`func(): return A and B` réparties sur plusieurs lignes physiques dans le
+nouveau check ont fait échouer le parsing (`Expected closing ")" after
+call arguments`) — même bug déjà documenté dans ce fichier pour une
+session antérieure. Corrigé en extrayant chaque condition dans une
+variable nommée intermédiaire avant l'appel à `_wait_until()`.
+
+**Vérification visuelle** (scratchpad, capture headless ciblée, pas
+commitée) : le sprite du joueur est visiblement compressé (squash
+horizontal, aplati verticalement) au pic du dash, et revient à `Vector2.
+ONE`/rotation nulle une fois le dash terminé — confirmé par capture
+pixel, pas seulement par le check automatisé.
+
+**Résultat** : 34/34 checks gameplay au vert (31 précédents + 3 nouveaux :
+`dash_applies_squash_and_lean_then_resets`, `camera_lookahead_offset_
+nonzero_during_dash`, `camera_punch_zoom_triggers_on_medium_hit_not_
+light`), 8/8 VFX recipe inchangés.
+
+### Prochain pas
+
+R3 — régénération v3 du personnage sans cape (référence déjà reçue et
+sauvegardée, `assets/source/pixellab/cendre/reference_v3_turnaround_raw.
+png`), dès que le budget PixelLab est confirmé.

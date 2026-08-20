@@ -1,12 +1,27 @@
 {
-  "_notes": "Donnees AnimationComposer (mandat production v1 §4) pour Cendre. J1 ne consomme que root_motion (les 3 coups) ; squash/lean/afterimages sont poses ici pour J2 mais pas encore lus par le code (docs/worklog.md documentera l'activation). start_tick/end_tick sont relatifs au debut du coup (0 = premier tick d'ANTICIPATION), sur la timeline pleine ANTICIPATION+RELEASE+RECOVERY (8+4+14=26 ticks, player.gd). ease='out_quad' reutilise Player._ease_out_quad(), la meme courbe que le dash (B4) — jamais une nouvelle formule dupliquee.",
+  "_notes": "Donnees AnimationComposer (mandat production v1 §4) pour Cendre. J1 a introduit root_motion (les 3 coups). J2 active squash/lean/afterimages pour le combo, + squash/afterimages pour le dash (migre depuis les constantes codees en dur DASH_AFTERIMAGE_TICKS/OPACITIES de player.gd — source unique desormais). Tous les ticks sont ABSOLUS depuis le premier tick de l'action courante (0 = premier tick d'ANTICIPATION), sur la timeline pleine propre a chaque action (combo: ANTICIPATION+RELEASE+RECOVERY = 8+4+14 = 26 ticks ; dash: ANTICIPATION+MOVE+RECOVERY = 2+5+4 = 11 ticks — voir player.gd). ease='out_quad' reutilise Player._ease_out_quad()/AnimationComposer.ease_out_quad(), une seule courbe, jamais dupliquee.",
+  "_squash_notes": "squash = liste de {tick, x, y, hold} — un keyframe = une impulsion qui monte en EASE_TICKS (AnimationComposer.gd), tient 'hold' ticks au pic, puis redescend en EASE_TICKS. x/y sont des facteurs d'echelle directs sur le sprite (scale.x/scale.y), PAS orientes selon la direction de deplacement — l'art Phase 1 n'existe qu'en direction sud (flip_h seulement, jamais de rotation reelle), donc l'etirement suit toujours l'axe local X/Y du sprite, une simplification assumee tant que les 7 autres directions n'existent pas (E, mandat §6). Utilise a la fois pour l'accent d'impact (coup3) et le smear de mouvement (dash + coup3, mandat J2 'smears dash + coup3', doc v3 §6.4 'smear 1 frame') — mecaniquement identiques (une impulsion d'echelle breve), pas deux systemes separes.",
+  "_lean_notes": "lean_deg = amplitude max de rotation du sprite, rampe symetrique (moitie montante/moitie descendante) sur la fenetre [start_tick,end_tick] — reutilise la fenetre root_motion pour le combo (le lean accompagne le meme engagement dans le coup, pas une 2e fenetre inventee), et une fenetre dediee pour le dash (pas de root_motion sur le dash, son deplacement est deja porte par sa propre logique MOVE). Signe = sens de `facing.x` (bascule vers l'avant du mouvement).",
+  "_afterimages_notes": "afterimages = {count, start_tick, spacing_ticks, opacities} — memes valeurs que l'ancien DASH_AFTERIMAGE_TICKS=[1,3]/OPACITIES=[0.5,0.2] pour le dash (start_tick=3 = DASH_ANTICIPATION_TICKS+1, spacing_ticks=2), migrees ici comme source unique. coup3 en recoit aussi (mandat J2 'action rapide' — le coup le plus engage du combo, escalade coherente avec COMBO_TIER_FEEDBACK qui lui donne deja le hit-stop/shake les plus forts) ; coup1/coup2 n'en ont pas (reserve a l'action la plus lente/lourde et au dash, pas a tout le combo).",
   "coup1": {
-    "root_motion": { "distance_px": 10.0, "start_tick": 6, "end_tick": 10, "ease": "out_quad" }
+    "root_motion": { "distance_px": 10.0, "start_tick": 6, "end_tick": 10, "ease": "out_quad" },
+    "lean_deg": 4.0
   },
   "coup2": {
-    "root_motion": { "distance_px": 14.0, "start_tick": 6, "end_tick": 11, "ease": "out_quad" }
+    "root_motion": { "distance_px": 14.0, "start_tick": 6, "end_tick": 11, "ease": "out_quad" },
+    "lean_deg": 6.0
   },
   "coup3": {
-    "root_motion": { "distance_px": 20.0, "start_tick": 5, "end_tick": 12, "ease": "out_quad" }
+    "root_motion": { "distance_px": 20.0, "start_tick": 5, "end_tick": 12, "ease": "out_quad" },
+    "lean_deg": 9.0,
+    "squash": [ { "tick": 9, "x": 1.25, "y": 0.82, "hold": 1 } ],
+    "afterimages": { "count": 2, "start_tick": 6, "spacing_ticks": 3, "opacities": [0.5, 0.25] }
+  },
+  "dash": {
+    "lean_deg": 8.0,
+    "lean_start_tick": 0,
+    "lean_end_tick": 7,
+    "squash": [ { "tick": 4, "x": 1.3, "y": 0.75, "hold": 1 } ],
+    "afterimages": { "count": 2, "start_tick": 3, "spacing_ticks": 2, "opacities": [0.5, 0.2] }
   }
 }

@@ -45,6 +45,7 @@ func _ready() -> void:
 	await _check_gueule_vide()
 	await _check_gueule_vide_owner_death_policy()
 	await _check_hit_response()
+	await _check_animation_composer_and_camera()
 
 	_report()
 
@@ -512,6 +513,16 @@ func _check_gueule_vide() -> void:
 		"detail": {"creature_finished": creature_finished},
 	})
 
+	# Sans ce nettoyage, "EnemyForGueuleVide" reste dans "enemies" à y=600
+	# (même zone que _check_dash()/_check_animation_composer_and_camera()) —
+	# bug de non-isolation déjà documenté pour "EnemyForCombo" : un check
+	# ultérieur qui spawne SON propre ennemi peut se faire voler sa cible
+	# par ce résidu, en silence (le combo avance quand même sur un swing à
+	# vide — voir player.gd, "swing à vide" — donc rien ne crashe, juste
+	# aucun dégât ne tombe sur le mauvais ennemi visé par le test).
+	enemy.queue_free()
+	await get_tree().physics_frame
+
 
 ## Addendum A, §A.4 : "owner_death_policy": "finish_core_then_stop_secondary"
 ## — instance dédiée (pas _player, déjà exercé/mort ailleurs dans cette
@@ -643,6 +654,104 @@ func _check_hit_response() -> void:
 		"pass": residue_after_death > residue_before_death,
 		"detail": {"residue_before_death": residue_before_death, "residue_after_death": residue_after_death},
 	})
+
+
+## J2 (mandat production v1 §4/§6, "Le corps en mouvement") : squash/lean
+## du dash (data-driven, migré depuis les constantes codées en dur — voir
+## AnimationComposer), punch-zoom CameraDirector sur un impact medium+, et
+## lookahead pendant un dash. Vérifie l'intégration réelle : le sprite
+## bouge/tourne réellement, la caméra zoome réellement, pas juste que le
+## code compile.
+func _check_animation_composer_and_camera() -> void:
+	# --- squash/lean pendant le dash : le sprite change réellement d'échelle/rotation ---
+	var scale_before_dash: Vector2 = _player.get_node("AnimatedSprite2D").scale
+	Input.action_press("dash")
+	await get_tree().physics_frame
+	Input.action_release("dash")
+	await _wait_until(func(): return _player._dash_phase != Player.DashPhase.NONE, 5)
+
+	var scale_seen_nonidentity := false
+	var rotation_seen_nonzero := false
+	var sprite: AnimatedSprite2D = _player.get_node("AnimatedSprite2D")
+	for i in range(9):  # couvre la fenêtre squash (tick=4) et lean (0..7)
+		await get_tree().physics_frame
+		if sprite.scale != Vector2.ONE:
+			scale_seen_nonidentity = true
+		if not is_equal_approx(sprite.rotation_degrees, 0.0):
+			rotation_seen_nonzero = true
+
+	# --- lookahead pendant le dash : offset non nul dans la direction du dash ---
+	var lookahead_during_dash: Vector2 = CameraDirector.get_lookahead_offset(_player._dash_direction)
+
+	await _wait_until(func(): return _player._dash_phase == Player.DashPhase.NONE, 15)
+	var scale_after_dash: Vector2 = sprite.scale
+	var rotation_after_dash: float = sprite.rotation_degrees
+
+	_checks.append({
+		"name": "dash_applies_squash_and_lean_then_resets",
+		"pass": scale_seen_nonidentity and rotation_seen_nonzero
+			and scale_after_dash == Vector2.ONE and is_equal_approx(rotation_after_dash, 0.0),
+		"detail": {
+			"scale_before_dash": str(scale_before_dash), "scale_seen_nonidentity": scale_seen_nonidentity,
+			"rotation_seen_nonzero": rotation_seen_nonzero, "scale_after_dash": str(scale_after_dash),
+			"rotation_after_dash": rotation_after_dash,
+		},
+	})
+	_checks.append({
+		"name": "camera_lookahead_offset_nonzero_during_dash",
+		"pass": lookahead_during_dash.length() > 1.0,
+		"detail": {"lookahead_during_dash": str(lookahead_during_dash)},
+	})
+
+	# --- punch-zoom : un impact tier2 (medium+ exclu "light") déclenche un zoom qui décroît ---
+	var enemy := EnemyScene.instantiate()
+	enemy.name = "EnemyForCameraDirector"
+	enemy.global_position = _player.global_position + Vector2(30, 0)
+	add_child(enemy)
+	await get_tree().physics_frame
+
+	Input.action_press("attack")
+	await get_tree().physics_frame
+	Input.action_release("attack")
+	await _wait_until(func(): return _player._combo_step == 1, 10)
+	var chain_window_start_cd: int = Player.RECOVERY_TICKS - Player.CHAIN_WINDOW_TICKS
+	var chain1_open := func(): return _player._combo_step == 1 and _player._combo_phase == Player.ComboPhase.RECOVERY and _player._combo_tick >= chain_window_start_cd
+	await _wait_until(chain1_open, Player.RECOVERY_TICKS + 5)
+	Input.action_press("attack")
+	await get_tree().physics_frame
+	Input.action_release("attack")
+	await _wait_until(func(): return _player._combo_step == 2, 10)
+	# coup2 = tier2 ("light" hitstop mais recoil_px accru et arcSlash) —
+	# PAS medium+, donc PAS de punch. Vérifie l'absence pour ne pas se
+	# contenter de "un zoom est apparu à un moment", confirmer le bon
+	# déclencheur (coup3 seulement, hitstop "medium").
+	var zoom_after_tier2: Vector2 = CameraDirector.get_punch_zoom()
+
+	var chain_window_start_cd2: int = Player.RECOVERY_TICKS - Player.CHAIN_WINDOW_TICKS
+	var chain2_open := func(): return _player._combo_step == 2 and _player._combo_phase == Player.ComboPhase.RECOVERY and _player._combo_tick >= chain_window_start_cd2
+	await _wait_until(chain2_open, Player.RECOVERY_TICKS + 5)
+	var hp_before_tier3: float = enemy.stats.hp
+	Input.action_press("attack")
+	await get_tree().physics_frame
+	Input.action_release("attack")
+	await _wait_until(func(): return _player._combo_step == 3, 10)
+	await _wait_until(func(): return enemy.stats.hp < hp_before_tier3, Player.ANTICIPATION_TICKS + Player.RELEASE_TICKS + 5)
+	var zoom_right_after_tier3: Vector2 = CameraDirector.get_punch_zoom()
+	for i in range(CameraDirector.PUNCH_ZOOM_TICKS + 2):
+		await get_tree().physics_frame
+	var zoom_after_decay: Vector2 = CameraDirector.get_punch_zoom()
+
+	_checks.append({
+		"name": "camera_punch_zoom_triggers_on_medium_hit_not_light",
+		"pass": zoom_after_tier2 == Vector2.ONE and zoom_right_after_tier3 != Vector2.ONE and zoom_after_decay == Vector2.ONE,
+		"detail": {
+			"zoom_after_tier2": str(zoom_after_tier2), "zoom_right_after_tier3": str(zoom_right_after_tier3),
+			"zoom_after_decay": str(zoom_after_decay),
+		},
+	})
+
+	enemy.queue_free()
+	await get_tree().physics_frame
 
 
 func _report() -> void:
