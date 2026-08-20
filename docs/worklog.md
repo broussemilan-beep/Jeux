@@ -2401,3 +2401,79 @@ que Phase 1.1 (§5.3), pas dans le scope de R3.
 
 D — esquive (logique) + usine à pouvoirs, prochaine étape de l'ordre du
 mandat (§6 : J1 → J2 → R3 → D → E/F/G → H).
+
+## 2026-08-20 — D, tranche 1 (esquive : squelette logique)
+
+Mandat production v1 §1.3/§6 — "check status c bon passe a la suite" de
+Milan après verdict sur le build R3. D couvre 4 items (archétypes de cast,
+primitives 6→15, Bras-Faux complet, esquive) — cette session ne traite que
+l'esquive (discipline Sonnet, §9 : "une brique par session"), la plus
+concrètement scopée et un pré-requis logique pour G (un ennemi qui
+attaque a besoin d'un joueur qui peut esquiver son coup).
+
+**État DODGE, `src/gameplay/player.gd`.** Même architecture à 3 phases que
+le dash (`DashPhase` déjà en place) — `DodgePhase { NONE, ANTICIPATION,
+ACTIVE, RECOVERY }` — mais action logiquement DISTINCTE (décision Milan
+§1.3 : "Dash ET esquive — deux actions séparées", pas un renommage).
+Différences de gabarit voulues : anticipation minimale (2 ticks, l'esquive
+doit répondre vite — c'est une réaction au danger), fenêtre ACTIVE plus
+généreuse que le MOVE du dash (8 ticks, la fenêtre d'i-frames), distance
+plus courte (56px vs 80px — "un pas d'évitement", pas un sprint), cooldown
+dédié (30 ticks = 0,5s, TUNABLE comme demandé par le mandat). `is_
+invincible()` ne renvoie `true` que pendant ACTIVE — ni l'anticipation ni
+la recovery n'accordent l'invincibilité, cohérent avec "le joueur paie" sa
+fenêtre défensive par une vulnérabilité aux deux bouts.
+
+**Logique de dégâts réellement câblée, pas juste un flag théorique.**
+Nouveau `Player.take_damage(amount, source_position)` (même signature
+qu'`Enemy.take_damage()`, cohérence entre les deux entités qui encaissent
+un coup) : `is_invincible()` annule le coup AVANT `stats.apply_damage()` —
+vérifié par un vrai appel à `take_damage()` pendant ACTIVE dans le smoke
+test (HP inchangés), pas seulement par une lecture de `is_invincible()`
+qui pourrait rester vraie sans jamais être consultée. Recul du joueur
+délibérément hors scope de cette brique (documenté dans le code, pas
+omis en silence) : `_handle_movement()` écrase `velocity` à chaque tick
+tant qu'aucune timeline "hurt" propre n'existe côté joueur (contrairement
+au combo/dash/esquive) — revient à G, quand un vrai ennemi attaquera pour
+de bon.
+
+**Placeholder visuel (mandat §1.3 : "le squelette logique... se code
+immédiatement avec un placeholder visuel").** L'esquive rejoue l'anim
+"dash" ET réutilise les données squash/lean/afterimages de l'entrée
+"dash" dans `data/animation_composer/cendre.json` — visuellement un dash,
+logiquement une action séparée à part entière (sa propre timeline de
+ticks, son cooldown, ses i-frames). L'animation dédiée reste à générer
+avec un futur lot v3 (pas dans le scope de cette brique) ; en attendant,
+le levier "action rapide" du §9 (afterimages/smear/lean) est déjà
+satisfait puisque le placeholder hérite du même juice que le dash.
+
+**Nouvel input.** Action `dodge` dans `project.godot` (touche C au
+clavier, jamais utilisée jusqu'ici) + `ButtonDodge` dans
+`touch_controls.tscn` (positionné à distance des 3 boutons existants pour
+éviter tout chevauchement de leurs cercles de collision — vérifié par
+calcul de distance avant placement, pas au hasard).
+
+**Bug trouvé et corrigé à la relecture, avant tout run (pas par le
+smoke test).** Un copier-coller de `_end_dash()` vers `_end_dodge()`
+dupliquait les deux lignes de reset `scale`/`rotation_degrees` — sans
+conséquence fonctionnelle (idempotent) mais un doublon mort repéré et
+retiré avant de lancer quoi que ce soit.
+
+**5 nouveaux checks smoke test** (`_check_dodge()`,
+`tools/smoke_test_gameplay.gd`) : l'esquive démarre et joue l'anim
+placeholder ; les i-frames sont vrais UNIQUEMENT pendant ACTIVE (pas
+anticipation, pas recovery, pas après) ; un vrai appel à `take_damage()`
+pendant ACTIVE n'inflige aucun dégât alors que le même appel après la fin
+de l'action en inflige ; déplacement ~56px puis déverrouillage ; le
+cooldown bloque une seconde esquive immédiate. 39/39 checks gameplay au
+vert (34 précédents + 5 nouveaux), 8/8 VFX recipe inchangés. Capture en
+jeu réelle (scratchpad) confirmant `is_invincible()` vrai pendant le roll,
+faux juste après, et le bouton tactile DDG visible sans chevaucher les
+3 autres.
+
+### Prochain pas
+
+D, tranche 2 : archétypes de cast génériques (3-4, projection avant /
+frappe de zone / invocation / canalisation) puis primitives 6→15 et
+Bras-Faux (recette+logique avant l'art). Puis E/F/G en parallèle selon
+disponibilité, puis H.

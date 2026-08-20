@@ -46,6 +46,7 @@ func _ready() -> void:
 	await _check_gueule_vide_owner_death_policy()
 	await _check_hit_response()
 	await _check_animation_composer_and_camera()
+	await _check_dodge()
 
 	_report()
 
@@ -752,6 +753,99 @@ func _check_animation_composer_and_camera() -> void:
 
 	enemy.queue_free()
 	await get_tree().physics_frame
+
+
+## D (mandat production v1 §1.3, "Dash ET esquive — deux actions séparées")
+## : squelette logique de l'esquive — état DODGE, i-frames UNIQUEMENT
+## pendant la phase ACTIVE, cooldown. Vérifie l'effet réel des i-frames
+## (take_damage() annulé pendant la fenêtre, pas juste is_invincible() qui
+## pourrait mentir sans jamais être consultée par un vrai coup), pas
+## seulement les transitions d'état.
+func _check_dodge() -> void:
+	await _wait_until(func(): return not _player._action_lock, Player.DODGE_RECOVERY_TICKS + 5)
+
+	# y=900, loin de tous les ennemis des checks précédents (y=180/y=600) —
+	# même précaution que _check_dash().
+	_player.global_position = Vector2(200, 900)
+	_player.velocity = Vector2.ZERO
+	_player.facing = Vector2.RIGHT
+	var sprite: AnimatedSprite2D = _player.get_node("AnimatedSprite2D")
+	var pos_before: Vector2 = _player.global_position
+	var invincible_before: bool = _player.is_invincible()
+
+	Input.action_press("dodge")
+	await get_tree().physics_frame
+	Input.action_release("dodge")
+	var started: bool = await _wait_until(func(): return _player._dodge_phase != Player.DodgePhase.NONE, 5)
+	var anim_during: String = sprite.animation
+	var invincible_during_anticipation: bool = _player.is_invincible()
+
+	var reached_active: bool = await _wait_until(
+		func(): return _player._dodge_phase == Player.DodgePhase.ACTIVE, Player.DODGE_ANTICIPATION_TICKS + 3)
+	var invincible_during_active: bool = _player.is_invincible()
+	var hp_before_hit_during_active: float = _player.stats.hp
+	_player.take_damage(10.0, _player.global_position + Vector2(-10, 0))
+	var hp_after_hit_during_active: float = _player.stats.hp
+
+	var reached_recovery: bool = await _wait_until(
+		func(): return _player._dodge_phase == Player.DodgePhase.RECOVERY, Player.DODGE_ACTIVE_TICKS + 3)
+	var invincible_during_recovery: bool = _player.is_invincible()
+
+	var ended: bool = await _wait_until(
+		func(): return _player._dodge_phase == Player.DodgePhase.NONE, Player.DODGE_RECOVERY_TICKS + 5)
+	var pos_after: Vector2 = _player.global_position
+	var action_unlocked_after: bool = not _player._action_lock
+	var invincible_after: bool = _player.is_invincible()
+
+	var hp_before_hit_after_end: float = _player.stats.hp
+	_player.take_damage(10.0, _player.global_position + Vector2(-10, 0))
+	var hp_after_hit_after_end: float = _player.stats.hp
+
+	# Cooldown : un second appui immédiat ne doit RIEN déclencher tant que
+	# DODGE_COOLDOWN_TICKS n'est pas écoulé (même discipline que le
+	# cooldown de Gueule Vide, _check_gueule_vide()).
+	Input.action_press("dodge")
+	await get_tree().physics_frame
+	Input.action_release("dodge")
+	var dodge_started_during_cooldown: bool = _player._dodge_phase != Player.DodgePhase.NONE
+
+	_checks.append({
+		"name": "dodge_input_starts_dodge_state",
+		"pass": started and not invincible_before,
+		"detail": {"started": started, "anim": anim_during, "invincible_before": invincible_before},
+	})
+	_checks.append({
+		"name": "dodge_iframes_only_during_active_phase",
+		"pass": not invincible_during_anticipation and reached_active and invincible_during_active
+			and reached_recovery and not invincible_during_recovery and not invincible_after,
+		"detail": {
+			"invincible_during_anticipation": invincible_during_anticipation,
+			"invincible_during_active": invincible_during_active,
+			"invincible_during_recovery": invincible_during_recovery,
+			"invincible_after": invincible_after,
+		},
+	})
+	_checks.append({
+		"name": "dodge_iframes_negate_damage_only_during_active",
+		"pass": hp_after_hit_during_active == hp_before_hit_during_active
+			and hp_after_hit_after_end < hp_before_hit_after_end,
+		"detail": {
+			"hp_before_hit_during_active": hp_before_hit_during_active, "hp_after_hit_during_active": hp_after_hit_during_active,
+			"hp_before_hit_after_end": hp_before_hit_after_end, "hp_after_hit_after_end": hp_after_hit_after_end,
+		},
+	})
+	_checks.append({
+		"name": "dodge_displaces_player_then_unlocks",
+		"pass": ended and action_unlocked_after
+			and pos_after.x > pos_before.x + Player.DODGE_DISTANCE_PX * 0.9
+			and pos_after.x < pos_before.x + Player.DODGE_DISTANCE_PX * 1.6,
+		"detail": {"pos_before": str(pos_before), "pos_after": str(pos_after), "ended": ended, "action_unlocked_after": action_unlocked_after},
+	})
+	_checks.append({
+		"name": "dodge_cooldown_blocks_immediate_second_dodge",
+		"pass": not dodge_started_during_cooldown,
+		"detail": {"dodge_started_during_cooldown": dodge_started_during_cooldown},
+	})
 
 
 func _report() -> void:

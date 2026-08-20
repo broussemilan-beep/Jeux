@@ -75,6 +75,30 @@ const DASH_DISTANCE_PX := 80.0
 ## d'Enemy._physics_process, réutilisé ici côté joueur).
 const DASH_RECOVERY_INITIAL_SPEED_PX_S := 220.0
 
+## Esquive (mandat production v1 §1.3, décision Milan : "Dash ET esquive —
+## deux actions séparées") — roulade/pas d'évitement avec i-frames, DISTINCTE
+## du dash (pas un renommage). Même construction en 3 phases que le dash
+## ci-dessus (anticipation -> déplacement ease-out -> recovery qui glisse),
+## mais des proportions différentes : anticipation minimale (l'esquive doit
+## répondre vite, c'est une réaction au danger), fenêtre active plus longue
+## que le MOVE du dash (le joueur "paie" pour l'invincibilité par une
+## recovery un peu plus engagée qu'un simple déplacement), distance plus
+## courte que le dash (un "pas d'évitement", pas un sprint). Valeurs de
+## départ TUNABLE (mandat §1.3 : "cooldown éventuel TUNABLE"), à ajuster
+## une fois testées en jeu réel, jamais un dogme.
+const DODGE_ANTICIPATION_TICKS := 2
+const DODGE_ACTIVE_TICKS := 8
+const DODGE_RECOVERY_TICKS := 6
+const DODGE_DISTANCE_PX := 56.0
+## Même schéma que DASH_RECOVERY_INITIAL_SPEED_PX_S, à l'échelle de la
+## distance plus courte de l'esquive.
+const DODGE_RECOVERY_INITIAL_SPEED_PX_S := 150.0
+## Cooldown avant de pouvoir ré-esquiver — évite un spam d'i-frames en
+## boucle (aucun combat réel n'exerce encore ce garde-fou, mais mieux vaut
+## le poser maintenant que devoir le retrofitter une fois que G y branche
+## de vraies attaques ennemies).
+const DODGE_COOLDOWN_TICKS := 30
+
 ## Traînée (mandat B4/J2 : "opacité ~50% puis ~20%") — ce n'est PAS une
 ## primitive VfxDirector (contrat seed/configure générique, §7.1) : une
 ## after-image lit la texture/frame COURANTE du sprite du joueur, une
@@ -156,6 +180,19 @@ var _dash_recovery_velocity: Vector2 = Vector2.ZERO
 ## afterimages du dash (J2) s'expriment sur cette timeline continue.
 var _dash_step_absolute_tick: int = 0
 
+## Même discipline que DashPhase : NONE = pas d'esquive en cours. ACTIVE est
+## la SEULE phase où is_invincible() renvoie true — l'anticipation et la
+## recovery n'accordent aucun i-frame (mandat §1.3 : "roulade... avec
+## frames d'invincibilité", pas une invincibilité de bout en bout de
+## l'action).
+enum DodgePhase { NONE, ANTICIPATION, ACTIVE, RECOVERY }
+var _dodge_phase: int = DodgePhase.NONE
+var _dodge_tick: int = 0
+var _dodge_direction: Vector2 = Vector2.ZERO
+var _dodge_recovery_velocity: Vector2 = Vector2.ZERO
+var _dodge_step_absolute_tick: int = 0
+var _dodge_cooldown_remaining: int = 0
+
 ## Gueule Vide n'utilise PAS _action_lock : l'invocation (0,7s) n'immobilise
 ## pas le joueur (rien dans le mandat ne l'exige, contrairement au combo/
 ## dash) — seul un cooldown la borne dans le temps.
@@ -196,6 +233,8 @@ func _physics_process(_delta: float) -> void:
 
 	if _power1_cooldown_remaining > 0:
 		_power1_cooldown_remaining -= 1
+	if _dodge_cooldown_remaining > 0:
+		_dodge_cooldown_remaining -= 1
 
 	if Input.is_action_just_pressed("attack"):
 		_attack_queued = true
@@ -206,8 +245,13 @@ func _physics_process(_delta: float) -> void:
 	if Input.is_action_just_pressed("dash"):
 		play_dash()
 
+	if Input.is_action_just_pressed("dodge"):
+		play_dodge()
+
 	if _dash_phase != DashPhase.NONE:
 		_advance_dash()
+	elif _dodge_phase != DodgePhase.NONE:
+		_advance_dodge()
 	elif _combo_step > 0:
 		_advance_combo()
 	elif _attack_queued and not stats.is_dead() and not _action_lock:
@@ -434,6 +478,39 @@ func is_dead() -> bool:
 	return stats.is_dead()
 
 
+## Mandat production v1 §1.3 : "roulade... avec frames d'invincibilité (i-
+## frames) dans la logique de dégâts." Vrai UNIQUEMENT pendant DodgePhase.
+## ACTIVE — jamais pendant l'anticipation (le joueur n'a pas encore bougé)
+## ni la recovery (il "paie" sa fenêtre d'invincibilité en restant
+## vulnérable le temps de se relever).
+func is_invincible() -> bool:
+	return _dodge_phase == DodgePhase.ACTIVE
+
+
+## Réaction à un coup subi. Même signature qu'Enemy.take_damage() (source_
+## position pour orienter le futur recul, cohérence entre les deux entités
+## qui peuvent encaisser un coup) — MAIS pas encore appelée par du vrai
+## gameplay dans cette tranche verticale (aucun ennemi n'attaque le joueur,
+## hors scope avant G). Le hook existe maintenant pour que l'esquive ait un
+## effet réel à tester (is_invincible() annule le coup ici, pas seulement
+## en théorie) et pour que G n'ait qu'à appeler cette fonction, jamais à
+## réinventer la logique d'i-frames. Recul du joueur volontairement hors
+## scope de cette brique (D, §1.3 — "logique immédiate") : _handle_movement()
+## écrase `velocity` à chaque tick tant qu'aucun état "hurt" à sa propre
+## timeline n'existe côté joueur (contrairement au combo/dash/esquive) ;
+## l'ajouter proprement appartient à G, quand un vrai ennemi attaquera.
+func take_damage(amount: float, _source_position: Vector2) -> void:
+	if stats.is_dead() or is_invincible():
+		return
+	stats.apply_damage(amount)
+	HitResponse.flash_sprite(_sprite)
+	HitResponse.spawn_damage_number(amount, global_position, get_parent())
+	if stats.is_dead():
+		die()
+	else:
+		play_hurt()
+
+
 ## Réaction à un coup subi — pas encore appelée par du vrai gameplay dans
 ## cette tranche verticale (aucun ennemi n'attaque le joueur, hors scope
 ## Phase 1), mais l'animation existe et le hook est prêt pour quand le
@@ -474,6 +551,41 @@ func play_dash() -> void:
 	# déclenché ici, au tout premier tick de l'action (l'anticipation),
 	# pas seulement au moment où le déplacement démarre.
 	CombatFeedback.trigger_shake("light", _dash_direction)
+
+
+## Même règle de direction que play_dash() (input courant sinon facing,
+## jamais nul) — l'esquive DOIT pouvoir se diriger, c'est tout son intérêt
+## défensif (s'écarter d'une attaque, pas juste "avancer plus vite").
+##
+## Placeholder visuel (mandat §1.3 : "le squelette logique... se code
+## immédiatement avec un placeholder visuel ; l'animation dédiée se génère
+## avec le lot v3") : réutilise l'anim "dash" ET les données squash/lean/
+## afterimages de "dash" dans data/animation_composer/cendre.json — l'
+## esquive est visuellement un dash pour l'instant, mais logiquement une
+## action séparée (sa propre timeline de ticks, son propre cooldown, ses
+## propres i-frames). Remplacer par une vraie anim "esquive" dédiée reste
+## à faire une fois le lot v3 régénéré (pas dans le scope de cette brique).
+func play_dodge() -> void:
+	if stats.is_dead() or _action_lock or _dodge_cooldown_remaining > 0:
+		return
+	var input_dir := Vector2(
+		Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left"),
+		Input.get_action_strength("ui_down") - Input.get_action_strength("ui_up")
+	)
+	var dir := input_dir
+	if dir.length_squared() < 0.0001:
+		dir = facing
+	if dir.length_squared() < 0.0001:
+		dir = Vector2.DOWN
+	_dodge_direction = dir.normalized()
+
+	_action_lock = true
+	_dodge_phase = DodgePhase.ANTICIPATION
+	_dodge_tick = 0
+	_dodge_step_absolute_tick = 0
+	_sprite.play("dash")
+	if _dodge_direction.x != 0.0:
+		_sprite.flip_h = _dodge_direction.x < 0.0
 
 
 ## Timeline déclarative du dash (B4) — ANTICIPATION (bref arrêt, buste
@@ -531,6 +643,55 @@ func _end_dash() -> void:
 	_sprite.rotation_degrees = 0.0
 
 
+## Timeline déclarative de l'esquive — même construction en 3 phases que
+## _advance_dash() (anticipation plantée -> déplacement ease-out -> recovery
+## qui glisse), mais SANS la moindre fenêtre d'i-frames en dehors de la
+## phase ACTIVE (is_invincible() ci-dessus ne consulte que _dodge_phase).
+## Réutilise les données squash/lean/afterimages de "dash" dans
+## data/animation_composer/cendre.json (placeholder visuel, voir
+## play_dodge()) — pas une nouvelle entrée JSON dupliquée pour l'instant.
+func _advance_dodge() -> void:
+	_dodge_tick += 1
+	_dodge_step_absolute_tick += 1
+	var dash_data: Dictionary = _animation_composer_data.get("dash", {})
+	AnimationComposer.apply_squash(_sprite, dash_data.get("squash", []), _dodge_step_absolute_tick)
+	AnimationComposer.apply_lean(_sprite, float(dash_data.get("lean_deg", 0.0)), _dodge_direction,
+		int(dash_data.get("lean_start_tick", 0)), int(dash_data.get("lean_end_tick", 0)), _dodge_step_absolute_tick)
+	_apply_afterimages(dash_data, _dodge_step_absolute_tick)
+	match _dodge_phase:
+		DodgePhase.ANTICIPATION:
+			velocity = Vector2.ZERO
+			if _dodge_tick >= DODGE_ANTICIPATION_TICKS:
+				_dodge_phase = DodgePhase.ACTIVE
+				_dodge_tick = 0
+		DodgePhase.ACTIVE:
+			var progress_before: float = _ease_out_quad(float(_dodge_tick - 1) / DODGE_ACTIVE_TICKS)
+			var progress_after: float = _ease_out_quad(float(_dodge_tick) / DODGE_ACTIVE_TICKS)
+			var step_px: float = (progress_after - progress_before) * DODGE_DISTANCE_PX
+			velocity = _dodge_direction * (step_px * Engine.physics_ticks_per_second)
+			if _dodge_tick >= DODGE_ACTIVE_TICKS:
+				_dodge_phase = DodgePhase.RECOVERY
+				_dodge_tick = 0
+				_dodge_recovery_velocity = _dodge_direction * DODGE_RECOVERY_INITIAL_SPEED_PX_S
+		DodgePhase.RECOVERY:
+			velocity = _dodge_recovery_velocity
+			_dodge_recovery_velocity = _dodge_recovery_velocity.move_toward(
+				Vector2.ZERO, DODGE_RECOVERY_INITIAL_SPEED_PX_S / DODGE_RECOVERY_TICKS)
+			if _dodge_tick >= DODGE_RECOVERY_TICKS:
+				_end_dodge()
+
+
+func _end_dodge() -> void:
+	_dodge_phase = DodgePhase.NONE
+	_dodge_tick = 0
+	velocity = Vector2.ZERO
+	_action_lock = false
+	_dodge_cooldown_remaining = DODGE_COOLDOWN_TICKS
+	# Même garde-fou que _end_combo()/_end_dash() ci-dessus.
+	_sprite.scale = Vector2.ONE
+	_sprite.rotation_degrees = 0.0
+
+
 ## Fantôme de traînée (B4, généralisé au combo en J2 — voir
 ## _apply_afterimages()) — PAS une primitive VfxDirector (§7.1, contrat
 ## seed/configure générique) : copie la texture/frame COURANTE du sprite
@@ -564,6 +725,8 @@ func _on_sprite_animation_finished() -> void:
 		return  # le combo gère son propre verrou via sa timeline de ticks (_end_combo())
 	if _dash_phase != DashPhase.NONE:
 		return  # le dash gère son propre verrou via sa timeline de ticks (_end_dash())
+	if _dodge_phase != DodgePhase.NONE:
+		return  # l'esquive gère son propre verrou via sa timeline de ticks (_end_dodge())
 	if _sprite.animation == "mort":
 		return  # reste sur la dernière frame, jamais reverrouillé sur idle
 	_action_lock = false
@@ -575,5 +738,6 @@ func die() -> void:
 	_combo_phase = ComboPhase.NONE
 	_attack_queued = false
 	_dash_phase = DashPhase.NONE
+	_dodge_phase = DodgePhase.NONE
 	_action_lock = true
 	_sprite.play("mort")
