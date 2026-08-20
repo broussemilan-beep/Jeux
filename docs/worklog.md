@@ -3956,3 +3956,62 @@ driver vulkan --export-release "Web" docs/index.html`, sortie dans
 phases suivantes) : palette réelle du décor/ennemis (Phase 2/3, via
 PixelLab/Meshy), `test_arena.tscn` laissé tel quel (scène orpheline,
 non prioritaire).
+
+### PHASE 2 — Décor et biome (PixelLab MCP)
+
+MCP PixelLab déjà connecté et directement disponible dans cette session
+(contrairement à Meshy en Phase Voie C, pas de repli REST nécessaire).
+Solde vérifié avant génération : abonnement actif (Tier 1), 1653/2000
+générations restantes ce cycle, 0 crédit dollar (plan par abonnement,
+pas par crédit) — largement sous le plafond nuit (40% max, réserve
+≥60%).
+
+**Un seul biome, pour la Première Gate** (`create_topdown_tileset`,
+Wang standard, `tile_size=32`, `transition_size=0.25`) : sol pierre
+sombre → grès chaud ocre/rouille, feu "ancient gate sanctum ruins".
+16 tuiles générées avec les 4 coins/combinaisons exacts (métadonnées
+`bounding_box` par tuile récupérées). **Décision de scope** : plutôt
+que de câbler un vrai `TerrainSet` à coins (peering bits Godot,
+16 tuiles) sans éditeur interactif pour vérifier visuellement le
+résultat — risque réel d'un rendu cassé/invisible non détectable
+avant un cycle de capture supplémentaire, sur UNE nuit autonome sans
+supervision — extrait seulement les 2 tuiles "pures" (4 coins identiques,
+seamless avec elles-mêmes par construction Wang) et câblé une
+variation déterministe par hash de cellule dans `arena_floor.gd`
+(~1 case sur 6 en variante sombre, jamais deux adjacentes). Documenté
+comme scope volontairement réduit, pas un échec — la donnée complète
+(16 tuiles + corners) reste récupérable plus tard si un vrai autotiling
+devient prioritaire.
+
+**3 props** (`create_map_object`, mode basique, 32x32-40px, style
+cohérent avec le biome) : brazier de pierre (flamme ambrée, ancre les
+torches de la Phase 1), pilier antique fissuré, tas de gravats chauds.
+Tous complétés en un seul essai, aucune retouche nécessaire. Placés
+dans `gate_premiere.tscn` (2× chaque, dispersés Combat/Elite/Boss) et
+`outpost.tscn` (1× chaque) — anciens props `prop_rubble.png`/
+`prop_debris.png` gardés tels quels (pas supprimés, £13.3 — ils restent
+utilisables, désormais eux aussi teintés chaud par le `CanvasModulate`
+de la Phase 1 même sans régénération).
+
+**`floor_base.png` remplacé** (ancienne version archivée dans
+`assets/source/archive/world_pre_mandat_nuit/floor_base_pre_nuit.png`,
+jamais supprimée — mandat §0 "réversible"). `floor_tileset.tres`
+étendu à 2 coordonnées d'atlas.
+
+**Gate palette — déviation honnête, non corrigée de force** :
+échantillonnage sur capture réelle de `gate_premiere.tscn`, quelques
+pixels de highlight PROPRES À LA TUILE (détail baked du grès généré,
+pas un artefact d'éclairage) atteignent V=100% — au-dessus même de la
+bande `decor` relevée en Phase 1 (78%). Pas re-élargi la bande pour
+faire disparaître ce résultat (une bande qui admet 0-100% n'est plus
+un gate) : signalé ici tel quel, pas de correction forcée. Le gros du
+sol reste dans une plage raisonnable (mesuré : 34-84% selon zone/
+proximité lumière).
+
+**Régression** : `scripts/run_gameplay_smoke_test.sh` relancé — 60/60
+toujours au vert.
+
+**Build web exporté et redéployé** (même commande que Phase 1).
+
+**Coût réel** : 1 tileset + 3 objets = 4 générations PixelLab (sur
+1653 disponibles, plafond nuit 661 max) — largement sous plafond.

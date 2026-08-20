@@ -18,6 +18,9 @@
 [ext_resource type="Script" path="res://src/world/gate_premiere.gd" id="16"]
 [ext_resource type="PackedScene" path="res://scenes/ui/character_screen.tscn" id="17"]
 [ext_resource type="Shader" path="res://src/vfx/shaders/canvas_modulate_compensate.gdshader" id="18"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/world/prop_brazier.png" id="19"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/world/prop_pillar.png" id="20"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/world/prop_rubble_warm.png" id="21"]
 
 [sub_resource type="ShaderMaterial" id="1"]
 shader = ExtResource("9")
@@ -86,6 +89,31 @@ tile_set = ExtResource("7")
 script = ExtResource("8")
 origin_tile = Vector2i(-2, 3)
 area_size_tiles = Vector2i(120, 11)
+
+[node name="PropPillar1" type="Sprite2D" parent="."]
+position = Vector2(280, 360)
+texture = ExtResource("20")
+
+[node name="PropRubble1" type="Sprite2D" parent="."]
+position = Vector2(520, 380)
+texture = ExtResource("21")
+
+[node name="PropBrazier1" type="Sprite2D" parent="."]
+position = Vector2(1250, 260)
+texture = ExtResource("19")
+
+[node name="PropPillar2" type="Sprite2D" parent="."]
+position = Vector2(1950, 380)
+scale = Vector2(-1, 1)
+texture = ExtResource("20")
+
+[node name="PropRubble2" type="Sprite2D" parent="."]
+position = Vector2(2620, 360)
+texture = ExtResource("21")
+
+[node name="PropBrazier2" type="Sprite2D" parent="."]
+position = Vector2(3350, 260)
+texture = ExtResource("19")
 
 [node name="Player" parent="." instance=ExtResource("1")]
 position = Vector2(160, 300)
