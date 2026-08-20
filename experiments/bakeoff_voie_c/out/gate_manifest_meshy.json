@@ -1,0 +1,15 @@
+{
+  "character": "bakeoff_voie_c_meshy_vs_baseline",
+  "out_canvas": [64, 64],
+  "anchor_px": [32, 61],
+  "animations": {
+    "idle": {
+      "frames": [
+        "assets/processed/sprites/cendre/idle_south/0.png",
+        "experiments/bakeoff_voie_c/out/meshy_idle_64.png"
+      ],
+      "canvas": [64, 64],
+      "anchor_px": [32, 61]
+    }
+  }
+}

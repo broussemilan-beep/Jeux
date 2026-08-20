@@ -25,3 +25,8 @@ assets/staging/*
 .env.*
 *.secret
 
+
+# Bake-off Voie C — sorties Meshy AI brutes (GLB/FBX, plusieurs MB, non
+# suivies tant que Milan n'a pas validé cette voie) : mêmes raisons que
+# /captures_local/ (§13.3) — pas un dossier de sortie brut committé.
+/experiments/bakeoff_voie_c/meshy_output/

@@ -3524,3 +3524,100 @@ recadrage, pipeline de rendu identique).
 En attente de décision de Milan : générer manuellement un modèle via
 l'un des deux outils et transmettre le fichier exporté, ou continuer
 sur le proxy primitives (Voie C v2, en attente de verdict séparé).
+
+## 2026-08-20 — Bake-off Animation, Voie C v3 : vrai modèle 3D via Meshy AI
+
+Milan a obtenu une clé API Meshy et l'a transmise. Remplace le fallback
+proxy-primitives (v2) par un vrai modèle généré, toujours GARDE-FOU 1
+(idle seul, STOP après cette tranche, aucun jugement esthétique
+automatisé).
+
+### Sécurité (avant tout le reste)
+
+Clé stockée UNIQUEMENT en config MCP scope `user` (`~/.claude.json`,
+hors du dépôt, jamais commitée) — d'abord tentée en scope `local` sous
+le mauvais chemin de projet (session Claude Code réellement enracinée
+sur `/home/user/Alpha_Project_Live`, pas `/workspace/jeux` : la config
+locale ne devenait donc jamais visible pour CETTE session), corrigée
+en scope `user` (portée globale, indépendante du chemin) pour qu'une
+future session la retrouve. `.gitignore` renforcé (`.env`, `*.secret`).
+Vérifié à chaque étape : `git status` ne montre jamais la clé, aucun
+`.mcp.json` dans le dépôt.
+
+### Constat : outils MCP non chargés dans la session en cours
+
+`claude mcp list` confirme la connexion, mais les outils du serveur
+(ajouté EN COURS de session) ne sont pas apparus via ToolSearch — un
+serveur MCP stdio ne se charge qu'au démarrage d'une session. Plutôt
+que d'attendre un redémarrage, generation faite en appelant directement
+l'API REST documentée (docs.meshy.ai) avec la clé, même discipline de
+journalisation que prévu pour l'outil MCP.
+
+### Fait
+
+**Génération multi-image** (`POST /openapi/v1/multi-image-to-3d`) à
+partir des 4 vues du turnaround v3 (crops FACE/3-4/PROFIL/DOS depuis
+`assets/source/pixellab/cendre/reference_v3_turnaround_raw.png`,
+label texte rogné, base64 inline). Texture standard 2K (pas Ultra/8K).
+**30 crédits**, conforme à l'estimation. Résultat (thumbnail Meshy) :
+reconstruction fidèle — harnais croisé, ceinture+pochettes, ourlet
+dépenaillé, avant-bras bandés, bottes — tout ce que le proxy
+primitives peinait à faire lire correctement.
+
+**Bug trouvé : rig direct refusé** — le modèle brut a ~2 millions de
+faces (target_polycount du multi-image-to-3d ne s'applique QUE si
+`should_remesh=true`, omis à la génération — donc silencieusement
+ignoré). Corrigé par un remesh séparé (`POST /openapi/v1/remesh`,
+30000 polys triangles) avant rig — **5 crédits**, coût non prévu dans
+le budget initial (non documenté avant appel) mais modeste.
+
+**Auto-rig** (`POST /openapi/v1/rigging`, `height_meters=1.6`) sur le
+modèle remeshé — **5 crédits**. Inclut AUTOMATIQUEMENT une animation
+de marche avec skin (`basic_animations.walking_glb_url`), sans appel
+séparé à `/animation` : couvre la tranche "rig + 1 animation de test"
+prévue par le mandat sans les 3cr supplémentaires estimés pour ça.
+
+**Total tranche : 40 crédits** (30+5+5), en haut de la réserve annoncée
+(20-40cr) mais dedans. Solde vérifié après coup : 1100 → 1060,
+cohérent. STOP ici — aucune génération supplémentaire.
+
+**Pipeline de capture étendu** : `capture_idle_glb.gd`/`.tscn`
+(nouveau) — même caméra/shader que `capture_idle.gd` (Voie C v2) mais
+charge un GLB externe au lieu du proxy primitives, pour un comparatif
+à égalité. Bug trouvé en cadrant : la bounding box calculée
+(`MeshInstance3D.global_transform * get_aabb()`) donnait 0.016 unité
+de haut au lieu de ~1.6m — le `Skeleton3D` importé porte une échelle
+0.01 (conversion cm→m du glTF) que le calcul multipliait correctement,
+mais le rendu RÉEL (déformation par les matrices d'os) ignore cette
+transform de nœud pour un mesh skinné. Contourné avec un cadrage
+manuel (`--char_center_y/x/z`) calibré en inspectant un rendu brut
+sans pixelisation avant de cadrer pour de vrai — pas une vraie
+correction du calcul d'aabb (qui reste faux pour un mesh skinné), juste
+un contournement suffisant pour CETTE capture statique.
+
+**Gates automatiques** : palette (bande Value character) — **ok**, 0
+violation. Gabarit — **1 violation** : `head_width_px` 6 vs baseline 8
+(tolérance 20%, écart réel 25%) ; `torso_width_px` 10 vs 13 passe
+(tolérance 25%). Écart de cadrage/échelle mineur (~1px), pas un défaut
+du modèle — rapporté tel quel, pas de nouvelle itération de cadrage
+pour forcer le gate au vert (GARDE-FOU 1 : le verdict est à Milan, pas
+un gate qui passe à tout prix).
+
+**Fichiers gardés hors dépôt** (`.gitignore`,
+`/experiments/bakeoff_voie_c/meshy_output/`) : les GLB bruts (~15MB,
+rigged+walk) — mêmes raisons que `/captures_local/` (§13.3), pas de
+dossier de sortie brut committé tant que Milan n'a pas tranché.
+
+### STOP — en attente du verdict de Milan
+
+Rendu idle Meshy + comparatif envoyés. Toujours aucune animation
+produite au-delà de la marche bundlée automatiquement par le rig (pas
+utilisée pour cette capture, gardée en réserve).
+
+### Prochain pas
+
+Si validé par Milan : les 2 autres actions du périmètre (dash, un coup
+de combo) — soit via la marche déjà obtenue gratuitement + une
+compétence Meshy dédiée, soit via des poses manuelles du rig, à
+préciser avec lui. Comparatif final à 3 voies (A/B/C) une fois les
+trois rendus sur les mêmes 3 actions.
