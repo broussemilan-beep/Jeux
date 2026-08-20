@@ -3848,3 +3848,29 @@ même discipline que les autres GLB bruts). Le remesh (étape 3) n'est
 PAS engagé — devenu probablement inutile au vu du résultat charge, mais
 la décision finale (remesh quand même / remplacer dash par charge /
 autre) revient à Milan.
+
+## 2026-08-20 — Dash définitif : remplacement Roll_Dodge → Standard_Forward_Charge
+
+Milan tranche : option 1 (remplacer la source du dash). Pas de remesh.
+
+Choix du temps représentatif : 4 candidats comparés (`t=0.05/0.08/0.13`
++ le `t=0.1` du diagnostic précédent), tous bien cadrés avant que le
+root motion ne sorte la pose du cadre fixe. Retenu **`t=0.08`** — jambe
+arrière pleinement étendue, buste penché en avant, lecture la plus
+dynamique d'un élan de dash parmi les candidats.
+
+`meshy_dash_raw.png`/`meshy_dash_64.png` **remplacés** (même cadrage
+que marche/combo : `cam_size=2.3, char_center_y=0.83`, pipeline shader
+complet, downscale NEAREST 64px). `comparison_meshy_actions.png`
+régénéré avec le nouveau dash (label mis à jour :
+« dash / Standard_Forward_Charge (0.08s) »). Résultat net, cohérent
+avec le diagnostic — aucun flou résiduel.
+
+**Coût** : 0 crédit (animation déjà payée/téléchargée lors du
+diagnostic). Aucune dépense supplémentaire cette tranche.
+
+### Périmètre Voie C (idle + 3 animations) à nouveau complet, dash corrigé
+
+`gate_manifest_meshy.json` n'a pas besoin de mise à jour (il ne couvre
+que l'idle, pas les actions — inchangé). Pas de nouvelle action engagée
+au-delà de ce remplacement, en attente de la suite décidée par Milan.
