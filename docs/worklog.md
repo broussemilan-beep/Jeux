@@ -3164,3 +3164,75 @@ HUD tous corrects ensemble.
 
 H4 (Outpost + boucle de run) ou H5 (écran personnage) selon le plan,
 ou réordonnancement si Milan le demande après verdict sur ce build.
+
+## 2026-08-20 — H4 (Outpost + boucle de run)
+
+Mandat §6/GDD §20 : "Hub → choisir Gate → entrée → combats → XP/loot/
+maîtrise → route → Elite → Boss → récompense → retour → amélioration →
+nouvelle Gate." Quatrième tranche du plan H — la pièce manquante que H3
+laissait volontairement non câblée (`GateExit.gate_completed` émis mais
+sans destinataire, faute de hub).
+
+### Fait
+
+**Autoload `RunState`** (`src/system/run_state.gd`) : un seul `Stats`
+Resource PARTAGÉ (`player_stats`), pas une copie resynchronisée à la
+main à chaque transition de scène. `Player._ready()` pointe directement
+dessus (`stats = RunState.player_stats`) au lieu de garder sa propre
+instance par défaut — aucun risque d'oubli de sync, c'est le même objet
+des deux côtés d'un `change_scene_to_file()`. "Amélioration" (GDD §20)
+= ce que H1 fournit déjà (XP/niveau), qui persiste ainsi sans code
+supplémentaire ; un système de boutique/équipement reste GDD §16 "à
+préciser", hors scope ici.
+
+**`GateEntrance`** (`src/world/gate_entrance.gd`, Area2D) : déclenche
+`get_tree().change_scene_to_file()` vers la Gate au contact du joueur.
+Logique de détection (`_should_trigger()`) isolée de l'action réelle
+(`_on_body_entered()`) — la première est pure et testable en boucle, la
+seconde invoquerait un vrai changement de scène si on l'appelait depuis
+un test automatisé, ce qui détruirait l'arbre du test lui-même en plein
+milieu de la suite.
+
+**`Outpost`** (`scenes/gameplay/outpost.tscn`, nouveau `run/main_scene`,
+remplace `gate_premiere.tscn`) : petit hub — sol, Player, HUD,
+TouchControls, un unique `GateEntrance` menant à la Première Gate. Un
+seul choix de Gate existe à ce stade donc pas de sélection réelle ;
+PNJ/statut social explicitement hors scope de cette brique.
+
+**`gate_premiere.gd`** (nouveau, attaché à la racine de
+`gate_premiere.tscn`) : câble enfin `$Exit.gate_completed` vers un
+retour à l'Outpost (`change_scene_to_file`) — la connexion que H3 avait
+délibérément laissée en signal nu.
+
+**3 nouveaux checks smoke test** (59/59, aucune régression) :
+`run_state_persists_player_stats_across_new_player_instances` (deux
+Player instanciés séparément partagent le MÊME objet Stats — modifier
+l'un modifie l'autre), `gate_entrance_detects_player_once_and_targets_
+the_gate_scene` (via `_should_trigger()` en direct, jamais de vrai
+changement de scène dans un test), `gate_premiere_wires_exit_signal_to_
+a_handler` (mock allégé — juste un enfant `Exit` sous le script
+`gate_premiere.gd`, pas la scène complète avec boss/ennemis/VFX —
+vérifié via `Signal.get_connections()`, pas en déclenchant le signal).
+
+**Bug préexistant trouvé en cours de route, sans rapport avec H4** :
+`_check_boss_slam_spares_player_outside_radius_but_hits_inside` (H2)
+lisait `boss_inside.slam_damage` APRÈS `boss_inside.queue_free()` +
+`await physics_frame` — le nœud était déjà libéré à ce point-là
+("Invalid access... on a base object of type 'previously freed'"), ce
+qui faisait planter la fonction avant son propre `_checks.append()` :
+le check disparaissait silencieusement du rapport (58 checks au lieu
+de 59 attendus) sans jamais apparaître comme un échec explicite.
+Corrigé en capturant `slam_damage` dans une variable locale avant le
+`queue_free()`.
+
+**Vérification visuelle réelle** (script jetable, supprimé après
+usage) : la vraie scène `outpost.tscn` chargée en main_scene — sol,
+Player, HUD (PV/niveau/cooldowns) tous corrects ensemble.
+
+**Web rebuild + commit.**
+
+### Prochain pas
+
+H5 (écran personnage : NOM/RANG/NIVEAU/FOR/AGI/INT/VIT/CLASSE=AUCUNE/
+COMPÉTENCES/ÉQUIPEMENT), dernière tranche du plan H, ou
+réordonnancement si Milan le demande après verdict sur ce build.

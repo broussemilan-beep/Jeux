@@ -66,6 +66,9 @@ func _ready() -> void:
 	await _check_xp_pickup_grants_xp_and_frees_itself()
 	await _check_heal_zone_heals_player_to_full()
 	await _check_gate_exit_emits_signal_on_player_contact()
+	await _check_run_state_persists_player_stats_across_new_player_instances()
+	await _check_gate_entrance_detects_player_once_and_targets_the_gate_scene()
+	await _check_gate_premiere_wires_exit_signal_to_a_handler()
 
 	_report()
 
@@ -1263,13 +1266,14 @@ func _check_boss_slam_spares_player_outside_radius_but_hits_inside() -> void:
 	var hp_before_inside: float = _player.stats.hp
 	var hit_inside: bool = await _wait_until(func(): return _player.stats.hp < hp_before_inside, boss_inside.slam_telegraph_ticks + 10)
 	var hp_after_inside: float = _player.stats.hp
+	var boss_inside_slam_damage: float = boss_inside.slam_damage
 	boss_inside.queue_free()
 	await get_tree().physics_frame
 
 	_checks.append({
 		"name": "boss_slam_spares_player_outside_radius_but_hits_inside",
 		"pass": is_equal_approx(hp_after_outside, hp_before_outside) and hit_inside
-			and is_equal_approx(hp_before_inside - hp_after_inside, boss_inside.slam_damage),
+			and is_equal_approx(hp_before_inside - hp_after_inside, boss_inside_slam_damage),
 		"detail": {
 			"hp_before_outside": hp_before_outside, "hp_after_outside": hp_after_outside,
 			"hp_before_inside": hp_before_inside, "hp_after_inside": hp_after_inside, "hit_inside": hit_inside,
@@ -1483,6 +1487,105 @@ func _check_gate_exit_emits_signal_on_player_contact() -> void:
 		"detail": {"completed_count": completed.size()},
 	})
 	exit_marker.queue_free()
+	await get_tree().physics_frame
+
+
+## H4 (mandat §6, GDD §20 : progression persiste Hub<->Gate). Deux instances
+## Player distinctes doivent partager le MÊME Resource Stats via l'autoload
+## RunState — pas une resynchronisation manuelle, l'identité de l'objet
+## (voir run_state.gd, Player._ready()).
+func _check_run_state_persists_player_stats_across_new_player_instances() -> void:
+	var player_a: Player = PlayerScene.instantiate()
+	player_a.global_position = Vector2(200, 3300)
+	add_child(player_a)
+	await get_tree().physics_frame
+
+	var player_b: Player = PlayerScene.instantiate()
+	player_b.global_position = Vector2(260, 3300)
+	add_child(player_b)
+	await get_tree().physics_frame
+
+	var same_stats_object: bool = (
+		player_a.stats == RunState.player_stats and player_b.stats == RunState.player_stats
+	)
+
+	player_a.stats.hp = 42.0
+	var propagates_to_b: bool = is_equal_approx(player_b.stats.hp, 42.0)
+
+	_checks.append({
+		"name": "run_state_persists_player_stats_across_new_player_instances",
+		"pass": same_stats_object and propagates_to_b,
+		"detail": {
+			"same_stats_object": same_stats_object, "propagates_to_b": propagates_to_b,
+			"hp_a": player_a.stats.hp, "hp_b": player_b.stats.hp,
+		},
+	})
+	player_a.queue_free()
+	player_b.queue_free()
+	await get_tree().physics_frame
+
+
+## H4 — testable sans jamais appeler `_on_body_entered()` réel (qui
+## invoquerait `get_tree().change_scene_to_file()`, destructeur pour l'arbre
+## de scène du test lui-même). `_should_trigger()` est la partie pure,
+## séparée exprès pour ça (voir gate_entrance.gd).
+func _check_gate_entrance_detects_player_once_and_targets_the_gate_scene() -> void:
+	var entrance := Area2D.new()
+	entrance.name = "GateEntranceCheck"
+	entrance.set_script(load("res://src/world/gate_entrance.gd"))
+	add_child(entrance)
+
+	var target_matches: bool = entrance.target_gate_scene == "res://scenes/gameplay/gate_premiere.tscn"
+	var triggers_on_player: bool = entrance._should_trigger(_player)
+
+	entrance._triggered = true
+	var ignores_after_triggered: bool = not entrance._should_trigger(_player)
+
+	var non_player := Node2D.new()
+	add_child(non_player)
+	entrance._triggered = false
+	var ignores_non_player: bool = not entrance._should_trigger(non_player)
+
+	_checks.append({
+		"name": "gate_entrance_detects_player_once_and_targets_the_gate_scene",
+		"pass": target_matches and triggers_on_player and ignores_after_triggered and ignores_non_player,
+		"detail": {
+			"target_matches": target_matches, "triggers_on_player": triggers_on_player,
+			"ignores_after_triggered": ignores_after_triggered, "ignores_non_player": ignores_non_player,
+		},
+	})
+	non_player.queue_free()
+	entrance.queue_free()
+	await get_tree().physics_frame
+
+
+## H4 — vérifie le câblage GateExit->Outpost sans charger toute la scène
+## gate_premiere.tscn (lourd : ennemis, boss, VFX...) ni déclencher un vrai
+## change_scene_to_file() : un mock allégé avec juste un enfant "Exit"
+## portant gate_exit.gd, sous le script gate_premiere.gd — Godot appelle
+## _ready() (donc le .connect()) dès l'ajout à l'arbre.
+func _check_gate_premiere_wires_exit_signal_to_a_handler() -> void:
+	var mock := Node2D.new()
+	mock.name = "GatePremiereCheck"
+	mock.set_script(load("res://src/world/gate_premiere.gd"))
+
+	var exit_marker := Area2D.new()
+	exit_marker.name = "Exit"
+	exit_marker.set_script(load("res://src/world/gate_exit.gd"))
+	mock.add_child(exit_marker)
+
+	add_child(mock)
+	await get_tree().physics_frame
+
+	var connections: Array = exit_marker.gate_completed.get_connections()
+	var wired: bool = connections.size() >= 1
+
+	_checks.append({
+		"name": "gate_premiere_wires_exit_signal_to_a_handler",
+		"pass": wired,
+		"detail": {"connection_count": connections.size()},
+	})
+	mock.queue_free()
 	await get_tree().physics_frame
 
 

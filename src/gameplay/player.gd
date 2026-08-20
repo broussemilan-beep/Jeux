@@ -250,6 +250,8 @@ var _hurt_recoil_velocity: Vector2 = Vector2.ZERO
 
 func _ready() -> void:
 	add_to_group("player")
+	if has_node("/root/RunState"):
+		stats = get_node("/root/RunState").player_stats
 	_sprite.animation_finished.connect(_on_sprite_animation_finished)
 	_animation_composer_data = _load_animation_composer_data()
 

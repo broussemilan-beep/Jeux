@@ -12,10 +12,15 @@ config_version=5
 
 config/name="Rank Zero"
 config/features=PackedStringArray("4.3", "Mobile")
-run/main_scene="res://scenes/gameplay/gate_premiere.tscn"
+run/main_scene="res://scenes/gameplay/outpost.tscn"
 
 [autoload]
 
+; RunState EN PREMIER — H4 (mandat §6, GDD §20 "boucle de run") : Player lit
+; RunState.player_stats dans son propre _ready() (voir player.gd), donc
+; RunState doit exister avant que la scène courante instancie un Player.
+; Aucune dépendance sur les autres autoloads.
+RunState="*res://src/system/run_state.gd"
 ; CombatFeedback EN PREMIER — bug réel trouvé en câblant C2
 ; (docs/worklog.md) : les autoloads et les nœuds de scène réguliers
 ; consultent tous CombatFeedback.is_frozen() en tête de leur propre
