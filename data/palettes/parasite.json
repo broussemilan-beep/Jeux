@@ -1,0 +1,10 @@
+{
+  "palette_id": "parasite",
+  "notes": "Signature visuelle de tout pouvoir volé à la Classe Parasite (mandat production v1 §1.4 : \"enregistrer la palette Parasite, grayscale strict du §7, signature de Pouvoir, même logique §2.5 que invocateur_vide\"). GDD §7 : \"Style : symbiose organique, fibres, membranes, tendons, croissance anormale... Palette stricte : grayscale désaturé, gris cendre, gris foncé, noir, pointe de bleu-gris pâle et lilas-gris pâle. NO PURPLE saturé, NO GLOW, NO MAGIC LIGHT EFFECTS.\" Saturations tenues délibérément basses (4-12%, plus basses que invocateur_vide 16-30%) — la Classe Parasite est plus organique/terne que l'Invocateur, la distinction de Classe passe par CETTE différence de saturation, pas seulement la teinte. hue_deg des deux pointes de couleur autorisées (bleu-gris ~205°, lilas-gris ~275°) réservé à de fines touches, jamais le corps principal (GDD : \"pointe de\", pas \"dominante de\"). Valeurs V (HSV %) dans la bande VFX autorisée 20-92%, mêmes garde-fous que invocateur_vide.",
+  "roles": [
+    { "role": "signature 1 (identité émotionnelle de la Classe volée)", "name": "gris cendre organique", "value_percent": 42, "hue_deg": 0, "saturation_percent": 0, "usage": "ribbonTrail, corps principal du balayage/membre" },
+    { "role": "signature 2 (matière Root)", "name": "gris foncé racine", "value_percent": 26, "hue_deg": 0, "saturation_percent": 0, "usage": "fractureLine, tendons/fibres, profondeurs" },
+    { "role": "contact (pointe bleu-gris)", "name": "bleu-gris pâle", "value_percent": 68, "hue_deg": 205, "saturation_percent": 10, "usage": "arcSlash, impactFlashFrame, trace du coup qui touche" },
+    { "role": "intermédiaire (pointe lilas-gris)", "name": "lilas-gris pâle", "value_percent": 50, "hue_deg": 275, "saturation_percent": 8, "usage": "transitions, reflets fins sur le membre transformé" }
+  ]
+}

@@ -47,6 +47,7 @@ var _registry: Dictionary = {
 	"fractureLine": "res://src/vfx/primitives/fracture_line.gd",
 	"shardBurst": "res://src/vfx/primitives/shard_burst.gd",
 	"arcSlash": "res://src/vfx/primitives/arc_slash.gd",
+	"ribbonTrail": "res://src/vfx/primitives/ribbon_trail.gd",
 }
 
 ## Journal en mémoire de chaque spawn — §8.2 "journalise seed + recette

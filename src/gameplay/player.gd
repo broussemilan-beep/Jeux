@@ -125,6 +125,30 @@ const GueuleVideScene := preload("res://scenes/gameplay/powers/gueule_vide.tscn"
 const POWER1_SPAWN_DISTANCE_PX := 96.0  # GameConstants.meters_to_px(3.0)
 const POWER1_COOLDOWN_TICKS := 360  # 6s @ 60/s
 
+## Bras-Faux (GDD §7.1, Parasite) — archétype de cast "frappe de zone"
+## (mandat production v1 §5) : EXÉCUTÉ PAR LE JOUEUR (contrairement à
+## Gueule Vide, une entité invoquée séparée), un seul balayage qui touche
+## potentiellement plusieurs ennemis dans un cône, jamais une entité qui
+## vit sa propre vie après le cast. "Portée ~1,5m, arc ~90°, durée
+## ~0,5-0,7s, une frappe, aucun déplacement automatique" — 40 ticks
+## (0,667s) : 14 anticipation (le membre se transforme) / 4 release
+## (le balayage, contact au 1er tick comme le combo) / 22 recovery (le
+## parasite se rétracte). Dégâts non chiffrés par la fiche (même statut
+## que Gueule Vide, ATTACK_DAMAGE ci-dessus) : alignés sur le combo par
+## défaut, à faire trancher par Milan. Cooldown NON chiffré par le GDD
+## (contrairement à Gueule Vide, "cooldown suggéré 6s") — valeur de
+## départ TUNABLE, plus courte que Gueule Vide (compétence de mêlée plus
+## légère qu'une invocation), à ajuster une fois testée en jeu réel.
+const BRAS_FAUX_ANTICIPATION_TICKS := 14
+const BRAS_FAUX_RELEASE_TICKS := 4
+const BRAS_FAUX_RECOVERY_TICKS := 22
+const BRAS_FAUX_RANGE_PX := 48.0  # ~1.5m, GameConstants.PX_PER_METER
+const BRAS_FAUX_HALF_ANGLE_DEG := 45.0  # arc total ~90°
+const BRAS_FAUX_DAMAGE := 10.0
+const BRAS_FAUX_COOLDOWN_TICKS := 180  # 3s @ 60/s, TUNABLE (non chiffré par le GDD)
+const BrasFauxRecipeId := "power.bras_faux.cast"
+const BRAS_FAUX_CAST_SEED := 51001  # Addendum A §A.5 : jamais l'horloge murale, même discipline que GueuleVide.CAST_SEED.
+
 @export var stats: Stats = Stats.new()
 
 ## Direction de face courante (8 valeurs), utile aux futures frames
@@ -198,6 +222,17 @@ var _dodge_cooldown_remaining: int = 0
 ## dash) — seul un cooldown la borne dans le temps.
 var _power1_cooldown_remaining: int = 0
 
+## Bras-Faux — même discipline de timeline que le combo/dash/esquive
+## (ANTICIPATION/RELEASE/RECOVERY, _action_lock pendant toute l'action :
+## contrairement à Gueule Vide, "aucun déplacement automatique" du GDD
+## implique que le joueur reste engagé dans son geste, pas libre de
+## bouger pendant qu'il balaie).
+enum BrasFauxPhase { NONE, ANTICIPATION, RELEASE, RECOVERY }
+var _bras_faux_phase: int = BrasFauxPhase.NONE
+var _bras_faux_tick: int = 0
+var _bras_faux_hit_applied: bool = false
+var _bras_faux_cooldown_remaining: int = 0
+
 @onready var _sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var _camera: Camera2D = $Camera2D
 
@@ -235,12 +270,17 @@ func _physics_process(_delta: float) -> void:
 		_power1_cooldown_remaining -= 1
 	if _dodge_cooldown_remaining > 0:
 		_dodge_cooldown_remaining -= 1
+	if _bras_faux_cooldown_remaining > 0:
+		_bras_faux_cooldown_remaining -= 1
 
 	if Input.is_action_just_pressed("attack"):
 		_attack_queued = true
 
 	if Input.is_action_just_pressed("power1") and not stats.is_dead() and _power1_cooldown_remaining <= 0:
 		_cast_gueule_vide()
+
+	if Input.is_action_just_pressed("power2"):
+		_start_bras_faux()
 
 	if Input.is_action_just_pressed("dash"):
 		play_dash()
@@ -252,6 +292,8 @@ func _physics_process(_delta: float) -> void:
 		_advance_dash()
 	elif _dodge_phase != DodgePhase.NONE:
 		_advance_dodge()
+	elif _bras_faux_phase != BrasFauxPhase.NONE:
+		_advance_bras_faux()
 	elif _combo_step > 0:
 		_advance_combo()
 	elif _attack_queued and not stats.is_dead() and not _action_lock:
@@ -472,6 +514,94 @@ func _cast_gueule_vide() -> void:
 	creature.global_position = global_position + dir * POWER1_SPAWN_DISTANCE_PX
 	get_parent().add_child(creature)
 	creature.set_owner_stats(stats)
+
+
+## Bras-Faux (GDD §7.1) — archétype "frappe de zone" : contrairement à
+## _cast_gueule_vide() (une entité séparée qui vit sa propre timeline),
+## le joueur EST l'exécutant, sur sa propre timeline de ticks (même
+## discipline que _start_attack()/play_dash()/play_dodge()). Rejette la
+## même façon que ces autres actions verrouillées : mort, déjà engagé
+## dans une autre action, ou cooldown.
+##
+## Placeholder visuel : réutilise l'anim "coup2" (le balayage tournant
+## existant est visuellement le plus proche d'un "seul balayage" avec
+## bras tendu — mandat §5 : "asset dédié seulement pour... une
+## transformation corporelle [Bras-Faux]", l'art dédié reste à générer,
+## pas dans le scope recette+logique de cette brique).
+func _start_bras_faux() -> void:
+	if stats.is_dead() or _action_lock or _bras_faux_cooldown_remaining > 0:
+		return
+	_action_lock = true
+	_bras_faux_phase = BrasFauxPhase.ANTICIPATION
+	_bras_faux_tick = 0
+	_bras_faux_hit_applied = false
+	_sprite.play("coup2")
+
+	var dir := facing
+	if dir.length_squared() < 0.0001:
+		dir = Vector2.DOWN
+	dir = dir.normalized()
+	VfxRecipeRegistry.play(BrasFauxRecipeId, {
+		"origin": global_position,
+		"seed": BRAS_FAUX_CAST_SEED,
+		"direction": dir,
+	})
+
+
+## Timeline déclarative (ANTICIPATION -> RELEASE, contact au 1er tick,
+## même convention que _advance_combo() -> RECOVERY) — jamais dépendante
+## de la durée réelle de lecture du sprite ("coup2" a sa propre fps,
+## potentiellement désynchronisée des bornes ci-dessous, comme documenté
+## pour le combo).
+func _advance_bras_faux() -> void:
+	_bras_faux_tick += 1
+	velocity = Vector2.ZERO  # "aucun déplacement automatique" (GDD §7.1) — jamais de root motion ici.
+	match _bras_faux_phase:
+		BrasFauxPhase.ANTICIPATION:
+			if _bras_faux_tick >= BRAS_FAUX_ANTICIPATION_TICKS:
+				_bras_faux_phase = BrasFauxPhase.RELEASE
+				_bras_faux_tick = 0
+		BrasFauxPhase.RELEASE:
+			if _bras_faux_tick == 1 and not _bras_faux_hit_applied:
+				_try_hit_bras_faux()
+				_bras_faux_hit_applied = true
+			if _bras_faux_tick >= BRAS_FAUX_RELEASE_TICKS:
+				_bras_faux_phase = BrasFauxPhase.RECOVERY
+				_bras_faux_tick = 0
+		BrasFauxPhase.RECOVERY:
+			if _bras_faux_tick >= BRAS_FAUX_RECOVERY_TICKS:
+				_end_bras_faux()
+
+
+func _end_bras_faux() -> void:
+	_bras_faux_phase = BrasFauxPhase.NONE
+	_bras_faux_tick = 0
+	_action_lock = false
+	_bras_faux_cooldown_remaining = BRAS_FAUX_COOLDOWN_TICKS
+
+
+## "Frappe de zone" : TOUS les ennemis vivants dans l'arc, pas un seul
+## (Targeting.enemies_in_arc(), pas nearest_enemy_in_radius()) — la
+## distinction qui fait l'identité de cet archétype face au combo/Gueule
+## Vide (une seule cible chacun). Recul individuel sur CHAQUE cible
+## touchée (GDD §7.1 : "chaque coup qui touche impose un recul visible"),
+## via Enemy.take_damage() comme pour le combo — jamais une primitive de
+## la recette (data/recipes/power.bras_faux.cast.json, notes).
+func _try_hit_bras_faux() -> void:
+	var dir := facing
+	if dir.length_squared() < 0.0001:
+		dir = Vector2.DOWN
+	dir = dir.normalized()
+	var targets: Array = Targeting.enemies_in_arc(get_tree(), global_position, dir, BRAS_FAUX_RANGE_PX, BRAS_FAUX_HALF_ANGLE_DEG)
+	if targets.is_empty():
+		return
+	for target in targets:
+		target.take_damage(BRAS_FAUX_DAMAGE, global_position)
+
+	# Même tier que Gueule Vide (tous deux importance_tier 2/6, feedback
+	# "medium" dans les deux recettes) — pas un second barème de hit-stop.
+	CombatFeedback.trigger_hitstop("medium")
+	CameraDirector.trigger_punch()
 
 
 func is_dead() -> bool:
@@ -727,6 +857,8 @@ func _on_sprite_animation_finished() -> void:
 		return  # le dash gère son propre verrou via sa timeline de ticks (_end_dash())
 	if _dodge_phase != DodgePhase.NONE:
 		return  # l'esquive gère son propre verrou via sa timeline de ticks (_end_dodge())
+	if _bras_faux_phase != BrasFauxPhase.NONE:
+		return  # Bras-Faux gère son propre verrou via sa timeline de ticks (_end_bras_faux())
 	if _sprite.animation == "mort":
 		return  # reste sur la dernière frame, jamais reverrouillé sur idle
 	_action_lock = false
@@ -739,5 +871,6 @@ func die() -> void:
 	_attack_queued = false
 	_dash_phase = DashPhase.NONE
 	_dodge_phase = DodgePhase.NONE
+	_bras_faux_phase = BrasFauxPhase.NONE
 	_action_lock = true
 	_sprite.play("mort")

@@ -2477,3 +2477,104 @@ D, tranche 2 : archétypes de cast génériques (3-4, projection avant /
 frappe de zone / invocation / canalisation) puis primitives 6→15 et
 Bras-Faux (recette+logique avant l'art). Puis E/F/G en parallèle selon
 disponibilité, puis H.
+
+---
+
+## 2026-08-20 — D, tranche 2 (Bras-Faux : archétype de cast "frappe de zone")
+
+"Continue" de Milan après la tranche 1 (esquive). Premier exemple concret
+de l'archétype "frappe de zone" du mandat §5 (usine à pouvoirs) : contrairement
+à l'invocation (Gueule Vide — une entité spawnée, cible unique), Bras-Faux
+est exécuté PAR le joueur lui-même et touche potentiellement plusieurs
+ennemis dans un cône (GDD §7.1 : "Rank Zero effectue un seul balayage").
+
+**Nouvelle primitive `ribbonTrail` (7/15, §5).** `src/vfx/primitives/ribbon_trail.gd`
+— balaie `sweep_deg` (défaut 90°, jitter seedé ±3°) centré sur `direction`
+sur `lifetime_ticks`, garde un historique de 8 angles passés pour tracer
+une traînée-ruban à plusieurs segments, largeur dégressive base→pointe,
+fondu par segment. Enregistrée dans `VfxDirector._registry`.
+
+**Nouvelle palette `parasite` (`data/palettes/parasite.json`), nommée
+explicitement par le mandat §1.4.** GDD §7 : "grayscale désaturé... pointe
+de bleu-gris pâle et lilas-gris pâle. NO PURPLE saturé, NO GLOW." 4 rôles,
+saturations 4-12% — délibérément plus basses qu'invocateur_vide (16-30%) :
+la distinction Invocateur/Parasite passe par CETTE différence de
+saturation, pas seulement la teinte, matière plus organique/terne.
+
+**Nouvelle recette `data/recipes/power.bras_faux.cast.json`.** 4 couches,
+timeline 40 ticks (0,667s, dans la fourchette GDD 0,5-0,7s) : anticipation
+0-14 (fractureLine, la membrane qui se déchire), release 14-18 (ribbonTrail
+balaie ~100°, contact au tick 15 — arcSlash + impactFlashFrame), recovery
+18-40 (rien, le membre se rétracte). Les 4 couches sont protégées
+(`degradable:false`) — un effet léger de 40 ticks n'a pas besoin de
+sacrifice sous pression de budget (Addendum A §A.1). Portée/arc/dégâts/recul
+NE SONT PAS dans cette recette (§8.1, frontière recette/gameplay déjà
+documentée dans `vfx_recipe_registry.gd`) : ils vivent dans `player.gd`.
+
+**Nouveau `Targeting.enemies_in_arc()` (`src/gameplay/targeting.gd`).**
+Complète `nearest_enemy_in_radius()` existant plutôt que de le remplacer —
+première méthode multi-cible de l'utilitaire, filtre cône (angle vs
+`facing`) + rayon + "vivant" (`is_dead()`), même convention que le reste.
+
+**État `BrasFauxPhase` (`src/gameplay/player.gd`).** Même famille
+d'architecture que le dash/l'esquive (3-4 phases, `_action_lock`, garde
+dans `_on_sprite_animation_finished()`) mais gardé LOCAL à Player plutôt
+que généralisé en un vrai dispatcher d'archétypes de cast : un seul exemple
+concret de "frappe de zone" à ce stade (Gueule Vide reste le seul exemple
+d'"invocation", chacun avec sa propre timeline locale) — une abstraction
+générique serait prématurée avec un seul cas à généraliser. `ANTICIPATION`
+14 ticks / `RELEASE` 4 ticks (hit au 1er tick de RELEASE, même convention
+que le combo/Gueule Vide) / `RECOVERY` 22 ticks = 40 ticks au total,
+portée 48px (~1,5m), demi-angle 45° (arc total 90°), dégâts 10,
+cooldown 180 ticks (3s, TUNABLE). Multi-cible réellement câblée : boucle
+sur TOUTES les cibles de `enemies_in_arc()`, chacune reçoit
+`take_damage()` (recul individuel porté par `Enemy`, pas une primitive
+VFX), un seul `CombatFeedback.trigger_hitstop("medium")` +
+`CameraDirector.trigger_punch()` pour l'ensemble du swing (pas par cible
+touchée — un hit-stop qui se cumule par cible casserait le rythme d'un
+swing qui touche 3 ennemis d'un coup). Placeholder visuel (mandat §1.3) :
+rejoue l'anim "coup2" existante, pas de nouvelle anim dédiée à ce stade
+(archétype générique = pas d'animation par pouvoir, §5).
+
+**Nouvel input.** Action `power2` dans `project.godot` (touche R, jamais
+utilisée jusqu'ici) + `ButtonPower2` dans `touch_controls.tscn`, position
+vérifiée par calcul de distance pour ne chevaucher aucun des 4 boutons
+existants.
+
+**3 nouveaux checks smoke test** (`_check_bras_faux()`,
+`tools/smoke_test_gameplay.gd`) : l'input démarre l'état et joue "coup2" ;
+le swing touche l'ennemi de face (0°) ET l'ennemi de côté (30°, dans le
+demi-angle 45°) mais épargne l'ennemi à 90° (hors arc) ; l'action se
+termine, se déverrouille, et le cooldown bloque un second cast immédiat.
+42/42 checks gameplay au vert (39 précédents + 3 nouveaux), 8/8 VFX
+recipe inchangés — aucune régression.
+
+**Nouveau mode de capture `--mode=player_action` (`tools/capture_scene.gd`).**
+Les modes existants ne couvraient pas ce cas : `character` fige une frame
+sans faire tourner la physique, `power` instancie une scène de créature
+autonome (`scenes/gameplay/powers/<power>.tscn`) — Bras-Faux est porté par
+le Player lui-même, pas une scène de pouvoir séparée. Nouveau mode :
+instancie le Player réel + 2 ennemis (mêmes offsets que le smoke test),
+simule `Input.action_press/release`, laisse la physique RÉELLE tourner N
+ticks depuis la pression, gèle, capture — même technique `_freeze_and_wait_render()`
+que les deux autres modes, un seul point d'entrée conservé (docstring du
+fichier). 3 captures en jeu réel (scratchpad, non commitées) : tick 8
+(anticipation — fractureLine visible, ennemi de face déjà en place), tick
+16 (contact — flash blanc `impactFlashFrame` + ruban `ribbonTrail`,
+conforme §4 "noyau blanc quasi-plein" qui ignore volontairement la
+palette, comme tout flash d'impact déjà validé pour Gueule Vide), tick 24
+(recovery — 2× nombre de dégâts "10" flottants, ennemi de face visiblement
+reculé par le knockback). Confirme visuellement le multi-cible, pas
+seulement les HP en JSON de test.
+
+**Web rebuild + commit.** `docs/index.html`/`docs/index.pck` régénérés
+(`godot4 --headless --export-release "Web" docs/index.html`, mêmes
+xvfb+Vulkan logiciel que les smoke tests).
+
+### Prochain pas
+
+D, tranche 3 : primitives 6→15 restantes (impactStar, converge, spiral,
+beamSegment, etc., `ARCHITECTURE_VFX_v3.md` §7.1) et un second exemple
+d'archétype ("projection avant" ou "canalisation" — les deux restent à 0
+exemple concret). Puis E/F/G en parallèle selon disponibilité, puis H.
+Verdict de Milan sur ce build attendu avant de pousser plus loin dans D.

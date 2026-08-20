@@ -43,6 +43,19 @@ extends Node2D
 ##   --background=neutral|loaded, --scale=1|2|4  mêmes conventions que character.
 ##   --out=/chemin/absolu/sortie.png
 ##
+## --mode=player_action (D, Bras-Faux) : instancie le Player RÉEL (pas une
+##   scène de pouvoir séparée) et simule une pression d'input via
+##   Input.action_press/release — nécessaire pour toute action portée par
+##   player.gd lui-même (Bras-Faux, esquive, dash, combo) plutôt que par
+##   une scène de créature autonome comme Gueule Vide. Place aussi 2
+##   ennemis (front + côté, mêmes offsets que _check_bras_faux() du smoke
+##   test) pour rendre visible le recul multi-cible, pas juste le VFX seul.
+##   --action=power2                 nom de l'InputMap action à presser 1 frame
+##   --tick=16                       tick physique auquel capturer (compté
+##                                    depuis la pression, pas depuis _ready())
+##   --background=neutral|loaded, --scale=1|2|4  mêmes conventions que character.
+##   --out=/chemin/absolu/sortie.png
+##
 ## Voir CLAUDE.md "Environnement de capture — écart documenté" : cette
 ## scène elle-même ne sait rien de xvfb/Vulkan logiciel — c'est
 ## scripts/capture_headless.sh qui choisit COMMENT lancer Godot. Ce
@@ -50,6 +63,7 @@ extends Node2D
 ## fonctionnera dans l'environnement d'exécution.
 
 const PlayerScene := preload("res://scenes/gameplay/player.tscn")
+const EnemyScene := preload("res://scenes/gameplay/enemy.tscn")
 
 
 func _ready() -> void:
@@ -59,8 +73,83 @@ func _ready() -> void:
 		await _run_character_capture(args)
 	elif mode == "power":
 		await _run_power_capture(args)
+	elif mode == "player_action":
+		await _run_player_action_capture(args)
 	else:
 		await _run_primitive_capture(args)
+
+
+func _run_player_action_capture(args: Dictionary) -> void:
+	var action_name: String = args.get("action", "")
+	var target_tick: int = int(args.get("tick", "16"))
+	var out_path: String = args.get("out", "")
+	var background: String = args.get("background", "neutral")
+	var scale: int = int(args.get("scale", "1"))
+	if action_name == "" or out_path == "":
+		push_error("capture_scene[player_action]: --action et --out sont requis.")
+		get_tree().quit(1)
+		return
+	if not InputMap.has_action(action_name):
+		push_error("capture_scene[player_action]: action InputMap introuvable '%s'." % action_name)
+		get_tree().quit(1)
+		return
+
+	if background == "loaded":
+		add_child(_make_loaded_background())
+
+	var player := PlayerScene.instantiate()
+	player.global_position = Vector2(320, 200)
+	player.facing = Vector2.RIGHT
+	add_child(player)
+
+	# Mêmes offsets que _check_bras_faux() (tools/smoke_test_gameplay.gd) :
+	# un ennemi devant (0°, dans l'arc) et un sur le côté (30°, dans l'arc)
+	# pour que le recul multi-cible soit visible dans la capture, pas
+	# seulement le VFX seul sur une salle vide.
+	var enemy_front := EnemyScene.instantiate()
+	enemy_front.global_position = player.global_position + Vector2(30, 0)
+	add_child(enemy_front)
+
+	var enemy_side := EnemyScene.instantiate()
+	var side_dir := Vector2.RIGHT.rotated(deg_to_rad(30.0))
+	enemy_side.global_position = player.global_position + side_dir * 30.0
+	add_child(enemy_side)
+
+	await get_tree().physics_frame
+
+	Input.action_press(action_name)
+	await get_tree().physics_frame
+	Input.action_release(action_name)
+
+	# Compté depuis la pression (pas depuis _ready()) — même sonde par
+	# comptage de physics_frame que le smoke test (_wait_until), la
+	# physique RÉELLE du Player pilote son propre état, aucune horloge
+	# externe à interroger comme VfxDirector.get_current_tick() en mode
+	# primitive.
+	var ticks_waited := 0
+	while ticks_waited < target_tick:
+		await get_tree().physics_frame
+		ticks_waited += 1
+
+	await _freeze_and_wait_render()
+
+	var img: Image = get_viewport().get_texture().get_image()
+	if scale > 1:
+		img.resize(img.get_width() * scale, img.get_height() * scale, Image.INTERPOLATE_NEAREST)
+	var err := _save_png(img, out_path)
+
+	var report := {
+		"save_err": err,
+		"out_path": out_path,
+		"size": [img.get_width(), img.get_height()],
+		"mode": "player_action",
+		"action": action_name,
+		"tick": target_tick,
+		"background": background,
+		"scale": scale,
+	}
+	print("CAPTURE_RESULT ", JSON.stringify(report))
+	get_tree().quit(0 if err == OK else 1)
 
 
 func _run_power_capture(args: Dictionary) -> void:

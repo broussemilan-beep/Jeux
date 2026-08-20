@@ -47,6 +47,7 @@ func _ready() -> void:
 	await _check_hit_response()
 	await _check_animation_composer_and_camera()
 	await _check_dodge()
+	await _check_bras_faux()
 
 	_report()
 
@@ -846,6 +847,99 @@ func _check_dodge() -> void:
 		"pass": not dodge_started_during_cooldown,
 		"detail": {"dodge_started_during_cooldown": dodge_started_during_cooldown},
 	})
+
+
+## D, tranche 2 (mandat production v1 §5, "usine à pouvoirs") : Bras-Faux
+## (GDD §7.1), premier pouvoir sur l'archétype de cast "frappe de zone" —
+## vérifie précisément ce qui distingue cet archétype du combo/Gueule Vide
+## (une seule cible chacun) : PLUSIEURS ennemis touchés en un seul
+## balayage si tous dans l'arc, un ennemi hors arc épargné. Place 3
+## ennemis autour du joueur (deux dans le cône de 90°, un à 90° pile hors
+## cône) plutôt que de faire confiance à Targeting.enemies_in_arc() sur
+## la seule foi de son code — le smoke test vérifie l'EFFET réel (PV qui
+## bougent), pas l'appel de fonction.
+func _check_bras_faux() -> void:
+	await _wait_until(func(): return not _player._action_lock, Player.BRAS_FAUX_RECOVERY_TICKS + 5)
+
+	_player.global_position = Vector2(200, 1200)
+	_player.velocity = Vector2.ZERO
+	_player.facing = Vector2.RIGHT
+	var sprite: AnimatedSprite2D = _player.get_node("AnimatedSprite2D")
+
+	var enemy_front := EnemyScene.instantiate()
+	enemy_front.name = "BrasFauxFront"
+	enemy_front.global_position = _player.global_position + Vector2(30, 0)  # 0° — dans l'arc
+	add_child(enemy_front)
+
+	var enemy_side := EnemyScene.instantiate()
+	enemy_side.name = "BrasFauxSide"
+	var side_dir := Vector2.RIGHT.rotated(deg_to_rad(30.0))
+	enemy_side.global_position = _player.global_position + side_dir * 30.0  # 30° — dans l'arc (demi-angle 45°)
+	add_child(enemy_side)
+
+	var enemy_outside := EnemyScene.instantiate()
+	enemy_outside.name = "BrasFauxOutside"
+	var outside_dir := Vector2.RIGHT.rotated(deg_to_rad(90.0))
+	enemy_outside.global_position = _player.global_position + outside_dir * 30.0  # 90° — hors arc
+	add_child(enemy_outside)
+
+	await get_tree().physics_frame  # laisser le groupe "enemies" se peupler
+
+	var hp_front_before: float = enemy_front.stats.hp
+	var hp_side_before: float = enemy_side.stats.hp
+	var hp_outside_before: float = enemy_outside.stats.hp
+
+	Input.action_press("power2")
+	await get_tree().physics_frame
+	Input.action_release("power2")
+	var started: bool = await _wait_until(func(): return _player._bras_faux_phase != Player.BrasFauxPhase.NONE, 5)
+	var anim_during: String = sprite.animation
+
+	await _wait_until(
+		func(): return enemy_front.stats.hp < hp_front_before,
+		Player.BRAS_FAUX_ANTICIPATION_TICKS + Player.BRAS_FAUX_RELEASE_TICKS + 5)
+	var hp_front_after: float = enemy_front.stats.hp
+	var hp_side_after: float = enemy_side.stats.hp
+	var hp_outside_after: float = enemy_outside.stats.hp
+
+	var ended: bool = await _wait_until(
+		func(): return _player._bras_faux_phase == Player.BrasFauxPhase.NONE, Player.BRAS_FAUX_RECOVERY_TICKS + 5)
+	var action_unlocked_after: bool = not _player._action_lock
+
+	# Cooldown : un second appui immédiat ne doit RIEN déclencher (même
+	# discipline que dodge/Gueule Vide).
+	Input.action_press("power2")
+	await get_tree().physics_frame
+	Input.action_release("power2")
+	var bras_faux_started_during_cooldown: bool = _player._bras_faux_phase != Player.BrasFauxPhase.NONE
+
+	_checks.append({
+		"name": "bras_faux_input_starts_state_and_plays_placeholder_anim",
+		"pass": started and anim_during == "coup2",
+		"detail": {"started": started, "anim": anim_during},
+	})
+	_checks.append({
+		"name": "bras_faux_hits_all_enemies_in_arc_spares_enemy_outside",
+		"pass": hp_front_after < hp_front_before and hp_side_after < hp_side_before and hp_outside_after == hp_outside_before,
+		"detail": {
+			"hp_front_before": hp_front_before, "hp_front_after": hp_front_after,
+			"hp_side_before": hp_side_before, "hp_side_after": hp_side_after,
+			"hp_outside_before": hp_outside_before, "hp_outside_after": hp_outside_after,
+		},
+	})
+	_checks.append({
+		"name": "bras_faux_ends_and_unlocks_then_cooldown_blocks_second_cast",
+		"pass": ended and action_unlocked_after and not bras_faux_started_during_cooldown,
+		"detail": {
+			"ended": ended, "action_unlocked_after": action_unlocked_after,
+			"bras_faux_started_during_cooldown": bras_faux_started_during_cooldown,
+		},
+	})
+
+	enemy_front.queue_free()
+	enemy_side.queue_free()
+	enemy_outside.queue_free()
+	await get_tree().physics_frame
 
 
 func _report() -> void:

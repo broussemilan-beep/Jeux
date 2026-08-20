@@ -1,0 +1,23 @@
+{
+  "id": "power.bras_faux.cast",
+  "family": "melee_sweep",
+  "importance_tier": 2,
+  "layers": [
+    { "type": "anticipation", "primitive": "fractureLine",     "start_tick": 0,  "end_tick": 14, "degradable": false },
+    { "type": "core",         "primitive": "ribbonTrail",      "start_tick": 6,  "end_tick": 17, "degradable": false, "scale_px": 44, "sweep_deg": 100 },
+    { "type": "contact",      "primitive": "arcSlash",         "start_tick": 15, "end_tick": 17, "degradable": false, "scale_px": 30 },
+    { "type": "contact",      "primitive": "impactFlashFrame", "start_tick": 15, "end_tick": 17, "degradable": false }
+  ],
+  "dissipation_profile": { "value_mult": 0.5, "saturation_mult": 0.5, "opacity_mult": 0.4, "duration_ticks": 12 },
+  "palette_id": "parasite",
+  "feedback": "medium",
+  "sfx_markers": [ { "tick": 15, "event": "bras_faux_slash" } ],
+  "limits": { "particles": 4, "sprites": 4, "persistent_ticks": 40, "overdraw_budget": 0.6 },
+  "lifecycle": {
+    "cancellable_before": "release",
+    "owner_death_policy": "finish_core_then_stop_secondary",
+    "scene_change_policy": "stop_immediately",
+    "max_lifetime_ticks": 44
+  },
+  "notes": "Archétype de cast 'frappe de zone' (mandat production v1 §5) — pas une entité invoquée comme Gueule Vide, exécuté PAR le joueur (GDD §7.1 : 'Rank Zero effectue un seul balayage'). Timeline 40 ticks (0,667s, dans la fourchette GDD 0,5-0,7s) : anticipation 0-14 (le membre se transforme/s'allonge, fractureLine trace la membrane qui se déchire — 'croissance anormale' §7), release 14-18 (le balayage lui-même, ribbonTrail balaie ~100° — légèrement plus large que l'arc de frappe réel 90° pour vendre un dépassement du geste au-delà de la zone de dégâts, contact au premier tick de release comme le combo/Gueule Vide), recovery 18-40 (le parasite se rétracte, aucune couche VFX supplémentaire — silhouette qui revient au neutre). Portée/arc/dégâts/recul NE sont PAS dans cette recette (§8.1 : 'cette registry ne pilote QUE les couches visuelles') — côté gameplay dans player.gd, mêmes constantes BRAS_FAUX_*. Multi-cible (Targeting.enemies_in_arc, PAS nearest_enemy_in_radius) : contrairement au combo/Gueule Vide (une seule cible), 'frappe de zone' touche potentiellement plusieurs ennemis dans le cône — chaque cible touchée reçoit un recul visible (GDD §7.1, porté par Enemy.take_damage(), jamais une primitive de cette recette). degradable (Addendum A §A.1) : les 4 couches sont protégées (jamais de couche dégradable ici, contrairement à shardBurst de Gueule Vide) — un swing de 4 couches légères sur 40 ticks n'a pas besoin de sacrifice sous pression de budget."
+}

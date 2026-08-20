@@ -24,3 +24,37 @@ static func nearest_enemy_in_radius(tree: SceneTree, origin: Vector2, radius_px:
 			best = candidate
 			best_dist_sq = dist_sq
 	return best
+
+
+## Retourne TOUS les ennemis vivants dans `radius_px` ET dans un cône de
+## `half_angle_deg` de part et d'autre de `facing` — usage : l'archétype
+## de cast "frappe de zone" (mandat production v1 §5, ex. Bras-Faux, GDD
+## §7.1 : "arc ~90°"), qui touche potentiellement PLUSIEURS cibles en un
+## seul balayage, contrairement à `nearest_enemy_in_radius()` (une seule
+## cible, le combo léger/Gueule Vide). Même filtre "vivant" que ci-dessus.
+## `facing` nul retombe sur Vector2.RIGHT plutôt que de renvoyer un
+## tableau vide sans raison de gameplay.
+static func enemies_in_arc(tree: SceneTree, origin: Vector2, facing: Vector2, radius_px: float, half_angle_deg: float) -> Array:
+	var dir := facing
+	if dir.length_squared() < 0.0001:
+		dir = Vector2.RIGHT
+	dir = dir.normalized()
+	var half_angle_rad: float = deg_to_rad(half_angle_deg)
+	var radius_sq: float = radius_px * radius_px
+
+	var hits: Array = []
+	for candidate in tree.get_nodes_in_group("enemies"):
+		if not (candidate is Node2D):
+			continue
+		if candidate.has_method("is_dead") and candidate.is_dead():
+			continue
+		var to_candidate: Vector2 = candidate.global_position - origin
+		if to_candidate.length_squared() > radius_sq:
+			continue
+		if to_candidate.length_squared() < 0.0001:
+			hits.append(candidate)  # exactement sur l'origine : dans tous les cônes possibles.
+			continue
+		var angle_to: float = absf(dir.angle_to(to_candidate.normalized()))
+		if angle_to <= half_angle_rad:
+			hits.append(candidate)
+	return hits
