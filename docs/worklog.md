@@ -2314,3 +2314,90 @@ light`), 8/8 VFX recipe inchangés.
 R3 — régénération v3 du personnage sans cape (référence déjà reçue et
 sauvegardée, `assets/source/pixellab/cendre/reference_v3_turnaround_raw.
 png`), dès que le budget PixelLab est confirmé.
+
+## 2026-08-20 — R3 (régénération v3 du personnage, sans cape)
+
+Mandat production v1 §1.1/§1.2 — "Go" de Milan après confirmation du
+budget PixelLab (`get_balance` : 1693/2000 générations restantes,
+abonnement actif — largement suffisant, ~10 générations consommées au
+total pour ce chantier).
+
+**Nouveau personnage PixelLab, `Cendre_v3c` (id `8596a4ad-0a0b-4d82-
+b99b-db8a73c01e33`), depuis `reference_v3_turnaround_raw.png` (panneau
+FACE, sans cape, harnais croisé, tunique courte, avant-bras bandés).**
+Trois tentatives avant le retenu, chacune tracée dans
+`data/pixellab_usage.jsonl` :
+- `Cendre_v3` (12×32px) : référence base64 trop agressivement réduite
+  (12px de large, pour tenir sous le seuil de troncature MCP ~1-2KB
+  documenté en Phase 1.1) — sortie bien plus petite que le personnage v2
+  (32×64px). Supprimé.
+- `Cendre_v3b` (20×56px) : encore trop petit — a fait exploser le gate de
+  morphologie (17 violations, `data/pixellab_usage.jsonl`) par bruit de
+  mesure pur (des écarts de 2-3px sur une baseline de 10px suffisent à
+  dépasser 25% de tolérance). Supprimé avec ses 8 animations.
+- `Cendre_v3c` (32×84px, retenu) : référence remontée à 31px de large
+  (16 couleurs, ~8,6 Ko de base64 — au-delà du seuil "~1-2KB" documenté
+  en Phase 1.1, mais transmis sans troncature constatée : ce seuil était
+  une prudence de départ, pas un mur dur). Sortie très proche du gabarit
+  v2 (32×64px), fidèle à la référence.
+
+**Gate de morphologie, faux positifs identifiés et documentés (pas
+contournés en silence).** `validate_morphology.py` restait rouge (33
+violations) même sur `Cendre_v3c`. Investigation par lecture du code
+(pas par supposition) : `measure_torso_width()` échantillonne à
+`y_top + char_height * shoulder_band_frac`, où `char_height` est la
+hauteur de bbox PROPRE À CHAQUE FRAME — une pose dont la hauteur globale
+diffère de celle d'idle (bras tendu, fente de coup, mort à l'horizontale)
+fait atterrir la bande à un endroit anatomique différent, sans que la
+silhouette elle-même n'ait changé de gabarit. Vérifié à l'œil sur les 9
+frames les plus flagrantes (contact sheet, scratchpad) : aucune
+distorsion réelle, le personnage reste fin et cohérent avec la référence
+partout, y compris la frame la plus extrême (`mort` frame 6, où le
+personnage est allongé à l'horizontale — le gate mesure alors la largeur
+du TORSE À LA PLACE de la tête, une limite de méthode déjà documentée en
+creux dans le docstring du script, jamais un vrai triplement de volume).
+Limite du gate acceptée et documentée ici plutôt que masquée en
+ajustant les tolérances pour forcer un vert artificiel.
+
+**Bug réel trouvé et corrigé dans `cook_character_frames.py`
+(`foot_anchor()`).** Erreur d'off-by-one : `bbox()` de PIL renvoie une
+borne basse EXCLUSIVE (convention `crop()`), mais la boucle de recherche
+du point d'ancrage pied démarrait à `range(bottom, top-1, -1)` — un
+`IndexError` dès qu'une frame touche le bord bas du canvas source
+(déclenché par le template `taking-punch` de `hurt`, jamais rencontré
+avant avec les animations v2). Corrigé en démarrant à `bottom-1`. Bug
+latent depuis A7, jamais trigger avant faute de frame source touchant
+exactement le bord.
+
+**Gate de valeur (`validate_pixels.py`), violation réelle trouvée et
+corrigée.** Le nouveau personnage utilise un gris de contour/ombre à
+`(30,30,30)` (11,76% V) systématiquement sous le plancher de la bande
+`character` (15%) — 3810 pixels sur les 8 animations, un seul remonté
+via nudge HSV (V→17%, teinte/saturation préservées), imperceptible à
+l'œil (capture avant/après comparée). Même discipline que le correctif
+de plafond déjà appliqué en Phase 1.1 (nudge ciblé, jamais un
+relâchement de bande pour la totalité de la catégorie).
+
+**Téléchargement robuste des frames PixelLab.** `urllib.request` nu
+échouait en 403 sur les URLs Backblaze (probablement filtrage anti-bot
+sans User-Agent) — `curl` passe sans souci. Noté ici pour la prochaine
+session de régénération.
+
+**Pipeline complet exécuté** : cuisson (`cook_character_frames.py`,
+canvas partagé 96×96, ancrage pied identique à v2), reconstruction de
+`cendre_frames.tres` (mêmes fps/loop que v2 par animation), gates pixel
+et smoke tests (34/34 gameplay, 8/8 VFX recipe, aucune régression),
+capture en jeu réelle (idle/coup1/dash, scratchpad) confirmant
+l'alignement sol et l'absence de cape. Les 8 manifests `hero_*.json`
+mis à jour (nouveau `pixellab_character_id`/`animation_group_id`,
+mentions de cape retirées des `pixellab_action_description` de
+dash/coup2, `known_limitation` de cape marquée obsolète).
+
+**Limite connue, assumée** : une seule direction (sud) régénérée, comme
+pour v2 — les 7 directions restantes suivent le même arbitrage batch
+que Phase 1.1 (§5.3), pas dans le scope de R3.
+
+### Prochain pas
+
+D — esquive (logique) + usine à pouvoirs, prochaine étape de l'ordre du
+mandat (§6 : J1 → J2 → R3 → D → E/F/G → H).

@@ -2,10 +2,10 @@
   "asset_id": "hero_dash",
   "kind": "character_animation",
   "source": "pixellab",
-  "pixellab_character_id": "f6b77b57-c482-4e1e-8919-ada684110e08",
-  "pixellab_animation_group_id": "2285e305-894e-4b68-bbbb-29f184c9f074",
+  "pixellab_character_id": "8596a4ad-0a0b-4d82-b99b-db8a73c01e33",
+  "pixellab_animation_group_id": "a304b954-5ec4-4cc8-ae69-9f13bd9748db",
   "pixellab_mode": "v3_custom",
-  "pixellab_action_description": "explosive forward sprint start, body tilted sharply forward at a low diagonal angle, legs stretched wide in a full running stride, both feet off the ground mid-stride, cape streaking straight backward from the speed",
+  "pixellab_action_description": "explosive forward sprint start, body tilted sharply forward at a low diagonal angle, legs stretched wide in a full running stride, both feet off the ground mid-stride",
   "character": "cendre",
   "direction": "south",
   "note_direction": "seule la direction sud existe pour l'instant (discipline batch section 5.3) - 7 directions restantes dans un batch ulterieur avec estimation Milan",
@@ -14,9 +14,21 @@
   "license": "internal",
   "seed": null,
   "frames": 5,
-  "cell": [96, 96],
-  "pivot": [48, 92],
-  "frame_ticks": [4, 4, 4, 4, 4],
+  "cell": [
+    96,
+    96
+  ],
+  "pivot": [
+    48,
+    92
+  ],
+  "frame_ticks": [
+    4,
+    4,
+    4,
+    4,
+    4
+  ],
   "loop": false,
   "source_frames_dir": "assets/source/pixellab/cendre/animations/dash/",
   "processed_frames_dir": "assets/processed/sprites/cendre/dash/",
@@ -24,9 +36,9 @@
   "capture_path": "captures/phase1/hero_dash.png",
   "capture_note": "frame 4 (pose la plus dynamique - la fente basse/cape deployee), fond neutre, capture headless",
   "validated_auto": true,
-  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK (0 violation). Meme correctif value-band que hero_idle.json. Correctif supplementaire (review externe, docs/worklog.md) : la cape se deployait symetriquement des deux cotes du personnage sur les frames 2/3/4 (lecture 'ailes', contredit le principe cape-asymetrique = lisibilite de la direction du dash). Retouche manuelle en Aseprite-equivalent (edition pixel directe des frames sources assets/source/pixellab/cendre/animations/dash/{2,3,4}.png, pas de nouveau tirage PixelLab - 2 re-rolls deja consommes sur dash) : le lobe de cape symetrique du cote oppose a ete efface, ne laissant que la trainee asymetrique deja presente de l'autre cote. Re-cuit (cook_character_frames.py) et recapture.",
+  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK sur toutes les frames apres R3. Meme correctif value-band que Phase 1.1 (nudge des pixels sous le plancher 15% V, ici le contour/ombre sombre du nouveau personnage a (30,30,30) => 11.76%V, nudge HSV vers 17%V, 3810 pixels sur les 8 animations, imperceptible visuellement).",
   "human_label_ref": null,
-  "known_limitation": "Ceci est deja un re-roll PixelLab (le premier essai lisait comme un changement de posture accroupie, pas un sprint - groupe supprime via delete_animation, voir data/pixellab_usage.jsonl). Le resultat retenu reste imparfait : lecture 'fente basse dynamique' plutot qu'un vrai sprint net. La symetrie 'ailes' (frames 2/3/4) a ete corrigee par retouche pixel (voir validated_auto_detail) sans 3e re-roll PixelLab ; la silhouette generale du sprint (pas la cape) reste telle quelle, signalee pour arbitrage Milan.",
+  "known_limitation": "R3 : limitation precedente (cape asymetrique/symetrie 'ailes') n'applique plus - le personnage v3 n'a plus de cape. A rejuger par Milan sur le nouveau build.",
   "capture_variants": {
     "neutral_1x": "captures/phase1/hero_dash.png",
     "neutral_2x": "captures/phase1/hero_dash_neutral_2x.png",
@@ -34,5 +46,7 @@
     "loaded_1x": "captures/phase1/hero_dash_loaded_1x.png",
     "loaded_2x": "captures/phase1/hero_dash_loaded_2x.png",
     "loaded_4x": "captures/phase1/hero_dash_loaded_4x.png"
-  }
+  },
+  "r3_regenerated": true,
+  "r3_note": "Regenere R3 (mandat production v1 SS1.1/SS1.2) depuis reference_v3_turnaround_raw.png (sans cape) - personnage Cendre_v3c (32x84px), remplace le personnage v2 (avec cape, f6b77b57...)."
 }

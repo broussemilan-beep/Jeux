@@ -2,8 +2,8 @@
   "asset_id": "hero_hurt",
   "kind": "character_animation",
   "source": "pixellab",
-  "pixellab_character_id": "f6b77b57-c482-4e1e-8919-ada684110e08",
-  "pixellab_animation_group_id": "90d6296b-79b5-4b5d-ac56-4c506d4f4639",
+  "pixellab_character_id": "8596a4ad-0a0b-4d82-b99b-db8a73c01e33",
+  "pixellab_animation_group_id": "6582ad7e-7687-4a62-8fc4-b874307a1cd7",
   "pixellab_template_animation_id": "taking-punch",
   "character": "cendre",
   "direction": "south",
@@ -13,9 +13,22 @@
   "license": "internal",
   "seed": null,
   "frames": 6,
-  "cell": [96, 96],
-  "pivot": [48, 92],
-  "frame_ticks": [5, 5, 5, 5, 5, 5],
+  "cell": [
+    96,
+    96
+  ],
+  "pivot": [
+    48,
+    92
+  ],
+  "frame_ticks": [
+    5,
+    5,
+    5,
+    5,
+    5,
+    5
+  ],
   "loop": false,
   "source_frames_dir": "assets/source/pixellab/cendre/animations/hurt/",
   "processed_frames_dir": "assets/processed/sprites/cendre/hurt/",
@@ -23,7 +36,7 @@
   "capture_path": "captures/phase1/hero_hurt.png",
   "capture_note": "frame 3 (pic de recul visible), fond neutre, capture headless",
   "validated_auto": true,
-  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK (0 violation). Meme correctif que hero_idle.json (nudge des teintes de highlight ~91-97% V -> ~89% V + plafond character 88->90 dans value_bands.json). Revalide, 0 violation.",
+  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK sur toutes les frames apres R3. Meme correctif value-band que Phase 1.1 (nudge des pixels sous le plancher 15% V, ici le contour/ombre sombre du nouveau personnage a (30,30,30) => 11.76%V, nudge HSV vers 17%V, 3810 pixels sur les 8 animations, imperceptible visuellement).",
   "human_label_ref": null,
   "known_limitation": "Accepte a la premiere passe sans re-roll, mais la reaction reste discrete a cette resolution (32x64 source) - pas de recul dramatique. Pas encore utilise par du vrai gameplay dans cette tranche (aucun ennemi n'attaque le joueur, hors scope Phase 1) ; le hook Player.play_hurt() existe et est pret.",
   "capture_variants": {
@@ -33,5 +46,7 @@
     "loaded_1x": "captures/phase1/hero_hurt_loaded_1x.png",
     "loaded_2x": "captures/phase1/hero_hurt_loaded_2x.png",
     "loaded_4x": "captures/phase1/hero_hurt_loaded_4x.png"
-  }
+  },
+  "r3_regenerated": true,
+  "r3_note": "Regenere R3 (mandat production v1 SS1.1/SS1.2) depuis reference_v3_turnaround_raw.png (sans cape) - personnage Cendre_v3c (32x84px), remplace le personnage v2 (avec cape, f6b77b57...)."
 }

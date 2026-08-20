@@ -1,49 +1,48 @@
-[gd_resource type="SpriteFrames" load_steps=45 format=3]
+[gd_resource type="SpriteFrames" load_steps=44 format=3]
 
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle/0.png" id="2"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle/1.png" id="3"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle/2.png" id="4"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle/3.png" id="5"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle/4.png" id="6"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement/0.png" id="7"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement/1.png" id="8"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement/2.png" id="9"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement/3.png" id="10"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement/4.png" id="11"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement/5.png" id="12"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement/6.png" id="13"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/hurt/0.png" id="14"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/hurt/1.png" id="15"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/hurt/2.png" id="16"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/hurt/3.png" id="17"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/hurt/4.png" id="18"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/mort/0.png" id="19"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/mort/1.png" id="20"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/mort/2.png" id="21"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/mort/3.png" id="22"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/mort/4.png" id="23"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/mort/5.png" id="24"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/mort/6.png" id="25"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/dash/0.png" id="26"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/dash/1.png" id="27"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/dash/2.png" id="28"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/dash/3.png" id="29"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/dash/4.png" id="30"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/0.png" id="31"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/1.png" id="32"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/2.png" id="33"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/3.png" id="34"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/4.png" id="35"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/0.png" id="36"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/1.png" id="37"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/2.png" id="38"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/3.png" id="39"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/4.png" id="40"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/0.png" id="41"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/1.png" id="42"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/2.png" id="43"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/3.png" id="44"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/4.png" id="45"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement/0.png" id="6"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement/1.png" id="7"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement/2.png" id="8"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement/3.png" id="9"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement/4.png" id="10"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement/5.png" id="11"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/hurt/0.png" id="12"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/hurt/1.png" id="13"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/hurt/2.png" id="14"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/hurt/3.png" id="15"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/hurt/4.png" id="16"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/hurt/5.png" id="17"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/mort/0.png" id="18"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/mort/1.png" id="19"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/mort/2.png" id="20"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/mort/3.png" id="21"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/mort/4.png" id="22"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/mort/5.png" id="23"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/mort/6.png" id="24"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/dash/0.png" id="25"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/dash/1.png" id="26"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/dash/2.png" id="27"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/dash/3.png" id="28"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/dash/4.png" id="29"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/0.png" id="30"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/1.png" id="31"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/2.png" id="32"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/3.png" id="33"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/4.png" id="34"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/0.png" id="35"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/1.png" id="36"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/2.png" id="37"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/3.png" id="38"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/4.png" id="39"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/0.png" id="40"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/1.png" id="41"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/2.png" id="42"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/3.png" id="43"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/4.png" id="44"]
 
 [resource]
 animations = [{
@@ -59,15 +58,15 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("5")
-}, {
-"duration": 1.0,
-"texture": ExtResource("6")
 }],
 "loop": true,
 "name": &"idle",
 "speed": 6.0
 }, {
 "frames": [{
+"duration": 1.0,
+"texture": ExtResource("6")
+}, {
 "duration": 1.0,
 "texture": ExtResource("7")
 }, {
@@ -82,18 +81,18 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("11")
-}, {
-"duration": 1.0,
-"texture": ExtResource("12")
-}, {
-"duration": 1.0,
-"texture": ExtResource("13")
 }],
 "loop": true,
 "name": &"deplacement",
 "speed": 10.0
 }, {
 "frames": [{
+"duration": 1.0,
+"texture": ExtResource("12")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13")
+}, {
 "duration": 1.0,
 "texture": ExtResource("14")
 }, {
@@ -105,15 +104,15 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("17")
-}, {
-"duration": 1.0,
-"texture": ExtResource("18")
 }],
 "loop": false,
 "name": &"hurt",
 "speed": 12.0
 }, {
 "frames": [{
+"duration": 1.0,
+"texture": ExtResource("18")
+}, {
 "duration": 1.0,
 "texture": ExtResource("19")
 }, {
@@ -131,15 +130,15 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("24")
-}, {
-"duration": 1.0,
-"texture": ExtResource("25")
 }],
 "loop": false,
 "name": &"mort",
 "speed": 6.0
 }, {
 "frames": [{
+"duration": 1.0,
+"texture": ExtResource("25")
+}, {
 "duration": 1.0,
 "texture": ExtResource("26")
 }, {
@@ -151,15 +150,15 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("29")
-}, {
-"duration": 1.0,
-"texture": ExtResource("30")
 }],
 "loop": false,
 "name": &"dash",
 "speed": 15.0
 }, {
 "frames": [{
+"duration": 1.0,
+"texture": ExtResource("30")
+}, {
 "duration": 1.0,
 "texture": ExtResource("31")
 }, {
@@ -171,15 +170,15 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("34")
-}, {
-"duration": 1.0,
-"texture": ExtResource("35")
 }],
 "loop": false,
 "name": &"coup1",
 "speed": 12.0
 }, {
 "frames": [{
+"duration": 1.0,
+"texture": ExtResource("35")
+}, {
 "duration": 1.0,
 "texture": ExtResource("36")
 }, {
@@ -191,15 +190,15 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("39")
-}, {
-"duration": 1.0,
-"texture": ExtResource("40")
 }],
 "loop": false,
 "name": &"coup2",
 "speed": 12.0
 }, {
 "frames": [{
+"duration": 1.0,
+"texture": ExtResource("40")
+}, {
 "duration": 1.0,
 "texture": ExtResource("41")
 }, {
@@ -211,9 +210,6 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("44")
-}, {
-"duration": 1.0,
-"texture": ExtResource("45")
 }],
 "loop": false,
 "name": &"coup3",

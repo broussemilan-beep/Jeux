@@ -2,8 +2,8 @@
   "asset_id": "hero_combo_3",
   "kind": "character_animation",
   "source": "pixellab",
-  "pixellab_character_id": "f6b77b57-c482-4e1e-8919-ada684110e08",
-  "pixellab_animation_group_id": "47479045-fe1a-433c-9308-31cc75b7a9f8",
+  "pixellab_character_id": "8596a4ad-0a0b-4d82-b99b-db8a73c01e33",
+  "pixellab_animation_group_id": "0ab93be4-b94a-444c-9c15-5825bee930da",
   "pixellab_mode": "v3_custom",
   "pixellab_action_description": "grounded heavy overhead hammer-fist strike, both fists raised together then slammed straight down with full body weight, purely physical effort, no magic, no glow, no light effects, feet planted wide and firm on the ground",
   "character": "cendre",
@@ -15,18 +15,40 @@
   "license": "internal",
   "seed": null,
   "frames": 5,
-  "cell": [96, 96],
-  "pivot": [48, 92],
-  "frame_ticks": [4, 4, 4, 4, 4],
+  "cell": [
+    96,
+    96
+  ],
+  "pivot": [
+    48,
+    92
+  ],
+  "frame_ticks": [
+    4,
+    4,
+    4,
+    4,
+    4
+  ],
   "loop": false,
   "source_frames_dir": "assets/source/pixellab/cendre/animations/coup3/",
   "processed_frames_dir": "assets/processed/sprites/cendre/coup3/",
   "sprite_frames_resource": "assets/processed/sprites/cendre/cendre_frames.tres",
   "capture_path": "captures/phase1/hero_combo_3.png",
   "capture_note": "frame 2 (changee depuis la review externe - la frame 3, utilisee initialement, montrait une aureole blanche couvrant une bonne partie de la tete, bien plus large que le 'leger halo residuel' rapporte au moment du re-roll ; frame 2 est propre, sans halo, retenue comme nouvelle reference de capture)",
-  "combo": {"step": 3, "of": 3, "chain_window_ticks": 0, "recovery_ticks": 14, "anticipation_ticks": 8, "release_ticks": 4, "damage": 10.0, "attack_range_px": 48.0, "note_chain_window": "dernier coup du combo - pas de fenetre de chainage, section 4 de player.gd (_advance_combo) exclut explicitement le 3e coup"},
+  "combo": {
+    "step": 3,
+    "of": 3,
+    "chain_window_ticks": 0,
+    "recovery_ticks": 14,
+    "anticipation_ticks": 8,
+    "release_ticks": 4,
+    "damage": 10.0,
+    "attack_range_px": 48.0,
+    "note_chain_window": "dernier coup du combo - pas de fenetre de chainage, section 4 de player.gd (_advance_combo) exclut explicitement le 3e coup"
+  },
   "validated_auto": true,
-  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK sur les 5 frames (0 violation). Meme correctif value-band que hero_idle.json. Correctif halo (review externe, docs/worklog.md) : les 5 frames sources ont ete inspectees individuellement (pas seulement celle choisie pour la capture) - frames 0 et 2 propres, frame 1 dans la norme (petit reflet de tete deja present sur les autres animations), frames 3 et 4 montraient un vrai defaut (grosse aureole blanche couvrant la tete sur la frame 3, bande blanche horizontale sur le visage frame 4). Frame 2 (propre) devient la reference de capture. Frames 3 et 4 retouchees en pixel direct (recoloration des pixels >200 de Value vers la teinte de capuche existante ~110,111,115, suivant le contour du cluster sombre reel plutot qu'un rectangle) - pas de 3e re-roll PixelLab.",
+  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK sur toutes les frames apres R3. Meme correctif value-band que Phase 1.1 (nudge des pixels sous le plancher 15% V, ici le contour/ombre sombre du nouveau personnage a (30,30,30) => 11.76%V, nudge HSV vers 17%V, 3810 pixels sur les 8 animations, imperceptible visuellement).",
   "human_label_ref": null,
   "known_limitation": "Premier essai rejete (halo/lueur blanche parasite + pose qui lisait comme un coup de pied/effet magique plutot qu'une frappe a deux mains - groupe supprime via delete_animation, voir data/pixellab_usage.jsonl). Re-roll accepte ; l'ampleur reelle du halo residuel (frames 3/4) etait plus importante que rapporte au moment du re-roll - corrige par retouche pixel plutot qu'un 2e re-roll (voir validated_auto_detail). La frappe elle-meme (silhouette/pose) n'a pas ete retouchee, seul le halo.",
   "capture_variants": {
@@ -36,5 +58,7 @@
     "loaded_1x": "captures/phase1/hero_combo_3_loaded_1x.png",
     "loaded_2x": "captures/phase1/hero_combo_3_loaded_2x.png",
     "loaded_4x": "captures/phase1/hero_combo_3_loaded_4x.png"
-  }
+  },
+  "r3_regenerated": true,
+  "r3_note": "Regenere R3 (mandat production v1 SS1.1/SS1.2) depuis reference_v3_turnaround_raw.png (sans cape) - personnage Cendre_v3c (32x84px), remplace le personnage v2 (avec cape, f6b77b57...)."
 }

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cexb66hdiorq6"
-path="res://.godot/imported/4.png-45cd72a13cffc7964f5c215909db1a3b.ctex"
+uid="uid://jene41d4u0ns"
+path="res://.godot/imported/reference_v2_archive.png-ce02f226e99a043e4886a53d36a5d134.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/source/pixellab/cendre/animations/idle/4.png"
-dest_files=["res://.godot/imported/4.png-45cd72a13cffc7964f5c215909db1a3b.ctex"]
+source_file="res://assets/source/pixellab/cendre/reference_v2_archive.png"
+dest_files=["res://.godot/imported/reference_v2_archive.png-ce02f226e99a043e4886a53d36a5d134.ctex"]
 
 [params]
 

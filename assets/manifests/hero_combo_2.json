@@ -2,10 +2,10 @@
   "asset_id": "hero_combo_2",
   "kind": "character_animation",
   "source": "pixellab",
-  "pixellab_character_id": "f6b77b57-c482-4e1e-8919-ada684110e08",
-  "pixellab_animation_group_id": "aa049d8d-8163-41d0-8a41-9d930faab7a9",
+  "pixellab_character_id": "8596a4ad-0a0b-4d82-b99b-db8a73c01e33",
+  "pixellab_animation_group_id": "019fa57a-3c99-4cf3-9acd-9ae19a10f4ba",
   "pixellab_mode": "v3_custom",
-  "pixellab_action_description": "spinning backhand strike continuing a combo's momentum, torso rotating through the hit, cape whipping with the turn",
+  "pixellab_action_description": "spinning backhand strike continuing a combo's momentum, torso rotating through the hit",
   "character": "cendre",
   "godot_animation_name": "coup2",
   "direction": "south",
@@ -15,18 +15,39 @@
   "license": "internal",
   "seed": null,
   "frames": 5,
-  "cell": [96, 96],
-  "pivot": [48, 92],
-  "frame_ticks": [4, 4, 4, 4, 4],
+  "cell": [
+    96,
+    96
+  ],
+  "pivot": [
+    48,
+    92
+  ],
+  "frame_ticks": [
+    4,
+    4,
+    4,
+    4,
+    4
+  ],
   "loop": false,
   "source_frames_dir": "assets/source/pixellab/cendre/animations/coup2/",
   "processed_frames_dir": "assets/processed/sprites/cendre/coup2/",
   "sprite_frames_resource": "assets/processed/sprites/cendre/cendre_frames.tres",
   "capture_path": "captures/phase1/hero_combo_2.png",
   "capture_note": "frame 3, cape/silhouette la plus dynamique de l'animation",
-  "combo": {"step": 2, "of": 3, "chain_window_ticks": 6, "recovery_ticks": 14, "anticipation_ticks": 8, "release_ticks": 4, "damage": 10.0, "attack_range_px": 48.0},
+  "combo": {
+    "step": 2,
+    "of": 3,
+    "chain_window_ticks": 6,
+    "recovery_ticks": 14,
+    "anticipation_ticks": 8,
+    "release_ticks": 4,
+    "damage": 10.0,
+    "attack_range_px": 48.0
+  },
   "validated_auto": true,
-  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK sur les 5 frames (0 violation). Meme correctif value-band que hero_idle.json. Correctif supplementaire (review externe, docs/worklog.md) : tache jaune/beige (#D8D5BF, hors palette grise/desaturee stricte) sur le crane, presente sur 4/5 frames (1,2,3,4 - 14 pixels au total, meme teinte 'highlight de peau' que PixelLab reutilise ponctuellement) non detectee au premier passage. Retouche pixel directe (desaturation vers l'equivalent gris neutre de meme Value, aucun tirage PixelLab), toutes occurrences dans les 5 frames sources.",
+  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK sur toutes les frames apres R3. Meme correctif value-band que Phase 1.1 (nudge des pixels sous le plancher 15% V, ici le contour/ombre sombre du nouveau personnage a (30,30,30) => 11.76%V, nudge HSV vers 17%V, 3810 pixels sur les 8 animations, imperceptible visuellement).",
   "human_label_ref": null,
   "capture_variants": {
     "neutral_1x": "captures/phase1/hero_combo_2.png",
@@ -35,5 +56,7 @@
     "loaded_1x": "captures/phase1/hero_combo_2_loaded_1x.png",
     "loaded_2x": "captures/phase1/hero_combo_2_loaded_2x.png",
     "loaded_4x": "captures/phase1/hero_combo_2_loaded_4x.png"
-  }
+  },
+  "r3_regenerated": true,
+  "r3_note": "Regenere R3 (mandat production v1 SS1.1/SS1.2) depuis reference_v3_turnaround_raw.png (sans cape) - personnage Cendre_v3c (32x84px), remplace le personnage v2 (avec cape, f6b77b57...)."
 }

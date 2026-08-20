@@ -56,10 +56,15 @@ def foot_anchor(img: Image.Image, bbox: tuple[int, int, int, int], foot_band_fra
     x_lo, x_hi = max(0, foot_x - band_half), min(img.width, foot_x + band_half)
     alpha = img.split()[-1]
     px = alpha.load()
-    for y in range(bottom, top - 1, -1):
+    # bbox() renvoie une borne "bottom" EXCLUSIVE (convention PIL, cf. crop()) -
+    # la derniere ligne de pixels reelle est bottom-1, jamais bottom (sinon
+    # IndexError des qu'une frame touche le bord bas du canvas source, ce
+    # qu'aucune frame precedente n'avait fait avant le template "taking-punch").
+    last_row = bottom - 1
+    for y in range(last_row, top - 1, -1):
         if any(px[x, y] > 0 for x in range(x_lo, x_hi)):
             return foot_x, y
-    return foot_x, bottom
+    return foot_x, last_row
 
 
 def main() -> int:

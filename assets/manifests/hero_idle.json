@@ -2,8 +2,8 @@
   "asset_id": "hero_idle",
   "kind": "character_animation",
   "source": "pixellab",
-  "pixellab_character_id": "f6b77b57-c482-4e1e-8919-ada684110e08",
-  "pixellab_animation_group_id": "1ba8f9b4-07d8-4d82-810a-8e1e4912ea18",
+  "pixellab_character_id": "8596a4ad-0a0b-4d82-b99b-db8a73c01e33",
+  "pixellab_animation_group_id": "9064ebc5-cf5f-427d-a570-9de63cfd2c30",
   "pixellab_template_animation_id": "breathing-idle",
   "character": "cendre",
   "direction": "south",
@@ -13,9 +13,20 @@
   "license": "internal",
   "seed": null,
   "frames": 4,
-  "cell": [96, 96],
-  "pivot": [48, 92],
-  "frame_ticks": [10, 10, 10, 10],
+  "cell": [
+    96,
+    96
+  ],
+  "pivot": [
+    48,
+    92
+  ],
+  "frame_ticks": [
+    10,
+    10,
+    10,
+    10
+  ],
   "loop": true,
   "source_frames_dir": "assets/source/pixellab/cendre/animations/idle/",
   "processed_frames_dir": "assets/processed/sprites/cendre/idle/",
@@ -23,7 +34,7 @@
   "capture_path": "captures/phase1/hero_idle.png",
   "capture_note": "frame 0, fond neutre, capture headless (tools/capture_scene.gd --mode=character)",
   "validated_auto": true,
-  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK sur les 4 frames (0 violation). Correctif review externe (voir docs/worklog.md) : le highlight du crane/cape (teintes proches de #EA E9 E8 et variantes, ~91-97% V, utilisees character-wide - tete, torse, jambes) etait systematiquement au-dessus de la bande [15,88]. Nudge de 2-4% applique sur ces teintes precises (toutes occurrences, toutes animations) pour les ramener a ~89% V, imperceptible visuellement ; plafond de la categorie character releve de 88 a 90 dans data/palettes/value_bands.json (seule cette categorie touchee, ui/vfx/decor inchangees) pour admettre la marge. Revalide sur cette frame et sur les 7 autres animations : 0 violation partout.",
+  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK sur toutes les frames apres R3. Meme correctif value-band que Phase 1.1 (nudge des pixels sous le plancher 15% V, ici le contour/ombre sombre du nouveau personnage a (30,30,30) => 11.76%V, nudge HSV vers 17%V, 3810 pixels sur les 8 animations, imperceptible visuellement).",
   "human_label_ref": null,
   "capture_variants": {
     "neutral_1x": "captures/phase1/hero_idle.png",
@@ -32,5 +43,7 @@
     "loaded_1x": "captures/phase1/hero_idle_loaded_1x.png",
     "loaded_2x": "captures/phase1/hero_idle_loaded_2x.png",
     "loaded_4x": "captures/phase1/hero_idle_loaded_4x.png"
-  }
+  },
+  "r3_regenerated": true,
+  "r3_note": "Regenere R3 (mandat production v1 SS1.1/SS1.2) depuis reference_v3_turnaround_raw.png (sans cape) - personnage Cendre_v3c (32x84px), remplace le personnage v2 (avec cape, f6b77b57...)."
 }

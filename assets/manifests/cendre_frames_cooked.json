@@ -1,12 +1,12 @@
 {
   "character": "cendre",
   "out_canvas": [
-    112,
-    112
+    96,
+    96
   ],
   "anchor_px": [
-    56,
-    104
+    48,
+    92
   ],
   "animations": {
     "idle": {
@@ -14,16 +14,15 @@
         "assets/processed/sprites/cendre/idle/0.png",
         "assets/processed/sprites/cendre/idle/1.png",
         "assets/processed/sprites/cendre/idle/2.png",
-        "assets/processed/sprites/cendre/idle/3.png",
-        "assets/processed/sprites/cendre/idle/4.png"
+        "assets/processed/sprites/cendre/idle/3.png"
       ],
       "canvas": [
-        112,
-        112
+        96,
+        96
       ],
       "anchor_px": [
-        56,
-        104
+        48,
+        92
       ]
     },
     "deplacement": {
@@ -33,16 +32,15 @@
         "assets/processed/sprites/cendre/deplacement/2.png",
         "assets/processed/sprites/cendre/deplacement/3.png",
         "assets/processed/sprites/cendre/deplacement/4.png",
-        "assets/processed/sprites/cendre/deplacement/5.png",
-        "assets/processed/sprites/cendre/deplacement/6.png"
+        "assets/processed/sprites/cendre/deplacement/5.png"
       ],
       "canvas": [
-        112,
-        112
+        96,
+        96
       ],
       "anchor_px": [
-        56,
-        104
+        48,
+        92
       ]
     },
     "hurt": {
@@ -51,15 +49,16 @@
         "assets/processed/sprites/cendre/hurt/1.png",
         "assets/processed/sprites/cendre/hurt/2.png",
         "assets/processed/sprites/cendre/hurt/3.png",
-        "assets/processed/sprites/cendre/hurt/4.png"
+        "assets/processed/sprites/cendre/hurt/4.png",
+        "assets/processed/sprites/cendre/hurt/5.png"
       ],
       "canvas": [
-        112,
-        112
+        96,
+        96
       ],
       "anchor_px": [
-        56,
-        104
+        48,
+        92
       ]
     },
     "mort": {
@@ -73,12 +72,12 @@
         "assets/processed/sprites/cendre/mort/6.png"
       ],
       "canvas": [
-        112,
-        112
+        96,
+        96
       ],
       "anchor_px": [
-        56,
-        104
+        48,
+        92
       ]
     },
     "dash": {
@@ -90,12 +89,12 @@
         "assets/processed/sprites/cendre/dash/4.png"
       ],
       "canvas": [
-        112,
-        112
+        96,
+        96
       ],
       "anchor_px": [
-        56,
-        104
+        48,
+        92
       ]
     },
     "coup1": {
@@ -107,12 +106,12 @@
         "assets/processed/sprites/cendre/coup1/4.png"
       ],
       "canvas": [
-        112,
-        112
+        96,
+        96
       ],
       "anchor_px": [
-        56,
-        104
+        48,
+        92
       ]
     },
     "coup2": {
@@ -124,12 +123,12 @@
         "assets/processed/sprites/cendre/coup2/4.png"
       ],
       "canvas": [
-        112,
-        112
+        96,
+        96
       ],
       "anchor_px": [
-        56,
-        104
+        48,
+        92
       ]
     },
     "coup3": {
@@ -141,12 +140,12 @@
         "assets/processed/sprites/cendre/coup3/4.png"
       ],
       "canvas": [
-        112,
-        112
+        96,
+        96
       ],
       "anchor_px": [
-        56,
-        104
+        48,
+        92
       ]
     }
   }
