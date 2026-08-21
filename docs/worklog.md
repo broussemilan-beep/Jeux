@@ -4405,3 +4405,80 @@ uniquement `experiments/` + le fix dans `capture_pose.py`) :
 en l'état / regénérer le modèle avec un prompt quadrupède plus explicite).
 Tant que ces 3 points ne sont pas tranchés, rien n'est câblé dans les
 scènes ennemies ni committé au-delà de ce round de revue.
+
+## 2026-08-21 — Régénération image-to-3D depuis les 3 références de Milan
+
+Milan a fourni 3 planches de référence multi-vues (une par monstre,
+face/3-4/profil/dos pour Brute et Ranged, 3-4/profil/3-4-arrière pour
+Crawler) et demandé une régénération complète via Meshy en image→3D
+(au lieu des prompts texte de la Phase 3 initiale), avec pour Crawler
+l'exigence explicite que la posture quadrupède soit non-ambiguë, pour
+Ranged une prévention appliquée dès le départ (dithering désactivé +
+plancher de Value ~0.35, déjà validés la veille), et pour Brute une
+régénération de raffermissement (design déjà validé).
+
+**Préparation des références.** Chaque planche a été découpée en
+images individuelles par angle (`experiments/monsters_nuit/crop_refs.py`)
+pour éviter de nourrir Meshy avec une planche complète (logo, titres,
+plusieurs vues juxtaposées — mauvais candidat pour une reconstruction
+3D). 3 à 4 crops propres par monstre, vérifiés visuellement avant tout
+appel payant.
+
+**Génération** (`meshy_multi_image_to_3d`, meshy-6/latest, 3-4 vues par
+monstre, **sans** `pose_mode` pour préserver la posture réelle de la
+référence — un `pose_mode=t-pose/a-pose` aurait justement effacé le
+quadrupède du Crawler) : 30cr × 3 = 90cr. **Remesh** (250k polys,
+sous la limite de 300k du rig, `resize_height` fixé directement sur
+les hauteurs déclarées 0.9/2.2/1.8m) : 5cr × 3 = 15cr.
+
+**Vérification posture (avant tout rig)** : rendu Blender rapide de
+chaque nouveau maillage brut, comparé à la référence
+(`experiments/monsters_nuit/comparison_v2_posture.png`). Confirmé :
+Crawler lit sans ambiguïté comme un quadrupède rampant (posture
+identique à la référence), Brute conserve sa posture accroupie/bras
+tendus. Le problème du round précédent (Crawler bipède dans son
+bind-pose) est donc résolu par la régénération depuis l'image de
+référence — la posture est maintenant baked dans le maillage lui-même,
+plus dans une anim retargetée génériquement.
+
+**BLOQUANT découvert : le rig auto Meshy refuse Crawler et Brute.**
+`meshy_rig` échoue avec `422 Pose estimation failed, please provide a
+valid model` sur les deux — reproduit 2 fois chacun (pas transitoire),
+0 crédit consommé sur les échecs (vérifié par solde avant/après).
+Ranged (posture debout, la plus proche d'un bipède standard) rigge sans
+problème. Diagnostic : l'estimateur de pose du rig auto Meshy est conçu
+pour un personnage debout standard (d'où sa recommandation de
+`pose_mode=t-pose` pour un rigging optimal) — un quadrupède à 4 pattes
+au sol (Crawler) ou une posture très accroupie/penchée en avant (Brute)
+sort de ce qu'il sait reconnaître. **C'est une tension directe avec la
+demande de Milan** : la posture qu'il a explicitement exigée fidèle à
+la référence est precisément ce qui casse le rig automatique gratuit.
+
+**Ranged, non bloqué, mené à son terme pour ce round** : rig réussi
+(5cr, marche+course gratuites incluses), attaque animée avec la même
+action que la veille (239 Crouch_Pull_and_Throw, 3cr), rendu idle+attaque
+au cadrage à échelle commune déjà établi (cam_size=2.6, target_z=1.092
+calculé sur la nouvelle mesure mins.z=0 avec origin_at=bottom) et
+quantifié avec le fix de lisibilité (dither=0, value_band_min=0.35).
+Résultat : `experiments/monsters_nuit/blender_out_v3/ranged_{idle,attack}_64.png`
+— silhouette nette, fidèle à la référence, mêmes réglages qu'approuvés
+la veille. Ranged est prêt pour la suite (mort à animer, puis
+intégration) dès accord de Milan.
+
+**Fichiers produits** (non committés dans les scènes, aucun câblage) :
+- `experiments/monsters_nuit/refs_v2/` — crops de référence par angle.
+- `experiments/monsters_nuit/meshy_output_v2/` — GLB bruts + remeshés
+  des 3 monstres, + rig/attaque Ranged.
+- `experiments/monsters_nuit/blender_out_v3/ranged_{idle,attack}_{raw,64}.png`.
+- `experiments/monsters_nuit/comparison_v2_posture.png` — preuve posture
+  Crawler/Brute vs référence.
+- `data/meshy_usage.jsonl` — traçabilité complète (113cr cette session :
+  90 génération + 15 remesh + 5 rig Ranged + 3 attaque Ranged).
+
+**En attente de Milan** : comment traiter le blocage de rig sur
+Crawler/Brute — regénérer dans une posture plus neutre compatible avec
+le rig auto (perd la fidélité de pose exigée dans la mesh de repos,
+récupérable seulement via l'animation ensuite), rigger manuellement dans
+Blender (préserve la posture exacte, mais aucune marche/course gratuite,
+travail manuel bien plus long), ou une autre option. Ranged continue en
+parallèle (mort à animer) puisqu'il n'est pas concerné par ce blocage.
