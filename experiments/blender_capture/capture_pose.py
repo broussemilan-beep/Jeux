@@ -64,6 +64,16 @@ def clear_scene() -> None:
         bpy.data.actions.remove(block)
 
 
+# Objets rencontrés dans les GLB riggés Meshy qui ne font PAS partie du
+# personnage (artefact du pipeline de rig, probablement un gizmo/proxy
+# visuel) — repéré sur Crawler : un mesh nommé "Icosphere" (42 sommets,
+# span fixe (0,0,-1)-(0,0,1) quelle que soit la pose/l'anim jouée) qui
+# gonflait la bbox calculée et rendait TOUTES les poses de Crawler
+# identiques en taille (~2.0 unités) indépendamment de la pose réelle
+# du personnage. Exclu explicitement du calcul de bbox.
+IGNORE_MESH_NAMES = {"icosphere"}
+
+
 def compute_bbox(objects, depsgraph) -> tuple:
     # IMPORTANT : `obj.bound_box` est la bbox LOCALE de la donnée
     # source, non évaluée — elle ignore la déformation par armature
@@ -75,6 +85,8 @@ def compute_bbox(objects, depsgraph) -> tuple:
     maxs = [-math.inf, -math.inf, -math.inf]
     for obj in objects:
         if obj.type != "MESH":
+            continue
+        if obj.name.lower() in IGNORE_MESH_NAMES:
             continue
         eval_obj = obj.evaluated_get(depsgraph)
         mesh = eval_obj.to_mesh()
@@ -105,6 +117,7 @@ def main() -> None:
     cam_yaw_deg = float(args.get("cam_yaw_deg", "35"))
     cam_pitch_deg = float(args.get("cam_pitch_deg", "18"))
     cam_size_arg = float(args.get("cam_size", "0"))
+    target_z_arg = args.get("target_z")
     anim_name = args.get("anim_name", "")
     anim_time = args.get("anim_time")
     anim_frame = args.get("anim_frame")
@@ -165,6 +178,14 @@ def main() -> None:
                       "v0_local=", tuple(v0_local), "v0_world=", tuple(v0_world))
             eval_obj.to_mesh_clear()
     cam_size = cam_size_arg if cam_size_arg > 0 else (max(size.x, size.y, size.z) * 1.3 if max(size) > 0 else 2.0)
+    # --target_z permet un cadrage à ÉCHELLE COMMUNE entre plusieurs
+    # personnages : au lieu de centrer chaque capture sur SA propre bbox
+    # (ce qui efface toute différence de taille réelle entre modèles),
+    # on fixe le même point vertical (monde) au même endroit du cadre
+    # pour tous — typiquement le sol (Z=0) à une fraction fixe depuis le
+    # bas de l'image, indépendante de la taille du personnage.
+    if target_z_arg is not None:
+        center.z = float(target_z_arg)
 
     cam_data = bpy.data.cameras.new("CaptureCam")
     cam_data.type = "ORTHO"

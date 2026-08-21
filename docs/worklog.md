@@ -4318,3 +4318,90 @@ que `captures/.gdignore`) — nouveau `.pck` : 4.2 Mo, cohérent avec la
 taille d'avant ce bug (3.8 Mo + le nouvel atlas de terrain + les 2 props
 d'arrière-plan). Effet de bord positif du Chantier B, pas juste un
 correctif de blocage de push.
+
+## 2026-08-21 — Retour Milan sur les 3 monstres rendus (échelle + Crawler + Ranged)
+
+Milan a validé la Brute telle quelle ("silhouette lourde lisible, éclats
+orange qui ressortent, rien à changer") et remonté 3 points sur Crawler/
+Ranged/échelle. Traité dans l'ordre, sans rien câbler dans les scènes
+(`enemy_crawler.tscn`/`enemy_brute.tscn`/`enemy_ranged.tscn` non touchés —
+c'est une revue, pas une intégration).
+
+**Bug trouvé en cours de route (bbox polluée par un mesh fantôme).**
+`compute_bbox()` dans `capture_pose.py` itérait tous les meshes du GLB
+importé, y compris un mesh nommé "Icosphere" (42 sommets, span statique
+±1 unité en Z quelle que soit la pose) présent dans le Crawler riggé —
+artefact du pipeline de rig Meshy (probablement un gizmo/proxy), pas de
+la géométrie du personnage. Il gonflait la bbox mesurée à ~2.0 unités
+quelle que soit la pose, masquant toute variation réelle de taille.
+Corrigé par une liste d'exclusion (`IGNORE_MESH_NAMES = {"icosphere"}`).
+Après correction, les hauteurs mesurées collent aux `height_meters`
+déclarés dans `data/meshy_usage.jsonl` : Crawler 0.911m (déclaré 0.9),
+Brute 2.170m (déclaré 2.2), Ranged 1.808m (déclaré 1.8).
+
+**Point 2 — Échelles incohérentes.** Cause : chaque monstre était cadré
+avec un `cam_size` auto-calculé depuis SA PROPRE bbox (`max(size)*1.3`),
+ce qui efface toute différence de taille réelle entre modèles (chacun
+remplit ~77% de son propre cadre, quelle que soit sa taille réelle).
+Fix : nouveau paramètre `--target_z` dans `capture_pose.py` (fixe le
+centre vertical du cadre en coordonnées monde, indépendamment de la
+bbox du personnage) + un seul `cam_size=2.6` partagé par les 4
+personnages (calé sur la Brute à 2.17m + 15% de marge, pour qu'elle
+remplisse le cadre comme demandé) + un `target_z` par personnage calculé
+pour que le sol (bas de bbox) tombe à la même fraction du cadre pour
+tous (8% depuis le bas). Un bug de calcul intermédiaire (`target_z` posé
+directement à `mins.z + marge`, en oubliant que le centre de cadre est
+au MILIEU de la hauteur de cadre et pas près du bas) a d'abord fait
+déborder la tête de la Brute hors cadre — détecté par inspection visuelle
+du premier rendu, corrigé (`target_z = mins.z + cam_size*(0.5 - marge)`),
+re-rendu propre. Résultat : `experiments/monsters_nuit/comparison_scale_fix.png`
+— Crawler visiblement plus petit, Ranged intermédiaire, Brute remplit le
+cadre, Cendre (référence, ~1.6m) entre Crawler et Ranged. Conforme à la
+demande de Milan.
+
+**Point 3 — Crawler ne lit pas comme un quadrupède.** Diagnostic isolé :
+rendu de `crawler_rigged.glb` sur son action `clip0` (bind pose native,
+single-frame, indépendante de toute anim retargetée) depuis un angle de
+profil pur (`cam_yaw_deg=90`) — `/tmp/dbg/crawler_bindpose.png`. Le
+résultat montre un personnage debout, bipède, bras le long du corps :
+posture verticale de base, pas une pose de quadrupède rampant. Ce n'est
+donc ni une question de frame choisie dans l'anim de marche, ni d'angle
+de caméra : **c'est le modèle 3D lui-même (le rig/bind pose Meshy) qui
+n'a pas de posture quadrupède.** Conformément au mandat ("documente-le,
+ne regénère pas sans mon accord"), aucune régénération n'a été lancée —
+en attente de décision de Milan (regénérer avec un prompt insistant sur
+la posture à 4 pattes coûterait des crédits Meshy).
+
+**Point 4 — Ranged illisible.** Confirmé : la pose attack ("avant")
+est un amas de pixels quasi noirs sans silhouette identifiable — voir
+`experiments/monsters_nuit/comparison_ranged_legibility.png`. Cause :
+la combinaison dithering Bayer (`--dither_amount=0.35` par défaut) +
+plancher de Value bas (`--value_band_min=0.165` par défaut) compresse
+un modèle déjà très sombre (noir/violet) dans une plage de valeurs
+quasi indistinguables. Fix, spécifique à Ranged uniquement (les autres
+gabarits gardent les défauts) : `--dither_amount=0.0
+--value_band_min=0.35`. La silhouette (cornes, robe, membres) redevient
+nettement lisible sur les 2 poses testées (idle et attack), au prix
+d'un rendu légèrement moins sombre que prévu à l'origine — compromis
+assumé, conforme à la demande de Milan ("quitte à ce qu'il soit moins
+sombre que prévu").
+
+**Fichiers produits pour la revue** (rien de committé côté scènes,
+uniquement `experiments/` + le fix dans `capture_pose.py`) :
+- `experiments/blender_capture/capture_pose.py` — `IGNORE_MESH_NAMES` +
+  paramètre `--target_z`.
+- `experiments/monsters_nuit/blender_out_v2/` — 4 rendus idle à échelle
+  commune (Cendre/Crawler/Brute/Ranged) + Ranged attack, bruts et
+  quantifiés 64px.
+- `experiments/monsters_nuit/comparison_scale_fix.png` — comparaison
+  avant/après échelle, les 4 personnages.
+- `experiments/monsters_nuit/comparison_ranged_legibility.png` —
+  comparaison avant/après lisibilité Ranged (idle + attack).
+- `/tmp/dbg/crawler_bindpose.png` — preuve bind-pose Crawler (non
+  committé, purement diagnostique).
+
+**En attente de Milan avant de continuer** : validation du cadrage à
+échelle commune + du fix Ranged, et décision sur le Crawler (documenter
+en l'état / regénérer le modèle avec un prompt quadrupède plus explicite).
+Tant que ces 3 points ne sont pas tranchés, rien n'est câblé dans les
+scènes ennemies ni committé au-delà de ce round de revue.
