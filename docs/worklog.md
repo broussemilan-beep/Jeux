@@ -4579,3 +4579,91 @@ si besoin refactoriser les deux scripts de test (`rig_manual_test.py`
 et `rig_manual_test_brute.py`, presque identiques) en un outil unique
 paramétré par une liste de bones — actuellement dupliqués pour aller
 vite sur ce round de validation.
+
+## 2026-08-21 — MANDAT SUITE v2 : Phase T (connexion d'outils, un par un)
+
+Nouveau mandat reçu : brancher une liste d'outils AVANT la production,
+un par un, avec test isolé + documentation entre chaque, puis enchaîner
+Phase 1→2→3→4 sans réattendre de prompt (sauf décision touchant la
+matrice du Document Maître).
+
+### T.1.1 — pixeldetector (Astropulse) : NON RETENU
+
+Cloné depuis GitHub (`experiments/tool_evals/pixeldetector/`), testé en
+mode `-p` sur `experiments/monsters_nuit/blender_out/ranged_attack_raw.png`
+(rendu 512×512 pré-correctif, cas connu bruité). Résultat :
+`experiments/tool_evals/pixeldetector_ranged_attack_test.png`.
+
+**Verdict : ne remplace ni ne complète notre pipeline.** Deux problèmes
+rédhibitoires :
+1. **Aucune gestion de la transparence** — `pixeldetector.py` convertit
+   systématiquement l'image en RGB (`Image.open(...).convert('RGB')`
+   ligne 100, puis `kCentroid` reconvertit aussi en RGB), le canal
+   alpha est perdu et le fond devient un bloc noir opaque. Bloquant
+   absolu pour un pipeline de sprites qui exige un fond transparent.
+2. **Mauvaise adéquation à notre cas d'usage** : l'outil est conçu pour
+   *réparer* un pixel art déjà existant qui a été redimensionné/compressé
+   (JPEG, resize) — il détecte la grille de pixels d'origine par pics de
+   différence entre pixels voisins. Nos rendus sources sont des rendus
+   3D lisses (Cycles), sans grille de pixel-art préexistante à détecter :
+   l'outil a donc simplement pris les micro-variations de shading/AA
+   pour des "bords de pixel" et produit une image 171×171 à 48 couleurs,
+   plus grande et plus bruitée que notre sortie 64×64 volontairement
+   quantifiée (`experiments/monsters_nuit/blender_out_v3/ranged_attack_64.png`,
+   dither désactivé, plancher de Value 0.35) — pas d'amélioration de
+   lisibilité, perte de la transparence, résolution non conforme à la
+   convention 64px du jeu.
+
+**Conclusion : pixeldetector n'est pas intégré au pipeline de
+production.** Resterait potentiellement utile un jour pour un cas très
+différent (récupérer un pixel art externe déjà fait mais abîmé par une
+compression/redimensionnement), pas pour notre chaîne rendu-3D→pixel-art.
+Passage à T.1.2 (bake de normal maps).
+
+### T.1.2 — Normal maps pour sprites 2D : RETENU (technique adaptée)
+
+**Écart assumé par rapport à la lettre du mandat** : `bpy.ops.object.
+bake(type='NORMAL')` (bake UV tangent-espace, pensé pour retexturer un
+mesh reprojetable sous n'importe quel angle) ne correspond pas à notre
+besoin réel — un sprite 2D est une image figée sous UN SEUL angle de
+caméra fixe. L'équivalent fonctionnel correct est la **passe de rendu
+"Normal" de Cycles en espace camera** (`view_layer.use_pass_normal`),
+rendue par le même compositeur que la passe couleur, sur le même
+maillage/pose/caméra — ce qui donne directement une normal map alignée
+pixel-à-pixel avec le sprite diffuse, sans étape de reprojection UV.
+Remap `[-1,1] -> [0,1]` fait dans le compositeur (Multiply 0.5, Add 0.5,
+alpha préservé depuis la passe Alpha) pour sortir un PNG 8-bit standard
+sans dépendance à un lecteur EXR. Script : `experiments/tool_evals/
+bake_normal_cendre.py`.
+
+**Vérification de la convention (avant tout câblage définitif)**, en 2
+temps :
+1. **Convention Godot elle-même** : normal map synthétique (une
+   demi-sphère bombée, générée en pur Python/numpy, `hemisphere_normal.
+   png`) avec le canal G construit explicitement "haut = vert fort" (au
+   sens propre convention OpenGL). Deux scènes Godot isolées identiques
+   sauf la position du `PointLight2D` (au-dessus vs en-dessous, même
+   distance) : lumière au-dessus → liseré du HAUT de la sphère éclairé ;
+   lumière en-dessous → liseré du BAS éclairé. Comportement physiquement
+   correct et sans ambiguïté (`hemisphere_above.png` / `hemisphere_below.
+   png`) — confirme que `CanvasTexture.normal_texture` + `PointLight2D`
+   de Godot 4 suit bien la convention "G fort = vers le haut de l'image".
+2. **Convention de la passe Blender elle-même** : une sphère de
+   référence ajoutée à côté de Cendre dans la même scène/caméra que le
+   test précédent. Mesure numérique du canal G au pôle nord vs pôle sud
+   de cette sphère dans le rendu : G=165.6 en haut, G=123.8 en bas —
+   même sens que la convention validée côté Godot au point 1. **Aucun
+   flip du canal G n'est nécessaire entre Blender et Godot** : la passe
+   Normal de Cycles, remappée telle quelle, est directement compatible.
+
+**Recette validée pour la suite** (Phase 2.2 généralisera aux
+monstres) : rendre beauty + passe Normal depuis la MÊME caméra/pose,
+remap compositeur, exporter les deux PNG, assigner en `CanvasTexture`
+(`diffuse_texture` + `normal_texture`) sur le `Sprite2D`, aucun shader
+custom requis — les `PointLight2D` déjà posés dans les scènes (torches,
+lueur du joueur) en profitent automatiquement.
+
+**Test isolé, zéro impact jeu** : tout dans `experiments/tool_evals/`
+(scènes de test, textures synthétiques et rendues), rien touché dans
+`scenes/gameplay/` ni dans les sprites de production de Cendre.
+Passage à T.1.3 (PyTexturePacker).
