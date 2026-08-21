@@ -4482,3 +4482,70 @@ récupérable seulement via l'animation ensuite), rigger manuellement dans
 Blender (préserve la posture exacte, mais aucune marche/course gratuite,
 travail manuel bien plus long), ou une autre option. Ranged continue en
 parallèle (mort à animer) puisqu'il n'est pas concerné par ce blocage.
+
+## 2026-08-21 — Rig manuel Blender testé sur Crawler (succès)
+
+Milan a demandé de tester l'option manuelle EN PREMIER (moins coûteuse
+que redouté) avant de trancher entre régénération en pose neutre et
+rig manuel : script qui construit une armature simple par bones
+alignés à la main sur le maillage, `bpy.ops.object.parent_set(type=
+'ARMATURE_AUTO')` (pondération automatique, pas de peinture manuelle),
+test d'une rotation de patte, rapport avant de passer à la Brute.
+
+**Calibration des coordonnées.** Plutôt que deviner les positions de
+bones depuis un rendu projeté (source d'erreurs, cf. les frames
+target_z du round précédent), deux outils dédiés créés :
+`experiments/blender_capture/calibrate_axes.py` (dépose des sphères
+colorées à des coordonnées candidates et rend la scène pour vérifier
+visuellement quel axe pointe où) et `inspect_mesh.py` (extrait les
+sommets extrêmes par axe + un profil de tranches Y — largeur/hauteur
+moyenne tous les 10% de la longueur — pour repérer numériquement
+museau, pic dorsal, pattes, arrière-train). A permis de placer 13 bones
+(colonne bassin→poitrine→cou→tête, queue, 4 pattes à 2 segments
+chacune) sans essai-erreur visuel.
+
+**BLOQUANT initial et sa cause : sommets dupliqués.** Premier essai :
+`parent_set(ARMATURE_AUTO)` réussit (modifier + groupes de vertex
+créés) mais **poids nul partout** (`max_weight=0.000` sur les 13
+groupes) — confirmé par un script de diagnostic dédié
+(`debug_weights.py`) qui somme les poids par groupe. La console Blender
+affichait un avertissement passé inaperçu au premier passage : `Bone
+Heat Weighting: failed to find solution for one or more bones`. Cause
+trouvée : le maillage issu du remesh Meshy contient **282419 sommets
+dont environ la moitié sont des doublons quasi-exacts** (un sous-produit
+probable du remesh par face/shell) — `bpy.ops.mesh.remove_doubles` fait
+tomber le compte à 130118. Cette duplication massive empêche totalement
+le solveur de diffusion de chaleur de converger (silencieusement, sans
+lever d'exception Python — seul un warning texte dans la console, facile
+à manquer). **Fix** : `remove_doubles(threshold=0.0001)` +
+`normals_make_consistent` sur le mesh AVANT le parentage. Résultat
+après fix : poids corrects sur les 13 groupes (voir
+`data/meshy_usage.jsonl`-adjacent note ; ex. `pelvis` 18681 sommets à
+poids fort, `head` 12920, `front_L_lower` 6181, tous avec un poids max
+proche de 1.0). Ce nettoyage devra être systématique pour tout futur
+rig manuel sur un maillage remeshé Meshy.
+
+**Test de déformation.** Rotation large et non-ambiguë de
+`front_L_upper`/`front_L_lower` (patte avant gauche) en pose mode,
+rendu avant/après comparé
+(`experiments/monsters_nuit/comparison_manual_rig_test.png`) : la patte
+se détache proprement et suit la rotation, aucune déchirure du maillage,
+aucun autre segment du corps affecté de façon incohérente. **Le rig
+manuel low-tech fonctionne** sur ce maillage, à condition du fix
+merge-doubles ci-dessus.
+
+**Fichiers** : `experiments/blender_capture/calibrate_axes.py`,
+`inspect_mesh.py`, `rig_manual_test.py` (script complet : import →
+nettoyage mesh → armature 13 bones → parentage auto → rendu repos →
+rotation test → rendu posé → export GLB), `debug_parent.py` et
+`debug_weights.py` (diagnostics, jetables). Export GLB de test :
+`/tmp/dbg/crawler_manual_rig2.glb` (non committé, juste la validation —
+l'armature définitive sera reconstruite une fois la posture d'idle et
+les cycles de marche/attaque décidés avec Milan).
+
+**Prochaine étape (en attente d'accord Milan)** : appliquer la même
+méthode sur Brute (même script, coordonnées de bones à recalibrer sur
+son maillage propre via `inspect_mesh.py`/`calibrate_axes.py`), puis si
+les deux passent, construire une pose idle statique + éventuellement
+un cycle de marche à la main (key-frames manuelles, pas de bibliothèque
+Meshy) pour les deux monstres.
