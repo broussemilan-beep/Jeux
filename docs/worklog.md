@@ -4132,3 +4132,92 @@ tout le contexte, sans re-payer les crédits Meshy déjà dépensés.
 **Coût réel Meshy Phase 3** : 69cr (3× [preview 5 + refine 10 + rig 5 +
 animate 3]). Solde après : 982/1051cr. Plafond nuit 250cr — largement
 respecté. Reste ~181cr de marge Meshy si besoin en Phase 4/5.
+
+### CHANTIER A — Déblocage du rendu 3D (repris par une autre session)
+
+**Résolu.** Suite à la remontée de Milan avec deux pistes concrètes
+(rapport Godot #82435 sur les gels llvmpipe Forward+/Mobile en VM, et
+Blender headless en repli) :
+
+**A1 — Retest Compatibility avec délai long.** Lancé en tâche de fond,
+`--rendering-driver opengl3 --rendering-method gl_compatibility`,
+timeout 45 min (au lieu de 150s testé la fois précédente). Toujours
+aucune sortie après 28+ minutes de CPU soutenu (250%+) au moment
+d'écrire cette entrée — donc soit le vrai temps nécessaire dépasse
+largement 45 min sur ce matériel, soit c'est un authentique gel même
+en Compatibility. Résultat définitif non déterminant, mais devenu
+**non bloquant** grâce à A2 ci-dessous.
+
+**A2 — Blender headless (Cycles CPU), solution retenue.** Blender 4.0.2
+installé (`apt-get install -y blender`). Deux soucis d'amorçage :
+(1) le Python système utilisé par Blender (3.12, PAS le python3
+générique du conteneur qui pointe vers 3.11) n'avait pas `numpy`,
+requis par l'import glTF — corrigé via `apt-get install -y
+python3-numpy` (paquet système, pas pip, contourne le
+"externally-managed-environment" de ce conteneur) ; (2) ce build
+Blender (paquet apt, pas le build officiel Blender Foundation) est
+compilé SANS OpenImageDenoiser — le rendu Cycles échouait
+("Build without OpenImageDenoiser") avec le débruitage activé par
+défaut, corrigé en le désactivant explicitement
+(`scene.cycles.use_denoising = False`).
+
+Une fois ces deux soucis réglés : **rendu complet en ~4 secondes**
+(import GLB 0.65s + 32 échantillons Cycles CPU 512x512), contre 20+
+minutes de blocage systématique sous Godot/Vulkan. Validé d'abord sur
+`cendre_rigged.glb` (référence connue-bonne) — pose bind asymétrique
+correcte, texture/couleurs cohérentes avec les rendus Godot antérieurs
+(mêmes vêtements/harnais/bottes reconnaissables).
+
+**Bug de cadrage trouvé en cours de route** : `obj.bound_box` de
+Blender est la bbox LOCALE de la donnée SOURCE, pas évaluée — elle
+ignore la déformation par armature (constaté : bit-à-bit identique
+entre la pose idle et un coup de pied en plein vol sur Crawler).
+Corrigé en calculant la bbox depuis le maillage évalué du depsgraph
+(`obj.evaluated_get(depsgraph).to_mesh()`, sommet par sommet) —
+confirme bien que les sommets individuels bougent avec la pose,
+mais empiriquement l'enveloppe globale (min/max) ne bouge PAS toujours
+pour ces 3 monstres (probablement des sommets rigides comme antennes/
+griffes qui restent les extrema sur tous les axes même quand les
+membres bougent) — pas entièrement élucidé, contourné pragmatiquement
+par un `--cam_size` manuel plus généreux sur les 3 poses d'attaque
+(silhouette complète visible, pas de recadrage serré parfait — le
+canevas final 64x64 absorbe la marge).
+
+**Nouveaux outils créés** (`experiments/blender_capture/`) :
+- `capture_pose.py` : rendu Blender headless (GLB → PNG RGBA haute
+  résolution, caméra orthographique auto-cadrée sur bbox, animation/
+  frame sélectionnable, `--list_actions` pour la reconnaissance).
+- `quantize.py` : post-traitement pixel-art en Python pur (Pillow +
+  numpy, AUCUNE dépendance Godot) — porte la même logique que
+  `pixel_quantize.gdshader` (pixelisation par blocs point-échantillonnés,
+  désaturation+quantification HSV remappée dans la bande de Value,
+  contour par détection de bords, dithering Bayer) mais calculée sur
+  l'image déjà rendue, pas en shader GPU. Différence assumée : les
+  bords/contours sont calculés sur l'image DÉJÀ pixelisée (pixels de
+  sortie voisins), pas sur la texture haute résolution originale comme
+  le shader — visuellement proche, pas un rendu identique au pixel
+  près.
+
+**Appliqué aux 3 monstres déjà générés et payés** (Crawler/Brute/
+Ranged) : idle (walk.glb à la frame de départ, convention déjà établie)
++ walk (walk.glb mi-cycle) + attack (attack.glb, frame choisie par
+inspection visuelle de chaque pose, 1 réglage de cadrage nécessaire sur
+les 3 poses d'attaque). `--target_saturation=0.55` (jugement documenté,
+pas une valeur imposée : "clairement coloré" sans être criard, à
+distinguer du 0.10 quasi-gris de Cendre) — corrige le bug de
+désaturation forcée trouvé plus tôt. Les 18 fichiers (raw+64px) dans
+`experiments/monsters_nuit/out/` remplacent les anciens (bugués,
+gris) du commit précédent. Inspection visuelle des 9 poses : silhouettes
+lisibles, couleurs cohérentes avec le thème de chaque monstre (Crawler
+gris/chair rouge exposée, Brute gris-acier/énergie orange-rouge, Ranged
+noir-violet/veines rouges) — aucune quantité auto-attribuée de
+"qualité finale", juste une confirmation que le pipeline produit un
+résultat exploitable.
+
+**Reste à faire (hors scope immédiat, noté pour la suite)** : recentrer/
+retoucher au pixel les 3 poses d'attaque si le cadrage large gêne en
+jeu ; construire les `SpriteFrames`/`AnimatedSprite2D` et câbler dans
+`enemy_crawler.tscn`/`enemy_brute.tscn`/`enemy_ranged.tscn` (placeholders
+`Polygon2D` toujours en place) ; vérifier `HitResponse` + convention
+rouge=danger sur les nouveaux sprites ; smoke test + redeploy si Phase 3
+est enfin complétée derrière ce travail.
