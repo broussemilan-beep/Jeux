@@ -4549,3 +4549,33 @@ son maillage propre via `inspect_mesh.py`/`calibrate_axes.py`), puis si
 les deux passent, construire une pose idle statique + éventuellement
 un cycle de marche à la main (key-frames manuelles, pas de bibliothèque
 Meshy) pour les deux monstres.
+
+## 2026-08-21 — Rig manuel Blender : Brute validé aussi (2/2)
+
+Même méthode appliquée à Brute : `calibrate_axes.py` confirme la même
+convention d'axes que Crawler (tête/museau côté Y négatif), puis
+`inspect_mesh.py` sur `brute_remeshed.glb` (314681 sommets) donne les
+points d'ancrage : sommet du crâne (y=-0.13, z=2.20), mâchoire/menton
+(extrémité avant basse, y=-1.16, z=1.31), mains au sol (posture
+« knuckle-walker », bras très longs : x=±1.37, y=-0.6, z=0.45), jambes
+courtes et reculées sous le corps (profil de tranches Y montrant la
+largeur X et la hauteur moyenne chuter progressivement de y=0.20 à
+y=0.97). Armature à 10 bones construite en conséquence (bassin→
+poitrine→cou→tête, 2 bras à 2 segments, 2 jambes à 2 segments) dans
+`rig_manual_test_brute.py`.
+
+Même fix merge-doubles appliqué d'emblée (314681 → 129071 sommets) :
+aucun warning « Bone Heat Weighting » cette fois, poids corrects du
+premier coup. Test de rotation sur le bras gauche (le membre le plus
+long/complexe du monstre) : déformation propre, le bras se replie
+naturellement sans déchirer le maillage ni affecter le reste du corps
+de façon incohérente
+(`experiments/monsters_nuit/comparison_manual_rig_test_brute.png`).
+
+**Bilan : 2/2 — le rig manuel fonctionne sur les deux monstres bloqués
+par le rig auto Meshy.** Reste à décider avec Milan : construire la
+pose idle finale + un cycle de marche à la main (key-frames), et
+si besoin refactoriser les deux scripts de test (`rig_manual_test.py`
+et `rig_manual_test_brute.py`, presque identiques) en un outil unique
+paramétré par une liste de bones — actuellement dupliqués pour aller
+vite sur ce round de validation.
