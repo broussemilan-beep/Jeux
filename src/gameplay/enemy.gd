@@ -56,6 +56,16 @@ const ProjectileScene := preload("res://scenes/gameplay/projectile.tscn")
 @export var projectile_damage: float = 6.0
 @export var projectile_speed_px_s: float = 240.0
 
+## Phase 1.3 (MANDAT SUITE v2) : bob procédural qui simule un déplacement
+## sans cycle de marche animé (Crawler/Brute n'ont qu'idle+attaque —
+## docs/worklog.md Phase 1.1, "no hand-animated walk cycle, trop coûteux
+## pour le prototype"). Glisse la pose idle + une légère oscillation
+## verticale pendant CHASE seulement, jamais pendant TELEGRAPH/RECOVER
+## (l'ennemi y est immobile par design).
+const BOB_AMPLITUDE_PX := 2.0
+const BOB_PERIOD_TICKS := 20
+var _move_tick: int = 0
+
 ## H1 (GDD §20/§21 : "combats -> XP/loot/maîtrise") — TUNABLE, roughly
 ## proportionnel au HP/difficulté de chaque archétype (Brute > Ranged >
 ## Crawler, mêmes valeurs que les .tscn variantes).
@@ -71,14 +81,14 @@ var _base_visual_color: Color = Color.WHITE
 
 signal hit(amount: float)
 
-## Nœud visuel de la cible — `Placeholder` (Polygon2D géométrique) pour
-## l'instant, mandat production v1 §4 : "shader sur le sprite de la
-## cible" s'applique identiquement à cette forme géométrique, aucune
-## réécriture attendue le jour où un vrai sprite ennemi (discipline
-## reference-image, GDD §10) remplace ce placeholder — flag posé,
-## art réel hors scope de cette brique (logique avant l'art, même
-## précédent que D/Bras-Faux).
-@onready var _visual: CanvasItem = $Placeholder
+## Nœud visuel de la cible — `Placeholder` (Polygon2D géométrique) sur le
+## mannequin générique `enemy.tscn` (encore utilisé par ~10 checks de
+## smoke_test_gameplay.gd, jamais retouché), `Visual` (AnimatedSprite2D,
+## Phase 1.3 MANDAT SUITE v2) sur les 3 scènes d'archétype réelles —
+## mandat production v1 §4 : "shader sur le sprite de la cible" s'applique
+## identiquement aux deux (HitResponse.flash_sprite() prend n'importe quel
+## CanvasItem), aucune branche de type nécessaire côté HitResponse.
+@onready var _visual: CanvasItem = get_node("Visual") if has_node("Visual") else get_node("Placeholder")
 
 
 func _ready() -> void:
@@ -101,6 +111,7 @@ func _physics_process(_delta: float) -> void:
 	if _cooldown_remaining > 0:
 		_cooldown_remaining -= 1
 	_run_ai()
+	_update_visual_bob()
 	# `move_and_slide()` UNIQUEMENT si un vrai déplacement est demandé (pas
 	# à chaque tick inconditionnellement) : appelé même à vélocité nulle,
 	# il dépénètre les CharacterBody2D déjà en collision (deux ennemis
@@ -141,13 +152,33 @@ func take_damage(amount: float, source_position: Vector2, recoil_strength_px: fl
 	HitResponse.spawn_damage_number(amount, global_position, get_parent())
 
 	if is_dead():
-		# H1 (GDD §20 : "combats -> XP/loot/maîtrise") — avant queue_free(),
+		# H1 (GDD §20 : "combats -> XP/loot/maîtrise") — avant _die(),
 		# jamais après (Targeting.get_player() ne dépend pas de CET ennemi).
 		var player: Node = Targeting.get_player(get_tree())
 		if player != null:
 			player.stats.add_xp(xp_reward)
 		HitResponse.spawn_death_response(global_position, away, get_parent())
-		queue_free()
+		_die()
+
+
+## Phase 1.2/1.3 (MANDAT SUITE v2) : Ranged a une vraie animation de mort
+## (bibliothèque Meshy, 6 frames — docs/worklog.md Phase 1.2) ; Crawler/
+## Brute n'en ont pas (scope Phase 1.1 réduit à idle+attaque). `_die()`
+## joue "mort" si elle existe (désactive IA/collision, libère au dernier
+## frame via animation_finished) et retombe sur le queue_free() immédiat
+## d'avant sinon — jamais de régression pour les 2 sans animation dédiée.
+func _die() -> void:
+	set_physics_process(false)
+	var collision: CollisionShape2D = get_node_or_null("CollisionShape2D")
+	if collision != null:
+		collision.set_deferred("disabled", true)
+	if _visual is AnimatedSprite2D:
+		var sprite: AnimatedSprite2D = _visual
+		if sprite.sprite_frames != null and sprite.sprite_frames.has_animation("mort"):
+			sprite.play("mort")
+			sprite.animation_finished.connect(queue_free, CONNECT_ONE_SHOT)
+			return
+	queue_free()
 
 
 ## État minimal : IDLE/CHASE (pas d'aggro ou en approche) -> TELEGRAPH
@@ -182,6 +213,7 @@ func _run_ai() -> void:
 				_state = State.CHASE
 				_state_tick = 0
 				_cooldown_remaining = attack_cooldown_ticks
+				_play_visual_animation("idle")
 		_:  # IDLE, CHASE
 			if dist > aggro_radius_px:
 				_state = State.IDLE
@@ -192,6 +224,7 @@ func _run_ai() -> void:
 				_state = State.TELEGRAPH
 				_state_tick = 0
 				velocity = Vector2.ZERO
+				_play_visual_animation("attaque")
 				return
 			velocity = _chase_velocity(to_player, dist)
 
@@ -240,6 +273,32 @@ func _pulse_telegraph_color(progress: float) -> void:
 func _reset_visual_color() -> void:
 	if _visual is Polygon2D:
 		(_visual as Polygon2D).color = _base_visual_color
+
+
+## `_visual` en `AnimatedSprite2D` uniquement (Crawler/Brute/Ranged, Phase
+## 1.3) — ignoré sans effet sur le mannequin générique (Polygon2D) et sur
+## tout SpriteFrames qui n'aurait pas encore l'anim demandée (aucun crash,
+## juste pas de changement visuel, même discipline que les checks
+## `is Polygon2D` ci-dessus).
+func _play_visual_animation(anim_name: String) -> void:
+	if _visual is AnimatedSprite2D:
+		var sprite: AnimatedSprite2D = _visual
+		if sprite.sprite_frames != null and sprite.sprite_frames.has_animation(anim_name):
+			sprite.play(anim_name)
+
+
+func _update_visual_bob() -> void:
+	if not (_visual is AnimatedSprite2D):
+		return
+	var sprite: AnimatedSprite2D = _visual
+	if _state == State.CHASE and velocity != Vector2.ZERO:
+		_move_tick += 1
+		sprite.position.y = sin(float(_move_tick) / BOB_PERIOD_TICKS * TAU) * BOB_AMPLITUDE_PX
+		if absf(velocity.x) > 0.0001:
+			sprite.flip_h = velocity.x < 0.0
+	else:
+		_move_tick = 0
+		sprite.position.y = 0.0
 
 
 ## MELEE : contact direct sur le joueur, même schéma que Player._try_hit()

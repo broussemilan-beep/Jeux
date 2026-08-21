@@ -1,0 +1,23 @@
+[gd_resource type="SpriteFrames" load_steps=3 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/brute/idle.png" id="1"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/brute/attaque.png" id="2"]
+
+[resource]
+animations = [{
+"name": &"idle",
+"speed": 5.0,
+"loop": true,
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1")
+}]
+}, {
+"name": &"attaque",
+"speed": 5.0,
+"loop": false,
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2")
+}]
+}]

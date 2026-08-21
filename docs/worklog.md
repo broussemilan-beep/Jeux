@@ -4899,3 +4899,72 @@ silhouette nette à chaque frame grâce au fix dither=0.
 réelle des 3 monstres (remplacement des rectangles placeholder,
 `HitResponse`, hitbox/hurtbox, IA existante), puis Phase 1.4 (redeploy
 web).
+
+## 2026-08-21 — MANDAT SUITE v2 : Phase 1.3 (intégration réelle des 3 monstres)
+
+Remplace les rectangles `Polygon2D` placeholder par les vrais sprites
+dans les 3 scènes d'archétype (`enemy_crawler.tscn`, `enemy_brute.tscn`,
+`enemy_ranged.tscn`). Constat de départ important en lisant
+`src/gameplay/enemy.gd` : `HitResponse` (flash/chiffres de dégâts/burst
+de mort), le hitbox/hurtbox (`CollisionShape2D`) et l'IA (`_run_ai`,
+états IDLE/CHASE/TELEGRAPH/RECOVER, contact MELEE et projectile RANGED)
+étaient **déjà entièrement câblés** depuis Phase G — le seul manque
+réel était le visuel. Portée de cette étape réduite en conséquence :
+pas de réécriture de la logique de combat, juste le sprite + les hooks
+d'animation.
+
+**Assets** : les PNG 64×64 déjà produits/quantifiés (Phase 1.1/1.2)
+copiés sous `assets/processed/sprites/{crawler,brute,ranged}/` (`idle.
+png`, `attaque.png`, + `mort_0..5.png` pour Ranged). 3 `SpriteFrames`
+`.tres` écrits à la main (mêmes principes que `pack_to_godot_
+atlastexture.py` en Phase T.1.3 : un format Godot simple, pas besoin du
+pipeline `build_sprite_frames.py`/manifeste cuit, disproportionné pour
+1-2 frames par anim). `mort` (Ranged uniquement) à 6fps (divise 60,
+même discipline de ticks entiers que `cendre_frames.tres`).
+
+**Alignement sol** : chaque sprite mesuré (ligne de pixel opaque la
+plus basse de l'idle, numpy) puis converti en `offset` du nœud
+`AnimatedSprite2D` pour faire coïncider le contact au sol avec l'origine
+du `CharacterBody2D` (même convention que `player.tscn`, `offset=
+(0,-32)` avec capsule `(0,-24)`) : Crawler `offset=(0,-31)`
+(collision `(0,-11)`, hauteur 22 → bas capsule = 0 ✓), Brute
+`offset=(0,-31)` (collision `(0,-20)`, hauteur 40 → bas = 0 ✓), Ranged
+`offset=(0,-28)` (collision `(0,-15)`, hauteur 30 → bas = 0 ✓) — les 3
+vérifiés par calcul, pas par tâtonnement visuel.
+
+**enemy.gd** : `_visual` résout maintenant `Visual` (AnimatedSprite2D,
+les 3 scènes réelles) OU `Placeholder` (Polygon2D, le mannequin
+générique `enemy.tscn` encore utilisé par ~10 checks smoke test,
+jamais retouché) — `HitResponse.flash_sprite()` prend déjà n'importe
+quel `CanvasItem`, aucune branche nécessaire là. Ajouts :
+- `_play_visual_animation()` : joue "attaque" à l'entrée en TELEGRAPH,
+  "idle" au retour CHASE après RECOVER (no-op silencieux sur le
+  mannequin Polygon2D ou toute anim absente).
+- `_update_visual_bob()` : bob procédural (amplitude 2px, période 20
+  ticks) + `flip_h` selon le sens du déplacement, actif seulement
+  pendant CHASE avec vélocité non nulle — remplace le cycle de marche
+  qu'on a choisi de ne PAS produire (Phase 1.1, scope réduit).
+- `_die()` : Ranged (seul avec une anim "mort") joue la séquence,
+  désactive IA/collision, libère via `animation_finished` (`CONNECT_
+  ONE_SHOT`) ; Crawler/Brute (pas d'anim mort) retombent sur le
+  `queue_free()` immédiat d'avant — 0 régression pour les deux.
+
+**Intégration réelle confirmée** : `gate_premiere.tscn` (le niveau
+jouable) et `test_arena.tscn` instancient déjà `enemy_crawler/brute/
+ranged.tscn` — aucune modification supplémentaire nécessaire, les
+nouveaux visuels sont hérités automatiquement par la scène réelle.
+
+**Vérification** : `--import` headless propre (0 erreur sur les 3
+nouveaux `SpriteFrames`+PNG) ; `scripts/run_gameplay_smoke_test.sh`
+100% vert (`all_pass:true`, y compris les 3 checks IA spécifiques —
+`crawler_chases_then_hits_player`, `brute_telegraphs_before_landing_a_
+heavier_hit`, `ranged_retreats_to_preferred_range_then_hits_player_
+with_projectile`) — 0 régression. Capture visuelle en moteur réel
+(`tools/capture_scene.tscn --mode=scene`) sur les 3 scènes : sprites
+chargés, filtrage NEAREST respecté (projet en `default_texture_
+filter=0`), silhouettes distinctes et lisibles.
+
+**Statut Phase 1.3 : terminé.** Les 3 monstres sont maintenant de
+vrais habitants du jeu (pas des assets en dossier) : intégrés + gates
+au vert. Reste : Phase 1.4, redeploy du build web (premier jalon
+jouable de ce mandat).

@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://src/gameplay/enemy.gd" id="1"]
 [ext_resource type="Script" path="res://src/gameplay/stats.gd" id="2"]
+[ext_resource type="SpriteFrames" path="res://assets/processed/sprites/crawler/crawler_frames.tres" id="3"]
 
 [sub_resource type="Resource" id="1"]
 resource_local_to_scene = true
@@ -33,6 +34,8 @@ xp_reward = 8.0
 position = Vector2(0, -11)
 shape = SubResource("2")
 
-[node name="Placeholder" type="Polygon2D" parent="."]
-polygon = PackedVector2Array(-7, -24, 7, -24, 7, 0, -7, 0)
-color = Color(0.75, 0.2, 0.15, 1)
+[node name="Visual" type="AnimatedSprite2D" parent="."]
+offset = Vector2(0, -31)
+sprite_frames = ExtResource("3")
+animation = &"idle"
+autoplay = "idle"
