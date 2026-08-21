@@ -4968,3 +4968,21 @@ filter=0`), silhouettes distinctes et lisibles.
 vrais habitants du jeu (pas des assets en dossier) : intégrés + gates
 au vert. Reste : Phase 1.4, redeploy du build web (premier jalon
 jouable de ce mandat).
+
+## 2026-08-21 — MANDAT SUITE v2 : Phase 1.4 (redeploy web — premier jalon jouable)
+
+`godot4 --headless --rendering-driver vulkan --export-release "Web"
+docs/index.html` — export propre, `docs/index.pck` (contient les 3
+nouveaux `SpriteFrames`+PNG et le script `enemy.gd` mis à jour) et
+`docs/index.html` régénérés ; `index.wasm`/`index.js` inchangés (aucune
+modification du moteur/template d'export). Vérifié avant export :
+`scripts/run_gameplay_smoke_test.sh` déjà vert (Phase 1.3).
+
+**Fin de Phase 1 (MANDAT SUITE v2) : les 3 monstres (Crawler, Brute,
+Ranged) sont désormais joués dans le build web déployé** — rig
+définitif + idle/attaque (Crawler/Brute) ou idle/attaque/mort (Ranged),
+HitResponse/hitbox/IA existants confirmés non régressés, plus de
+rectangles placeholder. Premier jalon jouable de ce mandat livré.
+Enchaîne sur Phase 2 (fondations : son, normal maps généralisées,
+post-render, primitives VFX 6→15) sans nouveau prompt, conformément à
+l'instruction finale du mandat.
