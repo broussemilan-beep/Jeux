@@ -167,6 +167,14 @@ var facing: Vector2 = Vector2.DOWN
 ## pas fusionner deux minuteries distinctes).
 var _action_lock: bool = false
 
+## Phase 2.1 (MANDAT SUITE v2) : famille "footstep" — pas de données de
+## contact au sol par frame pour l'instant (8 directions, aucune n'a de
+## marqueur dédié), donc un pas toutes les FOOTSTEP_PERIOD_TICKS tant que
+## le joueur se déplace réellement, plutôt que d'inventer une donnée de
+## contact qui n'existe pas encore.
+const FOOTSTEP_PERIOD_TICKS := 18
+var _footstep_tick: int = 0
+
 ## 0 = pas d'attaque en cours. 1-3 = quel coup du combo joue actuellement.
 var _combo_step: int = 0
 enum ComboPhase { NONE, ANTICIPATION, RELEASE, RECOVERY }
@@ -333,6 +341,14 @@ func _handle_movement() -> void:
 	velocity = input_dir * stats.move_speed_px
 	if input_dir.length_squared() > 0.0001:
 		facing = input_dir.normalized()
+
+	if not _action_lock and not stats.is_dead() and input_dir.length_squared() > 0.0001:
+		_footstep_tick += 1
+		if _footstep_tick >= FOOTSTEP_PERIOD_TICKS:
+			_footstep_tick = 0
+			Sfx.play("footstep")
+	else:
+		_footstep_tick = 0
 
 	if not _action_lock and not stats.is_dead():
 		# E (mandat production v1 §6) : art réel par direction pour idle/
@@ -509,6 +525,12 @@ func _try_hit() -> void:
 	if tier["shake"] != "":
 		CombatFeedback.trigger_shake(tier["shake"], facing)
 
+	# Phase 2.1 (MANDAT SUITE v2) : même seuil que le hit-stop existant
+	# ("light" vs le reste) pour choisir la famille SFX — jamais un 2e
+	# système de seuils dupliqué (même discipline que CameraDirector
+	# juste en dessous).
+	Sfx.play("light_impact" if tier["hitstop"] == "light" else "heavy_impact")
+
 	# CameraDirector (mandat production v1 §4/J2) : punch-zoom sur les
 	# impacts "medium+" — mêmes seuils que le hit-stop existant (jamais un
 	# 2e système de seuils dupliqué), "light" exclu.
@@ -648,6 +670,7 @@ func _try_hit_bras_faux() -> void:
 	# "medium" dans les deux recettes) — pas un second barème de hit-stop.
 	CombatFeedback.trigger_hitstop("medium")
 	CameraDirector.trigger_punch()
+	Sfx.play("heavy_impact")
 
 
 func is_dead() -> bool:
@@ -699,6 +722,9 @@ func take_damage(amount: float, source_position: Vector2, recoil_strength_px: fl
 	stats.apply_damage(amount)
 	HitResponse.flash_sprite(_sprite)
 	HitResponse.spawn_damage_number(amount, global_position, get_parent())
+	# Phase 2.1 : le SFX d'impact vit côté ATTAQUANT (Enemy._execute_attack,
+	# Projectile), même schéma que Player._try_hit() qui joue déjà le sien
+	# en touchant un ennemi — pas de second son ici côté victime.
 	if stats.is_dead():
 		die()
 		return
@@ -774,6 +800,7 @@ func play_dash() -> void:
 	# déclenché ici, au tout premier tick de l'action (l'anticipation),
 	# pas seulement au moment où le déplacement démarre.
 	CombatFeedback.trigger_shake("light", _dash_direction)
+	Sfx.play("whoosh")
 
 
 ## Même règle de direction que play_dash() (input courant sinon facing,
@@ -970,3 +997,4 @@ func die() -> void:
 	_bras_faux_phase = BrasFauxPhase.NONE
 	_action_lock = true
 	_sprite.play("mort")
+	Sfx.play("death")

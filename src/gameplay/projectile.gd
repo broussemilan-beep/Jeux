@@ -38,4 +38,5 @@ func _physics_process(_delta: float) -> void:
 	if global_position.distance_to(player.global_position) <= CONTACT_RADIUS_PX:
 		player.take_damage(_damage, global_position)
 		CombatFeedback.trigger_hitstop("light")
+		Sfx.play("light_impact")
 		queue_free()

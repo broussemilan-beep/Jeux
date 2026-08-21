@@ -169,6 +169,7 @@ func take_damage(amount: float, source_position: Vector2, recoil_strength_px: fl
 ## d'avant sinon — jamais de régression pour les 2 sans animation dédiée.
 func _die() -> void:
 	set_physics_process(false)
+	Sfx.play("death")
 	var collision: CollisionShape2D = get_node_or_null("CollisionShape2D")
 	if collision != null:
 		collision.set_deferred("disabled", true)
@@ -322,6 +323,9 @@ func _execute_attack(player: Node, to_player: Vector2) -> void:
 				CombatFeedback.trigger_hitstop(hitstop_profile)
 				if shake_profile != "":
 					CombatFeedback.trigger_shake(shake_profile, dir)
+				# Phase 2.1 (MANDAT SUITE v2) : même seuil que Player._try_hit()
+				# ("light" vs le reste), pas un second barème.
+				Sfx.play("light_impact" if hitstop_profile == "light" else "heavy_impact")
 		Archetype.RANGED:
 			_spawn_projectile(dir)
 	_state = State.RECOVER

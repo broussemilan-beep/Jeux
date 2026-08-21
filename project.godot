@@ -57,6 +57,13 @@ HitResponse="*res://src/gameplay/hit_response.gd"
 ; consulte que CombatFeedback.is_frozen(), déjà en tête) — ordre non
 ; critique, placé en dernier par simplicité (mandat production v1 §4, J2).
 CameraDirector="*res://src/gameplay/camera_director.gd"
+; Sfx (Phase 2.1, MANDAT SUITE v2) — aucune dépendance sur les autres
+; autoloads (juste un pool d'AudioStreamPlayer), ordre non critique.
+Sfx="*res://src/gameplay/sfx.gd"
+
+[audio]
+
+buses/default_bus_layout="res://default_bus_layout.tres"
 
 [display]
 

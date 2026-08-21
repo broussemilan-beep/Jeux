@@ -4986,3 +4986,86 @@ rectangles placeholder. Premier jalon jouable de ce mandat livré.
 Enchaîne sur Phase 2 (fondations : son, normal maps généralisées,
 post-render, primitives VFX 6→15) sans nouveau prompt, conformément à
 l'instruction finale du mandat.
+
+## 2026-08-21 — MANDAT SUITE v2 : Phase 2.1 (son — priorité absolue)
+
+Le jeu était 100% silencieux. `sfx_markers` existe dans le format de
+recette (`data/recipes/*.json`) depuis le début mais n'avait jamais été
+consommé par aucun système — confirmé en grep : aucune référence
+côté moteur avant cette étape.
+
+**Génération** (`scripts/generate_sfx.py`, pyfxr — T.1.4, retenu) : 6
+familles en .wav mono 44.1kHz, `assets/processed/sfx/` : `light_impact`
+(preset `hurt()`), `heavy_impact` (preset `explosion()`), `whoosh`
+(paramétrique : bruit + rampe de fréquence descendante + passe-bas
+suiveur — recette jsfxr classique, aucun preset direct disponible),
+`spawn` (preset `powerup()`), `death` (paramétrique : onde en dents de
+scie, longue rampe de fréquence descendante — trope "mort", distinct de
+`heavy_impact`), `footstep` (paramétrique : bruit très bref filtré,
+volontairement discret pour ne jamais se confondre avec un impact de
+combat). Seeds fixés pour les presets randomisés (reproductibilité de
+CETTE génération d'asset hors moteur, aucun rapport avec le
+déterminisme RNDC du gameplay réel). RMS vérifié non-silencieux sur les
+6 (17000-25000/32767).
+
+**Bus audio** (`default_bus_layout.tres`, jamais configuré avant cette
+étape — `grep audio/buses project.godot` ne renvoyait rien) : Master,
+`SFX_Combat`, `SFX_UI` (posé, pas encore consommé — aucune UI sonore
+dans le scope de cette brique), `Music` (posé, pas encore de musique —
+prêt pour plus tard). Référencé dans `project.godot`
+(`audio/buses/default_bus_layout`).
+
+**Autoload `Sfx`** (`src/gameplay/sfx.gd`) : pool de 12
+`AudioStreamPlayer` (même discipline de pool que `HitResponse`'s
+`DamageNumberPool`), `Sfx.play(event, bus="SFX_Combat")` — `pitch_scale`
+randomisé ±5% par lecture (mandat "pitch variants ±5%" appliqué au
+runtime, pas des fichiers dupliqués). Nom d'événement inconnu = no-op
+silencieux, même discipline que `Enemy._play_visual_animation()`.
+"Hit-stop ne coupe jamais la musique" (mandat) : déjà garanti par
+construction — le hit-stop (`CombatFeedback`) est un compteur de ticks
+auto-consulté par les nœuds de combat (§9.1, docs/ARCHITECTURE_VFX_v3),
+jamais un throttle de l'arbre de scène ni de l'Engine ; un
+`AudioStreamPlayer` qui ne consulte jamais `is_frozen()` continue de
+jouer normalement.
+
+**Câblage** (attaquant = propriétaire du son d'impact, même schéma que
+`Player._try_hit()` qui possédait déjà VFX/hit-stop de son propre coup —
+jamais le récepteur qui joue le son de qui l'a touché) :
+- `Player._try_hit()` : `light_impact`/`heavy_impact` selon le même
+  seuil que le hit-stop existant (tier `"light"` vs le reste) — pas un
+  2e barème.
+- `Player._try_hit_bras_faux()` : `heavy_impact` (tier "medium", même
+  raisonnement que Gueule Vide).
+- `Player.play_dash()` : `whoosh`.
+- `Player.die()` : `death`.
+- `Player._handle_movement()` : `footstep` toutes les 18 ticks pendant
+  un déplacement réel — aucune donnée de contact au sol par frame
+  n'existe encore pour les 8 directions, période fixe plutôt que
+  d'inventer une donnée absente.
+- `Enemy._execute_attack()` (MELEE) : `light_impact`/`heavy_impact`
+  selon `hitstop_profile`. `Enemy._die()` : `death`.
+- `Projectile` (Ranged) : `light_impact` au contact joueur.
+- `GueuleVide._ready()` : `spawn`. `GueuleVide._resolve_contact()` :
+  `heavy_impact` (tier "medium", même raisonnement que Bras-Faux).
+
+Piège évité en cours de route : un premier jet faisait jouer
+`light_impact` à la fois dans `Player.take_damage()` (récepteur) ET
+dans `Enemy._execute_attack()`/`Projectile` (attaquant) pour le MÊME
+coup — deux sons empilés sur un seul impact. Corrigé en retirant l'appel
+côté `Player.take_damage()` : le son d'impact appartient à
+l'attaquant, jamais dupliqué côté victime.
+
+**Vérification** : `--import` headless (0 erreur après un premier essai
+qui a révélé l'ordre "préload avant génération du .import" — un second
+`--import` après génération des `.wav` suffit) ; `scripts/
+run_gameplay_smoke_test.sh` toujours 100% vert, 0 régression. Un
+avertissement bénin "resource still in use at exit" apparaît au
+shutdown headless (probablement le pool `AudioStreamPlayer` de l'autoload
+Sfx, persistant par conception jusqu'à la fin du process) — sans impact
+sur les tests, noté tel quel.
+
+**Statut Phase 2.1 : terminé** (SFX + bus). Reste dans Phase 2 : normal
+maps généralisées aux monstres, post-render (bloom/outline/paletteRamp/
+directionalStreak), primitives VFX 6→15. Freesound (T.2.7) reste
+bloqué en attente de la clé de Milan — non utilisé ici, uniquement
+pyfxr (déjà en autonomie complète).

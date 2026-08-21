@@ -83,6 +83,7 @@ func _ready() -> void:
 	_sprite.play("cast")
 	_sprite.pause()
 	_sprite.frame = 0
+	Sfx.play("spawn")
 	_recipe_run_id = VfxRecipeRegistry.play(RECIPE_ID, {
 		"origin": global_position,
 		"seed": CAST_SEED,
@@ -173,6 +174,7 @@ func _resolve_contact() -> void:
 	# importance_tier 2/6 (data/recipes/power.gueule_vide.cast.json), un
 	# heavy ici viderait le plafond réservé aux compétences majeures.
 	CombatFeedback.trigger_hitstop("medium")
+	Sfx.play("heavy_impact")
 
 
 ## Tick courant du cast — utile aux tests/captures (même contrat que
