@@ -4850,3 +4850,52 @@ identique.
 définitive, idle + attaque rendus/quantifiés/exportés. Reste avant
 intégration : mort Ranged (Phase 1.2, `meshy_animate`), puis
 intégration réelle des 3 monstres dans les scènes de jeu (Phase 1.3).
+
+## 2026-08-21 — MANDAT SUITE v2 : Phase 1.2 (mort Ranged)
+
+Ranged étant déjà riggé avec succès par Meshy (contrairement à Crawler/
+Brute, cf. blocage documenté), la mort est une vraie animation de
+bibliothèque (`meshy_animate`), pas une pose statique — seul monstre
+des 3 dans ce cas pour l'instant.
+
+**Choix de l'action** : pas d'outil de listing exposé côté MCP
+(`meshy_animate` prend un `action_id` numérique fixe uniquement) —
+recherche dans la référence documentée de Meshy
+(`docs.meshy.ai/en/api/animation-library`, catégorie Fighting/Dying)
+pour un nom correspondant littéralement à « mort » : `action_id=8`
+("Dead") retenu, même logique de sélection que les choix précédents
+(`Left_Slash` pour « un coup », `Roll_Dodge` pour « dash ») — nom le
+plus proche disponible, pas d'options exotiques liées à des armes à
+feu (`Shot_and_Fall_*`) hors thème.
+
+**Exécution** : solde vérifié avant (869cr, inchangé depuis la veille —
+aucun appel Meshy pendant le travail Blender manuel sur Crawler/Brute).
+`meshy_animate(rig_task_id=01a024b4-1270-70eb-b5f1-8c07587afea5,
+action_id=8)` → succès, 3cr consommés (conforme au budget ~3cr annoncé
+dans le mandat). GLB téléchargé (26MB, `Animation_Dead_withSkin.glb`,
+confirme le nom "Dead") → `ranged_death.glb`.
+
+**Rendu** : une seule action dans le GLB (`Armature|Dead|baselayer_
+Armature`, frame_range 0.8-72.0, ~3s à 24fps). 6 frames échantillonnées
+uniformément sur toute la plage, rendues à l'échelle commune (`cam_size
+=2.6, target_z=1.092`, même convention mins.z=0/bottom_margin_frac=0.08
+que Brute) via `capture_pose.py --anim_frame=...`. Centre X/Y recalculé
+par frame (bbox réelle de la pose), `target_z` fixé (référence sol
+commune, pas de recentrage vertical qui effacerait l'affaissement du
+corps). Clipping mineur (~20-25px de bouts de filaments fins sur les 2
+dernières frames, marge basse 8% du cadre) jugé négligeable après
+réduction à 64×64 — même tolérance que documentée précédemment pour
+d'autres poses ("le canevas final 64×64 absorbe la marge").
+
+Quantifié aux réglages Ranged déjà établis (`--target_saturation=0.55
+--dither_amount=0.0 --value_band_min=0.35`, fix de lisibilité sur fond
+très sombre) → `ranged_death_{0..5}_64.png`. Séquence visuellement
+vérifiée (`ranged_death_strip.png`) : progression lisible — debout/
+touché → bras levé/chancelant → effondrement → chute → étalé au sol,
+silhouette nette à chaque frame grâce au fix dither=0.
+
+**Statut Phase 1.2 : terminé.** Ranged a maintenant idle + attaque
+(round précédent) + mort (6 frames). Reste : Phase 1.3, intégration
+réelle des 3 monstres (remplacement des rectangles placeholder,
+`HitResponse`, hitbox/hurtbox, IA existante), puis Phase 1.4 (redeploy
+web).
