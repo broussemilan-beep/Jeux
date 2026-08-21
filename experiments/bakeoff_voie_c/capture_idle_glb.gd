@@ -28,6 +28,12 @@ func _ready() -> void:
 	var dither_amount: float = float(args.get("dither_amount", "0.35"))
 	var outline_thickness: float = float(args.get("outline_thickness", "3.0"))
 	var target_pixels: int = int(args.get("target_pixels", "64"))
+	# Défaut 0.10 = comportement Cendre inchangé (grayscale désaturé, GDD).
+	# MANDAT NUIT phase 3 : les monstres doivent avoir des palettes colorées
+	# ("Palettes ennemies colorées (phase 1)") — ce paramètre était en dur à
+	# 0.10 partout, désaturant aussi les monstres par erreur. Surchargeable
+	# désormais via --target_saturation.
+	var target_saturation: float = float(args.get("target_saturation", "0.10"))
 
 	var sub_viewport := SubViewport.new()
 	sub_viewport.size = Vector2i(internal_res, internal_res)
@@ -53,15 +59,20 @@ func _ready() -> void:
 	key_light.rotation_degrees = Vector3(-55.0, -30.0, 0.0)
 	world.add_child(key_light)
 
+	print("DBG before load()")
 	var packed: PackedScene = load(glb_path)
+	print("DBG after load()")
 	if packed == null:
 		push_error("capture_idle_glb: impossible de charger '%s'." % glb_path)
 		get_tree().quit(1)
 		return
 	var character: Node3D = packed.instantiate()
+	print("DBG after instantiate()")
 	character.rotation_degrees.y = model_yaw_deg
 	world.add_child(character)
+	print("DBG before await physics_frame #1")
 	await get_tree().physics_frame
+	print("DBG after await physics_frame #1")
 
 	# Fige la pose sur une frame précise d'une animation Meshy bundlée dans
 	# le GLB (dash/coup de combo) au lieu de l'idle par défaut — même
@@ -144,7 +155,7 @@ func _ready() -> void:
 	shader_mat.set_shader_parameter("target_x_pixel_count", target_pixels)
 	shader_mat.set_shader_parameter("target_y_pixel_count", target_pixels)
 	shader_mat.set_shader_parameter("color_steps", color_steps)
-	shader_mat.set_shader_parameter("target_saturation", 0.10)
+	shader_mat.set_shader_parameter("target_saturation", target_saturation)
 	shader_mat.set_shader_parameter("dither_amount", dither_amount)
 	shader_mat.set_shader_parameter("outline_thickness", outline_thickness)
 
@@ -163,18 +174,27 @@ func _ready() -> void:
 	sub_viewport_2d.add_child(display)
 
 	for i in range(6):
+		print("DBG loop physics_frame ", i)
 		await get_tree().physics_frame
 
+	print("DBG before paused=true")
 	get_tree().paused = true
 	await get_tree().process_frame
+	print("DBG after process_frame #1")
 	await get_tree().process_frame
+	print("DBG after process_frame #2")
 	await get_tree().process_frame
+	print("DBG after process_frame #3")
 
+	print("DBG before get_image()")
 	var img: Image = sub_viewport_2d.get_texture().get_image()
+	print("DBG after get_image()")
 	var dir_path := out_path.get_base_dir()
 	if dir_path != "" and not DirAccess.dir_exists_absolute(dir_path):
 		DirAccess.make_dir_recursive_absolute(dir_path)
+	print("DBG before save_png()")
 	var err := img.save_png(out_path)
+	print("DBG after save_png() err=", err)
 
 	print("CAPTURE_RESULT ", JSON.stringify({
 		"save_err": err, "out_path": out_path, "internal_res": internal_res,

@@ -4015,3 +4015,120 @@ toujours au vert.
 
 **Coût réel** : 1 tileset + 3 objets = 4 générations PixelLab (sur
 1653 disponibles, plafond nuit 661 max) — largement sous plafond.
+
+### PHASE 3 — 3 monstres Meshy : génération terminée, capture BLOQUÉE (environnement)
+
+**État : PARTIEL / EN PAUSE.** La génération Meshy (payante) est
+terminée et validée en coût ; le pipeline de capture headless (rendu
+3D → pixel art) est bloqué par un problème d'environnement non résolu
+au moment où cette entrée est écrite. Rien n'est perdu (voir §Coût),
+mais aucune des 9 images finales des 3 monstres n'existe encore dans
+un état correct. Documenté ici en détail pour qu'une session
+ultérieure reprenne sans repartir de zéro.
+
+**Génération (terminée, 69cr, voir `data/meshy_usage.jsonl`)** : 3
+monstres conçus pour le biome "Gate corrompue" (GDD) — Crawler / Null
+Husk (0.9m, quadrupède rampant), Brute / System Fragment (2.2m, lourd),
+Ranged / Classless Aberration (1.8m, distance). Pipeline complet par
+monstre : `text_to_3d` preview meshy-5 (5cr) → `text_to_3d_refine`
+(10cr, texture) → `rigging` (5cr, inclut marche+course gratuites) →
+`animate` (3cr, action bibliothèque : Crawler=94 Flying_Fist_Kick,
+Brute=128 Heavy_Hammer_Swing, Ranged=239 Crouch_Pull_and_Throw). Les 9
+GLB (rigged/walk/attack ×3) téléchargés dans
+`experiments/monsters_nuit/meshy_output/` (non commité par convention
+§13.3, comme `bakeoff_voie_c/meshy_output/` — mais **committé cette
+fois-ci sur demande explicite de Milan**, pour transférer le travail
+Meshy déjà payé à une autre session sans le regénérer).
+
+**Bug trouvé et corrigé : désaturation forcée des monstres.**
+`experiments/bakeoff_voie_c/capture_idle_glb.gd` (outil de capture
+générique réutilisé du bake-off Voie C) codait en dur
+`shader_mat.set_shader_parameter("target_saturation", 0.10)` — valeur
+voulue pour Cendre (grayscale narratif, GDD) mais appliquée aussi aux
+3 monstres, contredisant l'exigence explicite du mandat ("Palettes
+ennemies colorées (phase 1)"). Repéré en inspectant `brute_idle_64.png`
+et `crawler_idle_64.png`, visuellement quasi gris. **Corrigé** : ajout
+d'un paramètre `--target_saturation` (défaut `0.10` inchangé pour ne
+rien casser sur Cendre), surchargeable par appel. Ce correctif seul
+est sûr et déjà vérifié (pas de dépendance au rendu qui bloque
+ci-dessous) mais **aucune image monstre n'a encore été re-rendue avec
+la valeur corrigée** — les 18 fichiers dans
+`experiments/monsters_nuit/out/` (raw+64px ×9) restent ceux de la
+tentative bugguée (trop désaturés), committés tels quels par
+transparence, PAS comme un livrable approuvé.
+
+**Blocage : le rendu 3D headless ne produit plus rien dans ce
+conteneur.** Après reprise de session (conteneur recyclé), toute
+capture via `capture_idle_glb.gd`/`capture_idle.gd` (SubViewport 3D
+offscreen → shader pixel-art → PNG) reste bloquée indéfiniment —
+aucune sortie, `save_err` jamais atteint, CPU parfois élevé (200%+),
+parfois quasi nul, selon la tentative. Diagnostic mené avant de passer
+la main (voir aussi les prints `DBG ...` laissés intentionnellement
+dans `capture_idle_glb.gd` pour la reprise) :
+
+1. **Pas un bug de script** : instrumenté `capture_idle_glb.gd` avec des
+   `print()` à chaque étape (avant/après `load()`, après
+   `instantiate()`, avant/après chaque `await physics_frame`/
+   `process_frame`). AUCUN print n'apparaît, pas même le tout premier
+   (placé avant tout calcul réel) — donc `_ready()` ne s'exécute
+   probablement jamais, ou l'engine entier est gelé avant.
+2. **Pas spécifique aux nouveaux assets** : même blocage identique en
+   remplaçant le GLB monstre par `cendre_rigged.glb` (connu bon,
+   capturé avec succès en session précédente), ET avec la scène
+   purement procédurale `capture_idle.tscn` (zéro GLB, zéro texture
+   externe, juste des primitives `cendre_lowpoly.gd`).
+3. **Pas un problème projet/autoloads/scan de ressources** :
+   `scripts/run_gameplay_smoke_test.sh` (le test de régression officiel
+   du jeu, 60 assertions gameplay) tourne PARFAITEMENT dans ce même
+   conteneur — 60/60 vert, en moins de 2 minutes, aucun blocage. Ceci
+   élimine un scan de classe global cassé (le mode d'échec documenté
+   dans l'en-tête de ce script lui-même, "`.import` manquant → hang
+   silencieux") comme cause : le projet entier boot et tourne bien.
+4. **Piste retenue (non confirmée)** : ce jeu est un jeu 2D pur — la
+   scène de smoke-test ne touche jamais le pipeline de rendu 3D
+   (`Node3D`/`Camera3D`/`WorldEnvironment`/Forward+). Nos scripts de
+   capture sont le SEUL endroit du projet à instancier un monde 3D
+   (`SubViewport.own_world_3d = true`). Hypothèse : le tout premier
+   appel de rendu 3D jamais effectué dans ce process, sous Vulkan
+   logiciel (llvmpipe, confirmé dans les logs), déclenche une
+   compilation de pipeline pathologiquement longue (Forward+ est
+   nettement plus coûteux à compiler que du 2D canvas) — sans cache de
+   shaders persistant d'une session à l'autre (`.godot/` est gitignoré
+   et non un volume persistant). Un essai à 1200s (20 min) de CPU
+   soutenu (200%+) n'a rien produit — soit le vrai temps nécessaire
+   dépasse largement ça, soit il s'agit d'un authentique gel (pas
+   seulement une lenteur), les deux restent possibles.
+5. **Tenté sans conclusion** : bascule vers le renderer
+   `--rendering-driver opengl3 --rendering-method gl_compatibility`
+   (pipeline de compilation plus simple, hypothèse d'un contournement
+   rapide) — même symptôme (aucune sortie, aucun fichier produit dans
+   le délai testé de 150s). Pas testé sur une durée plus longue faute
+   de temps avant la pause de session.
+
+**Décision (Milan, en session)** : ne pas continuer à creuser
+indéfiniment ("y'a clairement un bug, arrête de mouliner dans le
+vide") — committer et pousser l'état complet (fix inclus, GLB inclus,
+diagnostic documenté) pour qu'une AUTRE session Claude reprenne avec
+tout le contexte, sans re-payer les crédits Meshy déjà dépensés.
+
+**Reste à faire pour clore Phase 3** (pour la session qui reprend) :
+- Percer le blocage de rendu (pistes : essayer un timeout beaucoup
+  plus long sur `gl_compatibility` ; vérifier si un cache de shaders
+  Godot persistant existe/peut être créé hors `.godot/` ; comparer
+  avec un Godot fraîchement réinstallé/version différente ; envisager
+  un export minimal du modèle vers un format image via un outil tiers
+  hors Godot si le rendu natif reste impraticable dans ce conteneur).
+- Une fois débloqué : re-rendre les 9 captures (raw+64px) avec
+  `--target_saturation` explicite (valeur suggérée non figée : ~0.5-0.6,
+  "clairement coloré" sans être criard — à valider à l'œil, pas
+  imposée ici comme définitive).
+- Construire les `SpriteFrames`/`AnimatedSprite2D` et remplacer le
+  `Polygon2D` placeholder dans `enemy_crawler.tscn`/`enemy_brute.tscn`/
+  `enemy_ranged.tscn`.
+- Vérifier `HitResponse` (flash, dégâts, mort) sur les nouveaux sprites,
+  convention rouge=danger, smoke test, redeploy si Phase 3 est enfin
+  complétée.
+
+**Coût réel Meshy Phase 3** : 69cr (3× [preview 5 + refine 10 + rig 5 +
+animate 3]). Solde après : 982/1051cr. Plafond nuit 250cr — largement
+respecté. Reste ~181cr de marge Meshy si besoin en Phase 4/5.
