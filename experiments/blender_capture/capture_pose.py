@@ -33,8 +33,12 @@ calibrer manuellement comme sur le pipeline Godot d'origine.
 
 import bpy
 import sys
+import os
 import math
 import mathutils
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from normal_pass import render_normal_pass
 
 
 def parse_args() -> dict:
@@ -112,6 +116,7 @@ def main() -> None:
         print("ERROR: --glb requis")
         sys.exit(1)
     out_path = args.get("out", "/tmp/blender_capture.png")
+    out_normal = args.get("out_normal")
     res = int(args.get("res", "512"))
     samples = int(args.get("samples", "32"))
     cam_yaw_deg = float(args.get("cam_yaw_deg", "35"))
@@ -241,6 +246,10 @@ def main() -> None:
     scene.render.filepath = out_path
 
     bpy.ops.render.render(write_still=True)
+
+    if out_normal:
+        render_normal_pass(scene, out_normal)
+        print("NORMAL_RENDERED", out_normal)
 
     print("CAPTURE_RESULT", {
         "out_path": out_path, "center": tuple(center), "size": tuple(size),

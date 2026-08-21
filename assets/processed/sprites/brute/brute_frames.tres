@@ -1,7 +1,7 @@
 [gd_resource type="SpriteFrames" load_steps=3 format=3]
 
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/brute/idle.png" id="1"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/brute/attaque.png" id="2"]
+[ext_resource type="CanvasTexture" path="res://assets/processed/sprites/brute/idle_canvas.tres" id="1"]
+[ext_resource type="CanvasTexture" path="res://assets/processed/sprites/brute/attaque_canvas.tres" id="2"]
 
 [resource]
 animations = [{

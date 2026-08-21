@@ -5069,3 +5069,91 @@ maps généralisées aux monstres, post-render (bloom/outline/paletteRamp/
 directionalStreak), primitives VFX 6→15. Freesound (T.2.7) reste
 bloqué en attente de la clé de Milan — non utilisé ici, uniquement
 pyfxr (déjà en autonomie complète).
+
+## 2026-08-21 — MANDAT SUITE v2 : Phase 2.2 (normal maps généralisées aux monstres)
+
+Généralise la technique validée en Phase T.1.2 sur Cendre (passe Normal
+Cycles espace caméra, remap compositor [-1,1]->[0,1], convention Y+ =
+haut vérifiée deux fois indépendamment) aux 3 monstres — idle+attaque
+(pas la séquence de mort Ranged, hors scope volontairement : 6 frames
+supplémentaires pour un bénéfice marginal sur une pose qui disparaît
+vite, pas demandé explicitement par le mandat).
+
+**Généralisation technique** : extrait la logique compositor de
+`bake_normal_cendre.py` dans un module partagé
+`experiments/blender_capture/normal_pass.py`
+(`render_normal_pass(scene, out_path)`), importé par les 3 pipelines
+existants (`rig_final_crawler.py`, `rig_final_brute.py`,
+`capture_pose.py`) via `sys.path.insert` sur le dossier du script
+(convention Blender `--python`) — pas de duplication de la logique
+caméra/éclairage, chaque script garde sa propre passe beauty, ajoute
+juste l'appel à la passe Normal juste après (même camera/pose en
+place, donc alignement garanti par construction).
+
+**Downscale 64×64 sans casser l'encodage vectoriel** : `quantize.py`
+fait de la pixel-art (HSV/palette/dithering/contours) — inadapté à un
+normal map qui encode des VECTEURS, pas des couleurs. Nouveau
+`quantize_normal.py` réutilise UNIQUEMENT `pixelate_block_center()`
+(déjà écrite dans `quantize.py`, échantillonnage du centre de bloc,
+pas une moyenne) pour garantir un alignement pixel-à-pixel exact entre
+`normal_texture` et `diffuse_texture` : les deux images source
+partagent la même résolution/cadrage caméra, donc les mêmes
+coordonnées de bloc tombent sur le même texel des deux côtés.
+
+**Vérification déterminisme avant tout downscale** : re-rendu Crawler
+idle/attaque et Brute idle/attaque avec les scripts existants (mêmes
+poses, mêmes seeds de bones) — idle bit-à-bit identique à l'image déjà
+committée (0 diff), attaque à ~0.5/255 de diff moyenne (bruit Cycles
+stochastique entre deux exécutions, aucun seed de sampling fixé —
+sans incidence après quantification 64px). Confirmé : pas besoin de
+retoucher les diffuse Crawler/Brute déjà committés, seule la passe
+Normal est nouvelle pour ces deux-là.
+
+**Ranged, cas différent** : la frame exacte utilisée pour l'attaque
+committée n'était pas enregistrée (pipeline `capture_pose.py` générique,
+`--anim_frame` choisi "par inspection visuelle" à l'époque, valeur non
+notée). Recherche visuelle sur 6 candidats (frames 20-120 sur les 140
+de l'action `Crouch_Pull_and_Throw`) → frame 80 identifiée comme la
+plus proche visuellement de l'image committée, mais diff mesurée
+~6% des pixels de silhouette (filaments fins très mobiles d'une frame
+à l'autre) — trop pour ignorer. Plutôt que d'apparier un ancien
+diffuse à un nouveau normal map (désalignement garanti), régénéré
+diffuse+normal ENSEMBLE à la frame 80, requantifié avec les réglages
+Ranged déjà établis (`--target_saturation=0.55 --dither_amount=0.0
+--value_band_min=0.35`), et remplacé `assets/processed/sprites/ranged/
+attaque.png` par ce nouveau rendu (silhouette différente en détail,
+même lisibilité/qualité, alignement garanti avec son normal map).
+Idle Ranged : action à une seule frame (7.2s fixe), aucune ambiguïté,
+diffuse inchangé, seule la passe Normal ajoutée.
+
+**Intégration Godot** : 6 `CanvasTexture` (`.tres`, un par pose ×
+monstre — `idle_canvas.tres`/`attaque_canvas.tres` dans chaque dossier
+`assets/processed/sprites/<monstre>/`), même format déjà validé Phase
+T.1.2 (`diffuse_texture`/`normal_texture`). Les 3 `SpriteFrames`
+(`crawler_frames.tres`/`brute_frames.tres`/`ranged_frames.tres`)
+pointent maintenant vers ces `CanvasTexture` au lieu des PNG bruts pour
+`idle`/`attaque` (la séquence `mort` de Ranged reste en PNG simple,
+hors scope). Aucune modification du code moteur (`enemy.gd`) : un
+`AnimatedSprite2D` affiche une `CanvasTexture` exactement comme un
+`Texture2D` simple.
+
+**Vérification réelle en moteur** (pas juste "ça charge") : scène de
+test `experiments/tool_evals/normal_test_assets/test_crawler_light_
+{left,right}.tscn` (même schéma que le test Cendre) — `PointLight2D`
+à gauche puis à droite du sprite Crawler idle. Capturé via
+`capture_scene.tscn --mode=scene`, image éclaircie ×4 pour inspection :
+confirmé visuellement que le côté du monstre FACE à la lumière
+s'éclaircit et que ça s'inverse correctement quand la lumière change
+de côté — le normal map module bien l'éclairage par pixel, pas un flat
+shading. Les `PointLight2D` déjà existants dans le jeu (torches,
+impacts) bénéficient automatiquement, aucun câblage supplémentaire
+nécessaire (même architecture `CanvasTexture` + `Light2D`, zéro
+shader custom).
+
+**Vérification régression** : `--import` headless propre,
+`scripts/run_gameplay_smoke_test.sh` 100% vert après le remplacement
+du diffuse Ranged attaque (0 régression — les checks combat ne
+dépendent pas du contenu pixel du sprite). Redeploy web inclus.
+
+**Statut Phase 2.2 : terminé.** Reste dans Phase 2 : post-render
+(bloom/outline/paletteRamp/directionalStreak) et primitives VFX 6→15.

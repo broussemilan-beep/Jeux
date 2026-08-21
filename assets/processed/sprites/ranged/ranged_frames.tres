@@ -1,7 +1,7 @@
 [gd_resource type="SpriteFrames" load_steps=9 format=3]
 
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/ranged/idle.png" id="1"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/ranged/attaque.png" id="2"]
+[ext_resource type="CanvasTexture" path="res://assets/processed/sprites/ranged/idle_canvas.tres" id="1"]
+[ext_resource type="CanvasTexture" path="res://assets/processed/sprites/ranged/attaque_canvas.tres" id="2"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/ranged/mort_0.png" id="3"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/ranged/mort_1.png" id="4"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/ranged/mort_2.png" id="5"]

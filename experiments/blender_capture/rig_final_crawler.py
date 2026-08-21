@@ -7,8 +7,12 @@ pas d'animation, juste une pose comme demande par le mandat)."""
 
 import bpy
 import sys
+import os
 import math
 import mathutils
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from normal_pass import render_normal_pass
 
 
 def parse_args():
@@ -27,6 +31,8 @@ glb_path = args["glb"]
 out_glb = args.get("out_glb", "/tmp/crawler_final.glb")
 out_idle_raw = args.get("out_idle_raw")
 out_attack_raw = args.get("out_attack_raw")
+out_idle_normal = args.get("out_idle_normal")
+out_attack_normal = args.get("out_attack_normal")
 cam_size = float(args.get("cam_size", "2.6"))
 target_z = float(args.get("target_z", "1.0878"))
 
@@ -138,6 +144,9 @@ def setup_render(out_path, res=512, samples=32):
 if out_idle_raw:
     setup_render(out_idle_raw)
     print("IDLE_RENDERED", out_idle_raw)
+    if out_idle_normal:
+        render_normal_pass(bpy.context.scene, out_idle_normal)
+        print("IDLE_NORMAL_RENDERED", out_idle_normal)
 
 # --- Attaque : pose tenue (pas d'animation), morsure basse + pattes ----
 # avant poussees en avant - lunge de predateur.
@@ -171,6 +180,9 @@ bpy.ops.object.mode_set(mode="OBJECT")
 if out_attack_raw:
     setup_render(out_attack_raw)
     print("ATTACK_RENDERED", out_attack_raw)
+    if out_attack_normal:
+        render_normal_pass(bpy.context.scene, out_attack_normal)
+        print("ATTACK_NORMAL_RENDERED", out_attack_normal)
 
 # --- Retour a la bind pose avant export (le rig livre = repos) ---------
 bpy.ops.object.mode_set(mode="POSE")

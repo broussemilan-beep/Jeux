@@ -4,8 +4,12 @@ aerien, pose tenue) a l'echelle commune (cam_size=2.6, target_z=0.892)."""
 
 import bpy
 import sys
+import os
 import math
 import mathutils
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from normal_pass import render_normal_pass
 
 
 def compute_bbox(objects, depsgraph):
@@ -42,6 +46,8 @@ glb_path = args["glb"]
 out_glb = args.get("out_glb", "/tmp/brute_final.glb")
 out_idle_raw = args.get("out_idle_raw")
 out_attack_raw = args.get("out_attack_raw")
+out_idle_normal = args.get("out_idle_normal")
+out_attack_normal = args.get("out_attack_normal")
 cam_size = float(args.get("cam_size", "2.6"))
 target_z = float(args.get("target_z", "0.892"))
 
@@ -164,6 +170,9 @@ target_z = computed_target_z
 if out_idle_raw:
     setup_render(out_idle_raw, target_z)
     print("IDLE_RENDERED", out_idle_raw)
+    if out_idle_normal:
+        render_normal_pass(bpy.context.scene, out_idle_normal)
+        print("IDLE_NORMAL_RENDERED", out_idle_normal)
 
 # --- Attaque : bras droit leve (smash aerien), bras gauche stabilise ---
 bpy.ops.object.select_all(action="DESELECT")
@@ -192,6 +201,9 @@ bpy.ops.object.mode_set(mode="OBJECT")
 if out_attack_raw:
     setup_render(out_attack_raw, target_z)
     print("ATTACK_RENDERED", out_attack_raw)
+    if out_attack_normal:
+        render_normal_pass(bpy.context.scene, out_attack_normal)
+        print("ATTACK_NORMAL_RENDERED", out_attack_normal)
 
 bpy.ops.object.mode_set(mode="POSE")
 for b in arm_obj.pose.bones:
