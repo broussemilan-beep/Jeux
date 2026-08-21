@@ -4781,3 +4781,72 @@ tout au long de cette session) reste en place sans changement.
 
 Phase T.2 (Freesound, Tripo3D) reste bloquée en attente des clés API de
 Milan — non bloquant pour la suite (Phase 1 enchaîne directement).
+
+## 2026-08-21 — MANDAT SUITE v2 : Phase 1.1 (armature définitive Crawler + Brute)
+
+Suite du rig manuel validé (Crawler puis Brute, cf. entrées précédentes
+2/2) : construction du pipeline **définitif** par monstre
+(`experiments/blender_capture/rig_final_crawler.py` /
+`rig_final_brute.py`), sur les meshes déjà remeshés et payés
+(`crawler_remeshed.glb`, `brute_remeshed.glb`). Portée volontairement
+réduite conformément au mandat : **idle (bind pose) + UNE pose
+d'attaque tenue en keyframes manuelles** — pas de cycle de marche
+animé (trop coûteux pour le prototype ; le déplacement sera géré par
+glissement de la pose idle + léger bob procédural via
+`AnimationComposer`, déjà prêt).
+
+**Crawler** : armature 13 os identique au test validé, nettoyage
+mesh (`remove_doubles` + `normals_make_consistent`) systématisé avant
+`parent_set(ARMATURE_AUTO)`. Pose d'attaque = morsure basse + pattes
+avant poussées en avant (lunge de prédateur) : `neck` -35°, `head`
+-25°, `front_{L,R}_upper` +30°, `front_{L,R}_lower` -15°, `pelvis`
+-10°. Rendu idle+attaque à l'échelle commune (`cam_size=2.6`,
+`target_z=1.0878`) directement propre, sans recadrage — aucun
+problème rencontré. Quantifié (`--target_saturation=0.55`, réglages
+par défaut sinon, identique à Cendre) → `crawler_{idle,attack}_64.png`.
+Export GLB rigged final : `crawler_final_rigged.glb`.
+
+**Brute** : armature 10 os identique au test validé. Pose d'attaque =
+smash aérien, bras droit levé (`arm_R_upper` -100°/15°/-15°,
+`arm_R_lower` +50°, `arm_L_upper` +10°/0/+10° pour stabiliser,
+`chest` -15°/0/+8°).
+
+Bug rencontré et résolu : idle ET attaque montraient le haut de la
+tête/des pics d'épaule **coupé en haut du cadre**, avec les mêmes
+paramètres caméra (`cam_size=2.6`, `target_z=0.892`) validés plus tôt
+dans la session sur ce même mesh. Deux hypothèses écartées (la pose
+d'attaque pousserait la géométrie hors cadre ; le centrage X/Y caméra
+hardcodé à (0,0) serait faux — le centre X/Y réel calculé était déjà
+quasi (0,0), donc pas la cause). Cause réelle trouvée en imprimant
+explicitement `mins.z`/`maxs.z` de la bbox évaluée (pas seulement leur
+milieu) : `mins.z ≈ 0.0` (pas `-0.2` comme supposé lors du calcul
+initial de `target_z=0.892`), `maxs.z ≈ 2.2` (sommet du crâne, cohérent
+avec la calibration `inspect_mesh.py`). La valeur `target_z=0.892`
+avait été dérivée d'une hypothèse `mins.z=-0.2` qui ne correspond pas
+au mesh réellement utilisé dans ce script — d'où un cadrage trop bas
+de 0.2 unité, suffisant pour couper les pics du haut à `cam_size=2.6`.
+
+Fix : `rig_final_brute.py` calcule maintenant `target_z` directement
+depuis la bbox réelle de la bind pose (`mins.z + cam_size*(0.5 -
+bottom_margin_frac)`, `bottom_margin_frac=0.08`, formule déjà établie
+plus tôt dans la session) au lieu de faire confiance à une valeur
+`--target_z` fournie en ligne de commande supposant un `mins.z` qui
+s'est révélé faux pour ce mesh. `target_z` recalculé : `1.092` (au
+lieu de `0.892`), réutilisé identique pour les deux rendus (idle +
+attaque) afin de garder une échelle cohérente entre les deux poses.
+Après ce fix : idle et attaque rendent proprement, silhouette complète
+visible, aucun recadrage. Quantifié aux mêmes réglages que Crawler
+(`--target_saturation=0.55`) → `brute_{idle,attack}_64.png`. Export
+GLB rigged final : `brute_final_rigged.glb`.
+
+**Leçon pour la suite** : ne jamais réutiliser une valeur `target_z`
+figée d'une session précédente sans revérifier `mins.z`/`maxs.z` sur
+le mesh effectivement chargé par le script en cours — un script qui
+recharge un GLB doit calculer sa propre bbox plutôt que d'hériter
+d'une constante calibrée ailleurs, même si le fichier source semble
+identique.
+
+**Statut Phase 1.1** : Crawler + Brute ont maintenant leur armature
+définitive, idle + attaque rendus/quantifiés/exportés. Reste avant
+intégration : mort Ranged (Phase 1.2, `meshy_animate`), puis
+intégration réelle des 3 monstres dans les scènes de jeu (Phase 1.3).
