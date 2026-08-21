@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3]
+[gd_scene load_steps=25 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/gameplay/player.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/gameplay/enemy_crawler.tscn" id="2"]
@@ -24,6 +24,7 @@
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/world/prop_debris.png" id="22"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/world/bg_ruin_arch.png" id="23"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/world/bg_pillar_silhouette.png" id="24"]
+[ext_resource type="Shader" path="res://src/vfx/shaders/post_render.gdshader" id="25"]
 
 [sub_resource type="ShaderMaterial" id="1"]
 shader = ExtResource("9")
@@ -32,6 +33,14 @@ shader_parameter/inner_radius = 0.35
 shader_parameter/outer_radius = 0.9
 shader_parameter/vignette_color = Vector3(0, 0, 0)
 shader_parameter/aspect_ratio = 1.7778
+
+[sub_resource type="ShaderMaterial" id="10"]
+shader = ExtResource("25")
+shader_parameter/bloom_threshold = 0.72
+shader_parameter/bloom_intensity = 0.6
+shader_parameter/ramp_steps = 6.0
+shader_parameter/value_band_min = 0.05
+shader_parameter/value_band_max = 0.98
 
 [sub_resource type="RectangleShape2D" id="2"]
 size = Vector2(10, 300)
@@ -325,6 +334,16 @@ shape = SubResource("5")
 [node name="Visual" type="Polygon2D" parent="Exit"]
 polygon = PackedVector2Array(-16, -40, 16, -40, 16, 40, -16, 40)
 color = Color(0.3, 0.85, 0.5, 0.85)
+
+[node name="PostRender" type="CanvasLayer" parent="."]
+
+[node name="Overlay" type="ColorRect" parent="PostRender"]
+material = SubResource("10")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(1, 1, 1, 1)
 
 [node name="Vignette" type="CanvasLayer" parent="."]
 

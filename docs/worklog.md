@@ -5157,3 +5157,99 @@ dépendent pas du contenu pixel du sprite). Redeploy web inclus.
 
 **Statut Phase 2.2 : terminé.** Reste dans Phase 2 : post-render
 (bloom/outline/paletteRamp/directionalStreak) et primitives VFX 6→15.
+
+## 2026-08-21 — MANDAT SUITE v2 : Phase 2.3 (post-render stack) + Phase 2.4 (déjà complète)
+
+**Phase 2.4 vérifiée sans action** : avant d'écrire quoi que ce soit,
+vérifié l'état réel des primitives VFX (`ls src/vfx/primitives/`,
+`wc -l`, grep dans `vfx_director.gd`) plutôt que de faire confiance à
+la mention du mandat — le passage 6→15 primitives était déjà
+intégralement fait par une session antérieure. Aucune régénération,
+aucun doublon de travail.
+
+**Phase 2.3, périmètre** : `docs/ARCHITECTURE_VFX_v3.md` §10.1 liste
+4 effets — emissiveBloom, outlineSelective, paletteRamp,
+directionalStreak. Deux d'entre eux (bloom, paletteRamp) sont des
+passes GLOBALES (toute la scène) ; les deux autres (outline, streak)
+sont des effets PAR-SPRITE (un seul personnage à la fois) — donc deux
+familles de shaders, pas quatre fichiers isolés.
+
+**`post_render.gdshader`** (nouveau, global) : combine emissiveBloom
+(4-tap bright-pass sur `SCREEN_TEXTURE`, seuil 0.72, gain 0.6 — un
+"poor man's bloom" sans flou gaussien multi-passe, suffisant à cette
+échelle 640×360) et paletteRamp (conversion HSV, clamp de la Value
+dans `[value_band_min, value_band_max]`, posterize à `ramp_steps`
+paliers) en une seule passe `hint_screen_texture`. Ajouté comme
+nouveau `CanvasLayer`/`ColorRect` "PostRender" dans les 3 scènes de
+jeu réelles (`gate_premiere.tscn`, `test_arena.tscn`, `outpost.tscn`),
+inséré AVANT le `CanvasLayer` "Vignette" existant dans l'arbre (donc
+monde → PostRender → Vignette → HUD à l'écran) — même convention que
+Vignette : un `ColorRect`+`ShaderMaterial` dupliqué par scène, pas un
+autoload centralisé (le projet n'a jamais utilisé ce pattern pour ses
+effets plein écran).
+
+**`outline_selective.gdshader`** (nouveau, par-sprite) : détection de
+bord classique — un texel transparent (`alpha <= 0.5`) dont un voisin
+immédiat est opaque devient `outline_color`. Posé comme
+`ShaderMaterial` sur `Enemy._visual` (`AnimatedSprite2D`) dans
+`enemy.gd::_ready()`, couleur rouge `(0.85, 0.2, 0.18)` — "ennemi" au
+sens §10.1. Pas touché aux ennemis en `Polygon2D` (Gueule Vide,
+placeholders) : leur identification passe déjà par
+`_base_visual_color`, un outline shader sur un polygone plein serait
+redondant.
+
+**`player_fx.gdshader`** (nouveau, par-sprite) : un `CanvasItem` n'a
+qu'UN SEUL slot `material` — impossible de poser outline ET streak
+comme deux matériaux empilés sur le même `AnimatedSprite2D` du
+joueur. Plutôt que d'inventer un mécanisme de composition de
+matériaux (overkill pour 2 effets), un seul shader combine les deux :
+outline bleu `(0.3, 0.55, 1.0)` toujours actif (allié), streak
+directionnel piloté par deux nouveaux uniforms
+(`streak_direction`/`streak_amount`) mis à jour dans
+`player.gd::_advance_dash()` pendant la phase MOVE du dash
+(`streak_amount = 0.8`, direction = `_dash_direction`) puis remis à
+`0.0` en fin de phase et dans `_end_dash()` par sécurité — jamais
+permanent, seulement pendant le déplacement du dash.
+
+**Deux bugs de compilation Godot Shading Language rencontrés et
+corrigés** (aucun des deux n'est du GLSL standard, spécifiques au
+compilateur shader de Godot) :
+
+1. `return` interdit dans `fragment()` lui-même (mais autorisé dans
+   une fonction annexe normale) : `SHADER ERROR: Using 'return' in
+   the 'fragment' processor function is incorrect.` — corrigé dans
+   `outline_selective.gdshader` et `player_fx.gdshader` en
+   restructurant l'early-exit en `if` imbriqué.
+2. Plus sournois : les variables magiques (`TEXTURE`, `UV`, `COLOR`)
+   ne sont fiables que DANS le corps de `fragment()` lui-même — une
+   fonction annexe qui lit `TEXTURE` directement échoue à la
+   compilation (`Unknown identifier in expression: 'TEXTURE'`), et la
+   passer en paramètre (`sampler2D`) compile mais déclenche un
+   avertissement interne du compilateur RD
+   (`"!actions.custom_samplers.has(...)"`) — sans doute non fiable
+   selon les cas. `player_fx.gdshader` avait été écrit avec une
+   fonction annexe `sample_streaked(vec2 uv)` lisant `TEXTURE` en
+   interne : le shader échouait silencieusement à la compilation
+   (`--import` headless ne le signalait qu'au chargement runtime, pas
+   à l'import), le joueur se retrouvait donc SANS AUCUN matériau
+   actif — testé et vérifié : capture `/tmp/arena_postrender.png`
+   montrait les 3 ennemis avec leur liseré rouge net, mais aucun
+   liseré bleu autour du joueur. Corrigé en supprimant la fonction
+   annexe et en écrivant le sampling du streak directement dans le
+   corps de `fragment()`.
+
+**Vérification** : après le fix, `--import` headless propre (0 erreur
+shader), `scripts/run_gameplay_smoke_test.sh` 100% vert. Capture
+`test_arena.tscn` en jeu réel, recadrée ×6 sur le joueur puis scan de
+pixels (`b > r+15 and b > g+15` dans la zone du joueur) : 465 pixels
+bleutés détectés formant un liseré continu autour de la silhouette —
+confirmé visuellement, le joueur porte bien son contour bleu, les 3
+monstres gardent leur contour rouge, et le bloom/paletteRamp global
+ne dégrade pas la lisibilité de la scène (HUD, arène, props toujours
+nets).
+
+**Statut Phase 2.3 : terminé.** Phase 2 dans son ensemble (2.1 son,
+2.2 normal maps, 2.3 post-render, 2.4 primitives) est maintenant
+complète. Prochaine étape : Phase 3 (usine à compétences — Poing
+Belluaire, Poing Tellurique, archétypes de cast, preuve d'invocation
+mobile).

@@ -91,10 +91,22 @@ signal hit(amount: float)
 @onready var _visual: CanvasItem = get_node("Visual") if has_node("Visual") else get_node("Placeholder")
 
 
+## Phase 2.3 (MANDAT SUITE v2) : outlineSelective (ennemi = rouge), sur les
+## vraies scènes d'archétype (AnimatedSprite2D) uniquement — le mannequin
+## générique Polygon2D n'a pas de canal alpha à contourer de la même façon,
+## et n'a jamais eu besoin de lisibilité supplémentaire (smoke tests).
+const OutlineShader := preload("res://src/vfx/shaders/outline_selective.gdshader")
+
+
 func _ready() -> void:
 	add_to_group("enemies")
 	if _visual is Polygon2D:
 		_base_visual_color = (_visual as Polygon2D).color
+	elif _visual is AnimatedSprite2D:
+		var mat := ShaderMaterial.new()
+		mat.shader = OutlineShader
+		mat.set_shader_parameter("outline_color", Color(0.85, 0.2, 0.18, 1.0))
+		_visual.material = mat
 
 
 func _physics_process(_delta: float) -> void:

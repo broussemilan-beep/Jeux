@@ -255,6 +255,14 @@ var _hurt_recoil_velocity: Vector2 = Vector2.ZERO
 @onready var _sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var _camera: Camera2D = $Camera2D
 
+## Phase 2.3 (MANDAT SUITE v2) : outlineSelective (allié = bleu, toujours actif)
+## + directionalStreak (dash seulement) fusionnés dans un seul shader — un
+## CanvasItem n'a qu'un slot `material`, HitResponse.flash_sprite() sauvegarde/
+## restaure déjà ce matériau générique (Object quelconque) sans rien savoir de
+## son contenu, donc aucune interaction spéciale à gérer ici.
+const PlayerFxShader := preload("res://src/vfx/shaders/player_fx.gdshader")
+var _fx_material: ShaderMaterial
+
 
 func _ready() -> void:
 	add_to_group("player")
@@ -262,6 +270,9 @@ func _ready() -> void:
 		stats = get_node("/root/RunState").player_stats
 	_sprite.animation_finished.connect(_on_sprite_animation_finished)
 	_animation_composer_data = _load_animation_composer_data()
+	_fx_material = ShaderMaterial.new()
+	_fx_material.shader = PlayerFxShader
+	_sprite.material = _fx_material
 
 
 func _load_animation_composer_data() -> Dictionary:
@@ -863,10 +874,16 @@ func _advance_dash() -> void:
 			var progress_after: float = _ease_out_quad(float(_dash_tick) / DASH_MOVE_TICKS)
 			var step_px: float = (progress_after - progress_before) * DASH_DISTANCE_PX
 			velocity = _dash_direction * (step_px * Engine.physics_ticks_per_second)
+			# Phase 2.3 : directionalStreak actif UNIQUEMENT pendant MOVE (le
+			# joueur est réellement rapide ici), jamais pendant ANTICIPATION/
+			# RECOVERY — "jamais permanent" (§10.2).
+			_fx_material.set_shader_parameter("streak_direction", _dash_direction)
+			_fx_material.set_shader_parameter("streak_amount", 0.8)
 			if _dash_tick >= DASH_MOVE_TICKS:
 				_dash_phase = DashPhase.RECOVERY
 				_dash_tick = 0
 				_dash_recovery_velocity = _dash_direction * DASH_RECOVERY_INITIAL_SPEED_PX_S
+				_fx_material.set_shader_parameter("streak_amount", 0.0)
 		DashPhase.RECOVERY:
 			velocity = _dash_recovery_velocity
 			_dash_recovery_velocity = _dash_recovery_velocity.move_toward(
@@ -891,6 +908,7 @@ func _end_dash() -> void:
 	# Même garde-fou que _end_combo() ci-dessus.
 	_sprite.scale = Vector2.ONE
 	_sprite.rotation_degrees = 0.0
+	_fx_material.set_shader_parameter("streak_amount", 0.0)
 
 
 ## Timeline déclarative de l'esquive — même construction en 3 phases que

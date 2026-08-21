@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/gameplay/player.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/gameplay/enemy_crawler.tscn" id="2"]
@@ -12,6 +12,7 @@
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/world/prop_debris.png" id="10"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="11"]
 [ext_resource type="PackedScene" path="res://scenes/gameplay/boss_gate_maw.tscn" id="12"]
+[ext_resource type="Shader" path="res://src/vfx/shaders/post_render.gdshader" id="13"]
 
 [sub_resource type="ShaderMaterial" id="1"]
 shader = ExtResource("8")
@@ -20,6 +21,14 @@ shader_parameter/inner_radius = 0.35
 shader_parameter/outer_radius = 0.9
 shader_parameter/vignette_color = Vector3(0, 0, 0)
 shader_parameter/aspect_ratio = 1.7778
+
+[sub_resource type="ShaderMaterial" id="2"]
+shader = ExtResource("13")
+shader_parameter/bloom_threshold = 0.72
+shader_parameter/bloom_intensity = 0.6
+shader_parameter/ramp_steps = 6.0
+shader_parameter/value_band_min = 0.05
+shader_parameter/value_band_max = 0.98
 
 [node name="TestArena" type="Node2D"]
 
@@ -61,6 +70,16 @@ position = Vector2(160, 420)
 
 [node name="BossGateMaw" parent="." instance=ExtResource("12")]
 position = Vector2(700, 700)
+
+[node name="PostRender" type="CanvasLayer" parent="."]
+
+[node name="Overlay" type="ColorRect" parent="PostRender"]
+material = SubResource("2")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(1, 1, 1, 1)
 
 [node name="Vignette" type="CanvasLayer" parent="."]
 
