@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Texture2D" path="res://experiments/tool_evals/texturepacker_test/0_atlastex.tres" id="1"]
+
+[node name="AtlasTest" type="Node2D"]
+
+[node name="Backdrop" type="ColorRect" parent="."]
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 100.0
+offset_bottom = 100.0
+color = Color(0.5, 0.5, 0.5, 1)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(40, 40)
+centered = false
+texture = ExtResource("1")

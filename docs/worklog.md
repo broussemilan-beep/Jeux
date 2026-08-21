@@ -4667,3 +4667,35 @@ lueur du joueur) en profitent automatiquement.
 (scènes de test, textures synthétiques et rendues), rien touché dans
 `scenes/gameplay/` ni dans les sprites de production de Cendre.
 Passage à T.1.3 (PyTexturePacker).
+
+### T.1.3 — PyTexturePacker : RETENU (glue Godot nécessaire)
+
+Aujourd'hui, chaque frame de sprite (`assets/processed/sprites/cendre/
+idle_south/0.png` etc.) est un PNG individuel — aucun atlas, packing
+absent. Testé `PyTexturePacker` (MaxRects) sur les 4 frames
+`idle_south` de Cendre : `experiments/tool_evals/texturepacker_test/`.
+
+Constat : le format de sortie par défaut est un `.plist` (convention
+Cocos2d) — pas nativement lisible par Godot. Mais `atlas_format` accepte
+aussi une **fonction callable** `(data_dict, file_path) -> str`, ce qui
+permet de générer directement des ressources Godot natives sans étape
+de parsing intermédiaire. Preuve : `experiments/tool_evals/
+pack_to_godot_atlastexture.py` — callable qui émet un `AtlasTexture`
+`.tres` par frame (`atlas = ExtResource(atlas.png)`, `region =
+Rect2(x,y,w,h)`), pointant vers UN SEUL PNG packé au lieu de 4 fichiers
+séparés. Vérifié en conditions réelles : `.tres` généré chargé dans une
+scène Godot isolée (`test_atlastexture.tscn`), capturé via le pipeline
+xvfb+vulkan existant — la frame 0 s'affiche correctement, découpée au
+bon endroit dans l'atlas packé (`capture_atlastexture.png`). Alpha
+préservé (vérifié numériquement, fond RGBA(0,0,0,0)).
+
+**Conclusion : outil retenu**, avec un vrai gain (réduction du nombre
+de fichiers texture / bind textures à l'exécution — actuellement une
+texture séparée par frame pour tout le roster), MAIS l'intégration
+complète (re-packer TOUTES les animations de tous les personnages/
+monstres et regénérer les `SpriteFrames` correspondants pour pointer
+vers des `AtlasTexture` au lieu de fichiers séparés) est un chantier à
+part entière, pas fait ici — hors du périmètre du test isolé demandé
+("teste sur UN SEUL personnage"). À planifier si Milan confirme
+l'intérêt vu l'ampleur du roster déjà produit.
+Passage à T.1.4 (pyfxr).
