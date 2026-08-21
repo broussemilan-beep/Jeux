@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" path="res://scenes/gameplay/player.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/ui/touch_controls.tscn" id="2"]
-[ext_resource type="TileSet" path="res://assets/processed/sprites/world/floor_tileset.tres" id="3"]
+[ext_resource type="TileSet" path="res://assets/processed/sprites/world/floor_terrain.tres" id="3"]
 [ext_resource type="Script" path="res://src/world/arena_floor.gd" id="4"]
 [ext_resource type="Shader" path="res://src/vfx/shaders/vignette.gdshader" id="5"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="6"]
@@ -11,6 +11,8 @@
 [ext_resource type="Shader" path="res://src/vfx/shaders/canvas_modulate_compensate.gdshader" id="9"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/world/prop_brazier.png" id="10"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/world/prop_pillar.png" id="11"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/world/bg_ruin_arch.png" id="12"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/world/bg_pillar_silhouette.png" id="13"]
 
 [sub_resource type="ShaderMaterial" id="1"]
 shader = ExtResource("5")
@@ -56,6 +58,24 @@ offset_right = 1020.0
 offset_bottom = 700.0
 color = Color(0.3, 0.24, 0.19, 1)
 
+[node name="FarBackground" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.55, 1)
+
+[node name="BgPillar1" type="Sprite2D" parent="FarBackground"]
+position = Vector2(-50, 60)
+scale = Vector2(0.38, 0.38)
+texture = ExtResource("13")
+
+[node name="BgArch1" type="Sprite2D" parent="FarBackground"]
+position = Vector2(450, 55)
+scale = Vector2(0.38, 0.38)
+texture = ExtResource("12")
+
+[node name="BgPillar2" type="Sprite2D" parent="FarBackground"]
+position = Vector2(950, 60)
+scale = Vector2(-0.38, 0.38)
+texture = ExtResource("13")
+
 [node name="ArenaFloor" type="TileMapLayer" parent="."]
 tile_set = ExtResource("3")
 script = ExtResource("4")
@@ -68,6 +88,15 @@ texture = ExtResource("11")
 
 [node name="PropBrazier1" type="Sprite2D" parent="."]
 position = Vector2(650, 260)
+texture = ExtResource("10")
+
+[node name="PropPillar2" type="Sprite2D" parent="."]
+position = Vector2(240, 260)
+scale = Vector2(-1, 1)
+texture = ExtResource("11")
+
+[node name="PropBrazier2" type="Sprite2D" parent="."]
+position = Vector2(550, 400)
 texture = ExtResource("10")
 
 [node name="Player" parent="." instance=ExtResource("1")]

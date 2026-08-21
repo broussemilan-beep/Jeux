@@ -88,8 +88,68 @@ func _ready() -> void:
 		await _run_power_capture(args)
 	elif mode == "player_action":
 		await _run_player_action_capture(args)
+	elif mode == "scene":
+		await _run_scene_capture(args)
 	else:
 		await _run_primitive_capture(args)
+
+
+## --mode=scene (Chantier B, vérification décor) : instancie une scène
+## RÉELLE quelconque (res://scenes/...) via une Camera2D positionnée à la
+## demande, laisse tourner quelques ticks si besoin, capture — pour
+## vérifier un décor (TileMapLayer, props) sans dépendre d'un mode dédié
+## par écran. Pas un remplacement des modes existants (character/power/
+## player_action restent la référence pour le personnage/les pouvoirs) :
+## seulement pour des scènes qui n'ont pas encore de mode spécifique.
+##   --scene_path=res://scenes/gameplay/gate_premiere.tscn
+##   --cam_x=640 --cam_y=300 --cam_zoom=1.0
+##   --wait_ticks=1                 ticks physiques avant capture (def. 1)
+##   --background=neutral|loaded, --scale=1|2|4  mêmes conventions qu'ailleurs.
+##   --out=/chemin/absolu/sortie.png
+func _run_scene_capture(args: Dictionary) -> void:
+	var scene_path: String = args.get("scene_path", "")
+	var out_path: String = args.get("out", "")
+	var cam_x: float = float(args.get("cam_x", "320"))
+	var cam_y: float = float(args.get("cam_y", "180"))
+	var cam_zoom: float = float(args.get("cam_zoom", "1.0"))
+	var wait_ticks: int = int(args.get("wait_ticks", "1"))
+	var scale: int = int(args.get("scale", "1"))
+	if scene_path == "" or out_path == "":
+		push_error("capture_scene[scene]: --scene_path et --out sont requis.")
+		get_tree().quit(1)
+		return
+	if not ResourceLoader.exists(scene_path):
+		push_error("capture_scene[scene]: scène introuvable '%s'." % scene_path)
+		get_tree().quit(1)
+		return
+
+	var packed: PackedScene = load(scene_path)
+	var instance: Node = packed.instantiate()
+	add_child(instance)
+
+	var cam := Camera2D.new()
+	cam.position = Vector2(cam_x, cam_y)
+	cam.zoom = Vector2(cam_zoom, cam_zoom)
+	add_child(cam)
+	cam.make_current()
+
+	for i in range(wait_ticks):
+		await get_tree().physics_frame
+
+	await _freeze_and_wait_render()
+
+	var img: Image = get_viewport().get_texture().get_image()
+	if scale > 1:
+		img.resize(img.get_width() * scale, img.get_height() * scale, Image.INTERPOLATE_NEAREST)
+	var err := _save_png(img, out_path)
+
+	var report := {
+		"save_err": err, "out_path": out_path, "size": [img.get_width(), img.get_height()],
+		"mode": "scene", "scene_path": scene_path,
+		"cam": [cam_x, cam_y, cam_zoom], "wait_ticks": wait_ticks, "scale": scale,
+	}
+	print("CAPTURE_RESULT ", JSON.stringify(report))
+	get_tree().quit(0 if err == OK else 1)
 
 
 func _run_player_action_capture(args: Dictionary) -> void:

@@ -4221,3 +4221,100 @@ jeu ; construire les `SpriteFrames`/`AnimatedSprite2D` et câbler dans
 `Polygon2D` toujours en place) ; vérifier `HitResponse` + convention
 rouge=danger sur les nouveaux sprites ; smoke test + redeploy si Phase 3
 est enfin complétée derrière ce travail.
+
+**Mise à jour A1** : le test Compatibility à délai long (45 min, lancé en
+tâche de fond) est resté sans conclusion nette même après ~30 minutes de
+CPU soutenu (250%+, aucune sortie) — soit le temps réel nécessaire dépasse
+encore ça sur ce matériel, soit c'est un authentique gel même en
+Compatibility. Non déterminant, mais rendu **non bloquant** par la
+solution Blender (A2 ci-dessus) : je n'ai pas attendu la fin de ce test
+pour avancer, conformément au principe "ne pas boucler indéfiniment".
+
+### CHANTIER B — Décor (retour Milan, exploite ce qui est déjà payé)
+
+**B1 — Vrai TerrainSet à coins (16 tuiles Wang), au lieu des 2 tuiles
+pures.** Cause directe du sol plat/répétitif signalée par Milan.
+Métadonnées + image du tileset PixelLab déjà généré en Phase 2
+(`tileset_id=1ef12d88...`) re-téléchargées (`get_topdown_tileset` +
+téléchargement metadata/image, sauvegardées dans
+`assets/source/pixellab/world/wang_gate/`). Nouvel outil
+`tools/pixellab_tileset_converter.gd` (adapté de la doc MCP PixelLab
+`pixellab://docs/godot/wang-tilesets`, tourne en `godot4 --headless -s`,
+zéro éditeur requis) : parse les 16 tuiles + leurs coins NW/NE/SW/SE,
+génère un atlas (`floor_terrain_atlas.png`) et un vrai `TileSet` avec
+`terrain_set_0` en mode coin (`floor_terrain.tres`). `arena_floor.gd`
+réécrit pour peindre via `set_cells_terrain_connect` (tout le sol en
+terrain "grès chaud" dominant, puis des îlots de "pierre sombre" par
+blocs de 4x3 tuiles, motif déterministe par hash de bloc — pas de case
+isolée qui produirait un bruit visuel chargé). `gate_premiere.tscn` et
+`outpost.tscn` repointés vers `floor_terrain.tres`.
+
+**Vérifié par capture 2D** (pas à l'aveugle) : nouveau mode
+`--mode=scene` ajouté à `tools/capture_scene.gd` (charge une scène
+quelconque + Camera2D positionnable — réutilise la même discipline
+gel+3×process_frame que les modes existants, pas une nouvelle scène de
+capture dupliquée). Résultat : transitions Wang connectées avec bords
+irréguliers naturels, net progrès visuel par rapport au damier plat de
+la Phase 2 — capture envoyée à Milan pour référence
+(`floor_terrain_check.png`).
+
+**B2 — Couche d'arrière-plan lointain.** 2 nouveaux props PixelLab
+(`create_map_object`, vue "side", detail bas/flat shading pour rester
+silhouette) : arche de ruine antique (`bg_ruin_arch.png`, halo chaud
+visible à travers) et pilier élancé isolé (`bg_pillar_silhouette.png`).
+**Détour d'implémentation** : câblé d'abord via `Parallax2D` (scroll
+plus lent que la caméra = profondeur) avec les sprites redimensionnés
+trop grands/mal positionnés — capture de vérification montrant presque
+rien de visible. Diagnostic : pas un bug de Parallax2D lui-même (retiré
+pour tester, même résultat identique) mais une simple erreur de cadrage
+— la tuile de sol elle-même a une silhouette crénelée baked qui remplit
+~80% de la hauteur d'écran, ne laissant qu'une bande d'environ 76px en
+haut pour l'arrière-plan. Corrigé : sprites réduits (`scale=0.38`) et
+repositionnés pour tenir dans cette bande, `Parallax2D` finalement
+simplifié en `Node2D` simple (positions monde 1:1, pas de vitesse
+différentielle) — priorité donnée à un résultat qui marche plutôt qu'à
+un effet de parallaxe non vérifiable de façon fiable dans le temps
+disponible. Vérifié par capture à la position de caméra où une arche
+tombe dans le cadre (`b23_arch_check.png`) : silhouette bien visible
+au-dessus du sol, effet de profondeur net (référence Wizard of Legend/
+Skul). 3 arches + 3 piliers dans `gate_premiere.tscn` (salle longue,
+120 tuiles), 1 arche + 2 piliers dans `outpost.tscn` (salle courte,
+30 tuiles) — également vérifié par capture.
+
+**B3 — Densification des props.** `gate_premiere.tscn` : 6→13 props
+(ajout de `prop_debris.png`, déjà existant mais jamais câblé dans cette
+scène, pour varier sans regénérer) répartis pour combler les grands
+écarts entre les props Phase 2 (jusqu'à 600px vides). `outpost.tscn` :
+2→4 props. Aucune nouvelle génération PixelLab nécessaire pour B3.
+
+**Régression** : `scripts/run_gameplay_smoke_test.sh` — 60/60 après B1
+ET après B2/B3 (deux passages distincts, aucune casse introduite par
+étape).
+
+**Coût PixelLab réel Chantier B** : 2 générations (`create_map_object`
+×2 pour l'arrière-plan) — B1 et B3 n'ont consommé aucune génération
+(réutilisation de données/assets déjà payés). Total session PixelLab :
+4 (Phase 2) + 2 (Chantier B) = 6 générations, sur 1653 disponibles au
+départ — largement sous plafond.
+
+**Build web exporté et redéployé** (`godot4 --headless --rendering-driver
+vulkan --export-release "Web" docs/index.html`, sortie dans
+`docs/index.*`).
+
+**Bug préexistant trouvé et corrigé au passage** : le premier export a
+produit un `docs/index.pck` de 110 Mo (rejeté par GitHub, limite 100 Mo)
+— `experiments/monsters_nuit/` (GLB Meshy, 127 Mo) n'était protégé que
+par `.gitignore` (exclu du dépôt git) mais PAS d'un `.gdignore` (exclu du
+scan de ressources Godot), donc bundlé tel quel dans le PCK. Comparaison
+avec l'historique (`git show <commit>:docs/index.pck | wc -c`) : le
+`.pck` est passé de 3.8 Mo à 39.3 Mo entre les commits G et "MANDAT NUIT
+Phase 1" — exactement quand `experiments/bakeoff_voie_c/meshy_output/`
+(GLB du bake-off Voie C) a commencé à exister sur le disque. **Tous les
+builds web depuis plusieurs phases embarquaient donc déjà, sans le
+savoir, les GLB expérimentaux jamais destinés au jeu livré.** Corrigé en
+ajoutant `experiments/bakeoff_voie_c/.gdignore` et
+`experiments/monsters_nuit/.gdignore` (fichiers vides, même convention
+que `captures/.gdignore`) — nouveau `.pck` : 4.2 Mo, cohérent avec la
+taille d'avant ce bug (3.8 Mo + le nouvel atlas de terrain + les 2 props
+d'arrière-plan). Effet de bord positif du Chantier B, pas juste un
+correctif de blocage de push.
