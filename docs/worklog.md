@@ -4699,3 +4699,85 @@ part entière, pas fait ici — hors du périmètre du test isolé demandé
 ("teste sur UN SEUL personnage"). À planifier si Milan confirme
 l'intérêt vu l'ampleur du roster déjà produit.
 Passage à T.1.4 (pyfxr).
+
+### T.1.4 — pyfxr : RETENU (installation propre, pas besoin du fallback)
+
+L'inquiétude du mandat (wheels précompilées obsolètes face à un Python
+récent) ne s'est pas confirmée : `pip install pyfxr` s'installe sans
+erreur sur Python 3.11.15 (extension native `_pyfxr.SoundBuffer`, wheel
+cp311 disponible). Test : `pyfxr.hurt().build()` → `SoundBuffer`
+(mono, 44100 Hz, ~0.04s), exporté en `.wav`
+(`experiments/tool_evals/pyfxr_impact_test.wav`) et vérifié
+numériquement non silencieux (RMS ~21000/32767, signal réel, pas du
+bruit résiduel).
+
+Présets prêts à l'emploi couvrant exactement les familles demandées en
+Phase 2.1 : `hurt` (impact), `explosion` (impact lourd), `jump`,
+`laser`/`pluck` (whoosh candidats), `pickup`/`powerup` (apparition),
+`tone`/`chord` (notes libres). Chaque appel est aléatoire par défaut
+(graine interne via `random`) — la variante de pitch ±5% demandée est
+directement atteignable en rejouant l'appel ou en dérivant `base_freq`.
+**Aucun fallback numpy/wave nécessaire.** Câblage réel sur les
+sfx_markers (Phase 2.1) laissé pour cette phase-là, pas fait ici (test
+isolé = un seul son généré et vérifié).
+Passage à T.1.5 (Blender To Pixels).
+
+### T.1.5 — Blender To Pixels : NON TESTABLE dans cet environnement
+
+Contrairement à `pixeldetector` (dépôt GitHub public, `git clone` direct),
+**Blender To Pixels n'a pas de dépôt GitHub** — confirmé par recherche
+web (`git clone https://github.com/Astropulse/Blender-to-Pixels.git`
+échoue avec "could not read Username", et non par absence de réseau :
+`pixeldetector` s'est clonée sans problème juste avant). L'outil est
+distribué exclusivement via itch.io/Gumroad en "name your own price"
+(0€ possible), sous forme d'archive ZIP (`BlenderToPixels.zip`, 327 Ko)
+téléchargée via le bouton "Download Now" d'itch.io — un flux
+d'interaction navigateur (potentiellement JS/session), pas une URL
+statique directement `curl`-able trouvée sans naviguer manuellement la
+page.
+
+**Conclusion : non testé.** Pas de blocage technique de fond (l'outil
+existe, est gratuit), mais son mode de distribution ne se prête pas à
+une récupération scriptée dans cet environnement sans navigateur
+interactif. Vu le principe du mandat ("garder seulement s'il apporte un
+vrai gain, pas juste pour l'avoir") et que notre pipeline `quantize.py`
+est déjà éprouvé sur l'ensemble du roster cette session (dithering,
+plancher de Value, contours, tous calibrés et validés à la main sur
+Cendre/Crawler/Brute/Ranged), le gain incertain d'un outil non
+récupérable ne justifie pas de détour supplémentaire (ex. tenter de
+reproduire l'API de téléchargement itch.io). Repris plus tard
+uniquement si Milan peut fournir le ZIP directement.
+Passage à T.1.6 (auto-godot).
+
+### T.1.6 — auto-godot : NON TESTABLE (incompatibilité de version)
+
+Recherche web : `auto-godot` est un outil CLI reel ("A Headless CLI
+Tool for Godot Engine Targeting Agent Workflows") mais **nécessite
+Godot 4.6+ et Python 3.12+**. Ce projet tourne sur **Godot 4.3.stable**
+(`godot4 --version` confirmé) et l'environnement fournit Python 3.11.15.
+Aucune URL PyPI ou dépôt GitHub canonique trouvée malgré recherche
+ciblée (contrairement à `pixeldetector`, directement cloné plus tôt) —
+impossible même de tenter l'installation.
+
+**Conclusion : non testé, non retenu.** Deux blocages indépendants
+(version Godot, version Python) rendent l'outil inutilisable tel quel
+sur ce projet ; monter de version Godot pour un seul outil CLI
+expérimental serait hors de proportion et risqué (implique de
+revalider tout le pipeline existant — scenes, shaders, addons). Le
+process d'export manuel actuel (`godot4 --headless --rendering-driver
+vulkan --export-release "Web" docs/index.html`, déjà utilisé et fiable
+tout au long de cette session) reste en place sans changement.
+
+### Bilan Phase T.1 (6/6 traités)
+
+| Outil | Verdict |
+|---|---|
+| pixeldetector | Non retenu (pas d'alpha, mauvais cas d'usage) |
+| Bake normal maps (Blender) | **Retenu** — technique adaptée (passe Normal, pas bake UV), convention vérifiée |
+| PyTexturePacker | **Retenu** — glue Godot (callable → AtlasTexture) fonctionnelle |
+| pyfxr | **Retenu** — install propre Python 3.11, présets couvrent les familles Phase 2.1 |
+| Blender To Pixels | Non testable (distribution itch.io, pas de dépôt scriptable) |
+| auto-godot | Non testable (nécessite Godot 4.6+/Python 3.12+, incompatible) |
+
+Phase T.2 (Freesound, Tripo3D) reste bloquée en attente des clés API de
+Milan — non bloquant pour la suite (Phase 1 enchaîne directement).
