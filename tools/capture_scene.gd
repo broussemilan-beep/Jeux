@@ -74,6 +74,18 @@ extends Node2D
 ##                                    Pouvoir tiré au hasard ne convient pas)
 ##   --tick=16                       tick physique auquel capturer (compté
 ##                                    depuis la pression, pas depuis _ready())
+##   --enemy_scene=<res://...tscn>    override diagnostic (CHANTIER 1, 2026-08-22,
+##                                    "MANDAT ROUND 2") : par défaut EnemyScene
+##                                    (le Placeholder Polygon2D générique, JAMAIS
+##                                    spawné en jeu réel — gate_premiere.tscn
+##                                    n'instancie que enemy_crawler/enemy_brute/
+##                                    enemy_ranged). Permet de rejouer EXACTEMENT
+##                                    la même capture avec une VRAIE scène de
+##                                    monstre (Visual AnimatedSprite2D) pour
+##                                    distinguer un artefact d'outil de capture
+##                                    d'un vrai bug de rendu — sans ce paramètre,
+##                                    aucun moyen de le vérifier autrement qu'en
+##                                    rejouant la scène gate_premiere en vrai.
 ##   --background=neutral|loaded, --scale=1|2|4  mêmes conventions que character.
 ##   --out=/chemin/absolu/sortie.png
 ##
@@ -296,6 +308,16 @@ func _run_player_action_capture(args: Dictionary) -> void:
 	var out_path: String = args.get("out", "")
 	var background: String = args.get("background", "neutral")
 	var scale: int = int(args.get("scale", "1"))
+	# --enemy_scene= (CHANTIER 1, diagnostic) : par défaut EnemyScene
+	# (Placeholder), override possible vers une vraie scène de monstre.
+	var enemy_scene_path: String = args.get("enemy_scene", "")
+	var enemy_scene: PackedScene = EnemyScene
+	if enemy_scene_path != "":
+		if not ResourceLoader.exists(enemy_scene_path):
+			push_error("capture_scene[player_action]: --enemy_scene introuvable '%s'." % enemy_scene_path)
+			get_tree().quit(1)
+			return
+		enemy_scene = load(enemy_scene_path)
 	if action_name == "" or out_path == "":
 		push_error("capture_scene[player_action]: --action et --out sont requis.")
 		get_tree().quit(1)
@@ -330,11 +352,11 @@ func _run_player_action_capture(args: Dictionary) -> void:
 	# un ennemi devant (0°, dans l'arc) et un sur le côté (30°, dans l'arc)
 	# pour que le recul multi-cible soit visible dans la capture, pas
 	# seulement le VFX seul sur une salle vide.
-	var enemy_front := EnemyScene.instantiate()
+	var enemy_front := enemy_scene.instantiate()
 	enemy_front.global_position = player.global_position + Vector2(30, 0)
 	add_child(enemy_front)
 
-	var enemy_side := EnemyScene.instantiate()
+	var enemy_side := enemy_scene.instantiate()
 	var side_dir := Vector2.RIGHT.rotated(deg_to_rad(30.0))
 	enemy_side.global_position = player.global_position + side_dir * 30.0
 	add_child(enemy_side)

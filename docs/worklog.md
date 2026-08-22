@@ -22,6 +22,81 @@ garde que le 2026-08-22 (MANDAT AUTONOME v3 en cours) — au-delà de
 
 ---
 
+## 2026-08-22 — MANDAT ROUND 2, CHANTIER 1 : le bug "rectangle blanc" était réel, pas un artefact de capture — root cause trouvée et corrigée
+
+**Contexte** : sur les captures `2026-08-22-fidelite-bras_faux.png` et
+`-poing_belluaire.png` (mandat précédent), un cercle et un rectangle
+blancs pleins flottent près du personnage. Le même bug de rectangle
+blanc avait déjà été "corrigé" 2 sessions plus tôt (`hit_flash.gdshader`,
+TEXTURE→COLOR) — Milan, à raison, ne faisait plus confiance à un simple
+"c'est déjà réglé" et demandait un vrai diagnostic AVANT toute
+correction : est-ce le rig de capture (`enemy.tscn`, Placeholder
+Polygon2D générique, jamais spawné en jeu réel) ou un vrai bug qui
+toucherait aussi les vrais monstres (Crawler/Brute/Ranged, sprite réel) ?
+
+**ÉTAPE 1 — méthode.** Ajout d'un paramètre diagnostic
+`--enemy_scene=<...>` à `tools/capture_scene.gd` (mode `player_action`,
+additif, défaut inchangé = `EnemyScene`/Placeholder) pour rejouer
+EXACTEMENT le même pouvoir/tick avec une vraie scène de monstre
+(`enemy_brute.tscn`, vrai `AnimatedSprite2D`) au lieu du Placeholder.
+Premier essai sans `--level=3` : rien ne se passait (le slot power2
+était verrouillé au niveau par défaut, Bras-Faux ne se déclenchait
+jamais — erreur de méthode de ma part, pas une observation utile).
+Corrigé, relancé avec `--level=3` (Bras-Faux déverrouillé, tier 2) :
+**le même carré blanc plein apparaît, à l'identique, sur le vrai
+Brute** (silhouette réelle rendue en aplat blanc uni, aucune trace de
+sa couleur/texture). Conclusion de l'ÉTAPE 1, sans ambiguïté : **PAS un
+artefact du rig de capture** — un vrai bug de gameplay, visible sur
+n'importe quelle cible réelle touchée.
+
+**ÉTAPE 2 — cause précise.** Le 1er fix (TEXTURE→COLOR) était
+nécessaire mais un second bug, distinct, restait dessous. Lu
+`src/gameplay/hit_response.gd` + `src/gameplay/combat_feedback.gd` :
+`flash_sprite()` met `flash_amount=1.0` puis le décroît sur
+`HitResponse.FLASH_TICKS` (4) — MAIS `HitResponse._physics_process()`
+ne décrémente ce compteur QUE si `not CombatFeedback.is_frozen()` (choix
+délibéré antérieur, documenté : une minuterie cosmétique doit "rester
+synchrone avec l'impact"). Or le hit-stop "medium" (Bras-Faux/Poing
+Belluaire, `TARGET_HITSTOP_MS["medium"]=62ms`) dure ~4 ticks lui aussi —
+quasiment le même nombre que `FLASH_TICKS`. Pendant TOUTE cette fenêtre
+gelée, `flash_amount` reste ÉPINGLÉ à 1.0 (jamais décrémenté) : la
+cible rend un aplat blanc opaque PLEIN, sans aucune trace de sa couleur
+réelle, pendant toute la durée du gel (~65ms, largement perceptible) —
+pas un bref flash d'un tick comme prévu. `impact_flash_frame.gd`
+(primitive VFX séparée, le cercle) respecte déjà une règle documentée
+ailleurs dans ce projet (`MAX_VALUE_HSV=0.92`, §3 : "jamais blanc pur,
+V=100%, collision UI/décor") — `hit_flash.gdshader` était le seul module
+à l'ignorer, allant jusqu'à 1.0 plein.
+
+**ÉTAPE 3 — correctif appliqué.** `src/vfx/shaders/hit_flash.gdshader` :
+ajout d'une constante `MAX_FLASH_MIX=0.6` qui plafonne la CONTRIBUTION
+effective du mélange (`mix(COLOR.rgb, vec3(1.0), flash_amount *
+MAX_FLASH_MIX)`) plutôt que sa cible — à `flash_amount=1.0` (pic, y
+compris gelé pendant tout un hit-stop), la cible garde encore ~40% de
+sa propre couleur/texture au lieu de disparaître sous un aplat uni.
+Valeur choisie par lecture visuelle directe des captures avant/après
+(pas un calcul) : assez haute pour rester un vrai flash lisible, assez
+basse pour ne jamais effacer complètement la silhouette. Effet
+secondaire positif, non cherché mais bienvenu : les chiffres de dégâts
+(`damage_number.gd`, texte blanc) étaient invisibles sur fond blanc
+plein pendant le flash — ils redeviennent lisibles avec le fond
+partiellement teinté.
+
+**Vérification** : capture avant/après committée
+(`captures/verification/2026-08-22-fix-hit-flash-round2.png`, 4
+panneaux — Brute réel avant/après, scène Bras-Faux avant/après) montrant
+la même comparaison sur le vrai monstre ET sur le Placeholder de test.
+`scripts/run_gameplay_smoke_test.sh` et
+`scripts/run_vfx_recipe_smoke_test.sh` — `all_pass:true` avant et après
+le correctif (aucun check n'exerçait ce cas précis — gel + flash au pic
+— donc rien ne l'attrapait avant ce diagnostic manuel). Verdict honnête :
+corrigé à la racine (root cause identifiée, pas un contournement local),
+mais `MAX_FLASH_MIX=0.6` reste une valeur choisie à l'oeil — à
+retoucher si Milan la juge encore trop discrète ou trop marquée sur le
+prochain build réel.
+
+---
+
 ## 2026-08-22 — Coordination multi-agent (4 mandats dédiés) : Gueule Vide S-composition, audit Terre, sprites dédiés Bras-Faux/Poing Belluaire
 
 **Contexte** : suite au mandat d'audit précédent (entrée ci-dessous), Milan
