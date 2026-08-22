@@ -43,8 +43,8 @@ asymétriques pour Monstrification : 1/3/6/14/18). Slots `power1`..
 | Terre | 3 | Carapace | ❌ manquante |
 | Terre | 4 | Effondrement | ❌ manquante |
 | Terre | 5 | Fissure Éruptive | ❌ manquante |
-| Monstrification | 1 | Poing Belluaire | ✅ (fissure au sol corrigée 2026-08-22) |
-| Monstrification | 3 | Bras-Faux | ✅ |
+| Monstrification | 1 | Poing Belluaire | ✅ (fragments VFX invisibles corrigés 2026-08-22, `converge.gd`) |
+| Monstrification | 2 | Bras-Faux | ✅ (tier corrigé 2026-08-22 : `data/pouvoirs/monstrification.json` fait autorité, "3" ci-dessus était une erreur de transcription) |
 | Monstrification | 6 | Mâchoire | ❌ manquante |
 | Monstrification | 14 | Forme Bestiale | ❌ manquante |
 | Monstrification | 18 | Pattes de Chasse | ❌ manquante |
@@ -89,9 +89,23 @@ player_action_sequence/scene), lancé via `scripts/capture_headless.sh`
 (xvfb + Vulkan logiciel — `--headless` seul casse le rendu dans ce
 sandbox, écart documenté dans `CLAUDE.md`).
 
-## Budgets (au 2026-08-22, fin de MANDAT AUTONOME v3)
+## Gaps de fidélité connus (mandat audit références, 2026-08-22)
 
-PixelLab : 10 générations consommées ce mandat (plafond 300). Meshy :
+Bras-Faux/Poing Belluaire : le VISUEL reste un placeholder documenté
+(`_sprite.play("coup2"/"coup3")`, animation générique du combo, pas
+d'art de transformation dédié) — ne ressemble pas à leur planche
+(bras qui devient une faux organique), contrairement au comportement
+(arc/multi-cible/portée) qui lui est smoke-testé conforme. Combo de
+base (coup1/coup2/coup3) : les 3 coups sont visuellement quasi
+interchangeables, aucune arme visible sur aucun des trois — confirmé
+par comparaison frame-par-frame, pas de planche de référence pour ce
+point. Deux gaps de production connus, pas des régressions ; ampleur
+= nouvelle génération d'assets, hors scope d'une session de correctifs.
+
+## Budgets (au 2026-08-22, fin MANDAT AUDIT FIDÉLITÉ RÉFÉRENCES)
+
+PixelLab : 14 générations consommées cumulées (10 MANDAT AUTONOME v3 +
+4 cette entrée : régénération Gueule Vide, plafond 300). Meshy :
 0 crédit consommé ce mandat (plafond 150 — balance 866, walk Ranged
 récupéré gratuitement depuis un rig déjà payé).
 

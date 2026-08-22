@@ -22,6 +22,130 @@ garde que le 2026-08-22 (MANDAT AUTONOME v3 en cours) — au-delà de
 
 ---
 
+## 2026-08-22 — MANDAT AUDIT FIDÉLITÉ RÉFÉRENCES : Gueule Vide cassé confirmé et régénéré, converge.gd corrigé, 3 gaps documentés honnêtement
+
+**Contexte** : Milan soupçonnait, sans pouvoir vérifier lui-même (Git LFS
+hors de portée réseau de son côté), que le sprite réel de Gueule Vide ne
+ressemblait plus à sa planche de référence. Mandat : auditer chaque
+compétence vivante (ressemblance ET comportement) contre sa planche,
+dans l'ordre Gueule Vide → Bras-Faux/Poing Belluaire → Poing Tellurique/
+Marée de Sable → combo de base → 3 monstres, corriger ce qui est cassé
+avant de continuer, documenter honnêtement le reste.
+
+**Point 1 — Gueule Vide : CASSÉ, confirmé et corrigé.** Les 6 frames
+réelles (`assets/processed/sprites/gueule_vide/cast/*.png`) montraient
+une petite créature à jambes/tête ronde façon mannequin générique —
+zéro mâchoire, zéro croc, aucune ressemblance avec la planche (une
+gueule d'encre béante SANS jambes ni bras, juste une mâchoire sur un
+tendon d'encre). Confirmé par comparaison côte à côte agrandie (8x).
+Cause racine trouvée en relisant `data/pixellab_usage.jsonl` : la
+création d'origine utilisait `body_type` par défaut (humanoïde) ET une
+référence downscalée à 24x22px/8 couleurs (pour tenir sous le seuil de
+troncature MCP, ~1-2 Ko de base64) — bien trop dégradée pour transmettre
+"mâchoire sans corps" au générateur, qui est retombé sur un archétype de
+créature générique.
+
+Corrigé par une regénération complète (`data/pixellab_usage.jsonl`,
+entrées 2026-08-22T21:0x) : (1) guide de silhouette synthétique dessiné
+par script (mouth+crocs+tendon, SANS jambes, 40x40px, largement sous le
+seuil de troncature) ; (2) passé dans `create_image_pixflux` (img2img,
+1 crédit) pour obtenir un vrai rendu pixel art ombré plutôt que le guide
+brut tel quel (une créature en v3+reference se contente de FAIRE
+PIVOTER l'image donnée, elle ne la restylise pas — leçon retenue,
+importante pour toute régénération future via ce chemin) ; (3) ce
+rendu servi comme référence à `create_character` mode v3 (8 directions,
+1 crédit) ; (4) `animate_character` v3 (direction sud, 6 frames, 1
+crédit) pour le cast. Nouvelle séquence : frames 0-2 mâchoire grande
+ouverte/crocs visibles, frame 3 = la morsure (fermeture nette, plus
+sombre), frames 4-5 = désintégration en fragments d'encre épars —
+sémantique légèrement différente de l'ancienne (frame2 tient
+maintenant la grande ouverture au lieu de frame3, frame3 est la morsure
+au lieu de frame4) : `src/gameplay/powers/gueule_vide.gd::
+FRAME_TICK_BOUNDS` réajusté en conséquence, CONTACT_TICK inchangé.
+Anciennes frames/référence archivées dans `assets/source/pixellab/
+gueule_vide/_archive_2026-08-18_v1/` (jamais supprimées). Cuisson via
+`scripts/cook_character_frames.py` (48x48, foot-margin 4px). Smoke test
+complet relancé (`all_pass:true`, tous les checks `gueule_vide_*`
+passent). Comparaison finale committée : `captures/verification/
+2026-08-22-fidelite-gueule_vide.png`.
+
+**Point 2 — Bras-Faux/Poing Belluaire : trou d'outillage resitué + vrai
+bug trouvé et corrigé.** Le "trou d'outillage" de la session précédente
+(capture ne rendant aucune couche VFX) s'est avéré être DEUX choses
+distinctes, pas un vrai trou :
+- Bras-Faux : erreur de ma part — `data/pouvoirs/monstrification.json`
+  (verrouillé par Milan) place Bras-Faux en TIER 2 (slot `power2`,
+  unlock_level=3), pas tier 3 comme `docs/STATUS.md` le laissait croire
+  (désaccord entre les deux fichiers — `data/pouvoirs/*.json` fait
+  autorité, STATUS.md sera à corriger). Capturé au bon slot : la couche
+  `ribbonTrail` est bien là, visible.
+- Poing Belluaire (slot `power1`, correct dès le départ) : VRAI bug
+  trouvé dans `src/vfx/primitives/converge.gd` — taille de fragment
+  câblée en dur (2.0-4.5px) SANS RAPPORT avec `scale_px` de la recette.
+  Dès que `scale_px` dépasse ~20px (Poing Belluaire = 30, Poing
+  Tellurique = 26), les fragments deviennent des points de quelques
+  pixels, imperceptibles à l'échelle réelle du jeu — confirmé par
+  capture zoomée (avant : rien de visible ; après inspection à la loupe :
+  de minuscules taches). Corrigé : taille proportionnelle à `scale_px`
+  (~22-36% au lieu d'une constante fixe). `shardBurst` a la même
+  formule fixe mais reste lisible car ses fragments VOYAGENT sur un
+  grand arc (`speed_px_per_tick`) — `converge` les garde près de
+  l'origine toute leur vie, rien ne compense une taille trop petite.
+  Capture avant/après confirmée. Contenu VISUEL de Bras-Faux/Poing
+  Belluaire reste un placeholder documenté (`_sprite.play("coup2"/
+  "coup3")`, "art dédié à la transformation hors scope") — comparé à la
+  planche (bras qui devient une faux organique articulée), ce n'est PAS
+  fidèle, mais c'est un GAP DE PRODUCTION CONNU depuis le départ, pas
+  une régression : nécessiterait un vrai sprite de transformation de
+  bras, hors scope d'une session de correctifs. Comportement (arc,
+  multi-cible, portée) déjà smoke-testé conforme.
+
+**Point 3 — Poing Tellurique/Marée de Sable : même bug, déjà
+documenté.** La recette `power.poing_tellurique.cast.json` elle-même
+(`expected_layers[1].description`) flaguait DÉJÀ ce problème depuis une
+session antérieure (render_detector.py, R4/R2) : "converge... signal à
+peine perceptible... À RE-INVESTIGUER... pas encore tranché." Résolu
+par le même correctif `converge.gd` — capture avant/après confirmée
+(anneau + fragments désormais nettement visibles). Marée de Sable
+(`beamSegment`) déjà lisible sur capture antérieure, non retouché.
+
+**Point 4 — Combo de base (3 coups) : pas de planche dédiée, mais
+soupçon de Milan confirmé.** Comparaison frame-par-frame de coup1/coup2/
+coup3 (`assets/processed/sprites/cendre/coup{1,2,3}/*.png`) : poses
+quasi identiques à chaque index de frame correspondant, AUCUNE arme
+visible sur aucun des 3 coups (Cendre semble frapper à mains nues sur
+tous les frames), seule coup2 a un lean/une posture plus dynamique à
+mi-animation. Confirme "interchangeables" — pas un bug de code, un gap
+de contenu (les 3 coups n'ont jamais eu de poses ni d'arme dédiées
+différenciées). Pas de fix appliqué cette session : ampleur = nouvelle
+génération d'assets (poses distinctes + arme visible pour 3 animations
+existantes), pas un correctif ponctuel, et aucune planche de référence
+n'existe pour guider un remake. Documenté pour une session dédiée
+future.
+
+**Point 5 — 3 monstres (Crawler/Brute/Ranged) : mandat basé sur une
+prémisse fausse.** Le mandat supposait une planche de concept art dans
+`experiments/` pour ces 3 monstres. Vérifié dans `data/meshy_usage.
+jsonl` : "texte pas d'image reference disponible pour ces monstres" —
+génération 100% texte-vers-3D, AUCUNE image de référence n'a jamais
+existé pour Crawler/Brute/Ranged. Impossible d'auditer une "fidélité"
+contre une référence qui n'existe pas. Recadré en vérification de
+cohérence INTERNE (idle vs marche, même créature, pas de rig cassé) :
+les 3 monstres sont visuellement cohérents entre repos et marche
+(silhouette/couleur/échelle stables, cycle de membres réel visible) —
+aucun défaut trouvé, mais ce n'est pas la même question que celle posée
+par le mandat.
+
+**Vérifications finales** : `scripts/run_gameplay_smoke_test.sh` et
+`scripts/run_vfx_recipe_smoke_test.sh` — `all_pass:true` après chaque
+changement (regénération Gueule Vide, fix converge.gd). Budget PixelLab
+de cette entrée : 4 générations (guide→pixflux 1cr, create_character
+v2 1cr [rejeté], create_character v3 1cr, animate_character 1cr) — la
+tentative v2 est restée un personnage orphelin sur PixelLab, non
+utilisée en jeu, non supprimée (coût nul à la laisser).
+
+---
+
 ## 2026-08-22 — Retour Milan sur PREMIÈRE VIDÉO réelle : 6 points, dont build web resté périmé
 
 **Contexte critique découvert en premier** : Milan répète quasi mot pour

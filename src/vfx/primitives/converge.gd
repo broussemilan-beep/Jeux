@@ -49,7 +49,16 @@ func configure(params: Dictionary) -> void:
 		var a: float = (TAU / float(fragment_count)) * i + _rng.randf() * 0.4
 		var r: float = scale_px * START_RADIUS_RATIO * (0.8 + _rng.randf() * 0.4)
 		_start_positions.append(Vector2(cos(a), sin(a)) * r)
-		_sizes.append(2.0 + _rng.randf() * 2.5)
+		# Taille proportionnelle a scale_px (2026-08-22, audit fidelite
+		# Milan) : une constante fixe 2-4.5px rendait les fragments
+		# imperceptibles des que scale_px depassait ~20px (Poing
+		# Belluaire, scale_px=30 -> anticipation quasi invisible en jeu
+		# reel, confirme par capture zoomee). shardBurst partage la
+		# meme formule fixe mais reste lisible car ses fragments
+		# VOYAGENT (speed_px_per_tick) sur un arc large ; converge les
+		# garde pres de l'origine pendant toute leur vie, donc rien ne
+		# compense une taille absolue trop petite ici.
+		_sizes.append(scale_px * (0.22 + _rng.randf() * 0.14))
 
 
 func tick(ticks_elapsed: int) -> void:
