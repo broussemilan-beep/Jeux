@@ -5390,3 +5390,84 @@ pour occuper le créneau.
 cast : 3/4 couverts par du contenu réel. Invocation mobile : reportée,
 en attente de contenu Invocateur pertinent.** Prochaine étape : Phase 4
 (le monde — parallaxe, props, densification, Cendre 8-directions).
+
+## 2026-08-22 — MANDAT SUITE v2 : Phase 4 (le monde — partie gratuite)
+
+**Reconnaissance avant écriture** (agent lecture seule) : `outpost.tscn`
+a déjà un vrai `Parallax2D` "FarBackground" ; `test_arena.tscn` n'en
+avait AUCUN ; `gate_premiere.tscn` avait un "FarBackground" qui
+RESSEMBLAIT au bon pattern mais était un simple `Node2D` statique (pas
+de défilement parallax réel). Seulement 5 textures de props existent
+(`prop_rubble`, `prop_debris`, `prop_brazier`, `prop_pillar`,
+`prop_rubble_warm`), aucune variante peinte — la variété vient déjà de
+transforms moteur (`PropRubble2` = `PropRubble1` mirroré, convention
+documentée worklog.md:2780). Aucun script de "densification" procédurale
+n'existe : les props sont posés à la main dans chaque `.tscn`. Cendre
+n'a de couverture 8-directions que pour idle/déplacement (`coup1/2/3`,
+`dash`, `hurt`, `mort` restent mono-direction) — et n'a JAMAIS eu de
+pipeline Blender (contrairement aux 3 monstres Meshy) : c'est un
+turnaround PixelLab pur, donc "rotation caméra sur le modèle déjà
+riggé" ne s'applique pas à Cendre tel quel. Le mandat production v1 §6
+(item E) traite déjà explicitement le mono-direction des animations de
+combat comme une issue acceptable ("dash/combo/esquive si budget
+PixelLab, sinon flag"), pas un défaut à corriger à tout prix.
+
+**Décision de scope** : cette session traite la partie GRATUITE de
+Phase 4 (aucune génération PixelLab/SpriteCook, uniquement réemploi
+moteur de l'art existant) — parallaxe + densification. Compléter Cendre
+en 8 directions de combat (dash/coup1-3/hurt/mort, soit ~7 directions
+supplémentaires × 6 animations) et ajouter de nouvelles variantes de
+props/texture de mur relèvent d'une génération PixelLab qui n'est PLUS
+un "lot ponctuel habituel" (mandat production v1 §3, matrice de
+décision — item explicitement "à valider"). Solde vérifié avant de
+décider : PixelLab 1644 générations restantes sur 2000 (abonnement actif,
+reset 2026-09-14), SpriteCook 27 crédits seulement. Le solde PixelLab
+est confortable, mais engager plusieurs centaines de générations pour
+compléter Cendre est une dépense de production réelle sur l'abonnement
+de Milan, pas une décision purement technique — flaguée ci-dessous
+plutôt qu'engagée en autonomie.
+
+**Parallaxe** : `gate_premiere.tscn` — converti le `Node2D`
+"FarBackground" existant en vrai `Parallax2D` (`scroll_scale =
+Vector2(0.55, 1)`, même valeur qu'`outpost.tscn`) : les 6 sprites
+`BgArch1-3`/`BgPillar1-3` déjà en place défilent maintenant plus
+lentement que le premier plan sur ce long corridor, au lieu de rester
+statiques — correction de cohérence avec le pattern déjà établi, pas un
+nouveau système. `test_arena.tscn` — n'avait aucun décor lointain :
+ajouté un `Parallax2D` "FarBackground" (même `scroll_scale`) avec 3
+sprites réemployant `bg_ruin_arch.png`/`bg_pillar_silhouette.png` (zéro
+nouvel asset), un de chaque de part et d'autre de l'arène plus une arche
+centrale, à l'échelle 0.34 (cohérent avec 0.38 dans les 2 autres scènes,
+légèrement réduit car cette arène est plus resserrée).
+
+**Densification (test_arena uniquement)** : c'était la scène la plus
+pauvre en props (3 seulement, contre 13 dans `gate_premiere.tscn` et 4
+dans `outpost.tscn`) — portée à 6 en réemployant les textures déjà
+importées : `PropDebris2` (mirror de `PropDebris1`, même convention que
+`PropRubble2`), `PropRubble3` (échelle 0.85 pour varier la silhouette
+sans nouvel art), et `PropPillar1` — première utilisation de
+`prop_pillar.png` dans cette scène (déjà chargé par le projet via
+`outpost.tscn`/`gate_premiere.tscn`, aucun coût). `gate_premiere.tscn`
+et `outpost.tscn` non touchés : déjà densément peuplés (13 et 4 props
+sur des surfaces bien plus petites que `test_arena`), ajouter encore
+aurait surchargé sans bénéfice de lisibilité.
+
+**Vérification** : `--import` headless propre, `scripts/
+run_gameplay_smoke_test.sh` 100% vert (aucun des changements ne touche
+au gameplay). Capture des 2 scènes modifiées : `test_arena.tscn` montre
+l'arche en arrière-plan et les nouveaux props visibles sans
+chevauchement du HUD/des boutons tactiles ; `gate_premiere.tscn` inchangé
+visuellement à l'écran (le `Parallax2D` ne change le rendu qu'en
+mouvement de caméra, pas sur une capture statique) mais sans erreur de
+scène après la conversion de type de nœud.
+
+**Statut Phase 4 (partie gratuite) : terminé.** Reste EN ATTENTE
+(dépense PixelLab significative, montant à convenir avec Milan avant
+d'engager) :
+- Cendre 8-directions complètes pour dash/coup1/coup2/coup3/hurt/mort
+  (actuellement mono-direction, GDD amendement §1 section E l'autorise
+  explicitement comme fallback).
+- Nouvelles variantes de props / texture de mur (aucune texture de mur
+  n'existe actuellement, seulement des textures de sol).
+Ces deux points ne sont pas oubliés — ils sont documentés ici comme
+prochaine décision de production, pas silencieusement ignorés.
