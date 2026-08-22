@@ -64,12 +64,22 @@ extends Node
 ## tous ≈0,54-0,55) appliqué aux nouvelles valeurs cible. Toujours des
 ## valeurs À CONFIRMER par Milan sur le prochain build (un seul point de
 ## sandbox ne couvre qu'un impact isolé, pas l'enchaînement réel).
+## Mandat "critique probabiliste" (verrouillé par Milan, nom de travail
+## interne "Black Flash" — JAMAIS un nom exposé au joueur) : un palier
+## AU-DESSUS de "catastrophic", jamais atteignable par un coup normal
+## (aucun site d'appel ne passe "critical" sauf Player._try_hit() sur un
+## coup qui vient de rouler critique). Même discipline que le rescale de
+## tiers Phase R4 : dérivé du sommet existant par le MÊME multiplicateur
+## que les dégâts critiques (x1.5, tranché par Milan) plutôt qu'un
+## chiffre inventé sans rapport — catastrophic_cible×1,5 = 315ms,
+## catastrophic_attaquant×1,5 ≈ 170ms (113×1,5=169,5, arrondi).
 const TARGET_HITSTOP_MS := {
 	"none": 0.0,
 	"light": 30.0,
 	"medium": 62.0,
 	"heavy": 136.0,
 	"catastrophic": 210.0,
+	"critical": 315.0,
 }
 const ATTACKER_HITSTOP_MS := {
 	"none": 0.0,
@@ -77,6 +87,7 @@ const ATTACKER_HITSTOP_MS := {
 	"medium": 33.0,
 	"heavy": 73.0,
 	"catastrophic": 113.0,
+	"critical": 170.0,
 }
 
 ## §9.2 — 3 niveaux, "heavy" utilise le milieu de 3-5px (4px).
@@ -88,10 +99,18 @@ const ATTACKER_HITSTOP_MS := {
 ## fort en bac à sable) ; "light"/"medium" restent aux valeurs
 ## précédentes (non retestées par Milan) — à reconfirmer séparément
 ## plutôt que rescaler tout le tableau sur un seul point de mesure.
+## "critical" (mandat critique probabiliste) : même logique de dérivation
+## que les hit-stop critiques ci-dessus — heavy×1,5 (6px->9px), durée
+## également étirée (7->10 ticks) pour que le shake reste visible tout
+## le temps que dure le hit-stop critique côté cible (315ms ≈ 19 ticks,
+## bien au-delà des 10 ticks du shake — le shake n'a pas besoin de durer
+## aussi longtemps que le gel pour se lire, cf. "heavy" existant déjà
+## plus court que son propre hit-stop cible).
 const SHAKE_PROFILES := {
 	"light": {"amplitude_px": 1.0, "ticks": 4},
 	"medium": {"amplitude_px": 2.0, "ticks": 5},
 	"heavy": {"amplitude_px": 6.0, "ticks": 7},
+	"critical": {"amplitude_px": 9.0, "ticks": 10},
 }
 
 const TICK_MS := 1000.0 / 60.0
@@ -114,6 +133,18 @@ var _shake_ticks_total: int = 0
 var _shake_amplitude_px: float = 0.0
 var _shake_direction: Vector2 = Vector2.ZERO
 
+## Flash plein écran (mandat critique probabiliste) — délibérément
+## SÉPARÉ du shake/hit-stop ci-dessus : jamais déclenché par
+## register_hit(), seulement par Player._try_hit() sur un coup
+## critique. Un consommateur (Hud) lit get_screen_flash_color() chaque
+## frame et peint un ColorRect plein écran avec — "flash, pas juste plus
+## fort" (Milan) : aucun autre impact du jeu ne teinte l'écran entier,
+## c'est la garantie d'être identifiable en un coup d'œil sans dépendre
+## du rendu d'une primitive VFX existante (palette/couleur déjà prises).
+var _screen_flash_ticks_remaining: int = 0
+var _screen_flash_ticks_total: int = 0
+var _screen_flash_color: Color = Color(0.0, 0.0, 0.0, 0.0)
+
 
 func _physics_process(_delta: float) -> void:
 	# Ce nœud NE consulte JAMAIS is_frozen()/is_player_frozen()/
@@ -125,6 +156,8 @@ func _physics_process(_delta: float) -> void:
 		_enemy_freeze_ticks_remaining -= 1
 	if _shake_ticks_remaining > 0:
 		_shake_ticks_remaining -= 1
+	if _screen_flash_ticks_remaining > 0:
+		_screen_flash_ticks_remaining -= 1
 
 
 ## Point d'entrée UNIQUE pour tout impact qui touche une cible (Phase
@@ -214,6 +247,31 @@ func trigger_shake(profile: String, attack_direction: Vector2) -> void:
 	_shake_amplitude_px = cfg["amplitude_px"]
 	_shake_ticks_total = cfg["ticks"]
 	_shake_ticks_remaining = cfg["ticks"]
+
+
+## Mandat critique probabiliste — déclenché UNIQUEMENT par
+## Player._try_hit() sur un coup qui vient de rouler critique, jamais
+## par register_hit() (qui reste générique à tout impact). `color.a` de
+## l'appelant est ignoré : c'est cette fonction qui pilote l'alpha au
+## fil des ticks (voir get_screen_flash_color()), pas l'appelant.
+func trigger_screen_flash(color: Color, ticks: int) -> void:
+	_screen_flash_color = color
+	_screen_flash_ticks_total = ticks
+	_screen_flash_ticks_remaining = ticks
+
+
+## Couleur à peindre plein écran CE tick — alpha 0 si aucun flash actif
+## (le consommateur peut peindre sans condition, une alpha nulle ne
+## change rien à l'écran). Décroissance linéaire simple (pas de courbe
+## ease comme le shake) : un flash de critique doit taper fort puis
+## disparaître net, pas s'estomper en douceur comme un impact ordinaire.
+func get_screen_flash_color() -> Color:
+	if _screen_flash_ticks_remaining <= 0:
+		return Color(0.0, 0.0, 0.0, 0.0)
+	var t: float = float(_screen_flash_ticks_remaining) / float(_screen_flash_ticks_total)
+	var c: Color = _screen_flash_color
+	c.a = _screen_flash_color.a * t
+	return c
 
 
 ## Décalage caméra courant — à lire chaque tick par le nœud qui porte la

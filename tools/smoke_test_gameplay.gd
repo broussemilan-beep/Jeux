@@ -26,6 +26,12 @@ func _ready() -> void:
 	_player = PlayerScene.instantiate()
 	_player.global_position = Vector2(200, 180)
 	add_child(_player)
+	# Mandat critique probabiliste : zéro pour TOUTE la suite sauf
+	# _check_critical_hit() (qui force sa propre valeur puis restaure
+	# celle-ci) — sans ça, un crit qui roule au hasard pendant un check
+	# de dégâts/hitstop exacts le ferait échouer de façon intermittente.
+	# Pas de RNG à seeder : la chance elle-même est la variable de test.
+	_player._combo_crit_chance_percent = 0.0
 
 	_enemy_near = EnemyScene.instantiate()
 	_enemy_near.name = "EnemyNear"
@@ -46,6 +52,7 @@ func _ready() -> void:
 	await _check_movement()
 	await _check_combo()
 	await _check_combo_tier_feedback()
+	await _check_critical_hit()
 	await _check_dash()
 	await _check_gueule_vide()
 	await _check_gueule_vide_owner_death_policy()
@@ -422,6 +429,112 @@ func _check_combo_tier_feedback() -> void:
 		"pass": hit3_landed and frozen_ticks_3 == 4 and frozen_ticks_3 > frozen_ticks_1 and shake_seen_tier3,
 		"detail": {"hit_landed": hit3_landed, "frozen_ticks": frozen_ticks_3, "shake_seen": shake_seen_tier3},
 	})
+
+
+## Mandat "critique probabiliste" (verrouillé par Milan, nom de travail
+## interne "Black Flash" — jamais exposé au joueur) : (A) un coup forcé
+## à rouler critique applique x1.5 aux dégâts + le palier de feedback
+## "critical" (flash plein écran + shake au-dessus de "heavy", jamais
+## atteint par un coup normal) ; (B) la mécanique de streak — +3% par
+## combo propre à 3 coups, un coup subi remet à 5% NET (jamais une
+## décroissance). Piloté par manipulation directe de
+## `_combo_crit_chance_percent` (forcé à 0.0 pour tout le reste de cette
+## suite, voir _ready()) plutôt qu'un seed RNG à contrôler — la chance
+## elle-même est la variable de test, pas le tirage.
+func _check_critical_hit() -> void:
+	await _wait_until(func(): return not _player._action_lock, Player.COMBO_TIER_RECOVERY_TICKS[2] + 10)
+
+	# Réutilise l'ennemi déjà posé par _check_combo_tier_feedback() (même
+	# position, encore bien vivant après 3 coups de combo léger) plutôt
+	# que d'en spawner un second au même endroit — évite toute ambiguïté
+	# de ciblage (voir le commentaire sur "EnemyForCombo" plus haut dans
+	# ce fichier).
+	var enemy: Enemy = get_node("EnemyForTierFeedback")
+
+	# --- Partie A : un coup forcé à 100% doit appliquer x1.5 + le palier
+	# de feedback "critical" ---
+	_player._combo_crit_chance_percent = 100.0
+	var hp_before: float = enemy.stats.hp
+	Input.action_press("attack")
+	await get_tree().physics_frame
+	Input.action_release("attack")
+	await _wait_until(func(): return _player._combo_step == 1, 10)
+	var hit_landed: bool = await _wait_until(
+		func(): return enemy.stats.hp < hp_before,
+		Player.ANTICIPATION_TICKS + Player.RELEASE_TICKS + 5)
+	var damage_dealt: float = hp_before - enemy.stats.hp
+	var screen_flash_alpha: float = CombatFeedback.get_screen_flash_color().a
+	var shake_amplitude: float = CombatFeedback._shake_amplitude_px
+
+	_checks.append({
+		"name": "critical_hit_applies_1_5x_damage",
+		"pass": hit_landed and is_equal_approx(damage_dealt, Player.ATTACK_DAMAGE * Player.CRIT_DAMAGE_MULT),
+		"detail": {
+			"hit_landed": hit_landed, "damage_dealt": damage_dealt,
+			"expected": Player.ATTACK_DAMAGE * Player.CRIT_DAMAGE_MULT,
+		},
+	})
+	_checks.append({
+		"name": "critical_hit_triggers_distinct_screen_flash_and_shake",
+		"pass": screen_flash_alpha > 0.0 and is_equal_approx(shake_amplitude, 9.0),
+		"detail": {"screen_flash_alpha": screen_flash_alpha, "shake_amplitude": shake_amplitude},
+	})
+
+	# Laisser ce combo (un seul coup, pas chaîné) retomber jusqu'à idle
+	# avant la partie B — sinon le premier "attack" de la partie B
+	# chaînerait vers coup2 au lieu de démarrer un combo neuf.
+	await _wait_until(
+		func(): return _player._combo_step == 0,
+		Player.RELEASE_TICKS + Player.COMBO_TIER_RECOVERY_TICKS[0] + 10)
+
+	# --- Partie B : streak — combo propre à 3 coups ajoute +3%, un coup
+	# subi remet net à 5% ---
+	_player._combo_crit_chance_percent = Player.CRIT_BASE_CHANCE_PERCENT
+	var chain_window_start: int = Player.RECOVERY_TICKS - Player.CHAIN_WINDOW_TICKS
+
+	Input.action_press("attack")
+	await get_tree().physics_frame
+	Input.action_release("attack")
+	await _wait_until(func(): return _player._combo_step == 1, 10)
+	await _wait_until(
+		func(): return _player._combo_step == 1 and _player._combo_phase == Player.ComboPhase.RECOVERY and _player._combo_tick >= chain_window_start,
+		Player.RECOVERY_TICKS + 5)
+	Input.action_press("attack")
+	await get_tree().physics_frame
+	Input.action_release("attack")
+	await _wait_until(func(): return _player._combo_step == 2, 10)
+	await _wait_until(
+		func(): return _player._combo_step == 2 and _player._combo_phase == Player.ComboPhase.RECOVERY and _player._combo_tick >= chain_window_start,
+		Player.RECOVERY_TICKS + 5)
+	Input.action_press("attack")
+	await get_tree().physics_frame
+	Input.action_release("attack")
+	await _wait_until(func(): return _player._combo_step == 3, 10)
+	await _wait_until(
+		func(): return _player._combo_step == 0,
+		Player.COMBO_TIER_ANTICIPATION_TICKS[2] + Player.RELEASE_TICKS + Player.COMBO_TIER_RECOVERY_TICKS[2] + 10)
+
+	var chance_after_clean_combo: float = _player._combo_crit_chance_percent
+	_checks.append({
+		"name": "critical_streak_bonus_added_after_clean_3_hit_combo",
+		"pass": is_equal_approx(chance_after_clean_combo, Player.CRIT_BASE_CHANCE_PERCENT + Player.CRIT_STREAK_BONUS_PERCENT),
+		"detail": {"chance_after_clean_combo": chance_after_clean_combo},
+	})
+
+	# Un coup subi (à tout moment, pas seulement pendant un combo) doit
+	# remettre net à 5%, jamais une décroissance progressive.
+	_player.take_damage(1.0, _player.global_position + Vector2(-10, 0))
+	var chance_after_taking_damage: float = _player._combo_crit_chance_percent
+	_checks.append({
+		"name": "taking_damage_resets_crit_chance_to_base",
+		"pass": is_equal_approx(chance_after_taking_damage, Player.CRIT_BASE_CHANCE_PERCENT),
+		"detail": {"chance_after_taking_damage": chance_after_taking_damage},
+	})
+
+	# Rétablit l'état test-safe (0%, voir _ready()) pour le reste de la suite.
+	_player._combo_crit_chance_percent = 0.0
+	enemy.queue_free()
+	await get_tree().physics_frame
 
 
 ## B4 : refonte du dash (anticipation/ease-out/recovery/traînée/shake) —

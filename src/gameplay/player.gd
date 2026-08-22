@@ -261,6 +261,40 @@ var _combo_tick: int = 0
 var _attack_queued: bool = false
 var _hit_applied_this_release: bool = false
 
+## Mandat "critique probabiliste" (verrouillé par Milan — nom de travail
+## interne "Black Flash", JAMAIS un nom exposé au joueur : la bible n'a
+## pas encore de nom définitif, aucun texte UI ne doit l'afficher tel
+## quel). N'IMPORTE LEQUEL des 3 coups du combo existant peut critiquer
+## (pas un 4e/5e coup, aucune restructuration). Stockés ici plutôt que
+## sur Stats : c'est un état de combo (remis à zéro par un coup subi,
+## jamais persisté entre les morts/runs comme le niveau), pas une stat
+## de progression durable.
+const CRIT_BASE_CHANCE_PERCENT := 5.0
+const CRIT_STREAK_BONUS_PERCENT := 3.0
+const CRIT_STREAK_MAX_CHANCE_PERCENT := 40.0
+## x1.5, PAS x2 comme TSB — verdict explicite de Milan : Rank Zero est du
+## PvE solo sans contre-jeu ennemi, un x2 fréquent déséquilibrerait sans
+## retuning complet des PV ennemis.
+const CRIT_DAMAGE_MULT := 1.5
+## Teinte jamais utilisée ailleurs dans le HUD/les VFX de combat actuels
+## (impactFlashFrame reste dans les tons de la palette de chaque
+## recette) — "flash, pas juste plus fort" (Milan) : ce plein-écran est
+## la garantie d'être identifiable en un coup d'œil, indépendamment de
+## la primitive VFX locale du coup qui a critiqué.
+const CRIT_SCREEN_FLASH_COLOR := Color(1.0, 0.93, 0.35, 0.55)
+const CRIT_SCREEN_FLASH_TICKS := 8
+
+## Chance courante (%), remise à CRIT_BASE_CHANCE_PERCENT par tout coup
+## subi (jamais une décroissance progressive — reset net, cf. mandat).
+var _combo_crit_chance_percent: float = CRIT_BASE_CHANCE_PERCENT
+## true tant qu'aucun coup n'a été subi depuis le début du combo À 3
+## COUPS en cours — vérifié seulement quand ce combo atteint son 3e coup
+## et se termine naturellement (voir _end_combo()) pour décider du bonus
+## de streak. Un coup subi le remet à false IMMÉDIATEMENT (take_damage()),
+## qu'il soit suivi ou non d'un 3e coup — pas de bonus a posteriori
+## possible pour un combo qui a encaissé un coup en cours de route.
+var _combo_hit_free_so_far: bool = true
+
 ## Compteur de ticks absolu depuis le DÉBUT du coup courant (0 à la
 ## première frappe de _advance_combo() après _start_attack()), INDÉPENDANT
 ## des remises à zéro de `_combo_tick` à chaque transition de phase —
@@ -502,6 +536,11 @@ static func _direction_suffix(dir: Vector2) -> String:
 
 
 func _start_attack(step: int) -> void:
+	if step == 1:
+		# Nouveau combo à 3 coups qui démarre (pas un chaînage vers
+		# coup2/coup3) : réarme le suivi "sans dégât encaissé" pour CE
+		# combo — mandat critique probabiliste.
+		_combo_hit_free_so_far = true
 	_combo_step = step
 	_combo_phase = ComboPhase.ANTICIPATION
 	_combo_tick = 0
@@ -621,6 +660,15 @@ func _apply_afterimages(anim_data: Dictionary, abs_tick: int) -> void:
 
 
 func _end_combo() -> void:
+	# Mandat critique probabiliste : un combo À 3 COUPS (pas 1 ni 2 —
+	# `_combo_step` vaut encore sa dernière valeur ici, AVANT la remise à
+	# zéro juste en dessous) terminé sans dégât encaissé pendant son
+	# exécution ajoute +3%, cumulable, plafonné à 40%. `_combo_hit_free_
+	# so_far` est déjà à false si un coup a été subi PENDANT ce combo
+	# (take_damage() le pose immédiatement) — rien à vérifier de plus ici.
+	if _combo_step == AttackAnimName.size() and _combo_hit_free_so_far:
+		_combo_crit_chance_percent = minf(
+			_combo_crit_chance_percent + CRIT_STREAK_BONUS_PERCENT, CRIT_STREAK_MAX_CHANCE_PERCENT)
 	_combo_step = 0
 	_combo_phase = ComboPhase.NONE
 	_combo_tick = 0
@@ -644,7 +692,19 @@ func _try_hit() -> void:
 	if target == null:
 		return
 	var tier: Dictionary = COMBO_TIER_FEEDBACK[_combo_step - 1]
-	target.take_damage(ATTACK_DAMAGE, global_position, tier["recoil_px"])
+
+	# Mandat critique probabiliste : roulé sur CHAQUE coup du combo, quel
+	# que soit son tier — un vrai hasard non seedé est voulu ici (c'est
+	# le mécanisme lui-même, pas un choix cosmétique dans un chemin de
+	# feedback ; Addendum A §A.5 vise les variations cosmétiques sans
+	# enjeu, pas les probabilités de gameplay). smoke_test_gameplay.gd
+	# force `_combo_crit_chance_percent` à 0.0 pour ses checks existants
+	# (jamais de crit qui casserait une assertion de dégâts/hitstop
+	# exacts) et à 100.0 pour son propre check dédié — pas de RNG seedé
+	# à contrôler pour rester déterministe en test.
+	var is_critical: bool = randf() * 100.0 < _combo_crit_chance_percent
+	var damage: float = ATTACK_DAMAGE * CRIT_DAMAGE_MULT if is_critical else ATTACK_DAMAGE
+	target.take_damage(damage, global_position, tier["recoil_px"])
 
 	# Phase R4 (retour croisé Gemini/ChatGPT, MANDAT SUITE v2) : point
 	# d'entrée UNIQUE pour hit-stop (désormais asymétrique cible/
@@ -653,11 +713,21 @@ func _try_hit() -> void:
 	# shake ni punch, "light" exclu du punch — cf. smoke test
 	# camera_punch_zoom_triggers_on_medium_hit_not_light) : Phase R4
 	# unifie le POINT D'APPEL, pas la nuance déjà réglée par tier.
-	CombatFeedback.register_hit(
-		tier["hitstop"], true,
-		"light_impact" if tier["hitstop"] == "light" else "heavy_impact",
-		tier["shake"], facing,
-		tier["hitstop"] != "light" and tier["hitstop"] != "none")
+	#
+	# Un critique ÉCRASE le tier normal du coup (jamais additionné) : le
+	# palier "critical" (au-dessus de "catastrophic", voir
+	# combat_feedback.gd) doit rester identifiable en un coup d'œil quel
+	# que soit le tier du coup qui a critiqué — un jab léger critique se
+	# lit comme LE coup le plus lourd du jeu, pas comme un jab amélioré.
+	if is_critical:
+		CombatFeedback.register_hit("critical", true, "critical_hit", "critical", facing, true)
+		CombatFeedback.trigger_screen_flash(CRIT_SCREEN_FLASH_COLOR, CRIT_SCREEN_FLASH_TICKS)
+	else:
+		CombatFeedback.register_hit(
+			tier["hitstop"], true,
+			"light_impact" if tier["hitstop"] == "light" else "heavy_impact",
+			tier["shake"], facing,
+			tier["hitstop"] != "light" and tier["hitstop"] != "none")
 
 	# impactFlashFrame + recoil sur chaque coup (mandat Phase 1.4). Le
 	# recoil est déjà porté par Enemy.take_damage() (§4 : réaction de la
@@ -1081,6 +1151,15 @@ func take_damage(amount: float, source_position: Vector2, recoil_strength_px: fl
 	if stats.is_dead() or is_invincible():
 		return
 	stats.apply_damage(amount)
+	# Mandat critique probabiliste : "une seule touche reçue remet la
+	# chance à 5%" — reset NET (pas une décroissance), à TOUT moment
+	# (pas seulement pendant un combo). Si un combo est en cours,
+	# _combo_hit_free_so_far tombe aussi à false immédiatement : ce
+	# combo précis ne pourra plus jamais accorder le bonus de streak à
+	# sa fin, même s'il continue et se termine après ce coup subi.
+	_combo_crit_chance_percent = CRIT_BASE_CHANCE_PERCENT
+	if _combo_step > 0:
+		_combo_hit_free_so_far = false
 	HitResponse.flash_sprite(_sprite)
 	HitResponse.spawn_damage_number(amount, global_position, get_parent())
 	# Phase 2.1 : le SFX d'impact vit côté ATTAQUANT (Enemy._execute_attack,

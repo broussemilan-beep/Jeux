@@ -19,6 +19,11 @@ const ICON_SIZE := 26.0
 @onready var _level_label: Label = $LevelLabel
 @onready var _xp_fill: ColorRect = $XpBar/Fill
 @onready var _cd_dodge: ColorRect = $Cooldowns/Dodge/Overlay
+## Mandat critique probabiliste : plein écran, jamais une simple
+## variante plus lumineuse d'un effet existant — voir CombatFeedback.
+## trigger_screen_flash()/get_screen_flash_color(), déclenché uniquement
+## par Player._try_hit() sur un coup qui vient de rouler critique.
+@onready var _screen_flash: ColorRect = $ScreenFlash
 
 ## Amendement GDD Pouvoir/déblocage (confirmé par Milan) : 5 emplacements
 ## génériques (plus 4 fixes) — chaque conteneur entier (pas seulement son
@@ -47,6 +52,7 @@ func _process(_delta: float) -> void:
 	_xp_fill.size.x = XP_BAR_WIDTH * xp_ratio
 
 	_set_cooldown_overlay(_cd_dodge, _player.get_dodge_cooldown_ratio())
+	_screen_flash.color = CombatFeedback.get_screen_flash_color()
 
 	for i in _power_slots.size():
 		var slot_index: int = i + 1

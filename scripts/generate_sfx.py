@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
-"""Phase 2.1 (MANDAT SUITE v2) : génère les 6 familles de SFX de combat
+"""Phase 2.1 (MANDAT SUITE v2) : génère les familles de SFX de combat
 via pyfxr (T.1.4, retenu — cf. docs/worklog.md) en .wav mono 16-bit,
 lus tels quels par Godot (AudioStreamWAV). Pas de variantes de pitch
 baked ici : le mandat demande "pitch variants +-5%", appliqué au
 runtime via AudioStreamPlayer.pitch_scale (src/gameplay/sfx.gd) plutôt
 que de multiplier les fichiers sur disque pour un effet aussi simple.
+
+Mandat "critique probabiliste" (verrouillé par Milan) : ajout de
+critical_hit, "un signal sonore distinct" — voir sa docstring pour le
+choix de conception (hauteur montante, pas descendante/plate comme
+heavy_impact/light_impact).
 
 Seeds fixes (random.seed) : reproductibilité de CETTE génération d'assets
 (pouvoir regénérer un son identique si besoin), pas une contrainte de
@@ -81,6 +86,29 @@ def footstep() -> pyfxr.SFX:
     )
 
 
+def critical_hit() -> pyfxr.SFX:
+    # Signal distinct de TOUTE la famille existante (mandat critique
+    # probabiliste, "un signal sonore distinct") : light_impact/
+    # heavy_impact/death descendent ou restent plats (presets hurt/
+    # explosion, rampe négative) — celui-ci MONTE en hauteur
+    # (p_freq_ramp positif) avec un punch d'attaque marqué
+    # (p_env_punch), lu comme une confirmation éclatante plutôt qu'un
+    # impact de plus. Passe-haut léger (p_hpf_freq) pour rester brillant/
+    # tranchant, jamais confondu au mixage avec le "boom" sourd de
+    # heavy_impact.
+    return pyfxr.sfx(
+        wave_type=pyfxr.WaveType.SAW.value,
+        p_base_freq=0.32,
+        p_freq_ramp=0.45,
+        p_env_attack=0.0,
+        p_env_sustain=0.06,
+        p_env_decay=0.28,
+        p_env_punch=0.35,
+        p_hpf_freq=0.15,
+        p_lpf_freq=0.95,
+    )
+
+
 FAMILIES = {
     "light_impact": light_impact,
     "heavy_impact": heavy_impact,
@@ -88,6 +116,7 @@ FAMILIES = {
     "spawn": spawn,
     "death": death,
     "footstep": footstep,
+    "critical_hit": critical_hit,
 }
 
 

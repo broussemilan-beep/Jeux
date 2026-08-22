@@ -204,3 +204,9 @@ text = ""
 offset_right = 26.0
 offset_bottom = 0.0
 color = Color(0, 0, 0, 0.65)
+
+[node name="ScreenFlash" type="ColorRect" parent="."]
+mouse_filter = 2
+offset_right = 640.0
+offset_bottom = 360.0
+color = Color(0, 0, 0, 0)

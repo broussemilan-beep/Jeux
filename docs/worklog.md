@@ -6344,3 +6344,67 @@ nouvelle fonctionnalité ajoutée à l'outil.
 Rien à redéployer côté web spécifiquement pour cette passe (aucune
 scène de jeu réelle capturée/comparée visuellement) — HUD/touch
 vérifiés par lecture de logs headless, pas par capture visuelle Milan.
+
+## 2026-08-22 — Critique probabiliste ("Black Flash", nom de travail — jamais exposé au joueur)
+
+Verrouillé par Milan, aucune question bloquante. État stocké sur
+`Player` à côté de `_combo_step` (`_combo_crit_chance_percent`,
+`_combo_hit_free_so_far`) — c'est un état de combo, pas une stat de
+progression durable, donc pas sur `Stats`.
+
+- **Roulé sur CHAQUE coup** du combo à 3 coups existant (`_try_hit()`),
+  aucune restructuration : `randf()*100 < chance_courante`. Vrai
+  hasard non seedé assumé ici — Addendum A §A.5 vise les variations
+  cosmétiques sans enjeu dans un chemin de feedback (ex. direction d'un
+  chiffre de dégâts), pas une probabilité de gameplay que Milan demande
+  explicitement aléatoire.
+- **Streak** : `_start_attack(1)` réarme `_combo_hit_free_so_far` à
+  true (pas les chaînages vers coup2/3). `take_damage()` le passe à
+  false immédiatement + reset NET `_combo_crit_chance_percent` à 5%
+  (jamais une décroissance), à TOUT moment, pas seulement pendant un
+  combo. `_end_combo()` vérifie `_combo_step == 3` (donc un combo
+  vraiment complet, pas 1 ni 2 coups) ET `_combo_hit_free_so_far` avant
+  d'ajouter +3% (`minf(..., 40.0)`).
+- **x1.5** (`CRIT_DAMAGE_MULT`), pas x2 — verdict explicite de Milan.
+- **Palier de feedback "critical"** (`combat_feedback.gd`) : au-dessus
+  de "catastrophic", dérivé par le MÊME multiplicateur ×1,5 que les
+  dégâts (catastrophic 210ms/113ms -> critical 315ms/170ms ; shake heavy
+  6px/7 ticks -> critical 9px/10 ticks) — même discipline que le rescale
+  de tiers Phase R4, pas des chiffres inventés sans rapport. ÉCRASE le
+  tier normal du coup (jamais additionné) : un jab léger critique se lit
+  comme le coup le plus lourd du jeu.
+- **Flash plein écran, nouveau** (`CombatFeedback.trigger_screen_flash()`/
+  `get_screen_flash_color()`, consommé par un `ColorRect` ajouté à
+  `hud.tscn`) : "flash, pas juste plus fort" (Milan) — teinte
+  (1.0, 0.93, 0.35) jamais utilisée ailleurs dans le HUD/VFX de combat,
+  décroissance linéaire nette sur 8 ticks. Délibérément indépendant du
+  système de palette (qui aurait limité la distinction à la couleur déjà
+  prise par chaque recette) — la garantie de lisibilité en un coup
+  d'œil ne dépend d'aucune primitive VFX locale.
+- **Signal sonore distinct** : `critical_hit.wav` généré via pyfxr
+  (`scripts/generate_sfx.py`, même pipeline que les 6 sons existants) —
+  hauteur MONTANTE + punch d'attaque, à l'opposé de light_impact/
+  heavy_impact (descendants/plats) pour ne jamais être confondu au
+  mixage. Les 6 fichiers existants régénérés à l'identique (seeds fixes
+  inchangés, diff vérifié vide) en même passe.
+- **Nom de travail** : "Black Flash" n'apparaît nulle part dans un texte
+  visible par le joueur (aucun texte UI n'a été ajouté du tout pour ce
+  mécanisme — seul le flash/shake/son/dégâts, pas de libellé) —
+  respecté par construction, rien à retenir de plus tant qu'aucun nom
+  définitif n'est fourni.
+
+**Déterminisme des tests** (le vrai risque de cette passe) : un crit
+aléatoire pendant un check existant de dégâts/hitstop exacts l'aurait
+fait échouer de façon intermittente — pire, la chance peut monter
+jusqu'à 40% au fil de combos propres enchaînés dans la MÊME suite.
+Fixé par une seule ligne dans `_ready()` : `_player.
+_combo_crit_chance_percent = 0.0` pour toute la suite existante (0% =
+jamais de crit, quel que soit `randf()` — pas de seed RNG à contrôler).
+Nouveau `_check_critical_hit()` force 100% pour vérifier x1,5/flash/
+shake, puis remet 5% pour vérifier le streak (+3% après un combo propre
+à 3 coups, reset à 5% sur `take_damage()` direct) par manipulation
+d'état, avant de revenir à 0% pour le reste de la suite.
+
+**Vérification** : `scripts/run_gameplay_smoke_test.sh` 100% vert (70
+checks, 4 nouveaux). `test_arena.tscn` relancé headless (xvfb) : aucune
+erreur de nœud sur le nouveau `ScreenFlash` dans `hud.tscn`.

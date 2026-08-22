@@ -22,6 +22,9 @@ const SAMPLES: Dictionary = {
 	"spawn": preload("res://assets/processed/sfx/spawn.wav"),
 	"death": preload("res://assets/processed/sfx/death.wav"),
 	"footstep": preload("res://assets/processed/sfx/footstep.wav"),
+	# Mandat critique probabiliste (verrouillé par Milan) : signal distinct
+	# de light_impact/heavy_impact, voir scripts/generate_sfx.py.
+	"critical_hit": preload("res://assets/processed/sfx/critical_hit.wav"),
 }
 
 const PITCH_VARIANCE := 0.05  ## +-5%, mandat Phase 2.1.
