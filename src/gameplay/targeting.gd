@@ -60,6 +60,37 @@ static func enemies_in_arc(tree: SceneTree, origin: Vector2, facing: Vector2, ra
 	return hits
 
 
+## Retourne tous les ennemis vivants dans une bande rectangulaire devant
+## `origin` : entre 0 et `length_px` le long de `facing`, et à moins de
+## `half_width_px` de part et d'autre (perpendiculaire) — usage : l'archétype
+## "vague en ligne" (Marée de Sable, GDD "une ligne devant Rank Zero"),
+## distinct du cône d'enemies_in_arc() (Bras-Faux/Poing Tellurique, un arc
+## centré sur l'origine) : une ligne a une largeur CONSTANTE sur toute sa
+## longueur, pas un angle qui s'élargit avec la distance. Même filtre
+## "vivant" que les fonctions ci-dessus.
+static func enemies_in_line(tree: SceneTree, origin: Vector2, facing: Vector2, length_px: float, half_width_px: float) -> Array:
+	var dir := facing
+	if dir.length_squared() < 0.0001:
+		dir = Vector2.RIGHT
+	dir = dir.normalized()
+	var perp := Vector2(-dir.y, dir.x)
+
+	var hits: Array = []
+	for candidate in tree.get_nodes_in_group("enemies"):
+		if not (candidate is Node2D):
+			continue
+		if candidate.has_method("is_dead") and candidate.is_dead():
+			continue
+		var to_candidate: Vector2 = candidate.global_position - origin
+		var forward: float = to_candidate.dot(dir)
+		if forward < 0.0 or forward > length_px:
+			continue
+		var lateral: float = absf(to_candidate.dot(perp))
+		if lateral <= half_width_px:
+			hits.append(candidate)
+	return hits
+
+
 ## Symétrique de nearest_enemy_in_radius() côté ennemis (G, GDD §10) :
 ## une seule instance de joueur dans le groupe "player" (contrairement à
 ## "enemies", pluriel par nature) — pas de paramètre radius, un ennemi a

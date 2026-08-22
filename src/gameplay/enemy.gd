@@ -97,6 +97,17 @@ var _state_tick: int = 0
 var _cooldown_remaining: int = 0
 var _base_visual_color: Color = Color.WHITE
 
+## MANDAT AUTONOME v3 Phase 3 (Marée de Sable, GDD Terre §2 : "ralentissant
+## et entravant les ennemis touchés") — première source de ralentissement
+## du jeu, générique plutôt que spécifique à ce seul pouvoir (n'importe
+## quelle future compétence "contrôle" pourra appeler apply_slow() sans
+## dupliquer cet état). Un multiplicateur qui EXPIRE par compte de ticks
+## (même discipline que _recoil_tick/_cooldown_remaining ci-dessus),
+## jamais un Timer — cohérent avec le reste de cette classe, tout en
+## ticks physiques comptés à la main.
+var _slow_multiplier: float = 1.0
+var _slow_ticks_remaining: int = 0
+
 signal hit(amount: float)
 
 ## Nœud visuel de la cible — `Placeholder` (Polygon2D géométrique) sur le
@@ -146,6 +157,10 @@ func _physics_process(_delta: float) -> void:
 		return
 	if _cooldown_remaining > 0:
 		_cooldown_remaining -= 1
+	if _slow_ticks_remaining > 0:
+		_slow_ticks_remaining -= 1
+		if _slow_ticks_remaining <= 0:
+			_slow_multiplier = 1.0
 	_run_ai()
 	_update_visual_bob()
 	# `move_and_slide()` UNIQUEMENT si un vrai déplacement est demandé (pas
@@ -162,6 +177,16 @@ func _physics_process(_delta: float) -> void:
 
 func is_dead() -> bool:
 	return stats.is_dead()
+
+
+## Ralentissement temporaire (Marée de Sable) — écrase toujours l'effet en
+## cours par le plus récent (jamais cumulatif, jamais un stack de
+## multiplicateurs qui pourrait s'approcher de 0 après 2 vagues) : un
+## contrôle qui s'additionnerait sans limite serait un piège de boucle
+## infinie, pas un choix de design demandé par la bible.
+func apply_slow(multiplier: float, duration_ticks: int) -> void:
+	_slow_multiplier = clampf(multiplier, 0.0, 1.0)
+	_slow_ticks_remaining = duration_ticks
 
 
 ## `source_position` sert à orienter le recul (toujours opposé à l'attaque,
@@ -302,13 +327,14 @@ func _chase_velocity(to_player: Vector2, dist: float) -> Vector2:
 	if dist < 0.0001:
 		return Vector2.ZERO
 	var dir: Vector2 = to_player / dist
+	var speed: float = stats.move_speed_px * _slow_multiplier
 	if archetype == Archetype.RANGED:
 		if dist > preferred_range_px + range_tolerance_px:
-			return dir * stats.move_speed_px
+			return dir * speed
 		if dist < preferred_range_px - range_tolerance_px:
-			return -dir * stats.move_speed_px
+			return -dir * speed
 		return Vector2.ZERO
-	return dir * stats.move_speed_px
+	return dir * speed
 
 
 ## Lisibilité du télégraphe (GDD §10, "grosses attaques télégraphiées" —

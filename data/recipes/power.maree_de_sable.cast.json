@@ -1,0 +1,23 @@
+{
+  "id": "power.maree_de_sable.cast",
+  "family": "line_wave",
+  "importance_tier": 2,
+  "layers": [
+    { "type": "anticipation", "primitive": "converge",     "start_tick": 0,  "end_tick": 14, "degradable": false, "scale_px": 22 },
+    { "type": "core",         "primitive": "beamSegment",  "start_tick": 8,  "end_tick": 24, "degradable": false, "scale_px": 90, "width_px": 30 },
+    { "type": "contact",      "primitive": "dustKick",     "start_tick": 14, "end_tick": 22, "degradable": true,  "scale_px": 18 },
+    { "type": "contact",      "primitive": "smokePuff",    "start_tick": 22, "end_tick": 38, "degradable": true,  "scale_px": 16 }
+  ],
+  "dissipation_profile": { "value_mult": 0.5, "saturation_mult": 0.5, "opacity_mult": 0.4, "duration_ticks": 16 },
+  "palette_id": "terre",
+  "feedback": "medium",
+  "sfx_markers": [ { "tick": 14, "event": "maree_de_sable_impact" } ],
+  "limits": { "particles": 5, "sprites": 4, "persistent_ticks": 38, "overdraw_budget": 0.6 },
+  "lifecycle": {
+    "cancellable_before": "release",
+    "owner_death_policy": "finish_core_then_stop_secondary",
+    "scene_change_policy": "stop_immediately",
+    "max_lifetime_ticks": 42
+  },
+  "notes": "Archétype de cast 'line_wave' (Phase 3, MANDAT AUTONOME v3, nouveau : ni un balayage en arc comme Bras-Faux/Poing Tellurique, ni un coup frontal comme Poing Belluaire — une vague qui PART du joueur et VOYAGE en ligne droite) — RANK_ZERO_POWER_SKILL_BIBLE v0.4 'Terre' §2, Marée de Sable (Tier 2, ligne, contrôle) : 'Une vague de sable déferle sur une ligne devant Rank Zero, ralentissant et entravant les ennemis touchés.' Référence archivée docs/references/terre/maree_de_sable.png, 4 temps : 1.Préparation (pose neutre) 2.Lancement (mains poussent en avant, le sable commence) 3.Déferlement (grande vague de sable/poussière avec des pointes qui voyage sur une ligne, gravats visibles) 4.Fin (le sable retombe, poussière résiduelle). Traduit en 38 ticks (0,63s) : anticipation 0-14 (converge, le sable se rassemble entre les mains — plus court que Poing Tellurique/18 ticks : cette compétence n'a pas de 'coup' à charger, juste de la matière à invoquer avant de la lancer), core 8-24 (beamSegment — SEULE primitive du registre explicitement documentée pour 'l'archétype de cast projection avant... un tir qui part du joueur en ligne droite', chevauche la fin de l'anticipation comme converge/groundRing sur Poing Tellurique — scale_px=90 correspond à MAREE_DE_SABLE_RANGE_PX côté gameplay, largeur 30 = 2x MAREE_DE_SABLE_HALF_WIDTH_PX), contact 14-22 (dustKick, le sable qui gicle au passage de la vague), contact/conséquence 22-38 (smokePuff, poussière qui retombe après le passage — 'Fin' de la planche). Portée/largeur/dégâts/ralentissement/cooldown NE sont PAS dans cette recette (§8.1) : côté gameplay dans player.gd, constantes MAREE_DE_SABLE_*. Palette 'terre' RÉUTILISÉE (pas une nouvelle signature, 2e compétence de cette Classe après Poing Tellurique) : data/palettes/terre.json étendue (rôles 'ocre clair' et 'poussière pâle') pour couvrir beamSegment/smokePuff en plus d'impactFlashFrame/dustKick — aucune nouvelle couleur, la référence montre exactement ce sable ocre/tan déjà mesuré. degradable=true sur dustKick/smokePuff (conséquences du passage, sacrifiables sous pression de budget) ; converge/beamSegment non-degradable (sans eux, la vague elle-même ne se lit plus)."
+}

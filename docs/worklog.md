@@ -6587,3 +6587,71 @@ hasard sans debugger headless — pas un changement de gameplay, un
 paramètre de dev uniquement) : à tick 30, des segments de fissure brun
 radiant depuis le point d'impact sont visibles à l'écran, distincts du
 burst gris d'impactStar — correspond à la référence.
+
+## 2026-08-22 — MANDAT AUTONOME v3 : Phase 3, Marée de Sable (Terre, Tier 2)
+
+**Choix explicite** : parmi les 11 compétences manquantes, priorité à
+l'ordre de déblocage verrouillé (tier le plus bas d'abord). Les 3 tier 1
+existent déjà. Des 2 tier 2 restantes (Corbeau Pâle/Invocateur, Marée de
+Sable/Terre), Marée de Sable choisie pour cette passe — même Classe que
+Poing Tellurique déjà vivant (palette/archétype de départ partagés,
+risque le plus bas pour une seule compétence livrée et vérifiée de bout
+en bout, conformément à la consigne du mandat "une compétence terminée
+vaut mieux que trois à moitié faites").
+
+**Référence** (`docs/references/terre/maree_de_sable.png`) : "Une vague
+de sable déferle sur une ligne devant Rank Zero, ralentissant et
+entravant les ennemis touchés" (Tier 2, LIGNE, CONTRÔLE). 4 temps :
+Préparation/Lancement/Déferlement/Fin.
+
+**Nouvel archétype de cast `line_wave`** (aucun des archétypes existants
+— arc de mêlée, coup frontal — ne correspond à "une vague qui voyage en
+ligne droite") : `beamSegment`, seule primitive du registre déjà
+documentée pour ce cas exact ("l'archétype de cast 'projection avant'...
+un tir qui part du joueur en ligne droite", encore sans exemple concret
+avant cette passe). `data/recipes/power.maree_de_sable.cast.json` :
+converge (anticipation, le sable se rassemble) → beamSegment (core, la
+vague voyage) → dustKick (contact, gicle au passage) → smokePuff
+(conséquence, poussière qui retombe). Palette `terre` RÉUTILISÉE, 2
+usages étendus (`ocre clair`→beamSegment, `poussière pâle`→smokePuff)
+sans nouvelle couleur — la référence montre exactement ce sable déjà
+mesuré dans cette palette.
+
+**Nouveau : ciblage en LIGNE** (`Targeting.enemies_in_line()`,
+`src/gameplay/targeting.gd`) — distinct du cône `enemies_in_arc()` déjà
+utilisé par Bras-Faux/Poing Tellurique : une ligne garde une largeur
+CONSTANTE sur toute sa portée (projection avant/latérale sur `facing`/
+sa perpendiculaire), un cône s'élargit avec la distance. Premher usage
+réel de cette forme dans le jeu.
+
+**Nouveau : ralentissement** (`Enemy.apply_slow()`, `src/gameplay/
+enemy.gd`) — première mécanique de "contrôle" du jeu, générique plutôt
+que spécifique à cette seule compétence (état à expiration par compte
+de ticks, jamais cumulatif — le plus récent écrase toujours l'effet en
+cours). Consommé dans `_chase_velocity()` (multiplie `stats.move_speed_px`).
+
+**Gameplay** (`src/gameplay/player.gd`) : `_start_maree_de_sable()`/
+`_advance_maree_de_sable()`/`_try_hit_maree_de_sable()` — même
+construction 3 phases que Poing Tellurique (aucun déplacement
+automatique). Portée 90px (vs 44px pour un poing — "une vague voyage"),
+demi-largeur 15px, dégâts 8 (le plus faible des 4 compétences vivantes —
+Tier CONTRÔLE, pas dégâts), ralentissement ×0,5 pendant 90 ticks
+(1,5s). Enregistrée dans `IMPLEMENTED_SKILL_HANDLERS`/
+`IMPLEMENTED_SKILL_COOLDOWN_GETTERS` (slot "power2", tier 2 de Terre —
+même mapping que Bras-Faux/tier 2 de Monstrification).
+
+**Vérification** : 4 nouveaux checks (`tools/smoke_test_gameplay.gd`,
+`_check_maree_de_sable()`) — démarrage+anim, ligne touche la cible dans
+l'axe MAIS épargne une cible décalée latéralement (au-delà de la
+demi-largeur) ET une cible au-delà de la portée (2 angles distincts,
+jamais testés ensemble avant sur un cône), ralentissement appliqué
+uniquement à la cible touchée, fin+cooldown. `run_gameplay_smoke_test.sh`
+80/80 vert. Capture réelle (`capture_scene.gd --mode=player_action
+--action=power2 --active_power=terre --level=3`) : ligne de segments
+ocre visible s'étendant du joueur, distincte du burst blanc de contact —
+confirme le rendu "ligne qui voyage" à l'écran, pas seulement en test.
+
+**Non fait** : Corbeau Pâle (Invocateur, tier 2) et les 8 compétences
+restantes (tiers 3-5) — hors budget de cette session, aucun blocage
+technique identifié pour la suite (même méthode directement
+réutilisable). Enchaîne sur Phase 4 (housekeeping) sans nouveau prompt.

@@ -227,6 +227,23 @@ const POING_TELLURIQUE_COOLDOWN_TICKS := 200  # ~3,3s @ 60/s, TUNABLE (non chiff
 const PoingTelluriqueRecipeId := "power.poing_tellurique.cast"
 const POING_TELLURIQUE_CAST_SEED := 51003  # Addendum A §A.5, jamais l'horloge murale.
 
+## Marée de Sable (Terre, Tier 2) — MANDAT AUTONOME v3 Phase 3. GDD :
+## "Une vague de sable déferle sur une ligne devant Rank Zero, ralentissant
+## et entravant les ennemis touchés." Portée/largeur NON chiffrées par le
+## GDD : valeurs TUNABLE, plus longue mais plus étroite qu'un arc de mêlée
+## (une "vague en ligne" voyage, un poing/balayage ne voyage pas).
+const MAREE_DE_SABLE_ANTICIPATION_TICKS := 14
+const MAREE_DE_SABLE_RELEASE_TICKS := 10
+const MAREE_DE_SABLE_RECOVERY_TICKS := 18
+const MAREE_DE_SABLE_RANGE_PX := 90.0  # ~2,9m, plus long que Poing Tellurique (44px) — une vague voyage.
+const MAREE_DE_SABLE_HALF_WIDTH_PX := 15.0
+const MAREE_DE_SABLE_DAMAGE := 8.0  # TUNABLE, la plus faible des 4 mêlée/ligne — Tier CONTRÔLE, pas dégâts.
+const MAREE_DE_SABLE_SLOW_MULTIPLIER := 0.5  # vitesse divisée par 2, TUNABLE.
+const MAREE_DE_SABLE_SLOW_DURATION_TICKS := 90  # 1,5s @ 60/s, TUNABLE.
+const MAREE_DE_SABLE_COOLDOWN_TICKS := 220  # légèrement au-dessus de Poing Tellurique (contrôle > dégâts).
+const MareeDeSableRecipeId := "power.maree_de_sable.cast"
+const MAREE_DE_SABLE_CAST_SEED := 51004  # Addendum A §A.5, jamais l'horloge murale.
+
 @export var stats: Stats = Stats.new()
 
 ## Direction de face courante (8 valeurs), utile aux futures frames
@@ -369,6 +386,12 @@ var _poing_tellurique_tick: int = 0
 var _poing_tellurique_hit_applied: bool = false
 var _poing_tellurique_cooldown_remaining: int = 0
 
+enum MareeDeSablePhase { NONE, ANTICIPATION, RELEASE, RECOVERY }
+var _maree_de_sable_phase: int = MareeDeSablePhase.NONE
+var _maree_de_sable_tick: int = 0
+var _maree_de_sable_hit_applied: bool = false
+var _maree_de_sable_cooldown_remaining: int = 0
+
 ## Recul du joueur sous un coup ennemi (G, GDD §10 — voir take_damage()
 ## ci-dessous) : même construction qu'Enemy._recoil_ticks_remaining, mais
 ## portée par sa propre timeline (ACTIVE/NONE) au lieu d'une simple
@@ -445,6 +468,8 @@ func _physics_process(_delta: float) -> void:
 		_poing_belluaire_cooldown_remaining -= 1
 	if _poing_tellurique_cooldown_remaining > 0:
 		_poing_tellurique_cooldown_remaining -= 1
+	if _maree_de_sable_cooldown_remaining > 0:
+		_maree_de_sable_cooldown_remaining -= 1
 
 	if Input.is_action_just_pressed("attack"):
 		_attack_queued = true
@@ -473,6 +498,8 @@ func _physics_process(_delta: float) -> void:
 		_advance_poing_belluaire()
 	elif _poing_tellurique_phase != PoingTelluriquePhase.NONE:
 		_advance_poing_tellurique()
+	elif _maree_de_sable_phase != MareeDeSablePhase.NONE:
+		_advance_maree_de_sable()
 	elif _combo_step > 0:
 		_advance_combo()
 	elif _hurt_phase != HurtPhase.NONE:
@@ -1017,6 +1044,78 @@ func _try_hit_poing_tellurique() -> void:
 	CombatFeedback.register_hit("medium", true, "heavy_impact", "light", dir, true)
 
 
+## Marée de Sable — même construction que Poing Tellurique (3 phases,
+## aucun déplacement automatique). Placeholder visuel : "coup1" partagé
+## avec Poing Tellurique (même famille Terre, aucune ambiguïté avec les
+## 2 pouvoirs de Monstrification "coup2"/"coup3") — art dédié encore à
+## générer, cf. note similaire sur _start_poing_tellurique().
+func _start_maree_de_sable() -> void:
+	if stats.is_dead() or _action_lock or _maree_de_sable_cooldown_remaining > 0:
+		return
+	_action_lock = true
+	_maree_de_sable_phase = MareeDeSablePhase.ANTICIPATION
+	_maree_de_sable_tick = 0
+	_maree_de_sable_hit_applied = false
+	_sprite.play("coup1")
+
+	var dir := facing
+	if dir.length_squared() < 0.0001:
+		dir = Vector2.DOWN
+	dir = dir.normalized()
+	VfxRecipeRegistry.play(MareeDeSableRecipeId, {
+		"origin": global_position,
+		"seed": MAREE_DE_SABLE_CAST_SEED,
+		"direction": dir,
+	})
+
+
+func _advance_maree_de_sable() -> void:
+	_maree_de_sable_tick += 1
+	velocity = Vector2.ZERO
+	match _maree_de_sable_phase:
+		MareeDeSablePhase.ANTICIPATION:
+			if _maree_de_sable_tick >= MAREE_DE_SABLE_ANTICIPATION_TICKS:
+				_maree_de_sable_phase = MareeDeSablePhase.RELEASE
+				_maree_de_sable_tick = 0
+		MareeDeSablePhase.RELEASE:
+			if _maree_de_sable_tick == 1 and not _maree_de_sable_hit_applied:
+				_try_hit_maree_de_sable()
+				_maree_de_sable_hit_applied = true
+			if _maree_de_sable_tick >= MAREE_DE_SABLE_RELEASE_TICKS:
+				_maree_de_sable_phase = MareeDeSablePhase.RECOVERY
+				_maree_de_sable_tick = 0
+		MareeDeSablePhase.RECOVERY:
+			if _maree_de_sable_tick >= MAREE_DE_SABLE_RECOVERY_TICKS:
+				_end_maree_de_sable()
+
+
+func _end_maree_de_sable() -> void:
+	_maree_de_sable_phase = MareeDeSablePhase.NONE
+	_maree_de_sable_tick = 0
+	_action_lock = false
+	_maree_de_sable_cooldown_remaining = MAREE_DE_SABLE_COOLDOWN_TICKS
+
+
+## Ligne devant le joueur (Targeting.enemies_in_line(), pas un cône —
+## une vague garde une largeur constante sur toute sa portée, contrairement
+## à un arc de mêlée) : dégâts + ralentissement (apply_slow(), Enemy.gd)
+## sur TOUS les ennemis touchés, "entravant" de la fiche.
+func _try_hit_maree_de_sable() -> void:
+	var dir := facing
+	if dir.length_squared() < 0.0001:
+		dir = Vector2.DOWN
+	dir = dir.normalized()
+	var targets: Array = Targeting.enemies_in_line(get_tree(), global_position, dir, MAREE_DE_SABLE_RANGE_PX, MAREE_DE_SABLE_HALF_WIDTH_PX)
+	if targets.is_empty():
+		return
+	for target in targets:
+		target.take_damage(MAREE_DE_SABLE_DAMAGE, global_position)
+		if target.has_method("apply_slow"):
+			target.apply_slow(MAREE_DE_SABLE_SLOW_MULTIPLIER, MAREE_DE_SABLE_SLOW_DURATION_TICKS)
+
+	CombatFeedback.register_hit("medium", true, "heavy_impact", "light", dir, true)
+
+
 func is_dead() -> bool:
 	return stats.is_dead()
 
@@ -1054,6 +1153,10 @@ func get_poing_tellurique_cooldown_ratio() -> float:
 	return float(_poing_tellurique_cooldown_remaining) / float(POING_TELLURIQUE_COOLDOWN_TICKS)
 
 
+func get_maree_de_sable_cooldown_ratio() -> float:
+	return float(_maree_de_sable_cooldown_remaining) / float(MAREE_DE_SABLE_COOLDOWN_TICKS)
+
+
 ## Amendement GDD Pouvoir/déblocage (confirmé par Milan, docs/worklog.md :
 ## 1 seul Pouvoir par run tiré au hasard — RunState.active_power — 5
 ## compétences débloquées par palier de niveau, ordre FIXE par Pouvoir).
@@ -1068,12 +1171,14 @@ const IMPLEMENTED_SKILL_HANDLERS := {
 	"bras_faux": "_start_bras_faux",
 	"poing_belluaire": "_start_poing_belluaire",
 	"poing_tellurique": "_start_poing_tellurique",
+	"maree_de_sable": "_start_maree_de_sable",
 }
 const IMPLEMENTED_SKILL_COOLDOWN_GETTERS := {
 	"gueule_vide": "get_power1_cooldown_ratio",
 	"bras_faux": "get_bras_faux_cooldown_ratio",
 	"poing_belluaire": "get_poing_belluaire_cooldown_ratio",
 	"poing_tellurique": "get_poing_tellurique_cooldown_ratio",
+	"maree_de_sable": "get_maree_de_sable_cooldown_ratio",
 }
 
 
@@ -1434,6 +1539,8 @@ func _on_sprite_animation_finished() -> void:
 		return  # même discipline (_end_poing_belluaire())
 	if _poing_tellurique_phase != PoingTelluriquePhase.NONE:
 		return  # même discipline (_end_poing_tellurique())
+	if _maree_de_sable_phase != MareeDeSablePhase.NONE:
+		return  # même discipline (_end_maree_de_sable())
 	if _hurt_phase != HurtPhase.NONE:
 		return  # le recul gère son propre verrou via sa timeline de ticks (_end_hurt())
 	if _sprite.animation == "mort":
@@ -1452,6 +1559,7 @@ func die() -> void:
 	_bras_faux_phase = BrasFauxPhase.NONE
 	_poing_belluaire_phase = PoingBelluairePhase.NONE
 	_poing_tellurique_phase = PoingTelluriquePhase.NONE
+	_maree_de_sable_phase = MareeDeSablePhase.NONE
 	_action_lock = true
 	_sprite.play("mort")
 	Sfx.play("death")

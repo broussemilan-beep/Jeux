@@ -62,6 +62,7 @@ func _ready() -> void:
 	await _check_bras_faux()
 	await _check_poing_belluaire()
 	await _check_poing_tellurique()
+	await _check_maree_de_sable()
 	await _check_power_slot_gating()
 	await _check_player_recoils_on_taking_damage()
 	await _check_crawler_chases_and_hits_player()
@@ -1387,6 +1388,104 @@ func _check_poing_tellurique() -> void:
 	enemy_front.queue_free()
 	enemy_side.queue_free()
 	enemy_outside.queue_free()
+	await get_tree().physics_frame
+
+
+## MANDAT AUTONOME v3 Phase 3 — Marée de Sable (Terre, tier 2, palier
+## niveau 3, slot "power2" comme Bras-Faux/tier 2 de Monstrification).
+## Vérifie la forme LIGNE (pas un cône comme Bras-Faux/Poing Tellurique) :
+## un ennemi dans l'axe est touché, un ennemi decalé lateralement au-dela
+## de la demi-largeur est epargne, un ennemi au-dela de la portee est
+## epargne — 3 angles distincts de enemies_in_arc(). Verifie aussi le
+## ralentissement (apply_slow(), Enemy.gd) sur la cible touchee.
+func _check_maree_de_sable() -> void:
+	await _wait_until(func(): return not _player._action_lock, Player.MAREE_DE_SABLE_RECOVERY_TICKS + 5)
+
+	RunState.active_power = "terre"
+	_player.stats.level = 3  # palier de Marée de Sable (tier 2)
+
+	_player.global_position = Vector2(200, 2300)
+	_player.velocity = Vector2.ZERO
+	_player.facing = Vector2.RIGHT
+	var sprite: AnimatedSprite2D = _player.get_node("AnimatedSprite2D")
+
+	var enemy_in_line := EnemyScene.instantiate()
+	enemy_in_line.name = "MareeDeSableInLine"
+	enemy_in_line.global_position = _player.global_position + Vector2(60, 0)  # forward 60 <= 90, lateral 0 <= 15
+	add_child(enemy_in_line)
+
+	var enemy_lateral_outside := EnemyScene.instantiate()
+	enemy_lateral_outside.name = "MareeDeSableLateralOutside"
+	enemy_lateral_outside.global_position = _player.global_position + Vector2(60, 30)  # forward 60, lateral 30 > 15
+	add_child(enemy_lateral_outside)
+
+	var enemy_beyond_range := EnemyScene.instantiate()
+	enemy_beyond_range.name = "MareeDeSableBeyondRange"
+	enemy_beyond_range.global_position = _player.global_position + Vector2(150, 0)  # forward 150 > 90
+	add_child(enemy_beyond_range)
+
+	await get_tree().physics_frame
+
+	var hp_in_line_before: float = enemy_in_line.stats.hp
+	var hp_lateral_outside_before: float = enemy_lateral_outside.stats.hp
+	var hp_beyond_range_before: float = enemy_beyond_range.stats.hp
+
+	Input.action_press("power2")
+	await get_tree().physics_frame
+	Input.action_release("power2")
+	var started: bool = await _wait_until(func(): return _player._maree_de_sable_phase != Player.MareeDeSablePhase.NONE, 5)
+	var anim_during: String = sprite.animation
+
+	await _wait_until(
+		func(): return enemy_in_line.stats.hp < hp_in_line_before,
+		Player.MAREE_DE_SABLE_ANTICIPATION_TICKS + Player.MAREE_DE_SABLE_RELEASE_TICKS + 5)
+	var hp_in_line_after: float = enemy_in_line.stats.hp
+	var hp_lateral_outside_after: float = enemy_lateral_outside.stats.hp
+	var hp_beyond_range_after: float = enemy_beyond_range.stats.hp
+	var in_line_slowed: bool = enemy_in_line._slow_multiplier < 1.0 and enemy_in_line._slow_ticks_remaining > 0
+	var lateral_outside_not_slowed: bool = enemy_lateral_outside._slow_multiplier == 1.0
+
+	var ended: bool = await _wait_until(
+		func(): return _player._maree_de_sable_phase == Player.MareeDeSablePhase.NONE,
+		Player.MAREE_DE_SABLE_RELEASE_TICKS + Player.MAREE_DE_SABLE_RECOVERY_TICKS + 5)
+	var action_unlocked_after: bool = not _player._action_lock
+
+	Input.action_press("power2")
+	await get_tree().physics_frame
+	Input.action_release("power2")
+	var maree_de_sable_started_during_cooldown: bool = _player._maree_de_sable_phase != Player.MareeDeSablePhase.NONE
+
+	_checks.append({
+		"name": "maree_de_sable_input_starts_state_and_plays_placeholder_anim",
+		"pass": started and anim_during == "coup1",
+		"detail": {"started": started, "anim": anim_during},
+	})
+	_checks.append({
+		"name": "maree_de_sable_hits_line_spares_lateral_and_beyond_range",
+		"pass": hp_in_line_after < hp_in_line_before and hp_lateral_outside_after == hp_lateral_outside_before and hp_beyond_range_after == hp_beyond_range_before,
+		"detail": {
+			"hp_in_line_before": hp_in_line_before, "hp_in_line_after": hp_in_line_after,
+			"hp_lateral_outside_before": hp_lateral_outside_before, "hp_lateral_outside_after": hp_lateral_outside_after,
+			"hp_beyond_range_before": hp_beyond_range_before, "hp_beyond_range_after": hp_beyond_range_after,
+		},
+	})
+	_checks.append({
+		"name": "maree_de_sable_slows_target_hit_only",
+		"pass": in_line_slowed and lateral_outside_not_slowed,
+		"detail": {"in_line_slowed": in_line_slowed, "lateral_outside_not_slowed": lateral_outside_not_slowed},
+	})
+	_checks.append({
+		"name": "maree_de_sable_ends_and_unlocks_then_cooldown_blocks_second_cast",
+		"pass": ended and action_unlocked_after and not maree_de_sable_started_during_cooldown,
+		"detail": {
+			"ended": ended, "action_unlocked_after": action_unlocked_after,
+			"maree_de_sable_started_during_cooldown": maree_de_sable_started_during_cooldown,
+		},
+	})
+
+	enemy_in_line.queue_free()
+	enemy_lateral_outside.queue_free()
+	enemy_beyond_range.queue_free()
 	await get_tree().physics_frame
 
 
