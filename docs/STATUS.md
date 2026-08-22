@@ -38,13 +38,13 @@ asymétriques pour Monstrification : 1/3/6/14/18). Slots `power1`..
 | Invocateur | 3 | Poing du Colosse | ❌ manquante |
 | Invocateur | 4 | Œil Sans Regard | ❌ manquante |
 | Invocateur | 5 | Serpent Creux | ❌ manquante |
-| Terre | 1 | Poing Tellurique | ✅ |
-| Terre | 2 | Marée de Sable | ✅ (2026-08-22, MANDAT AUTONOME v3) |
+| Terre | 1 | Poing Tellurique | ✅ (retuning 2026-08-22 : bug de timing structurel corrigé — `groundRing` s'éteignait pile au moment du contact, cf. "Gaps de fidélité connus") |
+| Terre | 2 | Marée de Sable | ✅ (2026-08-22, MANDAT AUTONOME v3 ; retuning 2026-08-22 : intensité des couches augmentée, gap de texture `beamSegment` non résolu, cf. "Gaps de fidélité connus") |
 | Terre | 3 | Carapace | ❌ manquante |
 | Terre | 4 | Effondrement | ❌ manquante |
 | Terre | 5 | Fissure Éruptive | ❌ manquante |
-| Monstrification | 1 | Poing Belluaire | ✅ (fragments VFX invisibles corrigés 2026-08-22, `converge.gd`) |
-| Monstrification | 2 | Bras-Faux | ✅ (tier corrigé 2026-08-22 : `data/pouvoirs/monstrification.json` fait autorité, "3" ci-dessus était une erreur de transcription) |
+| Monstrification | 1 | Poing Belluaire | ✅ (sprite dédié réel depuis 2026-08-22 : poing massif/rond, `create_character_state` sur le Cendre en jeu — remplace `coup3` en placeholder ; fragments VFX `converge.gd` corrigés le même jour) |
+| Monstrification | 2 | Bras-Faux | ✅ (sprite dédié réel depuis 2026-08-22 : bras allongé/tendineux, `create_character_state` sur le Cendre en jeu — remplace `coup2` en placeholder ; tier corrigé le même jour, `data/pouvoirs/monstrification.json` fait autorité, "3" était une erreur de transcription) |
 | Monstrification | 6 | Mâchoire | ❌ manquante |
 | Monstrification | 14 | Forme Bestiale | ❌ manquante |
 | Monstrification | 18 | Pattes de Chasse | ❌ manquante |
@@ -89,28 +89,56 @@ player_action_sequence/scene), lancé via `scripts/capture_headless.sh`
 (xvfb + Vulkan logiciel — `--headless` seul casse le rendu dans ce
 sandbox, écart documenté dans `CLAUDE.md`).
 
-## Gaps de fidélité connus (mandat audit références, 2026-08-22)
+## Gaps de fidélité connus (mandat multi-agent, 2026-08-22)
 
-Bras-Faux/Poing Belluaire : le VISUEL reste un placeholder documenté
-(`_sprite.play("coup2"/"coup3")`, animation générique du combo, pas
-d'art de transformation dédié) — ne ressemble pas à leur planche
-(bras qui devient une faux organique), contrairement au comportement
-(arc/multi-cible/portée) qui lui est smoke-testé conforme. Combo de
-base (coup1/coup2/coup3) : les 3 coups sont visuellement quasi
-interchangeables, aucune arme visible sur aucun des trois — confirmé
-par comparaison frame-par-frame, pas de planche de référence pour ce
-point. Deux gaps de production connus, pas des régressions ; ampleur
-= nouvelle génération d'assets, hors scope d'une session de correctifs.
+Bras-Faux/Poing Belluaire ont désormais chacun un vrai sprite de
+transformation dédié (plus de placeholder `coup2`/`coup3`) — mais ni
+l'un ni l'autre n'est pixel-parfait avec sa planche, documenté
+honnêtement plutôt que présenté comme conforme : Bras-Faux donne un
+long membre tendineux rouge-brun mais plus proche d'une tige/lame
+anguleuse que du crochet courbé net de la référence ; Poing Belluaire
+donne une masse ronde/compacte clairement distincte de Bras-Faux
+(point de vérification principal du mandat, satisfait) mais plus
+proche du corps que la projection en diagonale de la planche. Gueule
+Vide : composition en S (tendon diagonal, mâchoire excentrée) confirmée
+conforme sur les 8 rotations et les 6 frames après une 2e passe ciblée
+— limite honnête : la désintégration finale ne fragmente plus
+littéralement le sprite (compensée par la couche VFX `shardBurst`),
+hors scope de ce mandat (composition seule). Poing Tellurique/Marée de
+Sable : un vrai bug de timing structurel trouvé et corrigé
+(`groundRing` s'éteignait pile au tick de contact, écran vide au moment
+du pic d'intensité) — Poing Tellurique "nettement amélioré", Marée de
+Sable "modestement amélioré" seulement : le gap de texture de
+`beamSegment` (crête de sable jaggy) reste entier, nécessiterait un
+changement moteur ou une nouvelle primitive VFX sprite-based, pas
+juste un réglage de recette. Deux bugs transversaux trouvés non
+corrigés, hors scope : `dust_kick.gd` a le même défaut de taille de
+particule fixe que l'ancien bug `converge.gd` (déjà corrigé) ; le
+moteur VFX (`VfxRecipeRegistry.play()`) n'a qu'un seul `origin` par
+run partagé par toutes les couches — aucun offset par couche, ce qui
+empêche par exemple le nuage de poussière résiduel de Marée de Sable de
+suivre la vague. Combo de base (coup1/coup2/coup3) : toujours
+visuellement quasi interchangeable, aucune arme visible — non retouché
+ce mandat (hors scope), nouvelle génération d'assets nécessaire.
 
-## Budgets (au 2026-08-22, fin MANDAT AUDIT FIDÉLITÉ RÉFÉRENCES)
+## Budgets (au 2026-08-22, fin mandat multi-agent coordination)
 
-PixelLab : 14 générations consommées cumulées (10 MANDAT AUTONOME v3 +
-4 cette entrée : régénération Gueule Vide, plafond 300). Meshy :
-0 crédit consommé ce mandat (plafond 150 — balance 866, walk Ranged
-récupéré gratuitement depuis un rig déjà payé).
+PixelLab (compte réel, `mcp__pixellab__get_balance`) : 449/2000
+générations consommées cumulées ce cycle (reset 2026-09-14), soit 1551
+restantes — aucun plafond arbitraire appliqué ce mandat (instruction
+explicite de Milan). Détail de ce mandat (~83 générations) : Gueule
+Vide 2e passe 3, Bras-Faux 56 (2 tentatives dont 1 jetée sur le mauvais
+character_id), Poing Belluaire 22 (1 seul essai, accepté), Terre 0
+(recette JSON uniquement, aucune génération nécessaire). Meshy : 0
+crédit consommé ce mandat par les 4 agents (pipeline 2D PixelLab
+suffisant partout, aucun besoin du fallback 3D composité).
 
 ## Prochaine priorité recommandée
 
 Continuer Phase 3 (compétences) dans l'ordre verrouillé : Corbeau Pâle
 (Invocateur, tier 2) ensuite — même méthode que Marée de Sable,
 référence déjà archivée (`docs/references/invocateur/corbeau_pale.png`).
+Deux chantiers transversaux identifiés cette session, non bloquants :
+le bug `dust_kick.gd` (taille de particule fixe) et la limite
+architecturale "un seul `origin` par run VFX" méritent une passe
+dédiée plutôt qu'un correctif de recette de plus.

@@ -22,6 +22,161 @@ garde que le 2026-08-22 (MANDAT AUTONOME v3 en cours) — au-delà de
 
 ---
 
+## 2026-08-22 — Coordination multi-agent (4 mandats dédiés) : Gueule Vide S-composition, audit Terre, sprites dédiés Bras-Faux/Poing Belluaire
+
+**Contexte** : suite au mandat d'audit précédent (entrée ci-dessous), Milan
+a envoyé 4 mandats séparés conçus pour exécution parallèle par agent
+dédié, chacun restreint à ses propres fichiers de compétence, plus un
+document de coordination fixant la seule contrainte de collision réelle
+(`data/palettes/parasite.json`, partagée Bras-Faux/Poing Belluaire —
+à ne jamais lancer en même temps) et une instruction explicite sur le
+budget : aucun plafond arbitraire PixelLab/Meshy, "un agent qui
+s'arrête après une tentative faible... livre un échec évitable, pas
+une économie." Exécuté : Gueule Vide + Terre + Bras-Faux en parallèle
+(aucun fichier en commun entre eux), Poing Belluaire retenu jusqu'à la
+fin confirmée de Bras-Faux et la confirmation explicite dans son
+rapport que `parasite.json` n'avait pas été touché.
+
+**Gueule Vide — 2e passe, composition en S.** La 1ère régénération
+(entrée précédente) avait corrigé l'identité (mâchoire+tendon, zéro
+jambe) mais produisait une composition FRONTALE/symétrique, pas la
+composition dynamique en S de la référence (tendon qui jaillit en
+diagonale du sol, mâchoire excentrée au sommet). Corrigé par un nouveau
+guide de silhouette synthétique dessiné explicitement en S (tracé
+polygonal bas-gauche → milieu-droite → haut-gauche, mâchoire EXCENTRÉE
+avec mandibules asymétriques) réinjecté dans le même pipeline prouvé
+(guide → `create_image_pixflux` strength 120 → `create_character`
+v3+reference → `animate_character` v3, 6 frames sud). Résultat vérifié
+sur les 8 rotations ET les 6 frames d'animation (pas seulement frame 0)
+: le tendon part bien du sol en biais, se recourbe deux fois, la
+mâchoire penchée est nettement excentrée — jamais un ovale frontal
+centré. Limite honnête documentée : contrairement à la 1ère version qui
+fragmentait littéralement en points épars sur les 2 dernières frames,
+cette 2e version fait un cycle ouverture/fermeture/réouverture sans
+effritement dessiné (compensé par la couche VFX `shardBurst` existante)
+— hors scope de ce mandat qui portait sur la composition, pas
+l'animation. Canvas cuit élargi de 48×48 à 56×72 (la composition en S
+est plus haute que l'ancienne mâchoire frontale compacte, rognée en
+haut sur l'ancien canvas carré). `FRAME_TICK_BOUNDS` inchangé (le
+mapping tenait déjà). Coût : 3 générations PixelLab (pixflux 1 +
+create_character v3 1 + animate_character v3 1). Capture :
+`captures/verification/2026-08-22-fidelite-gueule_vide-v2.png`.
+
+**Terre — audit d'abord, correctifs de recette ensuite.** Verdict de
+Milan ("nul à chier") volontairement pas détaillé techniquement, à
+diagnostiquer avant toute régénération. Vérifié en premier : Cendre
+reste bien en posture de combat normale sur la planche de référence
+(pas de changement corporel) — donc PAS un manque de sprite dédié
+(contrairement à Bras-Faux/Poing Belluaire), le problème est ailleurs.
+Diagnostic précis trouvé : un vrai BUG DE TIMING STRUCTUREL sur Poing
+Tellurique — `groundRing.end_tick` (18) était exactement égal au
+`start_tick` des couches de contact, donc l'anneau disparaissait pile
+au moment de l'impact ; une capture au tick 35 montrait un écran
+totalement vide là où la référence montre l'anneau qui persiste sur
+les temps 3-4. Corrigé (recette JSON uniquement, aucune génération) :
+`groundRing` scale_px 26→42 et end_tick 18→40, `converge` scale_px
+26→34 + count 9, `dustKick` scale_px 16→28 et end_tick 26→30, nouvelle
+couche `impactStar` (tick 19-34, scale_px 40). Marée de Sable :
+`converge` scale_px 22→30 + count 9, 3 nouvelles couches
+`fractureLine` à seeds distincts, `dustKick`/`smokePuff` intensité et
+fenêtre temporelle augmentées ; `beamSegment` non retouché (déjà lié à
+la vraie hitbox). `data/palettes/terre.json` : seule l'extension du
+champ `usage` du rôle "contact" pour matcher les 2 nouvelles couches
+— aucune valeur numérique changée, palette verrouillée respectée.
+Deux bugs transversaux trouvés, documentés mais NON corrigés (hors
+scope d'un mandat Terre) : `dust_kick.gd` a le même défaut de taille de
+particule fixe que l'ancien bug `converge.gd` (déjà corrigé, session
+précédente) ; le moteur VFX n'a qu'un seul `origin` par run partagé par
+toutes les couches d'une recette — aucun offset par couche, ce qui
+empêche par exemple le nuage de poussière résiduel de Marée de Sable de
+suivre le trajet de la vague (limite architecturale, pas un bug de
+recette). Verdict honnête : Poing Tellurique "nettement amélioré, plus
+embarrassant" (pas une parité pixel, les grains de poussière restent
+petits) ; Marée de Sable "modestement amélioré, pas transformé" — le
+vrai gap (texture de crête de sable jaggy sur `beamSegment`) n'est pas
+résolu par du réglage seul, nécessiterait un changement moteur ou une
+nouvelle primitive VFX sprite-based. Coût : 0 génération PixelLab (recette
+JSON uniquement). Captures : `captures/verification/
+2026-08-22-fidelite-poing_tellurique.png` et `-maree_de_sable.png`.
+
+**Bras-Faux — premier sprite de transformation réel.** Jusqu'ici
+`_start_bras_faux()` rejouait littéralement `coup2`, le combo de base à
+mains nues. Approche : `create_character_state` sur le character_id de
+Cendre RÉELLEMENT en jeu (piège trouvé et évité : un ancien
+character_id avec cape existait encore sur PixelLab, mais le vrai
+personnage en jeu depuis "R3 — régénération v3 sans cape" est
+différent — vérifié via `git log -- cendre_frames.tres` avant tout
+appel, une 1ère génération sur le mauvais character_id a été jetée,
+coût non récupéré) pour muter le bras droit en membre organique
+articulé rouge-brun, puis `animate_character` v3 (6 frames sud). Une
+1ère passe d'animation a été rejetée pour hallucination d'arme (faucille
+bleu pâle flottante — même défaut déjà documenté sur coup1/coup3),
+corrigée par reformulation du prompt sans aucun mot d'arme + exclusion
+négative explicite ("no weapon, no glow, no light trail"). Bug de
+cuisson trouvé : le rendu brut sortait ~1,5× trop grand pour le canvas
+64×64 partagé (tête/pieds tronqués), corrigé par un facteur de
+redimensionnement LANCZOS mesuré empiriquement (pas un script généraliste
+qui aurait écrasé le manifeste entier — un script ponctuel qui fusionne
+la nouvelle entrée). Verdict honnête : le bras est réellement
+transformé, silhouette nettement allongée, clairement distinct du
+poing normal du combo ET de la masse ronde attendue pour Poing
+Belluaire — mais l'écart avec la référence reste réel (planche : faucille
+courbée avec crochet net et texture tendon/chair détaillée ; résultat :
+plus proche d'une tige/lame anguleuse, moins "articulé"). Jugé
+suffisant après 2 itérations plutôt que de multiplier les tentatives à
+rendement incertain. Coût : 56 générations PixelLab (2×
+`create_character_state` dont 1 jeté sur le mauvais personnage, 2×
+`animate_character` dont 1 rejeté pour hallucination d'arme).
+`data/palettes/parasite.json` lu et vérifié conforme, NON modifié.
+Capture : `captures/verification/2026-08-22-fidelite-bras_faux.png`.
+
+**Poing Belluaire — sprite dédié, lancé après confirmation que
+Bras-Faux ne toucherait plus `parasite.json`.** Même méthode que
+Bras-Faux, avec le character_id de Cendre vérifié en amont cette fois
+(`get_character` avant tout appel, piège déjà connu évité directement).
+`create_character_state` pour fusionner bras+poing droit en masse
+ronde/compacte de muscle et chair enflée (canvas source élargi à
+64×84 pour la place nécessaire), puis `animate_character` v3 (6 frames
+sud, prompt court + exclusion négative dès le premier essai — aucune
+hallucination d'arme, accepté sans reroll). Deux bugs de cuisson
+trouvés et corrigés par mesure : facteur d'échelle LANCZOS 0,6375 pour
+le canvas partagé 64×64 (personnage source haut de 80px) ; ancrage pied
+élargi en pleine largeur pour 1 frame sur 6 (pose de fente large où la
+bande de recherche centrée du pied était trop étroite pour des jambes
+très écartées). Verdict honnête : silhouette nettement large/ronde, à
+l'opposé de la silhouette longue/fine de Bras-Faux — comparaison directe
+faite dans la capture, aucune confusion possible à l'écran (point de
+vérification principal du mandat, satisfait). Écart réel avec la
+référence : la planche montre une projection du poing plus loin devant
+le corps en diagonale avec une texture de grappes/griffes plus
+marquée ; le résultat reste une masse plus compacte, près du corps.
+Coût : 22 générations PixelLab (1 `create_character_state` + 1
+`animate_character`, aucun reroll nécessaire). Aucun appel Meshy sur
+les 4 mandats de cette entrée (pipeline 2D PixelLab suffisant partout).
+Capture : `captures/verification/2026-08-22-fidelite-poing_belluaire.
+png` (4 panneaux, incluant Bras-Faux pour contraste de silhouette).
+
+**Fusion et vérifications.** Les 4 agents ont opéré sur le même
+répertoire de travail partagé (l'isolation git worktree demandée ne
+s'est pas appliquée à cet environnement pour 3 des 4 agents — seul
+Terre a réellement travaillé dans un clone isolé, poussé séparément
+puis mergé) ; chacun n'a commité que ses propres fichiers scopés,
+vérifié après coup (aucun chevauchement, aucune collision constatée sur
+`parasite.json` ni ailleurs). Fusion dans l'ordre Gueule Vide → Bras-Faux
+→ Terre (merge propre, aucun conflit, fichiers disjoints) → Poing
+Belluaire (poussé directement en fast-forward par son propre agent).
+`scripts/run_gameplay_smoke_test.sh` et `scripts/run_vfx_recipe_smoke_test.sh`
+— `all_pass:true` après chaque étape de fusion, re-testé une dernière
+fois sur l'état final poussé (`origin/main` à `5f03ff0`). Coût total
+mesuré (compte PixelLab réel, `get_balance`) : 449/2000 générations
+consommées ce cycle (1551 restantes) — ~83 générations pour cette
+entrée complète (Gueule Vide 3 + Terre 0 + Bras-Faux 56 + Poing
+Belluaire 22 + quelques appels de vérification), aucun plafond
+arbitraire appliqué, conformément à l'instruction de Milan. 0 crédit
+Meshy consommé.
+
+---
+
 ## 2026-08-22 — MANDAT AUDIT FIDÉLITÉ RÉFÉRENCES : Gueule Vide cassé confirmé et régénéré, converge.gd corrigé, 3 gaps documentés honnêtement
 
 **Contexte** : Milan soupçonnait, sans pouvoir vérifier lui-même (Git LFS
