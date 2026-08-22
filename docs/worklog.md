@@ -5253,3 +5253,140 @@ nets).
 complète. Prochaine étape : Phase 3 (usine à compétences — Poing
 Belluaire, Poing Tellurique, archétypes de cast, preuve d'invocation
 mobile).
+
+## 2026-08-22 — MANDAT SUITE v2 : Phase 3 (Poing Belluaire + Poing Tellurique)
+
+**Blocage rencontré puis levé.** Avant d'écrire du code, recherche
+systématique (agent lecture seule) du contenu GDD/Bible pour "Poing
+Belluaire"/"Monstrification" et "Poing Tellurique"/"Terre" : ZÉRO fiche
+existante dans `docs/RANK_ZERO_MASTER_GDD.md` ni `docs/
+PRODUCTION_MANDATE_v1.md` — seule une mention de titre de phase dans ce
+worklog. Or le mandat lui-même (§3, matrice de décision) flague
+explicitement "nouvelle matière/palette signature pour un Pouvoir/
+Classe sans signature définie" et "tout contenu narratif/monde non
+explicitement fourni" comme "à valider — s'arrêter, flaguer" — deux
+pouvoirs sans AUCUNE fiche qualifient clairement pour cet arrêt.
+Documenté comme tel, en attente. Milan a alors transmis
+`RANK_ZERO_POWER_SKILL_BIBLE_v0.4.docx` ("Fiches de production
+gameplay" des 15 compétences, principe/enchaînement/interactions par
+compétence, "valeurs exactes à équilibrer avant verrouillage") — lu via
+python-docx (pandoc absent de l'environnement), débloquant la brique.
+Le blocage a duré le temps de la recherche, pas une session complète :
+dès la Bible reçue, le contenu manquant (mécanique/visuel qualitatif)
+était disponible, seules les valeurs numériques exactes restaient
+ouvertes — exactement le statut "TUNABLE" déjà appliqué à Bras-Faux.
+
+**Découverte de continuité importante** : la Bible v0.4 classe
+Bras-Faux SOUS la Classe "Monstrification" (pas "Parasite" isolément
+comme l'appelait le mandat v1) — Poing Belluaire, deuxième compétence
+de cette même famille, n'est donc PAS un "pouvoir sans signature" :
+`data/palettes/parasite.json` est réutilisée telle quelle (roles 1 et 3
+étendus dans leur champ `usage` pour couvrir `converge`/`impactStar` en
+plus de `ribbonTrail`/`arcSlash`/`impactFlashFrame` — jamais un nouveau
+`palette_id`). "Terre" en revanche est une Classe réellement nouvelle
+(zéro fiche antérieure) : `data/palettes/terre.json` est une PROPOSITION
+de première passe, dérivée directement du principe donné ("sable,
+terre, roche, poussière et gravats" — rien au-delà), documentée comme
+non verrouillée dans son propre champ `notes`, à valider par Milan comme
+signature de Classe avant que les 4 autres compétences Terre à venir
+(Marée de Sable, Éperon, Carapace, Effondrement) ne s'appuient dessus.
+
+**Poing Belluaire** (`FOR | Tier 2 | Impact lourd`) : même archétype de
+cast que Bras-Faux — exécuté PAR le joueur, pas une entité invoquée —
+mais recodé comme un NOUVEL archétype `melee_impact` (distinct de
+`melee_sweep`) puisqu'un "seul coup frontal très lourd" n'est pas un
+balayage. Implémenté dans `player.gd` en miroir exact de la timeline
+`_start_bras_faux()/_advance_bras_faux()/_end_bras_faux()/
+_try_hit_bras_faux()` (même discipline ANTICIPATION/RELEASE/RECOVERY,
+`_action_lock` pendant toute l'action, cooldown après RECOVERY) :
+50 ticks (20/4/26, plus lent que Bras-Faux 40 ticks pour vendre le
+poids), portée 40px/demi-angle 30° (plus courte et plus étroite qu'un
+balayage), dégâts 16 (> combo/Bras-Faux, "peut interrompre les attaques
+faibles"), recoil_strength_px 40 (> défaut 24, "forte valeur de
+recul"), hitstop "heavy" (vs "medium" pour Bras-Faux). Toutes ces
+valeurs sont TUNABLE (non chiffrées par la fiche v0.4, même statut que
+Bras-Faux) — choisies dans les bandes de tuning déjà posées (autonome,
+§3 de la matrice). Recette `data/recipes/power.poing_belluaire.cast.json` :
+`converge` (anticipation, la masse qui grossit dans le poing) +
+`impactStar`+`impactFlashFrame` (contact) — pas de couche "core" de
+traînée, un coup frontal n'a pas de mouvement à tracer contrairement au
+balayage de Bras-Faux (différence honnête entre archétypes plutôt
+qu'une couche copiée sans raison). Placeholder visuel : anim "coup3"
+(le plus lourd des 3 coups du combo, art dédié à la transformation du
+poing hors scope recette+logique, même discipline que "coup2"/Bras-Faux).
+
+**Poing Tellurique** (`FOR | Tier 2 | Corps-à-corps/impact`) : même
+archétype `melee_impact`. Timeline 42 ticks (18/4/20). Portée 44px/
+demi-angle 40°, dégâts 14 (entre Bras-Faux et Poing Belluaire — la fiche
+ne porte aucun qualificatif "forte"/"très lourd" pour celui-ci),
+hitstop "medium". Recette `data/recipes/power.poing_tellurique.cast.json` :
+`groundRing` (anticipation, la terre qui se fissure/remonte au sol) +
+`converge` (core, la matière qui converge dans le poing, chevauche la
+fin de l'anticipation) + `impactFlashFrame` (contact) + `dustKick`
+(contact/conséquence, "éclats/poussière", seule couche `degradable`).
+Bug de sens trouvé et corrigé AVANT le smoke test (relecture du code de
+`dust_kick.gd`, pas après coup) : `direction` y est interprété comme "le
+sens du DÉPLACEMENT qui cause le contact" et projette les éclats à
+l'opposé — correct pour un pas/dash qui laisse de la poussière derrière
+lui, FAUX pour un impact de poing qui doit projeter ses éclats DEVANT.
+Seule cette couche lit `direction` dans la recette (vérifié dans
+`ground_ring.gd`/`converge.gd`/`impact_flash_frame.gd` : aucun des trois
+ne le fait) — `_start_poing_tellurique()` passe donc `-facing` au lieu
+de `facing` au niveau de l'appel `VfxRecipeRegistry.play()`, sans
+risque pour les 3 autres couches. Placeholder visuel : anim "coup1"
+(distinct de "coup2"/Bras-Faux et "coup3"/Poing Belluaire).
+
+**Intégration** : nouvelles actions d'input `power3` (touche T) et
+`power4` (touche G) dans `project.godot` ; boutons tactiles
+`ButtonPower3`/`ButtonPower4` ("PW3"/"PW4") dans `touch_controls.tscn`,
+positionnés à gauche du joystick (aucune zone tactile existante
+chevauchée) ; icônes de cooldown `Power3`/`Power4` dans `hud.tscn` (la
+zone `Cooldowns` élargie de 160 à 186px de large pour accueillir 6
+icônes au lieu de 4, toujours dans les 640px du viewport) + getters
+`get_poing_belluaire_cooldown_ratio()`/`get_poing_tellurique_cooldown_ratio()`
+lus par `hud.gd`. Capture en jeu réel (`test_arena.tscn`) confirmée :
+6 icônes de cooldown visibles sans chevauchement, boutons tactiles PW3/
+PW4 distincts.
+
+**Bug de smoke test trouvé et corrigé** (pas un bug de gameplay réel,
+mais une leçon de méthode) : les 2 premiers essais de tests
+`_check_poing_belluaire()`/`_check_poing_tellurique()` échouaient sur
+la cible latérale (et pour Belluaire, même la cible frontale) — debug
+print a montré que la position du joueur dérivait d'environ 15px dès le
+1er tick de l'anticipation, alors que `velocity = Vector2.ZERO` est
+posé explicitement chaque tick. Cause : les ennemis de test étaient
+placés à seulement 25-28px du joueur (plus près que les 30px utilisés
+par le test Bras-Faux), chevauchant probablement leur collider au
+spawn — `move_and_slide()` résorbe cette interpénétration dès le
+premier appel, indépendamment de la vélocité demandée, ce qui suffisait
+à faire sortir une cible tout juste à la limite du cône (30-31°). Fixé
+en alignant la distance de spawn sur les 30px connus sans problème de
+Bras-Faux et en resserrant les angles latéraux de test (12°/18° au lieu
+de 15°/25°) pour garder de la marge des deux côtés plutôt que de couper
+au plus juste. `scripts/run_gameplay_smoke_test.sh` : 100% vert (2
+nouveaux triplets de checks : démarrage+anim, multi-cible dans l'arc
+sans toucher hors-arc, fin+déverrouillage+cooldown bloque un second
+cast — même couverture que Bras-Faux).
+
+**Archétypes de cast (mandat production v1 §5)** : `melee_impact` est
+un NOUVEL archétype introduit par cette brique (distinct de
+`melee_sweep`/Bras-Faux et `invocation`/Gueule Vide) — 3 archétypes
+concrets existent maintenant sur 4 nommés par le mandat ("projection
+avant" et "canalisation" restent à 0 exemple, primitives disponibles
+`beamSegment`/`spiral` mais aucune compétence documentée ne les
+réclame ; pas d'invention pour combler ce vide).
+
+**Preuve d'invocation mobile : reportée, non bloquante.** Le mandat la
+conditionne à "quand une compétence Invocateur retourne" — aucune des
+5 fiches Invocateur de la Bible v0.4 (Gueule Vide, Serpent Creux,
+Corbeau Pâle, Poing du Colosse, Œil Sans Regard) ne décrit de
+déplacement libre/suivi ("Aucune IA de suivi... aucun déplacement
+libre" reste la règle §0 du principe Invocateur) : rien à prouver
+avec le contenu actuellement fourni. Flag documenté, pas une invention
+pour occuper le créneau.
+
+**Statut Phase 3 : Poing Belluaire et Poing Tellurique terminés
+(logique + recette + palette + intégration + tests). Archétypes de
+cast : 3/4 couverts par du contenu réel. Invocation mobile : reportée,
+en attente de contenu Invocateur pertinent.** Prochaine étape : Phase 4
+(le monde — parallaxe, props, densification, Cendre 8-directions).

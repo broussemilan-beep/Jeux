@@ -52,6 +52,8 @@ func _ready() -> void:
 	await _check_animation_composer_and_camera()
 	await _check_dodge()
 	await _check_bras_faux()
+	await _check_poing_belluaire()
+	await _check_poing_tellurique()
 	await _check_player_recoils_on_taking_damage()
 	await _check_crawler_chases_and_hits_player()
 	await _check_brute_telegraphs_before_hitting()
@@ -978,6 +980,187 @@ func _check_bras_faux() -> void:
 		"detail": {
 			"ended": ended, "action_unlocked_after": action_unlocked_after,
 			"bras_faux_started_during_cooldown": bras_faux_started_during_cooldown,
+		},
+	})
+
+	enemy_front.queue_free()
+	enemy_side.queue_free()
+	enemy_outside.queue_free()
+	await get_tree().physics_frame
+
+
+## Phase 3 (MANDAT SUITE v2, RANK_ZERO_POWER_SKILL_BIBLE v0.4) : Poing
+## Belluaire (Monstrification §2), même construction que _check_bras_faux()
+## ci-dessus mais avec le cône plus étroit (30° de demi-angle, "coup
+## frontal" pas un balayage) — l'ennemi latéral est placé à 15° (dans le
+## cône) au lieu de 30° pour Bras-Faux.
+func _check_poing_belluaire() -> void:
+	await _wait_until(func(): return not _player._action_lock, Player.POING_BELLUAIRE_RECOVERY_TICKS + 5)
+
+	_player.global_position = Vector2(200, 1800)
+	_player.velocity = Vector2.ZERO
+	_player.facing = Vector2.RIGHT
+	var sprite: AnimatedSprite2D = _player.get_node("AnimatedSprite2D")
+
+	# Distance 30px (même espacement que Bras-Faux, connu sans chevauchement
+	# de collision avec le joueur) et angle latéral resserré à 12° (marge de
+	# 18° sous le demi-angle 30°) : à 25px/15° le chevauchement de collision
+	# au spawn provoquait un léger recalage de position (move_and_slide()
+	# résorbant l'interpénétration dès le 1er tick) qui suffisait à faire
+	# sortir la cible latérale du cône — corrigé en donnant de la marge des
+	# deux côtés plutôt qu'en coupant au plus juste.
+	var enemy_front := EnemyScene.instantiate()
+	enemy_front.name = "PoingBelluaireFront"
+	enemy_front.global_position = _player.global_position + Vector2(30, 0)  # 0° — dans l'arc
+	add_child(enemy_front)
+
+	var enemy_side := EnemyScene.instantiate()
+	enemy_side.name = "PoingBelluaireSide"
+	var side_dir := Vector2.RIGHT.rotated(deg_to_rad(12.0))
+	enemy_side.global_position = _player.global_position + side_dir * 30.0  # 12° — dans l'arc (demi-angle 30°)
+	add_child(enemy_side)
+
+	var enemy_outside := EnemyScene.instantiate()
+	enemy_outside.name = "PoingBelluaireOutside"
+	var outside_dir := Vector2.RIGHT.rotated(deg_to_rad(90.0))
+	enemy_outside.global_position = _player.global_position + outside_dir * 30.0  # 90° — hors arc
+	add_child(enemy_outside)
+
+	await get_tree().physics_frame
+
+	var hp_front_before: float = enemy_front.stats.hp
+	var hp_side_before: float = enemy_side.stats.hp
+	var hp_outside_before: float = enemy_outside.stats.hp
+
+	Input.action_press("power3")
+	await get_tree().physics_frame
+	Input.action_release("power3")
+	var started: bool = await _wait_until(func(): return _player._poing_belluaire_phase != Player.PoingBelluairePhase.NONE, 5)
+	var anim_during: String = sprite.animation
+
+	await _wait_until(
+		func(): return enemy_front.stats.hp < hp_front_before,
+		Player.POING_BELLUAIRE_ANTICIPATION_TICKS + Player.POING_BELLUAIRE_RELEASE_TICKS + 5)
+	var hp_front_after: float = enemy_front.stats.hp
+	var hp_side_after: float = enemy_side.stats.hp
+	var hp_outside_after: float = enemy_outside.stats.hp
+
+	var ended: bool = await _wait_until(
+		func(): return _player._poing_belluaire_phase == Player.PoingBelluairePhase.NONE, Player.POING_BELLUAIRE_RECOVERY_TICKS + 5)
+	var action_unlocked_after: bool = not _player._action_lock
+
+	Input.action_press("power3")
+	await get_tree().physics_frame
+	Input.action_release("power3")
+	var poing_belluaire_started_during_cooldown: bool = _player._poing_belluaire_phase != Player.PoingBelluairePhase.NONE
+
+	_checks.append({
+		"name": "poing_belluaire_input_starts_state_and_plays_placeholder_anim",
+		"pass": started and anim_during == "coup3",
+		"detail": {"started": started, "anim": anim_during},
+	})
+	_checks.append({
+		"name": "poing_belluaire_hits_all_enemies_in_arc_spares_enemy_outside",
+		"pass": hp_front_after < hp_front_before and hp_side_after < hp_side_before and hp_outside_after == hp_outside_before,
+		"detail": {
+			"hp_front_before": hp_front_before, "hp_front_after": hp_front_after,
+			"hp_side_before": hp_side_before, "hp_side_after": hp_side_after,
+			"hp_outside_before": hp_outside_before, "hp_outside_after": hp_outside_after,
+		},
+	})
+	_checks.append({
+		"name": "poing_belluaire_ends_and_unlocks_then_cooldown_blocks_second_cast",
+		"pass": ended and action_unlocked_after and not poing_belluaire_started_during_cooldown,
+		"detail": {
+			"ended": ended, "action_unlocked_after": action_unlocked_after,
+			"poing_belluaire_started_during_cooldown": poing_belluaire_started_during_cooldown,
+		},
+	})
+
+	enemy_front.queue_free()
+	enemy_side.queue_free()
+	enemy_outside.queue_free()
+	await get_tree().physics_frame
+
+
+## Phase 3 (MANDAT SUITE v2) : Poing Tellurique (Terre §1), même
+## construction (demi-angle 40°, ennemi latéral à 25°).
+func _check_poing_tellurique() -> void:
+	await _wait_until(func(): return not _player._action_lock, Player.POING_TELLURIQUE_RECOVERY_TICKS + 5)
+
+	_player.global_position = Vector2(200, 2100)
+	_player.velocity = Vector2.ZERO
+	_player.facing = Vector2.RIGHT
+	var sprite: AnimatedSprite2D = _player.get_node("AnimatedSprite2D")
+
+	# Même correctif de marge que Poing Belluaire ci-dessus (distance 30px,
+	# angle latéral resserré sous le demi-angle pour absorber le léger
+	# recalage de collision au spawn).
+	var enemy_front := EnemyScene.instantiate()
+	enemy_front.name = "PoingTelluriqueFront"
+	enemy_front.global_position = _player.global_position + Vector2(30, 0)  # 0° — dans l'arc
+	add_child(enemy_front)
+
+	var enemy_side := EnemyScene.instantiate()
+	enemy_side.name = "PoingTelluriqueSide"
+	var side_dir := Vector2.RIGHT.rotated(deg_to_rad(18.0))
+	enemy_side.global_position = _player.global_position + side_dir * 30.0  # 18° — dans l'arc (demi-angle 40°)
+	add_child(enemy_side)
+
+	var enemy_outside := EnemyScene.instantiate()
+	enemy_outside.name = "PoingTelluriqueOutside"
+	var outside_dir := Vector2.RIGHT.rotated(deg_to_rad(90.0))
+	enemy_outside.global_position = _player.global_position + outside_dir * 30.0  # 90° — hors arc
+	add_child(enemy_outside)
+
+	await get_tree().physics_frame
+
+	var hp_front_before: float = enemy_front.stats.hp
+	var hp_side_before: float = enemy_side.stats.hp
+	var hp_outside_before: float = enemy_outside.stats.hp
+
+	Input.action_press("power4")
+	await get_tree().physics_frame
+	Input.action_release("power4")
+	var started: bool = await _wait_until(func(): return _player._poing_tellurique_phase != Player.PoingTelluriquePhase.NONE, 5)
+	var anim_during: String = sprite.animation
+
+	await _wait_until(
+		func(): return enemy_front.stats.hp < hp_front_before,
+		Player.POING_TELLURIQUE_ANTICIPATION_TICKS + Player.POING_TELLURIQUE_RELEASE_TICKS + 5)
+	var hp_front_after: float = enemy_front.stats.hp
+	var hp_side_after: float = enemy_side.stats.hp
+	var hp_outside_after: float = enemy_outside.stats.hp
+
+	var ended: bool = await _wait_until(
+		func(): return _player._poing_tellurique_phase == Player.PoingTelluriquePhase.NONE, Player.POING_TELLURIQUE_RECOVERY_TICKS + 5)
+	var action_unlocked_after: bool = not _player._action_lock
+
+	Input.action_press("power4")
+	await get_tree().physics_frame
+	Input.action_release("power4")
+	var poing_tellurique_started_during_cooldown: bool = _player._poing_tellurique_phase != Player.PoingTelluriquePhase.NONE
+
+	_checks.append({
+		"name": "poing_tellurique_input_starts_state_and_plays_placeholder_anim",
+		"pass": started and anim_during == "coup1",
+		"detail": {"started": started, "anim": anim_during},
+	})
+	_checks.append({
+		"name": "poing_tellurique_hits_all_enemies_in_arc_spares_enemy_outside",
+		"pass": hp_front_after < hp_front_before and hp_side_after < hp_side_before and hp_outside_after == hp_outside_before,
+		"detail": {
+			"hp_front_before": hp_front_before, "hp_front_after": hp_front_after,
+			"hp_side_before": hp_side_before, "hp_side_after": hp_side_after,
+			"hp_outside_before": hp_outside_before, "hp_outside_after": hp_outside_after,
+		},
+	})
+	_checks.append({
+		"name": "poing_tellurique_ends_and_unlocks_then_cooldown_blocks_second_cast",
+		"pass": ended and action_unlocked_after and not poing_tellurique_started_during_cooldown,
+		"detail": {
+			"ended": ended, "action_unlocked_after": action_unlocked_after,
+			"poing_tellurique_started_during_cooldown": poing_tellurique_started_during_cooldown,
 		},
 	})
 

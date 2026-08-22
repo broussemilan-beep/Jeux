@@ -125,6 +125,25 @@ power2={
 ]
 }
 
+; Poing Belluaire (RANK_ZERO_POWER_SKILL_BIBLE v0.4, "Monstrification"
+; §2, Phase 3 MANDAT SUITE v2) — troisième emplacement de pouvoir
+; ("power3"), touche T au clavier, bouton tactile dédié. Câblée dans
+; Player._start_poing_belluaire().
+power3={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":84,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+
+; Poing Tellurique (RANK_ZERO_POWER_SKILL_BIBLE v0.4, "Terre" §1, Phase 3
+; MANDAT SUITE v2) — quatrième emplacement de pouvoir ("power4"), touche
+; G au clavier, bouton tactile dédié. Câblée dans Player._start_poing_tellurique().
+power4={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":71,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+
 ; Écran personnage (H5, GDD §17 : "NAME / RANK / LEVEL / FOR / AGI / INT /
 ; VIT / CLASS / SKILLS / EQUIPMENT") — touche Tab au clavier, bouton
 ; tactile dédié ("PERSO"). Bascule ouvert/fermé sur chaque pression,

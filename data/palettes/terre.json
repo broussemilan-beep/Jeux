@@ -1,0 +1,10 @@
+{
+  "palette_id": "terre",
+  "notes": "PROPOSITION de première passe (Phase 3, MANDAT SUITE v2) — Classe Terre n'a AUCUNE signature établie avant cette brique (contrairement à Monstrification/Parasite, qui réutilise sa palette existante pour Poing Belluaire). Dérivée directement du principe donné par RANK_ZERO_POWER_SKILL_BIBLE v0.4 : \"Terre — le monde devient l'arme : sable, terre, roche, poussière et gravats.\" Rien au-delà de cette liste de matières : tons terreux/minéraux (ocre, brun-gris, gris pierre), une pointe de poussière pâle pour le contact. À VALIDER PAR MILAN avant de la considérer verrouillée pour les 4 autres compétences Terre à venir (Marée de Sable, Éperon, Carapace, Effondrement) — même statut que le reste de la fiche v0.4 (\"matière/palette : à finaliser\").",
+  "roles": [
+    { "role": "signature 1 (corps principal, terre/roche)", "name": "brun-gris terreux", "value_percent": 38, "hue_deg": 32, "saturation_percent": 28, "usage": "converge/groundRing, masse de terre et roche qui se rassemble" },
+    { "role": "signature 2 (profondeur, roche compacte)", "name": "gris pierre foncé", "value_percent": 22, "hue_deg": 30, "saturation_percent": 14, "usage": "fissures/tendons de matière, profondeurs" },
+    { "role": "contact (impact, éclat minéral)", "name": "ocre clair", "value_percent": 70, "hue_deg": 40, "saturation_percent": 45, "usage": "impactFlashFrame, éclat au moment du coup" },
+    { "role": "poussière (retombée)", "name": "poussière pâle", "value_percent": 62, "hue_deg": 35, "saturation_percent": 12, "usage": "dustKick, éclats/poussière qui retombent après l'impact" }
+  ]
+}

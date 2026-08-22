@@ -55,7 +55,7 @@ offset_bottom = 6.0
 color = Color(0.55, 0.65, 0.9, 1)
 
 [node name="Cooldowns" type="Control" parent="."]
-offset_left = 470.0
+offset_left = 444.0
 offset_top = 10.0
 offset_right = 630.0
 offset_bottom = 36.0
@@ -131,6 +131,46 @@ vertical_alignment = 1
 text = "PW2"
 
 [node name="Overlay" type="ColorRect" parent="Cooldowns/Power2"]
+offset_right = 26.0
+offset_bottom = 0.0
+color = Color(0, 0, 0, 0.65)
+
+[node name="Power3" type="ColorRect" parent="Cooldowns"]
+offset_left = 128.0
+offset_right = 154.0
+offset_bottom = 26.0
+color = Color(0.55, 0.3, 0.25, 0.85)
+
+[node name="Label" type="Label" parent="Cooldowns/Power3"]
+offset_right = 26.0
+offset_bottom = 26.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 9
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "PW3"
+
+[node name="Overlay" type="ColorRect" parent="Cooldowns/Power3"]
+offset_right = 26.0
+offset_bottom = 0.0
+color = Color(0, 0, 0, 0.65)
+
+[node name="Power4" type="ColorRect" parent="Cooldowns"]
+offset_left = 160.0
+offset_right = 186.0
+offset_bottom = 26.0
+color = Color(0.55, 0.4, 0.2, 0.85)
+
+[node name="Label" type="Label" parent="Cooldowns/Power4"]
+offset_right = 26.0
+offset_bottom = 26.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 9
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "PW4"
+
+[node name="Overlay" type="ColorRect" parent="Cooldowns/Power4"]
 offset_right = 26.0
 offset_bottom = 0.0
 color = Color(0, 0, 0, 0.65)

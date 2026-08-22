@@ -149,6 +149,68 @@ const BRAS_FAUX_COOLDOWN_TICKS := 180  # 3s @ 60/s, TUNABLE (non chiffré par le
 const BrasFauxRecipeId := "power.bras_faux.cast"
 const BRAS_FAUX_CAST_SEED := 51001  # Addendum A §A.5 : jamais l'horloge murale, même discipline que GueuleVide.CAST_SEED.
 
+## Poing Belluaire (RANK_ZERO_POWER_SKILL_BIBLE v0.4, "Monstrification" §2)
+## — même archétype "frappe de zone" que Bras-Faux (EXÉCUTÉ PAR LE JOUEUR,
+## pas une entité invoquée), mais "Impact lourd" plutôt qu'un balayage :
+## "L'avant-bras et le poing grossissent... un seul coup frontal très
+## lourd... portée courte... forte valeur de recul... peut interrompre
+## les attaques faibles." Timeline volontairement plus lente que
+## Bras-Faux (50 ticks / 0,83s vs 40) pour vendre le poids : 20
+## anticipation (compression -> grossissement -> pose d'impact, 3 beats
+## narratifs du GDD dans UNE seule phase code, même discipline que
+## Bras-Faux), 4 release (contact au 1er tick, comme le combo), 26
+## recovery (retour anatomique, plus long qu'un simple retrait de
+## membrane). Portée/angle plus courts et plus étroits (coup frontal,
+## pas un balayage à 90°). Dégâts/cooldown NON chiffrés par la fiche
+## (même statut que Bras-Faux) : damage relevé au-dessus du combo/
+## Bras-Faux (16 vs 10) pour "peut interrompre les attaques faibles",
+## recoil_strength_px monté à 40 (vs 24 par défaut) pour "forte valeur
+## de recul", hitstop "heavy" (vs "medium" pour Bras-Faux) pour "gros
+## recul/hit-stop" — toutes des valeurs de départ TUNABLE, à ajuster par
+## Milan. Monstrification = même famille que Bras-Faux (la Bible v0.4
+## classe explicitement Bras-Faux SOUS "Monstrification", pas "Parasite"
+## séparément) : palette_id "parasite" RÉUTILISÉE, pas une nouvelle
+## signature — §3 de la matrice de décision n'exige de valider QUE les
+## pouvoirs "sans signature définie", ce qui n'est plus le cas ici.
+const POING_BELLUAIRE_ANTICIPATION_TICKS := 20
+const POING_BELLUAIRE_RELEASE_TICKS := 4
+const POING_BELLUAIRE_RECOVERY_TICKS := 26
+const POING_BELLUAIRE_RANGE_PX := 40.0  # ~1.25m, "portée courte"
+const POING_BELLUAIRE_HALF_ANGLE_DEG := 30.0  # arc total ~60°, "coup frontal" pas un balayage
+const POING_BELLUAIRE_DAMAGE := 16.0  # TUNABLE, > combo/Bras-Faux ("peut interrompre les attaques faibles")
+const POING_BELLUAIRE_RECOIL_PX := 40.0  # TUNABLE, > défaut 24.0 ("forte valeur de recul")
+const POING_BELLUAIRE_RECOIL_TICKS := 8
+const POING_BELLUAIRE_COOLDOWN_TICKS := 240  # 4s @ 60/s, TUNABLE (non chiffré par le GDD), > Bras-Faux (coup plus lourd)
+const PoingBelluaireRecipeId := "power.poing_belluaire.cast"
+const POING_BELLUAIRE_CAST_SEED := 51002  # Addendum A §A.5, jamais l'horloge murale.
+
+## Poing Tellurique (RANK_ZERO_POWER_SKILL_BIBLE v0.4, "Terre" §1) —
+## premier pouvoir de la Classe Terre implémenté : AUCUNE palette
+## signature existante (contrairement à Monstrification ci-dessus), donc
+## data/palettes/terre.json est une PROPOSITION de première passe dérivée
+## directement du principe donné par la fiche ("le monde devient l'arme :
+## sable, terre, roche, poussière et gravats") — tons terreux/minéraux,
+## rien d'inventé au-delà de cette liste de matières. Même archétype
+## "frappe de zone" que Bras-Faux/Poing Belluaire : "Rank Zero concentre
+## terre et roche autour de son poing puis frappe... attaque frontale
+## courte... peut toucher plusieurs ennemis proches." Timeline 42 ticks :
+## 18 anticipation (appui -> matière qui remonte), 4 release (coup/
+## impact, contact au 1er tick), 20 recovery (éclats/poussière qui
+## retombent -> retour à la normale). Pas de qualificatif "très lourd"/
+## "forte" dans la fiche (contrairement à Poing Belluaire) : damage/
+## recoil/hitstop restent au niveau Bras-Faux (medium), légèrement en
+## dessous de Poing Belluaire. Dégâts/cooldown NON chiffrés (même statut
+## que les 2 autres) : valeurs de départ TUNABLE, à ajuster par Milan.
+const POING_TELLURIQUE_ANTICIPATION_TICKS := 18
+const POING_TELLURIQUE_RELEASE_TICKS := 4
+const POING_TELLURIQUE_RECOVERY_TICKS := 20
+const POING_TELLURIQUE_RANGE_PX := 44.0  # ~1.4m, "attaque frontale courte"
+const POING_TELLURIQUE_HALF_ANGLE_DEG := 40.0  # arc total ~80°, "plusieurs ennemis proches"
+const POING_TELLURIQUE_DAMAGE := 14.0  # TUNABLE, entre Bras-Faux (10) et Poing Belluaire (16)
+const POING_TELLURIQUE_COOLDOWN_TICKS := 200  # ~3,3s @ 60/s, TUNABLE (non chiffré par le GDD)
+const PoingTelluriqueRecipeId := "power.poing_tellurique.cast"
+const POING_TELLURIQUE_CAST_SEED := 51003  # Addendum A §A.5, jamais l'horloge murale.
+
 @export var stats: Stats = Stats.new()
 
 ## Direction de face courante (8 valeurs), utile aux futures frames
@@ -241,6 +303,22 @@ var _bras_faux_tick: int = 0
 var _bras_faux_hit_applied: bool = false
 var _bras_faux_cooldown_remaining: int = 0
 
+## Poing Belluaire / Poing Tellurique — même discipline que Bras-Faux
+## ci-dessus (une timeline de ticks propre par pouvoir, _action_lock
+## pendant toute l'action : aucun des deux ne mentionne de déplacement
+## automatique dans la fiche, contrairement à Pattes de Chasse).
+enum PoingBelluairePhase { NONE, ANTICIPATION, RELEASE, RECOVERY }
+var _poing_belluaire_phase: int = PoingBelluairePhase.NONE
+var _poing_belluaire_tick: int = 0
+var _poing_belluaire_hit_applied: bool = false
+var _poing_belluaire_cooldown_remaining: int = 0
+
+enum PoingTelluriquePhase { NONE, ANTICIPATION, RELEASE, RECOVERY }
+var _poing_tellurique_phase: int = PoingTelluriquePhase.NONE
+var _poing_tellurique_tick: int = 0
+var _poing_tellurique_hit_applied: bool = false
+var _poing_tellurique_cooldown_remaining: int = 0
+
 ## Recul du joueur sous un coup ennemi (G, GDD §10 — voir take_damage()
 ## ci-dessous) : même construction qu'Enemy._recoil_ticks_remaining, mais
 ## portée par sa propre timeline (ACTIVE/NONE) au lieu d'une simple
@@ -305,6 +383,10 @@ func _physics_process(_delta: float) -> void:
 		_dodge_cooldown_remaining -= 1
 	if _bras_faux_cooldown_remaining > 0:
 		_bras_faux_cooldown_remaining -= 1
+	if _poing_belluaire_cooldown_remaining > 0:
+		_poing_belluaire_cooldown_remaining -= 1
+	if _poing_tellurique_cooldown_remaining > 0:
+		_poing_tellurique_cooldown_remaining -= 1
 
 	if Input.is_action_just_pressed("attack"):
 		_attack_queued = true
@@ -314,6 +396,12 @@ func _physics_process(_delta: float) -> void:
 
 	if Input.is_action_just_pressed("power2"):
 		_start_bras_faux()
+
+	if Input.is_action_just_pressed("power3"):
+		_start_poing_belluaire()
+
+	if Input.is_action_just_pressed("power4"):
+		_start_poing_tellurique()
 
 	if Input.is_action_just_pressed("dash"):
 		play_dash()
@@ -327,6 +415,10 @@ func _physics_process(_delta: float) -> void:
 		_advance_dodge()
 	elif _bras_faux_phase != BrasFauxPhase.NONE:
 		_advance_bras_faux()
+	elif _poing_belluaire_phase != PoingBelluairePhase.NONE:
+		_advance_poing_belluaire()
+	elif _poing_tellurique_phase != PoingTelluriquePhase.NONE:
+		_advance_poing_tellurique()
 	elif _combo_step > 0:
 		_advance_combo()
 	elif _hurt_phase != HurtPhase.NONE:
@@ -684,6 +776,156 @@ func _try_hit_bras_faux() -> void:
 	Sfx.play("heavy_impact")
 
 
+## Poing Belluaire — même construction que _start_bras_faux() ci-dessus.
+## Placeholder visuel : "coup3" (le plus lourd des 3 coups du combo léger,
+## le plus proche visuellement d'un "coup frontal très lourd" — art dédié
+## à la transformation du poing hors scope recette+logique, même
+## discipline que Bras-Faux/"coup2").
+func _start_poing_belluaire() -> void:
+	if stats.is_dead() or _action_lock or _poing_belluaire_cooldown_remaining > 0:
+		return
+	_action_lock = true
+	_poing_belluaire_phase = PoingBelluairePhase.ANTICIPATION
+	_poing_belluaire_tick = 0
+	_poing_belluaire_hit_applied = false
+	_sprite.play("coup3")
+
+	var dir := facing
+	if dir.length_squared() < 0.0001:
+		dir = Vector2.DOWN
+	dir = dir.normalized()
+	VfxRecipeRegistry.play(PoingBelluaireRecipeId, {
+		"origin": global_position,
+		"seed": POING_BELLUAIRE_CAST_SEED,
+		"direction": dir,
+	})
+
+
+func _advance_poing_belluaire() -> void:
+	_poing_belluaire_tick += 1
+	velocity = Vector2.ZERO  # aucun déplacement automatique (GDD : "un seul coup frontal").
+	match _poing_belluaire_phase:
+		PoingBelluairePhase.ANTICIPATION:
+			if _poing_belluaire_tick >= POING_BELLUAIRE_ANTICIPATION_TICKS:
+				_poing_belluaire_phase = PoingBelluairePhase.RELEASE
+				_poing_belluaire_tick = 0
+		PoingBelluairePhase.RELEASE:
+			if _poing_belluaire_tick == 1 and not _poing_belluaire_hit_applied:
+				_try_hit_poing_belluaire()
+				_poing_belluaire_hit_applied = true
+			if _poing_belluaire_tick >= POING_BELLUAIRE_RELEASE_TICKS:
+				_poing_belluaire_phase = PoingBelluairePhase.RECOVERY
+				_poing_belluaire_tick = 0
+		PoingBelluairePhase.RECOVERY:
+			if _poing_belluaire_tick >= POING_BELLUAIRE_RECOVERY_TICKS:
+				_end_poing_belluaire()
+
+
+func _end_poing_belluaire() -> void:
+	_poing_belluaire_phase = PoingBelluairePhase.NONE
+	_poing_belluaire_tick = 0
+	_action_lock = false
+	_poing_belluaire_cooldown_remaining = POING_BELLUAIRE_COOLDOWN_TICKS
+
+
+## "peut interrompre les attaques faibles" (GDD) : couvert par le recul
+## imposé à la cible (Enemy.take_damage()), pas une mécanique séparée
+## d'interruption d'attaque adverse (aucun ennemi actuel n'a d'anticipation
+## interruptible dans son propre code — inventer ce système serait hors
+## scope de cette brique).
+func _try_hit_poing_belluaire() -> void:
+	var dir := facing
+	if dir.length_squared() < 0.0001:
+		dir = Vector2.DOWN
+	dir = dir.normalized()
+	var targets: Array = Targeting.enemies_in_arc(get_tree(), global_position, dir, POING_BELLUAIRE_RANGE_PX, POING_BELLUAIRE_HALF_ANGLE_DEG)
+	if targets.is_empty():
+		return
+	for target in targets:
+		target.take_damage(POING_BELLUAIRE_DAMAGE, global_position, POING_BELLUAIRE_RECOIL_PX, POING_BELLUAIRE_RECOIL_TICKS)
+
+	CombatFeedback.trigger_hitstop("heavy")
+	CameraDirector.trigger_punch()
+	Sfx.play("heavy_impact")
+
+
+## Poing Tellurique — même construction. Placeholder visuel : "coup1"
+## (distinct de "coup2"/Bras-Faux et "coup3"/Poing Belluaire, évite toute
+## ambiguïté visuelle entre les 3 pouvoirs de mêlée pendant que l'art
+## dédié à la matière terre/roche reste à générer).
+func _start_poing_tellurique() -> void:
+	if stats.is_dead() or _action_lock or _poing_tellurique_cooldown_remaining > 0:
+		return
+	_action_lock = true
+	_poing_tellurique_phase = PoingTelluriquePhase.ANTICIPATION
+	_poing_tellurique_tick = 0
+	_poing_tellurique_hit_applied = false
+	_sprite.play("coup1")
+
+	var dir := facing
+	if dir.length_squared() < 0.0001:
+		dir = Vector2.DOWN
+	dir = dir.normalized()
+	# dustKick (data/recipes/power.poing_tellurique.cast.json) interprète
+	# `direction` comme "le sens du DÉPLACEMENT qui cause le contact" et
+	# projette ses éclats à l'opposé (dust_kick.gd : "la poussière part à
+	# l'opposé, jamais dans le sens du mouvement") — pertinent pour un pas/
+	# dash qui laisse de la poussière DERRIÈRE lui, mais un impact de poing
+	# doit au contraire projeter ses éclats DEVANT, dans le sens du coup
+	# (facing). Seule cette couche lit `direction` dans cette recette
+	# (groundRing/converge/impactFlashFrame l'ignorent, vérifié dans leurs
+	# configure()) : inverser `dir` ici est donc sans risque pour les 3
+	# autres couches et corrige la lecture pour dustKick.
+	VfxRecipeRegistry.play(PoingTelluriqueRecipeId, {
+		"origin": global_position,
+		"seed": POING_TELLURIQUE_CAST_SEED,
+		"direction": -dir,
+	})
+
+
+func _advance_poing_tellurique() -> void:
+	_poing_tellurique_tick += 1
+	velocity = Vector2.ZERO  # aucun déplacement automatique (GDD ne mentionne aucun bond, contrairement à Pattes de Chasse).
+	match _poing_tellurique_phase:
+		PoingTelluriquePhase.ANTICIPATION:
+			if _poing_tellurique_tick >= POING_TELLURIQUE_ANTICIPATION_TICKS:
+				_poing_tellurique_phase = PoingTelluriquePhase.RELEASE
+				_poing_tellurique_tick = 0
+		PoingTelluriquePhase.RELEASE:
+			if _poing_tellurique_tick == 1 and not _poing_tellurique_hit_applied:
+				_try_hit_poing_tellurique()
+				_poing_tellurique_hit_applied = true
+			if _poing_tellurique_tick >= POING_TELLURIQUE_RELEASE_TICKS:
+				_poing_tellurique_phase = PoingTelluriquePhase.RECOVERY
+				_poing_tellurique_tick = 0
+		PoingTelluriquePhase.RECOVERY:
+			if _poing_tellurique_tick >= POING_TELLURIQUE_RECOVERY_TICKS:
+				_end_poing_tellurique()
+
+
+func _end_poing_tellurique() -> void:
+	_poing_tellurique_phase = PoingTelluriquePhase.NONE
+	_poing_tellurique_tick = 0
+	_action_lock = false
+	_poing_tellurique_cooldown_remaining = POING_TELLURIQUE_COOLDOWN_TICKS
+
+
+func _try_hit_poing_tellurique() -> void:
+	var dir := facing
+	if dir.length_squared() < 0.0001:
+		dir = Vector2.DOWN
+	dir = dir.normalized()
+	var targets: Array = Targeting.enemies_in_arc(get_tree(), global_position, dir, POING_TELLURIQUE_RANGE_PX, POING_TELLURIQUE_HALF_ANGLE_DEG)
+	if targets.is_empty():
+		return
+	for target in targets:
+		target.take_damage(POING_TELLURIQUE_DAMAGE, global_position)
+
+	CombatFeedback.trigger_hitstop("medium")
+	CameraDirector.trigger_punch()
+	Sfx.play("heavy_impact")
+
+
 func is_dead() -> bool:
 	return stats.is_dead()
 
@@ -711,6 +953,14 @@ func get_power1_cooldown_ratio() -> float:
 
 func get_bras_faux_cooldown_ratio() -> float:
 	return float(_bras_faux_cooldown_remaining) / float(BRAS_FAUX_COOLDOWN_TICKS)
+
+
+func get_poing_belluaire_cooldown_ratio() -> float:
+	return float(_poing_belluaire_cooldown_remaining) / float(POING_BELLUAIRE_COOLDOWN_TICKS)
+
+
+func get_poing_tellurique_cooldown_ratio() -> float:
+	return float(_poing_tellurique_cooldown_remaining) / float(POING_TELLURIQUE_COOLDOWN_TICKS)
 
 
 ## Réaction à un coup subi. Même signature qu'Enemy.take_damage() (source_
@@ -997,6 +1247,10 @@ func _on_sprite_animation_finished() -> void:
 		return  # l'esquive gère son propre verrou via sa timeline de ticks (_end_dodge())
 	if _bras_faux_phase != BrasFauxPhase.NONE:
 		return  # Bras-Faux gère son propre verrou via sa timeline de ticks (_end_bras_faux())
+	if _poing_belluaire_phase != PoingBelluairePhase.NONE:
+		return  # même discipline (_end_poing_belluaire())
+	if _poing_tellurique_phase != PoingTelluriquePhase.NONE:
+		return  # même discipline (_end_poing_tellurique())
 	if _hurt_phase != HurtPhase.NONE:
 		return  # le recul gère son propre verrou via sa timeline de ticks (_end_hurt())
 	if _sprite.animation == "mort":
@@ -1013,6 +1267,8 @@ func die() -> void:
 	_dash_phase = DashPhase.NONE
 	_dodge_phase = DodgePhase.NONE
 	_bras_faux_phase = BrasFauxPhase.NONE
+	_poing_belluaire_phase = PoingBelluairePhase.NONE
+	_poing_tellurique_phase = PoingTelluriquePhase.NONE
 	_action_lock = true
 	_sprite.play("mort")
 	Sfx.play("death")

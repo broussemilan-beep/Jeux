@@ -21,6 +21,8 @@ const ICON_SIZE := 26.0
 @onready var _cd_dodge: ColorRect = $Cooldowns/Dodge/Overlay
 @onready var _cd_power1: ColorRect = $Cooldowns/Power1/Overlay
 @onready var _cd_power2: ColorRect = $Cooldowns/Power2/Overlay
+@onready var _cd_power3: ColorRect = $Cooldowns/Power3/Overlay
+@onready var _cd_power4: ColorRect = $Cooldowns/Power4/Overlay
 
 const HP_BAR_WIDTH := 120.0
 const XP_BAR_WIDTH := 120.0
@@ -42,6 +44,8 @@ func _process(_delta: float) -> void:
 	_set_cooldown_overlay(_cd_dodge, _player.get_dodge_cooldown_ratio())
 	_set_cooldown_overlay(_cd_power1, _player.get_power1_cooldown_ratio())
 	_set_cooldown_overlay(_cd_power2, _player.get_bras_faux_cooldown_ratio())
+	_set_cooldown_overlay(_cd_power3, _player.get_poing_belluaire_cooldown_ratio())
+	_set_cooldown_overlay(_cd_power4, _player.get_poing_tellurique_cooldown_ratio())
 
 
 ## `ratio` 1.0 = vient d'être utilisé (icône entièrement voilée) -> 0.0 =

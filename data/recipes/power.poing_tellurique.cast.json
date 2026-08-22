@@ -1,0 +1,23 @@
+{
+  "id": "power.poing_tellurique.cast",
+  "family": "melee_impact",
+  "importance_tier": 2,
+  "layers": [
+    { "type": "anticipation", "primitive": "groundRing",       "start_tick": 0,  "end_tick": 18, "degradable": false, "scale_px": 26 },
+    { "type": "core",         "primitive": "converge",         "start_tick": 8,  "end_tick": 18, "degradable": false, "scale_px": 26 },
+    { "type": "contact",      "primitive": "impactFlashFrame", "start_tick": 18, "end_tick": 22, "degradable": false },
+    { "type": "contact",      "primitive": "dustKick",         "start_tick": 18, "end_tick": 26, "degradable": true,  "scale_px": 16 }
+  ],
+  "dissipation_profile": { "value_mult": 0.5, "saturation_mult": 0.5, "opacity_mult": 0.4, "duration_ticks": 12 },
+  "palette_id": "terre",
+  "feedback": "medium",
+  "sfx_markers": [ { "tick": 18, "event": "poing_tellurique_impact" } ],
+  "limits": { "particles": 4, "sprites": 5, "persistent_ticks": 42, "overdraw_budget": 0.6 },
+  "lifecycle": {
+    "cancellable_before": "release",
+    "owner_death_policy": "finish_core_then_stop_secondary",
+    "scene_change_policy": "stop_immediately",
+    "max_lifetime_ticks": 46
+  },
+  "notes": "Archétype de cast 'melee_impact' (même famille que Poing Belluaire, Phase 3 MANDAT SUITE v2) — RANK_ZERO_POWER_SKILL_BIBLE v0.4 'Terre' §1 : 'Rank Zero concentre terre et roche autour de son poing puis frappe. La matière est arrachée ou soulevée au dernier instant... puis se brise et retombe.' Enchaînement fiche : 'appui -> matière qui remonte -> coup -> impact -> éclats/poussière -> retour à la normale' — traduit en 42 ticks (0,7s) : anticipation 0-18 (groundRing télégraphie la terre qui se fissure/remonte au sol sous le poing, §7.1 de la registry primitive : 'anneau au sol cassé ou incomplet', jamais un halo plein), core 8-18 (converge, la matière converge DANS le poing en même temps que le sol se fissure — chevauchement volontaire, même construction que le core ribbonTrail de Bras-Faux qui démarre avant la fin de l'anticipation), contact 18-22 (impactFlashFrame, coup/impact), contact/conséquence 18-26 (dustKick, 'éclats/poussière' qui volent à l'OPPOSÉ de la direction du coup — §7.1 : 'projeté à l'opposé du mouvement' — avant que tout ne retombe en recovery). Seule couche degradable=true de cette recette (dustKick) : c'est la conséquence, pas le contact lui-même, donc sacrifiable sous pression de budget sans perdre la lecture du coup. Portée/angle/dégâts/recul/cooldown NE sont PAS dans cette recette (§8.1) : côté gameplay dans player.gd, constantes POING_TELLURIQUE_*. Palette 'terre' : PREMIÈRE signature de la Classe Terre (voir data/palettes/terre.json, notes — proposition non verrouillée, à valider par Milan), contrairement à Poing Belluaire qui réutilise une signature déjà établie."
+}
