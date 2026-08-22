@@ -50,26 +50,57 @@ const CAST_SEED := 44103
 ## d'AnimatedSprite2D (qui ne peut pas exprimer des phases de durées
 ## inégales avec le pas fps uniforme de build_sprite_frames.py).
 ##
-## AUDIT FIDÉLITÉ (2026-08-22, retour Milan) : les 6 frames PixelLab
-## d'origine (créature à jambes façon mannequin générique) ne
-## ressemblaient PAS à la planche de référence (docs/references/
+## AUDIT FIDÉLITÉ (2026-08-22, retour Milan, PREMIÈRE PASSE) : les 6
+## frames PixelLab d'origine (créature à jambes façon mannequin générique)
+## ne ressemblaient PAS à la planche de référence (docs/references/
 ## invocateur/gueule_vide.png — une gueule d'encre béante SANS jambes ni
-## bras, seulement une mâchoire sur un tendon d'encre). Régénérées en
-## v3+reference (voir data/pixellab_usage.jsonl) : nouvelle séquence
-## visuelle DIFFÉRENTE de l'ancienne — frames 0-2 = mâchoire grande
-## ouverte, crocs visibles (silhouette qui se maintient/respire, pas de
-## progression nette entre elles) ; frame 3 = la morsure elle-même
-## (mâchoire qui se referme, crocs qui s'imbriquent, nettement plus
-## sombre) ; frames 4-5 = désintégration en fragments d'encre épars.
-## Bornes réadaptées à cette nouvelle lecture (l'ancien mapping tenait
-## frame 3 = "grande ouverture" et frame 4 = "crocs/fermeture" ; dans la
-## nouvelle séquence c'est frame 2 qui tient la grande ouverture et
-## frame 3 qui EST la fermeture/morsure) : frame 2 prolongée jusqu'à
-## juste avant CONTACT_TICK (10-19), frame 3 bascule PILE sur
+## bras, seulement une mâchoire sur un tendon d'encre). Régénérées une
+## première fois en v3+reference (voir data/pixellab_usage.jsonl,
+## entrées 2026-08-22T21:0x) : silhouette correcte (mâchoire+tendon, zéro
+## jambe) mais composition FRONTALE/symétrique — une mâchoire vue de
+## face, pas la composition dynamique en S que montre la référence
+## (tendon qui jaillit en diagonale depuis le sol, mâchoire penchée au
+## sommet). Corrigé écarté par Milan (`captures/verification/
+## 2026-08-22-fidelite-gueule_vide.png`, verdict "toujours pas fini").
+##
+## AUDIT FIDÉLITÉ, DEUXIÈME PASSE (2026-08-22, même journée) : nouveau
+## guide de silhouette synthétique dessiné explicitement en S (tracé
+## polygonal bas-gauche -> milieu-droite -> haut-gauche, largeur qui
+## s'amincit en montant, mâchoire EXCENTRÉE en haut avec mandibules
+## asymétriques) -> `create_image_pixflux` (strength 120) -> `create_
+## character` v3+reference -> `animate_character` v3 (6 frames, sud
+## seul). Résultat : la composition en S diagonale EST bien présente et
+## COHÉRENTE sur les 6 frames (voir data/pixellab_usage.jsonl,
+## entrées 2026-08-22T22:xx) — le tendon part du sol en biais, se
+## recourbe deux fois, et la mâchoire penchée est nettement excentrée,
+## jamais un ovale frontal centré. Lecture des frames, honnête : 0-1 =
+## mâchoire grande ouverte, crocs visibles (le tendon "respire", pas de
+## progression nette) ; 2 = début de fermeture (crocs qui se recouvrent
+## partiellement) ; 3 = la morsure (mâchoire fermée, bande sombre nette,
+## goutte qui pend) ; 4 = mâchoire toujours fermée (tenue post-morsure) ;
+## 5 = réouverture/retrait (la gueule se rouvre légèrement, une volute
+## d'encre se recourbe à la base). LIMITE CONNUE, documentée honnêtement :
+## contrairement à l'ancienne v1 (qui montrait un vrai effritement en
+## points épars sur les frames 4-5), cette séquence v2 ne fragmente PAS
+## littéralement le sprite en fin de cast — la "désintégration" reste un
+## cycle ouverture/fermeture/réouverture de la mâchoire, compensée comme
+## avant par la couche VFX shardBurst de la recette plutôt que par un
+## effritement dessiné. Le mandat de cette passe portait sur la
+## COMPOSITION (le S), pas sur l'animation — non retenté pour rester dans
+## le périmètre. Bornes de frames inchangées par rapport à la première
+## passe (le mapping tenait déjà : frame 2 = fin de préparation/débute la
+## fermeture, frame 3 = bite pile sur CONTACT_TICK) : frame 2 prolongée
+## jusqu'à juste avant CONTACT_TICK (10-19), frame 3 bascule PILE sur
 ## CONTACT_TICK (20) et tient jusqu'à 27 ("claquement brutal" simultané
-## aux dégâts, même discipline que l'ancien mapping), frames 4/5 se
-## partagent la désintégration (28-34 / 35-42). CONTACT_TICK/
-## PREP_END_TICK et les couches VFX de la recette restent inchangés.
+## aux dégâts), frames 4/5 se partagent la fin (28-34 / 35-42).
+## CONTACT_TICK/PREP_END_TICK et les couches VFX de la recette restent
+## inchangés. Canvas cuit changé de 48x48 à 56x72 (`scripts/
+## cook_character_frames.py`) : la composition en S est nettement plus
+## haute que l'ancienne mâchoire frontale compacte, un canvas carré 48x48
+## rognait la mâchoire hors cadre en haut — vérifié visuellement avant
+## de committer, `scenes/gameplay/powers/gueule_vide.tscn` (offset)
+## inchangé, l'ancrage bas (base du tendon dans la flaque) tombe déjà au
+## bon endroit par rapport à `groundRing`/`runicStamp` sans retouche.
 const FRAME_TICK_BOUNDS: Array[int] = [5, 9, 19, 27, 34, 42]
 
 @onready var _sprite: AnimatedSprite2D = $AnimatedSprite2D

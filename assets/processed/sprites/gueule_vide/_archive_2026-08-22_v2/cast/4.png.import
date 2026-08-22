@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://spsbx8pupy6u"
-path="res://.godot/imported/2.png-8f9cab8b4ba8ce3f24e86770b49499ae.ctex"
+uid="uid://c3plt5x5vlmmt"
+path="res://.godot/imported/4.png-72a6ea0fcd2c2dba05a1cfaeb1169adb.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/source/pixellab/gueule_vide/animations/cast/2.png"
-dest_files=["res://.godot/imported/2.png-8f9cab8b4ba8ce3f24e86770b49499ae.ctex"]
+source_file="res://assets/processed/sprites/gueule_vide/_archive_2026-08-22_v2/cast/4.png"
+dest_files=["res://.godot/imported/4.png-72a6ea0fcd2c2dba05a1cfaeb1169adb.ctex"]
 
 [params]
 

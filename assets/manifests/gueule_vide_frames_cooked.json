@@ -1,12 +1,12 @@
 {
   "character": "gueule_vide",
   "out_canvas": [
-    48,
-    48
+    56,
+    72
   ],
   "anchor_px": [
-    24,
-    44
+    28,
+    68
   ],
   "animations": {
     "cast": {
@@ -19,12 +19,12 @@
         "assets/processed/sprites/gueule_vide/cast/5.png"
       ],
       "canvas": [
-        48,
-        48
+        56,
+        72
       ],
       "anchor_px": [
-        24,
-        44
+        28,
+        68
       ]
     }
   }
