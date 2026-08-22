@@ -18,7 +18,11 @@ const FLASH_SHADER := preload("res://src/vfx/shaders/hit_flash.gdshader")
 const DamageNumberScript := preload("res://src/gameplay/damage_number.gd")
 const GroundDecalScript := preload("res://src/gameplay/ground_decal.gd")
 
-const FLASH_TICKS := 2
+## Phase R4 (verdict Milan, bac à sable : impact_flash_duration_ms=65) —
+## flash JAMAIS tiéré (un seul flash_sprite() pour tout coup, quel que
+## soit le poids), donc pas d'échelle à recaler ici, juste la durée
+## mesurée convertie en ticks (65/16,667 ≈ 3,9 -> 4, contre 2 avant).
+const FLASH_TICKS := 4
 const DAMAGE_NUMBER_POOL_SIZE := 16
 const DEATH_BURST_HUE_DEG := 0.0            # rouge = ennemi (§9 doc VFX, non contournable)
 const DEATH_BURST_SATURATION_PERCENT := 45.0

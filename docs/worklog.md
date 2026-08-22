@@ -5647,3 +5647,79 @@ recoupe désormais très largement R4.5/R4.6, à réconcilier plutôt qu'à
 refaire) et R3/R3bis (Monstrification/Invocation placeholders, chiffrage
 migration Cendre) restent en attente de la validation de Milan sur le
 prochain clip, comme demandé.
+
+## 2026-08-22 — Suite R4 : valeurs de game feel de Milan + items secondaires restants
+
+Milan a réglé au ressenti, dans un bac à sable dédié à UN impact isolé :
+hitstop_freeze_ms=210, knockback_distance_px=27, camera_shake_amplitude_px=6,
+impact_flash_duration_ms=65, knockback_return_curve=easeOut. Un verdict humain
+qui prime sur la table théorique du doc (plafonnée à 95ms), mais 210ms
+partout romprait le rythme d'un combo de 3 coups (3×210ms de gel cumulé
+côté cible) — les 5 valeurs ont donc été interprétées et recalées plutôt
+qu'appliquées telles quelles :
+
+- **Hitstop** : 210ms traité comme la valeur CIBLE du coup le plus lourd
+  (catastrophic), le reste de l'échelle recalé en conservant EXACTEMENT
+  les ratios de la 1re passe R4 (light≈0,48×medium, heavy≈2,2×medium,
+  catastrophic≈3,4×medium ; attaquant ≈0,54×cible) — `TARGET_HITSTOP_MS`/
+  `ATTACKER_HITSTOP_MS` (`combat_feedback.gd`) : light 30/16, medium
+  62/33, heavy 136/73, catastrophic 210/113.
+- **Shake** : 6px traité comme le nouveau plafond "heavy" (`SHAKE_PROFILES`,
+  4→6px) — light/medium non retestés par Milan, laissés tels quels plutôt
+  que rescalés sur un seul point de mesure.
+- **Flash d'impact** : jamais tiéré (un seul `flash_sprite()` pour tout
+  coup) — `HitResponse.FLASH_TICKS` 2→4 (65ms), conversion directe.
+- **Recul par défaut** : `recoil_strength_px` par défaut des 3
+  `take_damage()` (Player/Enemy/BossGateMaw) 24.0→27.0 — interprété
+  comme LA valeur de référence "non spécifiée" (les attaques déjà
+  tunées explicitement — Poing Belluaire 40, boss 26-70 — gardent leur
+  propre valeur).
+- **Courbe de recul** : linéaire (`move_toward` vers 0) remplacée par
+  une vraie courbe de POSITION ease-out — nouvelle fonction partagée
+  `AnimationComposer.ease_out_step_px()` (même `ease_out_quad()` déjà
+  utilisée par `Player._advance_dash()`, jamais une 2e courbe dupliquée),
+  réutilisée par les 3 sites de recul (Player.take_damage() côté
+  joueur, Enemy.take_damage(), BossGateMaw.take_damage()) qui
+  partageaient jusqu'ici une décroissance de vitesse linéaire quasi
+  identique copiée-collée 3 fois.
+
+**Vérification** : `run_gameplay_smoke_test.sh` 100% vert (le check
+boss_enrage, seul à lire directement l'ancien `_recoil_ticks_remaining`,
+mis à jour sur les nouveaux `_recoil_tick`/`_recoil_total_ticks`).
+
+**Restes de R4 traités dans cette passe** :
+- **Sol `gate_premiere`/`test_arena`** : capture réelle confirmant le
+  diagnostic (`assets/processed/sprites/world/floor_terrain_atlas.png`
+  bien trop saturé/contrasté, absorbe la lecture du combat). Nouvel
+  outil `tools/desaturate_floor_atlas.py` (PIL, déterministe, teinte
+  intacte — HSV : saturation ×0,62, contraste de valeur resserré autour
+  de 55%) appliqué directement sur l'atlas déjà cuit (pas de
+  régénération PixelLab, 0 crédit). Comparaison avant/après confirmée
+  par capture (saturation moyenne mesurée sur la zone de sol : 0,811 ->
+  0,620) avant de committer le changement.
+- **Chiffres de dégâts** : le fondu existait déjà (`damage_number.gd`,
+  40% finaux) mais la trajectoire était une simple montée verticale —
+  deux chiffres nés au même point (ex. Bras-Faux touchant 2 cibles)
+  restaient superposés pile l'un sur l'autre, d'où le "statique"
+  rapporté. Ajout d'une dérive latérale (`ARC_HORIZONTAL_PX`, direction
+  dérivée d'un hash déterministe de position+montant — jamais un vrai
+  hasard non seedé dans un chemin de feedback de combat, Addendum A
+  §A.5) sur la MÊME courbe ease-out partagée que le reste (x et y).
+- **Zoom caméra +20-25%** : PAS tranché — deux captures A/B produites
+  (`--mode=scene`, cam_zoom=1.0 vs 0.8) et envoyées à Milan pour
+  décision, comme demandé explicitement ("ça touche au cadrage général,
+  ne pas trancher seul"). Aucun changement de code appliqué (le zoom de
+  base du jeu reste géré par `CameraDirector.get_punch_zoom()`
+  ponctuellement, pas un `BASE_ZOOM` permanent — à ajouter seulement si
+  Milan valide l'option B).
+
+**render_detector.py (détecteur de rendu factuel) : PAS intégré cette
+passe** — Milan le décrit comme "fourni" mais le fichier est introuvable
+dans le dépôt ou ailleurs dans cette session ; demandé à Milan de le
+joindre avant de pouvoir l'intégrer/calibrer.
+
+**Statut** : valeurs de game feel + sol + chiffres de dégâts terminés et
+vérifiés (tests + captures). Zoom caméra en attente du choix de Milan
+(A ou B). render_detector.py bloqué en attente du fichier. Redeploy web
+à suivre. R3/R3bis toujours en attente du verdict de Milan sur le
+prochain clip.

@@ -27,6 +27,25 @@ static func ease_out_quad(x: float) -> float:
 	return 1.0 - (1.0 - c) * (1.0 - c)
 
 
+## Sandbox de Milan ("knockback_return_curve: easeOut") : le recul devient
+## une COURBE DE POSITION ease-out (vite puis qui s'adoucit) plutôt qu'une
+## simple décroissance linéaire de vitesse (`move_toward` vers 0) — même
+## technique que Player._advance_dash() (MOVE), la seule référence déjà
+## éprouvée d'un déplacement en ticks purs qui suit ease_out_quad(),
+## partagée ici pour ne pas la retaper 3 fois (Player.take_damage(),
+## Enemy.take_damage(), BossGateMaw.take_damage()). `tick` = le tick qui
+## VIENT d'être consommé (1-indexé, comme _dash_tick après incrémentation).
+## Retourne la distance à parcourir CE tick (pas une vitesse) — l'appelant
+## la convertit en vitesse via `* Engine.physics_ticks_per_second` pour
+## rester compatible avec `velocity` + `move_and_slide()`.
+static func ease_out_step_px(tick: int, total_ticks: int, total_distance_px: float) -> float:
+	if total_ticks <= 0:
+		return 0.0
+	var progress_before: float = ease_out_quad(float(tick - 1) / float(total_ticks))
+	var progress_after: float = ease_out_quad(float(tick) / float(total_ticks))
+	return (progress_after - progress_before) * total_distance_px
+
+
 ## `keyframes` : la liste "squash" d'une animation (voir data/
 ## animation_composer/cendre.json, _squash_notes). Remet `sprite.scale` à
 ## (1,1) par défaut puis applique le PREMIER keyframe dont la fenêtre

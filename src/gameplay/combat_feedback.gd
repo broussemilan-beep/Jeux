@@ -40,35 +40,58 @@ extends Node
 ## fourchette (45-65 -> 55, 75-95 -> 85) — valeurs de départ, pas des
 ## vérités figées (le doc le dit explicitement).
 ##
-## Phase R4 : remplacées par deux tableaux ASYMÉTRIQUES (cible gèle plus
-## longtemps que l'attaquant, convergence Gemini/ChatGPT sur le clip
-## post-correctif R1 : "hit-stop ~50-80ms côté cible / ~30-40ms côté
-## attaquant"). "medium" est calé au centre des deux fourchettes
-## (65ms cible / 35ms attaquant) ; light/heavy/catastrophic suivent le
-## même ratio que l'ancien tableau symétrique (light≈0,48×medium,
-## heavy≈2,2×medium, catastrophic≈3,4×medium) plutôt que des chiffres
-## inventés sans rapport avec le calibrage précédent. Valeurs de départ
-## À TESTER (Milan), pas verrouillées.
+## Phase R4 (1re passe) : remplacées par deux tableaux ASYMÉTRIQUES
+## (cible gèle plus longtemps que l'attaquant, convergence Gemini/
+## ChatGPT sur le clip post-correctif R1 : "hit-stop ~50-80ms côté cible
+## / ~30-40ms côté attaquant"). "medium" calé au centre des deux
+## fourchettes (65ms cible / 35ms attaquant) ; light/heavy/catastrophic
+## suivaient le même ratio que l'ancien tableau symétrique (light≈0,48×
+## medium, heavy≈2,2×medium, catastrophic≈3,4×medium).
+##
+## Phase R4 (2e passe, verdict de Milan dans un bac à sable dédié à UN
+## impact isolé) : hitstop_freeze_ms=210 — un verdict humain qui prime
+## sur la table théorique du doc (plafonnée à 95ms), mais 210ms partout
+## romprait le rythme d'un combo de 3 coups enchaînés (3×210ms de gel
+## cumulé côté cible). Le nombre de Milan est donc traité comme la
+## VALEUR CIBLE DU COUP LE PLUS LOURD (catastrophic, côté cible) — proche
+## de l'ancien 221ms, cohérent avec "le plus lourd" plutôt qu'un remplacement
+## uniforme — et le reste de l'échelle est RECALÉ sur ce nouveau sommet en
+## conservant EXACTEMENT les mêmes ratios que la 1re passe (jamais des
+## chiffres inventés sans rapport) : medium_cible = 210/3,4 ≈ 62ms,
+## light_cible = medium_cible×0,48 ≈ 30ms, heavy_cible = medium_cible×2,2
+## ≈ 136ms. Côté attaquant : même ratio attaquant/cible que la 1re passe
+## (~0,54×, dérivé de l'ancien tableau 17/31, 35/65, 77/143, 119/221 —
+## tous ≈0,54-0,55) appliqué aux nouvelles valeurs cible. Toujours des
+## valeurs À CONFIRMER par Milan sur le prochain build (un seul point de
+## sandbox ne couvre qu'un impact isolé, pas l'enchaînement réel).
 const TARGET_HITSTOP_MS := {
 	"none": 0.0,
-	"light": 31.0,
-	"medium": 65.0,
-	"heavy": 143.0,
-	"catastrophic": 221.0,
+	"light": 30.0,
+	"medium": 62.0,
+	"heavy": 136.0,
+	"catastrophic": 210.0,
 }
 const ATTACKER_HITSTOP_MS := {
 	"none": 0.0,
-	"light": 17.0,
-	"medium": 35.0,
-	"heavy": 77.0,
-	"catastrophic": 119.0,
+	"light": 16.0,
+	"medium": 33.0,
+	"heavy": 73.0,
+	"catastrophic": 113.0,
 }
 
 ## §9.2 — 3 niveaux, "heavy" utilise le milieu de 3-5px (4px).
+##
+## Phase R4 (verdict Milan, bac à sable) : camera_shake_amplitude_px=6,
+## au-delà même de l'ancien "heavy" (4px) — testé sur UN impact isolé,
+## pas explicitement rattaché à un tier précis. Traité comme LE NOUVEAU
+## PLAFOND "heavy" (le tier que Milan sent le plus proche d'un impact
+## fort en bac à sable) ; "light"/"medium" restent aux valeurs
+## précédentes (non retestées par Milan) — à reconfirmer séparément
+## plutôt que rescaler tout le tableau sur un seul point de mesure.
 const SHAKE_PROFILES := {
 	"light": {"amplitude_px": 1.0, "ticks": 4},
 	"medium": {"amplitude_px": 2.0, "ticks": 5},
-	"heavy": {"amplitude_px": 4.0, "ticks": 7},
+	"heavy": {"amplitude_px": 6.0, "ticks": 7},
 }
 
 const TICK_MS := 1000.0 / 60.0

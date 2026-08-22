@@ -343,8 +343,12 @@ var _poing_tellurique_cooldown_remaining: int = 0
 ## voir le commentaire historique sur take_damage() plus bas).
 enum HurtPhase { NONE, ACTIVE }
 var _hurt_phase: int = HurtPhase.NONE
-var _hurt_ticks_remaining: int = 0
-var _hurt_recoil_velocity: Vector2 = Vector2.ZERO
+## Phase R4 (game feel Milan, "knockback_return_curve: easeOut") — voir
+## Enemy._recoil_tick/AnimationComposer.ease_out_step_px(), même construction.
+var _hurt_recoil_tick: int = 0
+var _hurt_recoil_total_ticks: int = 0
+var _hurt_recoil_total_distance_px: float = 0.0
+var _hurt_recoil_direction: Vector2 = Vector2.ZERO
 
 @onready var _sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var _camera: Camera2D = $Camera2D
@@ -998,7 +1002,15 @@ func get_poing_tellurique_cooldown_ratio() -> float:
 ## cosmétique par-dessus une timeline en cours (le corrompre est pire que
 ## l'omettre) — scope volontairement limité pour cette brique G, à
 ## reconsidérer si Milan le juge insuffisant en jeu réel.
-func take_damage(amount: float, source_position: Vector2, recoil_strength_px: float = 24.0, recoil_ticks: int = 6) -> void:
+##
+## Phase R4 (game feel Milan, bac à sable : knockback_distance_px=27) :
+## défaut `recoil_strength_px` remonté de 24.0 à 27.0 — même défaut que
+## Enemy.take_damage()/BossGateMaw.take_damage(), même raisonnement dans
+## les 3 (voir Enemy.gd). Affecte Bras-Faux/Poing Tellurique/Gueule Vide
+## (qui n'ont jamais fixé leur propre recoil_strength_px) et le
+## projectile de Ranged côté joueur — pas les tiers du combo ni les 4
+## attaques du boss, qui passent déjà leur propre valeur explicite.
+func take_damage(amount: float, source_position: Vector2, recoil_strength_px: float = 27.0, recoil_ticks: int = 6) -> void:
 	if stats.is_dead() or is_invincible():
 		return
 	stats.apply_damage(amount)
@@ -1016,8 +1028,10 @@ func take_damage(amount: float, source_position: Vector2, recoil_strength_px: fl
 	if away.length_squared() < 0.0001:
 		away = Vector2.RIGHT
 	away = away.normalized()
-	_hurt_recoil_velocity = away * (recoil_strength_px * Engine.physics_ticks_per_second / max(1, recoil_ticks))
-	_hurt_ticks_remaining = recoil_ticks
+	_hurt_recoil_direction = away
+	_hurt_recoil_total_distance_px = recoil_strength_px
+	_hurt_recoil_total_ticks = recoil_ticks
+	_hurt_recoil_tick = 0
 	_hurt_phase = HurtPhase.ACTIVE
 	play_hurt()
 
@@ -1032,23 +1046,25 @@ func play_hurt() -> void:
 
 
 ## Timeline de recul (G) — même construction que le recul d'Enemy
-## (_recoil_ticks_remaining) : `move_toward` linéaire vers zéro sur les
-## ticks restants, mais posée comme phase à part (ACTIVE/NONE) pour être
-## consultée par le if/elif de _physics_process() AVANT _handle_movement(),
-## qui écraserait sinon `velocity` dès ce même tick si une touche de
-## mouvement est tenue.
+## (Phase R4 : courbe de position ease-out, AnimationComposer.
+## ease_out_step_px()), mais posée comme phase à part (ACTIVE/NONE) pour
+## être consultée par le if/elif de _physics_process() AVANT
+## _handle_movement(), qui écraserait sinon `velocity` dès ce même tick si
+## une touche de mouvement est tenue.
 func _advance_hurt() -> void:
-	if _hurt_ticks_remaining > 0:
-		velocity = _hurt_recoil_velocity
-		_hurt_recoil_velocity = _hurt_recoil_velocity.move_toward(Vector2.ZERO, _hurt_recoil_velocity.length() / max(1, _hurt_ticks_remaining))
-		_hurt_ticks_remaining -= 1
-	if _hurt_ticks_remaining <= 0:
+	if _hurt_recoil_tick < _hurt_recoil_total_ticks:
+		_hurt_recoil_tick += 1
+		var step_px: float = AnimationComposer.ease_out_step_px(
+			_hurt_recoil_tick, _hurt_recoil_total_ticks, _hurt_recoil_total_distance_px)
+		velocity = _hurt_recoil_direction * (step_px * Engine.physics_ticks_per_second)
+	if _hurt_recoil_tick >= _hurt_recoil_total_ticks:
 		_end_hurt()
 
 
 func _end_hurt() -> void:
 	_hurt_phase = HurtPhase.NONE
-	_hurt_ticks_remaining = 0
+	_hurt_recoil_tick = 0
+	_hurt_recoil_total_ticks = 0
 	velocity = Vector2.ZERO
 	_action_lock = false
 

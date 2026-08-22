@@ -1553,12 +1553,13 @@ func _check_boss_enrages_at_hp_threshold() -> void:
 	var enraged_before: bool = boss._enraged
 	var threshold_hp: float = boss.stats.max_hp * boss.enrage_hp_ratio
 	boss.take_damage(boss.stats.max_hp - threshold_hp + 1.0, boss.global_position + Vector2(-10, 0))
-	# take_damage() pose SON PROPRE recul (_recoil_ticks_remaining, défaut
-	# 6 ticks) — _check_enrage() est gardée derrière le early-return recul
-	# de _physics_process() (comme tout le reste de l'IA), donc un seul
-	# physics_frame ne suffit pas : il faut attendre la fin du recul avant
-	# que la vérification ait seulement une chance de tourner.
-	await _wait_until(func(): return boss._recoil_ticks_remaining <= 0, 20)
+	# take_damage() pose SON PROPRE recul (_recoil_tick/_recoil_total_ticks,
+	# Phase R4 courbe ease-out — défaut 6 ticks) — _check_enrage() est
+	# gardée derrière le early-return recul de _physics_process() (comme
+	# tout le reste de l'IA), donc un seul physics_frame ne suffit pas : il
+	# faut attendre la fin du recul avant que la vérification ait seulement
+	# une chance de tourner.
+	await _wait_until(func(): return boss._recoil_tick >= boss._recoil_total_ticks, 20)
 	await get_tree().physics_frame
 
 	var enraged_after: bool = boss._enraged

@@ -87,8 +87,12 @@ const SLAM_TELEGRAPH_SEED := 71001  ## Addendum A §A.5 : jamais l'horloge mural
 ## visiblement tressaillir sous un coup, jamais rester un bloc immobile.
 @export var recoil_multiplier: float = 0.3
 
-var _recoil_ticks_remaining: int = 0
-var _recoil_velocity: Vector2 = Vector2.ZERO
+## Phase R4 (game feel Milan, "knockback_return_curve: easeOut") — voir
+## Enemy._recoil_tick/AnimationComposer.ease_out_step_px(), même construction.
+var _recoil_tick: int = 0
+var _recoil_total_ticks: int = 0
+var _recoil_total_distance_px: float = 0.0
+var _recoil_direction: Vector2 = Vector2.ZERO
 
 var _state: int = State.IDLE
 var _state_tick: int = 0
@@ -119,10 +123,10 @@ func _physics_process(_delta: float) -> void:
 	# Le boss est une entité côté ennemi (Phase R4, hit-stop asymétrique).
 	if CombatFeedback.is_enemy_frozen():
 		return
-	if _recoil_ticks_remaining > 0:
-		_recoil_ticks_remaining -= 1
-		velocity = _recoil_velocity
-		_recoil_velocity = _recoil_velocity.move_toward(Vector2.ZERO, _recoil_velocity.length() / max(1, _recoil_ticks_remaining + 1))
+	if _recoil_tick < _recoil_total_ticks:
+		_recoil_tick += 1
+		var step_px: float = AnimationComposer.ease_out_step_px(_recoil_tick, _recoil_total_ticks, _recoil_total_distance_px)
+		velocity = _recoil_direction * (step_px * Engine.physics_ticks_per_second)
 		move_and_slide()
 		return
 	if is_dead():
@@ -152,7 +156,7 @@ func _check_enrage() -> void:
 
 ## Même contrat qu'Enemy.take_damage() (source_position/recoil pour le
 ## recul subi), + crédite xp_reward au joueur à la mort comme G/H1.
-func take_damage(amount: float, source_position: Vector2, recoil_strength_px: float = 24.0, recoil_ticks: int = 6) -> void:
+func take_damage(amount: float, source_position: Vector2, recoil_strength_px: float = 27.0, recoil_ticks: int = 6) -> void:
 	if is_dead():
 		return
 	stats.apply_damage(amount)
@@ -163,8 +167,10 @@ func take_damage(amount: float, source_position: Vector2, recoil_strength_px: fl
 	away = away.normalized()
 	# Phase R4 : `recoil_multiplier` module le recul demandé par
 	# l'attaquant (même principe qu'Enemy.take_damage()).
-	_recoil_velocity = away * (recoil_strength_px * recoil_multiplier * Engine.physics_ticks_per_second / max(1, recoil_ticks))
-	_recoil_ticks_remaining = recoil_ticks
+	_recoil_direction = away
+	_recoil_total_distance_px = recoil_strength_px * recoil_multiplier
+	_recoil_total_ticks = recoil_ticks
+	_recoil_tick = 0
 
 	HitResponse.flash_sprite(_visual)
 	HitResponse.spawn_damage_number(amount, global_position, get_parent())

@@ -81,8 +81,16 @@ var _move_tick: int = 0
 ## Crawler, mêmes valeurs que les .tscn variantes).
 @export var xp_reward: float = 10.0
 
-var _recoil_ticks_remaining: int = 0
-var _recoil_velocity: Vector2 = Vector2.ZERO
+## Phase R4 (game feel Milan, "knockback_return_curve: easeOut") : recul en
+## courbe de POSITION ease-out (AnimationComposer.ease_out_step_px(), même
+## technique que Player._advance_dash()/MOVE) plutôt qu'une vitesse qui
+## décroît linéairement — _recoil_tick compte les ticks déjà consommés
+## (1-indexé), _recoil_total_ticks/_recoil_total_distance_px/_recoil_direction
+## sont figés au moment de l'impact.
+var _recoil_tick: int = 0
+var _recoil_total_ticks: int = 0
+var _recoil_total_distance_px: float = 0.0
+var _recoil_direction: Vector2 = Vector2.ZERO
 
 var _state: int = State.IDLE
 var _state_tick: int = 0
@@ -128,10 +136,10 @@ func _physics_process(_delta: float) -> void:
 	# `attacker_is_player`, ce nœud n'a qu'à lire celui qui le concerne.
 	if CombatFeedback.is_enemy_frozen():
 		return
-	if _recoil_ticks_remaining > 0:
-		_recoil_ticks_remaining -= 1
-		velocity = _recoil_velocity
-		_recoil_velocity = _recoil_velocity.move_toward(Vector2.ZERO, _recoil_velocity.length() / max(1, _recoil_ticks_remaining + 1))
+	if _recoil_tick < _recoil_total_ticks:
+		_recoil_tick += 1
+		var step_px: float = AnimationComposer.ease_out_step_px(_recoil_tick, _recoil_total_ticks, _recoil_total_distance_px)
+		velocity = _recoil_direction * (step_px * Engine.physics_ticks_per_second)
 		move_and_slide()
 		return
 	if is_dead():
@@ -160,7 +168,16 @@ func is_dead() -> bool:
 ## jamais isotrope — §4 : "jamais un bruit isotrope"). `damage` peut être 0
 ## pour un recul sans dégâts (pas de cas connu aujourd'hui, mais la
 ## signature reste correcte pour ça).
-func take_damage(amount: float, source_position: Vector2, recoil_strength_px: float = 24.0, recoil_ticks: int = 6) -> void:
+##
+## Phase R4 (game feel Milan, bac à sable sur UN impact isolé :
+## knockback_distance_px=27) : proche de l'ancien défaut (24.0, déjà le
+## défaut générique des 3 take_damage() du jeu) plutôt que des grandes
+## valeurs déjà tunées par site (Poing Belluaire 40, boss 26-70) —
+## interprété comme LA VALEUR DE RÉFÉRENCE "défaut non spécifié", pas
+## comme le coup le plus lourd (contrairement à hitstop_freeze_ms) : les
+## attaques déjà tunées explicitement gardent leur propre valeur, seul ce
+## défaut change (24.0 -> 27.0), même choix sur les 3 take_damage().
+func take_damage(amount: float, source_position: Vector2, recoil_strength_px: float = 27.0, recoil_ticks: int = 6) -> void:
 	if is_dead():
 		return
 	stats.apply_damage(amount)
@@ -172,8 +189,10 @@ func take_damage(amount: float, source_position: Vector2, recoil_strength_px: fl
 	# Phase R4 : `recoil_multiplier` (poids de CET ennemi) module le
 	# recul demandé par l'attaquant — jamais l'inverse, l'attaquant ne
 	# connaît pas le poids de sa cible.
-	_recoil_velocity = away * (recoil_strength_px * recoil_multiplier * Engine.physics_ticks_per_second / max(1, recoil_ticks))
-	_recoil_ticks_remaining = recoil_ticks
+	_recoil_direction = away
+	_recoil_total_distance_px = recoil_strength_px * recoil_multiplier
+	_recoil_total_ticks = recoil_ticks
+	_recoil_tick = 0
 
 	# HitResponse (mandat production v1 §4) : flash + chiffre de dégâts sur
 	# TOUT coup qui touche, avant le early-return de mort ci-dessous — la
