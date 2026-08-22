@@ -22,6 +22,75 @@ garde que le 2026-08-22 (MANDAT AUTONOME v3 en cours) — au-delà de
 
 ---
 
+## 2026-08-22 — Retour Milan sur captures réelles : bug flash blanc + trou de vérification
+
+**Contexte** : 1er retour de Milan sur de vraies captures du jeu en
+exécution (jamais reçu avant sur ce projet). Trois points, priorité
+explicite de Milan : "le rectangle blanc cassé" d'abord, puis le trou
+de vérification, puis (hors scope de cette entrée, pas commencé) un
+passage lumière/chaleur sur le monde.
+
+**Point 1 — bug résolu.** Deux rectangles blancs pleins flottant à côté
+du joueur sur les captures de Milan. Hypothèse de Milan (traînée/
+afterimage, Addendum B) vérifiée et écartée : `_spawn_afterimage()`
+dans `player.gd` garde déjà `if texture == null: return` et copie la
+vraie frame du joueur. Vraie cause trouvée en réexaminant mes propres
+captures de vérification de cette session (Phase 3, Poing Belluaire et
+Marée de Sable) : le MÊME bug y était déjà visible, mais mal
+diagnostiqué comme "juste les mannequins placeholder génériques" sans
+creuser pourquoi ils étaient blancs alors que leur couleur définie est
+rouge sombre. Cause réelle : `src/vfx/shaders/hit_flash.gdshader`
+ré-échantillonnait `texture(TEXTURE, UV)` directement au lieu de lire
+l'entrée `COLOR` déjà pré-calculée par Godot. Pour un `AnimatedSprite2D`
+texturé ça fonctionne (TEXTURE = la vraie texture). Pour un `Polygon2D`
+sans texture assignée — le mannequin générique d'`Enemy`
+(`scenes/gameplay/enemy.tscn`) ET `boss_gate_maw.tscn`, tous deux
+présents dans des scènes de jeu réelles (`gate_premiere`, `test_arena`),
+pas seulement des mannequins de test — Godot lie `TEXTURE` à sa texture
+blanche 1×1 par défaut : `tex.rgb`/`tex.a` valaient TOUJOURS `(1,1,1,1)`
+quel que soit `flash_amount`, d'où un rectangle blanc opaque plein, sans
+fondu, ignorant la couleur réelle du polygone. Fix d'une ligne : lire
+`COLOR` (déjà texture×modulate pour un sprite, couleur de vertex×
+modulate pour un `Polygon2D` sans texture) au lieu de re-sampler
+`TEXTURE` — corrige les deux cas sans branche `if` ni régression pour
+les sprites déjà corrects. Vérifié : `godot4 --headless --rendering-
+driver vulkan --import` propre, `scripts/run_gameplay_smoke_test.sh`
+toujours `"all_pass":true` (les 3 checks `hit_response_*` passent).
+Capture avant/après, même scène (`--mode=player_action --action=power1
+--active_power=monstrification --level=1 --tick=30`) :
+`captures/verification/2026-08-22-hit-flash-fix-avant.png` (rectangles
+blancs pleins) vs `2026-08-22-hit-flash-fix-apres.png` (teinte rose/
+rouge du polygone qui transparaît sous le flash, comme attendu).
+
+**Point 2 — trou de vérification corrigé.** Milan : "aucune capture de
+vérification n'a jamais été committée", malgré des dizaines de mentions
+"vérifié par capture" dans ce worklog. Vérifié : exact. La règle "seules
+les captures approuvées sont commitées" existait dans `.gitignore`
+depuis le début mais n'avait jamais été suivie en pratique — tout
+partait dans `/captures_local/` (gitignoré). `data/labels/
+quality_labels.jsonl` (verdicts `accept`/`reject` de Milan sur une
+référence d'asset, §13.2 `ARCHITECTURE_VFX_v3.md`) est structurellement
+le mauvais mécanisme pour une preuve ponctuelle de correction de bug —
+il attend un verdict humain formel, pas une preuve immédiate. Nouvelle
+convention, documentée dans `CLAUDE.md` et `.gitignore` : toute capture
+citée comme preuve va dans `captures/verification/` (réellement
+committé), nommée `<date>-<sujet>.png`, dans le MÊME commit que le
+changement qu'elle prouve. `data/labels/quality_labels.jsonl` garde son
+rôle initial inchangé (verdict Milan uniquement, jamais écrit par
+Claude Code).
+
+**Point 3 — non commencé, volontairement.** Milan a explicitement
+ordonné de traiter 1 et 2 avant toute nouvelle feature. Passage lumière/
+chaleur du monde (Addendum C) à faire dans une session/entrée
+séparée, avec sa propre capture avant/après committée.
+
+**Fichiers touchés** : `src/vfx/shaders/hit_flash.gdshader` (fix),
+`.gitignore` + `CLAUDE.md` (convention de capture), `captures/
+verification/2026-08-22-hit-flash-fix-{avant,apres}.png` (nouveau
+dossier, 1res captures réellement committées du projet).
+
+---
+
 ## 2026-08-22 — MANDAT SUITE v2 : Phase 3 (Poing Belluaire + Poing Tellurique)
 
 **Blocage rencontré puis levé.** Avant d'écrire du code, recherche

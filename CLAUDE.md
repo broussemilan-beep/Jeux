@@ -35,6 +35,31 @@ Mobile tourne sur Vulkan/Metal matériel exactement comme prévu — cet
 écart ne concerne QUE l'outillage de capture dans cet environnement de
 développement.
 
+## Captures de vérification (preuve committée, pas juste écrite au worklog)
+
+Écart trouvé et corrigé le 2026-08-22 (retour direct de Milan, 1res
+captures réelles jamais reçues sur ce projet) : la règle "seules les
+captures approuvées sont commitées" (`.gitignore`, `/captures_local/`)
+existait sur le papier mais n'avait jamais été suivie en pratique —
+chaque capture de vérification produite cette session dormait dans
+`/captures_local/` (gitignoré), invisible pour Milan malgré des dizaines
+de mentions "vérifié par capture" dans `docs/worklog.md`.
+
+Règle, à partir de maintenant : **toute capture citée comme preuve
+("vérifié par capture", "confirmé à l'écran"...) doit être committée
+dans `captures/verification/` dans le MÊME commit que le changement
+qu'elle prouve** — jamais seulement décrite en prose, jamais laissée
+dans `/captures_local/`. Nommage : `<date>-<sujet>.png` (ex.
+`2026-08-22-hit-flash-fix-apres.png`).
+
+Ceci est DISTINCT de `data/labels/quality_labels.jsonl` (§13.2 de
+`docs/ARCHITECTURE_VFX_v3.md`) : ce fichier reste réservé aux verdicts
+`accept`/`reject` de Milan sur une image de référence d'ASSET destinée
+à devenir la base de comparaison pixel-parfaite de `compare_reference.py`
+— jamais écrit par Claude Code (règle inchangée, toujours en vigueur),
+et jamais le bon mécanisme pour une preuve ponctuelle de correction de
+bug ou de feature qui n'attend pas de verdict qualité formel.
+
 ## Commandes utiles
 
 ```bash

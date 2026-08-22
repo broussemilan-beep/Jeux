@@ -12,9 +12,18 @@
 assets/staging/*
 !assets/staging/.gitkeep
 
-# Sorties de capture locales non versionnées — seules les captures
-# APPROUVÉES (référencées dans data/labels/quality_labels.jsonl) sont
-# commitées, jamais un dossier de sortie brut (§13.3).
+# Sorties de capture locales non versionnées — brouillons de travail
+# uniquement, jamais une preuve. Deux destins pour une capture qui doit
+# survivre (CLAUDE.md "Captures de vérification") :
+#   - preuve qu'un bug est corrigé / qu'une feature marche : committée
+#     directement dans captures/verification/, PAS gardée ici.
+#   - image de référence d'asset visée par le pipeline qualité (§13.2/
+#     13.3) : passe par data/labels/quality_labels.jsonl (verdict humain
+#     de Milan), jamais un verdict que Claude Code s'auto-attribue.
+# Écart trouvé et corrigé le 2026-08-22 (retour Milan) : cette règle
+# existait sur le papier depuis le début mais n'avait jamais été suivie
+# en pratique — toutes les captures de vérification de cette session
+# dormaient ici, invisibles pour Milan.
 /captures_local/
 
 # Clés/secrets — dépôt public, une clé commitée est immédiatement
