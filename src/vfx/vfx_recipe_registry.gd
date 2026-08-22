@@ -48,9 +48,25 @@ const _RESERVED_LAYER_KEYS := ["type", "primitive", "start_tick", "end_tick", "d
 
 
 func _physics_process(_delta: float) -> void:
-	# Même gel que VfxDirector (§9.1) : aucune nouvelle couche ne se
-	# programme pendant un hit-stop, tout reste en phase.
-	if CombatFeedback.is_frozen():
+	# Phase R4 : hit-stop asymétrique — TOUS les appelants actuels de
+	# play() (gueule_vide.gd, Bras-Faux/Poing Belluaire/Poing Tellurique
+	# dans player.gd) sont des pouvoirs du JOUEUR, gelés eux-mêmes via
+	# is_player_frozen() (pas le générique is_frozen()). Avant ce
+	# correctif, cette registry restait gelée au générique (OR des deux
+	# compteurs, donc plus long — la cible touchée gèle plus longtemps que
+	# l'attaquant) pendant que le nœud propriétaire du run (ex. la
+	# créature Gueule Vide) dégelait plus tôt — les deux horloges d'un
+	# MÊME run divergeaient de quelques ticks, et un run laissé "en
+	# retard" pouvait encore planifier une couche dégradable après que le
+	# test/gameplay le croyait terminé (bug trouvé via
+	# gueule_vide_owner_death_cancels_degradable_layer : le run NORMAL
+	# précédent, pas encore à échéance à cause de ce retard, polluait le
+	# spawn_log partagé pendant la fenêtre du test suivant). Bascule sur
+	# is_player_frozen() pour rester en phase avec ces mêmes nœuds. Si un
+	# jour un pouvoir ENNEMI utilise cette registry, il faudra un flag
+	# d'appartenance par run — inutile tant qu'aucun n'existe (grep
+	# vérifié).
+	if CombatFeedback.is_player_frozen():
 		return
 	for run_id in _active.keys().duplicate():
 		var run: Dictionary = _active.get(run_id)

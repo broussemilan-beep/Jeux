@@ -15,8 +15,17 @@ shader_type canvas_item;
 // les variables magiques (TEXTURE/UV/COLOR) ne sont fiables que dans le
 // corps de fragment() lui-meme en Godot Shading Language.
 
-uniform vec4 outline_color : source_color = vec4(0.3, 0.55, 1.0, 1.0);
-uniform float outline_width_px : hint_range(0.0, 4.0) = 1.0;
+// Phase R4 (retour croisé Gemini/ChatGPT, MANDAT SUITE v2, verifie par
+// capture zoomee reelle avant retouche — tools/capture_scene.tscn
+// --mode=player_action) : a alpha=1.0/largeur=1.0, le contour couvrait
+// TOUT le contour du sprite en bleu plein des qu'un pixel voisin est
+// semi-transparent (pas de degrade), ce qui, sur un petit sprite
+// remonte a l'echelle du jeu, saturait la silhouette grise en un bloc
+// bleu neon au lieu d'un simple trait fin (§10.1 : allie = bleu, jamais
+// une recoloration). Alpha et largeur reduits — reste un vrai contour
+// visible, jamais un trait invisible.
+uniform vec4 outline_color : source_color = vec4(0.3, 0.55, 1.0, 0.6);
+uniform float outline_width_px : hint_range(0.0, 4.0) = 0.6;
 uniform bool outline_enabled = true;
 
 uniform vec2 streak_direction = vec2(1.0, 0.0);

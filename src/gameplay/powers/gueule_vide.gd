@@ -129,7 +129,9 @@ func cancel_cast() -> bool:
 
 
 func _physics_process(_delta: float) -> void:
-	if CombatFeedback.is_frozen():
+	# La créature agit pour le compte du joueur (Phase R4, hit-stop
+	# asymétrique) — is_player_frozen(), pas le générique is_frozen().
+	if CombatFeedback.is_player_frozen():
 		return
 	_tick += 1
 	_sprite.frame = _frame_for_tick(_tick)
@@ -173,8 +175,12 @@ func _resolve_contact() -> void:
 	# le proposait le diagnostic externe — Gueule Vide est explicitement
 	# importance_tier 2/6 (data/recipes/power.gueule_vide.cast.json), un
 	# heavy ici viderait le plafond réservé aux compétences majeures.
-	CombatFeedback.trigger_hitstop("medium")
-	Sfx.play("heavy_impact")
+	# Phase R4 (retour croisé Gemini/ChatGPT, MANDAT SUITE v2) : shake +
+	# camera-punch ajoutés (Gueule Vide était le seul pouvoir du joueur
+	# à n'avoir NI l'un NI l'autre, trou confirmé par audit) via le
+	# point d'entrée unique register_hit() — attacker_is_player=true
+	# (la créature agit pour le compte du joueur, même côté du conflit).
+	CombatFeedback.register_hit("medium", true, "heavy_impact", "light", Vector2.RIGHT, true)
 
 
 ## Tick courant du cast — utile aux tests/captures (même contrat que

@@ -80,6 +80,13 @@ const SLAM_TELEGRAPH_SEED := 71001  ## Addendum A §A.5 : jamais l'horloge mural
 @export var enrage_recover_ticks: int = 10
 @export var enrage_speed_multiplier: float = 1.25
 
+## Phase R4 (retour croisé Gemini/ChatGPT, MANDAT SUITE v2 : "recul par
+## poids d'ennemi... lourd/boss = réaction sur place sans déplacement
+## significatif mais JAMAIS immobile") — même mécanisme que
+## `Enemy.recoil_multiplier`, valeur basse mais non nulle : le boss doit
+## visiblement tressaillir sous un coup, jamais rester un bloc immobile.
+@export var recoil_multiplier: float = 0.3
+
 var _recoil_ticks_remaining: int = 0
 var _recoil_velocity: Vector2 = Vector2.ZERO
 
@@ -109,7 +116,8 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	if CombatFeedback.is_frozen():
+	# Le boss est une entité côté ennemi (Phase R4, hit-stop asymétrique).
+	if CombatFeedback.is_enemy_frozen():
 		return
 	if _recoil_ticks_remaining > 0:
 		_recoil_ticks_remaining -= 1
@@ -153,7 +161,9 @@ func take_damage(amount: float, source_position: Vector2, recoil_strength_px: fl
 	if away.length_squared() < 0.0001:
 		away = Vector2.RIGHT
 	away = away.normalized()
-	_recoil_velocity = away * (recoil_strength_px * Engine.physics_ticks_per_second / max(1, recoil_ticks))
+	# Phase R4 : `recoil_multiplier` module le recul demandé par
+	# l'attaquant (même principe qu'Enemy.take_damage()).
+	_recoil_velocity = away * (recoil_strength_px * recoil_multiplier * Engine.physics_ticks_per_second / max(1, recoil_ticks))
 	_recoil_ticks_remaining = recoil_ticks
 
 	HitResponse.flash_sprite(_visual)
@@ -273,19 +283,21 @@ func _execute_attack() -> void:
 		Attack.BITE:
 			if player != null and global_position.distance_to(player.global_position) <= bite_range_px * 1.4:
 				player.take_damage(bite_damage, global_position, bite_recoil_px)
-				CombatFeedback.trigger_hitstop("light")
+				# Phase R4 : boss n'avait JAMAIS de SFX ni de camera-punch
+				# sur AUCUNE de ses 4 attaques (trou confirmé par audit) —
+				# point d'entrée unique register_hit(), mêmes seuils que
+				# Enemy._execute_attack()/Player._try_hit().
+				CombatFeedback.register_hit("light", false, "light_impact")
 			_advance_rotation_to_recover()
 		Attack.PROJECTION:
 			if player != null and global_position.distance_to(player.global_position) <= projection_range_px * 1.4:
 				player.take_damage(projection_damage, global_position, projection_recoil_px)
-				CombatFeedback.trigger_hitstop("light")
-				CombatFeedback.trigger_shake("light", player.global_position - global_position)
+				CombatFeedback.register_hit("light", false, "light_impact", "light", player.global_position - global_position)
 			_advance_rotation_to_recover()
 		Attack.SLAM:
 			if player != null and global_position.distance_to(player.global_position) <= slam_radius_px:
 				player.take_damage(slam_damage, global_position, slam_recoil_px)
-				CombatFeedback.trigger_hitstop("medium")
-				CombatFeedback.trigger_shake("medium", Vector2.ZERO)
+				CombatFeedback.register_hit("medium", false, "heavy_impact", "medium", Vector2.ZERO, true)
 			_advance_rotation_to_recover()
 		Attack.CHARGE:
 			_state = State.CHARGE_DASH
@@ -296,8 +308,7 @@ func _execute_attack() -> void:
 func _advance_charge_dash(player: Node) -> void:
 	if not _charge_hit_applied and player != null and global_position.distance_to(player.global_position) <= charge_contact_radius_px:
 		player.take_damage(charge_damage, global_position, charge_recoil_px)
-		CombatFeedback.trigger_hitstop("medium")
-		CombatFeedback.trigger_shake("light", _charge_direction)
+		CombatFeedback.register_hit("medium", false, "heavy_impact", "light", _charge_direction, true)
 		_charge_hit_applied = true
 
 	var progress_before: float = float(_state_tick) / float(charge_dash_ticks)

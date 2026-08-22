@@ -25,6 +25,22 @@ const RECOVERY_TICKS := 14
 ## derniers ticks de chaque RECOVERY") — dernier tiers de la recovery.
 const CHAIN_WINDOW_TICKS := 6
 
+## Phase R4 (retour croisé Gemini/ChatGPT, MANDAT SUITE v2 : "poids du
+## combo... coup 3 (finisher) : anticipation plus longue... ajouter une
+## frame de stabilisation en fin de combo au lieu du retour instantané à
+## idle/course"). Surcharge PAR TIER des constantes ci-dessus — tier1/2
+## gardent EXACTEMENT ANTICIPATION_TICKS/RECOVERY_TICKS (aucune
+## régression sur les 2 premiers coups), seul tier3 (le finisher, jamais
+## chaînable plus loin — `_combo_step < AttackAnimName.size()` exclut
+## déjà tier3 de la fenêtre de chaînage, donc allonger sa recovery ne
+## grignote sur AUCUN chaînage réel) s'allonge : +4 ticks d'anticipation
+## (silhouette qui se charge plus longtemps avant le coup) et +6 ticks
+## de recovery (le temps de stabilisation demandé avant idle/course,
+## RELEASE_TICKS/le tick de contact restent inchangés — seul l'AUTOUR du
+## coup s'étire). Valeurs de départ TUNABLE, comme le reste des tiers.
+const COMBO_TIER_ANTICIPATION_TICKS := [ANTICIPATION_TICKS, ANTICIPATION_TICKS, ANTICIPATION_TICKS + 4]
+const COMBO_TIER_RECOVERY_TICKS := [RECOVERY_TICKS, RECOVERY_TICKS, RECOVERY_TICKS + 6]
+
 const ATTACK_RANGE_PX := 48.0  # ~1.5m, GameConstants.PX_PER_METER
 const ATTACK_DAMAGE := 10.0
 
@@ -374,7 +390,11 @@ func _physics_process(_delta: float) -> void:
 		_dash_direction if _dash_phase != DashPhase.NONE else Vector2.ZERO)
 	_camera.offset = CombatFeedback.get_shake_offset() + lookahead
 	_camera.zoom = CameraDirector.get_punch_zoom()
-	if CombatFeedback.is_frozen():
+	# Phase R4 : hit-stop asymétrique — le joueur consulte SON compteur
+	# (attaquant quand il frappe, cible quand il encaisse un coup ennemi ;
+	# CombatFeedback.register_hit() route déjà les deux compteurs selon
+	# `attacker_is_player`, ce nœud n'a qu'à lire celui qui le concerne).
+	if CombatFeedback.is_player_frozen():
 		return
 
 	if _power1_cooldown_remaining > 0:
@@ -512,9 +532,14 @@ func _advance_combo() -> void:
 		anim_data = _animation_composer_data.get(AttackAnimName[_combo_step - 1], {})
 	_apply_combo_root_motion(anim_data, _combo_step_absolute_tick)
 	_apply_squash_lean_afterimages(anim_data, _combo_step_absolute_tick)
+	# Phase R4 : timeline PAR TIER (voir COMBO_TIER_ANTICIPATION_TICKS/
+	# COMBO_TIER_RECOVERY_TICKS ci-dessus) — tier1/2 valent toujours
+	# ANTICIPATION_TICKS/RECOVERY_TICKS, seul tier3 diffère.
+	var anticipation_ticks: int = COMBO_TIER_ANTICIPATION_TICKS[_combo_step - 1]
+	var recovery_ticks: int = COMBO_TIER_RECOVERY_TICKS[_combo_step - 1]
 	match _combo_phase:
 		ComboPhase.ANTICIPATION:
-			if _combo_tick >= ANTICIPATION_TICKS:
+			if _combo_tick >= anticipation_ticks:
 				_combo_phase = ComboPhase.RELEASE
 				_combo_tick = 0
 		ComboPhase.RELEASE:
@@ -525,12 +550,12 @@ func _advance_combo() -> void:
 				_combo_phase = ComboPhase.RECOVERY
 				_combo_tick = 0
 		ComboPhase.RECOVERY:
-			var chain_window_start := RECOVERY_TICKS - CHAIN_WINDOW_TICKS
+			var chain_window_start := recovery_ticks - CHAIN_WINDOW_TICKS
 			if _combo_tick >= chain_window_start and _combo_step < AttackAnimName.size() and _attack_queued:
 				_attack_queued = false
 				_start_attack(_combo_step + 1)
 				return
-			if _combo_tick >= RECOVERY_TICKS:
+			if _combo_tick >= recovery_ticks:
 				_end_combo()
 
 
@@ -621,24 +646,18 @@ func _try_hit() -> void:
 	var tier: Dictionary = COMBO_TIER_FEEDBACK[_combo_step - 1]
 	target.take_damage(ATTACK_DAMAGE, global_position, tier["recoil_px"])
 
-	# Hit-stop + shake (mandat combat, B1-B3) : local aux nœuds de combat
-	# via CombatFeedback (§9.1), jamais Engine.time_scale. Direction du
-	# shake = `facing` (l'attaque), CombatFeedback inverse lui-même l'axe.
-	CombatFeedback.trigger_hitstop(tier["hitstop"])
-	if tier["shake"] != "":
-		CombatFeedback.trigger_shake(tier["shake"], facing)
-
-	# Phase 2.1 (MANDAT SUITE v2) : même seuil que le hit-stop existant
-	# ("light" vs le reste) pour choisir la famille SFX — jamais un 2e
-	# système de seuils dupliqué (même discipline que CameraDirector
-	# juste en dessous).
-	Sfx.play("light_impact" if tier["hitstop"] == "light" else "heavy_impact")
-
-	# CameraDirector (mandat production v1 §4/J2) : punch-zoom sur les
-	# impacts "medium+" — mêmes seuils que le hit-stop existant (jamais un
-	# 2e système de seuils dupliqué), "light" exclu.
-	if tier["hitstop"] != "light" and tier["hitstop"] != "none":
-		CameraDirector.trigger_punch()
+	# Phase R4 (retour croisé Gemini/ChatGPT, MANDAT SUITE v2) : point
+	# d'entrée UNIQUE pour hit-stop (désormais asymétrique cible/
+	# attaquant) + shake + camera-punch + SFX, un seul appel au lieu de
+	# 4 dispersés. Seuils shake/punch inchangés (tier1/2 restent sans
+	# shake ni punch, "light" exclu du punch — cf. smoke test
+	# camera_punch_zoom_triggers_on_medium_hit_not_light) : Phase R4
+	# unifie le POINT D'APPEL, pas la nuance déjà réglée par tier.
+	CombatFeedback.register_hit(
+		tier["hitstop"], true,
+		"light_impact" if tier["hitstop"] == "light" else "heavy_impact",
+		tier["shake"], facing,
+		tier["hitstop"] != "light" and tier["hitstop"] != "none")
 
 	# impactFlashFrame + recoil sur chaque coup (mandat Phase 1.4). Le
 	# recoil est déjà porté par Enemy.take_damage() (§4 : réaction de la
@@ -771,9 +790,10 @@ func _try_hit_bras_faux() -> void:
 
 	# Même tier que Gueule Vide (tous deux importance_tier 2/6, feedback
 	# "medium" dans les deux recettes) — pas un second barème de hit-stop.
-	CombatFeedback.trigger_hitstop("medium")
-	CameraDirector.trigger_punch()
-	Sfx.play("heavy_impact")
+	# Phase R4 : shake "light" ajouté (absent jusqu'ici sur TOUS les
+	# pouvoirs du joueur, trou confirmé par audit — seul le combo tier3
+	# en avait un) + point d'entrée unique register_hit().
+	CombatFeedback.register_hit("medium", true, "heavy_impact", "light", dir, true)
 
 
 ## Poing Belluaire — même construction que _start_bras_faux() ci-dessus.
@@ -844,9 +864,10 @@ func _try_hit_poing_belluaire() -> void:
 	for target in targets:
 		target.take_damage(POING_BELLUAIRE_DAMAGE, global_position, POING_BELLUAIRE_RECOIL_PX, POING_BELLUAIRE_RECOIL_TICKS)
 
-	CombatFeedback.trigger_hitstop("heavy")
-	CameraDirector.trigger_punch()
-	Sfx.play("heavy_impact")
+	# Phase R4 : shake "medium" ajouté (trou confirmé par audit, cohérent
+	# avec le hit-stop "heavy" — "impact lourd" GDD) + point d'entrée
+	# unique register_hit().
+	CombatFeedback.register_hit("heavy", true, "heavy_impact", "medium", dir, true)
 
 
 ## Poing Tellurique — même construction. Placeholder visuel : "coup1"
@@ -921,9 +942,9 @@ func _try_hit_poing_tellurique() -> void:
 	for target in targets:
 		target.take_damage(POING_TELLURIQUE_DAMAGE, global_position)
 
-	CombatFeedback.trigger_hitstop("medium")
-	CameraDirector.trigger_punch()
-	Sfx.play("heavy_impact")
+	# Phase R4 : shake "light" ajouté (trou confirmé par audit) + point
+	# d'entrée unique register_hit().
+	CombatFeedback.register_hit("medium", true, "heavy_impact", "light", dir, true)
 
 
 func is_dead() -> bool:

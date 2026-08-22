@@ -329,11 +329,24 @@ func _check_combo_tier_feedback() -> void:
 	var hit1_landed: bool = await _wait_until(
 		func(): return enemy.stats.hp < hp_before_1,
 		Player.ANTICIPATION_TICKS + Player.RELEASE_TICKS + 5)
-	var frozen_ticks_1: int = await _drain_frozen_ticks()
+	# Phase R4 : le shake se décompte en ticks RÉELS (CombatFeedback ne se
+	# gèle jamais lui-même) tandis que le hit-stop cible est maintenant
+	# ASYMÉTRIQUE — sonder le shake ET le gel dans LA MÊME boucle (plutôt
+	# que deux boucles séquentielles, dans un ordre ou dans l'autre) :
+	# avec un gel "medium" désormais aussi long (4 ticks) que la fenêtre de
+	# sonde du shake, mesurer l'un PUIS l'autre fait toujours rater le
+	# premier des deux (déjà retombé pendant que le second était sondé).
 	var shake_seen_tier1 := false
+	var frozen_ticks_1 := 0
+	var freeze_done_tier1 := false
 	for i in range(6):
 		if CombatFeedback.get_shake_offset() != Vector2.ZERO:
 			shake_seen_tier1 = true
+		if not freeze_done_tier1:
+			if CombatFeedback.is_frozen():
+				frozen_ticks_1 += 1
+			else:
+				freeze_done_tier1 = true
 		await get_tree().physics_frame
 
 	# Chaîner vers coup 2 dans la fenêtre de chaînage (même mécanique que
@@ -366,19 +379,36 @@ func _check_combo_tier_feedback() -> void:
 	await get_tree().physics_frame
 	Input.action_release("attack")
 	await _wait_until(func(): return _player._combo_step == 3, 10)
+	# Phase R4 : tier3 (finisher) a sa PROPRE anticipation, plus longue
+	# que tier1/2 (COMBO_TIER_ANTICIPATION_TICKS), pas la constante plate.
 	var hit3_landed: bool = await _wait_until(
 		func(): return enemy.stats.hp < hp_before_3,
-		Player.ANTICIPATION_TICKS + Player.RELEASE_TICKS + 5)
-	var frozen_ticks_3: int = await _drain_frozen_ticks()
+		Player.COMBO_TIER_ANTICIPATION_TICKS[2] + Player.RELEASE_TICKS + 5)
+	# Phase R4 : shake et gel sondés dans LA MÊME boucle (voir commentaire
+	# identique sur tier1 plus haut).
 	var shake_seen_tier3 := false
+	var frozen_ticks_3 := 0
+	var freeze_done_tier3 := false
 	for i in range(6):
 		if CombatFeedback.get_shake_offset() != Vector2.ZERO:
 			shake_seen_tier3 = true
+		if not freeze_done_tier3:
+			if CombatFeedback.is_frozen():
+				frozen_ticks_3 += 1
+			else:
+				freeze_done_tier3 = true
 		await get_tree().physics_frame
 
+	# Phase R4 : hit-stop désormais ASYMÉTRIQUE (cible plus longue que
+	# l'attaquant) — _drain_frozen_ticks() lit CombatFeedback.is_frozen()
+	# (OR des deux compteurs), qui reste vrai jusqu'à ce que le PLUS LONG
+	# des deux (toujours le compteur CIBLE ici, le joueur étant
+	# l'attaquant) retombe à 0. Valeurs recalculées depuis
+	# TARGET_HITSTOP_MS (light=31ms->2 ticks, medium=65ms->4 ticks à
+	# 60/s) — plus les anciennes valeurs symétriques (1/2 ticks).
 	_checks.append({
 		"name": "combo_tier1_hitstop_light_no_shake",
-		"pass": hit1_landed and frozen_ticks_1 == 1 and not shake_seen_tier1,
+		"pass": hit1_landed and frozen_ticks_1 == 2 and not shake_seen_tier1,
 		"detail": {"hit_landed": hit1_landed, "frozen_ticks": frozen_ticks_1, "shake_seen": shake_seen_tier1},
 	})
 	_checks.append({
@@ -388,7 +418,7 @@ func _check_combo_tier_feedback() -> void:
 	})
 	_checks.append({
 		"name": "combo_tier3_hitstop_medium_longer_than_tier1_with_shake",
-		"pass": hit3_landed and frozen_ticks_3 == 2 and frozen_ticks_3 > frozen_ticks_1 and shake_seen_tier3,
+		"pass": hit3_landed and frozen_ticks_3 == 4 and frozen_ticks_3 > frozen_ticks_1 and shake_seen_tier3,
 		"detail": {"hit_landed": hit3_landed, "frozen_ticks": frozen_ticks_3, "shake_seen": shake_seen_tier3},
 	})
 
@@ -794,9 +824,15 @@ func _check_animation_composer_and_camera() -> void:
 	await get_tree().physics_frame
 	Input.action_release("attack")
 	await _wait_until(func(): return _player._combo_step == 3, 10)
-	await _wait_until(func(): return enemy.stats.hp < hp_before_tier3, Player.ANTICIPATION_TICKS + Player.RELEASE_TICKS + 5)
+	await _wait_until(func(): return enemy.stats.hp < hp_before_tier3, Player.COMBO_TIER_ANTICIPATION_TICKS[2] + Player.RELEASE_TICKS + 5)
 	var zoom_right_after_tier3: Vector2 = CameraDirector.get_punch_zoom()
-	for i in range(CameraDirector.PUNCH_ZOOM_TICKS + 2):
+	# Phase R4 : hit-stop asymétrique — CameraDirector.get_punch_zoom() ne
+	# décroît QUE quand CombatFeedback.is_frozen() (OR des deux pools) est
+	# faux ; un coup "medium" gèle la cible (l'ennemi, ici) 4 ticks
+	# (TARGET_HITSTOP_MS.medium=65ms), plus long que l'ancien gel symétrique
+	# (2 ticks) sur lequel cette marge était calée. Attendre le gel le plus
+	# long (4) + la décroissance du punch (PUNCH_ZOOM_TICKS=3) + marge (2).
+	for i in range(4 + CameraDirector.PUNCH_ZOOM_TICKS + 2):
 		await get_tree().physics_frame
 	var zoom_after_decay: Vector2 = CameraDirector.get_punch_zoom()
 
@@ -820,7 +856,15 @@ func _check_animation_composer_and_camera() -> void:
 ## pourrait mentir sans jamais être consultée par un vrai coup), pas
 ## seulement les transitions d'état.
 func _check_dodge() -> void:
-	await _wait_until(func(): return not _player._action_lock, Player.DODGE_RECOVERY_TICKS + 5)
+	# Phase R4 : le check précédent (_check_camera_punch) termine sur un
+	# coup3 (finisher) dont l'anticipation ET la récupération sont
+	# désormais allongées (COMBO_TIER_ANTICIPATION_TICKS/
+	# COMBO_TIER_RECOVERY_TICKS[2]) — attendre la levée de _action_lock du
+	# COMBO qui vient de se terminer, pas juste une marge calée sur
+	# DODGE_RECOVERY_TICKS (bien trop courte pour couvrir la RECOVERY du
+	# finisher, cause du cascade "anim:'coup3'" observé ici).
+	await _wait_until(func(): return not _player._action_lock,
+		Player.COMBO_TIER_RECOVERY_TICKS[2] + Player.RELEASE_TICKS + 15)
 
 	# y=900, loin de tous les ennemis des checks précédents (y=180/y=600) —
 	# même précaution que _check_dash().
@@ -1069,8 +1113,16 @@ func _check_poing_belluaire() -> void:
 	var hp_side_after: float = enemy_side.stats.hp
 	var hp_outside_after: float = enemy_outside.stats.hp
 
+	# Phase R4 : Poing Belluaire s'inflige à lui-même un hit-stop "heavy"
+	# (register_hit("heavy", true, ...), _try_hit_poing_belluaire()) — tant
+	# que CombatFeedback.is_player_frozen() est vrai, TOUT _physics_process
+	# du joueur (dont _advance_poing_belluaire()) est court-circuité (garde
+	# en tête de fonction), donc la progression de sa propre RECOVERY est
+	# elle-même mise en pause quelques ticks après le coup. Marge élargie
+	# (au-delà de +5) pour couvrir ce gel côté attaquant (ATTACKER_HITSTOP_
+	# MS.heavy), sans quoi la RECOVERY n'a pas fini dans la fenêtre d'attente.
 	var ended: bool = await _wait_until(
-		func(): return _player._poing_belluaire_phase == Player.PoingBelluairePhase.NONE, Player.POING_BELLUAIRE_RECOVERY_TICKS + 5)
+		func(): return _player._poing_belluaire_phase == Player.PoingBelluairePhase.NONE, Player.POING_BELLUAIRE_RECOVERY_TICKS + 12)
 	var action_unlocked_after: bool = not _player._action_lock
 
 	Input.action_press("power3")

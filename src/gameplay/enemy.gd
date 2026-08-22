@@ -50,6 +50,16 @@ const ProjectileScene := preload("res://scenes/gameplay/projectile.tscn")
 @export var hitstop_profile: String = "light"
 @export var shake_profile: String = ""  ## "" = pas de shake (CombatFeedback n'a pas de profil "none" pour trigger_shake).
 
+## Phase R4 (retour croisé Gemini/ChatGPT, MANDAT SUITE v2 : "recul par
+## poids d'ennemi") — multiplie le `recoil_strength_px` que l'ATTAQUANT
+## demande dans `take_damage()`, indépendamment de quel pouvoir/coup a
+## frappé (combo/Bras-Faux/Poing Belluaire/Poing Tellurique/Gueule Vide
+## passent tous des valeurs différentes sans connaître le poids de la
+## cible — ce multiplicateur est ce qui reste constant CÔTÉ CIBLE).
+## Jamais 0.0 : "le retour doit toujours être visible, même minime"
+## (Milan) — un ennemi lourd résiste au recul, il n'y est jamais immun.
+@export var recoil_multiplier: float = 1.0
+
 ## RANGED seulement — maintient la distance au lieu de foncer au contact.
 @export var preferred_range_px: float = 170.0
 @export var range_tolerance_px: float = 24.0
@@ -103,6 +113,7 @@ func _ready() -> void:
 	if _visual is Polygon2D:
 		_base_visual_color = (_visual as Polygon2D).color
 	elif _visual is AnimatedSprite2D:
+		_base_visual_color = _visual.self_modulate
 		var mat := ShaderMaterial.new()
 		mat.shader = OutlineShader
 		mat.set_shader_parameter("outline_color", Color(0.85, 0.2, 0.18, 1.0))
@@ -110,7 +121,12 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	if CombatFeedback.is_frozen():
+	# Phase R4 : hit-stop asymétrique — un ennemi consulte TOUJOURS son
+	# propre compteur "enemy", qu'il soit lui-même en train de frapper
+	# (attaquant, gel court) ou de se faire toucher (cible, gel long) :
+	# register_hit() route déjà les deux compteurs selon
+	# `attacker_is_player`, ce nœud n'a qu'à lire celui qui le concerne.
+	if CombatFeedback.is_enemy_frozen():
 		return
 	if _recoil_ticks_remaining > 0:
 		_recoil_ticks_remaining -= 1
@@ -153,7 +169,10 @@ func take_damage(amount: float, source_position: Vector2, recoil_strength_px: fl
 	if away.length_squared() < 0.0001:
 		away = Vector2.RIGHT
 	away = away.normalized()
-	_recoil_velocity = away * (recoil_strength_px * Engine.physics_ticks_per_second / max(1, recoil_ticks))
+	# Phase R4 : `recoil_multiplier` (poids de CET ennemi) module le
+	# recul demandé par l'attaquant — jamais l'inverse, l'attaquant ne
+	# connaît pas le poids de sa cible.
+	_recoil_velocity = away * (recoil_strength_px * recoil_multiplier * Engine.physics_ticks_per_second / max(1, recoil_ticks))
 	_recoil_ticks_remaining = recoil_ticks
 
 	# HitResponse (mandat production v1 §4) : flash + chiffre de dégâts sur
@@ -275,17 +294,35 @@ func _chase_velocity(to_player: Vector2, dist: float) -> Vector2:
 
 ## Lisibilité du télégraphe (GDD §10, "grosses attaques télégraphiées" —
 ## exigé explicitement pour Brute, appliqué uniformément aux 3 archétypes
-## par simplicité/cohérence) : le placeholder blanchit progressivement
-## jusqu'au moment du coup, déterministe (fonction du tick, jamais un
-## Tween en temps réel qui désynchroniserait de la simulation à 60 ticks/s).
+## par simplicité/cohérence) : la cible blanchit progressivement jusqu'au
+## moment du coup, déterministe (fonction du tick, jamais un Tween en
+## temps réel qui désynchroniserait de la simulation à 60 ticks/s).
+##
+## Phase R4 (retour croisé Gemini/ChatGPT sur clip réel, MANDAT SUITE
+## v2) : ce pulse ne s'appliquait QU'à `Polygon2D` (le mannequin
+## générique) — sur les 3 scènes d'archétype réelles (Crawler/Brute/
+## Ranged, `_visual` en `AnimatedSprite2D`), rien ne se voyait à l'écran
+## pendant tout le TELEGRAPH au-delà du changement d'animation ponctuel
+## vers "attaque" en tout DÉBUT de fenêtre — même diagnostic que les
+## bugs précédents (Poing Tellurique, outline joueur) : la logique
+## existait (`_state_tick`/`telegraph_ticks` gate bien le coup), le
+## rendu manquait. Étendu via `self_modulate` (teinte progressive vers
+## blanc, même formule que Polygon2D.color) — s'applique PAR-DESSUS le
+## shader d'outline déjà posé sur ces sprites (le modulate Godot
+## multiplie la sortie du shader, aucun conflit).
 func _pulse_telegraph_color(progress: float) -> void:
+	var lerped: Color = _base_visual_color.lerp(Color(1.0, 1.0, 1.0, 1.0), clampf(progress, 0.0, 1.0))
 	if _visual is Polygon2D:
-		(_visual as Polygon2D).color = _base_visual_color.lerp(Color(1.0, 1.0, 1.0, 1.0), clampf(progress, 0.0, 1.0))
+		(_visual as Polygon2D).color = lerped
+	elif _visual is AnimatedSprite2D:
+		_visual.self_modulate = lerped
 
 
 func _reset_visual_color() -> void:
 	if _visual is Polygon2D:
 		(_visual as Polygon2D).color = _base_visual_color
+	elif _visual is AnimatedSprite2D:
+		_visual.self_modulate = _base_visual_color
 
 
 ## `_visual` en `AnimatedSprite2D` uniquement (Crawler/Brute/Ranged, Phase
@@ -332,12 +369,17 @@ func _execute_attack(player: Node, to_player: Vector2) -> void:
 		Archetype.MELEE:
 			if global_position.distance_to(player.global_position) <= attack_range_px * 1.5:
 				player.take_damage(contact_damage, global_position, contact_recoil_px)
-				CombatFeedback.trigger_hitstop(hitstop_profile)
-				if shake_profile != "":
-					CombatFeedback.trigger_shake(shake_profile, dir)
-				# Phase 2.1 (MANDAT SUITE v2) : même seuil que Player._try_hit()
-				# ("light" vs le reste), pas un second barème.
-				Sfx.play("light_impact" if hitstop_profile == "light" else "heavy_impact")
+				# Phase R4 : point d'entrée unique register_hit() — même
+				# seuil que Player._try_hit() pour SFX/camera-punch
+				# ("light" vs le reste), et camera-punch ENFIN présent sur
+				# les coups ennemis (trou confirmé par audit : AUCUNE
+				# attaque ennemie ne zoomait la caméra jusqu'ici, seules
+				# les attaques du joueur le faisaient).
+				CombatFeedback.register_hit(
+					hitstop_profile, false,
+					"light_impact" if hitstop_profile == "light" else "heavy_impact",
+					shake_profile, dir,
+					hitstop_profile != "light" and hitstop_profile != "none")
 		Archetype.RANGED:
 			_spawn_projectile(dir)
 	_state = State.RECOVER
@@ -348,4 +390,4 @@ func _spawn_projectile(direction: Vector2) -> void:
 	var proj: Node2D = ProjectileScene.instantiate()
 	get_parent().add_child(proj)
 	proj.global_position = global_position
-	proj.configure(direction, projectile_speed_px_s, projectile_damage)
+	proj.configure(direction, projectile_speed_px_s, projectile_damage, hitstop_profile, shake_profile)

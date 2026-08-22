@@ -25,6 +25,7 @@ attack_recover_ticks = 12
 attack_cooldown_ticks = 46
 hitstop_profile = "light"
 shake_profile = ""
+recoil_multiplier = 1.4
 preferred_range_px = 170.0
 range_tolerance_px = 26.0
 projectile_damage = 7.0

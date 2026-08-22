@@ -12,10 +12,14 @@
     "lean_deg": 6.0
   },
   "coup3": {
-    "root_motion": { "distance_px": 20.0, "start_tick": 5, "end_tick": 12, "ease": "out_quad" },
-    "lean_deg": 9.0,
-    "squash": [ { "tick": 9, "x": 1.25, "y": 0.82, "hold": 1 } ],
-    "afterimages": { "count": 2, "start_tick": 6, "spacing_ticks": 3, "opacities": [0.5, 0.25] }
+    "_r4_notes": "Phase R4 (retour croisé Gemini/ChatGPT, MANDAT SUITE v2 : 'coup 3 (finisher) : anticipation plus longue et silhouette etiree pour marquer la conclusion') - anticipation du finisher allongee de 8 a 12 ticks cote code (player.gd, COMBO_TIER_ANTICIPATION_TICKS) ; les timings ci-dessous sont recales sur ce nouveau contact (tick absolu 13 = 12 anticipation + 1er tick de release, au lieu de 9), et un premier keyframe squash 'etirement' (x<1, y>1, l'inverse de l'ecrasement d'impact) est ajoute PENDANT l'anticipation pour lire la silhouette qui se charge avant le coup - jamais vu sur coup1/coup2, reserve au finisher.",
+    "root_motion": { "distance_px": 24.0, "start_tick": 8, "end_tick": 16, "ease": "out_quad" },
+    "lean_deg": 11.0,
+    "squash": [
+      { "tick": 5, "x": 0.88, "y": 1.18, "hold": 1 },
+      { "tick": 13, "x": 1.25, "y": 0.82, "hold": 1 }
+    ],
+    "afterimages": { "count": 2, "start_tick": 9, "spacing_ticks": 3, "opacities": [0.5, 0.25] }
   },
   "dash": {
     "lean_deg": 8.0,

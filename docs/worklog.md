@@ -5530,3 +5530,120 @@ en jeu réel confirmant les nouveaux labels lisibles avec contour.
 fournie par Milan, méthodologie "vérifier avant de corriger") démarre
 dans la foulée — voir entrée suivante. Phase R3/R3bis restent en
 attente du nouveau clip de Milan après ce redeploy, comme demandé.
+
+## 2026-08-22 — Retour croisé Gemini/ChatGPT sur clip post-R1 : Phase R4 (feedback d'impact, priorité unique)
+
+Les deux analyses convergent après R1 : le bug d'input est bien corrigé,
+mais "aucun contenu supplémentaire tant que le combat ne frappe pas" —
+un seul chantier cette passe, carte/monstres/HUD/migration Cendre non
+touchés (consigne explicite de Milan).
+
+**1. Système de hit commun (le plus important).** `CombatFeedback`
+faisait déjà le hit-stop de façon centralisée mais SYMÉTRIQUE (même
+durée des deux côtés du conflit) et 4-5 appels séparés par site
+(`trigger_hitstop`/`trigger_shake`/`Sfx.play`/`CameraDirector.
+trigger_punch()` à la main, avec des trous confirmés par audit :
+Gueule Vide sans shake ni camera-punch, les 4 attaques de boss sans SFX
+ni camera-punch, le projectile de Ranged avec un hitstop/shake codés en
+dur et jamais branchés sur son propre `configure()`). Refonte :
+- `TARGET_HITSTOP_MS`/`ATTACKER_HITSTOP_MS` (deux tables, cible
+  toujours plus longue que l'attaquant — asymétrie demandée par les deux
+  analyses) remplacent l'ancienne table symétrique unique.
+- Deux compteurs de gel séparés (`_player_freeze_ticks_remaining` /
+  `_enemy_freeze_ticks_remaining`, routés par `attacker_is_player`) au
+  lieu d'un seul — chaque camp consulte SON compteur
+  (`is_player_frozen()`/`is_enemy_frozen()`), `is_frozen()` (OR des deux)
+  reste dispo pour les usages génériques (décroissance cosmétique du
+  shake/punch-zoom).
+- `register_hit(hitstop_weight, attacker_is_player, sfx_event, shake_weight,
+  shake_direction, camera_punch)` : point d'entrée UNIQUE, un appel par
+  site de contact (combo 3 coups, Bras-Faux, Poing Belluaire, Poing
+  Tellurique, Gueule Vide, les 4 attaques d'Enemy, les 4 attaques du
+  boss, le projectile de Ranged) — comble tous les trous de l'audit sans
+  rien retirer aux nuances déjà testées (coup léger sans camera-punch,
+  etc, via les paramètres optionnels).
+
+**2. Recul par poids d'ennemi.** Mécanique neuve : `recoil_multiplier`
+(export par entité, jamais 0.0) multiplie le `recoil_strength_px` que
+l'attaquant transmet à `take_damage()` — avant cette brique, le recul
+subi ne dépendait QUE de l'attaquant, jamais de qui étai touché. Réglé
+sur les 3 tiers demandés : Crawler (léger) 1.6, Ranged (léger-moyen)
+1.4, Brute (lourd) 0.35, boss (lourd) 0.3 — jamais statique, toujours un
+minimum de recul visible même sur les poids lourds.
+
+**3. Télégraphe visuel ennemi.** Le mécanisme de pulse existait déjà
+(`_pulse_telegraph_color()`, lerp progressif vers blanc, tick-driven)
+mais ne s'appliquait qu'aux `Polygon2D` (mannequin générique + boss) —
+les 3 archétypes jouables (Crawler/Brute/Ranged), en `AnimatedSprite2D`,
+n'avaient RIEN, confirmant le trou signalé ("logique présente, rien à
+l'écran"). Étendu via `self_modulate` sur la branche `AnimatedSprite2D`
+— même mécanisme, pas un second langage visuel, cohabite sans conflit
+avec le shader d'contour existant (modulate multiplie par-dessus la
+sortie COLOR d'un shader canvas_item).
+
+**4. Poids du combo.** Root motion sur les 3 coups : déjà spécifié et
+câblé depuis J1 (`_apply_combo_root_motion()`, lecture data-driven de
+`cendre.json`) — vérifié, PAS un trou, juste une couverture de test plus
+étroite que le câblage réel. Coup3 (finisher) : anticipation+récupération
+allongées via `COMBO_TIER_ANTICIPATION_TICKS`/`COMBO_TIER_RECOVERY_TICKS`
+(nouveaux tableaux par tier, tier1/2 inchangés) + un keyframe squash
+"étirement" pendant l'anticipation (silhouette qui se charge avant le
+coup, jamais vu sur coup1/2) dans `cendre.json`.
+
+**5. Terre (Poing Tellurique) — vérifié par capture avant de toucher au
+code**, même méthodologie que Gueule Vide/C1 : `tools/capture_scene.tscn
+--mode=player_action --action=power4` à plusieurs ticks. Verdict :
+`groundRing` et `dustKick` sont bien rendus (pas un bug de rendu) mais
+`groundRing` était quasiment invisible contre le sol neutre (value 38%/
+saturation 28%, palette `terre.json` "signature 1") — contraste remonté
+(52%/46%), scale_px/durée déjà corrects dans la recette, rien d'autre
+retouché.
+
+**6. Contour bleu + sol — vérifié par capture zoomée réelle avant de
+retoucher.** La capture confirme le diagnostic de Gemini : à alpha=1.0/
+largeur=1.0 (`player_fx.gdshader`), le contour peint en plein n'importe
+quel texel voisin d'un pixel semi-transparent — sur un sprite aussi
+petit remonté à l'échelle du jeu, ça sature toute la silhouette en bloc
+bleu au lieu d'un trait fin (§10.1 : allié = bleu, jamais une
+recoloration). Alpha réduit à 0.6, largeur à 0.6 — reste un contour
+visible (capture après/avant comparée), plus une recoloration complète.
+Sol de `gate_premiere`/`test_arena` : NON touché cette passe — R4 a
+prioritisé le système de hit commun et les 2 vérifications par capture
+demandées explicitement (Terre, contour), pas eu le temps de reprendre
+le tileset avant la fin de cette passe ; reste ouvert pour la
+prochaine, la teinte/saturation exacte étant une décision esthétique
+(Addendum C) à trancher avec une capture dédiée plutôt qu'en aparté ici.
+
+**7. Secondaire (chiffres de dégâts en arc, zoom caméra A/B) : NON
+traité cette passe**, comme prévu par Milan ("si le temps le permet
+après 1-6") — priorité donnée au système de hit commun et aux 2
+vérifications par capture explicitement demandées.
+
+**Bug trouvé en cours de route (pas dans le mandat, découvert en
+testant le système de hit commun) :** `VfxRecipeRegistry._physics_process()`
+gelait encore sur le générique `is_frozen()` (OR des deux compteurs)
+alors que `gueule_vide.gd` (et tous les autres appelants de `play()`,
+tous des pouvoirs du joueur) gèlent désormais sur `is_player_frozen()`
+— deux horloges d'un même run pouvaient dériver de quelques ticks selon
+qui était touché. Une run "en retard" laissait sa couche dégradable
+(ex. `shardBurst`) se déclencher plus tard que prévu, polluant le
+spawn_log partagé pendant la fenêtre d'un test suivant
+(`gueule_vide_owner_death_cancels_degradable_layer`, faux négatif).
+Corrigé en alignant la registry sur `is_player_frozen()` (seul rôle
+utilisé par tous ses appelants actuels à ce jour).
+
+**Vérification** : `--import` headless propre, `scripts/
+run_gameplay_smoke_test.sh` 100% vert (deux runs indépendants,
+déterminisme confirmé) — 8 régressions de méthodologie de test exposées
+par l'asymétrie du hit-stop (ordre de sonde shake/gel, marges d'attente
+calées sur l'ancienne durée symétrique) diagnostiquées et corrigées une
+par une, aucune n'était un vrai bug de gameplay. Captures zoomées
+réelles pour Terre (avant/après) et contour (avant/après) — voir
+`/tmp/r4_captures/` (non versionné, artefacts de vérification).
+
+**Statut Phase R4 : items 1-6 terminés et vérifiés (tests + captures),
+item 7 différé.** Redeploy web à suivre. R2 (items encore ouverts :
+recoupe désormais très largement R4.5/R4.6, à réconcilier plutôt qu'à
+refaire) et R3/R3bis (Monstrification/Invocation placeholders, chiffrage
+migration Cendre) restent en attente de la validation de Milan sur le
+prochain clip, comme demandé.

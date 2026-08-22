@@ -28,6 +28,7 @@ contact_damage = 5.0
 contact_recoil_px = 12.0
 hitstop_profile = "light"
 shake_profile = ""
+recoil_multiplier = 1.6
 xp_reward = 8.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
