@@ -5763,3 +5763,80 @@ directement, jamais `_camera.zoom`, donc indifférents à `BASE_ZOOM`).
 **Statut** : terminé et vérifié, redeploy web à suivre immédiatement.
 render_detector.py maintenant fourni par Milan — intégration en cours,
 voir entrée suivante.
+
+## 2026-08-22 — render_detector.py : intégration + calibration Poing Tellurique
+
+Fichiers de Milan (`render_detector.py` + `test_render_detector.py`)
+copiés tels quels dans `tools/`. Suite synthétique 4/4 rejouée dans cet
+environnement (`python3 tools/test_render_detector.py`) : présent /
+absent / flash blanc (channel_delta) / cas limite ("incertain") tous
+corrects.
+
+**Nouveau mode de capture** (`tools/capture_scene.gd`,
+`--mode=player_action_sequence`) : aucun mode existant ne produisait
+une SÉQUENCE d'images tick par tick (`frame_0000.png`, `frame_0001.png`,
+...) au format attendu par `render_detector.load_frames_from_dir()` —
+tous les autres modes capturent UN seul tick cible. Même mise en place
+que `--mode=player_action` (Player réel + 2 ennemis, mêmes offsets).
+
+**Bug trouvé et corrigé en construisant ce mode** : la première version
+gelait/dégelait le `SceneTree` (`get_tree().paused`) à CHAQUE tick pour
+réutiliser `_freeze_and_wait_render()` — résultat : les primitives VFX
+ne se rendaient plus DU TOUT (`groundRing` de Poing Tellurique,
+pourtant confirmé visible en capture ponctuelle `--mode=player_action`,
+disparaissait entièrement en séquence). Cause exacte non isolée
+(interaction entre le pause/dégel répété et le pipeline de rendu
+logiciel), corrigée en abandonnant la pause pour cette capture : un
+`process_frame` de plus après chaque `physics_frame`, jamais de gel.
+
+**Vérification "alignement tick 0" (demandée explicitement par Milan)**
+: en corrigeant le bug ci-dessus, un second problème est apparu — le
+TOUT PREMIER frame capturé (tick 0, la baseline "avant effet") sortait
+avec un fond NOIR (0,0,0) au lieu du gris neutre stable (76,76,76) de
+tous les frames suivants, un artefact de chauffe du rasterizer logiciel
+(llvmpipe) sur la toute première image rendue. Sans correctif, TOUTES
+les couches ressortaient "present" dès le tick 1 avec
+`pixel_fraction=1.0` — un faux positif qui ne mesurait que cet artefact,
+jamais un vrai effet (exactement le risque que Milan avait anticipé).
+Corrigé par 3 `process_frame` de chauffe avant la capture du tick 0.
+
+**Calibration sur Poing Tellurique** (cas choisi par Milan, déjà
+confirmé visible en capture manuelle cette session) : région/seuils par
+primitive dérivés de vraies mesures sur une séquence de 31 frames
+(0-30 ticks), pas inventés :
+- `groundRing` (luminance_delta) : present, mean_delta~8-9.3 sur toute
+  la fenêtre 1-18, seuil calé à 6.0/0.10 avec marge.
+- `impactFlashFrame` (luminance_delta) : present, delta ~12 au contact
+  (tick 18) montant à ~65-72 (gel de hit-stop qui retarde la
+  décroissance visuelle, cohérent avec l'asymétrie Phase R4).
+- `dustKick` (stddev_delta — texture, pas luminosité moyenne, exactement
+  le cas d'usage documenté par Milan) : present, signature nette (saut
+  36,9->84 dès le tick 19, décroissance ticks 26-27).
+- `converge` (core, matière qui converge dans le poing) : **absent**
+  selon le détecteur (delta max ~0,4, loin sous le seuil). Inspection
+  visuelle d'une capture zoomée confirme un signal à peine perceptible
+  — pas une absence aussi franche qu'un vrai bug de rendu (C1/Gueule
+  Vide), documenté dans la recette comme piste ouverte plutôt que bug
+  tranché : soit augmenter son contraste/échelle (même diagnostic que
+  groundRing avant son propre correctif), soit recalibrer la mesure.
+  Pas encore résolu.
+
+`expected_layers` ajouté à `data/recipes/power.poing_tellurique.cast.json`
+(liste brute, conforme au schéma de `render_detector.py` — les notes de
+calibration vivent dans une clé séparée `_expected_layers_notes` pour ne
+jamais casser `load_recipe()`). Rapport complet :
+`/tmp/r4_captures/poing_tellurique_render_report.json` (non versionné).
+
+**Non fait cette passe** : `expected_layers` sur les autres recettes
+(Bras-Faux, Poing Belluaire, Gueule Vide, Totem du Vide...) — chacune
+demande sa propre calibration par capture réelle (région/seuils
+propres à son cadrage), pas un travail générique à dupliquer sans
+vérification. Le pipeline complet (capture séquence -> calibrer ->
+`expected_layers` -> `run_detection_from_paths()`) est maintenant
+prouvé de bout en bout sur un cas réel ; l'étendre aux autres pouvoirs
+reste un chantier à part entière, pas terminé ici.
+
+**Vérification** : `scripts/run_gameplay_smoke_test.sh` 100% vert
+(nouveau mode de capture n'affecte aucun code de gameplay). Rien à
+redéployer côté web (outil de développement uniquement, pas de code
+runtime jeu changé au-delà de `capture_scene.gd`).

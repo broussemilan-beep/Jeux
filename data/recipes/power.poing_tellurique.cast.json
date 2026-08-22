@@ -19,5 +19,36 @@
     "scene_change_policy": "stop_immediately",
     "max_lifetime_ticks": 46
   },
-  "notes": "Archétype de cast 'melee_impact' (même famille que Poing Belluaire, Phase 3 MANDAT SUITE v2) — RANK_ZERO_POWER_SKILL_BIBLE v0.4 'Terre' §1 : 'Rank Zero concentre terre et roche autour de son poing puis frappe. La matière est arrachée ou soulevée au dernier instant... puis se brise et retombe.' Enchaînement fiche : 'appui -> matière qui remonte -> coup -> impact -> éclats/poussière -> retour à la normale' — traduit en 42 ticks (0,7s) : anticipation 0-18 (groundRing télégraphie la terre qui se fissure/remonte au sol sous le poing, §7.1 de la registry primitive : 'anneau au sol cassé ou incomplet', jamais un halo plein), core 8-18 (converge, la matière converge DANS le poing en même temps que le sol se fissure — chevauchement volontaire, même construction que le core ribbonTrail de Bras-Faux qui démarre avant la fin de l'anticipation), contact 18-22 (impactFlashFrame, coup/impact), contact/conséquence 18-26 (dustKick, 'éclats/poussière' qui volent à l'OPPOSÉ de la direction du coup — §7.1 : 'projeté à l'opposé du mouvement' — avant que tout ne retombe en recovery). Seule couche degradable=true de cette recette (dustKick) : c'est la conséquence, pas le contact lui-même, donc sacrifiable sous pression de budget sans perdre la lecture du coup. Portée/angle/dégâts/recul/cooldown NE sont PAS dans cette recette (§8.1) : côté gameplay dans player.gd, constantes POING_TELLURIQUE_*. Palette 'terre' : PREMIÈRE signature de la Classe Terre (voir data/palettes/terre.json, notes — proposition non verrouillée, à valider par Milan), contrairement à Poing Belluaire qui réutilise une signature déjà établie."
+  "notes": "Archétype de cast 'melee_impact' (même famille que Poing Belluaire, Phase 3 MANDAT SUITE v2) — RANK_ZERO_POWER_SKILL_BIBLE v0.4 'Terre' §1 : 'Rank Zero concentre terre et roche autour de son poing puis frappe. La matière est arrachée ou soulevée au dernier instant... puis se brise et retombe.' Enchaînement fiche : 'appui -> matière qui remonte -> coup -> impact -> éclats/poussière -> retour à la normale' — traduit en 42 ticks (0,7s) : anticipation 0-18 (groundRing télégraphie la terre qui se fissure/remonte au sol sous le poing, §7.1 de la registry primitive : 'anneau au sol cassé ou incomplet', jamais un halo plein), core 8-18 (converge, la matière converge DANS le poing en même temps que le sol se fissure — chevauchement volontaire, même construction que le core ribbonTrail de Bras-Faux qui démarre avant la fin de l'anticipation), contact 18-22 (impactFlashFrame, coup/impact), contact/conséquence 18-26 (dustKick, 'éclats/poussière' qui volent à l'OPPOSÉ de la direction du coup — §7.1 : 'projeté à l'opposé du mouvement' — avant que tout ne retombe en recovery). Seule couche degradable=true de cette recette (dustKick) : c'est la conséquence, pas le contact lui-même, donc sacrifiable sous pression de budget sans perdre la lecture du coup. Portée/angle/dégâts/recul/cooldown NE sont PAS dans cette recette (§8.1) : côté gameplay dans player.gd, constantes POING_TELLURIQUE_*. Palette 'terre' : PREMIÈRE signature de la Classe Terre (voir data/palettes/terre.json, notes — proposition non verrouillée, à valider par Milan), contrairement à Poing Belluaire qui réutilise une signature déjà établie.",
+  "_expected_layers_notes": "render_detector.py (Milan, fourni + tools/test_render_detector.py) — cas de calibration CHOISI par Milan car déjà confirmé visible par capture manuelle (session R4). Regions/seuils calibres sur une capture REELLE de ce rig exact : godot4 res://tools/capture_scene.tscn -- --mode=player_action_sequence --action=power4 --ticks=30 --out_dir=<dir> (Player instancie a (320,200) facing RIGHT, un ennemi 'front' a +30,0 ; voir tools/capture_scene.gd, _run_player_action_sequence_capture — MEMES offsets que _check_bras_faux()/smoke test). region_pct est donc relatif a CE viewport 640x360 et CE cadrage precis, pas une propriete universelle du recipe — a re-calibrer si le rig de capture change (position joueur, zoom camera, etc). tick 0 = frame AVANT la pression (baseline), voir la note de chauffage de rendu dans capture_scene.gd (le tout premier frame rendu peut sortir avec un fond noir au lieu du gris neutre attendu, corrige par 3 process_frame de chauffe avant la capture du tick 0 -- sans ce correctif, TOUTES les couches ressortent 'present' des le tick 1 avec fraction=1.0, un faux positif qui ne mesure que l'artefact de rendu, pas un vrai effet). 'expected_layers' DOIT rester une LISTE brute (render_detector.load_recipe() itere directement dessus) — les notes vivent dans CETTE clé séparée, jamais imbriquées dans le tableau lui-même.",
+  "expected_layers": [
+    {
+      "id": "groundRing",
+      "description": "Anneau au sol (anticipation) — calibre : mean_delta~8-9.3/fraction~0.19-0.20 sur toute la fenetre 1-18, marge confortable au-dessus des seuils.",
+      "region_pct": { "x0": 0.453, "y0": 0.417, "x1": 0.519, "y1": 0.583 },
+      "tick_window": { "start": 1, "end": 18 },
+      "detection": { "metric": "luminance_delta", "min_delta": 6.0, "min_pixel_fraction": 0.10 }
+    },
+    {
+      "id": "converge",
+      "description": "Matiere qui converge dans le poing (core) — NON confirme par le detecteur (mean_delta max observe ~0.4, sous le seuil) ; inspection visuelle d'une capture zoomee montre un signal a peine perceptible, pas une absence franche comme un vrai bug de rendu (C1/Gueule Vide). A RE-INVESTIGUER : soit augmenter le contraste/la taille de converge pour cette recette (meme diagnostic que groundRing avant son propre correctif de contraste), soit recalibrer la region/le seuil si le probleme est la mesure et non le rendu. Pas encore tranche.",
+      "region_pct": { "x0": 0.453, "y0": 0.417, "x1": 0.531, "y1": 0.556 },
+      "tick_window": { "start": 8, "end": 18 },
+      "detection": { "metric": "stddev_delta", "min_delta": 2.0, "min_pixel_fraction": 0.01 }
+    },
+    {
+      "id": "impactFlashFrame",
+      "description": "Flash de contact — calibre : mean_delta ~12 des le tick18 (impact), monte a ~65-72 aux ticks 19-22 (gel de hit-stop qui retarde la decroissance visuelle, cf Phase R4 asymetrique).",
+      "region_pct": { "x0": 0.469, "y0": 0.417, "x1": 0.531, "y1": 0.528 },
+      "tick_window": { "start": 18, "end": 22 },
+      "detection": { "metric": "luminance_delta", "min_delta": 20.0, "min_pixel_fraction": 0.05 }
+    },
+    {
+      "id": "dustKick",
+      "description": "Eclats/poussiere (consequence, opposee au mouvement) — calibre via stddev_delta (texture, pas luminosite moyenne, cf docstring render_detector.py) : signature nette, saut de ~36.9 a ~84 des le tick19, decroissance visible ticks 26-27 (fin de vie).",
+      "region_pct": { "x0": 0.484, "y0": 0.417, "x1": 0.563, "y1": 0.556 },
+      "tick_window": { "start": 18, "end": 27 },
+      "detection": { "metric": "stddev_delta", "min_delta": 5.0, "min_pixel_fraction": 0.01 }
+    }
+  ]
 }

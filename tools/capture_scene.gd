@@ -90,8 +90,123 @@ func _ready() -> void:
 		await _run_player_action_capture(args)
 	elif mode == "scene":
 		await _run_scene_capture(args)
+	elif mode == "player_action_sequence":
+		await _run_player_action_sequence_capture(args)
 	else:
 		await _run_primitive_capture(args)
+
+
+## --mode=player_action_sequence (render_detector.py, tools/README) : même
+## mise en place que --mode=player_action (Player réel + 2 ennemis, mêmes
+## offsets), mais capture UNE image PAR TICK de tick 0 (juste avant la
+## pression du bouton — la baseline "avant effet" qu'attend render_detector)
+## à --ticks=N inclus, nommées frame_0000.png.. dans --out_dir — le format
+## exact que render_detector.load_frames_from_dir() attend (tick 0 = frame
+## où l'input a été envoyé, comme documenté dans son schéma expected_layers).
+## Jamais un seul geler-capturer-figer comme les autres modes : ici on doit
+## geler PUIS DÉGELER entre deux captures pour laisser la physique avancer
+## d'un tick à la fois — nouvelle fonction dédiée plutôt que de complexifier
+## _freeze_and_wait_render() (qui ne dégèle jamais ailleurs, par design).
+##   --action=power4                nom de l'InputMap action à presser 1 frame
+##   --ticks=30                     dernier tick capturé, inclus (def. 30)
+##   --out_dir=/chemin/absolu/      dossier de sortie (créé si besoin)
+##   --scale=1|2|4                  même convention qu'ailleurs (def. 1)
+func _run_player_action_sequence_capture(args: Dictionary) -> void:
+	var action_name: String = args.get("action", "")
+	var last_tick: int = int(args.get("ticks", "30"))
+	var out_dir: String = args.get("out_dir", "")
+	var scale: int = int(args.get("scale", "1"))
+	if action_name == "" or out_dir == "":
+		push_error("capture_scene[player_action_sequence]: --action et --out_dir sont requis.")
+		get_tree().quit(1)
+		return
+	if not InputMap.has_action(action_name):
+		push_error("capture_scene[player_action_sequence]: action InputMap introuvable '%s'." % action_name)
+		get_tree().quit(1)
+		return
+	if not DirAccess.dir_exists_absolute(out_dir):
+		DirAccess.make_dir_recursive_absolute(out_dir)
+
+	var player := PlayerScene.instantiate()
+	player.global_position = Vector2(320, 200)
+	player.facing = Vector2.RIGHT
+	add_child(player)
+
+	# Mêmes offsets que _run_player_action_capture()/_check_bras_faux().
+	var enemy_front := EnemyScene.instantiate()
+	enemy_front.global_position = player.global_position + Vector2(30, 0)
+	add_child(enemy_front)
+
+	var enemy_side := EnemyScene.instantiate()
+	var side_dir := Vector2.RIGHT.rotated(deg_to_rad(30.0))
+	enemy_side.global_position = player.global_position + side_dir * 30.0
+	add_child(enemy_side)
+
+	await get_tree().physics_frame
+
+	# Chauffe de rendu (render_detector.py, vérification "alignement tick 0"
+	# demandée par Milan) : constaté empiriquement que la TOUTE PREMIÈRE
+	# image capturée après l'instanciation de la scène peut sortir avec un
+	# fond NOIR (0,0,0) au lieu du gris neutre (76,76,76) stable de tous les
+	# frames suivants — un artefact du rasterizer logiciel (llvmpipe) qui
+	# n'a pas fini d'appliquer la couleur de fond/canvas dès la 1re image
+	# rendue, pas un vrai changement de scène. Sans ce chauffage, ce frame
+	# servirait de BASELINE à render_detector (tick 0) et ferait ressortir
+	# une fausse détection massive ("tout" a changé dès le tick 1, jamais
+	# crédible pour une seule primitive VFX) sur 100% de l'image. Quelques
+	# process_frame de plus ici, AVANT de capturer la vraie baseline,
+	# laissent le rasterizer se stabiliser une bonne fois.
+	for i in range(3):
+		await get_tree().process_frame
+
+	var frame_paths: Array[String] = []
+	# Tick 0 = capturé AVANT la pression, baseline "avant effet" — cohérent
+	# avec le docstring de render_detector.py ("tick 0 = frame ou l'input a
+	# ete envoye" : ce nom capture l'état juste avant que l'action ne prenne
+	# effet, la première frame OU l'effet peut apparaître est le tick 1).
+	#
+	# PAS de pause ici (contrairement aux autres modes de ce fichier) :
+	# geler/dégeler le SceneTree À CHAQUE tick d'une séquence s'est avéré
+	# casser le rendu des primitives VFX (constaté empiriquement — un
+	# groundRing visible en capture ponctuelle --mode=player_action
+	# disparaissait entièrement en séquence avec pause/dégel répétés,
+	# cause exacte non isolée mais reproductible). À la place : un seul
+	# process_frame supplémentaire après chaque physics_frame pour laisser
+	# le rendu rattraper le tick qui vient d'avancer, jamais de pause.
+	frame_paths.append(await _capture_sequence_frame_no_pause(out_dir, 0, scale))
+
+	Input.action_press(action_name)
+	await get_tree().physics_frame
+	await get_tree().process_frame
+	Input.action_release(action_name)
+
+	for tick in range(1, last_tick + 1):
+		frame_paths.append(await _capture_sequence_frame_no_pause(out_dir, tick, scale))
+		if tick < last_tick:
+			await get_tree().physics_frame
+			await get_tree().process_frame
+
+	var report := {
+		"out_dir": out_dir,
+		"action": action_name,
+		"ticks_captured": frame_paths.size(),
+		"frames": frame_paths,
+	}
+	print("CAPTURE_RESULT ", JSON.stringify(report))
+	get_tree().quit(0)
+
+
+## Capture SANS geler le SceneTree (voir note ci-dessus) — un process_frame
+## de plus avant la capture pour laisser le rendu rattraper le dernier
+## physics_frame consommé par l'appelant, jamais de pause/dégel.
+func _capture_sequence_frame_no_pause(out_dir: String, tick: int, scale: int) -> String:
+	await get_tree().process_frame
+	var img: Image = get_viewport().get_texture().get_image()
+	if scale > 1:
+		img.resize(img.get_width() * scale, img.get_height() * scale, Image.INTERPOLATE_NEAREST)
+	var path := out_dir.path_join("frame_%04d.png" % tick)
+	_save_png(img, path)
+	return path
 
 
 ## --mode=scene (Chantier B, vérification décor) : instancie une scène
