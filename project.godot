@@ -78,14 +78,23 @@ window/handheld/orientation="landscape"
 
 [input]
 
-; Phase 1.4 : action "attack" pour le combo léger — pas d'exigence de
-; contrôles réels dans le mandat Phase 1 (remap, tactile, etc. hors
-; scope, voir player.gd), une seule touche + clic gauche suffisent pour
-; une tranche verticale testée en headless.
+; Phase 1.4 : action "attack" pour le combo léger — touche espace au
+; clavier + TouchScreenButton dédié (ButtonAttack, touch_controls.tscn),
+; câblé via son propre `action = "attack"`, jamais via cette liste
+; d'events. Phase R1 (retour croisé Gemini/ChatGPT sur clip réel,
+; MANDAT SUITE v2) : le binding InputEventMouseButton générique
+; (button_mask=1, aucune position/zone restreinte) hérité de la Phase
+; 1.4 faisait qu'un SIMPLE CLIC/TOUCHER N'IMPORTE OÙ À L'ÉCRAN
+; déclenchait une attaque sur le build web tactile — un bouton
+; InputEventMouseButton sans zone n'est jamais limité à un widget
+; précis, contrairement à un TouchScreenButton (qui a sa propre
+; CollisionShape2D). Retiré : seul le clavier + le bouton tactile
+; dédié restent. Vérifié : aucune autre action (power1-4, dash, dodge,
+; character_screen) n'a de binding InputEventMouseButton — "attack"
+; était un cas isolé.
 attack={
 "deadzone": 0.5,
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":32,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
-, Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":1,"position":Vector2(0, 0),"global_position":Vector2(0, 0),"factor":1.0,"button_index":1,"canceled":false,"pressed":false,"double_click":false,"script":null)
 ]
 }
 

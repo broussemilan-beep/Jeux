@@ -39,6 +39,7 @@ func _ready() -> void:
 
 	await get_tree().physics_frame  # laisser les groupes ("enemies") se peupler
 
+	_check_input_map_has_no_stray_mouse_bindings()
 	_check_targeting()
 	await _check_damage_and_recoil()
 	await _check_death()
@@ -91,6 +92,29 @@ func _wait_until(predicate: Callable, max_ticks: int = 400) -> bool:
 		await get_tree().physics_frame
 		n += 1
 	return true
+
+
+## Phase R1 (retour croisé Gemini/ChatGPT sur clip réel, MANDAT SUITE v2) :
+## un InputEventMouseButton sans zone restreinte sur "attack" faisait
+## qu'un touché n'importe où sur l'écran déclenchait une attaque sur le
+## web export tactile — retiré de project.godot, mais un test headless
+## classique (Input.action_press()) ne l'aurait jamais détecté, puisqu'il
+## contourne l'InputMap. Vérifie directement la configuration réelle de
+## chaque action gameplay plutôt que son effet simulé, pour empêcher ce
+## bug précis de revenir silencieusement (ex. un remap futur qui
+## réintroduit un binding souris générique).
+func _check_input_map_has_no_stray_mouse_bindings() -> void:
+	var gameplay_actions := ["attack", "power1", "power2", "power3", "power4", "dash", "dodge", "character_screen"]
+	var offenders: Array[String] = []
+	for action_name in gameplay_actions:
+		for event in InputMap.action_get_events(action_name):
+			if event is InputEventMouseButton:
+				offenders.append(action_name)
+	_checks.append({
+		"name": "gameplay_actions_have_no_mouse_button_bindings",
+		"pass": offenders.is_empty(),
+		"detail": {"offenders": offenders, "checked": gameplay_actions},
+	})
 
 
 func _check_targeting() -> void:

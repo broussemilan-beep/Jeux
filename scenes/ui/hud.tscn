@@ -105,10 +105,12 @@ color = Color(0.2, 0.3, 0.75, 0.85)
 offset_right = 26.0
 offset_bottom = 26.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 9
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 10
 horizontal_alignment = 1
 vertical_alignment = 1
-text = "PWR"
+text = "GV"
 
 [node name="Overlay" type="ColorRect" parent="Cooldowns/Power1"]
 offset_right = 26.0
@@ -125,10 +127,12 @@ color = Color(0.55, 0.25, 0.55, 0.85)
 offset_right = 26.0
 offset_bottom = 26.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 9
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 10
 horizontal_alignment = 1
 vertical_alignment = 1
-text = "PW2"
+text = "BF"
 
 [node name="Overlay" type="ColorRect" parent="Cooldowns/Power2"]
 offset_right = 26.0
@@ -145,10 +149,12 @@ color = Color(0.55, 0.3, 0.25, 0.85)
 offset_right = 26.0
 offset_bottom = 26.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 9
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 10
 horizontal_alignment = 1
 vertical_alignment = 1
-text = "PW3"
+text = "PB"
 
 [node name="Overlay" type="ColorRect" parent="Cooldowns/Power3"]
 offset_right = 26.0
@@ -165,10 +171,12 @@ color = Color(0.55, 0.4, 0.2, 0.85)
 offset_right = 26.0
 offset_bottom = 26.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 9
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 10
 horizontal_alignment = 1
 vertical_alignment = 1
-text = "PW4"
+text = "PT"
 
 [node name="Overlay" type="ColorRect" parent="Cooldowns/Power4"]
 offset_right = 26.0

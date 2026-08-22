@@ -5471,3 +5471,62 @@ d'engager) :
   n'existe actuellement, seulement des textures de sol).
 Ces deux points ne sont pas oubliés — ils sont documentés ici comme
 prochaine décision de production, pas silencieusement ignorés.
+
+## 2026-08-22 — Retour croisé Gemini/ChatGPT sur clip réel : Phase R1 (bug bloquant)
+
+**Contexte** : Milan a fait analyser un clip de gameplay réel par deux
+IA indépendantes (Gemini, ChatGPT), plus un bug trouvé par Claude en
+lisant le code. Traitement en ordre STRICT imposé par Milan : R1 d'abord
+(bloquant), redeploy, puis R2 (vérifier avant corriger), R3/R3bis
+attendent la validation de Milan sur un nouveau clip.
+
+**Bug** : `project.godot`, action `"attack"` — héritée de la Phase 1.4
+("une seule touche + clic gauche suffisent pour une tranche verticale
+testée en headless"), elle portait un `InputEventMouseButton` sans zone
+restreinte (`button_mask=1`, aucune position). Contrairement à un
+`TouchScreenButton` (qui a sa propre `CollisionShape2D` et ne réagit
+que dans sa zone), ce binding déclenchait l'action sur N'IMPORTE QUEL
+clic/toucher de l'écran — sur le build web tactile, ça veut dire
+qu'un touché n'importe où (déplacement au joystick compris, si le doigt
+glisse) pouvait déclencher une attaque. Root cause confirmée par simple
+lecture du binding, pas par reproduction manuelle.
+
+**Fix** : retiré l'event `InputEventMouseButton` de `attack`, gardé
+uniquement `InputEventKey` (espace) + le `TouchScreenButton` dédié
+(`ButtonAttack`, câblé via son propre `action = "attack"`, jamais
+affecté par ce retrait). Vérifié explicitement (lecture directe de
+`[input]`) qu'aucune autre action (`power1-4`, `dash`, `dodge`,
+`character_screen`) ne porte de binding souris généraliste — "attack"
+était un cas isolé, pas un pattern répété.
+
+**Test de régression permanent** : `scripts/run_gameplay_smoke_test.sh`
+utilise `Input.action_press()` partout, qui CONTOURNE l'InputMap — un
+test headless classique n'aurait donc jamais détecté ce bug ni sa
+régression. Ajouté `_check_input_map_has_no_stray_mouse_bindings()`
+(`tools/smoke_test_gameplay.gd`) : inspecte directement
+`InputMap.action_get_events()` pour les 8 actions gameplay et échoue si
+l'une d'elles porte un `InputEventMouseButton` — verrouille ce bug
+précis contre un retour silencieux (ex. un futur remap qui
+réintroduirait un binding généraliste).
+
+**Labels power1-4 illisibles** (Gemini + Milan) : "PWR"/"PW2"/"PW3"/"PW4"
+ne distinguent rien du tout entre eux au premier coup d'œil et ne disent
+rien sur la compétence réelle. Renommés selon l'identité de chaque
+pouvoir (GV = Gueule Vide, BF = Bras-Faux, PB = Poing Belluaire, PT =
+Poing Tellurique) sur les 2 endroits qui les affichent
+(`touch_controls.tscn` boutons tactiles, `hud.tscn` icônes de cooldown)
+— même préfixe que le joueur retrouvera plus tard dans un éventuel menu
+de compétences. Contraste ajouté (`font_outline_color` noir,
+`outline_size` 2-3) + taille légèrement augmentée (boutons tactiles
+12->14px, HUD 9->10px) pour rester lisible sur des fonds très variés
+(sol, ennemis, VFX derrière) — vérifié par capture, nettement plus
+lisible qu'avant.
+
+**Vérification** : `--import` headless propre, `scripts/
+run_gameplay_smoke_test.sh` 100% vert (nouveau check inclus). Capture
+en jeu réel confirmant les nouveaux labels lisibles avec contour.
+
+**Statut Phase R1 : terminé.** Redeploy web à suivre. Phase R2 (déjà
+fournie par Milan, méthodologie "vérifier avant de corriger") démarre
+dans la foulée — voir entrée suivante. Phase R3/R3bis restent en
+attente du nouveau clip de Milan après ce redeploy, comme demandé.
