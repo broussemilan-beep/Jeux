@@ -403,6 +403,24 @@
         32,
         61
       ]
+    },
+    "poing_belluaire": {
+      "frames": [
+        "assets/processed/sprites/cendre/poing_belluaire/0.png",
+        "assets/processed/sprites/cendre/poing_belluaire/1.png",
+        "assets/processed/sprites/cendre/poing_belluaire/2.png",
+        "assets/processed/sprites/cendre/poing_belluaire/3.png",
+        "assets/processed/sprites/cendre/poing_belluaire/4.png",
+        "assets/processed/sprites/cendre/poing_belluaire/5.png"
+      ],
+      "canvas": [
+        64,
+        64
+      ],
+      "anchor_px": [
+        32,
+        61
+      ]
     }
   }
 }

@@ -901,10 +901,18 @@ func _try_hit_bras_faux() -> void:
 
 
 ## Poing Belluaire — même construction que _start_bras_faux() ci-dessus.
-## Placeholder visuel : "coup3" (le plus lourd des 3 coups du combo léger,
-## le plus proche visuellement d'un "coup frontal très lourd" — art dédié
-## à la transformation du poing hors scope recette+logique, même
-## discipline que Bras-Faux/"coup2").
+##
+## Art dédié (agent Poing Belluaire, 2026-08-22) : anim "poing_belluaire"
+## propre, PAS un réemploi de "coup3" — bras+poing droit réellement
+## transformés en une seule masse ronde/compacte de muscle et chair
+## enflée (create_character_state sur le character_id Cendre_v3c EN JEU
+## (8596a4ad, vérifié via get_character AVANT l'appel — même piège que
+## Bras-Faux avec e08932a2, évité ici en amont) puis animate_character
+## mode v3 sur cet état, 6 frames sud, cf. data/pixellab_usage.jsonl).
+## Silhouette délibérément large/ronde, à l'opposé de la silhouette
+## longue/fine de Bras-Faux — les deux ne doivent jamais être confondues
+## à l'écran. Même discipline flip_h auto-contenue que _start_bras_faux()/
+## _start_attack() (art "sud" seul).
 func _start_poing_belluaire() -> void:
 	if stats.is_dead() or _action_lock or _poing_belluaire_cooldown_remaining > 0:
 		return
@@ -912,7 +920,9 @@ func _start_poing_belluaire() -> void:
 	_poing_belluaire_phase = PoingBelluairePhase.ANTICIPATION
 	_poing_belluaire_tick = 0
 	_poing_belluaire_hit_applied = false
-	_sprite.play("coup3")
+	if facing.x != 0.0:
+		_sprite.flip_h = facing.x < 0.0
+	_sprite.play("poing_belluaire")
 
 	var dir := facing
 	if dir.length_squared() < 0.0001:

@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=120 format=3]
+[gd_resource type="SpriteFrames" load_steps=126 format=3]
 
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/0.png" id="2"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/1.png" id="3"]
@@ -119,6 +119,12 @@
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/3.png" id="118"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/4.png" id="119"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/5.png" id="120"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/0.png" id="121"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/1.png" id="122"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/2.png" id="123"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/3.png" id="124"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/4.png" id="125"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/5.png" id="126"]
 
 [resource]
 animations = [{
@@ -592,5 +598,28 @@ animations = [{
 }],
 "loop": false,
 "name": &"bras_faux",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("121")
+}, {
+"duration": 1.0,
+"texture": ExtResource("122")
+}, {
+"duration": 1.0,
+"texture": ExtResource("123")
+}, {
+"duration": 1.0,
+"texture": ExtResource("124")
+}, {
+"duration": 1.0,
+"texture": ExtResource("125")
+}, {
+"duration": 1.0,
+"texture": ExtResource("126")
+}],
+"loop": false,
+"name": &"poing_belluaire",
 "speed": 12.0
 }]

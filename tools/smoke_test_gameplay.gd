@@ -1268,8 +1268,8 @@ func _check_poing_belluaire() -> void:
 	var poing_belluaire_started_during_cooldown: bool = _player._poing_belluaire_phase != Player.PoingBelluairePhase.NONE
 
 	_checks.append({
-		"name": "poing_belluaire_input_starts_state_and_plays_placeholder_anim",
-		"pass": started and anim_during == "coup3",
+		"name": "poing_belluaire_input_starts_state_and_plays_dedicated_anim",
+		"pass": started and anim_during == "poing_belluaire",
 		"detail": {"started": started, "anim": anim_during},
 	})
 	_checks.append({
