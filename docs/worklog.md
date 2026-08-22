@@ -1454,3 +1454,92 @@ vrai dans le code/les recettes/les journaux d'usage.
 **Vérification** : `run_gameplay_smoke_test.sh` 80/80 vert (changement
 100% documentation, aucun fichier de code touché — vérifié quand même
 par discipline, jamais supposé "sans risque" sans le confirmer).
+
+## 2026-08-22 — MANDAT AUTONOME v3 : Rapport final
+
+Milan indisponible pour arbitrer cette session (mandat explicite,
+autonomie totale dans les budgets fixés). 4 phases exécutées dans
+l'ordre imposé, chacune commitée/poussée séparément.
+
+### Ce qui est vraiment fait et vérifié, phase par phase
+
+**Phase 1 (monde/décor)** — TERMINÉ. Audit réel des 3 scènes (flat-
+color backdrops, parallaxe ne répétant que 2 textures, 4 props uniques
+seulement). 8 assets PixelLab générés (statue/tour/bannière en
+arrière-plan + caisse/idole/torche/végétation/poteau en props de sol),
+2 régénérés après échantillonnage HSV réel ayant mesuré une palette
+hors plage (corrigé). Intégrés dans les 3 scènes en positions non
+répétitives. Fix bonus : `test_arena.tscn` uniformisé sur
+`floor_terrain.tres` (comme les 2 autres scènes). Vérifié : smoke test
+76/76, capture en jeu réel (3 angles caméra). Coût : 10/300 générations
+PixelLab.
+
+**Phase 2 (animation des monstres)** — TERMINÉ. Les 3 monstres avaient
+un bob procédural, jamais de vraie marche. Ranged : marche+course déjà
+incluses gratuitement dans son rig Meshy payé — récupérées via
+`meshy_download_model`, 0 crédit. Crawler/Brute : 4 poses de marche à
+la main sur leur rig manuel Blender déjà validé (le rig auto Meshy
+échoue sur leurs postures). Câblé dans `enemy.gd` (`_update_visual_bob`
+préfère "marche" si l'animation existe, repli bob procédural conservé
+pour un futur archétype sans anim dédiée). Vérifié : smoke test 76/76
+(dont les 3 checks qui exercent le mouvement des monstres), capture en
+jeu réel confirmant une pose de marche distincte de l'idle à l'écran.
+Coût : 0 crédit Meshy (866/866 restants).
+
+**Phase 3 (compétences)** — PARTIEL, honnêtement. Deux livrables réels :
+(1) fissure au sol manquante sur Poing Belluaire (écart identifié lors
+de l'audit palette en début de session) corrigée — couche `fractureLine`
+ajoutée, aucune nouvelle couleur (la palette la nommait déjà), vérifié
+par smoke test + capture réelle (segments de fissure visibles). (2)
+Marée de Sable (Terre, Tier 2) implémentée de bout en bout : nouvel
+archétype de cast "ligne qui voyage" (`beamSegment`), nouveau ciblage en
+ligne (`Targeting.enemies_in_line()`), nouvelle mécanique de
+ralentissement générique (`Enemy.apply_slow()`), 4 nouveaux checks smoke
+test, capture réelle confirmant le rendu. **10 des 11 compétences
+manquantes restent non implémentées** (Corbeau Pâle, Poing du Colosse,
+Œil Sans Regard, Serpent Creux, Carapace, Effondrement, Fissure
+Éruptive, Mâchoire, Forme Bestiale, Pattes de Chasse) — choix délibéré
+de livrer une compétence complète et vérifiée plutôt que plusieurs
+ébauches, conformément à la consigne explicite du mandat. Aucun blocage
+technique : la méthode (VFX recipe → gameplay → mécanique générique si
+besoin → smoke test dédié → capture réelle) est directement
+réutilisable pour les 10 restantes, dans l'ordre de tier verrouillé.
+
+**Phase 4 (housekeeping)** — TERMINÉ. `docs/worklog.md` (6657 lignes)
+archivé par période (2026-08-18 → 2026-08-21 dans un fichier séparé,
+2026-08-22 conservé, 1425 lignes). `docs/STATUS.md` — écart réel trouvé
+(le fichier n'existait pas du tout, contrairement à ce que le mandat
+supposait) — créé neuf avec un état factuel du dépôt.
+
+### Ce qui est bloqué, et ce qu'il faudrait pour débloquer
+
+Rien n'est bloqué techniquement. La seule limite rencontrée sur toute
+la session est le **temps/budget de cette session elle-même** pour la
+Phase 3 (10 compétences sur 15 restent à écrire). Aucune décision de
+Milan n'est nécessaire pour les 10 compétences restantes : chacune a
+déjà (a) un sprite de référence archivé, (b) un tier verrouillé, (c)
+une méthode éprouvée deux fois cette session (Poing Belluaire fix,
+Marée de Sable). Un point RÉEL à trancher par Milan un jour (pas
+bloquant pour continuer les compétences) : aucun des 15 combats n'a
+encore de sprite Godot dédié (tous utilisent "coup1"/"coup2"/"coup3"
+en placeholder) — pas un problème pour cette session, mais un vrai
+manque d'identité visuelle qui grandira à mesure que plus de
+compétences existent sans art propre.
+
+### Coût réel consommé (mesuré, pas estimé)
+
+- PixelLab : 10 générations / 300 (Phase 1 uniquement).
+- Meshy : 0 crédit / 150 (Phase 2 — récupération gratuite d'un rig déjà
+  payé, aucun nouvel appel facturé).
+
+### Recommandation pour la prochaine session
+
+Continuer Phase 3 dans l'ordre verrouillé : Corbeau Pâle (Invocateur,
+Tier 2) en premier — référence déjà archivée
+(`docs/references/invocateur/corbeau_pale.png`), même méthode
+directement réutilisable. Après les 5 compétences Tier 2 restantes du
+même ordre de priorité (tiers bas = plus visibles), envisager l'art
+dédié par compétence (point non bloquant relevé ci-dessus) comme
+chantier séparé, une fois plus de compétences vivantes pour juger si le
+partage "coup1/coup2/coup3" reste lisible ou commence à confondre les
+Pouvoirs entre eux.
