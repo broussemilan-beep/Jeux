@@ -6408,3 +6408,85 @@ d'état, avant de revenir à 0% pour le reste de la suite.
 **Vérification** : `scripts/run_gameplay_smoke_test.sh` 100% vert (70
 checks, 4 nouveaux). `test_arena.tscn` relancé headless (xvfb) : aucune
 erreur de nœud sur le nouveau `ScreenFlash` dans `hud.tscn`.
+
+## 2026-08-22 — MANDAT AUTONOME v3 : Phase 1 (le monde et le décor)
+
+**Contexte** : Milan indisponible pour arbitrer ce mandat (4 phases,
+autonomie totale dans les budgets fixés). Ordre d'exécution imposé :
+monde d'abord (plus gros manque visuel constaté, et sert de base jugée
+pour la suite). Cf. mandat complet archivé dans l'historique de
+conversation — pas de fichier dédié, contenu reproduit ici en substance
+à chaque décision qui s'y réfère.
+
+**Audit réel des 3 scènes** (lecture complète des 3 `.tscn`, pas une
+estimation) : `gate_premiere`/`test_arena`/`outpost` partagent le même
+schéma pauvre — `Backdrop` en `ColorRect` plat, `FarBackground`
+(`Parallax2D`) ne répétant que 2 textures (`bg_ruin_arch`/
+`bg_pillar_silhouette`) 3× chacune, et seulement 4 props uniques
+(`prop_pillar`/`prop_rubble_warm`/`prop_brazier`/`prop_debris`)
+dispersés par variation de position/flip sur les 14 instances de
+`gate_premiere`. Incohérence trouvée en prime : `test_arena.tscn`
+utilisait `floor_tileset.tres` (atlas 2 tuiles, aucune donnée de
+terrain) alors que `gate_premiere`/`outpost` utilisent déjà
+`floor_terrain.tres` (vrai `TerrainSet` à coins Wang) — même script
+`arena_floor.gd` dans les 3, donc bascule directe sans risque de
+compatibilité.
+
+**Génération PixelLab** (10 `create_map_object`, budget mandat 300 —
+10/300 consommés, journalisées dans `data/pixellab_usage.jsonl`) :
+- 3 arrière-plans (vue `side`, 224px de haut, même famille d'échelle
+  que `bg_ruin_arch`/`bg_pillar_silhouette`) : statue brisée, tour
+  effondrée, bannière en lambeaux.
+- 5 props de sol (vue `high top-down`, 32×32/32×40, même famille
+  d'échelle que `prop_pillar`) : caisse en bois, idole de pierre, pied
+  de torche, végétation, poteau de bannière.
+
+**Vérification de palette par échantillonnage HSV réel** (script
+Python ponctuel, comptage de pixels opaques par couleur dominante —
+même méthode que le verrouillage de `terre.json` en début de session,
+jamais à l'œil) : la bannière et les 5 props de sol tombent dans la
+même famille de teinte (12-28°, terracotta/bois) que `prop_pillar.png`
+— acceptés tels quels. La statue et la tour, en 1re génération,
+échantillonnaient hue 228-286° avec jusqu'à 41% des pixels sous 7% de
+valeur (violation mesurée de la règle Addendum C "jamais de bande à
+0%/100%", et hors de la plage de teinte 250-330° déjà établie par les 2
+arrière-plans existants) — **régénérées** (2 générations
+supplémentaires, prompt explicitement corrigé vers "purple-brown, never
+blue-grey or near-black, amber rim light"). v2 : hue 248-286°/sat
+30-93%/val 11-35% — dans la plage de variation déjà réelle entre
+`bg_ruin_arch` (ombre 250-266°) et `bg_pillar_silhouette` (326-330°),
+bandes de valeur non extrêmes. Acceptées.
+
+**Intégration réelle** (pas de génération orpheline) :
+- `test_arena.tscn` : `floor_tileset.tres` → `floor_terrain.tres`
+  (fix zéro-génération).
+- Les 3 scènes reçoivent les nouveaux assets en positions non
+  répétitives (jamais un simple flip d'un asset déjà placé à côté) :
+  `gate_premiere` (scène la plus longue, 5 nouveaux arrière-plans + 5
+  nouveaux props sur ses ~3900px), `outpost` (1 arrière-plan + 2
+  props), `test_arena` (1 arrière-plan + 2 props).
+- Capture réelle (`scripts/capture_headless.sh --mode=scene`,
+  `gate_premiere.tscn`, 3 positions caméra) : tour effondrée et statue
+  visibles en arrière-plan, teinte chaude cohérente une fois composée
+  avec `AmbientWarmth`/le shader post-render existants ; nouveaux props
+  au sol visibles, aucun chevauchement avec le décor existant.
+
+**Vérification** : `scripts/run_gameplay_smoke_test.sh` 100% vert (76
+checks, aucune régression — les scènes ne sont pas exercées par ce
+test, mais les modules qu'il couvre — Player/HUD/pouvoirs — ne
+dépendent d'aucune des 3 scènes modifiées). Export web régénéré
+(`godot4 --headless --rendering-driver vulkan --export-release "Web"
+docs/index.html`, précédé d'un `--import` pour cuire les 8 nouveaux
+PNG) — `docs/index.pck`/`docs/index.html` à jour.
+
+**Coût réel consommé** : 10 générations PixelLab (10/300 du budget
+mandat, largement sous le plafond).
+
+**Non fait / hors scope de cette phase** : pas de retouche des 4 props
+déjà existants (mandat ne le demandait pas) ; pas de nouvelle
+plateforme de parallaxe intermédiaire (mandat priorise sol/mur >
+props > parallaxe lointaine > détail premier plan — le sol était déjà
+correct sauf `test_arena`, et le parallaxe lointain a été enrichi mais
+pas restructuré en plusieurs plans). Enchaîne sur Phase 2 (animation
+Meshy des monstres) sans nouveau prompt, conformément à l'instruction
+du mandat.

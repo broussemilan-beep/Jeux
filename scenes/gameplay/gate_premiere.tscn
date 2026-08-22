@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3]
+[gd_scene load_steps=33 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/gameplay/player.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/gameplay/enemy_crawler.tscn" id="2"]
@@ -25,6 +25,14 @@
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/world/bg_ruin_arch.png" id="23"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/world/bg_pillar_silhouette.png" id="24"]
 [ext_resource type="Shader" path="res://src/vfx/shaders/post_render.gdshader" id="25"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/world/bg_statue_silhouette.png" id="26"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/world/bg_tower_fragment.png" id="27"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/world/bg_banner_ruin.png" id="28"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/world/prop_crate.png" id="29"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/world/prop_idol.png" id="30"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/world/prop_torch_stand.png" id="31"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/world/prop_vegetation.png" id="32"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/world/prop_banner_post.png" id="33"]
 
 [sub_resource type="ShaderMaterial" id="1"]
 shader = ExtResource("9")
@@ -129,6 +137,31 @@ position = Vector2(3700, 60)
 scale = Vector2(-0.38, 0.38)
 texture = ExtResource("24")
 
+[node name="BgStatue1" type="Sprite2D" parent="FarBackground"]
+position = Vector2(100, 65)
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("26")
+
+[node name="BgTower1" type="Sprite2D" parent="FarBackground"]
+position = Vector2(900, 60)
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("27")
+
+[node name="BgBanner1" type="Sprite2D" parent="FarBackground"]
+position = Vector2(1700, 65)
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("28")
+
+[node name="BgStatue2" type="Sprite2D" parent="FarBackground"]
+position = Vector2(2500, 65)
+scale = Vector2(-0.4, 0.4)
+texture = ExtResource("26")
+
+[node name="BgTower2" type="Sprite2D" parent="FarBackground"]
+position = Vector2(3300, 60)
+scale = Vector2(-0.4, 0.4)
+texture = ExtResource("27")
+
 [node name="ArenaFloor" type="TileMapLayer" parent="."]
 tile_set = ExtResource("7")
 script = ExtResource("8")
@@ -190,6 +223,26 @@ texture = ExtResource("21")
 position = Vector2(3450, 400)
 scale = Vector2(-1, 1)
 texture = ExtResource("20")
+
+[node name="PropCrate1" type="Sprite2D" parent="."]
+position = Vector2(380, 400)
+texture = ExtResource("29")
+
+[node name="PropIdol1" type="Sprite2D" parent="."]
+position = Vector2(1100, 400)
+texture = ExtResource("30")
+
+[node name="PropTorchStand1" type="Sprite2D" parent="."]
+position = Vector2(1800, 260)
+texture = ExtResource("31")
+
+[node name="PropVegetation1" type="Sprite2D" parent="."]
+position = Vector2(2350, 400)
+texture = ExtResource("32")
+
+[node name="PropBannerPost1" type="Sprite2D" parent="."]
+position = Vector2(3050, 380)
+texture = ExtResource("33")
 
 [node name="Player" parent="." instance=ExtResource("1")]
 position = Vector2(160, 300)
