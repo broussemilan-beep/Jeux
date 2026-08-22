@@ -356,17 +356,34 @@ func _play_visual_animation(anim_name: String) -> void:
 			sprite.play(anim_name)
 
 
+## MANDAT AUTONOME v3 Phase 2 (Meshy/Blender) : les 3 archétypes ont
+## maintenant une vraie animation "marche" (Ranged : marche+course
+## incluses gratuitement dans son rig Meshy déjà payé ; Crawler/Brute :
+## 4 poses clés à la main sur leur rig manuel déjà validé, aucun
+## crédit). Le bob procédural devient un repli, jamais supprimé — un
+## futur archétype sans "marche" dans son SpriteFrames continue de
+## bouger visiblement au lieu de rester figé, même discipline que
+## `_play_visual_animation()`.
 func _update_visual_bob() -> void:
 	if not (_visual is AnimatedSprite2D):
 		return
 	var sprite: AnimatedSprite2D = _visual
+	var has_walk_anim: bool = sprite.sprite_frames != null and sprite.sprite_frames.has_animation("marche")
 	if _state == State.CHASE and velocity != Vector2.ZERO:
-		_move_tick += 1
-		sprite.position.y = sin(float(_move_tick) / BOB_PERIOD_TICKS * TAU) * BOB_AMPLITUDE_PX
+		if has_walk_anim:
+			if sprite.animation != &"marche":
+				sprite.play("marche")
+			sprite.position.y = 0.0
+		else:
+			_move_tick += 1
+			sprite.position.y = sin(float(_move_tick) / BOB_PERIOD_TICKS * TAU) * BOB_AMPLITUDE_PX
 		if absf(velocity.x) > 0.0001:
 			sprite.flip_h = velocity.x < 0.0
 	else:
 		_move_tick = 0
+		sprite.position.y = 0.0
+		if has_walk_anim and sprite.animation == &"marche":
+			sprite.play("idle")
 		sprite.position.y = 0.0
 
 

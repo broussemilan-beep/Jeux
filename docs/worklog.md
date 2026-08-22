@@ -6490,3 +6490,73 @@ correct sauf `test_arena`, et le parallaxe lointain a été enrichi mais
 pas restructuré en plusieurs plans). Enchaîne sur Phase 2 (animation
 Meshy des monstres) sans nouveau prompt, conformément à l'instruction
 du mandat.
+
+## 2026-08-22 — MANDAT AUTONOME v3 : Phase 2 (animation des monstres)
+
+**État de départ vérifié** (jamais supposé) : `crawler_frames.tres`/
+`brute_frames.tres` n'avaient que `idle`+`attaque`, chacun à UNE seule
+frame statique — `ranged_frames.tres` avait en plus `mort` (6 frames).
+Aucun des 3 n'avait de "marche" : le déplacement passait par le bob
+procédural sinusoïdal de `enemy.gd` (`_update_visual_bob()`), un repli
+documenté comme volontaire à l'intégration (Phase 1.1 MANDAT SUITE v2 :
+"pas de cycle de marche animé — trop coûteux pour le prototype").
+
+**Ranged — gratuit, retrouvé plutôt que régénéré** : le rig Meshy déjà
+payé (`rig_task_id=01a024b4-...`, 5cr dépensés le 2026-08-21) inclut
+marche+course de façon permanente (`meshy_rig` : "Walking/Running
+animation included FREE"). `meshy_download_model` sur ce même
+`task_id` (type `rigging`) a retourné les URLs `basic_animations.
+walking_glb_url` directement — **0 crédit supplémentaire**, aucun appel
+`meshy_animate`. GLB téléchargé, 6 frames échantillonnées régulièrement
+sur l'action existante via Blender headless Cycles (même caméra/lumière
+que idle/attaque : `cam_size=2.6`, `target_z=1.092`), quantifiées aux
+réglages de lisibilité déjà établis (`--target_saturation=0.55
+--dither_amount=0.0 --value_band_min=0.35`).
+
+**Crawler/Brute — 0 crédit, poses à la main sur le rig manuel déjà
+validé** : le rig auto Meshy avait échoué sur ces 2 postures (gotcha
+déjà documenté, "estimateur conçu pour un bipède debout"), contournement
+manuel Blender déjà en place (`crawler_final_rigged.glb`/
+`brute_final_rigged.glb`, armatures 13/10 os). Nouveaux scripts
+(`experiments/blender_capture/pose_walk_{crawler,brute}.py`) : 4 poses
+clés à la main par monstre (Crawler : trot diagonal, front_L+back_R
+avancent ensemble puis front_R+back_L ; Brute : marche bipède,
+bras/jambe opposés) réutilisant exactement les noms d'os et le cadrage
+déjà approuvés pour idle/attaque (aucun nouveau rig). Rendu Cycles
+headless, quantifié à `--target_saturation=0.55` (réglages par défaut
+sinon, identique à idle/attaque).
+
+**Vérification par échantillonnage visuel réel** (pas supposé) : les
+3 planches de contact (`contact_sheet.png` par monstre) montrent des
+silhouettes nettement distinctes frame à frame — jambes qui alternent,
+bras qui balancent, queue qui oscille (Crawler) — pas 4 copies de la
+même pose.
+
+**Câblage jeu** (`src/gameplay/enemy.gd`, `_update_visual_bob()`) :
+joue "marche" en boucle si `sprite_frames.has_animation("marche")`
+pendant `State.CHASE` à vélocité non nulle, retombe sur "idle" en
+sortie de mouvement ; **le bob procédural n'est PAS supprimé** — il
+reste le repli pour un futur archétype sans animation dédiée, même
+discipline que `_play_visual_animation()` ailleurs dans ce fichier.
+
+**Vérification** : `scripts/run_gameplay_smoke_test.sh` 76/76 vert
+(inclut les 3 checks qui exercent le mouvement des monstres :
+`crawler_chases_then_hits_player`, `brute_telegraphs_before_landing_a_
+heavier_hit`, `ranged_retreats_to_preferred_range_then_hits_player_
+with_projectile`). Capture réelle en jeu (`capture_headless.sh
+--mode=scene`, `test_arena.tscn`, tick 3 après spawn) : le Crawler
+affiche une pose de marche (jambe avant tendue, corps abaissé),
+visuellement distincte de son idle — confirmé à l'écran, pas seulement
+en test unitaire. Export web régénéré.
+
+**Coût réel consommé (Meshy)** : 0 crédit ce mandat (866/866 restants,
+inchangé) — le seul appel a été un `meshy_download_model` gratuit sur
+une tâche déjà payée. Budget de 150cr entièrement disponible pour les
+phases suivantes si nécessaire.
+
+**Non fait / hors scope de cette phase** : pas de retouche de l'attaque
+existante (déjà présente, mandat priorise marche > attaque > mort) ;
+Crawler/Brute restent sans "mort" dédiée (seul Ranged en a une,
+héritage Phase 1.2 MANDAT SUITE v2 — pas demandé par cette phase, qui
+priorise explicitement la marche). Enchaîne sur Phase 3 (compétences
+restantes) sans nouveau prompt, conformément à l'instruction du mandat.

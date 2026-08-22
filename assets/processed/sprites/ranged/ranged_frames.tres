@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=9 format=3]
+[gd_resource type="SpriteFrames" load_steps=15 format=3]
 
 [ext_resource type="CanvasTexture" path="res://assets/processed/sprites/ranged/idle_canvas.tres" id="1"]
 [ext_resource type="CanvasTexture" path="res://assets/processed/sprites/ranged/attaque_canvas.tres" id="2"]
@@ -8,6 +8,12 @@
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/ranged/mort_3.png" id="6"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/ranged/mort_4.png" id="7"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/ranged/mort_5.png" id="8"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/ranged/marche_0.png" id="9"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/ranged/marche_1.png" id="10"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/ranged/marche_2.png" id="11"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/ranged/marche_3.png" id="12"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/ranged/marche_4.png" id="13"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/ranged/marche_5.png" id="14"]
 
 [resource]
 animations = [{
@@ -48,5 +54,28 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("8")
+}]
+}, {
+"name": &"marche",
+"speed": 8.0,
+"loop": true,
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("9")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14")
 }]
 }]
