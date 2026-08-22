@@ -6048,3 +6048,190 @@ consignée ici pour ne pas la perdre, non implémentée) :
 Aucun changement de code pour ce point 3 (audit seulement, comme
 demandé). Rien à redéployer côté web pour cette passe (JSON de données
 + documentation uniquement, aucun code runtime modifié).
+
+## 2026-08-22 — Système Classe/déblocage : état des lieux + plan (PAS ENCORE IMPLÉMENTÉ)
+
+Milan a confirmé l'amendement GDD (1 Classe/run tirée au hasard, 5
+compétences débloquées par niveau, HUD conditionnel) et demandé
+explicitement un état des lieux + un plan présenté AVANT tout code
+("changement structurel, pas un ajustement ponctuel"). Ce qui suit est
+ce plan — **aucun fichier de code modifié cette passe**, seulement de
+la lecture/analyse. Attend le retour de Milan sur plusieurs questions
+bloquantes avant la moindre ligne de code.
+
+**État des lieux — l'architecture actuelle est 100% câblée en dur, 1:1,
+sans aucune indirection :**
+- `project.godot` : 4 actions d'input `power1`-`power4` (touches
+  E/R/T/G), aucune 5e action.
+- `player.gd::_physics_process()` : `power1` appelle TOUJOURS
+  `_cast_gueule_vide()`, `power2` TOUJOURS `_start_bras_faux()`,
+  `power3` TOUJOURS `_start_poing_belluaire()`, `power4` TOUJOURS
+  `_start_poing_tellurique()` — zéro garde de Classe, zéro indirection.
+- `scenes/ui/touch_controls.tscn` : 4 `TouchScreenButton` permanents
+  (ButtonPower1-4), labels texte STATIQUES ("GV"/"BF"/"PB"/"PT") gravés
+  dans la scène, aucun script attaché au nœud racine pour piloter
+  visibilité/libellé (seul `Joystick` a un script, `virtual_joystick.gd`).
+- `src/ui/hud.gd` : 4 overlays de cooldown fixes, chacun lié en dur à
+  un getter précis (`get_power1_cooldown_ratio`,
+  `get_bras_faux_cooldown_ratio`, `get_poing_belluaire_cooldown_ratio`,
+  `get_poing_tellurique_cooldown_ratio`) — même rigidité que
+  touch_controls.
+- `src/ui/character_screen.gd` : **conflit direct avec le nouvel
+  amendement**. Le fichier porte une exigence GDD EXPLICITE et
+  documentée en commentaire : "Rank Zero doit afficher CLASS = NONE et
+  ne jamais recevoir une Classe inventée" — `_stats_label.text` affiche
+  littéralement `"CLASSE : AUCUNE"` en dur. Maintenant qu'une Classe
+  réelle sera tirée et vécue toute la run, cette règle GDD est-elle
+  caduque (la Classe doit s'afficher) ou reste-t-elle absolue (Milan
+  distinguait peut-être "Classe de bâtisseur"/méta-progression et
+  "Classe de pouvoir" tirée en run) ? **Ne pas trancher seul.** Détail
+  secondaire, même fichier : `_skills_label.text` liste en dur "E —
+  Gueule Vide\nR — Bras-Faux" — déjà obsolète aujourd'hui (oublie Poing
+  Belluaire/Poing Tellurique), à rendre dynamique de toute façon.
+- `src/system/run_state.gd` (autoload) : `player_stats: Stats` est un
+  Resource unique créé UNE fois au chargement de l'autoload et jamais
+  réinitialisé ensuite — il n'existe **aucune notion explicite de
+  "début de run"** distincte du démarrage du process (pas de fonction
+  `new_run()`/`restart()` trouvée nulle part dans le dépôt). C'est
+  exactement le même point d'ancrage que Milan demande pour le tirage
+  de Classe : `active_class` peut suivre le même patron que
+  `player_stats` (tiré une fois à l'init de l'autoload), sans qu'il
+  faille inventer une notion de "run" qui n'existe pas encore ailleurs
+  dans le code.
+- `stats.gd` : `signal leveled_up(new_level: int)` déjà émis dans
+  `add_xp()`, en boucle (un gain d'XP massif peut émettre plusieurs
+  fois de suite, niveau par niveau, jamais sauté) — exploitable tel
+  quel, rien à changer ici.
+- `tools/smoke_test_gameplay.gd` : les 4 checks vivants
+  (`_check_gueule_vide`, `_check_bras_faux`, `_check_poing_belluaire`,
+  `_check_poing_tellurique`) déclenchent CHACUN via
+  `Input.action_press("powerN")` — donc le jour où l'entrée devient
+  gardée par Classe/niveau, ces 4 checks casseront tous en silence
+  (spawn=false) SAUF si chacun force d'abord `RunState.active_class` et
+  `stats.level` au bon état avant d'appuyer. Mise à jour obligatoire
+  des 4 blocs, pas optionnelle — c'est précisément la régression que
+  Milan demande d'éviter.
+
+**Réalité de contenu actuel (contrainte transversale à ne pas
+oublier)** : à ce jour, sur les 5 compétences nominales par Classe,
+seules certaines existent réellement en code/recette VFX :
+Invocateur = 1/5 (Gueule Vide seule), Monstrification = 2/5 (Bras-Faux,
+Poing Belluaire), Terre = 1/5 (Poing Tellurique seule). Les 11
+compétences restantes n'ont ni fonction `_start_X()` ni recette JSON —
+conformément à la consigne permanente de ne pas les commencer, le
+système de déblocage doit fonctionner correctement même quand la
+plupart de ses paliers de niveau "débloquent" une compétence qui n'a
+tout simplement rien à afficher/appeler pour l'instant (bouton absent,
+pas un bouton grisé cassé). Conséquence concrète pour Milan : une run
+qui tire Invocateur ou Terre n'aura QU'UN SEUL bouton de pouvoir actif
+pour toute sa durée tant que le reste de la bible n'est pas construit ;
+seule Monstrification en aura deux. Signalé pour que ce ne soit pas une
+surprise au prochain test — pas un problème à corriger ici.
+
+**Contradictions de Tier relevées sur les planches archivées (bloquent
+le verrouillage de l'ordre — voir docs/references/) :**
+
+*Terre* — planches avec Tier explicite et cohérent 1→4 : Poing
+Tellurique=TIER 1, Marée de Sable=TIER 2, Carapace=TIER 3,
+Effondrement=TIER 4. Fissure Éruptive (planche mixte) n'affiche AUCUN
+Tier. Or l'ordre donné en exemple par Milan lui-même dans le mandat
+précédent — "Poing Tellurique -> Marée de Sable -> Éperon -> Carapace
+-> Effondrement" — place ce 5e pouvoir ("Éperon", nom qui ne correspond
+à aucune planche fournie, cf. divergence déjà signalée) EN 3E position,
+AVANT Carapace(T3) et Effondrement(T4). Ça contredit frontalement les
+Tiers imprimés sur les planches. **Je ne tranche pas** : soit l'ordre
+d'exemple de Milan est le bon et les Tiers 3/4 de Carapace/Effondrement
+sont à ignorer pour l'ordre de déblocage, soit les Tiers font foi et
+Fissure Éruptive vient en dernier (Tier 5 par élimination) — à
+confirmer.
+
+*Monstrification* — INCOHÉRENCE INTERNE, pas seulement un désaccord
+avec un exemple : Bras-Faux=TIER 2, Mâchoire=TIER 3, Pattes de
+Chasse=TIER 3 (DOUBLON avec Mâchoire), Forme Bestiale=TIER 4, Coup de
+Poing Monstrifié (= Poing Belluaire, confirmé la passe précédente)
+n'affiche AUCUN Tier. Aucune planche ne réclame Tier 1 ni Tier 5. Il
+manque soit une correction de Tier sur une des planches, soit une
+information supplémentaire sur Coup de Poing Monstrifié/Poing
+Belluaire (probablement Tier 1, le seul qui reste libre en bas de
+l'échelle, mais ce n'est qu'une supposition — le bloc de dégâts/recul/
+cooldown actuel en jeu, POING_BELLUAIRE > BRAS_FAUX, suggérerait plutôt
+un Tier supérieur si on se fiait au seul équilibrage code, mais Milan a
+explicitement demandé de ne jamais utiliser l'équilibrage code pour
+trancher un désaccord avec la bible). **Je ne tranche pas.**
+
+*Invocateur* — pas de contradiction relevée : Gueule Vide=T1, Corbeau
+Pâle=T2, Poing du Colosse=T3, Œil sans Regard=T4, Invocation du Serpent
+(planche mixte) sans Tier affiché — cohérent par élimination avec Tier
+5, mais toujours non confirmé explicitement sur la planche elle-même.
+
+**Architecture proposée (sous réserve des réponses de Milan
+ci-dessous) :**
+1. `RunState` (autoload) : nouveau champ `active_class: String`, tiré
+   aléatoirement parmi les 3 classes UNE fois à l'initialisation de
+   l'autoload — même patron que `player_stats`, aucun écran de
+   sélection, rien à construire côté UI pour le tirage lui-même.
+2. Nouvelle donnée (ex. `data/classes/<classe>.json`, un fichier par
+   Classe ou un seul fichier combiné, à trancher) : la liste FIXE des 5
+   compétences dans l'ordre bible, avec pour chacune : nom, Tier,
+   palier de niveau de déblocage, et si elle est "implémentée" (a une
+   fonction `_start_X()`/`_cast_X()` + une recette VFX réelle) ou non
+   (placeholder, rien à faire tant que non construite).
+3. `player.gd` : remplacer les 4 appels directs par une résolution de
+   "slot" — `power1..4` deviennent des emplacements de COMBAT
+   génériques (pas des identités figées de compétence), résolus au
+   moment de l'appui selon (Classe active, niveau courant, position
+   dans l'ordre bible de cette Classe parmi les compétences déjà
+   implémentées). Connecter `stats.leveled_up` en `_ready()` pour
+   rafraîchir l'état de déblocage affiché par le HUD/touch (pas besoin
+   de cache complexe : le niveau courant suffit à recalculer l'état à
+   la demande).
+4. `touch_controls.tscn` : ajouter un script au nœud racine
+   `TouchControls` (aucun aujourd'hui) qui, à chaque changement de
+   niveau, masque les `ButtonPowerN` dont le slot est vide/non débloqué
+   (absent, pas grisé — exigence explicite de Milan) et réécrit le
+   `text` du Label selon la compétence réellement assignée à ce slot.
+5. `hud.gd` : même logique de masquage sur les 4 overlays de cooldown.
+6. `character_screen.gd` : en attente de la réponse de Milan sur le
+   conflit "CLASSE : AUCUNE" avant tout changement.
+7. `tools/smoke_test_gameplay.gd` : mise à jour obligatoire des 4 blocs
+   vivants pour forcer `RunState.active_class` + `stats.level` au bon
+   état avant chaque test d'input, afin de ne rien casser.
+
+**Question ouverte transversale — 5e emplacement de pouvoir** : le jeu
+n'a que 4 slots (E/R/T/G + 4 boutons tactiles) pour un maximum
+théorique de 5 compétences par Classe. Proposition : NE PAS ajouter de
+5e slot maintenant (aucune Classe actuelle n'en a besoin avec le
+contenu déjà construit — même discipline "pas de fonctionnalité pour
+un besoin hypothétique" que le reste du projet), construire la
+résolution de slot de façon assez générique pour qu'ajouter un 5e slot
+plus tard (quand une Classe aura effectivement 5 compétences
+implémentées) soit un changement mineur. À valider par Milan.
+
+**Proposition de palier niveau -> compétence (À VALIDER, pas verrouillé)**
+: 1 / 3 / 6 / 10 / 15 comme suggéré par Milan. Note de cohérence
+économique (calcul, pas un verdict) : `xp_to_next_level()` coûte 50×N
+XP pour passer du niveau N à N+1 (coût cumulatif niveau 25×L×(L-1)) ;
+avec les seules sources d'XP déjà codées (ramassage ~20 XP,
+ennemi normal ~8 XP, boss ~120 XP), atteindre le niveau 15 réclame
+~5250 XP cumulés, soit plusieurs centaines de kills/pickups selon la
+longueur réelle d'une run — je n'ai pas de référence sur la longueur de
+run visée pour juger si ce rythme est trop lent ou correct, donc je ne
+l'ajuste pas moi-même comme demandé.
+
+**QUESTIONS BLOQUANTES avant tout code (résumé)** :
+1. Terre : ordre d'exemple de Milan vs Tiers imprimés — lequel prime ?
+2. Monstrification : Tier de Coup de Poing Monstrifié/Poing Belluaire
+   + résolution du doublon Tier 3 Mâchoire/Pattes de Chasse ?
+3. `character_screen.gd` "CLASSE : AUCUNE" : règle GDD toujours valable
+   telle quelle, ou remplacée par l'affichage de la vraie Classe active ?
+4. Paliers 1/3/6/10/15 : à valider ou à ajuster (voir note économique) ?
+5. 5e emplacement de pouvoir : absent pour l'instant (ma proposition)
+   ou à créer dès maintenant en plomberie inerte ?
+6. Un seul bouton actif toute la run pour Invocateur/Terre tant que le
+   reste de la bible n'existe pas en code : acceptable pour ce mandat,
+   ou faut-il revoir la priorité de construction des 11 compétences
+   restantes en conséquence (hors scope explicite de ce mandat, mais
+   Milan doit le savoir) ?
+
+Rien commité côté code — uniquement cette entrée de worklog (analyse/
+plan). Implémentation suspendue jusqu'au retour de Milan.
