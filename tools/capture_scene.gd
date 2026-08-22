@@ -308,10 +308,23 @@ func _run_player_action_capture(args: Dictionary) -> void:
 	if background == "loaded":
 		add_child(_make_loaded_background())
 
+	# --active_power=<id> (outil de capture uniquement, jamais consulté par
+	# le gameplay réel) : RunState.active_power est tiré au hasard à la
+	# construction de l'autoload — un dev qui veut capturer précisément un
+	# power1..5 d'un Pouvoir donné doit pouvoir le forcer sans debugger
+	# attaché en headless (cf. docstring ci-dessus, "fixer active_power
+	# dans le débogueur" n'est pas praticable ici).
+	var forced_active_power: String = args.get("active_power", "")
+	if forced_active_power != "":
+		RunState.active_power = forced_active_power
+	var forced_level: int = int(args.get("level", "0"))
+
 	var player := PlayerScene.instantiate()
 	player.global_position = Vector2(320, 200)
 	player.facing = Vector2.RIGHT
 	add_child(player)
+	if forced_level > 0:
+		player.stats.level = forced_level
 
 	# Mêmes offsets que _check_bras_faux() (tools/smoke_test_gameplay.gd) :
 	# un ennemi devant (0°, dans l'arc) et un sur le côté (30°, dans l'arc)

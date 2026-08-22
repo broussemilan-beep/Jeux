@@ -6560,3 +6560,30 @@ Crawler/Brute restent sans "mort" dédiée (seul Ranged en a une,
 héritage Phase 1.2 MANDAT SUITE v2 — pas demandé par cette phase, qui
 priorise explicitement la marche). Enchaîne sur Phase 3 (compétences
 restantes) sans nouveau prompt, conformément à l'instruction du mandat.
+
+## 2026-08-22 — MANDAT AUTONOME v3 : Phase 3, point d'attention (fissure Poing Belluaire)
+
+**Corrigé, vérifié visuellement** : Poing Belluaire n'avait aucune couche
+de fissure au sol malgré la référence archivée (`docs/references/
+monstrification/coup_de_poing_monstrifie.png`, colonne "Assets - Effets",
+case du milieu) qui en montre une nettement — écart identifié lors de
+l'audit palette du début de session, laissé non corrigé à l'époque.
+
+Ajout d'une couche `fractureLine` en contact/conséquence (`data/recipes/
+power.poing_belluaire.cast.json`, ticks 20-34, `degradable: true`, même
+raisonnement que `dustKick` sur Poing Tellurique : c'est la conséquence
+de l'impact, pas le contact lui-même). **Aucune nouvelle couleur** :
+`data/palettes/parasite.json` nommait déjà explicitement `fractureLine`
+dans son rôle 2 ("brun-rouille profond") depuis la réécriture de palette
+plus tôt cette session — l'écart n'était que dans cette recette.
+
+Vérifié par exécution réelle, pas supposé : `run_vfx_recipe_smoke_test.sh`
+(15/15 primitives dont fractureLine spawn/tick/cleanup sans erreur),
+`run_gameplay_smoke_test.sh` (76/76, aucune régression sur les checks
+Poing Belluaire existants), et une capture en jeu réel (`tools/
+capture_scene.gd --mode=player_action`, nouveau `--active_power=`/
+`--level=` ajoutés à cet outil de capture pour forcer le Pouvoir tiré au
+hasard sans debugger headless — pas un changement de gameplay, un
+paramètre de dev uniquement) : à tick 30, des segments de fissure brun
+radiant depuis le point d'impact sont visibles à l'écran, distincts du
+burst gris d'impactStar — correspond à la référence.
