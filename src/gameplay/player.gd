@@ -810,11 +810,16 @@ func _cast_gueule_vide() -> void:
 ## même façon que ces autres actions verrouillées : mort, déjà engagé
 ## dans une autre action, ou cooldown.
 ##
-## Placeholder visuel : réutilise l'anim "coup2" (le balayage tournant
-## existant est visuellement le plus proche d'un "seul balayage" avec
-## bras tendu — mandat §5 : "asset dédié seulement pour... une
-## transformation corporelle [Bras-Faux]", l'art dédié reste à générer,
-## pas dans le scope recette+logique de cette brique).
+## Art dédié (agent Bras-Faux, 2026-08-22) : anim "bras_faux" propre,
+## PAS un réemploi de "coup2" — bras droit réellement transformé en long
+## membre organique rouge-brun tendu (create_character_state sur le
+## character_id Cendre_v3c EN JEU (8596a4ad, vérifié via git log --
+## cendre_frames.tres avant de choisir la source, PAS l'ancien
+## character_id avec cape) puis animate_character mode v3 sur cet état,
+## 6 frames south, cf. data/pixellab_usage.jsonl). Même discipline
+## flip_h auto-contenue que _start_attack() (art "sud" seul, doit se
+## flipper lui-même face à l'ouest plutôt que dépendre du dernier
+## flip_h laissé par _handle_movement()).
 func _start_bras_faux() -> void:
 	if stats.is_dead() or _action_lock or _bras_faux_cooldown_remaining > 0:
 		return
@@ -822,7 +827,9 @@ func _start_bras_faux() -> void:
 	_bras_faux_phase = BrasFauxPhase.ANTICIPATION
 	_bras_faux_tick = 0
 	_bras_faux_hit_applied = false
-	_sprite.play("coup2")
+	if facing.x != 0.0:
+		_sprite.flip_h = facing.x < 0.0
+	_sprite.play("bras_faux")
 
 	var dir := facing
 	if dir.length_squared() < 0.0001:

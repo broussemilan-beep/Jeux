@@ -1156,8 +1156,8 @@ func _check_bras_faux() -> void:
 	var bras_faux_started_during_cooldown: bool = _player._bras_faux_phase != Player.BrasFauxPhase.NONE
 
 	_checks.append({
-		"name": "bras_faux_input_starts_state_and_plays_placeholder_anim",
-		"pass": started and anim_during == "coup2",
+		"name": "bras_faux_input_starts_state_and_plays_dedicated_anim",
+		"pass": started and anim_during == "bras_faux",
 		"detail": {"started": started, "anim": anim_during},
 	})
 	_checks.append({

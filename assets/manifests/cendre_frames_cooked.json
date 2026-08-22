@@ -385,6 +385,24 @@
         32,
         61
       ]
+    },
+    "bras_faux": {
+      "frames": [
+        "assets/processed/sprites/cendre/bras_faux/0.png",
+        "assets/processed/sprites/cendre/bras_faux/1.png",
+        "assets/processed/sprites/cendre/bras_faux/2.png",
+        "assets/processed/sprites/cendre/bras_faux/3.png",
+        "assets/processed/sprites/cendre/bras_faux/4.png",
+        "assets/processed/sprites/cendre/bras_faux/5.png"
+      ],
+      "canvas": [
+        64,
+        64
+      ],
+      "anchor_px": [
+        32,
+        61
+      ]
     }
   }
 }
