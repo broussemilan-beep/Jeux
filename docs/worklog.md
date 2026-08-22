@@ -5932,3 +5932,119 @@ matière) — changement documenté dans les notes du fichier lui-même.
 
 Aucun changement de code ni de recette à ce stade (demande explicite de
 Milan : audit seulement). Aucune des 11 compétences restantes entamée.
+
+## 2026-08-22 — Trois décisions de Milan : couleur Monstrification, confirmation Poing Belluaire, audit Classe unique
+
+**1. `data/palettes/parasite.json` réécrite — verdict Milan : la référence
+a raison, pas le code.** L'audit précédent avait relevé que la palette
+"parasite" (grayscale strict + pointe froide bleu-gris/lilas, mandatée
+par le texte GDD §7) ne correspondait pas aux 5 planches Monstrification
+archivées (rouge-brun-rouille organique dominant). Milan tranche : la
+planche fait foi, pas le texte GDD/le code d'origine.
+
+Valeurs dérivées par échantillonnage réel des pixels (pas à l'oeil,
+même méthode que la vérification `render_detector.py` sur Poing
+Tellurique) : script ponctuel (non versionné) sur la colonne "Assets -
+Effets" des 5 planches (`docs/references/monstrification/*.png`),
+filtrage des pixels rouge-orangé saturés (hue proche de 0-40°, sat>30%)
+pour isoler la matière organique du fond crème/du personnage
+gris/du texte noir — 21 456 pixels retenus au total, moyenne circulaire
+de teinte par tranche de luminosité (V) :
+
+| tranche V | n | teinte | saturation | valeur |
+|---|---|---|---|---|
+| 0-10% (le plus sombre) | 2192 | 2,6° | 40,3% | 17,6% |
+| 30-50% | 4512 | 7,5° | 37,3% | 31,0% |
+| 50-70% | 4564 | 10,6° | 36,6% | 38,4% |
+| 90-100% (le plus clair) | 2163 | 18,2° | 33,9% | 61,3% |
+
+Rampe cohérente et mesurée : la teinte se réchauffe (rouge profond ->
+orangé) à mesure que la luminosité monte, un comportement de rim-light
+naturel sur de la matière organique — pas une valeur inventée. Les 5
+planches sont individuellement cohérentes entre elles (teinte moyenne
+par planche 5-14°, aucun outlier). 4 rôles réécrits en conservant EXACTEMENT
+la même structure et les mêmes champs `usage` (aucun remapping
+primitive->rôle) :
+- signature 1 (corps principal) : "rouge-brun tendineux", hue 9°, sat 37%, val 38%
+- signature 2 (Root/profondeurs) : "brun-rouille profond", hue 3°, sat 40%, val 18%
+- contact (éclat/impact) : "roux-orangé vif", hue 18°, sat 34%, val 61%
+- intermédiaire (transitions) : "roux clair organique", hue 14°, sat 35%, val 48%
+
+**Vérifié : aucun résidu de l'ancienne teinte froide.** Le système est
+purement data-driven (`src/vfx/vfx_recipe_registry.gd::_resolve_color` lit
+`data/palettes/<palette_id>.json` et matche la primitive contre le champ
+`usage` en texte libre — seul repli = gris neutre générique si aucune
+correspondance). Grep sur `205|275|bleu-gris|lilas` dans `src/` : aucune
+occurrence dans le code (`.gd`), la seule trace de l'ancienne teinte
+était dans ce fichier JSON, maintenant réécrit. Bras-Faux et Poing
+Belluaire référencent `palette_id: "parasite"` sans aucune couleur codée
+en dur dans leurs couches — les deux recettes héritent donc du nouveau
+rouge-brun automatiquement, sans modification de fichier de recette
+nécessaire (vérifié aussi qu'aucune des deux notes de recette ne
+décrivait elle-même la teinte froide en texte — rien à corriger là).
+
+**2. Poing Belluaire = Coup de Poing Monstrifié, confirmé par Milan.**
+Note de `data/recipes/power.poing_belluaire.cast.json` mise à jour pour
+pointer vers `docs/references/monstrification/coup_de_poing_monstrifie.png`
+comme référence visuelle confirmée (recette non modifiée par ailleurs).
+
+Vérification du point soulevé lors de l'audit précédent — l'absence
+d'une couche fissure/craquelure au sol : **confirmé, c'est un vrai
+manque, pas couvert autrement.** La recette n'a que 3 couches
+(`converge` anticipation, `impactStar`+`impactFlashFrame` contact) —
+aucune couche de type `fractureLine`/`groundRing` qui produirait un
+décalque de sol fissuré, contrairement à Poing Tellurique qui EN a un
+(`groundRing`, anticipation). `impactStar` est un éclat/étoile
+d'impact ponctuel, pas un décalque persistant au sol — les deux
+effets ne se recouvrent pas visuellement. La planche montre bien cet
+effet de fissure au sol dans sa colonne "Assets - Effets", en plus de
+la progression du poing et de l'éclat d'impact. Signalé tel quel,
+aucune couche ajoutée à ce stade (audit seulement, comme demandé).
+
+**3. Audit factuel : le HUD des captures zoom caméra est-il un HUD de
+debug ou le HUD réel ?** Réponse basée sur lecture directe du code
+(les captures de la session zoom n'ont pas été versionnées, donc
+vérifié via la source plutôt que de re-générer les images) :
+
+`src/gameplay/player.gd::_physics_process()` lie sans AUCUNE condition
+de garde les 4 pouvoirs sur les 4 actions `power1`-`power4` :
+```
+power1 -> _cast_gueule_vide()       (Invocateur)
+power2 -> _start_bras_faux()        (Monstrification)
+power3 -> _start_poing_belluaire()  (Monstrification)
+power4 -> _start_poing_tellurique() (Terre)
+```
+Aucune vérification de "Classe active" avant l'appel. Côté HUD tactile,
+`scenes/ui/touch_controls.tscn` instancie ButtonPower1/2/3/4 de façon
+permanente et inconditionnelle (les 4 nœuds `TouchScreenButton` existent
+tous dans la scène, aucune visibilité conditionnelle). Recherche
+exhaustive (`grep -rn "ButtonPower\|current_class\|classe_active\|
+active_class\|selected_class\|unlock"` sur `src/` et `scenes/`) : **zéro
+résultat** — il n'existe actuellement AUCUN concept de "Classe active"
+ni de système de déblocage dans le code, à quelque niveau que ce soit.
+
+**Verdict : ce n'est PAS un HUD de debug.** `touch_controls.tscn` est le
+HUD tactile réel utilisé en jeu (le même dont le positionnement a été
+vérifié sous le nouveau `BASE_ZOOM` cette session) et `player.gd` est le
+script réel du joueur. Les captures montraient donc fidèlement l'état
+actuel du jeu : un seul personnage avec les 4 pouvoirs des 3 Classes
+(Invocateur/Monstrification/Terre) disponibles simultanément et sans
+restriction, dès le début. **Ceci contredit directement** la nouvelle
+règle de Milan (1 seule Classe par run, 5 compétences débloquées
+progressivement). Signalé tel quel — **aucune correction appliquée**,
+conformément à l'instruction explicite de ne rien changer tant que le
+système de déblocage complet n'est pas précisé.
+
+**AMENDEMENT GDD EN ATTENTE DE DÉTAIL** (règle confirmée par Milan,
+consignée ici pour ne pas la perdre, non implémentée) :
+- Le personnage n'a qu'**une seule Classe par run** (Invocateur,
+  Monstrification OU Terre — jamais plusieurs à la fois).
+- Les **5 compétences de cette Classe se débloquent progressivement**
+  pendant la run, plutôt que d'être toutes disponibles dès le départ.
+- **Non précisé par Milan, ne rien inventer d'ici là** : l'ordre de
+  déblocage des 5 compétences, et la méthode de déblocage (niveau ?
+  étage franchi ? nombre de kills ? autre ?).
+
+Aucun changement de code pour ce point 3 (audit seulement, comme
+demandé). Rien à redéployer côté web pour cette passe (JSON de données
++ documentation uniquement, aucun code runtime modifié).
