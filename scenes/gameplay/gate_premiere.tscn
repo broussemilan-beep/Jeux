@@ -180,6 +180,12 @@ texture = ExtResource("21")
 position = Vector2(1250, 260)
 texture = ExtResource("19")
 
+[node name="Glow" type="PointLight2D" parent="PropBrazier1"]
+color = Color(1, 0.5, 0.2, 1)
+energy = 1.5
+texture_scale = 2.4
+texture = SubResource("7")
+
 [node name="PropPillar2" type="Sprite2D" parent="."]
 position = Vector2(1950, 380)
 scale = Vector2(-1, 1)
@@ -192,6 +198,12 @@ texture = ExtResource("21")
 [node name="PropBrazier2" type="Sprite2D" parent="."]
 position = Vector2(3350, 260)
 texture = ExtResource("19")
+
+[node name="Glow" type="PointLight2D" parent="PropBrazier2"]
+color = Color(1, 0.48, 0.18, 1)
+energy = 1.5
+texture_scale = 2.4
+texture = SubResource("7")
 
 [node name="PropDebris1" type="Sprite2D" parent="."]
 position = Vector2(100, 380)
@@ -235,6 +247,12 @@ texture = ExtResource("30")
 [node name="PropTorchStand1" type="Sprite2D" parent="."]
 position = Vector2(1800, 260)
 texture = ExtResource("31")
+
+[node name="Glow" type="PointLight2D" parent="PropTorchStand1"]
+color = Color(1, 0.78, 0.5, 1)
+energy = 0.85
+texture_scale = 1.3
+texture = SubResource("7")
 
 [node name="PropVegetation1" type="Sprite2D" parent="."]
 position = Vector2(2350, 400)

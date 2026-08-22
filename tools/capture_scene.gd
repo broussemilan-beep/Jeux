@@ -497,8 +497,15 @@ func _make_loaded_background() -> Sprite2D:
 	var vh: int = ProjectSettings.get_setting("display/window/size/viewport_height", 360)
 	var img := Image.create(vw, vh, false, Image.FORMAT_RGBA8)
 	const CELL := 16
-	var tone_a := Color8(58, 56, 62, 255)
-	var tone_b := Color8(84, 80, 74, 255)
+	# Tons ocre chauds (2026-08-22, principe d'écart de lisibilité Milan) —
+	# avant, un damier gris neutre désaturé, qui ne représentait pas le sol
+	# ambiant réel des salles éclairées (Addendum C) et masquait les VFX
+	# trop discrets/trop clairs restant lisibles ici mais invisibles en jeu
+	# réel. Valeurs dérivées de data/palettes/value_bands.json (sol ambiant
+	# mesuré ~24-37% V, hue ocre ~35-38°) : un "fond chargé" qui teste
+	# vraiment contre l'ambiance qui pose problème.
+	var tone_a := Color8(76, 62, 42, 255)
+	var tone_b := Color8(92, 78, 55, 255)
 	for y in range(vh):
 		for x in range(vw):
 			var cell_index := (x / CELL) + (y / CELL)

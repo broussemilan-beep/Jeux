@@ -22,6 +22,118 @@ garde que le 2026-08-22 (MANDAT AUTONOME v3 en cours) — au-delà de
 
 ---
 
+## 2026-08-22 — Retour Milan sur PREMIÈRE VIDÉO réelle : 6 points, dont build web resté périmé
+
+**Contexte critique découvert en premier** : Milan répète quasi mot pour
+mot les points 1 et 2 de l'entrée précédente (rectangle blanc, trou de
+vérification), déjà corrigés et poussés (commit `318df6b`). Cause
+trouvée : `docs/index.pck` (build web joué par Milan) datait de 19h19,
+soit UNE HEURE AVANT le fix du shader (20h15) — Milan a regardé une
+vidéo du build PÉRIMÉ, pas de l'état réel du dépôt. Pas un nouveau bug,
+un rappel que "commité" ≠ "joué" tant que le build web n'est pas
+redéployé. Leçon retenue : redéployer `docs/index.html`/`index.pck` en
+DERNIÈRE étape de toute session touchant du visuel, jamais oublié entre
+un fix et la prochaine vérification de Milan.
+
+**Point 3 — torche/lumière de porte rendue dans la zone des boutons
+tactiles (bug réel, nouveau).** Root cause : `scenes/ui/touch_controls.
+tscn` place ses boutons dans une bande écran fixe (native 640×360,
+y≈205-370) qui, à `BASE_ZOOM=0.8`, correspond à une bande du MONDE assez
+basse pour contenir le sol/les props/la lumière des portes (vérifié par
+capture `--mode=scene` caméra centrée sur la torche de la porte Elite,
+x=1800-2048) — les boutons sont des icônes semi-transparentes SANS fond
+opaque, donc tout ce qui passe par cette bande de l'écran (n'importe
+quel élément du monde, pas spécifiquement "une torche") reste visible
+au travers. Fix : `Background` (ColorRect plein, `Color(0.08,0.06,0.05,
+1.0)`, `mouse_filter=IGNORE`) ajouté en premier enfant de
+`TouchControls`, couvrant toute la bande boutons — testé d'abord à
+alpha 0.82 (insuffisant, un halo de lumière très intense reste
+partiellement visible même à travers un fond à 82% d'opacité), corrigé
+à 1.0 (masquage total confirmé par capture). `captures/verification/
+2026-08-22-touch-ui-bleed-{avant,apres}.png`. Smoke test inchangé
+(`all_pass:true`) — pur ajout visuel, aucune logique touchée.
+
+**Point 4 — principe d'écart de lisibilité VFX (nouvelle règle
+générale, pas un cas isolé).** Diagnostic de Milan confirmé par mesure :
+`data/palettes/value_bands.json` documente déjà le sol ambiant réel
+(~24-37% V, jusqu'à ~78% en bord de halo de torche) — les 2 rôles les
+plus visibles de `invocateur_vide` (bleu pâle 72%V, gris-lilas 55%V)
+recouvraient très exactement cette bande : même écart de teinte, aucun
+écart de LUMINANCE avec le sol le plus lumineux, d'où l'effet "qui ne
+perce pas" que Milan décrit sur Gueule Vide. Relevés à 90/85% V et 55/
+50% saturation (toujours sous le plafond VFX 92%, teinte inchangée,
+identité de Classe intacte) — capture avant/après confirmée (`captures/
+verification/2026-08-22-vfx-contraste-gueule-vide-{avant,apres}.png`).
+Audit des 4 autres compétences implémentées avant généralisation,
+comme demandé par Milan :
+- **Poing Tellurique/Marée de Sable (`terre`, VERROUILLÉE)** : capture
+  réelle confirme que `groundRing` restait à peine visible MÊME après
+  le premier correctif R4 documenté dans ce fichier de palette — hue
+  quasi identique au sol (32° vs ~35-38° mesuré) ne laisse QUE value/
+  saturation comme levier pour une matière qui doit rester "terre" par
+  nature (contrairement à Invocateur, la teinte ne peut pas s'éloigner
+  sans casser l'identité). 2e correctif : 52→80% V, 46→65% saturation
+  sur le rôle "signature 1" uniquement (le seul confirmé faible par
+  capture) — `captures/verification/2026-08-22-vfx-contraste-
+  tellurique-{avant,apres}.png`, nette amélioration visible. Rôles
+  contact/poussière non touchés (déjà lisibles sur la capture Marée de
+  Sable).
+- **Bras-Faux/Poing Belluaire (`parasite`, réécrite from reference
+  2026-08-22 même journée)** : PAS auditables cette passe — l'outil de
+  capture (`--mode=player_action --action=power1/power3`) n'a rendu
+  AUCUNE couche VFX aux ticks testés (6/10/18), alors que `Poing
+  Belluaire`/tier1 est censé être débloqué dès le niveau 1. Cause non
+  encore identifiée (décalage tick recette vs tick capture différent de
+  celui qui marche pour `terre`/`invocateur_vide` ? condition de portée
+  non remplie par le rig de capture ?) — flag explicite : ceci est un
+  TROU D'OUTILLAGE, pas une conclusion sur la lisibilité réelle de ces
+  2 compétences. Palette `parasite` volontairement non retouchée sans
+  preuve visuelle (elle vient d'un échantillonnage direct des 5 planches
+  de référence officielles le jour même — la retoucher à l'aveugle
+  romprait la fidélité à la référence que Milan a validée). À reprendre
+  en priorité la prochaine session avant tout nouveau travail sur ces
+  2 compétences.
+
+**Point 5 — monde encore plat malgré la Phase 1 (Addendum C).** Cause :
+un seul `CanvasModulate` global (teinte uniforme sur TOUT le niveau) +
+seulement 3 `PointLight2D` (les torches de porte Combat/Elite/Boss,
+espacées de 650 à 1050px) sur un niveau large de ~3550px — les 2
+braziers et le porte-torche déjà présents dans le décor (Phase 1,
+MANDAT AUTONOME v3) étaient de PURS sprites décoratifs, aucune lumière
+réelle. Exactement le symptôme que Milan décrit : des props ajoutés
+mais aucune variation lumineuse. Fix : `PointLight2D` (texture radiale
+déjà utilisée par les torches de porte) ajouté en enfant de
+`PropBrazier1`, `PropBrazier2` (orange-feu, energy 1.5, rayon 2.4×) et
+`PropTorchStand1` (or pâle, energy 0.85, rayon 1.3×) — comble
+spécifiquement le grand vide entre la porte Combat (x=768) et la porte
+Elite (x=2048) où rien n'éclairait avant. Capture large (caméra
+x=1500) avant/après : dôme de lumière chaude visible sur le sol là où
+il n'y avait qu'un ton plat avant — `captures/verification/
+2026-08-22-monde-lumiere-{avant,apres}.png`. `AmbientWarmth`
+(CanvasModulate) et Addendum C non touchés, comme demandé (ne pas
+assombrir le monde, ajouter de la variation LOCALE en plus). `outpost.
+tscn`/`test_arena.tscn` non repris cette passe (hors scope, la vidéo de
+Milan montre `gate_premiere`) — à faire si Milan le demande.
+
+**Point 6 — première capture d'un impact réel commitée.** Aucune
+capture existante (avant cette session) ne montrait un coup qui touche
+réellement un ennemi. `--mode=player_action --action=attack --tick=12`
+(2 ennemis positionnés devant/à 30° comme le smoke test) : capture
+montre les 2 ennemis en plein flash de hit (teinte réelle qui
+transparaît sous le blanc, pas un bloc opaque — le fix du point 1 tient
+aussi en combo réel, pas seulement en isolation) + une étincelle
+d'impact. `captures/verification/2026-08-22-combo-impact-reel.png`.
+
+**Vérifications finales** : `scripts/run_gameplay_smoke_test.sh` et
+`scripts/run_vfx_recipe_smoke_test.sh` — `all_pass:true` après CHAQUE
+changement de cette entrée (shader/UI/palettes/scène), pas seulement à
+la fin. Build web (`docs/index.html`/`index.pck`) redéployé en tout
+dernier, après tous les fixes ci-dessus — pour que la PROCHAINE vidéo
+de Milan reflète enfin l'état réel du dépôt, pas un état d'il y a
+plusieurs commits.
+
+---
+
 ## 2026-08-22 — Retour Milan sur captures réelles : bug flash blanc + trou de vérification
 
 **Contexte** : 1er retour de Milan sur de vraies captures du jeu en
