@@ -5723,3 +5723,43 @@ vérifiés (tests + captures). Zoom caméra en attente du choix de Milan
 (A ou B). render_detector.py bloqué en attente du fichier. Redeploy web
 à suivre. R3/R3bis toujours en attente du verdict de Milan sur le
 prochain clip.
+
+## 2026-08-22 — Zoom caméra tranché (option B) : BASE_ZOOM permanent
+
+Milan a choisi l'option B (+25%, cam_zoom=0.8) sur les 2 captures A/B
+envoyées. `CameraDirector.BASE_ZOOM := Vector2(0.8, 0.8)` + nouvelle
+fonction `get_zoom()` = `BASE_ZOOM * get_punch_zoom()` (multiplication,
+pas addition — le punch garde exactement la même intensité RELATIVE
+quel que soit le zoom de base). `Player._physics_process()` : `_camera.
+zoom = CameraDirector.get_zoom()` au lieu de `get_punch_zoom()` seul.
+`get_punch_zoom()` reste inchangée et exposée telle quelle (le smoke
+test `camera_punch_zoom_triggers_on_medium_hit_not_light` la lit en
+isolation, indépendamment de tout zoom de base).
+
+Un seul `player.tscn` partagé par `gate_premiere`/`test_arena`/
+`outpost` (voir leurs `.tscn` respectifs, node "Player" instancié 3
+fois) : ce changement dans `player.gd`/`camera_director.gd` s'applique
+identiquement aux 3 scènes, pas 3 réglages séparés à synchroniser.
+
+**Vérifié par capture réelle (pas seulement lu dans le code)** : les
+modes existants de `capture_scene.gd` (`--mode=scene`) injectent
+TOUJOURS leur propre `Camera2D` (`cam.make_current()`), ce qui aurait
+masqué silencieusement l'effet réel de ce changement (la caméra
+injectée écrase celle de Player, donc capturer avec l'ancien mode
+aurait "confirmé" n'importe quelle valeur de zoom sans jamais tester le
+vrai code). Nouveau flag `--use_scene_camera=1` : laisse la caméra RÉELLE
+de Player (celle pilotée par `CameraDirector.get_zoom()`) active plutôt
+que d'en injecter une — capturé sur les 3 scènes : le monde est
+visiblement ~25% plus grand, HUD (barre de vie, `Niv. 1`) et boutons
+tactiles (joystick, PB/BF/GV/PT/DDG/DASH/ATK/PERSO) restent pile à
+leur place — `CanvasLayer` (root des 2 scènes UI) est par construction
+immunisé à `Camera2D.zoom`, confirmé par capture plutôt que supposé.
+
+**Vérification** : `--import` headless propre, `scripts/
+run_gameplay_smoke_test.sh` 100% vert (aucune régression — les 2 checks
+qui touchent la caméra lisent `CameraDirector.get_punch_zoom()`
+directement, jamais `_camera.zoom`, donc indifférents à `BASE_ZOOM`).
+
+**Statut** : terminé et vérifié, redeploy web à suivre immédiatement.
+render_detector.py maintenant fourni par Milan — intégration en cours,
+voir entrée suivante.

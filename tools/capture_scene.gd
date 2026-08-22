@@ -105,6 +105,14 @@ func _ready() -> void:
 ##   --cam_x=640 --cam_y=300 --cam_zoom=1.0
 ##   --wait_ticks=1                 ticks physiques avant capture (def. 1)
 ##   --background=neutral|loaded, --scale=1|2|4  mêmes conventions qu'ailleurs.
+##   --use_scene_camera=1           Phase R4 (BASE_ZOOM permanent) : n'injecte
+##                                  PAS de Camera2D — laisse la caméra RÉELLE
+##                                  de la scène (celle de Player, pilotée par
+##                                  CameraDirector.get_zoom() à chaque tick)
+##                                  rester active, pour vérifier le zoom de
+##                                  base EN JEU RÉEL plutôt qu'un cam_zoom
+##                                  choisi à la main qui l'écraserait. --cam_x/
+##                                  y/zoom ignorés dans ce mode (def. 0/off).
 ##   --out=/chemin/absolu/sortie.png
 func _run_scene_capture(args: Dictionary) -> void:
 	var scene_path: String = args.get("scene_path", "")
@@ -114,6 +122,7 @@ func _run_scene_capture(args: Dictionary) -> void:
 	var cam_zoom: float = float(args.get("cam_zoom", "1.0"))
 	var wait_ticks: int = int(args.get("wait_ticks", "1"))
 	var scale: int = int(args.get("scale", "1"))
+	var use_scene_camera: bool = args.get("use_scene_camera", "0") == "1"
 	if scene_path == "" or out_path == "":
 		push_error("capture_scene[scene]: --scene_path et --out sont requis.")
 		get_tree().quit(1)
@@ -127,11 +136,12 @@ func _run_scene_capture(args: Dictionary) -> void:
 	var instance: Node = packed.instantiate()
 	add_child(instance)
 
-	var cam := Camera2D.new()
-	cam.position = Vector2(cam_x, cam_y)
-	cam.zoom = Vector2(cam_zoom, cam_zoom)
-	add_child(cam)
-	cam.make_current()
+	if not use_scene_camera:
+		var cam := Camera2D.new()
+		cam.position = Vector2(cam_x, cam_y)
+		cam.zoom = Vector2(cam_zoom, cam_zoom)
+		add_child(cam)
+		cam.make_current()
 
 	for i in range(wait_ticks):
 		await get_tree().physics_frame
@@ -145,7 +155,7 @@ func _run_scene_capture(args: Dictionary) -> void:
 
 	var report := {
 		"save_err": err, "out_path": out_path, "size": [img.get_width(), img.get_height()],
-		"mode": "scene", "scene_path": scene_path,
+		"mode": "scene", "scene_path": scene_path, "use_scene_camera": use_scene_camera,
 		"cam": [cam_x, cam_y, cam_zoom], "wait_ticks": wait_ticks, "scale": scale,
 	}
 	print("CAPTURE_RESULT ", JSON.stringify(report))

@@ -26,6 +26,18 @@ const PUNCH_ZOOM_AMOUNT := 0.025
 ## Milieu de la fourchette "12-20px" du mandat.
 const LOOKAHEAD_DISTANCE_PX := 16.0
 
+## Phase R4 (suite, verdict de Milan sur les 2 captures A/B envoyées après
+## le chantier "sol/chiffres/game feel" — cam_zoom=1.0 vs 0.8, option B
+## retenue) : zoom de BASE permanent des scènes de jeu, remplace l'ancien
+## Vector2.ONE neutre sur lequel seul le punch-zoom ponctuel s'appliquait.
+## Camera2D.zoom < 1 = plus zoomé (Godot inverse l'intuition "zoom in =
+## plus grand") : 0.8 affiche 80% de la largeur normale du monde dans le
+## même viewport, donc les sprites paraissent 1/0.8 = 1.25× plus grands
+## ("+25%"). Un seul Player.tscn partagé par gate_premiere/test_arena/
+## outpost (voir _physics_process de Player) : ce SEUL changement
+## s'applique aux 3 scènes, pas 3 réglages séparés à synchroniser.
+const BASE_ZOOM := Vector2(0.8, 0.8)
+
 var _punch_ticks_remaining: int = 0
 
 
@@ -56,6 +68,17 @@ func get_punch_zoom() -> Vector2:
 	var t: float = float(elapsed) / float(PUNCH_ZOOM_TICKS)
 	var amount: float = PUNCH_ZOOM_AMOUNT * (1.0 - t)
 	return Vector2.ONE * (1.0 + amount)
+
+
+## Zoom Camera2D COMPLET à appliquer ce tick (Player._physics_process()) :
+## BASE_ZOOM permanent × punch-zoom ponctuel — une multiplication, pas une
+## addition, pour que le punch garde exactement la même intensité
+## RELATIVE (+2,5% au pic) quel que soit le zoom de base. get_punch_zoom()
+## reste exposée telle quelle (lue isolément par le smoke test
+## camera_punch_zoom_triggers_on_medium_hit_not_light, qui vérifie le
+## PUNCH lui-même, indépendamment de tout zoom de base).
+func get_zoom() -> Vector2:
+	return BASE_ZOOM * get_punch_zoom()
 
 
 ## `direction` : direction du dash en cours (Vector2.ZERO hors dash — le

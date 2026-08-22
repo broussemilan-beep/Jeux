@@ -393,7 +393,7 @@ func _physics_process(_delta: float) -> void:
 	var lookahead: Vector2 = CameraDirector.get_lookahead_offset(
 		_dash_direction if _dash_phase != DashPhase.NONE else Vector2.ZERO)
 	_camera.offset = CombatFeedback.get_shake_offset() + lookahead
-	_camera.zoom = CameraDirector.get_punch_zoom()
+	_camera.zoom = CameraDirector.get_zoom()
 	# Phase R4 : hit-stop asymétrique — le joueur consulte SON compteur
 	# (attaquant quand il frappe, cible quand il encaisse un coup ennemi ;
 	# CombatFeedback.register_hit() route déjà les deux compteurs selon
