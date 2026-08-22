@@ -5840,3 +5840,95 @@ reste un chantier à part entière, pas terminé ici.
 (nouveau mode de capture n'affecte aucun code de gameplay). Rien à
 redéployer côté web (outil de développement uniquement, pas de code
 runtime jeu changé au-delà de `capture_scene.gd`).
+
+## 2026-08-22 — Socle de référence : archivage planches + verrouillage palette Terre + audit 4 recettes vivantes
+
+Mandat Milan en 3 points, explicitement **sans toucher aux 11
+compétences restantes** de la bible — priorisation à venir dans un
+futur mandat une fois ce socle posé.
+
+**1. Archivage permanent des 15 planches** — les planches de référence
+validées par Milan (Invocateur/Monstrification/Terre, 5 par classe)
+n'existaient que dans l'historique de discussion. Recadrées (script
+Pillow, crop vertical par bornes de ligne) et archivées sous
+`docs/references/<classe>/<nom-competence>.png`, avec un
+`docs/references/README.md` documentant le mapping fichier -> planche
+source (4 uploads). Les 2 blocs "sprites de base/icônes/effets
+communs" (transverses, pas liés à une compétence, présents en pied de
+page sur 2 des 4 uploads) archivés séparément sous
+`docs/references/shared/`.
+
+Divergence de nommage relevée : le mandat citait "Éperon" comme 5e
+planche Terre, mais aucune planche de ce nom n'existe dans les
+uploads — la 5e planche Terre réellement fournie est **Fissure
+Éruptive**. Traité comme une divergence de nommage dans la demande
+(documentée dans le README), pas comme une planche manquante : les 5
+planches Terre annoncées sont bien toutes présentes.
+
+**2. Verrouillage de `data/palettes/terre.json`** — comparée aux 5
+planches Terre désormais archivées. Aucun écart net : Marée de Sable
+(sable ocre/tan sur roches brun-gris), Carapace (plaques rocheuses
+brun-gris-beige désaturées), Effondrement (fissures brun-terreux qui
+convergent puis explosent en éclats ocre clair/poussière pâle),
+Fissure Éruptive (pics gris-pierre + nuages de poussière gris-tan) —
+et Poing Tellurique, déjà audité en détail via `render_detector.py`
+ci-dessus. Toutes cohérentes avec la palette déjà en place (brun-gris
+terreux / gris pierre foncé / ocre clair / poussière pâle, hue 30-40°),
+aucune couleur hors de cette famille. Flag `PROPOSITION` retiré,
+`"status": "VERROUILLÉE"` ajouté, structure et valeurs numériques
+inchangées (aucune réinvention, la bible reste la référence de
+matière) — changement documenté dans les notes du fichier lui-même.
+
+**3. Audit factuel des 4 recettes vivantes (aucun changement de code)** :
+
+- **Gueule Vide** (`power.gueule_vide.cast.json`, palette
+  `invocateur_vide`) — **cohérent**. La planche (créature d'encre
+  noire/gris-lilas surgissant du sol, cercle runique bleu pâle sous les
+  pieds, éclaboussures sombres) correspond terme à terme aux 4 rôles de
+  la palette (noir d'encre, gris-lilas désaturé, gris cendre, pointe
+  bleu pâle système sur le cercle au sol). Aucun écart relevé.
+
+- **Poing Tellurique** (`power.poing_tellurique.cast.json`, palette
+  `terre`) — **cohérent**, déjà audité en détail ci-dessus par mesure
+  réelle (`render_detector.py`) : groundRing/impactFlashFrame/dustKick
+  confirmés présents, `converge` reste une piste ouverte non tranchée
+  (signal à peine perceptible, pas une absence franche) — pas un
+  nouveau constat, le même suivi déjà documenté dans la recette.
+
+- **Bras-Faux** (`power.bras_faux.cast.json`, palette `parasite`) —
+  **écart notable de couleur**. La palette `parasite` est explicitement
+  définie (notes du fichier, citant GDD §7) comme un "grayscale strict...
+  gris cendre, gris foncé, noir, pointe de bleu-gris pâle et lilas-gris
+  pâle... NO PURPLE saturé, NO GLOW" — les teintes de couleur (bleu-gris
+  ~205°, lilas-gris ~275°) n'apparaissant qu'en fine touche ("pointe de",
+  jamais dominante). Or la planche Bras-Faux montre un bras-tendon/faux
+  rouge-brun-rouille organique (chair et tendons) comme couleur
+  DOMINANTE du membre transformé sur les 4 panneaux, avec des
+  éclaboussures rouges — pas une pointe froide bleu-gris/lilas sur fond
+  gris cendre, mais une teinte chaude rouge-brun qui domine tout le
+  visuel. Écart de teinte net entre la palette de code (froide,
+  désaturée, à peine teintée) et la référence (chaude, organique,
+  rouge-brun affirmé).
+
+- **Poing Belluaire** (`power.poing_belluaire.cast.json`, palette
+  `parasite` réutilisée) — **aucune planche dédiée parmi les 15
+  fournies** ("Poing Belluaire" n'est le nom d'aucune des 15
+  compétences illustrées). Candidat le plus proche par construction :
+  **Coup de Poing Monstrifié** (Monstrification) — même archétype exact
+  que documenté dans les notes de la recette ("un seul coup frontal
+  très lourd", pas de traînée/balayage) : Préparation/Transformation ->
+  Impact -> Récupération, sans étape de balayage, contrairement à
+  Bras-Faux. Hypothèse plausible (non tranchée) d'une divergence de
+  nommage bible/code du même type que Terre/"Éperon" ci-dessus — à
+  confirmer par Milan, pas assumé comme acquis. Si cette
+  correspondance est la bonne : même écart de teinte que Bras-Faux
+  (planche rouge-rose organique dominante vs palette `parasite`
+  froide/désaturée, réutilisée telle quelle par cette recette), et la
+  colonne "Assets - Effets" de la planche montre un impact + une
+  fissure au sol qui n'a pas d'équivalent dans les 3 couches actuelles
+  de la recette (`converge`/`impactStar`/`impactFlashFrame`, aucune
+  couche de fissure/craquelure au sol) — à vérifier une fois l'identité
+  confirmée, pas un constat définitif ici.
+
+Aucun changement de code ni de recette à ce stade (demande explicite de
+Milan : audit seulement). Aucune des 11 compétences restantes entamée.
