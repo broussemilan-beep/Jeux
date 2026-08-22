@@ -19,10 +19,15 @@ const ICON_SIZE := 26.0
 @onready var _level_label: Label = $LevelLabel
 @onready var _xp_fill: ColorRect = $XpBar/Fill
 @onready var _cd_dodge: ColorRect = $Cooldowns/Dodge/Overlay
-@onready var _cd_power1: ColorRect = $Cooldowns/Power1/Overlay
-@onready var _cd_power2: ColorRect = $Cooldowns/Power2/Overlay
-@onready var _cd_power3: ColorRect = $Cooldowns/Power3/Overlay
-@onready var _cd_power4: ColorRect = $Cooldowns/Power4/Overlay
+
+## Amendement GDD Pouvoir/déblocage (confirmé par Milan) : 5 emplacements
+## génériques (plus 4 fixes) — chaque conteneur entier (pas seulement son
+## overlay) est masqué quand Player.get_power_slot_info() est vide, pour
+## qu'un emplacement non débloqué soit ABSENT, pas juste "grisé" (même
+## exigence que touch_controls.gd).
+@onready var _power_slots: Array[ColorRect] = [
+	$Cooldowns/Power1, $Cooldowns/Power2, $Cooldowns/Power3, $Cooldowns/Power4, $Cooldowns/Power5,
+]
 
 const HP_BAR_WIDTH := 120.0
 const XP_BAR_WIDTH := 120.0
@@ -42,10 +47,18 @@ func _process(_delta: float) -> void:
 	_xp_fill.size.x = XP_BAR_WIDTH * xp_ratio
 
 	_set_cooldown_overlay(_cd_dodge, _player.get_dodge_cooldown_ratio())
-	_set_cooldown_overlay(_cd_power1, _player.get_power1_cooldown_ratio())
-	_set_cooldown_overlay(_cd_power2, _player.get_bras_faux_cooldown_ratio())
-	_set_cooldown_overlay(_cd_power3, _player.get_poing_belluaire_cooldown_ratio())
-	_set_cooldown_overlay(_cd_power4, _player.get_poing_tellurique_cooldown_ratio())
+
+	for i in _power_slots.size():
+		var slot_index: int = i + 1
+		var info: Dictionary = _player.get_power_slot_info(slot_index)
+		var container: ColorRect = _power_slots[i]
+		container.visible = not info.is_empty()
+		if info.is_empty():
+			continue
+		var label: Label = container.get_node("Label")
+		label.text = info.get("touch_label", "")
+		var overlay: ColorRect = container.get_node("Overlay")
+		_set_cooldown_overlay(overlay, _player.get_power_slot_cooldown_ratio(slot_index))
 
 
 ## `ratio` 1.0 = vient d'être utilisé (icône entièrement voilée) -> 0.0 =

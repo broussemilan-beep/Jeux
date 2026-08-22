@@ -1,0 +1,11 @@
+{
+  "pouvoir_id": "terre",
+  "notes": "Ordre VERROUILLÉ par Milan (mandat système Pouvoir/déblocage) — confirme et résout la contradiction relevée dans le plan précédent (docs/worklog.md) entre l'ordre d'exemple de Milan et les Tiers imprimés sur les planches (docs/references/terre/) : les Tiers 1-4 imprimés (Poing Tellurique/Marée de Sable/Carapace/Effondrement) sont confirmés dans cet ordre, et 'Fissure Éruptive' (planche mixte, anciennement nommée 'Éperon' dans le mandat précédent — divergence de nommage désormais résolue) est bien la 5e, en dernier. Paliers de niveau : rythme par défaut 1/3/6/10/15, identique à Invocateur. Seul 'poing_tellurique' est implémenté en jeu à ce jour (power.poing_tellurique.cast.json, Player._start_poing_tellurique()) ; les 4 autres slots restent vides tant qu'ils n'ont ni fonction ni recette — accepté explicitement par Milan.",
+  "skills": [
+    { "tier": 1, "id": "poing_tellurique", "name": "Poing Tellurique", "unlock_level": 1, "touch_label": "PT" },
+    { "tier": 2, "id": "maree_de_sable", "name": "Marée de Sable", "unlock_level": 3, "touch_label": "MS" },
+    { "tier": 3, "id": "carapace", "name": "Carapace", "unlock_level": 6, "touch_label": "CR" },
+    { "tier": 4, "id": "effondrement", "name": "Effondrement", "unlock_level": 10, "touch_label": "EF" },
+    { "tier": 5, "id": "fissure_eruptive", "name": "Fissure Éruptive", "unlock_level": 15, "touch_label": "FE" }
+  ]
+}

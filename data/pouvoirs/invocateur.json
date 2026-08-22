@@ -1,0 +1,11 @@
+{
+  "pouvoir_id": "invocateur",
+  "notes": "Ordre VERROUILLÉ par Milan (mandat système Pouvoir/déblocage, réponse aux questions bloquantes du plan précédent) — RANK_ZERO_POWER_SKILL_BIBLE v0.4, ordre Tier confirmé cohérent sur les 4 premières planches (docs/references/invocateur/) et complété par Milan pour la 5e. 'serpent_creux' correspond à la planche 'Invocation du Serpent' (docs/references/invocateur/invocation_du_serpent.png, planche mixte) — nom raccourci donné par Milan dans ce mandat, même compétence, pas une divergence à signaler. Seul 'gueule_vide' est implémenté en jeu à ce jour (power.gueule_vide.cast.json, Player._cast_gueule_vide()) ; les 4 autres slots restent vides (bouton absent) tant qu'ils n'ont ni fonction ni recette — accepté explicitement par Milan comme conséquence de ce mandat, pas un bug.",
+  "skills": [
+    { "tier": 1, "id": "gueule_vide", "name": "Gueule Vide", "unlock_level": 1, "touch_label": "GV" },
+    { "tier": 2, "id": "corbeau_pale", "name": "Corbeau Pâle", "unlock_level": 3, "touch_label": "CP" },
+    { "tier": 3, "id": "poing_du_colosse", "name": "Poing du Colosse", "unlock_level": 6, "touch_label": "PC" },
+    { "tier": 4, "id": "oeil_sans_regard", "name": "Œil Sans Regard", "unlock_level": 10, "touch_label": "OSR" },
+    { "tier": 5, "id": "serpent_creux", "name": "Serpent Creux", "unlock_level": 15, "touch_label": "SC" }
+  ]
+}

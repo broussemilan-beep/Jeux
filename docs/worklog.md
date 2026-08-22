@@ -6235,3 +6235,112 @@ l'ajuste pas moi-même comme demandé.
 
 Rien commité côté code — uniquement cette entrée de worklog (analyse/
 plan). Implémentation suspendue jusqu'au retour de Milan.
+
+## 2026-08-22 — Système Pouvoir/déblocage : IMPLÉMENTÉ
+
+Milan a tranché les 6 questions bloquantes du plan précédent. Ordre
+verrouillé par Classe, paliers de niveau (asymétriques pour
+Monstrification), terminologie ("Pouvoir", pas "Classe" —
+character_screen.gd/"CLASSE : AUCUNE" non touché, règle GDD distincte),
+5 emplacements réels dès cette passe (pas de report), conséquence
+"1 seul bouton actif toute la run pour Invocateur/Terre" acceptée.
+
+**Données (`data/pouvoirs/{invocateur,monstrification,terre}.json`)** :
+un fichier par Pouvoir, 5 compétences ordonnées par tier avec
+`unlock_level`/`touch_label`. Ordre verrouillé :
+- Invocateur : Gueule Vide(1)→Corbeau Pâle(3)→Poing du Colosse(6)→
+  Œil Sans Regard(10)→Serpent Creux(15).
+- Terre : Poing Tellurique(1)→Marée de Sable(3)→Carapace(6)→
+  Effondrement(10)→Fissure Éruptive(15).
+- Monstrification (paliers délibérément différents, cf. mandat) :
+  Poing Belluaire(1)→Bras-Faux(3)→Mâchoire(6)→Forme Bestiale(**14**)→
+  Pattes de Chasse(**18**) — écart 6→14 nettement le plus large des 3
+  Pouvoirs, resserré ensuite pour 14→18, exactement le rythme demandé
+  (Forme Bestiale = "seule vraie transformation complète de la bible").
+  Chiffres de Milan conservés tels quels (1/3/6/14/18).
+
+**`src/system/pouvoir_registry.gd`** (autoload `PouvoirRegistry`) :
+charge/cache les 3 JSON (même patron que
+`VfxRecipeRegistry._load_palette()`). Ne connaît QUE l'ordre/les
+paliers — délibérément ignorant de ce qui est réellement implémenté en
+code (séparation données/dispatch, voir plus bas).
+
+**`src/system/run_state.gd`** : nouveau champ `active_power: String`,
+tiré au hasard parmi les 3 Pouvoirs à l'init de l'autoload (même patron
+que `player_stats`, aucune notion de "début de run" à inventer). Liste
+des 3 Pouvoirs dupliquée en dur plutôt que référencée via
+`PouvoirRegistry.POUVOIR_IDS` : un champ par défaut se résout à la
+construction du nœud, avant toute garantie sur l'ordre d'init des
+autres autoloads — RunState reste sans AUCUNE dépendance, comme documenté.
+
+**`src/gameplay/player.gd`** — cœur du changement : `power1`..`power5`
+ne sont plus liés en dur à une compétence (`_cast_gueule_vide()`,
+`_start_bras_faux()`, etc. directement dans `_physics_process()`) mais
+résolus dynamiquement via un nouveau `_try_activate_power_slot(slot_
+index)`. Table `IMPLEMENTED_SKILL_HANDLERS`/`IMPLEMENTED_SKILL_
+COOLDOWN_GETTERS` (id de compétence -> nom de méthode) : SEULE source
+de vérité sur ce qui a une fonction réelle aujourd'hui (4 compétences
+sur 15). `get_power_slot_info(slot_index)` (public, lu par
+touch_controls.gd/hud.gd/character_screen.gd) retourne `{}` si le slot
+n'est pas débloqué par le niveau OU si la compétence qui s'y trouverait
+n'est pas implémentée — absent, jamais "grisé". Conséquence directe du
+nouvel ordre verrouillé : Poing Belluaire est maintenant tier 1 de
+Monstrification (pas tier 3 comme dans l'ancien câblage), Poing
+Tellurique tier 1 de Terre (pas tier 4) — les deux se déclenchent
+maintenant via "power1", jamais "power3"/"power4".
+
+**`scenes/ui/touch_controls.tscn` + `src/ui/touch_controls.gd`** (nouveau
+script, la scène n'en avait aucun) : `ButtonPower5` ajouté (touche H,
+position (315,305)), et un poll en `_process()` (même discipline que
+hud.gd/character_screen.gd) masque chaque bouton (`visible = false`,
+pas un overlay) et réécrit son label selon `Player.get_power_slot_info()`.
+
+**`scenes/ui/hud.tscn` + `src/ui/hud.gd`** : `Power5` ajouté au
+conteneur `Cooldowns` (même grille, pitch 32px). `_process()` généralisé
+en boucle sur 5 slots : conteneur entier masqué si vide (pas seulement
+l'overlay de cooldown), sinon label + overlay mis à jour via
+`get_power_slot_info()`/`get_power_slot_cooldown_ratio()`.
+
+**`src/ui/character_screen.gd` + `.tscn`** : "CLASSE : AUCUNE" **non
+touché** (règle GDD distincte, confirmée toujours valide). Nouveau
+`PouvoirLabel` séparé affichant "POUVOIR : <valeur active>". Le texte
+`_skills_label` (déjà obsolète avant ce mandat : oubliait 2 des 4
+compétences vivantes) est maintenant dynamique, listant les slots
+réellement débloqués+implémentés avec leur touche réelle (E/R/T/G/H).
+
+**`project.godot`** : action `power5` ajoutée (touche H), autoload
+`PouvoirRegistry` enregistré.
+
+**`tools/smoke_test_gameplay.gd`** : les 4 checks vivants
+(`_check_gueule_vide`/`_check_bras_faux`/`_check_poing_belluaire`/
+`_check_poing_tellurique`) fixent maintenant explicitement `RunState.
+active_power` (+ `stats.level = 3` pour Bras-Faux, tier 2) avant de
+presser leur touche — et Poing Belluaire/Poing Tellurique pressent
+maintenant "power1" (plus "power3"/"power4", cf. nouvel ordre de tier).
+`"power5"` ajouté à la liste `gameplay_actions_have_no_mouse_button_
+bindings`. Nouveau check `_check_power_slot_gating()` : vérifie le
+mécanisme lui-même (pas seulement la non-régression) — un slot
+débloqué+implémenté est exposé, un slot implémenté mais sous son palier
+reste absent puis apparaît une fois le niveau atteint, un appui sur un
+slot verrouillé ne déclenche RIEN côté gameplay (pas juste "bouton
+absent"), et le ratio de cooldown d'un slot vide est 0.0.
+
+**Vérification** : `scripts/run_gameplay_smoke_test.sh` 100% vert (65
+checks, dont les 5 nouveaux). `touch_controls.tscn`/`hud.tscn`/
+`character_screen.tscn` non exercés par ce smoke test (aucune scène de
+jeu réelle n'y est instanciée) — vérifiés séparément en lançant
+`scenes/gameplay/test_arena.tscn` en headless (xvfb + Vulkan logiciel,
+15s) : aucune erreur de nœud manquant/script cassé (les 2 erreurs
+`tile_set->get_terrain_sets_count() = 0` observées sont préexistantes,
+sans rapport avec ce mandat — tileset de terrain, pas UI/Pouvoir).
+
+**Note tooling (hors mandat, corrigée par prudence)** :
+`tools/capture_scene.gd` avait deux exemples de docstring ("--action=
+power2"/"--action=power4") qui prétendaient encore une identité de
+compétence fixe par slot — commentaires seulement corrigés pour
+refléter la résolution dynamique via `RunState.active_power`, aucune
+nouvelle fonctionnalité ajoutée à l'outil.
+
+Rien à redéployer côté web spécifiquement pour cette passe (aucune
+scène de jeu réelle capturée/comparée visuellement) — HUD/touch
+vérifiés par lecture de logs headless, pas par capture visuelle Milan.

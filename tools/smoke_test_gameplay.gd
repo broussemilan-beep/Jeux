@@ -55,6 +55,7 @@ func _ready() -> void:
 	await _check_bras_faux()
 	await _check_poing_belluaire()
 	await _check_poing_tellurique()
+	await _check_power_slot_gating()
 	await _check_player_recoils_on_taking_damage()
 	await _check_crawler_chases_and_hits_player()
 	await _check_brute_telegraphs_before_hitting()
@@ -104,7 +105,7 @@ func _wait_until(predicate: Callable, max_ticks: int = 400) -> bool:
 ## bug précis de revenir silencieusement (ex. un remap futur qui
 ## réintroduit un binding souris générique).
 func _check_input_map_has_no_stray_mouse_bindings() -> void:
-	var gameplay_actions := ["attack", "power1", "power2", "power3", "power4", "dash", "dodge", "character_screen"]
+	var gameplay_actions := ["attack", "power1", "power2", "power3", "power4", "power5", "dash", "dodge", "character_screen"]
 	var offenders: Array[String] = []
 	for action_name in gameplay_actions:
 		for event in InputMap.action_get_events(action_name):
@@ -532,6 +533,11 @@ func _check_dash() -> void:
 ## seulement l'intégration gameplay (spawn, cooldown, dégât/recul, fin de
 ## vie de la créature).
 func _check_gueule_vide() -> void:
+	# Amendement GDD Pouvoir/déblocage : "power1" n'est plus lié en dur à
+	# Gueule Vide, il faut que le Pouvoir actif de cette run soit
+	# Invocateur pour que le slot 1 (tier 1, palier niveau 1, déjà
+	# atteint par défaut) résolve vers _cast_gueule_vide().
+	RunState.active_power = "invocateur"
 	_player.facing = Vector2.RIGHT
 	var spawn_pos: Vector2 = _player.global_position + Vector2.RIGHT * Player.POWER1_SPAWN_DISTANCE_PX
 
@@ -976,6 +982,13 @@ func _check_dodge() -> void:
 func _check_bras_faux() -> void:
 	await _wait_until(func(): return not _player._action_lock, Player.BRAS_FAUX_RECOVERY_TICKS + 5)
 
+	# Amendement GDD Pouvoir/déblocage : Bras-Faux est tier 2 de
+	# Monstrification (data/pouvoirs/monstrification.json), palier
+	# niveau 3 — sans ce niveau, le slot resterait verrouillé et "power2"
+	# ne ferait plus rien.
+	RunState.active_power = "monstrification"
+	_player.stats.level = 3
+
 	_player.global_position = Vector2(200, 1200)
 	_player.velocity = Vector2.ZERO
 	_player.facing = Vector2.RIGHT
@@ -1065,6 +1078,12 @@ func _check_bras_faux() -> void:
 func _check_poing_belluaire() -> void:
 	await _wait_until(func(): return not _player._action_lock, Player.POING_BELLUAIRE_RECOVERY_TICKS + 5)
 
+	# Amendement GDD Pouvoir/déblocage : Poing Belluaire est tier 1 de
+	# Monstrification (data/pouvoirs/monstrification.json, palier niveau
+	# 1) — déjà atteint par défaut, mais on fixe active_power au cas où
+	# ce check tournerait seul (ne pas dépendre de l'ordre d'exécution).
+	RunState.active_power = "monstrification"
+
 	_player.global_position = Vector2(200, 1800)
 	_player.velocity = Vector2.ZERO
 	_player.facing = Vector2.RIGHT
@@ -1100,9 +1119,13 @@ func _check_poing_belluaire() -> void:
 	var hp_side_before: float = enemy_side.stats.hp
 	var hp_outside_before: float = enemy_outside.stats.hp
 
-	Input.action_press("power3")
+	# Poing Belluaire est tier 1 de Monstrification (data/pouvoirs/
+	# monstrification.json) : le slot résolu est donc "power1", pas
+	# "power3" comme dans l'ancien câblage 1:1 (voir RunState.active_power
+	# fixé plus haut).
+	Input.action_press("power1")
 	await get_tree().physics_frame
-	Input.action_release("power3")
+	Input.action_release("power1")
 	var started: bool = await _wait_until(func(): return _player._poing_belluaire_phase != Player.PoingBelluairePhase.NONE, 5)
 	var anim_during: String = sprite.animation
 
@@ -1125,9 +1148,9 @@ func _check_poing_belluaire() -> void:
 		func(): return _player._poing_belluaire_phase == Player.PoingBelluairePhase.NONE, Player.POING_BELLUAIRE_RECOVERY_TICKS + 12)
 	var action_unlocked_after: bool = not _player._action_lock
 
-	Input.action_press("power3")
+	Input.action_press("power1")
 	await get_tree().physics_frame
-	Input.action_release("power3")
+	Input.action_release("power1")
 	var poing_belluaire_started_during_cooldown: bool = _player._poing_belluaire_phase != Player.PoingBelluairePhase.NONE
 
 	_checks.append({
@@ -1164,6 +1187,11 @@ func _check_poing_belluaire() -> void:
 func _check_poing_tellurique() -> void:
 	await _wait_until(func(): return not _player._action_lock, Player.POING_TELLURIQUE_RECOVERY_TICKS + 5)
 
+	# Amendement GDD Pouvoir/déblocage : Poing Tellurique est tier 1 de
+	# Terre (data/pouvoirs/terre.json, palier niveau 1, déjà atteint par
+	# défaut) — sans ce Pouvoir actif, "power4" ne ferait plus rien.
+	RunState.active_power = "terre"
+
 	_player.global_position = Vector2(200, 2100)
 	_player.velocity = Vector2.ZERO
 	_player.facing = Vector2.RIGHT
@@ -1195,9 +1223,12 @@ func _check_poing_tellurique() -> void:
 	var hp_side_before: float = enemy_side.stats.hp
 	var hp_outside_before: float = enemy_outside.stats.hp
 
-	Input.action_press("power4")
+	# Poing Tellurique est tier 1 de Terre (data/pouvoirs/terre.json) : le
+	# slot résolu est donc "power1", pas "power4" comme dans l'ancien
+	# câblage 1:1 (voir RunState.active_power fixé plus haut).
+	Input.action_press("power1")
 	await get_tree().physics_frame
-	Input.action_release("power4")
+	Input.action_release("power1")
 	var started: bool = await _wait_until(func(): return _player._poing_tellurique_phase != Player.PoingTelluriquePhase.NONE, 5)
 	var anim_during: String = sprite.animation
 
@@ -1212,9 +1243,9 @@ func _check_poing_tellurique() -> void:
 		func(): return _player._poing_tellurique_phase == Player.PoingTelluriquePhase.NONE, Player.POING_TELLURIQUE_RECOVERY_TICKS + 5)
 	var action_unlocked_after: bool = not _player._action_lock
 
-	Input.action_press("power4")
+	Input.action_press("power1")
 	await get_tree().physics_frame
-	Input.action_release("power4")
+	Input.action_release("power1")
 	var poing_tellurique_started_during_cooldown: bool = _player._poing_tellurique_phase != Player.PoingTelluriquePhase.NONE
 
 	_checks.append({
@@ -1244,6 +1275,67 @@ func _check_poing_tellurique() -> void:
 	enemy_side.queue_free()
 	enemy_outside.queue_free()
 	await get_tree().physics_frame
+
+
+## Amendement GDD Pouvoir/déblocage (confirmé par Milan, docs/worklog.md) :
+## vérifie le cœur du nouveau mécanisme, pas seulement que les 4
+## compétences déjà vivantes n'ont pas régressé. Trois angles : (1) un
+## slot débloqué+implémenté est bien exposé (Poing Belluaire, tier 1 de
+## Monstrification, palier niveau 1), (2) un slot implémenté mais PAS
+## encore débloqué par le niveau reste absent (Bras-Faux, tier 2, palier
+## niveau 3, testé à niveau 1), et redevient présent une fois le palier
+## atteint, (3) un appui sur ce même slot pendant qu'il est verrouillé
+## ne déclenche RIEN côté gameplay (pas juste "le bouton n'existe pas" :
+## l'input lui-même doit être un no-op).
+func _check_power_slot_gating() -> void:
+	await _wait_until(func(): return not _player._action_lock, 60)
+	RunState.active_power = "monstrification"
+	_player.stats.level = 1
+
+	var slot1_at_level1: Dictionary = _player.get_power_slot_info(1)
+	var slot2_at_level1: Dictionary = _player.get_power_slot_info(2)
+
+	# Appui sur le slot verrouillé (Bras-Faux, "power2") : ne doit rien
+	# démarrer — même garde que le reste de l'input, pas un bouton absent
+	# qui laisserait pourtant l'action passer si pressée au clavier.
+	Input.action_press("power2")
+	await get_tree().physics_frame
+	Input.action_release("power2")
+	var bras_faux_started_while_locked: bool = _player._bras_faux_phase != Player.BrasFauxPhase.NONE
+
+	# Capturé AVANT de relever le niveau ci-dessous : au niveau 1 ce slot
+	# est encore vide, c'est justement ce que ce ratio doit refléter (0.0,
+	# jamais le vrai cooldown de Bras-Faux une fois débloqué).
+	var slot2_cooldown_ratio_when_empty: float = _player.get_power_slot_cooldown_ratio(2)
+
+	_player.stats.level = 3
+	var slot2_at_level3: Dictionary = _player.get_power_slot_info(2)
+
+	_checks.append({
+		"name": "power_slot_unlocked_and_implemented_is_exposed",
+		"pass": not slot1_at_level1.is_empty() and slot1_at_level1.get("id", "") == "poing_belluaire",
+		"detail": {"slot1_at_level1": slot1_at_level1},
+	})
+	_checks.append({
+		"name": "power_slot_below_unlock_level_stays_absent",
+		"pass": slot2_at_level1.is_empty(),
+		"detail": {"slot2_at_level1": slot2_at_level1},
+	})
+	_checks.append({
+		"name": "power_slot_becomes_present_once_level_reached",
+		"pass": not slot2_at_level3.is_empty() and slot2_at_level3.get("id", "") == "bras_faux",
+		"detail": {"slot2_at_level3": slot2_at_level3},
+	})
+	_checks.append({
+		"name": "locked_power_slot_input_is_a_no_op",
+		"pass": not bras_faux_started_while_locked,
+		"detail": {"bras_faux_started_while_locked": bras_faux_started_while_locked},
+	})
+	_checks.append({
+		"name": "empty_power_slot_cooldown_ratio_is_zero",
+		"pass": is_equal_approx(slot2_cooldown_ratio_when_empty, 0.0),
+		"detail": {"slot2_cooldown_ratio_when_empty": slot2_cooldown_ratio_when_empty},
+	})
 
 
 ## G (GDD §10) : le recul du joueur sous un coup ennemi manquait jusqu'ici

@@ -21,6 +21,12 @@ run/main_scene="res://scenes/gameplay/outpost.tscn"
 ; RunState doit exister avant que la scène courante instancie un Player.
 ; Aucune dépendance sur les autres autoloads.
 RunState="*res://src/system/run_state.gd"
+; PouvoirRegistry (amendement GDD Pouvoir/déblocage) — charge data/
+; pouvoirs/<id>.json, aucune dépendance sur les autres autoloads, ordre
+; non critique dans cette liste (voir RunState.active_power, qui
+; duplique volontairement la liste des 3 Pouvoirs plutôt que de
+; dépendre de l'ordre d'init de celui-ci).
+PouvoirRegistry="*res://src/system/pouvoir_registry.gd"
 ; CombatFeedback EN PREMIER — bug réel trouvé en câblant C2
 ; (docs/worklog.md) : les autoloads et les nœuds de scène réguliers
 ; consultent tous CombatFeedback.is_frozen() en tête de leur propre
@@ -150,6 +156,21 @@ power3={
 power4={
 "deadzone": 0.5,
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":71,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+
+; Cinquième emplacement de pouvoir ("power5", touche H au clavier,
+; bouton tactile dédié) — amendement GDD Pouvoir/déblocage confirmé par
+; Milan : chaque Pouvoir a 5 compétences, les 5 slots doivent exister
+; dès cette passe même si la plupart restent vides tant que le contenu
+; n'existe pas (voir data/pouvoirs/*.json, Player.get_power_slot_info()).
+; power1-4 ne sont plus liés en dur à une compétence précise : ce sont
+; désormais des emplacements de COMBAT génériques (slot 1-5 = tier 1-5
+; du Pouvoir actif), résolus dynamiquement par Player selon
+; RunState.active_power + stats.level.
+power5={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":72,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
 

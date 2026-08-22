@@ -64,6 +64,14 @@ extends Node2D
 ##   ennemis (front + côté, mêmes offsets que _check_bras_faux() du smoke
 ##   test) pour rendre visible le recul multi-cible, pas juste le VFX seul.
 ##   --action=power2                 nom de l'InputMap action à presser 1 frame
+##                                    (amendement GDD Pouvoir/déblocage :
+##                                    power1..power5 sont des emplacements
+##                                    génériques résolus via RunState.
+##                                    active_power + le niveau du joueur,
+##                                    voir Player.get_power_slot_info() —
+##                                    fixer active_power dans le débogueur
+##                                    avant de lancer cette capture si le
+##                                    Pouvoir tiré au hasard ne convient pas)
 ##   --tick=16                       tick physique auquel capturer (compté
 ##                                    depuis la pression, pas depuis _ready())
 ##   --background=neutral|loaded, --scale=1|2|4  mêmes conventions que character.
@@ -108,6 +116,11 @@ func _ready() -> void:
 ## d'un tick à la fois — nouvelle fonction dédiée plutôt que de complexifier
 ## _freeze_and_wait_render() (qui ne dégèle jamais ailleurs, par design).
 ##   --action=power4                nom de l'InputMap action à presser 1 frame
+##                                    (même remarque que --mode=player_action
+##                                    ci-dessus : power1..power5 sont
+##                                    génériques depuis l'amendement
+##                                    Pouvoir/déblocage, dépend de
+##                                    RunState.active_power)
 ##   --ticks=30                     dernier tick capturé, inclus (def. 30)
 ##   --out_dir=/chemin/absolu/      dossier de sortie (créé si besoin)
 ##   --scale=1|2|4                  même convention qu'ailleurs (def. 1)

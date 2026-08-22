@@ -1,0 +1,11 @@
+{
+  "pouvoir_id": "monstrification",
+  "notes": "Ordre VERROUILLÉ par Milan (mandat système Pouvoir/déblocage) — résout explicitement la contradiction de Tier relevée dans le plan précédent (docs/worklog.md) : les planches (docs/references/monstrification/) affichaient Bras-Faux=T2, Mâchoire=T3, Pattes de Chasse=T3 (doublon), Forme Bestiale=T4, Coup de Poing Monstrifié/Poing Belluaire sans Tier. Milan tranche : Poing Belluaire=T1 (comble le seul Tier libre), Mâchoire et Forme Bestiale gardent leur Tier imprimé (T3/T4), Pattes de Chasse est déplacée en T5 pour lever le doublon. Paliers de niveau délibérément NON alignés sur Invocateur/Terre (1/3/6/10/15) — Milan : 'Monstrification a un palier 4 délibérément plus lointain que les deux autres Classes' car Forme Bestiale est 'la seule vraie transformation complète de toute la bible'. Chiffres proposés par Milan (1/3/6/14/18), conservés tels quels : l'écart 6->14 (+8, coût cumulatif ~3800 XP) est nettement le plus large des 3 Pouvoirs, et l'écart 14->18 (+4, ~3100 XP) le resserre un peu ensuite, exactement le rythme demandé. Seuls 'poing_belluaire' et 'bras_faux' sont implémentés en jeu à ce jour (power.poing_belluaire.cast.json/power.bras_faux.cast.json) ; les 3 autres slots restent vides tant qu'ils n'ont ni fonction ni recette.",
+  "skills": [
+    { "tier": 1, "id": "poing_belluaire", "name": "Poing Belluaire", "unlock_level": 1, "touch_label": "PB" },
+    { "tier": 2, "id": "bras_faux", "name": "Bras-Faux", "unlock_level": 3, "touch_label": "BF" },
+    { "tier": 3, "id": "machoire", "name": "Mâchoire", "unlock_level": 6, "touch_label": "MC" },
+    { "tier": 4, "id": "forme_bestiale", "name": "Forme Bestiale", "unlock_level": 14, "touch_label": "FB" },
+    { "tier": 5, "id": "pattes_de_chasse", "name": "Pattes de Chasse", "unlock_level": 18, "touch_label": "PDC" }
+  ]
+}

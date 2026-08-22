@@ -415,17 +415,13 @@ func _physics_process(_delta: float) -> void:
 	if Input.is_action_just_pressed("attack"):
 		_attack_queued = true
 
-	if Input.is_action_just_pressed("power1") and not stats.is_dead() and _power1_cooldown_remaining <= 0:
-		_cast_gueule_vide()
-
-	if Input.is_action_just_pressed("power2"):
-		_start_bras_faux()
-
-	if Input.is_action_just_pressed("power3"):
-		_start_poing_belluaire()
-
-	if Input.is_action_just_pressed("power4"):
-		_start_poing_tellurique()
+	# Amendement GDD Pouvoir/déblocage (confirmé par Milan) : power1..power5
+	# ne sont plus liés en dur à une compétence précise, voir
+	# _try_activate_power_slot() et le bloc de constantes juste après ce
+	# fichier pour la table des compétences réellement implémentées.
+	for slot_index in range(1, 6):
+		if Input.is_action_just_pressed("power%d" % slot_index):
+			_try_activate_power_slot(slot_index)
 
 	if Input.is_action_just_pressed("dash"):
 		play_dash()
@@ -986,6 +982,77 @@ func get_poing_belluaire_cooldown_ratio() -> float:
 
 func get_poing_tellurique_cooldown_ratio() -> float:
 	return float(_poing_tellurique_cooldown_remaining) / float(POING_TELLURIQUE_COOLDOWN_TICKS)
+
+
+## Amendement GDD Pouvoir/déblocage (confirmé par Milan, docs/worklog.md :
+## 1 seul Pouvoir par run tiré au hasard — RunState.active_power — 5
+## compétences débloquées par palier de niveau, ordre FIXE par Pouvoir).
+## data/pouvoirs/<pouvoir_id>.json (lu par l'autoload PouvoirRegistry) ne
+## connaît que l'ordre/les paliers de la bible, PAS ce qui existe
+## réellement en code — cette table est la seule source de vérité sur
+## les compétences qui ont une fonction/un cooldown réels aujourd'hui (4
+## sur les 15 de la bible). Un id absent de cette table = slot vide
+## (bouton absent), même si son palier de niveau est déjà atteint.
+const IMPLEMENTED_SKILL_HANDLERS := {
+	"gueule_vide": "_cast_gueule_vide",
+	"bras_faux": "_start_bras_faux",
+	"poing_belluaire": "_start_poing_belluaire",
+	"poing_tellurique": "_start_poing_tellurique",
+}
+const IMPLEMENTED_SKILL_COOLDOWN_GETTERS := {
+	"gueule_vide": "get_power1_cooldown_ratio",
+	"bras_faux": "get_bras_faux_cooldown_ratio",
+	"poing_belluaire": "get_poing_belluaire_cooldown_ratio",
+	"poing_tellurique": "get_poing_tellurique_cooldown_ratio",
+}
+
+
+func _get_active_power() -> String:
+	if not has_node("/root/RunState"):
+		return ""
+	return get_node("/root/RunState").active_power
+
+
+## Compétence occupant l'emplacement `slot_index` (1..5) pour le Pouvoir
+## actif de cette run — dictionnaire `{id, name, touch_label}` SI son
+## palier de niveau est atteint ET qu'elle est réellement implémentée
+## (voir IMPLEMENTED_SKILL_HANDLERS ci-dessus), dictionnaire vide sinon.
+## C'est ce que touch_controls.gd/hud.gd lisent pour savoir si un
+## emplacement doit afficher quelque chose du tout — absent, jamais
+## grisé (exigence explicite de Milan).
+func get_power_slot_info(slot_index: int) -> Dictionary:
+	var pouvoir_id: String = _get_active_power()
+	if pouvoir_id == "" or not has_node("/root/PouvoirRegistry"):
+		return {}
+	var skill: Dictionary = get_node("/root/PouvoirRegistry").get_unlocked_skill_for_slot(
+		pouvoir_id, slot_index, stats.level
+	)
+	if skill.is_empty():
+		return {}
+	var skill_id: String = skill.get("id", "")
+	if not IMPLEMENTED_SKILL_HANDLERS.has(skill_id):
+		return {}
+	return {
+		"id": skill_id,
+		"name": skill.get("name", ""),
+		"touch_label": skill.get("touch_label", ""),
+	}
+
+
+func get_power_slot_cooldown_ratio(slot_index: int) -> float:
+	var info: Dictionary = get_power_slot_info(slot_index)
+	if info.is_empty():
+		return 0.0
+	return call(IMPLEMENTED_SKILL_COOLDOWN_GETTERS[info["id"]])
+
+
+func _try_activate_power_slot(slot_index: int) -> void:
+	var info: Dictionary = get_power_slot_info(slot_index)
+	if info.is_empty() or stats.is_dead():
+		return
+	if get_power_slot_cooldown_ratio(slot_index) > 0.0:
+		return
+	call(IMPLEMENTED_SKILL_HANDLERS[info["id"]])
 
 
 ## Réaction à un coup subi. Même signature qu'Enemy.take_damage() (source_
