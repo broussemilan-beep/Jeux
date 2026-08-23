@@ -22,6 +22,48 @@ garde que le 2026-08-22 (MANDAT AUTONOME v3 en cours) — au-delà de
 
 ---
 
+## 2026-08-23 — MANDAT ROUND 4, CHANTIER 0 : le losange beige identifié — `arcSlash`, la couche CONTACT de Bras-Faux
+
+**Contexte** : le chantier 1bis (round précédent) a recoloré le
+Placeholder en magenta et confirmé le cercle blanc comme
+`impactFlashFrame`/`smokePuff`, mais a supposé à tort que le losange
+beige visible sur `captures/verification/2026-08-23-diagnostic-
+chantier1bis.png` (panneau 2) faisait partie du même node Placeholder
+— jamais vérifié explicitement. Milan l'a relevé à raison : cette forme
+reste distincte du rectangle magenta ET du cercle blanc, jamais
+expliquée.
+
+**Identification, par preuve pixel-exacte, pas par supposition.**
+Couleur échantillonnée directement sur le losange dans la capture :
+RGB(156, 119, 103), identique sur plusieurs pixels (pas un dégradé).
+Calcul de la couleur que produirait `arc_slash.gd` (couche CONTACT de
+`power.bras_faux.cast.json`, résolue via le rôle "contact (éclat
+organique)" de `data/palettes/parasite.json` : hue=18°, saturation=34%,
+value=61%) : `colorsys.hsv_to_rgb(18/360, 0.34, 0.61)` → **RGB(156,
+119, 103) — correspondance EXACTE, à l'unité près sur les 3 canaux**.
+
+**Verdict : légitime, pas un bug.** Le losange EST la couche `arcSlash`
+de Bras-Faux ("croissant anguleux directionnel... TRACE du geste, pas
+le swing d'arme lui-même", `arc_slash.gd`) — déjà documentée, déjà
+correctement teintée par la palette. Sa géométrie (croissant à
+`BASE_SWEEP≈99°`, `INNER_RATIO=0.45`, 10 segments, direction horizontale
+pour un personnage qui fait face à droite) produit à cette
+configuration précise une silhouette qui se lit comme un losange/kite
+plutôt qu'un "croissant" au sens strict — une observation de LISIBILITÉ
+légitime (le nom de la primitive suggère une forme que le rendu actuel
+ne donne pas toujours), mais distincte de la question "est-ce un bug" :
+ce n'en est pas un, le node produit exactement la couleur/l'intention
+documentées pour cette couche.
+
+**Aucun correctif appliqué** (mandat explicite : identifier et
+trancher, pas corriger à l'aveugle sur une simple observation de forme
+— si la lisibilité de `arcSlash` doit être retravaillée, ce sera un
+chantier VFX dédié avec de vraies mesures, pas une réaction à une
+question de nommage). Smoke tests non ré-exécutés (aucun fichier
+modifié ce chantier).
+
+---
+
 ## 2026-08-23 — MANDAT ROUND 3, CHANTIER DÉCOR : outpost éclairé pour la 1ère fois, gate_premiere couvert sur toute sa largeur, test_arena confirmée hors scope
 
 **Contexte** : suite au chantier 1bis (entrée précédente), 3 agents
