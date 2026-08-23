@@ -141,6 +141,32 @@ const GueuleVideScene := preload("res://scenes/gameplay/powers/gueule_vide.tscn"
 const POWER1_SPAWN_DISTANCE_PX := 96.0  # GameConstants.meters_to_px(3.0)
 const POWER1_COOLDOWN_TICKS := 360  # 6s @ 60/s
 
+## AUDIT "polish complet" (2026-08-23, agent dédié Gueule Vide) : Milan
+## demandait de vérifier point par point si la planche de référence
+## (docs/references/invocateur/gueule_vide.png, temps 2 "Émergence") se
+## retrouve VRAIMENT en jeu — capture tick-par-tick (captures/verification/
+## 2026-08-23-gueule-vide-4temps/) : confirmé, Cendre restait bloqué sur
+## sa pose idle/déplacement générique du tick 0 au tick 42, AUCUN geste
+## d'invocation, alors que _cast_gueule_vide() n'appelait ni _sprite.play()
+## ni _action_lock (cf. commentaire ci-dessous sur _power1_cooldown_remaining,
+## déjà documenté comme un choix délibéré). Corrigé SANS remettre en cause
+## ce choix ("l'invocation n'immobilise pas le joueur") : au lieu de
+## _action_lock (qui bloquerait aussi le déplacement/attaque, jamais
+## demandé par le mandat ni par le GDD), une fenêtre séparée et courte
+## protège uniquement le CHOIX D'ANIMATION du sprite (pas la vélocité) le
+## temps que le geste "invocation_gueule_vide" (6 frames pose-à-pose,
+## PixelLab, character_id Cendre_v3c 8596a4ad EN JEU — vérifié via
+## get_character avant l'appel, même discipline que Bras-Faux/Poing
+## Belluaire) se lise clairement, cf. _handle_movement(). Durée calée sur
+## la même vitesse d'animation que bras_faux/poing_belluaire (12fps, 6
+## frames = 30 ticks, cendre_frames.tres) : le joueur reste libre de
+## bouger/attaquer pendant cette fenêtre (aucun _action_lock), seul le
+## RENDU du sprite est protégé — s'il bouge avant la fin, _handle_movement()
+## bascule immédiatement sur idle/déplacement au tick suivant (comportement
+## voulu, pas un bug : rien n'oblige le joueur à rester immobile).
+const GUEULE_VIDE_GESTURE_TICKS := 30  # 0,5s @ 60/s, 6 frames @ 12fps (même cadence que bras_faux/poing_belluaire).
+var _gueule_vide_gesture_ticks_remaining: int = 0
+
 ## Bras-Faux (GDD §7.1, Parasite) — archétype de cast "frappe de zone"
 ## (mandat production v1 §5) : EXÉCUTÉ PAR LE JOUEUR (contrairement à
 ## Gueule Vide, une entité invoquée séparée), un seul balayage qui touche
@@ -164,6 +190,44 @@ const BRAS_FAUX_DAMAGE := 10.0
 const BRAS_FAUX_COOLDOWN_TICKS := 180  # 3s @ 60/s, TUNABLE (non chiffré par le GDD)
 const BrasFauxRecipeId := "power.bras_faux.cast"
 const BRAS_FAUX_CAST_SEED := 51001  # Addendum A §A.5 : jamais l'horloge murale, même discipline que GueuleVide.CAST_SEED.
+
+## 6 frames pose-à-pose (bras_faux/0..5.png) pilotées tick-exact — même
+## discipline que GueuleVide.FRAME_TICK_BOUNDS /
+## POING_BELLUAIRE_FRAME_TICK_BOUNDS ci-dessous, jamais la fps autonome
+## d'AnimatedSprite2D. Lecture des frames (contact sheet vérifié
+## visuellement, mandat "polish complet") : 0-2 = le bras se déploie
+## progressivement en crochet (planche bras_faux.png, temps 2
+## "Transformation"), quasi-identiques entre elles à l'œil (variations
+## fines de posture du bras gauche/tête, pas un vrai déplacement) ; 3-5 =
+## corps pivoté, bras balayé au-dessus de l'épaule (silhouette nettement
+## DISTINCTE du cluster 0-2, la meilleure lecture disponible de "temps 3
+## Balayage" dans les assets actuels), also quasi-identiques entre elles.
+##
+## AUDIT (2026-08-23, agent dédié Bras-Faux, mandat "polish complet") :
+## avant cette table, `_sprite.play("bras_faux")` tournait en fps
+## autonome (12fps, cf. cendre_frames.tres, speed=12.0 -> 5 ticks/frame).
+## Capture tick-par-tick (scripts/capture_headless.sh --mode=
+## player_action, ticks 3/8/13/15/16/17/18/20/25) : la pose affichée à
+## RELEASE tick1 (contact, tick global 15, frame index floor(15/5)=3)
+## restait ensuite STRICTEMENT IDENTIQUE jusqu'au tick global 25 inclus
+## (10 ticks capturés, aucune différence visible) — parce que l'animation
+## à 5 ticks/frame se termine à 30 ticks (6 frames) alors que le cast
+## complet dure 40 ticks (14+4+22) : les 10 derniers ticks de RECOVERY
+## tenaient déjà la dernière frame par simple fin de lecture, ET le
+## cluster de frames 3-5 (déjà quasi-identiques en contenu, voir
+## ci-dessus) s'étalait sans aucun repère avec les bornes de phase — rien
+## ne garantissait que le "snap" vers la pose de balayage tombe pile au
+## tick de contact plutôt qu'avant ou après. Constat identique à celui de
+## POING_BELLUAIRE_FRAME_TICK_BOUNDS (même bug de architecture, trouvé
+## indépendamment par l'agent Poing Belluaire sur son propre pouvoir).
+## Bornes ci-dessous calées pour que la frame 3 (première pose du cluster
+## "balayage") bascule PILE au tick global 15 (ANTICIPATION 14 + RELEASE
+## tick1 = contact) au lieu d'un tick arbitraire dérivé du fps, et que les
+## frames 4/5 (même cluster visuel, mais on garde la table à 6 entrées
+## comme GueuleVide/PoingBelluaire) se répartissent sur le reste de
+## RELEASE+RECOVERY plutôt que de figer instantanément sur la frame 5 dès
+## la fin de la lecture fps native.
+const BRAS_FAUX_FRAME_TICK_BOUNDS: Array[int] = [5, 10, 14, 18, 29, 40]
 
 ## Poing Belluaire (RANK_ZERO_POWER_SKILL_BIBLE v0.4, "Monstrification" §2)
 ## — même archétype "frappe de zone" que Bras-Faux (EXÉCUTÉ PAR LE JOUEUR,
@@ -199,6 +263,36 @@ const POING_BELLUAIRE_RECOIL_TICKS := 8
 const POING_BELLUAIRE_COOLDOWN_TICKS := 240  # 4s @ 60/s, TUNABLE (non chiffré par le GDD), > Bras-Faux (coup plus lourd)
 const PoingBelluaireRecipeId := "power.poing_belluaire.cast"
 const POING_BELLUAIRE_CAST_SEED := 51002  # Addendum A §A.5, jamais l'horloge murale.
+
+## 6 frames pose-à-pose (poing_belluaire/0..5.png) pilotées tick-exact —
+## même discipline que GueuleVide.FRAME_TICK_BOUNDS, jamais la fps
+## autonome d'AnimatedSprite2D. Lecture des frames : 0-4 = la masse
+## poing/bras enfle progressivement (planche docs/references/
+## monstrification/coup_de_poing_monstrifie.png, temps 1 "Préparation" +
+## 2 "Transformation") ; 5 = poing en extension complète, pose "Impact"
+## (temps 3) nettement distincte des 5 précédentes — pas de frame de
+## retrait dédiée dans la séquence, tenue jusqu'à la fin du cast.
+##
+## AUDIT (2026-08-23, agent dédié, mandat "polish complet") : avant cette
+## table, `_sprite.play("poing_belluaire")` tournait en fps autonome
+## (12fps, cf. cendre_frames.tres). Sur une capture tick-par-tick
+## (scripts/capture_headless.sh --mode=player_action), la pose affichée
+## était identique entre l'ANTICIPATION tardive (tick 19-20) et TOUT le
+## RELEASE (tick 21-24, contact inclus à RELEASE tick1) : frame index
+## floor(tick_global/5) valait 4 (windup) sur toute cette fenêtre, et la
+## frame 5 (Impact) ne s'affichait qu'au tick global 25 — 1 tick dans
+## RECOVERY, APRÈS que les dégâts/hit-stop/recul aient déjà été
+## appliqués. Le "coup" visuel arrivait donc systématiquement un temps
+## entier trop tard par rapport au contact mécanique, alors même que le
+## hit-stop "heavy" (CombatFeedback.register_hit, déjà câblé) gelait la
+## logique du joueur (_physics_process retourne tôt sous is_player_
+## frozen()) SANS geler le sprite (AnimatedSprite2D avance sur son
+## `_process` propre, jamais gated par ce freeze) — la pose de contact
+## réelle continuait donc de dériver pendant le gel plutôt que d'être
+## tenue. Bornes ci-dessous calées pour que frame5 bascule PILE au tick
+## global 21 (ANTICIPATION 20 + RELEASE tick1 = contact) et tienne
+## jusqu'à la fin du cast (20+4+26=50).
+const POING_BELLUAIRE_FRAME_TICK_BOUNDS: Array[int] = [4, 8, 12, 16, 20, 50]
 
 ## Poing Tellurique (RANK_ZERO_POWER_SKILL_BIBLE v0.4, "Terre" §1) —
 ## premier pouvoir de la Classe Terre implémenté : AUCUNE palette
@@ -470,6 +564,8 @@ func _physics_process(_delta: float) -> void:
 		_poing_tellurique_cooldown_remaining -= 1
 	if _maree_de_sable_cooldown_remaining > 0:
 		_maree_de_sable_cooldown_remaining -= 1
+	if _gueule_vide_gesture_ticks_remaining > 0:
+		_gueule_vide_gesture_ticks_remaining -= 1
 
 	if Input.is_action_just_pressed("attack"):
 		_attack_queued = true
@@ -534,7 +630,20 @@ func _handle_movement() -> void:
 	else:
 		_footstep_tick = 0
 
-	if not _action_lock and not stats.is_dead():
+	# Fenêtre de geste Gueule Vide (GUEULE_VIDE_GESTURE_TICKS, voir
+	# _cast_gueule_vide()) : PAS d'_action_lock (le joueur reste libre de
+	# bouger, choix délibéré), mais tant qu'il reste réellement immobile
+	# (input_dir nul) le geste "invocation_gueule_vide" ne doit pas être
+	# écrasé dès le tick suivant par idle_<suffix> — sinon la pose ne
+	# durerait qu'1 frame, invisible en jeu (audit "polish complet" du
+	# 2026-08-23). Un déplacement réel pendant la fenêtre reprend la main
+	# immédiatement (input_dir.length_squared() > 0.0001 rend ce garde
+	# faux) : aucun verrou de mouvement, seule la pose stationnaire est
+	# protégée.
+	var gueule_vide_gesture_active: bool = (
+		_gueule_vide_gesture_ticks_remaining > 0 and input_dir.length_squared() < 0.0001
+	)
+	if not _action_lock and not stats.is_dead() and not gueule_vide_gesture_active:
 		# E (mandat production v1 §6) : art réel par direction pour idle/
 		# déplacement (8 rotations PixelLab, plus de flip_h ici — contrairement
 		# au combo/dash/esquive qui restent "sud" seul + flip_h, hors scope
@@ -797,6 +906,15 @@ func _cast_gueule_vide() -> void:
 		dir = Vector2.DOWN
 	dir = dir.normalized()
 
+	# Geste d'invocation de Cendre lui-même (voir GUEULE_VIDE_GESTURE_TICKS
+	# ci-dessus) : PAS d'_action_lock (choix délibéré préservé), seule la
+	# lecture du sprite est protégée le temps du geste — flip_h auto-contenu,
+	# même discipline que _start_bras_faux()/_start_attack() (art "sud" seul).
+	_gueule_vide_gesture_ticks_remaining = GUEULE_VIDE_GESTURE_TICKS
+	if facing.x != 0.0:
+		_sprite.flip_h = facing.x < 0.0
+	_sprite.play("invocation_gueule_vide")
+
 	var creature: Node2D = GueuleVideScene.instantiate()
 	creature.global_position = global_position + dir * POWER1_SPAWN_DISTANCE_PX
 	get_parent().add_child(creature)
@@ -829,7 +947,14 @@ func _start_bras_faux() -> void:
 	_bras_faux_hit_applied = false
 	if facing.x != 0.0:
 		_sprite.flip_h = facing.x < 0.0
+	# Tick-exact (voir BRAS_FAUX_FRAME_TICK_BOUNDS ci-dessus) : play()
+	# positionne l'AnimatedSprite2D sur "bras_faux", pause() coupe
+	# immédiatement sa propre horloge fps pour que seule _advance_
+	# bras_faux() décide de la frame affichée, jamais Godot — même
+	# discipline que _start_poing_belluaire().
 	_sprite.play("bras_faux")
+	_sprite.pause()
+	_sprite.frame = 0
 
 	var dir := facing
 	if dir.length_squared() < 0.0001:
@@ -844,9 +969,12 @@ func _start_bras_faux() -> void:
 
 ## Timeline déclarative (ANTICIPATION -> RELEASE, contact au 1er tick,
 ## même convention que _advance_combo() -> RECOVERY) — jamais dépendante
-## de la durée réelle de lecture du sprite ("coup2" a sa propre fps,
-## potentiellement désynchronisée des bornes ci-dessous, comme documenté
-## pour le combo).
+## de la durée réelle de lecture du sprite. Correction "polish complet"
+## (2026-08-23) : le pilotage de la frame affichée est maintenant
+## tick-exact (BRAS_FAUX_FRAME_TICK_BOUNDS, voir audit ci-dessus),
+## PAS la fps autonome d'AnimatedSprite2D qui gelait la pose ~10 ticks
+## avant la fin réelle du cast et ne garantissait aucun alignement entre
+## le "snap" de pose et le tick de contact.
 func _advance_bras_faux() -> void:
 	_bras_faux_tick += 1
 	velocity = Vector2.ZERO  # "aucun déplacement automatique" (GDD §7.1) — jamais de root motion ici.
@@ -865,6 +993,15 @@ func _advance_bras_faux() -> void:
 		BrasFauxPhase.RECOVERY:
 			if _bras_faux_tick >= BRAS_FAUX_RECOVERY_TICKS:
 				_end_bras_faux()
+	# Tick-exact (voir BRAS_FAUX_FRAME_TICK_BOUNDS) : appliqué APRÈS la
+	# transition de phase éventuelle ci-dessus, pour que la frame reflète
+	# l'état réel de CE tick (ex. RELEASE tick1 = contact -> frame 3 dès
+	# ce même appel, pas un tick de retard) — même discipline que
+	# _advance_poing_belluaire(). Rien à faire si le cast vient de se
+	# terminer (_end_bras_faux() a remis NONE) : _handle_movement()
+	# reprend la main sur _sprite au tick suivant.
+	if _bras_faux_phase != BrasFauxPhase.NONE:
+		_sprite.frame = _bras_faux_frame_for_tick(_bras_faux_global_tick())
 
 
 func _end_bras_faux() -> void:
@@ -872,6 +1009,30 @@ func _end_bras_faux() -> void:
 	_bras_faux_tick = 0
 	_action_lock = false
 	_bras_faux_cooldown_remaining = BRAS_FAUX_COOLDOWN_TICKS
+
+
+## Tick unique cumulé depuis le début du cast (ANTICIPATION puis RELEASE
+## puis RECOVERY mis bout à bout) — même rôle que GueuleVide._tick /
+## Player._poing_belluaire_global_tick(), recalculé à partir des
+## compteurs par-phase existants plutôt que dupliqué en un 3e compteur.
+func _bras_faux_global_tick() -> int:
+	match _bras_faux_phase:
+		BrasFauxPhase.ANTICIPATION:
+			return _bras_faux_tick
+		BrasFauxPhase.RELEASE:
+			return BRAS_FAUX_ANTICIPATION_TICKS + _bras_faux_tick
+		BrasFauxPhase.RECOVERY:
+			return BRAS_FAUX_ANTICIPATION_TICKS + BRAS_FAUX_RELEASE_TICKS + _bras_faux_tick
+		_:
+			return 0
+
+
+## Même schéma que GueuleVide._frame_for_tick() / Player._poing_belluaire_frame_for_tick().
+func _bras_faux_frame_for_tick(tick: int) -> int:
+	for i in BRAS_FAUX_FRAME_TICK_BOUNDS.size():
+		if tick <= BRAS_FAUX_FRAME_TICK_BOUNDS[i]:
+			return i
+	return BRAS_FAUX_FRAME_TICK_BOUNDS.size() - 1
 
 
 ## "Frappe de zone" : TOUS les ennemis vivants dans l'arc, pas un seul
@@ -922,7 +1083,13 @@ func _start_poing_belluaire() -> void:
 	_poing_belluaire_hit_applied = false
 	if facing.x != 0.0:
 		_sprite.flip_h = facing.x < 0.0
+	# Tick-exact (voir POING_BELLUAIRE_FRAME_TICK_BOUNDS ci-dessus) : play()
+	# positionne l'AnimatedSprite2D sur "poing_belluaire", pause() coupe
+	# immédiatement sa propre horloge fps pour que seule _advance_
+	# poing_belluaire() décide de la frame affichée, jamais Godot.
 	_sprite.play("poing_belluaire")
+	_sprite.pause()
+	_sprite.frame = 0
 
 	var dir := facing
 	if dir.length_squared() < 0.0001:
@@ -953,6 +1120,38 @@ func _advance_poing_belluaire() -> void:
 		PoingBelluairePhase.RECOVERY:
 			if _poing_belluaire_tick >= POING_BELLUAIRE_RECOVERY_TICKS:
 				_end_poing_belluaire()
+	# Tick-exact (voir POING_BELLUAIRE_FRAME_TICK_BOUNDS) : appliqué APRÈS
+	# la transition de phase éventuelle ci-dessus, pour que la frame
+	# reflète l'état réel de CE tick (ex. RELEASE tick1 = contact -> frame
+	# 5 dès ce même appel, pas un tick de retard). Rien à faire si le cast
+	# vient de se terminer (_end_poing_belluaire() a remis NONE) :
+	# _handle_movement() reprend la main sur _sprite au tick suivant.
+	if _poing_belluaire_phase != PoingBelluairePhase.NONE:
+		_sprite.frame = _poing_belluaire_frame_for_tick(_poing_belluaire_global_tick())
+
+
+## Tick unique cumulé depuis le début du cast (ANTICIPATION puis RELEASE
+## puis RECOVERY mis bout à bout) — même rôle que GueuleVide._tick, mais
+## recalculé à partir des compteurs par-phase existants plutôt que
+## dupliqué en un 3e compteur.
+func _poing_belluaire_global_tick() -> int:
+	match _poing_belluaire_phase:
+		PoingBelluairePhase.ANTICIPATION:
+			return _poing_belluaire_tick
+		PoingBelluairePhase.RELEASE:
+			return POING_BELLUAIRE_ANTICIPATION_TICKS + _poing_belluaire_tick
+		PoingBelluairePhase.RECOVERY:
+			return POING_BELLUAIRE_ANTICIPATION_TICKS + POING_BELLUAIRE_RELEASE_TICKS + _poing_belluaire_tick
+		_:
+			return 0
+
+
+## Même schéma que GueuleVide._frame_for_tick().
+func _poing_belluaire_frame_for_tick(tick: int) -> int:
+	for i in POING_BELLUAIRE_FRAME_TICK_BOUNDS.size():
+		if tick <= POING_BELLUAIRE_FRAME_TICK_BOUNDS[i]:
+			return i
+	return POING_BELLUAIRE_FRAME_TICK_BOUNDS.size() - 1
 
 
 func _end_poing_belluaire() -> void:
