@@ -232,6 +232,125 @@ aujourd'hui) : 40cr (modèle+rig, déjà payé) + 27cr (animate, dont 3cr
 déjà payés) = 67cr, dont 43cr déjà dépensés ce pilote → 24cr
 restants.**
 
+---
+
+### Correctif post-vérification (même jour, 2026-08-23)
+
+**Contexte.** Milan a jugé lui-même la capture de comparaison
+(`captures/verification/2026-08-23-cendre-migration-3d-pilote-combo-
+avant-apres.png`) issue du pilote ci-dessus et mesuré un défaut de
+contenu au moment du contact sur coup2 et coup3, non signalé
+honnêtement par le rapport initial. Un agent de suivi (nouvelle
+session, la précédente n'était pas reprenable) a reproduit la mesure
+et corrigé le défaut précis — même périmètre strict que le mandat
+d'origine (pilote, pas de bascule en jeu, coup1 non touché, aucun
+fichier `.tscn`/`.gd`, aucun asset PixelLab supprimé, `cendre_frames.
+tres`/`cendre_frames_cooked.json` non touchés).
+
+**Méthode de mesure (reproductible)** : diff pixel-à-pixel entre
+frames consécutives du même coup, sur les frames déjà quantifiées
+(`combo_quantized/`) — seuil `>20` sur la somme des 4 canaux RGBA,
+`% de pixels changés` = `(diff > seuil).sum() / total_pixels * 100`.
+
+**Défaut coup3 (priorité, le pire des deux)** : `COUP3_FRACTIONS
+["contact"] = [1.0, 1.0]` posait littéralement la MÊME fraction
+d'interpolation deux fois de suite → les deux frames de contact
+(`coup3_contact_00_frac1.00.png` / `coup3_contact_01_frac1.00.png`)
+étaient **pixel-identiques (0.00% de diff)**, un hold de la pose finale
+répétée au lieu d'un vrai temps de contact distinct.
+
+**Défaut coup2** : le contact (`mocap_frame 34, 35`) tombait dans un
+plateau quasi-statique du clip `Punch_Combo` (le bras/lame reste levé
+près du visage de la frame ~32 à ~38, diff pixel à plat 5-10% sur toute
+la séquence anticipation→contact→récupération) — la transition vers le
+contact (8.13%) était même PLUS PETITE que plusieurs transitions
+d'anticipation (9-10%), aucun pic distinctif.
+
+**Corrections apportées** (détail technique et justification complète
+en commentaires dans `experiments/blender_capture/render_combo_
+cendre.py`, sections `COUP2` et `COUP3_CONTACT_KEYS`) :
+- **Coup2** : scout fin frame-par-frame (rendu de chaque frame mocap
+  24 à 42, diff pixel + inspection visuelle zoomée x3) pour localiser
+  le vrai point de reach maximal du clip — frame 31 (bbox du sommet de
+  silhouette la plus haute de tout le segment). Nouveau découpage :
+  anticipation `[26, 28]` (raccourcie pour que le swing rapide du clip,
+  frames 29-31, tombe ENTRE la dernière frame d'anticipation et la
+  première frame de contact au lieu d'être absorbé dedans — même
+  principe que le saut de frames déjà utilisé par coup1), contact
+  `[31, 33]`, récupération `[35, 37, 39, 41]`.
+- **Coup3** : remplacement des deux `frac=1.0` par deux vraies clés de
+  pose intentionnelles, `impact_peak` (bras/avant-bras gauche en
+  overshoot 135/140% de l'amplitude "posée", buste 180%) et
+  `impact_release` (buste qui commence à se de-rotater à 130%, bras
+  gauche relâché à 105%). Un premier essai en pur overshoot sur
+  LeftArm/LeftForeArm/Spine seuls (108-135%) s'est révélé insuffisant à
+  la mesure (~6% de diff, toujours dans le bruit d'anticipation — la
+  silhouette du bras gauche seul est bornée près de la tête/épaule
+  au-delà d'un certain angle). Ajout d'un contre-mouvement du bras
+  DROIT (bras de garde qui se retire pendant que le gauche porte le
+  coup — mécanique réelle d'un crochet), même axe/convention de signe
+  que la calibration d'origine (`cal_right.png`/`cal_right2.png`,
+  déjà vérifiée pour l'autre bras par le mandat initial). Le bras droit
+  est explicitement restauré à sa pose mocap frame 49 en récupération
+  (pas de résidu du contre-mouvement).
+- `render_combo_cendre.py` gagne un flag `--sections=` pour ne
+  regénérer que les blocs concernés (coup2, coup3) sans re-rendre coup1
+  ni les transitions (inchangés) — aucune dépense Meshy, uniquement du
+  rendu Blender local sur le GLB déjà téléchargé et payé.
+
+**Mesure AVANT (frames rapportées, sur `combo_quantized/` d'origine) :**
+
+| Transition | Avant |
+|---|---|
+| coup2 antic(28)→antic(30) | ~9-10% (bruit) |
+| coup2 antic(32)→contact(34) | **8.13%** (plus petit que le bruit) |
+| coup3 antic(0.85)→contact(1.00) | 3.57% |
+| coup3 contact(1.00)→contact(1.00) | **0.00%** (duplicata) |
+| coup3 contact(1.00)→recovery(0.75) | 4.76% |
+
+**Mesure APRÈS (même méthode, nouvelles frames, `combo_quantized/`) :**
+
+| Transition | Après |
+|---|---|
+| coup2 antic(26)→antic(28) | 10.58% |
+| coup2 antic(28)→contact(31) | **12.03%** (pic net, seul maximum local) |
+| coup2 contact(31)→contact(33) | 10.18% |
+| coup2 contact(33)→recovery(35) | 7.81% |
+| coup3 antic(0.72)→antic(0.85) | 4.80% (bruit d'anticipation, référence) |
+| coup3 antic(0.85)→contact(impact_peak) | **11.58%** (contre 3.57% avant) |
+| coup3 contact(impact_peak)→contact(impact_release) | **11.95%** (contre 0.00% avant) |
+| coup3 contact(impact_release)→recovery(0.75) | **10.41%** (contre 4.76% avant) |
+
+Les deux transitions clés (entrée et sortie de contact) sont
+maintenant nettement au-dessus du bruit d'anticipation mesuré
+(4.8-10.6%) sur les deux coups, et du même ordre de grandeur que le
+pic de coup1 (15.56%, inchangé) sans être strictement identiques — plus
+un plat, plus de 0.00%.
+
+**Régénération** : seules les 8 frames coup2 et 13 frames coup3 ont été
+re-rendues (`--sections=coup2,coup3` puis `--sections=coup3` pour
+l'itération finale du contact) ; coup1 et les deux blocs de transition
+sont restés strictement inchangés (mêmes frames mocap, même code). Post-
+traitement identique (`quantize.py --target_pixels=96`, mêmes
+paramètres). `build_comparison.py` mis à jour (nouveaux noms de tags
+coup2/coup3) et ré-exécuté — même mise en page (3 blocs coup1/2/3,
+AVANT PixelLab au-dessus/APRÈS 3D en dessous, frames de transition
+surlignées en ambre), capture régénérée au même chemin.
+
+**Aucune dépense Meshy** : correctif entièrement local (Blender +
+Python), GLB riggé déjà téléchargé et payé par le pilote initial,
+`data/meshy_usage.jsonl` non modifié.
+
+**Fichiers modifiés** : `experiments/blender_capture/
+render_combo_cendre.py` (nouveau découpage coup2, nouvelles clés de
+contact coup3, flag `--sections=`), `experiments/blender_capture/
+cendre_pilot/build_comparison.py` (working dir, non committé — noms de
+tags mis à jour), `captures/verification/2026-08-23-cendre-migration-
+3d-pilote-combo-avant-apres.png` (régénérée). Script de diagnostic
+`experiments/blender_capture/cendre_pilot/tune_coup3_contact.py`
+(working dir, non committé) gardé pour trace de l'itération de
+calibration ayant mené aux valeurs finales.
+
 **Si 8 directions partout** (les 9 animations actuellement
 mono-direction étendues à 8) : **+0cr Meshy supplémentaire** — coût
 100% en temps de rendu Blender (9 mouvements × 7 directions
