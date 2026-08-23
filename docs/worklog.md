@@ -370,6 +370,195 @@ supprimé, rien basculé en jeu.
 
 ---
 
+### Correction du pilote (2026-08-23) — 2 défauts visuels zoomés par Milan, corrigés à la source
+
+**Contexte.** Milan a zoomé la capture committée et trouvé 2 défauts
+qu'aucun agent précédent n'avait signalés. Mandat de correction reçu :
+corriger à la SOURCE (rig/éclairage/quantification), jamais frame par
+frame, et livrer une nouvelle capture au canvas RÉEL du jeu (64×64,
+vérifié dans `assets/manifests/cendre_frames_cooked.json` :
+`out_canvas=[64,64]`, `anchor_px=[32,61]`), pas à 96. Aucun fichier
+`.tscn`/`.gd` touché, aucun asset PixelLab touché, même périmètre que
+les 2 commits précédents.
+
+#### Défaut 1 — bavure aux articulations (coup1 contact) : cause isolée par élimination
+
+Diagnostic reproductible dans `experiments/blender_capture/cendre_pilot/
+diag_defect1.py` et `inspect_shard_weights.py` (working dir, non
+committés — mêmes rendus comparatifs qu'utilisés pour le diagnostic
+`Roll_Dodge`, voir `docs/worklog-archive-2026-08-18-a-2026-08-21.md`) :
+
+1. **Trop d'influences par sommet (piste 1 du mandat) — mesuré, ÉLIMINÉ.**
+   `max_influences_per_vertex=4` sur les 237 277 sommets du mesh
+   (`char1`), `verts_over_limit_4=0`. Le rig est déjà au plafond
+   standard glTF (4 os/sommet) — rien à limiter. Un `vertex_group_
+   smooth` (factor=0.5, 3 passes) appliqué seul et rendu en comparatif
+   ne corrige PAS la bavure (rendu identique en silhouette, légèrement
+   plus bruité sur les sangles) — piste éliminée par la mesure, pas par
+   supposition.
+2. **Sommets dupliqués non fusionnés (piste 2) — présents mais PAS la
+   cause.** Mesure honnête : **48,6% de doublons** (237 277 → 121 952
+   sommets après `remove_doubles(threshold=0.0001)`) — l'auto-rig Meshy
+   a réussi à river un squelette dessus, mais le maillage porte bien le
+   piège de doublons déjà rencontré sur d'autres personnages (~50%,
+   conforme à l'avertissement du mandat). **Mais un rebind complet**
+   (fusion réelle des doublons + `parent_set(type="ARMATURE_AUTO")` sur
+   l'armature existante, pose de repos forcée en `REST` pour un
+   heat-weight propre) **reproduit la bavure À L'IDENTIQUE** sur la
+   frame de contact coup1 — preuve que les doublons ne sont pas la
+   cause de CE défaut (fusionnés quand même dans le correctif final,
+   bonne hygiène générale, mais documentés ici comme piste éliminée
+   pour ce symptôme précis).
+3. **Cause réelle isolée** (`inspect_shard_weights.py` — sommets triés
+   par déplacement anormal entre bind pose et frame de contact, poids
+   de squelette inspectés) : en VRAIE pose de repos (bras le long du
+   corps — pas la pose de garde de la frame 1 de l'action, vérifiée
+   séparément en forçant `armature.data.pose_position="REST"`), **la
+   main droite touche/frôle l'ourlet déchiqueté de la tunique à hauteur
+   de hanche** (position du sommet le plus déplacé : `(-0.262,-0.028,
+   0.573)` vs tête de l'os `RightHand` en repos : `(-0.264,-0.036,
+   0.893)` — à ~0,3 unité, bien plus proche que `RightShoulder`/`neck`).
+   Le heat-weighting automatique (Meshy comme le recalcul Blender —
+   les deux donnent le même résultat) colle ~950 sommets de l'ourlet à
+   l'os `RightHand` (poids 0,96-0,98) au lieu de `Hips`/`RightUpLeg`.
+   Quand le coup part, ces sommets sont traînés avec le poing → l'écharde.
+   **Même classe de bug que `Roll_Dodge`** (déformation de skinning sur
+   pose extrême) mais mécanisme précis différent : pas la rotation en
+   elle-même, un mauvais binding de PROXIMITÉ en pose de repos.
+
+**Fix retenu (le moins destructif qui a réellement marché, testé
+avant/après par rendu comparatif de la même frame)** : recalcul des
+poids automatiques pendant que `RightArm`/`LeftArm` sont écartés du
+corps (rotation temporaire ±90° sur X, le contact main/ourlet disparaît
+le temps du calcul), fusion des doublons au passage, puis pose remise à
+plat — la pose utilisée pour le calcul n'affecte QUE la qualité du
+heat-weighting, pas les matrices de repos de l'armature ni l'action
+`Punch_Combo` qui continue de s'appliquer normalement par-dessus.
+Implémenté une fois dans `fix_shoulder_hem_skinning()`
+(`experiments/blender_capture/render_combo_cendre.py`), appelé à
+l'import, avant toute pose — **bénéfice automatique à toutes les
+animations futures**, zéro coût Meshy (Blender/Python pur).
+
+**Preuve comparative** (frame `coup1_contact_00_mocapframe16`, rendu
+brut 512px non quantifié — voir bloc "Detail articulation" de la
+nouvelle capture) : bras/poing lisibles comme un bras après correction,
+écharde disparue. Confirmé sur `coup1_contact_01_mocapframe18`
+également. **Coup3 (bras gauche, amplitude déjà extrême) ne montrait
+PAS ce symptôme avant correction** — le contact main/hanche ne se
+produit que pour le bras qui pend le long du corps en repos, pas pour
+un bras qui monte vers la tête — mais le fix est appliqué aux DEUX bras
+par symétrie/prévention (bénéfice pour de futures animations qui
+solliciteraient le bras gauche de la même façon).
+
+**Piste 4 (amplitude du clip mocap réduite) : non nécessaire** — la
+vraie cause n'était pas l'amplitude de rotation, inutile de dégrader la
+fidélité du clip Punch_Combo.
+
+#### Défaut 2 — silhouette molle (coup3) : rim light ajoutée + `quantize.py` retuné pour le 64px réel — verdict nuancé, honnête
+
+**Rim light.** Ajoutée dans `render_combo_cendre.py` (fonction de setup
+scène, avant le premier rendu) : un second `SUN` Blender orienté
+exactement sur le vecteur `direction` déjà calculé pour la caméra (via
+`to_track_quat`, générique — pas une valeur en dur liée à ce `yaw_deg`
+précis), donc toujours en contre-jour quel que soit l'angle de prise de
+vue. Teinte froide/neutre `(0.80, 0.88, 1.0)`, énergie 1.6 (sous la key
+light à 3.0) — discrète, pas de halo coloré.
+
+**Saturation re-mesurée (`measure_saturation.py`), comme demandé.**
+Sur les frames de contact quantifiées à 64px (nouveaux réglages, voir
+ci-dessous) : coup1/2/3 = **0,0595 / 0,0598 / 0,0602** — sous le
+PixelLab existant (0,0761-0,0801) et sous la mesure du pilote initial à
+96px (0,0670-0,0692). **Aucune dérive vers le haut, confirmé.** Test
+supplémentaire pour isoler l'effet de la rim light SEULE (même frame,
+mêmes réglages `quantize.py`, rim light ON vs OFF) : saturation
+**identique au 4e chiffre près** (0,0595 dans les deux cas) — attendu,
+`quantize.py` FIXE la saturation du remplissage à `target_saturation`
+(0,10) pour chaque pixel indépendamment de la teinte d'entrée, la rim
+light ne peut donc pas la faire dériver par construction.
+
+**Verdict honnête sur l'effet visuel de la rim light à 64px : quasi
+nul, mesuré, pas supposé.** Comparaison pixel-à-pixel de la même frame
+quantifiée (mêmes réglages `quantize.py`) avec et sans rim light :
+**rendu strictement identique** au canvas réel. Cause identifiée :
+`pixelate_block_center()` dans `quantize.py` échantillonne UN SEUL
+pixel (le centre du bloc) par bloc de 8×8 pixels source (512px → 64px)
+au lieu d'en faire la moyenne — un liseré de contour de 1-2px de large
+a une probabilité très faible d'être exactement le pixel échantillonné
+sur tout le pourtour de la silhouette. La rim light AMÉLIORE bien la
+lecture des contours dans le rendu Cycles brut 512px (visible à l'œil
+dans le rendu non quantifié), mais cet effet est presque entièrement
+perdu par le point-sampling du post-traitement pixel-art actuel.
+**Corriger ça proprement (passer `pixelate_block_center` à une moyenne
+de bloc) est HORS PÉRIMÈTRE de ce mandat** : `quantize.py` est un
+script partagé par tous les personnages (Crawler/Brute/Ranged), pas
+spécifique à Cendre — le modifier changerait le rendu de TOUT le
+pipeline pixel-art existant, pas seulement ce pilote. Signalé ici comme
+piste future, pas fait unilatéralement. La rim light est conservée
+(gratuite, saturation sûre, bénéficie à tout rendu futur en plus haute
+résolution ou non quantifié) mais **son bénéfice réel sur l'asset livré
+en jeu aujourd'hui (64px) est négligeable** — verdict honnête demandé
+par le mandat.
+
+**Ce qui améliore vraiment la lisibilité à 64px : le retuning de
+`quantize.py`.** Testé (`experiments/blender_capture/cendre_pilot/
+quantize_tests/`, non committé) : `color_steps` (8 défaut → 5),
+`value_band_min/max` (0.165/0.90 défaut → 0.08/0.97, bande élargie =
+plus de contraste), `outline_thickness`/`edge_strength` (3.0/0.12 →
+4.5/0.10, contour un peu plus épais et plus sensible), `dither_amount`
+(0.35 → 0.18, moins de bruit qui casse les formes à cette résolution).
+Comparé visuellement sur plusieurs frames (coup1 contact, coup3
+contact) : **moins de paliers de couleur = blocs plus contigus = bras/
+torse mieux séparés visuellement**, amélioration réelle et visible
+(voir bloc COUP 3 de la nouvelle capture, silhouette nettement moins
+diffuse qu'avec les réglages par défaut). C'est ce changement, pas la
+rim light, qui porte la majorité de l'amélioration mesurable du défaut
+2 au format réel.
+
+#### Nouvelle capture de validation
+
+`captures/verification/2026-08-23-cendre-migration-3d-correction-
+pilote-avant-apres-64px.png` — 3 blocs, format demandé par Milan :
+(A) frames de contact des 3 coups, AVANT correction / APRÈS correction,
+**au canvas réel 64×64** (pas 96) ; (B) détail zoomé articulation
+épaule/coude (coup1 contact), rendu brut NON quantifié pour juger
+objectivement l'état géométrique de la bavure ; (C) ligne de référence
+PixelLab actuel (format natif 112px) à échelle d'affichage cohérente
+pour comparaison. `git check-attr filter` vérifié : `unspecified`, pas
+de LFS.
+
+**Fichiers modifiés/ajoutés** : `experiments/blender_capture/
+render_combo_cendre.py` (fonction `fix_shoulder_hem_skinning()` +
+appel à l'import, rim light dans le setup lumière, flags
+`--fix_weights=1`/`--rim_light=1` pour A/B testing futur),
+`captures/verification/2026-08-23-cendre-migration-3d-correction-
+pilote-avant-apres-64px.png` (nouvelle capture). Working dir
+(`experiments/blender_capture/cendre_pilot/`, non committé) : scripts
+de diagnostic (`diag_defect1.py`, `inspect_shard_weights.py`,
+`render_rest_pose.py`), rendus intermédiaires (`combo_render_v2/` 40
+frames corrigées 512px, `combo_quantized_64/` mêmes frames quantifiées
+au format réel, `old_quantized_64/` frames de contact AVANT quantifiées
+au format réel pour comparaison équitable, `quantize_tests/` essais de
+réglages), `build_validation_capture.py` (script ayant produit la
+capture ci-dessus). **Aucun fichier `.tscn`/`.gd` touché, aucun asset
+PixelLab touché, `cendre_frames.tres`/`cendre_frames_cooked.json` non
+touchés** — même périmètre que les 2 commits précédents.
+
+**Coût Meshy : 0 crédit.** Tout le travail de cette correction est
+Blender/Python pur sur le GLB déjà téléchargé et payé par le pilote
+initial (43cr) — `data/meshy_usage.jsonl` non modifié, confirmé.
+
+**Blocages non résolus** : aucun pour le périmètre de ce mandat. Point
+ouvert signalé ci-dessus (pas un blocage) : le point-sampling de
+`quantize.py` limite l'impact de tout ajout d'éclairage de contour au
+format 64px — à garder en tête si un futur mandat retouche ce script
+partagé.
+
+**Prochain pas** : en attente du jugement de Milan (zoom personnel sur
+la nouvelle capture) avant tout push. Rien poussé, rien basculé en jeu,
+aucune généralisation engagée.
+
+---
+
 ## 2026-08-23 — MANDAT ROUND 4, CHANTIER 0 : le losange beige identifié — `arcSlash`, la couche CONTACT de Bras-Faux
 
 **Contexte** : le chantier 1bis (round précédent) a recoloré le

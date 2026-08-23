@@ -21,10 +21,42 @@ coup3 (frac=1.0 dupliquee, 0.00% de diff) a ete revu - voir les
 commentaires sur COUP2 et COUP3_CONTACT_KEYS ci-dessous pour le detail
 et la justification mesuree.
 
+CORRECTIF MANDAT CORRECTION PILOTE (2026-08-23, voir docs/worklog.md) :
+deux defauts visuels releves par Milan sur la capture ci-dessus,
+corriges A LA SOURCE (pas de retouche frame par frame) :
+- Defaut 1 (bavure aux articulations, coup1 contact) : cause isolee par
+  diagnostic (experiments/blender_capture/cendre_pilot/diag_defect1.py
+  + inspect_shard_weights.py, non commites) - PAS un exces d'influences
+  par sommet (deja plafonne a 4, standard glTF) ni les sommets
+  dupliques (48.6% de doublons mesures mais un rebind apres fusion
+  reproduit IDENTIQUEMENT le defaut, doublons elimines comme cause).
+  Cause reelle : en VRAIE pose de repos (bras le long du corps, pas la
+  pose de garde de la frame 1 de l'action), la main droite touche/frole
+  l'ourlet dechiquete de la tunique a hauteur de hanche -> le
+  heat-weighting automatique (Meshy comme Blender, verifie par un
+  rebind ARMATURE_AUTO qui reproduit le meme defaut) colle ~950 sommets
+  de l'ourlet a l'os RightHand (poids ~0.96-0.98) au lieu de
+  Hips/RightUpLeg. Quand le bras part en avant dans le coup, ces
+  sommets sont traines avec le poing -> l'echarde. Fix (fonction
+  `fix_shoulder_hem_skinning` ci-dessous, appliquee une fois au rig,
+  benefice automatique a toutes les animations futures) : recalcul des
+  poids automatiques (`ARMATURE_AUTO`) pendant que LES DEUX bras sont
+  ECARTES du corps (le contact disparait, le heat-weighting retombe sur
+  le bon os), puis remise a plat de la pose (0,0,0) - la pose utilisee
+  pour le calcul n'affecte que la QUALITE du heat-weighting, pas les
+  matrices de repos de l'armature ni l'action Punch_Combo qui continue
+  de s'appliquer normalement par-dessus.
+- Defaut 2 (silhouette molle, coup3) : rim light ajoutee dans
+  `setup_scene()` (lumiere de contour froide/neutre, discrete, en
+  contre-jour) pour detacher les membres du torse sombre. Saturation
+  re-mesuree apres coup (voir docs/worklog.md) pour confirmer qu'elle
+  ne derive pas au-dessus du PixelLab existant.
+
 Usage:
     blender --background --factory-startup --python render_combo_cendre.py -- \
         --glb=<combo.glb> --out_dir=<dir> [--res=512] [--samples=32] \
-        [--sections=coup1,transition_1_2,coup2,transition_2_3,coup3]
+        [--sections=coup1,transition_1_2,coup2,transition_2_3,coup3] \
+        [--fix_weights=1] [--rim_light=1]
 """
 import bpy
 import sys
@@ -56,6 +88,8 @@ yaw_deg = float(args.get("yaw_deg", "10"))
 # 2026-08-23) sans re-rendre tout le combo (coup1 inchange, cout/temps
 # inutile). Defaut = tout, comme avant.
 sections = set(args.get("sections", "coup1,transition_1_2,coup2,transition_2_3,coup3").split(","))
+fix_weights = args.get("fix_weights", "1") != "0"
+rim_light_enabled = args.get("rim_light", "1") != "0"
 
 os.makedirs(out_dir, exist_ok=True)
 
@@ -65,11 +99,71 @@ bpy.ops.object.delete(use_global=False)
 bpy.ops.import_scene.gltf(filepath=glb_path)
 
 armature = None
+mesh_obj = None
 for obj in bpy.context.scene.objects:
     if obj.type == "ARMATURE":
         armature = obj
-        break
+    if obj.type == "MESH" and obj.name.lower() != "icosphere":
+        if mesh_obj is None or len(obj.data.vertices) > len(mesh_obj.data.vertices):
+            mesh_obj = obj
 assert armature is not None
+assert mesh_obj is not None
+
+
+def fix_shoulder_hem_skinning(armature, mesh_obj):
+    """CORRECTIF MANDAT CORRECTION PILOTE, defaut 1 (voir docs/worklog.md
+    2026-08-23) : recalcule les poids automatiques du mesh pendant que
+    RightArm/LeftArm sont ecartes du corps, pour eviter que le
+    heat-weighting colle l'ourlet de la tunique (qui touche la main au
+    repos, bras le long du corps) a l'os de la main. Applique UNE FOIS
+    au rig import - benefice automatique a toutes les poses/animations
+    rendues ensuite dans ce process (coup1/2/3 et au-dela)."""
+    orig_parent_inverse = mesh_obj.matrix_parent_inverse.copy()
+
+    bpy.context.view_layer.objects.active = armature
+    bpy.ops.object.select_all(action="DESELECT")
+    armature.select_set(True)
+    bpy.ops.object.mode_set(mode="POSE")
+    for pb_name, euler_deg in (("RightArm", (90.0, 0.0, 0.0)), ("LeftArm", (-90.0, 0.0, 0.0))):
+        pb = armature.pose.bones[pb_name]
+        pb.rotation_mode = "XYZ"
+        pb.rotation_euler = tuple(math.radians(d) for d in euler_deg)
+    bpy.ops.object.mode_set(mode="OBJECT")
+    bpy.context.view_layer.update()
+
+    bpy.context.view_layer.objects.active = mesh_obj
+    bpy.ops.object.select_all(action="DESELECT")
+    mesh_obj.select_set(True)
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.select_all(action="SELECT")
+    bpy.ops.mesh.remove_doubles(threshold=0.0001)  # ~48.6% de sommets dupliques mesures (piege Meshy connu) - fusionnes ici, meme s'ils n'etaient pas la cause de la bavure
+    bpy.ops.mesh.normals_make_consistent(inside=False)
+    bpy.ops.object.mode_set(mode="OBJECT")
+
+    bpy.ops.object.select_all(action="DESELECT")
+    mesh_obj.select_set(True)
+    armature.select_set(True)
+    bpy.context.view_layer.objects.active = armature
+    bpy.ops.object.parent_set(type="ARMATURE_AUTO")
+
+    mesh_obj.matrix_parent_inverse = orig_parent_inverse
+
+    bpy.context.view_layer.objects.active = armature
+    bpy.ops.object.select_all(action="DESELECT")
+    armature.select_set(True)
+    bpy.ops.object.mode_set(mode="POSE")
+    for pb_name in ("RightArm", "LeftArm"):
+        pb = armature.pose.bones[pb_name]
+        pb.rotation_mode = "XYZ"
+        pb.rotation_euler = (0.0, 0.0, 0.0)
+    bpy.ops.object.mode_set(mode="OBJECT")
+    bpy.context.view_layer.update()
+    print("FIX_SHOULDER_HEM_SKINNING_APPLIED")
+
+
+if fix_weights:
+    fix_shoulder_hem_skinning(armature, mesh_obj)
+
 action = bpy.data.actions[0]
 if armature.animation_data is None:
     armature.animation_data_create()
@@ -112,6 +206,25 @@ light_data.energy = 3.0
 light_obj = bpy.data.objects.new("L", light_data)
 light_obj.rotation_euler = (math.radians(55), 0.0, math.radians(-30))
 scene.collection.objects.link(light_obj)
+
+# CORRECTIF MANDAT CORRECTION PILOTE, defaut 2 (silhouette molle, voir
+# docs/worklog.md 2026-08-23) : rim light en contre-jour pour detacher
+# les membres du torse sombre. Rayons alignes sur `direction` (le
+# vecteur camera->centre calcule plus haut) via le meme to_track_quat
+# que la camera, pour que la lumiere vienne bien de DERRIERE le
+# personnage relativement a la camera, quel que soit yaw_deg - generique,
+# pas une valeur en dur specifique a cette prise de vue. Teinte
+# neutre/froide (leger bleu) et energie sous la key light (3.0) pour
+# rester discrete, ne pas creer de halo colore qui casserait l'identite
+# desaturee de Cendre (re-mesure de saturation faite separement, voir
+# docs/worklog.md).
+if rim_light_enabled:
+    rim_data = bpy.data.lights.new("RimL", type="SUN")
+    rim_data.energy = 1.6
+    rim_data.color = (0.80, 0.88, 1.0)
+    rim_obj = bpy.data.objects.new("RimL", rim_data)
+    rim_obj.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
+    scene.collection.objects.link(rim_obj)
 
 if scene.world is None:
     scene.world = bpy.data.worlds.new("World")
