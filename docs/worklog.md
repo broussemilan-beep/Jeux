@@ -22,6 +22,81 @@ garde que le 2026-08-22 (MANDAT AUTONOME v3 en cours) — au-delà de
 
 ---
 
+## 2026-08-23 — MANDAT ROUND 3, CHANTIER 1bis : cercle blanc/losange beige tranché définitivement (cas a, légitime — pas un 2e bug)
+
+**Contexte** : cette question traînait depuis 2 rounds — un cercle et une
+forme en losange/rectangle de couleur unie apparaissent de façon
+cohérente sur plusieurs captures récentes, y compris APRÈS le fix du
+chantier 1 (`hit_flash.gdshader`). Mandat explicite : identifier le
+node exact producteur de CHAQUE forme, pas une supposition visuelle,
+et trancher (a) éléments légitimes vs (b) un second bug distinct.
+
+**Identification, par lecture directe du code, pas par supposition** :
+- **Le rectangle/losange** = `scenes/gameplay/enemy.tscn`, node
+  `Placeholder` (`Polygon2D`, `polygon = (-10,-40,10,-40,10,0,-10,0)`,
+  un simple rectangle 20×40). C'est le nœud visuel de fallback
+  d'`enemy.gd` (`_visual = get_node("Visual") if has_node("Visual")
+  else get_node("Placeholder")`) — utilisé UNIQUEMENT quand aucun nœud
+  "Visual" n'existe. Vérifié : `gate_premiere.tscn` (le seul niveau
+  jouable réel) n'instancie QUE `enemy_crawler.tscn`/`enemy_brute.tscn`/
+  `enemy_ranged.tscn`, qui ONT tous un nœud "Visual"
+  (`AnimatedSprite2D`, vrai art) — le Placeholder n'est donc JAMAIS
+  visible en jeu réel. Il n'apparaît que parce que
+  `tools/capture_scene.gd` (mode `player_action`, utilisé pour TOUTES
+  les captures de fidélité de compétence) instancie par défaut
+  `EnemyScene = res://scenes/gameplay/enemy.tscn` (la scène de base,
+  sans Visual) pour un test isolé rapide, sans avoir besoin d'un vrai
+  monstre.
+- **Le cercle** : DEUX identités différentes selon la capture, toutes
+  deux légitimes. Sur les captures Bras-Faux/Poing Belluaire (couche
+  CONTACT) : `impact_flash_frame.gd`, la primitive "flash blanc"
+  documentée depuis le début du projet (§4 : "noyau blanc quasi-plein,
+  1-2 ticks"), volontairement proche du blanc (`MAX_VALUE_HSV=0.92`).
+  Sur la capture Marée de Sable (couche CONSEQUENCE, tick 30, label
+  déjà présent dans l'image committée au round précédent : "smokePuff
+  étale le long du trajet") : `smoke_puff.gd`, qui dessine
+  `BLOB_COUNT=5` cercles pleins qui se chevauchent avec un faible
+  rayon de dispersion (`scale_px * 0.3 * randf()`) — à l'échelle de la
+  capture, 5 petits cercles proches fusionnent visuellement en un seul
+  blob de couleur unie. C'est EXPLICITEMENT documenté dans le fichier
+  lui-même comme un choix de design ("nuage stylisé... PAS un cercle
+  dont l'alpha descend à 0... un petit nombre de blobs OPAQUES") — pas
+  un bug, juste un VFX procédural pas encore habillé d'un vrai sprite
+  (même famille de limite que `beamSegment` avant sa refonte en
+  `sandCrest` la session précédente).
+
+**Verdict : CAS (a) sur toute la ligne — aucun 2e bug distinct.** Le
+`hit_flash.gdshader` du chantier 1 fonctionne correctement ; les formes
+observées sont soit un artefact du RIG DE CAPTURE (le Placeholder,
+jamais vu par un vrai joueur), soit du VFX procédural légitime et déjà
+documenté comme tel (`impactFlashFrame`, `smokePuff`).
+
+**Action prise** (mandat : "désactive-le par défaut... pour ne plus
+polluer les comparaisons", appliqué au cas capture-tool) : le
+Placeholder gardait une couleur rouge-brun plausible
+(`Color(0.6,0.15,0.15,1)`) qui pouvait se lire comme un choix de
+design réel plutôt qu'un stand-in de test — c'est ce qui a nourri la
+confusion 2 rounds de suite. Recoloré en magenta vif
+(`Color(1,0,1,1)`), la convention universelle "texture manquante/
+placeholder" en dev — désormais instantanément reconnaissable comme un
+artefact de test, sans ambiguïté possible, dans n'importe quelle
+capture future. Changement d'UNE ligne, zéro risque : vérifié qu'aucun
+smoke test ni script de mesure (`render_detector.py` et consorts) ne
+dépend de sa couleur spécifique (seulement de son NOM de nœud,
+`get_node("Placeholder")`). `smoke_puff.gd`/`impact_flash_frame.gd`
+non touchés (hors scope, VFX légitime déjà documenté — seront traités
+avec leur contenu concerné si/quand ce chantier arrive).
+
+**Preuve** : `captures/verification/2026-08-23-diagnostic-chantier1bis.
+png` — 3 panneaux : (1) les 2 captures round 2 qui montraient encore le
+losange rose-fauve à l'époque, (2) la même scène Bras-Faux recapturée
+avec le Placeholder désormais magenta (non-confondable), (3) rappel de
+la capture Marée de Sable identifiant `smokePuff`. Smoke tests
+`run_gameplay_smoke_test.sh`/`run_vfx_recipe_smoke_test.sh` :
+`all_pass:true`.
+
+---
+
 ## 2026-08-23 — MANDAT ROUND 2, CHANTIERS 2/3/4 : Bras-Faux courbé, VFX Terre réellement produit, détail Gueule Vide
 
 **Contexte** : suite au chantier 1 (bug hit-flash, entrée précédente),
