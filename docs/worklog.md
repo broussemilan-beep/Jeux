@@ -2276,3 +2276,67 @@ dédié par compétence (point non bloquant relevé ci-dessus) comme
 chantier séparé, une fois plus de compétences vivantes pour juger si le
 partage "coup1/coup2/coup3" reste lisible ou commence à confondre les
 Pouvoirs entre eux.
+
+## 2026-08-23 — Agent Décor test_arena : vérification du rôle réel AVANT retouche (verdict : hors scope, aucune retouche)
+
+Mandat : traiter `scenes/gameplay/test_arena.tscn` comme `outpost`/
+`gate_premiere` (PointLight2D réels, props PixelLab, vérification HSV)
+**mais seulement si la scène est réellement vue par un joueur** —
+vérifier le rôle réel en premier, ne pas dépenser de budget par défaut.
+
+**Enquête (code, pas supposition)** :
+- `grep -rn "test_arena" --include="*.gd" --include="*.tscn" .` :
+  aucune occurrence dans un chemin de transition de scène. Les seuls
+  hits `.gd` sont des commentaires de doc (`camera_director.gd`,
+  `ground_decal.gd` — "Player.tscn partagé par gate_premiere/
+  test_arena/outpost", pas un `load()`/`change_scene`).
+- Tous les appels réels de `get_tree().change_scene_to_file(...)` du
+  dépôt (`src/world/gate_entrance.gd`, `src/world/gate_premiere.gd`) :
+  seulement `outpost.tscn` ⇄ `gate_premiere.tscn`. `gate_entrance.gd`
+  a un `@export var target_gate_scene`, mais sa valeur câblée dans
+  `outpost.tscn` (`scenes/gameplay/outpost.tscn:147`) est en dur
+  `"res://scenes/gameplay/gate_premiere.tscn"` — aucune Gate, aucun
+  menu, aucun sélecteur de niveau ne pointe vers `test_arena.tscn`.
+  `run/main_scene` de `project.godot` = `outpost.tscn`.
+- Seules occurrences du chemin exact `res://scenes/gameplay/
+  test_arena.tscn` dans tout le dépôt : `.godot/editor/
+  project_metadata.cfg` sous `[recent_files]` (liste des scènes
+  récemment ouvertes **dans l'éditeur Godot** — métadonnée d'IDE, zéro
+  rapport avec le jeu en exécution) et l'export web compilé
+  (`docs/index.pck`, qui embarque toutes les scènes du projet par
+  défaut, reachable ou non — n'implique pas une exposition joueur).
+  Aucun script de capture/smoke test dans `scripts/` ne référence
+  `test_arena` par nom (le smoke test lance `tools/
+  smoke_test_gameplay.tscn`, une scène de mock séparée).
+- Confirme et recoupe deux constats déjà posés par des agents
+  précédents sur ce même dossier : `docs/worklog-archive-2026-08-18-
+  a-2026-08-21.md:3916` ("`test_arena.tscn` n'est référencée nulle
+  part comme cible de transition, laissée de côté") et `docs/
+  STATUS.md:20` qui la catégorise explicitement `test_arena (bac à
+  sable)` face à `gate_premiere` (parcours complet) et `outpost` (hub).
+
+**Verdict** : `test_arena.tscn` est une scène de test technique interne
+— un bac à sable créé pour l'itération développeur/QA (composition
+Player + ennemis à distances contrôlées), jamais instanciée par un
+menu, un hub, une Gate ou un sélecteur accessible en jeu, et absente de
+tout chemin `change_scene_to_file()` réel. Un vrai joueur en conditions
+normales ne peut pas l'atteindre. Note pour mémoire : des passes
+antérieures (parallaxe, uniformisation du sol `floor_terrain.tres`,
+recherche d'éclairage) l'ont néanmoins touchée par le passé, mais
+toujours dans le cadre de passes systémiques sur les 3 scènes
+ensemble (jamais un mandat dédié "décor test_arena" comme celui-ci) —
+ça ne change pas le verdict d'accessibilité joueur ci-dessus.
+
+**Décision** : aucune retouche visuelle. Pas de `PointLight2D`
+supplémentaire, pas de génération PixelLab, pas de capture avant/après,
+pas de mesure `validate_pixels.py` — appliquer le traitement `outpost`/
+`gate_premiere` ici serait du travail décoratif sur une scène que
+personne ne voit, contraire à la consigne explicite du mandat
+("inutile de la peaufiner visuellement... dis-le clairement plutôt que
+de dépenser du budget PixelLab dessus par défaut").
+
+**Coût réel consommé** : 0 crédit PixelLab, 0 crédit Meshy (solde non
+consulté — non applicable, aucune dépense envisagée après l'enquête).
+
+**Fichiers modifiés** : uniquement cette entrée de worklog. Aucun
+fichier de scène (`test_arena.tscn` ou autre) touché.
