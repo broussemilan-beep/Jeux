@@ -70,8 +70,18 @@ Brute n'ont pas encore de mort dédiée (`queue_free()` immédiat).
 `bg_statue_silhouette`/`bg_tower_fragment`/`bg_banner_ruin`) + props de
 sol variés (pilier/gravats/brasier/caisse/idole/torche/végétation/
 poteau de bannière). Sol : `floor_terrain.tres` (vrai TerrainSet Wang)
-sur les 3 scènes (uniformisé 2026-08-22, `test_arena` utilisait avant
-un atlas plat sans raison).
+sur les 3 scènes (uniformisé 2026-08-22).
+
+**Éclairage (mis à jour 2026-08-23, "MANDAT ROUND 3")** : `gate_premiere`
+éclairée sur toute sa largeur (~3550px) — spawn (x=0-768) et le vide
+Elite→Boss (x=2048-3100) comblés en plus de la zone Combat→Elite
+traitée 2 rounds plus tôt, tous les `PropBrazier`/`PropTorchStand` ont
+désormais un vrai `PointLight2D`. `outpost` a reçu son premier
+traitement lumière (les 2 braseros existants émettent enfin une vraie
+lumière, `PointLight2D` ajoutés — n'avait jamais été retouché). `test_arena`
+confirmée scène de développement pure (aucun `change_scene_to_file` du
+dépôt ne la cible, `run/main_scene` = `outpost.tscn`) — volontairement
+non retouchée, jamais vue par un joueur.
 
 ## Pipeline outillage (tools/, experiments/, scripts/)
 
@@ -107,6 +117,35 @@ mélange (jamais la cible ne disparaît entièrement sous un aplat, même
 au pic/gelée) — effet positif secondaire : les chiffres de dégâts
 (texte blanc) redeviennent lisibles pendant le flash. Preuve avant/
 après : `captures/verification/2026-08-22-fix-hit-flash-round2.png`.
+
+## Bugs transversaux connus, non corrigés (trouvés "MANDAT ROUND 3")
+
+**Placeholder de capture confondu avec un bug, 2 rounds de suite —
+tranché.** `scenes/gameplay/enemy.tscn` (node `Placeholder`, jamais
+spawné en jeu réel — seulement utilisé par défaut par
+`tools/capture_scene.gd` pour un test isolé rapide) portait une couleur
+rouge-brun plausible qui se lisait comme un vrai bug de rendu sur
+plusieurs captures. Recoloré en magenta vif (convention "placeholder"
+universelle), non-confondable désormais. `impactFlashFrame`/
+`smokePuff` confirmés légitimes (VFX documenté, pas encore stylisé en
+sprite — même famille que `beamSegment` avant sa refonte). Diagnostic
+complet : `captures/verification/2026-08-23-diagnostic-chantier1bis.png`.
+
+**Plafond de bande "decor" systématiquement dépassé près de toute
+source de lumière (trouvé par l'agent Décor A, non corrigé, hors
+scope d'un mandat single-scene).** `post_render.gdshader` (posterize,
+`ramp_steps=6`, bucket haut fixe à ~83% V) combiné à `CanvasModulate`
+chaud + la texture de sol fait que la bande "decor" (`[15,78]` V%, cf.
+`data/palettes/value_bands.json`) est dépassée sur la quasi-totalité du
+sol directement sous un halo de `PointLight2D` (mesuré : ~99% de
+violation locale près d'un brasero, sur `outpost` COMME sur
+`gate_premiere` déjà accepté — donc pas une régression de ce round,
+un défaut structurel préexistant). Le nécessaire pour corriger
+proprement (retoucher `post_render.gdshader` et/ou
+`value_bands.json`) touche des ressources PARTAGÉES entre les 3
+scènes de jeu — explicitement hors du scope d'un mandat "une scène,
+un agent". À traiter dans un futur chantier dédié au shader de
+post-render lui-même, pas scène par scène.
 
 ## Gaps de fidélité connus (mis à jour 2026-08-23, "MANDAT ROUND 2")
 
@@ -146,24 +185,26 @@ suffisant, non retouché. Captures :
 interchangeable, aucune arme visible — non retouché (hors scope de
 tous les mandats jusqu'ici), nouvelle génération d'assets nécessaire.
 
-## Budgets (au 2026-08-23, fin "MANDAT ROUND 2")
+## Budgets (au 2026-08-23, fin "MANDAT ROUND 3")
 
 PixelLab (compte réel, `mcp__pixellab__get_balance`) : 522/2000
 générations consommées cumulées ce cycle (reset 2026-09-14), soit 1478
 restantes — aucun plafond arbitraire appliqué (instruction explicite de
-Milan). Round 2 : 73 générations consommées au total (chantiers 2/3/4,
-mesuré sur le solde réel avant/après) — 3 agents ont tourné en
-parallèle sur le même compte partagé, une répartition exacte par agent
-n'est pas fiable à partir de leurs propres rapports individuels (deltas
-qui se chevauchent), donc seul le total réel est retenu ici plutôt
-qu'une ventilation inventée. Chantier 1 (fix `hit_flash.gdshader`) : 0
-génération, recette/code uniquement. Meshy : 0 crédit consommé ce round
-(aucun agent n'a eu besoin du fallback 3D).
+Milan). Round 3 : **0 génération dépensée** (chantier 1bis = diagnostic/
+recolorisation pure, aucun des 3 agents décor n'a jugé une génération
+PixelLab nécessaire — l'écart identifié partout était l'éclairage
+[`PointLight2D`, textures déjà présentes] ou l'accessibilité réelle de
+la scène, jamais un manque de variété de props justifiant une dépense).
+Round 2 : 73 générations (chantiers 2/3/4). Meshy : 0 crédit consommé
+ce round.
 
 ## Prochaine priorité recommandée
 
 Continuer Phase 3 (compétences) dans l'ordre verrouillé : Corbeau Pâle
 (Invocateur, tier 2) ensuite — même méthode que Marée de Sable,
 référence déjà archivée (`docs/references/invocateur/corbeau_pale.png`).
-Le combo de base (coup1/coup2/coup3, visuellement interchangeable)
-reste le seul gap de fidélité connu non planifié à ce jour.
+Deux chantiers non planifiés identifiés ce round : le combo de base
+(coup1/coup2/coup3, visuellement interchangeable) et le plafond de
+bande "decor" systématiquement dépassé près des lumières (nécessite de
+toucher `post_render.gdshader`, partagé entre scènes — voir "Bugs
+transversaux connus").

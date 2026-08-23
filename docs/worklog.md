@@ -22,6 +22,96 @@ garde que le 2026-08-22 (MANDAT AUTONOME v3 en cours) — au-delà de
 
 ---
 
+## 2026-08-23 — MANDAT ROUND 3, CHANTIER DÉCOR : outpost éclairé pour la 1ère fois, gate_premiere couvert sur toute sa largeur, test_arena confirmée hors scope
+
+**Contexte** : suite au chantier 1bis (entrée précédente), 3 agents
+dédiés ont traité chacun une scène de décor en parallèle. Rappel
+explicite du mandat : l'isolation git worktree ne s'applique jamais
+vraiment dans cet environnement — le réflexe défensif (`git stash`
+avant de commiter si le répertoire n'est pas propre, restituer dès que
+détecté) reste la vraie protection. Chaque capture a de nouveau été
+ouverte et jugée par le coordinateur avant d'être considérée acquise.
+
+**Agent Décor B — test_arena : vérifié hors scope, aucune dépense.**
+Avant toute retouche, l'agent a cherché dans tout le dépôt qui
+instancie réellement `test_arena.tscn` : aucun `change_scene_to_file`
+ne la cible (seuls `outpost.tscn`⇄`gate_premiere.tscn` sont câblés),
+`run/main_scene` du projet vaut `outpost.tscn`, les seules occurrences
+du chemin sont des métadonnées d'éditeur Godot ou l'export web qui
+embarque toutes les scènes par défaut — recoupé avec 2 mentions déjà
+posées par des agents précédents (`docs/worklog-archive-*.md`,
+`docs/STATUS.md`, qui la catégorise déjà "bac à sable"). Verdict :
+scène de développement pure, jamais vue par un joueur — aucune
+retouche visuelle effectuée, aucune génération PixelLab dépensée.
+Exactement le comportement demandé par le mandat ("inutile de peaufiner
+une scène de debug interne").
+
+**Agent Décor A — outpost : premier passage lumière + un vrai défaut
+transversal trouvé.** Audit confirmé : `outpost` n'avait AUCUN
+`PointLight2D`, ses 2 braseros (`PropBrazier1/2`) étaient de purs
+sprites statiques — même symptôme déjà corrigé sur `gate_premiere` 2
+rounds plus tôt. `PointLight2D` ajoutés (texture radiale déjà présente
+dans la scène, réutilisée depuis `Player/Glow`, aucun nouvel asset).
+L'agent a d'abord copié littéralement les valeurs de `gate_premiere`,
+puis MESURÉ (pas jugé à l'œil) que ça sature ~99% du sol local au
+bucket haut du posterize partagé (`post_render.gdshader`) — et a
+vérifié par mesure croisée que ce même taux de saturation existe DÉJÀ,
+à magnitude quasi identique, sur le brasero de `gate_premiere` déjà
+accepté par Milan. Conclusion honnête : ce n'est pas une régression
+introduite ici, c'est un défaut structurel PARTAGÉ entre les 3 scènes
+(`post_render.gdshader` + `floor_terrain.tres` + `CanvasModulate`),
+hors du scope d'un mandat "une scène, un agent" — corriger ça pour de
+bon nécessiterait un chantier dédié au shader de post-render lui-même.
+L'agent a recalibré l'intensité (energy 1.5→0.55, texture_scale
+2.4→1.3) pour limiter l'empreinte visuelle du défaut sans prétendre
+l'éliminer, et l'a documenté clairement plutôt que de le masquer ou de
+le corriger à l'aveugle sur des fichiers partagés hors scope. Aucune
+génération PixelLab dépensée (déficit identifié = lumière manquante,
+pas variété de props — la densité de props avait déjà été jugée
+suffisante 2 rounds plus tôt). Capture :
+`captures/verification/2026-08-23-decor-outpost.png` (3 positions
+caméra, avant/après). Deux incidents de coordination pendant la
+session (modifications effacées deux fois par une opération git d'un
+agent parallèle) — réappliquées et committées dès détection, sans
+perte au final.
+
+**Agent Décor C — gate_premiere : couverture complète des ~3550px.**
+Le round précédent n'avait éclairé qu'un point (entre les portes Combat
+et Elite). Mesure réelle (11 captures balayant tout le niveau + HSV)
+a identifié 2 zones jamais retouchées et nettement plus sombres que la
+moyenne du niveau : la salle de spawn (x=0-768, V moyenne 31,82% —
+la plus basse du niveau) et le vide Elite→Boss (x=2048-3100, V moyenne
+34-36%). Comblées avec 4 nouveaux props porteurs de `PointLight2D`
+(`PropBrazier3`/`PropTorchStand2` en zone spawn,
+`PropTorchStand3`/`PropBrazier4` en zone Elite-Boss, ce dernier près de
+la salle Rest — effet "foyer de repos" thématique), même recette que le
+round précédent, aucun nouvel asset PixelLab nécessaire (textures déjà
+chargées). Gain mesuré : +2,4 à +5,3 points de V moyenne sur les 4
+zones corrigées. Variété de props du reste du niveau (9 textures
+distinctes déjà présentes) jugée suffisante, aucune intervention
+PixelLab jugée nécessaire sur ce point. Verdict honnête : la zone
+spawn reste légèrement sous les zones déjà éclairées au round
+précédent (salle plus grande que la densité de lumière appliquée) — un
+3e point lumineux améliorerait encore, non ajouté pour rester
+proportionné à l'écart mesuré plutôt que de sur-corriger. Capture :
+`captures/verification/2026-08-23-decor-gate_premiere.png` (grille de
+8 captures avant/après sur les 4 zones).
+
+**Vérifications finales.** `run_gameplay_smoke_test.sh` et
+`run_vfx_recipe_smoke_test.sh` — `all_pass:true` sur chaque commit
+individuel ET sur l'état final fusionné des 3 agents. Coût réel total
+de ce chantier décor : **0 génération PixelLab, 0 crédit Meshy** — les
+3 scènes avaient un déficit de LUMIÈRE (ou, pour test_arena, aucun
+déficit pertinent puisque jamais vue), jamais un déficit de contenu
+généré justifiant une dépense. Point d'attention pour une session
+future, transversal aux 3 scènes : le plafond de bande "decor"
+(`data/palettes/value_bands.json`) est structurellement dépassé près
+de toute source de lumière à cause du posterize partagé — documenté
+dans `docs/STATUS.md`, pas corrigé (ressources partagées, hors scope
+d'un mandat par scène).
+
+---
+
 ## 2026-08-23 — MANDAT ROUND 3, CHANTIER 1bis : cercle blanc/losange beige tranché définitivement (cas a, légitime — pas un 2e bug)
 
 **Contexte** : cette question traînait depuis 2 rounds — un cercle et une
