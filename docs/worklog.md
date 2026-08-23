@@ -22,6 +22,235 @@ garde que le 2026-08-22 (MANDAT AUTONOME v3 en cours) — au-delà de
 
 ---
 
+## 2026-08-23 — MANDAT MIGRATION CENDRE : pilote 3D Meshy/Blender du combo de base (3 coups)
+
+**Contexte.** Décision de Milan : migrer Cendre du pipeline 2D PixelLab
+(4-6 poses/compétence, dérive possible entre frames) vers le pipeline
+3D Meshy/Blender déjà éprouvé sur Crawler/Brute/Ranged (frames = temps
+de rendu Blender, cohérence garantie). Ce mandat est un PILOTE : un
+seul livrable (combo 3 coups haute densité), pas de généralisation, pas
+de régénération des compétences existantes, pas de bascule en jeu.
+
+**Étape 1 — modèle.** Source : `reference_v3_turnaround_raw.png`
+(panneaux FACE/3-4/PROFIL/DOS, sans cape — vérifié visuellement, aucune
+confusion avec `reference_v1_archive.png`/`reference_v2_archive.png`
+qui portent une cape). 4 crops serrés (bbox non-fond + marge 6px)
+générés dans `experiments/blender_capture/cendre_pilot/tight_{face,3-4,
+profil,dos}.png`, même discipline que `crop_refs.py` pour les 3
+monstres. `meshy_multi_image_to_3d` (meshy-6/latest, 4 vues, sans
+`pose_mode` pour préserver la posture réelle — même règle que les
+monstres) : **30cr**. Vérification de posture AVANT tout rig (rendu
+Blender rapide, `posture_check.png`) : bipède debout conforme à la
+référence, harnais/tunique déchirée/bottes fidèles. `meshy_remesh`
+(target_polycount=250000, resize_height=1.75m — aucune hauteur Cendre
+documentée ailleurs dans le repo, valeur humaine standard assumée et
+notée ici, resize_height plutôt qu'auto_size pour rester dans la
+convention déjà utilisée sur les monstres — origin_at=bottom) : **5cr**.
+
+**Rig — verdict honnête : auto-rig Meshy réussi du premier coup, aucun
+contournement manuel nécessaire.** Conforme à l'attente du mandat
+(Cendre = bipède en posture standard, contrairement au Crawler
+quadrupède et au Brute accroupi qui avaient échoué en 422 "Pose
+estimation failed"). `meshy_rig` : **5cr**, marche+course incluses
+gratuitement. Les scripts `rig_final_brute.py`/`rig_manual_test*.py`
+(fusion de doublons + armature manuelle) n'ont pas été nécessaires ce
+tour — gardés en réserve si un futur re-rig échoue.
+
+**Étape 2 — pilote combo.** `meshy_animate` avec l'action de
+bibliothèque `Punch_Combo` (action_id=198, catégorie Fighting/Punching,
+identifiée via la doc Meshy - même famille que les actions déjà
+utilisées sur les monstres type `Crouch_Pull_and_Throw`/`Heavy_Hammer_
+Swing`) : **3cr**. **Scouting AVANT tout rendu final** (discipline
+"vérifier avant de croire") : 2 passes de rendu low-res (24 puis 48
+frames, `preview_scout.py`) ont montré que `Punch_Combo` ne contient
+que **2 frappes distinctes** (une croix ~frame 16-18, un uppercut
+~frame 34-35), bookées par une garde statique en début/fin de clip
+(0.8-10 et 41-60) — pas 3 comme le nom générique le laissait supposer.
+Conforme au mandat ("pars d'un mouvement de bibliothèque... puis
+retouche-le par script Blender") : le 3e coup a été posé à la main sur
+le même squelette rigué (bones `LeftArm`/`LeftForeArm`/`Spine`, même
+technique que `pose_walk_brute.py`/`pose_walk_crawler.py`), amorcé
+depuis la dernière frame mocap (49, quasi-bind-pose de garde) pour que
+la coupure mocap→pose-à-la-main soit invisible. Axes calibrés
+empiriquement par rendus-test isolés avant tout coup manuel (le rig
+Meshy n'a pas de convention d'axe documentée, et `LeftArm`/`RightArm`
+ne sont PAS symétriques en signe — confirmé par test : `rx=-90°` lève
+le bras gauche, il faut `rx=+90°` pour un effet symétrique sur le bras
+droit).
+
+**Répartition des frames (règle de la Bible d'animation — dense à
+l'anticipation, 2-3 frames au contact, étalé à la récupération, PAS
+uniforme) :**
+- Coup 1 (croix, mocap pur) : 8 anticipation + 2 contact + 3
+  récupération = 13 frames.
+- Transition 1→2 (fondu, mocap pur, zone de garde-reset partagée) : 3
+  frames.
+- Coup 2 (uppercut, mocap pur) : 5 anticipation (dont les 3 de
+  transition) + 2 contact + 3 récupération = 13 frames effectives (10
+  propres).
+- Transition 2→3 (mocap pur, queue de garde qui sert de pont vers la
+  pose à la main) : 3 frames.
+- Coup 3 (crochet gauche, posé à la main) : 7 anticipation + 2 contact
+  + 4 récupération = 13 frames.
+- **Total : 42 frames rendues** (Cycles CPU, 512×512, 32 samples,
+  cadrage à échelle commune comme `rig_final_brute.py` — un seul
+  process Blender, un seul import, `render_combo_cendre.py`).
+
+**Post-traitement** : `quantize.py` avec les paramètres par défaut déjà
+calibrés sur les monstres (`target_pixels=96` — plus grand que le
+canvas cuit 64×64 pour rester lisible en comparaison, `target_
+saturation=0.10` inchangé), aucun paramètre retouché.
+
+**Point de vigilance identité (couleur/désaturation) — vérifié par
+mesure, pas affirmé.** `measure_saturation.py` (saturation HSV moyenne
+sur les pixels non-transparents) :
+- PixelLab existant (`coup1/2/3`, frame 2) : saturation moyenne
+  0.0801 / 0.0773 / 0.0761.
+- Rendu Meshy BRUT (avant quantize), frames de contact : 0.0914 /
+  0.0960 / 0.0855 — légèrement au-dessus mais même ordre de grandeur
+  (aucune couleur vive, pas de recoloration franche).
+- Rendu Meshy QUANTIFIÉ (après `quantize.py`, mêmes frames) : 0.0670 /
+  0.0692 / 0.0666 — **plus désaturé que le PixelLab existant**, pas
+  moins.
+Verdict : la migration ne recolore pas Cendre, mesuré et non simplement
+observé. Mécanisme du contre-poids anti-CanvasModulate
+(`src/vfx/shaders/canvas_modulate_compensate.gdshader`) vérifié par
+lecture directe de `scenes/gameplay/gate_premiere.tscn` (ligne 322,
+`material = SubResource("8")` posé sur le node `AnimatedSprite2D` de
+`Player`) : c'est un matériau appliqué au niveau de la SCÈNE sur le
+node sprite, agnostique de la source des pixels (2D PixelLab ou 3D
+baké) — il ne fait que diviser par la couleur du `CanvasModulate`
+parent pour l'annuler, il ne désature RIEN lui-même (c'est
+`quantize.py` qui fait ce travail, confirmé ci-dessus). Conclusion
+honnête : le mécanisme survivrait tel quel à la migration tant que (a)
+le même node `AnimatedSprite2D` reste utilisé et (b) chaque frame 3D
+future passe par `quantize.py` (ou équivalent) avant intégration — pas
+une garantie automatique, une dépendance de process à documenter pour
+la généralisation.
+
+**Bug connu (tranche verticale écrasée, ticks 35/15 sur Gueule
+Vide/Marée de Sable, cf. entrée du 2026-08-22)** : hors scope de ce
+mandat (chantier "couche code" séparé). Observation honnête demandée
+par le mandat : le pipeline 3D produit un maillage skinné rendu par
+Cycles, pas une image 2D composée par couches — structurellement, ce
+type de "tranche écrasée" (probablement un artefact de la couche
+squash&stretch appliquée à une texture 2D) n'a pas d'équivalent direct
+dans le rendu 3D (pas de squash&stretch appliqué au maillage dans ce
+pilote). Ce n'est PAS une preuve que le bug est éliminé par la
+migration — c'est juste que ce pilote n'exerce pas le même chemin de
+code (le VFX squash&stretch en jeu s'applique au node Godot au moment
+du rendu, pas à Blender) ; verdict honnête : observation, pas une
+correction, à re-vérifier une fois un asset 3D réellement intégré au
+jeu.
+
+**Livrable de validation** :
+`captures/verification/2026-08-23-cendre-migration-3d-pilote-combo-avant-apres.png`
+— une seule image, 3 blocs (un par coup), AVANT (5 frames PixelLab) au-
+dessus d'APRÈS (13-16 frames 3D, frames de transition surlignées en
+ambre) sur la même échelle d'affichage. Planche-contact intermédiaire
+des 42 frames brutes + quantifiées gardée dans
+`experiments/blender_capture/cendre_pilot/` (non committée — répertoire
+de travail, pas un livrable, cohérent avec la discipline "un seul
+fichier net pour Milan"). Vérifié `git check-attr filter` sur la
+capture avant commit : `unspecified`, pas de LFS (ne matche ni
+`assets/processed/**/*.png` ni `assets/source/**/*.png`), commit normal
+confirmé.
+
+**Coût réel mesuré (solde Meshy avant/après, `meshy_check_balance`)** :
+avant = **866cr**, après = **823cr**, delta = **43cr** (30 génération +
+5 remesh + 5 rig + 3 animate). Conforme à l'ordre de grandeur annoncé
+par le mandat (~40cr génération + ~5cr rig + ~3cr/animation) — écart de
++3cr uniquement dû au remesh (5cr), non compté dans l'estimation
+initiale de Milan.
+
+**Chiffrage de la généralisation (obligatoire, deuxième partie du
+mandat) — voir détail complet en fin d'entrée ci-dessous.** Résumé :
+modèle+rig déjà payés (40cr, réutilisables pour TOUTES les animations
+futures), combo déjà payé (3cr animate). Il reste 8 mouvements distincts
+à financer (dash, hurt, mort, bras_faux, poing_belluaire, poing_
+tellurique, invocation_gueule_vide, maree_de_sable) à ~3cr/mouvement =
+24cr. **Total généralisation à la couverture directionnelle actuelle :
+~67cr** (43 déjà dépensés + 24 restants). Extension à 8 directions pour
+les 11 animations actuellement mono-direction : **+0cr Meshy** (la
+rotation de caméra autour du même clip rigué est gratuite en 3D,
+contrairement au pipeline 2D où chaque direction est une génération
+PixelLab payante séparée) — coût réel = temps de rendu Blender
+supplémentaire, pas des crédits.
+
+**Fichiers modifiés/ajoutés** : `experiments/blender_capture/
+render_combo_cendre.py` (script de production, réutilisable pour les
+prochaines compétences), `captures/verification/2026-08-23-cendre-
+migration-3d-pilote-combo-avant-apres.png`, `data/meshy_usage.jsonl`
+(5 entrées : multi_image_to_3d, remesh, rig, animate, balance),
+`experiments/blender_capture/cendre_pilot/` (scratch de travail :
+crops, GLB téléchargés, scripts de scout/calibration, 42 frames brutes
++ quantifiées, non committé). **Aucun fichier `.tscn`/`.gd` touché,
+aucun asset PixelLab supprimé, `cendre_frames.tres`/`cendre_frames_
+cooked.json` non touchés** — conforme au périmètre du mandat.
+
+**Détail du chiffrage de généralisation.**
+Animations Cendre existantes (`assets/manifests/cendre_frames_cooked.json`,
+27 entrées vérifiées) : idle ×8 directions, déplacement ×8 directions,
+hurt, mort, dash, coup1/2/3 (combo — CE PILOTE), bras_faux, poing_
+belluaire, poing_tellurique, invocation_gueule_vide, maree_de_sable —
+ces 5 dernières + hurt/mort/dash/coup1-3 n'ont actuellement QU'UNE
+direction chacune (pas de suffixe `_east`/`_north`/etc. dans le
+manifeste), seuls idle et déplacement sont déjà couverts à 8
+directions.
+
+Modèle propriété clé de la 3D vs la 2D : en 2D PixelLab, chaque
+direction est une génération payante séparée (8× le coût). En 3D, une
+fois le modèle riggé et UNE animation appliquée, les 8 directions sont
+de simples rotations de caméra autour du même clip (`yaw_deg` dans
+`render_combo_cendre.py`/`capture_pose.py`) — gratuites en crédits,
+seulement du temps de rendu Blender. Le coût de généralisation est donc
+piloté par le nombre de MOUVEMENTS distincts, pas par mouvements ×
+directions.
+
+Coût par mouvement extrapolé du réel mesuré ce pilote : `meshy_animate`
+sur une action de bibliothèque = 3cr (mesuré : Punch_Combo). Modèle +
+rig déjà payés une fois pour toutes (40cr, sunk, réutilisable).
+
+| Mouvement | Statut | Coût Meshy |
+|---|---|---|
+| Combo (coup1+2+3) | **Fait ce pilote** | 3cr (déjà dépensé) |
+| Déplacement/marche | Gratuit avec le rig (marche incluse) | 0cr |
+| Idle | Pose de base ou geste posé à la main (comme coup3) | 0cr |
+| Dash | Action bibliothèque (ex. Standard_Forward_Charge, precedent monstre) | 3cr |
+| Hurt | Action bibliothèque ou geste posé à la main | 3cr |
+| Mort | Action bibliothèque (Dead, action_id=8, precedent Ranged) | 3cr |
+| Bras-Faux | Action bibliothèque + retouche (comme coup3) | 3cr |
+| Poing Belluaire | idem | 3cr |
+| Poing Tellurique | idem | 3cr |
+| Invocation Gueule Vide | idem | 3cr |
+| Marée de Sable | idem | 3cr |
+| **Total animate restant** | | **24cr** |
+
+**TOTAL généralisation Cendre (couverture directionnelle actuelle,
+idle/déplacement déjà 8 directions, le reste à 1 direction comme
+aujourd'hui) : 40cr (modèle+rig, déjà payé) + 27cr (animate, dont 3cr
+déjà payés) = 67cr, dont 43cr déjà dépensés ce pilote → 24cr
+restants.**
+
+**Si 8 directions partout** (les 9 animations actuellement
+mono-direction étendues à 8) : **+0cr Meshy supplémentaire** — coût
+100% en temps de rendu Blender (9 mouvements × 7 directions
+supplémentaires × ~13 frames/mouvement en moyenne × cadrage/rendu
+Cycles, de l'ordre de plusieurs heures de calcul CPU réparties, aucun
+coût crédit).
+
+**Chiffre unique pour Milan : ~67 crédits Meshy pour régénérer
+entièrement Cendre en 3D à la couverture directionnelle actuelle (24cr
+restants après ce pilote), 8 directions partout inclus sans surcoût
+crédit.** Solde Meshy actuel après ce pilote : 823cr — largement
+suffisant.
+
+**Prochain pas** : en attente du jugement de Milan sur la capture de
+comparaison avant tout GO sur la généralisation. Rien re-rendu, rien
+supprimé, rien basculé en jeu.
+
+---
+
 ## 2026-08-23 — MANDAT ROUND 4, CHANTIER 0 : le losange beige identifié — `arcSlash`, la couche CONTACT de Bras-Faux
 
 **Contexte** : le chantier 1bis (round précédent) a recoloré le
