@@ -769,6 +769,109 @@ assets committés).
 
 ---
 
+### Dernier test avant décision (2026-08-23) — le pilote corrigé passé par le VRAI pipeline de cuisson 64px
+
+**Contexte.** Les rounds 1 et 2 ont validé les deux corrections (bavure
+épaule/bras + rim light ; quantize.py moyenne pondérée par alpha +
+écharde hanche) au format natif PixelLab 112px. Mais le canvas
+RÉELLEMENT affiché en jeu aujourd'hui est cuit à 64×64
+(`assets/manifests/cendre_frames_cooked.json`, `out_canvas=[64,64]`,
+ancrage `(32,61)`) par `scripts/cook_character_frames.py` — jamais
+testé avec ces corrections. Ce mandat ferme cette inconnue.
+
+**Méthode — le vrai pipeline, pas un raccourci.** `scripts/cook_
+character_frames.py` n'a pas été modifié ; il a été appelé tel quel en
+subprocess, avec `--repo-root` pointé vers un répertoire scratch isolé
+(hors du dépôt) pour qu'il écrive ses sorties (`assets/processed/
+sprites/...` + le manifeste `<character>_frames_cooked.json` qu'il
+RÉÉCRIT ENTIÈREMENT) sans toucher un seul fichier réel du dépôt —
+`cendre_frames_cooked.json` et tout asset Cendre committé restent
+intacts, vérifié après coup (`git status` propre hors la nouvelle
+capture). Même logique bbox alpha / ancrage pied bande centrale /
+collage que la production, exécutée par le fichier réel, pas réimportée
+ni réécrite.
+
+**Étape 1 — hauteur cible mesurée (pas supposée).** `assets/processed/
+sprites/cendre/coup1/0.png` (frame déjà cuite et committée, suggérée par
+le mandat) donne une bbox alpha de hauteur 48px — mais c'est une pose de
+garde genoux fléchis, pas une hauteur de référence fiable. Mesuré aussi
+`idle_south/0.png` (pose debout neutre, déjà en jeu) : bbox alpha
+**56px**, retenu comme hauteur cible. Vérification croisée : le facteur
+qui en résulte (voir étape 2) tombe pile dans la fourchette des 5
+facteurs déjà mesurés sur d'autres pouvoirs de Cendre (0.6375–0.683),
+alors que le facteur dérivé de `coup1/0.png` (48px) tomberait à 0.555,
+nettement hors de cette fourchette — confirmation, pas une coïncidence,
+que `idle_south` est la bonne référence de hauteur "debout" et que
+`coup1/0` est une pose trop fléchie pour ce rôle.
+
+**Étape 2 — facteur LANCZOS appliqué.** Source : les 6 frames de contact
+round1+round2 déjà quantifiées à 112px (`experiments/blender_capture/
+cendre_pilot/combo_quantized_112_v3_after/`, mêmes fichiers que la
+capture round 2) — bbox alpha 86-88px (moyenne 86.5px). **Facteur =
+56/86.5 ≈ 0.6474**, appliqué en LANCZOS (`Image.resize`) aux 6 frames
+avant tout passage dans `cook_character_frames.py`, exactement comme la
+convention établie pour les autres pouvoirs (mesurer, PUIS redimensionner
+AVANT la cuisson, jamais dans le script de cuisson lui-même).
+
+**Étape 3 — cuisson réelle.** Frames redimensionnées rangées dans
+`0.png`/`1.png` par dossier `coup{1,2,3}_contact` (format d'entrée
+attendu par le script), puis `python3 scripts/cook_character_frames.py
+--character cendre_pilot_test --out-canvas 64x64 --foot-margin-px 3
+--repo-root <scratch>` (foot-margin-px 3 reproduit exactement
+`anchor_px=[32,61]` du manifeste réel). Résultat : ancrage pied
+identique à la production sur les 6 frames, hauteur de personnage
+obtenue 55-57px (cohérent avec la cible 56px, écart de mesure normal
+entre poses).
+
+**Livrable** : `captures/verification/2026-08-23-cendre-migration-3d-
+dernier-test-cuit-64px-reel.png` — 3 blocs (un par coup), pipeline 3D
+corrigé → cuit 64px réel (2 frames de contact) à côté de la référence
+PixelLab 2D DÉJÀ cuite à 64px (`assets/processed/sprites/cendre/
+coup{1,2,3}/2.png`, même index de frame que la référence retenue round 1
+dans `build_validation_capture.py::section_c`, pour rester cohérent
+entre les rounds), même échelle d'affichage (×8 nearest-neighbor, même
+convention que les captures précédentes de ce mandat). `git check-attr
+filter` vérifié : `unspecified`, pas de LFS.
+
+**VERDICT HONNÊTE, NÉGATIF.** Le gain observé à 112px (bras détaché du
+torse, texture/rim light visibles) **ne survit pas** au downscale réel à
+64px — pire, le résultat 3D lit comme **moins lisible** que la
+référence 2D PixelLab déjà en jeu à cette même taille. À 64px réel, la
+silhouette 3D devient un bloc moucheté/granuleux (le bruit de
+sur-brillance spéculaire, déjà noté comme "poivre et sel" dans le test
+de non-régression round 2, se fige par la quantification sans lignes de
+contour nettes) où bras/torse/jambes se distinguent mal ; la référence
+PixelLab garde des aplats propres, un contour net, une pose clairement
+lisible (poings levés, coudes distincts). Les détails qui justifiaient
+le gain à 112px se compressent sous 3-4px de large à 64px — sous le
+seuil de lisibilité en jeu. Aucune régression de structure en revanche :
+silhouette complète sur les 6 frames, pas de membre perdu, ancrage pied
+identique. Vérifié moi-même au zoom (×12) sur un couple de frames avant
+d'écrire ce verdict, pas une impression de vignette.
+
+**Fichiers modifiés/ajoutés** : `captures/verification/2026-08-23-
+cendre-migration-3d-dernier-test-cuit-64px-reel.png` (nouvelle capture,
+seul livrable committé). Tout le travail de cuisson (frames
+redimensionnées, appel du script, manifeste généré) a eu lieu dans un
+répertoire scratch hors dépôt — rien ajouté sous `assets/processed/`
+ni `assets/manifests/` pour ce test. **Aucun fichier `.tscn`/`.gd`
+touché, aucun asset PixelLab touché, `cendre_frames.tres`/`cendre_
+frames_cooked.json` non touchés, rien basculé en jeu** — même périmètre
+que les 3 commits précédents de ce mandat.
+
+**Coût Meshy : 0 crédit.** Aucune génération, aucun appel Meshy — travail
+de traitement d'image pur (PIL/LANCZOS + `cook_character_frames.py`) sur
+des assets déjà rendus/quantifiés. `data/meshy_usage.jsonl` non modifié.
+
+**Blocages non résolus** : aucun. Le verdict est négatif mais net —
+c'est exactement l'information que ce mandat cherchait à établir avant
+toute décision de généralisation.
+
+**Prochain pas** : en attente du jugement de Milan (zoom personnel sur
+la nouvelle capture 64px). Rien poussé, comme les 4 fois précédentes.
+
+---
+
 ## 2026-08-23 — MANDAT ROUND 4, CHANTIER 0 : le losange beige identifié — `arcSlash`, la couche CONTACT de Bras-Faux
 
 **Contexte** : le chantier 1bis (round précédent) a recoloré le
