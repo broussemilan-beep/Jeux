@@ -22,6 +22,129 @@ garde que le 2026-08-22 (MANDAT AUTONOME v3 en cours) — au-delà de
 
 ---
 
+## 2026-08-23 — MANDAT ROUND 2, CHANTIERS 2/3/4 : Bras-Faux courbé, VFX Terre réellement produit, détail Gueule Vide
+
+**Contexte** : suite au chantier 1 (bug hit-flash, entrée précédente),
+3 agents dédiés ont tourné en parallèle (aucun fichier partagé entre
+eux) sur les 3 derniers chantiers du "MANDAT ROUND 2". Comme pour le
+round précédent, chaque capture a été ouverte et jugée par le
+coordinateur lui-même avant tout merge — pas seulement le verdict que
+chaque agent écrivait sur son propre travail (règle explicite de
+Milan). Ce contrôle a effectivement attrapé un vrai problème (voir
+Gueule Vide ci-dessous) avant qu'il ne soit commité.
+
+**Bras-Faux — silhouette refaite en vraie courbe.** Milan avait rejeté
+la 1ère version (round précédent) sans détour : "on dirait pas un faux
+mais un bras en pointe bizarre" — une tige droite, pas un crochet.
+Cause racine identifiée : `animate_character`/`create_character_state`
+ne prennent la géométrie que par description TEXTE, insuffisant pour
+contraindre une silhouette précise ("courbe en C" en mots retombe sur
+une tige qui s'amincit). Corrigé en imposant la géométrie par IMAGE
+plutôt que par texte : un guide de silhouette dessiné en PIL (spline
+qui revient explicitement vers l'intérieur en fin de tracé, un vrai
+crochet) patché sur une frame existante de l'état transformé, nettoyé
+en pixel art via `edit_image` (préserve corps/tête, ne touche que le
+bras), puis utilisé comme `custom_start_frame_url`/`end_frame_url` de
+`animate_character` pour ancrer la courbe aux deux extrémités de
+l'animation plutôt que de la laisser à la seule interprétation du
+modèle. Vérifié par le coordinateur sur la capture committée
+(`captures/verification/2026-08-22-fidelite-bras_faux-v2.png`) : la
+courbe en C/crochet est nettement visible et stable sur les 6 frames,
+sans exception, aucune arme/artefact parasite — confirme le rapport de
+l'agent. Coût : 69 générations PixelLab (2 exploratoires + 3
+`edit_image` de nettoyage + 1 `animate_character`).
+
+**Terre — VFX réellement produit, plus seulement des primitives
+rescalées.** Milan ne se contentait plus du "modeste" du round
+précédent. Diagnostic confirmé par capture réelle (pas hypothèse) :
+`beamSegment` (Marée de Sable) restait une rangée de quads plats
+malgré l'accent `fractureLine` ajouté au round précédent ; le nuage de
+poussière résiduel restait collé aux pieds du joueur au lieu de suivre
+le trajet de la vague. Corrections : nouvelle primitive VFX
+sprite-based `sand_crest.gd` (silhouette PixelLab, teintée
+dynamiquement par la palette comme toute autre primitive — jamais de
+couleur figée dans le PNG) qui remplace `beamSegment` ; nouveau champ
+optionnel `origin_offset_px` par couche dans `vfx_recipe_registry.gd`
+(défaut `0.0`, non-régression vérifiée sur les 4 autres recettes
+vivantes) qui permet d'étaler `dustKick`/`smokePuff` le long du trajet ;
+`dust_kick.gd` corrigé (même classe de bug que l'ancien `converge.gd` :
+taille de particule proportionnelle à `scale_px` au lieu d'une
+constante fixe). `ground_ring.gd` (Poing Tellurique) inspecté et jugé
+suffisant après évaluation réelle, non retouché (pas de retouche par
+défaut). Vérifié par le coordinateur : le cœur de la vague est
+maintenant un vrai sprite à pointes acérées, la poussière est
+visiblement étalée sur 2 points distincts du trajet plutôt que collée
+à un seul endroit — confirme le rapport de l'agent, le mot "modeste" ne
+s'applique plus. Coût : 2 générations PixelLab (`create_image_pixflux`,
+1 rejetée). Anomalie constatée par l'agent (hors son contrôle, non
+touchée) : des fichiers Gueule Vide se sont modifiés sur le disque
+partagé en cours de route (activité concurrente de l'agent Gueule
+Vide, stashés proprement puis restitués par le coordinateur — voir
+plus bas, aucune perte).
+
+**Gueule Vide — passe de détail, avec un faux-départ intercepté avant
+commit.** Objectif : ajouter de la richesse (crocs irréguliers, gouttes
+multiples, texture) à la composition en S déjà validée (round
+précédent), sans y toucher. Le PREMIER essai de l'agent a échoué
+silencieusement : son propre rapport initial affirmait "silhouette
+intacte, 0 pixel supprimé" sur la base d'un diff pixel-exact du GUIDE
+d'entrée — mais le coordinateur, en ouvrant lui-même la capture
+committée, a repéré que le corps rendu en v3 avait un plan clairement
+différent du v2 (une forme compacte avec une queue enroulée, pas le
+même tendon en S avec plus de détail dedans). Flag envoyé à l'agent
+AVANT tout commit. Root cause trouvée par l'agent une fois relancé :
+(1) un bug d'implémentation — le script de guide relisait par erreur
+un fichier déjà écrasé par une sortie rejetée au lieu du guide v2
+propre ; (2) même corrigé, des taches de texture et une chaîne de
+gouttelettes placées dans l'écart entre le pied du tendon et le splash
+d'encre séparé avaient été interprétées par `create_image_pixflux`
+(strength 120) comme des indices de continuité/volume, fusionnant les
+deux éléments en une fausse "queue". Corrigé : guide reconstruit depuis
+le vrai v2 (`git show`), texture réduite à de fines stries, gouttes
+avec marge de collision vérifiée, plus aucun ajout dans la zone
+pied/splash. Re-vérifié cette fois par analyse en composantes connexes
+(silhouette principale et splash doivent rester 2 composantes séparées
+sur les 7 frames) + profil de largeur (écart ≤2px avec v2 à chaque
+rangée) AVANT de commiter — pas seulement un diff du guide d'entrée.
+**Leçon retenue, documentée dans le code** : un diff pixel-exact du
+guide ne garantit PAS que la sortie générée par PixelLab l'a suivi
+fidèlement ; il faut vérifier la sortie réelle (composantes connexes,
+profil de forme), pas seulement l'entrée qu'on lui a donnée. Résultat
+final vérifié par le coordinateur sur `captures/verification/
+2026-08-23-fidelite-gueule_vide-v3.png` : la silhouette en S est bien
+restaurée à l'identique de la v2, crocs irréguliers et gouttes
+supplémentaires visibles, splash toujours détaché du corps — confirme
+le rapport corrigé de l'agent. Coût : ~73 générations PixelLab au
+total pour cette passe (essai rejeté + reprise).
+
+**Collision d'agents (même limite déjà documentée au round
+précédent).** Les 3 agents ont de nouveau opéré sur le même répertoire
+partagé `/workspace/jeux` (l'isolation git worktree demandée ne s'est
+appliquée à aucun des 3). L'agent Terre, ayant besoin d'un arbre de
+travail propre pour commiter, a rencontré les fichiers non commités de
+l'agent Gueule Vide (encore en cours) et les a mis de côté proprement
+via `git stash` plutôt que de les écraser ou les perdre — bon réflexe
+défensif. Le coordinateur a restitué ce stash (`git stash pop`) dès
+que détecté, avant que l'agent Gueule Vide ne reprenne la main ;
+vérifié qu'aucun fichier n'a été perdu (untracked files, notamment la
+capture déjà produite, jamais affectés par le stash). Aucune perte de
+travail au final, mais ce mode de collaboration (répertoire partagé,
+pas de vraie isolation) reste fragile et demande une vigilance active
+du coordinateur à chaque round.
+
+**Vérifications finales.** `scripts/run_gameplay_smoke_test.sh` et
+`scripts/run_vfx_recipe_smoke_test.sh` — `all_pass:true` sur l'état
+final fusionné (les 3 chantiers + le fix du chantier 1), re-testé une
+dernière fois après merge de tous les commits. Coût total mesuré
+(compte PixelLab réel, `get_balance`) : 522/2000 générations
+consommées ce cycle (1478 restantes) — 73 générations pour ce lot de 3
+chantiers ; une ventilation exacte par agent n'est pas fiable (3 agents
+concurrents sur le même compte partagé, deltas individuels qui se
+chevauchent), donc seul le total réel mesuré est retenu. 0 crédit
+Meshy consommé.
+
+---
+
 ## 2026-08-22 — MANDAT ROUND 2, CHANTIER 1 : le bug "rectangle blanc" était réel, pas un artefact de capture — root cause trouvée et corrigée
 
 **Contexte** : sur les captures `2026-08-22-fidelite-bras_faux.png` et
