@@ -870,6 +870,177 @@ toute décision de généralisation.
 **Prochain pas** : en attente du jugement de Milan (zoom personnel sur
 la nouvelle capture 64px). Rien poussé, comme les 4 fois précédentes.
 
+### Dernière tentative ciblée, round 3 (2026-08-23) — matériau aplati (spécularité réduite + posterisation albédo/émission), verdict de clôture
+
+**Mandat.** Milan a proposé une dernière tentative ciblée avant de
+clore le mandat : réduire la spécularité du rendu Blender (roughness ↑,
+specular ↓, ou bascule vers un shader plus proche d'un toon/NPR si le
+temps le permet) — **aucune régénération Meshy**, seulement le rendu
+(matériau/éclairage) et la chaîne quantize→cook en aval, sur les mêmes
+6 frames de contact déjà utilisées à chaque round précédent.
+
+**Étape 1 — diagnostic mesuré du matériau importé (pas supposé).**
+Inspection du GLB (`experiments/blender_capture/cendre_pilot/
+mat_round3/inspect_materials.py`, working dir non commité) : le
+matériau `Material_1` (seul matériau texturé du personnage — `Material`
+et `Dots Stroke` ne portent aucune texture, non touchés) a `Metallic=
+1.0`, `Roughness=0.41`, `Specular IOR Level=0.5`, et une **même**
+texture 2048px (`texture_0`) branchée à la fois sur `Base Color` ET sur
+`Emission Color` (`Emission Strength=1.0`) — donc quasi-émise telle
+quelle, indépendamment de tout éclairage Blender.
+
+**Étape 2 — test comparatif de la piste "spécularité" demandée par le
+mandat, AVANT généralisation.** Rendu de la même frame (coup1 contact,
+mocap frame 16) avec le matériau ACTUEL (`iter0`, référence) puis avec
+`Metallic=0.0, Roughness=0.9, Specular IOR Level=0.2` (`iter1`) —
+harnais isolé `mat_round3/render_single_test.py` (import + les deux fix
+de skinning + caméra/lumière identiques au script de production, pour
+rester comparable). Diff pixel mesuré sur les rendus bruts 512px :
+**moyenne ~1.3/255 par canal, max 112/255** — un effet réel mais
+marginal, visuellement quasi imperceptible après quantize+cook 64px
+(`mat_round3/compare_iter0_iter1.png`). **Conclusion mesurée : la
+spécularité BSDF n'est PAS la cause dominante du bruit "poivre et sel"**
+— contrairement à l'hypothèse de départ du mandat (raisonnable a priori,
+mais infirmée par la mesure, pas supposée).
+
+**Étape 3 — recherche de la cause réelle (mesurée, pas supposée).**
+Export de `texture_0` depuis le GLB (`mat_round3/texture_0.png`,
+working dir non commité) : ce n'est PAS une texture de tissu à grain
+fin mais une **mosaïque de patches gris/noir/crème/beige de quelques
+dizaines de pixels** sur les 2048px de la texture — visuellement une
+sorte de motif "camouflage" à haute fréquence. Cette texture est émise
+quasi-telle-quelle (Emission Strength=1.0, non affectée par la
+lumière/le matériau) : à l'échelle du personnage rendu (~400px de
+haut), chaque patch de texture occupe 1-3 pixels de rendu — exactement
+la taille d'un grain de bruit "poivre et sel" une fois downscalé à
+64px. C'est cette texture, pas la spécularité, qui est la cause réelle
+du défaut identifié aux rounds précédents.
+
+**Étape 4 — itération vers un rendu plus "toon" (comme prévu par le
+mandat en cas d'insuffisance de la seule réduction spécular).** Deux
+essais comparés :
+- `iter2` (posterisation RGB par canal, 5 paliers, Math SNAP par
+  canal Rouge/Vert/Bleu séparément) : **rejeté** — un posterize par
+  canal RGB indépendant décale les teintes de façon incohérente
+  (patches oranges/rouges apparus sur la tunique, `mat_round3/
+  iter2_posterize5.png`), inacceptable même si `quantize.py` re-fixe la
+  saturation en aval (le rendu brut intermédiaire devient trompeur pour
+  tout jugement visuel).
+- `iter2b` (posterisation **HSV, canal Value seul**, Teinte/Saturation
+  intactes, 5 paliers) : **retenu**. Nœuds Blender insérés en mémoire
+  sur le graphe de matériau importé (`ShaderNodeSeparateColor`/
+  `ShaderNodeCombineColor` mode HSV + `ShaderNodeMath` opération `SNAP`
+  sur le canal Value), rebranchés sur les deux noeuds `TEX_IMAGE`
+  (`Image Texture` → Emission, `Image Texture.001` → Base Color).
+  **Aucune texture modifiée sur le disque** — uniquement le graphe de
+  nœuds du rendu en cours, un réglage de rendu au sens strict du
+  mandat.
+
+Comparaison mesurée `mat_round3/compare_all3.png` (iter0 brut / iter1
+spécularité réduite seule / iter2b spécularité réduite + posterize
+Value) après quantize 112px + downscale 0.647 + cook 64px réel :
+iter2b montre des zones de couleur nettement plus plates (grandes
+masses sombres continues au lieu du bruit moucheté), silhouette plus
+lisible — gain net et visible, contrairement à iter1 seul. Essai
+supplémentaire (`iter3`, 7 paliers + `Emission Strength=0.6`) comparé à
+iter2b (`mat_round3/compare_2b_3.png`) : résultat quasi équivalent,
+**iter2b retenu** (réglage plus simple, un seul levier de plus que la
+réduction spécular demandée par le mandat).
+
+**Réglage final retenu** (appliqué dans `flatten_material_specular()`,
+nouvelle fonction dans `render_combo_cendre.py`, activée par défaut
+via `--mat_flatten=1`) : `Metallic=0.0`, `Roughness=0.9`, `Specular IOR
+Level=0.15`, posterisation HSV Value 5 paliers sur les deux branches
+texture (albédo + émission). **Rim light du round 1 intacte, non
+modifiée** (elle répond à un défaut différent — silhouette qui se fond
+dans le fond — les deux corrections ne s'opposent pas, confirmé par
+inspection du rendu final : le contour reste détaché du fond sombre).
+
+**Étape 5 — généralisation aux 6 frames de contact, pipeline réel
+identique au test précédent.** `render_combo_cendre.py` (production,
+patché) relancé avec `--sections=coup1,coup2,coup3` (34 frames,
+~2min50 CPU) → `quantize.py` sur les 6 frames de contact, **mêmes
+réglages Cendre retenus round 2** (`color_steps=5, value_band=0.08/
+0.97, outline_thickness=4.5, edge_strength=0.10, dither_amount=0.18,
+pixelate_mode=mean_alpha` par défaut) → bbox alpha mesurée 86-88px
+(moyenne 86.5px, **identique aux rounds précédents** — le matériau ne
+change ni la géométrie ni le cadrage, le facteur LANCZOS déjà validé
+reste correct) → downscale ×0.647 LANCZOS → cuisson via le VRAI
+`scripts/cook_character_frames.py` (repo-root isolé en scratch hors
+dépôt, aucun fichier réel touché, vérifié après coup par `git status`
+propre hors la nouvelle capture) — même méthode exacte que le test
+précédent, aucun raccourci.
+
+**Livrable** : `captures/verification/2026-08-23-cendre-migration-3d-
+round3-materiau-aplati-cuit-64px-reel.png` — même format que le test
+précédent (3 blocs coup1/2/3, 2 frames 3D cuites 64px réel + 1 frame
+PixelLab de référence par bloc, échelle ×8 nearest-neighbor). `git
+check-attr filter` vérifié : `unspecified`, pas de LFS.
+
+**VERDICT HONNÊTE.** Amélioration réelle et nette par rapport au round
+précédent (b1e762e) : le bruit "poivre et sel"/bloc moucheté a disparu,
+remplacé par des masses de couleur plates et une silhouette
+nettement plus lisible (tête, torse, jambe qui frappe distinguables au
+zoom ×8, vérifié moi-même avant d'écrire ce verdict). **Mais le
+résultat ne rejoint pas la référence PixelLab** : le rendu 3D reste
+sensiblement plus sombre/monochrome (dominante noir/gris foncé avec
+peu de demi-teintes) que le PixelLab (gris moyen plus homogène,
+meilleure séparation visuelle bras/torse/jambes, contour plus net).
+Position honnête : **s'approche de la lisibilité du PixelLab sans
+l'égaler** — nette amélioration mesurée, pas une parité. Aucune
+régression de structure (silhouette complète, ancrage pied identique
+sur les 6 frames).
+
+**Ce que ce round ferme, dans les deux sens demandés par Milan.** Le
+gain vient très majoritairement de la posterisation de l'albédo/
+émission (traitement du symptôme correctement diagnostiqué), pas de la
+réduction de spécularité en elle-même (testée isolément, effet
+marginal mesuré) — la piste explicite du mandat ("réduire la
+spécularité") n'était donc pas la bonne hypothèse causale, mais
+l'esprit du mandat ("rendu plus plat, plus proche d'un toon shading")
+était correct et c'est cette direction, poussée jusqu'à l'albédo plutôt
+que seulement le BSDF, qui produit le gain mesuré. Un gain
+supplémentaire résiduel existe probablement encore dans la texture
+source elle-même (mosaïque haute fréquence à la base) mais y toucher
+sortirait du périmètre "aucune régénération" de ce mandat.
+
+**Fichiers modifiés/ajoutés** : `experiments/blender_capture/
+render_combo_cendre.py` (nouvelles fonctions `flatten_material_specular()`
++ `_posterize_texture_output()`, nouveaux flags CLI `--mat_flatten`,
+`--mat_metallic`, `--mat_roughness`, `--mat_specular`, `--mat_
+posterize_steps` — défaut ON avec les valeurs retenues, `--mat_
+flatten=0` reproduit le comportement identique aux rounds 1/2),
+`captures/verification/2026-08-23-cendre-migration-3d-round3-materiau-
+aplati-cuit-64px-reel.png` (nouvelle capture). Working dir non commité
+(`experiments/blender_capture/cendre_pilot/mat_round3/` : scripts de
+diagnostic/itération — `inspect_materials.py`, `render_single_test.py`,
+`export_texture.py`, `prep_and_cook*.py`, `quantize_batch_v4.py`,
+`build_compare_sheet.py`, `build_final_capture.py` — et rendus
+intermédiaires ; `combo_render_v4/`, `combo_quantized_v4/` : rendus/
+quantifications finales des 34 frames avec le matériau retenu).
+**Aucun fichier `.tscn`/`.gd` touché, aucun asset PixelLab touché,
+aucune génération/régénération PixelLab, `cendre_frames.tres`/`cendre_
+frames_cooked.json` non touchés, aucun asset monstre modifié** — même
+périmètre que les 5 commits précédents de ce mandat.
+
+**Coût Meshy : 0 crédit.** Aucune génération, aucun appel Meshy — GLB
+déjà téléchargé et payé par le pilote initial, réglages de rendu
+Blender (nœuds de matériau en mémoire) + retraitement d'image
+(`quantize.py`/LANCZOS/`cook_character_frames.py`) uniquement.
+`data/meshy_usage.jsonl` non modifié, confirmé.
+
+**Blocages non résolus** : aucun. Le mandat demandait un verdict
+honnête qui clôt la question de migration dans un sens ou dans
+l'autre — c'est fait : le pilote 3D atteint maintenant une lisibilité
+*proche* du PixelLab à 64px réel (contre *moins lisible* au round
+précédent), mais ne l'égale pas encore avec les réglages de rendu
+seuls ; aller plus loin demanderait de toucher la texture source
+elle-même (hors périmètre "aucune régénération" explicitement fixé par
+ce mandat).
+
+**Prochain pas** : en attente du jugement de Milan (zoom personnel sur
+la nouvelle capture, comme les 5 fois précédentes). Rien poussé.
+
 ---
 
 ## 2026-08-23 — MANDAT ROUND 4, CHANTIER 0 : le losange beige identifié — `arcSlash`, la couche CONTACT de Bras-Faux

@@ -52,11 +52,44 @@ corriges A LA SOURCE (pas de retouche frame par frame) :
   re-mesuree apres coup (voir docs/worklog.md) pour confirmer qu'elle
   ne derive pas au-dessus du PixelLab existant.
 
+MANDAT DERNIERE TENTATIVE, round 3 materiau (2026-08-23, voir docs/
+worklog.md) : le test au vrai canvas cuit 64px (commit b1e762e) a
+donne un verdict NEGATIF - le rendu devient un bloc grisatre moucheté
+("poivre et sel") une fois quantifie/compresse, moins lisible que le
+PixelLab a la meme taille. Diagnostic MESURE (pas suppose) avant toute
+retouche : le materiau importe du GLB (`Material_1`) a `Metallic=1.0`,
+`Roughness=0.41` - une comparaison rendue metallic=1 vs metallic=0 ne
+change quasiment rien au bruit (diff pixel moyenne ~1.3/255 sur 512px,
+voir mat_round3/compare_iter0_iter1.png, working dir non commite) : la
+specularite BSDF n'est PAS la cause dominante. La vraie cause, retrouvee
+en exportant `texture_0` (2048px, partagee par Base Color ET Emission
+Color, Emission Strength=1.0) : c'est une texture d'albedo a tres haute
+frequence (mosaique de patches gris/noir/creme de quelques dizaines de
+pixels sur 2048px, cf. mat_round3/texture_0.png) qui, emise quasi TELLE
+QUELLE (Emission Strength=1.0, non affectee par l'eclairage), s'aliase
+en bruit une fois le rendu downscale a 64px - exactement le "poivre et
+sel" deja note au round 2. Fix retenu (fonction
+`flatten_material_albedo` ci-dessous, testee frame par frame avant
+generalisation - voir docs/worklog.md) : (1) reduction de la
+contribution specular/metallique comme demande par le mandat (Metallic
+0.0, Roughness 0.9, Specular IOR Level 0.15) - insuffisant seul mais
+conserve car conforme a l'intention du mandat et sans effet negatif ;
+(2) posterisation du canal VALUE (HSV, Teinte/Saturation intactes -
+evite le shift de couleur d'un posterize RGB par canal) de la texture
+d'albedo/emission en 5 paliers, inseree par noeuds Blender
+(SeparateColor/Math SNAP/CombineColor) directement sur le graphe de
+materiau importe - AUCUNE texture regeneree ni modifiee sur le disque,
+un rendu/shader plus proche d'un toon shading comme suggere par le
+mandat en cas d'insuffisance de la seule reduction specular. Rim light
+(round 1) intacte, non touchee par ce changement.
+
 Usage:
     blender --background --factory-startup --python render_combo_cendre.py -- \
         --glb=<combo.glb> --out_dir=<dir> [--res=512] [--samples=32] \
         [--sections=coup1,transition_1_2,coup2,transition_2_3,coup3] \
-        [--fix_weights=1] [--rim_light=1]
+        [--fix_weights=1] [--rim_light=1] [--mat_flatten=1] \
+        [--mat_metallic=0.0] [--mat_roughness=0.9] [--mat_specular=0.15] \
+        [--mat_posterize_steps=5]
 """
 import bpy
 import sys
@@ -90,6 +123,15 @@ yaw_deg = float(args.get("yaw_deg", "10"))
 sections = set(args.get("sections", "coup1,transition_1_2,coup2,transition_2_3,coup3").split(","))
 fix_weights = args.get("fix_weights", "1") != "0"
 rim_light_enabled = args.get("rim_light", "1") != "0"
+# MANDAT DERNIERE TENTATIVE round 3 (voir docs/worklog.md) : aplatissement
+# du materiau (specular + posterisation de l'albedo/emission). Defaut ON
+# avec les valeurs retenues par comparaison mesuree ; mat_flatten=0
+# reproduit le comportement des rounds 1/2 (materiau Meshy tel quel).
+mat_flatten_enabled = args.get("mat_flatten", "1") != "0"
+mat_metallic = float(args.get("mat_metallic", "0.0"))
+mat_roughness = float(args.get("mat_roughness", "0.9"))
+mat_specular = float(args.get("mat_specular", "0.15"))
+mat_posterize_steps = int(args.get("mat_posterize_steps", "5"))
 
 os.makedirs(out_dir, exist_ok=True)
 
@@ -247,9 +289,78 @@ def fix_hip_hem_proximity(armature, mesh_obj):
     print(f"FIX_HIP_HEM_PROXIMITY_APPLIED reassigned={len(reassign_plan)} margin={MARGIN}")
 
 
+def _posterize_texture_output(node_tree, tex_node_name, steps):
+    """MANDAT DERNIERE TENTATIVE round 3 (voir docs/worklog.md). Insere
+    Separate/Combine Color (mode HSV) + Math(SNAP) sur le SEUL canal
+    Value juste apres le noeud TEX_IMAGE nomme, pour aplatir le bruit
+    haute-frequence de l'albedo/emission (mesure comme la cause reelle
+    du "poivre et sel" a 64px, pas la specularite BSDF - comparaison
+    metallic=1 vs metallic=0 quasi identique, voir docstring en tete de
+    fichier) en un petit nombre de plages de LUMINOSITE plates. Teinte/
+    Saturation d'origine intactes (evite le shift de couleur d'un
+    posterize RGB par canal, teste et rejete - voir mat_round3/
+    iter2_posterize5.png, working dir non commite). AUCUNE texture
+    modifiee sur le disque - uniquement le graphe de noeuds en memoire
+    pour ce rendu. Rebranche tous les liens existants depuis la sortie
+    Color du noeud texture vers la sortie posterisee."""
+    if tex_node_name not in node_tree.nodes:
+        return
+    tex_node = node_tree.nodes[tex_node_name]
+    color_output = tex_node.outputs["Color"]
+    links_to_rewire = [l for l in node_tree.links if l.from_socket == color_output]
+    if not links_to_rewire:
+        return
+    sep = node_tree.nodes.new("ShaderNodeSeparateColor")
+    sep.mode = "HSV"
+    node_tree.links.new(color_output, sep.inputs["Color"])
+    comb = node_tree.nodes.new("ShaderNodeCombineColor")
+    comb.mode = "HSV"
+    node_tree.links.new(sep.outputs["Red"], comb.inputs["Red"])      # Teinte, passthrough
+    node_tree.links.new(sep.outputs["Green"], comb.inputs["Green"])  # Saturation, passthrough
+    incr = 1.0 / steps
+    m = node_tree.nodes.new("ShaderNodeMath")
+    m.operation = "SNAP"
+    m.inputs[1].default_value = incr
+    node_tree.links.new(sep.outputs["Blue"], m.inputs[0])  # Value
+    node_tree.links.new(m.outputs[0], comb.inputs["Blue"])
+    for l in links_to_rewire:
+        to_socket = l.to_socket
+        node_tree.links.remove(l)
+        node_tree.links.new(comb.outputs["Color"], to_socket)
+    print(f"POSTERIZE_APPLIED node={tex_node_name} steps={steps}")
+
+
+def flatten_material_specular(metallic, roughness, specular, posterize_steps):
+    """MANDAT DERNIERE TENTATIVE round 3 (voir docs/worklog.md) : reduit
+    la contribution specular/metallique du materiau Cendre importe du
+    GLB (`Material_1`, seul materiau texture du personnage - `Material`
+    et `Dots Stroke` ne portent aucune texture visible, non touches) ET
+    aplatit son albedo/emission par bandes de luminosite (posterisation
+    HSV Value, voir `_posterize_texture_output`). Les deux leviers
+    demandes par le mandat (roughness/specular ET bascule vers un rendu
+    plus "toon") - la reduction specular seule etait mesuree insuffisante
+    (voir docstring en tete de fichier), la posterisation est ce qui
+    apporte le gain reel."""
+    for mat in bpy.data.materials:
+        if mat.name != "Material_1" or not mat.use_nodes:
+            continue
+        for node in mat.node_tree.nodes:
+            if node.type == "BSDF_PRINCIPLED":
+                node.inputs["Metallic"].default_value = metallic
+                node.inputs["Roughness"].default_value = roughness
+                node.inputs["Specular IOR Level"].default_value = specular
+        if posterize_steps > 0:
+            for tex_name in ("Image Texture", "Image Texture.001"):
+                _posterize_texture_output(mat.node_tree, tex_name, posterize_steps)
+        print(f"MATERIAL_FLATTENED metallic={metallic} roughness={roughness} specular={specular} posterize_steps={posterize_steps}")
+
+
 if fix_weights:
     fix_shoulder_hem_skinning(armature, mesh_obj)
     fix_hip_hem_proximity(armature, mesh_obj)
+
+if mat_flatten_enabled:
+    flatten_material_specular(mat_metallic, mat_roughness, mat_specular, mat_posterize_steps)
 
 action = bpy.data.actions[0]
 if armature.animation_data is None:
