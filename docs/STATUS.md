@@ -33,18 +33,18 @@ asymétriques pour Monstrification : 1/3/6/14/18). Slots `power1`..
 **Compétences réellement implémentées : 5 sur 15**
 | Pouvoir | Tier | Compétence | Statut |
 |---|---|---|---|
-| Invocateur | 1 | Gueule Vide | ✅ |
+| Invocateur | 1 | Gueule Vide | ✅ (MANDAT ROUND 4 : geste d'invocation dédié de Cendre ajouté — manquait jusque-là, Cendre restait sur sa pose idle générique pendant le cast ; glyphe au sol et animation de la créature vérifiés déjà réels, cf. "Gaps de fidélité connus") |
 | Invocateur | 2 | Corbeau Pâle | ❌ manquante |
 | Invocateur | 3 | Poing du Colosse | ❌ manquante |
 | Invocateur | 4 | Œil Sans Regard | ❌ manquante |
 | Invocateur | 5 | Serpent Creux | ❌ manquante |
-| Terre | 1 | Poing Tellurique | ✅ (retuning 2026-08-22 : bug de timing structurel corrigé — `groundRing` s'éteignait pile au moment du contact ; `dust_kick.gd` retuné 2026-08-23, cf. "Gaps de fidélité connus") |
-| Terre | 2 | Marée de Sable | ✅ (2026-08-22, MANDAT AUTONOME v3 ; 2026-08-23 : `beamSegment` remplacé par `sandCrest`, une primitive VFX sprite-based réelle — plus un quad procédural plat, cf. "Gaps de fidélité connus") |
+| Terre | 1 | Poing Tellurique | ✅ (retuning 2026-08-22 : bug de timing structurel corrigé — `groundRing` s'éteignait pile au moment du contact ; `dust_kick.gd` retuné 2026-08-23 ; MANDAT ROUND 4 : pose dédiée de Cendre au frappe-au-sol ajoutée — manquait jusque-là, seuls l'anneau/la poussière avaient été travaillés, cf. "Gaps de fidélité connus") |
+| Terre | 2 | Marée de Sable | ✅ (2026-08-22, MANDAT AUTONOME v3 ; 2026-08-23 R3 : `beamSegment` remplacé par `sandCrest` ; MANDAT ROUND 4 : geste de Cendre au lancement (temps 2) ajouté + retour visuel du ralentissement (teinte ocre sur l'ennemi touché) — les deux manquaient jusque-là, cf. "Gaps de fidélité connus") |
 | Terre | 3 | Carapace | ❌ manquante |
 | Terre | 4 | Effondrement | ❌ manquante |
 | Terre | 5 | Fissure Éruptive | ❌ manquante |
-| Monstrification | 1 | Poing Belluaire | ✅ (sprite dédié réel depuis 2026-08-22 : poing massif/rond, `create_character_state` sur le Cendre en jeu — remplace `coup3` en placeholder ; fragments VFX `converge.gd` corrigés le même jour) |
-| Monstrification | 2 | Bras-Faux | ✅ (sprite dédié réel depuis 2026-08-22 ; 2026-08-23 : silhouette refaite en vraie courbe en C/crochet — Milan avait rejeté la 1ère version, "un bras en pointe bizarre" — vérifié frame par frame, cf. "Gaps de fidélité connus" ; tier corrigé le 22, `data/pouvoirs/monstrification.json` fait autorité) |
+| Monstrification | 1 | Poing Belluaire | ✅ (sprite dédié réel depuis 2026-08-22 : poing massif/rond, `create_character_state` sur le Cendre en jeu — remplace `coup3` en placeholder ; fragments VFX `converge.gd` corrigés le même jour ; MANDAT ROUND 4 : bug de pilotage tick-exact corrigé — la frame d'impact arrivait décalée du tick de contact réel, cf. "Gaps de fidélité connus") |
+| Monstrification | 2 | Bras-Faux | ✅ (sprite dédié réel depuis 2026-08-22 ; 2026-08-23 R2 : silhouette refaite en vraie courbe en C/crochet — Milan avait rejeté la 1ère version, "un bras en pointe bizarre" ; MANDAT ROUND 4 : même bug de pilotage tick-exact que Poing Belluaire trouvé et corrigé (le balayage était une pose tenue, pas un arc animé), cf. "Gaps de fidélité connus" ; tier corrigé le 22, `data/pouvoirs/monstrification.json` fait autorité) |
 | Monstrification | 6 | Mâchoire | ❌ manquante |
 | Monstrification | 14 | Forme Bestiale | ❌ manquante |
 | Monstrification | 18 | Pattes de Chasse | ❌ manquante |
@@ -147,64 +147,96 @@ scènes de jeu — explicitement hors du scope d'un mandat "une scène,
 un agent". À traiter dans un futur chantier dédié au shader de
 post-render lui-même, pas scène par scène.
 
-## Gaps de fidélité connus (mis à jour 2026-08-23, "MANDAT ROUND 2")
+**Sprite de Cendre écrasé en fine tranche verticale à certains ticks
+(trouvé "MANDAT ROUND 4" en revoyant les captures, non corrigé, racine
+non investiguée).** Confirmé au tick 35 dans
+`captures/verification/2026-08-23-gueule-vide-4temps/after_tick35.png`
+et indépendamment au tick 15 (panneau "AVANT") dans
+`captures/verification/2026-08-23-maree-de-sable-lancement-avant-apres.png`
+— PRÉ-EXISTANT (identique dans les baselines "avant" qui précèdent tout
+changement de ce round), reproductible dans 2 contextes de compétence
+indépendants. Cause racine inconnue — chantier dédié futur nécessaire,
+même discipline que le défaut posterize ci-dessus.
 
-**Bras-Faux** : RÉSOLU. Milan avait rejeté la 1ère version ("un bras en
-pointe bizarre", une tige droite) — refaite via un guide de silhouette
-qui ancre explicitement une courbe en C par image (pas par texte
-seul), vérifiée courbée sur les 6 frames sans exception. Capture :
-`captures/verification/2026-08-22-fidelite-bras_faux-v2.png`.
+## Gaps de fidélité connus (mis à jour 2026-08-23, "MANDAT ROUND 4")
 
-**Poing Belluaire** : inchangé ce round (verdict "pas mal" de Milan,
-aucune retouche demandée) — masse ronde/compacte, plus proche du corps
-que la projection en diagonale de la planche.
+**MANDAT ROUND 4 — axe de vérification changé** : les rounds précédents
+avaient vérifié la fidélité du SPRITE à la planche de référence : ce
+round a vérifié autre chose, jamais fait avant — que la séquence en 4
+temps de chaque planche se joue vraiment comme un MOUVEMENT en jeu
+(pas une pose tenue X ticks). Bug systémique trouvé indépendamment sur
+4/5 compétences : l'`AnimatedSprite2D` (fps autonome) désynchronisait
+de la machine à états au tick, faisant arriver la frame de contact en
+retard ou geler la pose trop tôt — corrigé partout par le même patron
+tick-exact déjà établi sur Gueule Vide (`*_FRAME_TICK_BOUNDS` +
+`_frame_for_tick()`). Détail par compétence dans `docs/worklog.md`
+(entrée "MANDAT ROUND 4, CHANTIERS 1-5").
+
+**Bras-Faux** : silhouette RÉSOLUE depuis Round 2. Round 4 : pilotage
+tick-exact corrigé (le balayage, temps 3, était une pose tenue, pas un
+arc animé — la frame courbée en crochet arrive maintenant pile au tick
+de contact). Écart honnête restant, documenté par l'agent : même après
+correction du pilotage, les 6 frames sources se lisent comme 2 poses
+groupées (bras déployé / bras balayé au-dessus de l'épaule) plutôt
+qu'un arc continu à 6 temps uniques — partiellement compensé par le
+VFX `ribbonTrail` qui anime déjà un vrai balayage indépendant du
+sprite sur la même fenêtre. Pas de nouvelle génération PixelLab jugée
+justifiée (4e cycle sur ce pouvoir, risque de régresser des échecs déjà
+documentés). Capture :
+`captures/verification/2026-08-23-bras_faux-tick-exact-fix/`.
+
+**Poing Belluaire** : sprite inchangé (verdict "pas mal" de Milan,
+Round 2). Round 4 : même bug de pilotage tick-exact que Bras-Faux
+trouvé et corrigé — frame d'impact désormais synchronisée pile au
+contact, tenue correctement en hitstop/recovery. Capture :
+`captures/verification/2026-08-23-poing_belluaire-tick-exact-fix/`.
 
 **Gueule Vide** : composition en S toujours conforme (2e passe,
-2026-08-22) + passe de détail ajoutée (2026-08-23) : crocs irréguliers,
-gouttes d'encre à plusieurs points du tendon, légère texture de
-surface — silhouette S vérifiée STRICTEMENT préservée (analyse en
-composantes connexes + profil de largeur, après qu'un 1er essai ait
-fusionné par erreur un élément de la planche dans le corps, intercepté
-avant commit). Écart honnête restant : texture de mâchoire moins
-organique que la référence, mares d'encre au sol plus petites. Capture :
-`captures/verification/2026-08-23-fidelite-gueule_vide-v3.png`.
+2026-08-22) + passe de détail (2026-08-23 R2). Round 4 : vérification
+point par point des 3 manques suspectés par Milan — glyphe au sol déjà
+présent et fonctionnel (aucune correction), geste d'invocation de
+Cendre CONFIRMÉ manquant et corrigé (nouvelle pose dédiée
+`invocation_gueule_vide`, bras levés en garde large), animation propre
+de la créature à travers ses 4 temps déjà réelle et confirmée non
+figée. Capture :
+`captures/verification/2026-08-23-gueule-vide-4temps/`.
 
-**Terre** : le gap "modeste" de Marée de Sable est résolu — `beamSegment`
-(rangée de quads plats) remplacé par `sandCrest`, une vraie primitive
-VFX sprite-based (PixelLab, teintée par la palette comme les autres
-primitives) ; le nuage de poussière résiduel suit maintenant le trajet
-de la vague (nouveau champ moteur optionnel `origin_offset_px` par
-couche, défaut neutre, non-régression vérifiée sur les 4 autres
-recettes). `dust_kick.gd` corrigé (même classe de bug que l'ancien
-`converge.gd`). `ground_ring.gd` (Poing Tellurique) inspecté et jugé
-suffisant, non retouché. Captures :
-`captures/verification/2026-08-22-fidelite-maree_de_sable-v2.png` et
-`-poing_tellurique-v2.png`.
+**Terre** : gap "modeste" de Marée de Sable résolu Round 2
+(`sandCrest`). Round 4 : geste de Cendre au lancement (temps 2) ajouté
+pour Marée de Sable — manquait entièrement (placeholder "coup1"
+générique) — et retour visuel de teinte ajouté sur l'ennemi ralenti par
+la vague. Poing Tellurique : pose dédiée de Cendre au frappe-au-sol
+ajoutée — manquait aussi, seuls l'anneau/la poussière avaient été
+travaillés jusque-là. Captures :
+`captures/verification/2026-08-23-maree-de-sable-lancement-avant-apres.png`,
+`-ralentissement-teinte-avant-apres.png`,
+`-poing-tellurique-pose-dediee.png`.
 
 **Combo de base** (coup1/coup2/coup3) : toujours visuellement quasi
 interchangeable, aucune arme visible — non retouché (hors scope de
 tous les mandats jusqu'ici), nouvelle génération d'assets nécessaire.
 
-## Budgets (au 2026-08-23, fin "MANDAT ROUND 3")
+## Budgets (au 2026-08-23, fin "MANDAT ROUND 4")
 
-PixelLab (compte réel, `mcp__pixellab__get_balance`) : 522/2000
-générations consommées cumulées ce cycle (reset 2026-09-14), soit 1478
+PixelLab (compte réel, `mcp__pixellab__get_balance`) : 528/2000
+générations consommées cumulées ce cycle (reset 2026-09-14), soit 1472
 restantes — aucun plafond arbitraire appliqué (instruction explicite de
-Milan). Round 3 : **0 génération dépensée** (chantier 1bis = diagnostic/
-recolorisation pure, aucun des 3 agents décor n'a jugé une génération
-PixelLab nécessaire — l'écart identifié partout était l'éclairage
-[`PointLight2D`, textures déjà présentes] ou l'accessibilité réelle de
-la scène, jamais un manque de variété de props justifiant une dépense).
-Round 2 : 73 générations (chantiers 2/3/4). Meshy : 0 crédit consommé
-ce round.
+Milan). Round 4 : **6 générations** (poses/gestes dédiés Gueule Vide/
+Poing Tellurique/Marée de Sable ; Bras-Faux et Poing Belluaire corrigés
+à 0 crédit, bug de pilotage pur, aucune régénération jugée nécessaire —
+voir "Gaps de fidélité connus"). Round 3 : 0 génération. Round 2 : 73
+générations. Meshy : 0 crédit consommé ce round.
 
 ## Prochaine priorité recommandée
 
-Continuer Phase 3 (compétences) dans l'ordre verrouillé : Corbeau Pâle
-(Invocateur, tier 2) ensuite — même méthode que Marée de Sable,
-référence déjà archivée (`docs/references/invocateur/corbeau_pale.png`).
-Deux chantiers non planifiés identifiés ce round : le combo de base
-(coup1/coup2/coup3, visuellement interchangeable) et le plafond de
-bande "decor" systématiquement dépassé près des lumières (nécessite de
-toucher `post_render.gdshader`, partagé entre scènes — voir "Bugs
-transversaux connus").
+**Arrêt demandé par Milan avant de continuer** : le mandat Round 4
+est explicite — Milan doit valider ou non le résultat sur ces 5
+compétences avant qu'on attaque les 10 restantes, pour que celles-ci
+soient construites directement au niveau atteint ici plutôt que
+polish après coup. Ne pas commencer Corbeau Pâle (ni aucune des 10
+autres) sans un retour explicite. En attendant : le sprite de Cendre
+écrasé (bug transversal trouvé ce round, cf. "Bugs transversaux
+connus") est un candidat naturel de prochain chantier d'investigation,
+de même que le combo de base (coup1/coup2/coup3, visuellement
+interchangeable) et le plafond de bande "decor" près des lumières
+(`post_render.gdshader`, partagé entre scènes).

@@ -64,6 +64,111 @@ modifié ce chantier).
 
 ---
 
+## 2026-08-23 — MANDAT ROUND 4, CHANTIERS 1-5 : polish complet des 5 compétences déjà vivantes (mouvement réel, pas une pose tenue)
+
+**Contexte.** Les rounds précédents avaient corrigé des sprites isolés
+(silhouette Bras-Faux, mâchoire Gueule Vide, contraste VFX) mais jamais
+vérifié que la séquence en 4 temps de chaque planche de référence se
+joue vraiment en jeu comme un mouvement — pas une frame tenue X ticks.
+5 agents en parallèle, un par compétence, même méthode : rejouer les 4
+temps contre la planche de `docs/references/`, corriger ce qui n'est
+pas un vrai mouvement, capture committée montrant TOUS les temps en
+mouvement (pas une frame isolée), verdict honnête par temps.
+
+**Bug systémique trouvé indépendamment sur 4/5 compétences** : le
+pilotage de l'`AnimatedSprite2D` (autonome, à son propre FPS) désync de
+la machine à états au tick, faisant arriver la frame de contact/impact
+1+ tick en retard ou figeant la pose trop tôt. Corrigé partout par le
+même patron déjà établi sur `gueule_vide.gd::FRAME_TICK_BOUNDS` :
+`play()+pause()+frame=0` au cast, puis un tableau `*_FRAME_TICK_BOUNDS`
+de bornes cumulatives + un helper `_frame_for_tick()` qui pousse la
+frame exacte à chaque tick de `_physics_process`.
+
+**Poing Belluaire** — l'animation de frappe utilisait le nouveau poing
+transformé mais son impact tombait au mauvais tick (pose figée avant
+contact réel). `POING_BELLUAIRE_FRAME_TICK_BOUNDS` ajouté, frame
+d'impact désormais synchronisée pile au tick de contact, tenue
+correctement à travers hitstop/recovery. Preuve :
+`captures/verification/2026-08-23-poing_belluaire-tick-exact-fix/`.
+Verdict : les 4 temps se lisent comme un vrai coup lourd, pas une pose.
+
+**Bras-Faux** — le balayage (temps 3) était bien une pose tenue, pas un
+arc animé : `BRAS_FAUX_FRAME_TICK_BOUNDS` ajouté, la pose courbée en
+crochet (frame 3) arrive maintenant pile au tick de contact (15), tenue
+jusqu'à recovery. Preuve :
+`captures/verification/2026-08-23-bras_faux-tick-exact-fix/` — dégâts
+"10" lisibles contre le Placeholder magenta à la frame de contact.
+Contamination git bénigne pendant la session (le commit `9dad975`
+labellisé Bras-Faux contient en fait les fichiers Gueule Vide d'un
+agent concurrent) — sans conséquence : chaque agent suivant a bien
+recommité son propre périmètre, rien perdu, vérifié par une
+reconciliation `git log`/`git status`/`git stash list` complète en fin
+de round.
+
+**Gueule Vide** — 3 manques précis vérifiés un par un. (a) Glyphe au
+sol au temps 1 : déjà présent et fonctionnel, rien à corriger. (b)
+Geste d'invocation de Cendre : générique avant ce round (pose idle
+maquillée) — nouvelle anim dédiée `invocation_gueule_vide` (geste bras
+levés distinct), câblée via une fenêtre `_gueule_vide_gesture_ticks_remaining`
+qui ne bloque que l'écrasement d'anim idle, jamais le mouvement
+lui-même. (c) Animation propre de la créature à travers ses 4 temps :
+déjà réelle, confirmée non figée. Preuve :
+`captures/verification/2026-08-23-gueule-vide-4temps/` (21 fichiers,
+before/after sur les ticks 1/2/5/12/20/35).
+
+**Poing Tellurique** — la pose/le geste de Cendre au moment de la
+frappe au sol manquait (seuls l'anneau et la poussière avaient été
+travaillés). Nouvelle pose dédiée `poing_tellurique`
+(`POING_TELLURIQUE_FRAME_TICK_BOUNDS`, impact au tick 19) : séquence à
+6 panneaux (prep/arme/descend/impact/éclats/relève) qui se lit
+maintenant comme un vrai ground-pound, conforme à la planche. Preuve :
+`captures/verification/2026-08-23-poing-tellurique-pose-dediee.png`.
+
+**Marée de Sable** — geste de Cendre au lancement (temps 2) absent
+(placeholder "coup1" générique), et le ralentissement sur les ennemis
+touchés n'avait aucun retour visuel. Nouvelle pose `maree_de_sable`
+(bas sur pattes, poussée vers l'avant) + teinte ocre pulsée sur
+l'ennemi ralenti (réutilise le rôle palette "contact" déjà verrouillé
+de `data/palettes/terre.json`, aucune nouvelle valeur). Preuves :
+`captures/verification/2026-08-23-maree-de-sable-lancement-avant-apres.png`
+et `...-ralentissement-teinte-avant-apres.png` (magenta neutre AVANT →
+teinte rose/tan visible APRÈS). Incident pendant la session : un
+`git reset` concurrent a effacé le travail non commité de cet agent
+(`enemy.gd`/`player.gd`/smoke test) — détecté via un smoke test qui
+repassait au rouge, réécrit à l'identique, re-vérifié, commité.
+
+**Bug pré-existant, transversal, trouvé PENDANT la revue des captures
+(pas par un agent) — non corrigé ce round.** Le sprite de Cendre se
+rend par moments comme une fine tranche verticale écrasée : confirmé au
+tick 35 dans `gueule-vide-4temps/after_tick35.png`, et indépendamment
+au tick 15 dans le panneau "AVANT" de
+`maree-de-sable-lancement-avant-apres.png`. Confirmé PRÉ-EXISTANT
+(identique dans les baselines "avant" qui précèdent tout changement de
+ce round), reproductible dans 2 contextes de compétence indépendants.
+Cause racine non encore investiguée — chantier dédié futur nécessaire,
+même discipline que le défaut posterize `post_render.gdshader` déjà
+documenté-pas-corrigé.
+
+**Smoke tests** : `run_gameplay_smoke_test.sh` et
+`run_vfx_recipe_smoke_test.sh` verts (`"all_pass":true`) sur l'état
+fusionné des 5 agents, ré-exécutés après un import propre complet
+(`.godot` supprimé et régénéré — la synchronisation Git LFS locale
+n'avait pas encore été tirée sur cette machine, cause des erreurs de
+parse transitoires en tout début de vérification, aucun rapport avec
+le contenu des chantiers).
+
+**Chantier 0 (avant les 5 agents)** : losange beige identifié comme
+`arcSlash` (couche contact Bras-Faux), légitime — voir entrée
+précédente, aucun changement.
+
+**Après ce round** : Milan valide ou non le résultat sur ces 5
+compétences avant d'attaquer les 10 restantes — l'objectif explicite
+est que les 10 prochaines soient construites directement au niveau
+atteint ici, pas qu'elles soient faites d'abord et polish après coup.
+Aucun travail sur les 10 compétences restantes n'a été commencé.
+
+---
+
 ## 2026-08-23 — MANDAT ROUND 3, CHANTIER DÉCOR : outpost éclairé pour la 1ère fois, gate_premiere couvert sur toute sa largeur, test_arena confirmée hors scope
 
 **Contexte** : suite au chantier 1bis (entrée précédente), 3 agents
