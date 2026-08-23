@@ -2472,3 +2472,105 @@ consulté — non applicable, aucune dépense envisagée après l'enquête).
 
 **Fichiers modifiés** : uniquement cette entrée de worklog. Aucun
 fichier de scène (`test_arena.tscn` ou autre) touché.
+
+## 2026-08-23 — Agent Poing Tellurique : pose dédiée de frappe au sol (mandat "polish complet")
+
+Mandat : les rounds précédents ont retravaillé le VFX de Poing
+Tellurique (`groundRing`, `dustKick`, `impactStar`) mais jamais le
+geste du personnage — `_start_poing_tellurique()` jouait encore
+`"coup1"` (le 1er coup du combo à mains nues, un jab horizontal), un
+placeholder documenté comme tel dans le code depuis le début. Écart
+confirmé par comparaison directe avec `docs/references/terre/
+poing_tellurique.png` (4 temps : préparation, frappe qui descend,
+impact au sol, dissipation) — un jab devant soi n'a aucun rapport avec
+un coup qui frappe le sol.
+
+**Pipeline (1 génération PixelLab, acceptée dès le 1er essai)** :
+`get_character` d'abord pour vérifier le character_id RÉELLEMENT en
+jeu (`8596a4ad-...`, Cendre_v3c sans cape — même piège documenté 2 fois
+cette session sur Bras-Faux/Poing Belluaire, évité ici en amont).
+Contrairement à ces deux pouvoirs, Poing Tellurique ne transforme
+aucun membre — c'est une POSE, pas une mutation — donc `animate_character`
+mode v3 DIRECTEMENT sur l'état de base "Idle" (même construction que
+coup1/coup2/coup3/dash/mort), pas de `create_character_state`. Prompt
+avec exclusions négatives explicites (pas d'arme/lueur/traînée),
+"downward ground pound", 6 frames sud. Résultat : séquence lisible
+(debout → bras qui s'arment → accroupissement profond → poings au sol
+avec éclats de débris visibles sur le sprite lui-même → remontée),
+aucune hallucination, aucun re-roll nécessaire.
+
+**Cuisson (0 appel PixelLab supplémentaire)** : intégration sur le
+canvas partagé Cendre (64×64, ancrage pied (32,61)), script ponctuel
+qui MERGE dans le manifeste existant (même contournement que Bras-Faux/
+Poing Belluaire — `cook_character_frames.py` écrase tout le manifeste
+s'il n'est appelé qu'avec un seul `--anim`). Deux bugs trouvés et
+corrigés en route : (1) `foot_anchor()` du pipeline existant (bande
+centrale 35 % du bbox, conçue pour ignorer une cape qui déborde) se
+trompe sur cette pose précise — stance large "prêt au combat", pieds
+écartés au-delà de la bande, qui tombe alors dans l'entrejambe (y=79)
+au lieu des pieds réels (y=95) ; corrigé en utilisant directement
+`bbox_bottom-1`, fiable ici car aucune cape (supprimée du jeu) et les
+pieds restent au même niveau au sol sur les 6 frames (écart max 2px).
+(2) Facteur d'échelle recalculé après ce correctif : 53/78 ≈ 0,68
+(mesuré sur frame0 contre `idle_south` cuit), même classe de correction
+que le facteur Bras-Faux (51/79) — sans lui, la tête sortait tronquée
+en haut du canvas sur la pose debout.
+
+**Câblage tick-exact** (`POING_TELLURIQUE_FRAME_TICK_BOUNDS`, même
+discipline que `BRAS_FAUX_FRAME_TICK_BOUNDS`/`POING_BELLUAIRE_
+FRAME_TICK_BOUNDS` ajoutés cette même session par des agents parallèles
+sur ce même fichier) : `play()`+`pause()`+`frame=0` puis pilotage
+manuel de la frame par tick cumulé, JAMAIS la lecture fps autonome
+d'`AnimatedSprite2D`. Bornes calées pour que la frame d'impact (poings
+au sol + éclats) bascule PILE au tick global 19 (ANTICIPATION 18 +
+RELEASE tick1 = contact), aligné avec la fenêtre "contact" 18-22
+d'`impactFlashFrame` de la recette VFX déjà en place — le point
+d'impact du sprite correspond maintenant à où l'anneau/les éclats
+apparaissent, pas un hasard de fps.
+
+**Vérifié** : smoke test gameplay (76 checks, `all_pass=true`), dont
+`poing_tellurique_input_starts_state_and_plays_dedicated_anim` (renommé
+depuis `plays_placeholder_anim`). Capture de vérification 6 temps
+(t=3/8/16/19/30/40) en jeu réel, comparée côte-à-côte à la planche de
+référence, committée dans `captures/verification/
+2026-08-23-poing-tellurique-pose-dediee.png` — verdict honnête : le
+geste lit clairement comme "frappe le sol" (accroupissement net, mains
+qui descendent, contact avec éclats), pas un jab légèrement modifié.
+Écart mineur restant assumé : la planche montre des blocs de terre
+arrachés au moment de l'impact que le sprite lui-même ne dessine pas
+(compensé par la couche VFX `impactStar`/`dustKick` déjà en place,
+pas par le personnage) — jugé suffisant, pas retenté (discipline
+anti-reroll-infini).
+
+**Coordination multi-agents (réel, pas hypothétique)** : ce round a
+vu au moins 3 autres agents éditer les MÊMES fichiers partagés
+(`player.gd`, `cendre_frames.tres`, `cendre_frames_cooked.json`,
+`smoke_test_gameplay.gd`) en temps réel dans le même répertoire de
+travail — un vrai conflit de fusion a été rencontré et corrigé en
+direct (un `}` manquant dans `cendre_frames.tres` après une écriture
+concurrente sur la même fin de fichier), et une passe complète de
+"revert HEAD puis ré-application" a été nécessaire deux fois pour
+isoler proprement les changements avant de committer. L'entrée
+`poing_tellurique` de `cendre_frames.tres`/le manifeste a fini par être
+absorbée dans le commit d'un autre agent (`7624ba9`, effet de bord
+d'un working tree partagé) avant que ce commit-ci ne parte — ce
+commit ne retouche donc que ce qui restait réellement scopé Poing
+Tellurique : `player.gd` (bloc Poing Tellurique uniquement, diff
+vérifié ligne par ligne), `smoke_test_gameplay.gd` (1 check renommé),
+le log PixelLab, les 6 PNG cuits et la capture de vérification.
+
+**Coût réel consommé** : 1 génération PixelLab (`animate_character`,
+1478/2000 générations restantes avant travail, aucun appel Meshy).
+
+**Fichiers modifiés** : `src/gameplay/player.gd` (bloc Poing
+Tellurique : `POING_TELLURIQUE_FRAME_TICK_BOUNDS`, `_start_poing_
+tellurique()`, `_advance_poing_tellurique()`, `_poing_tellurique_
+global_tick()`, `_poing_tellurique_frame_for_tick()`, `_end_poing_
+tellurique()` inchangé), `tools/smoke_test_gameplay.gd` (1 check
+renommé), `data/pixellab_usage.jsonl` (2 entrées), `assets/processed/
+sprites/cendre/poing_tellurique/{0..5}.png`, `captures/verification/
+2026-08-23-poing-tellurique-pose-dediee.png`. `assets/processed/
+sprites/cendre/cendre_frames.tres` et `assets/manifests/
+cendre_frames_cooked.json` NON dans ce commit (déjà absorbés par un
+commit parallèle, cf. note coordination ci-dessus) mais leur contenu
+Poing Tellurique est identique à ce qui a été vérifié ici.
