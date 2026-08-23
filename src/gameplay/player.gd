@@ -358,6 +358,43 @@ const MAREE_DE_SABLE_COOLDOWN_TICKS := 220  # légèrement au-dessus de Poing Te
 const MareeDeSableRecipeId := "power.maree_de_sable.cast"
 const MAREE_DE_SABLE_CAST_SEED := 51004  # Addendum A §A.5, jamais l'horloge murale.
 
+## Art dédié (agent Marée de Sable, mandat "polish complet", 2026-08-23) :
+## anim "maree_de_sable" propre, PAS un réemploi de "coup1" (jab horizontal
+## générique — écart confirmé par capture avant correctif sur plusieurs
+## ticks et par comparaison directe avec le temps 2 "Lancement" de
+## docs/references/terre/maree_de_sable.png, qui montre un bras unique
+## projeté droit devant en position basse/écartée, aucun rapport avec un
+## jab). Pipeline : character_id Cendre_v3c EN JEU (8596a4ad, vérifié via
+## get_character AVANT l'appel), animate_character mode v3 DIRECTEMENT sur
+## l'état de base (pas de create_character_state : Marée de Sable ne
+## transforme aucun membre, contrairement à Bras-Faux/Poing Belluaire —
+## même construction que coup1/coup2/coup3/Poing Tellurique). 6 frames sud,
+## acceptées dès le 1er essai (aucune arme/lueur saturée hallucinée ; un
+## voile pâle poussiéreux apparaît à la main sur les 2 dernières frames,
+## lu comme le début du jet de sable annoncé par le prompt — cohérent avec
+## la planche, pas un artefact à corriger). Facteur d'échelle LANCZOS
+## 53/79 ≈ 0.671 mesuré sur la frame la plus haute (frame0, bras au repos)
+## vs le gabarit déjà établi (bras_faux 53px/poing_belluaire 51px) — même
+## classe de correctif que ces deux pouvoirs, appliqué uniformément aux 6
+## frames avant ancrage pied (sans quoi la tête sortait du canvas partagé
+## 64×64, vérifié et corrigé avant tout commit). Bande de recherche du pied
+## élargie à 100% (foot_band_frac) pour les 6 frames : jambes écartées dès
+## la 1ère frame, la bande centrale étroite par défaut tombait dans l'écart
+## entre les deux bottes (vérifié pixel par pixel, aucune cape/tissu ne
+## traîne sous les bottes sur ce personnage R3 sans cape, donc aucun risque
+## de retomber sur le bug cape que cette bande visait à l'origine).
+##
+## Pilotage tick-exact (même discipline que POING_BELLUAIRE_FRAME_TICK_BOUNDS/
+## POING_TELLURIQUE_FRAME_TICK_BOUNDS ci-dessus, jamais la fps autonome
+## d'AnimatedSprite2D qui désynchronise le contact mécanique de la pose
+## affichée — bug de classe déjà trouvé et corrigé sur ces deux pouvoirs) :
+## bornes calées pour que la frame 3 (bras tendu en extension complète,
+## pose "Lancement" de la planche) couvre la fin de l'ANTICIPATION ET le
+## tick de contact (RELEASE tick1 = tick global 15 = ANTICIPATION 14 + 1),
+## puis frames 4-5 (voile de sable qui grossit à la main) tiennent le reste
+## du RELEASE et toute la RECOVERY (14+10+18=42).
+const MAREE_DE_SABLE_FRAME_TICK_BOUNDS: Array[int] = [4, 8, 11, 15, 22, 42]
+
 @export var stats: Stats = Stats.new()
 
 ## Direction de face courante (8 valeurs), utile aux futures frames
@@ -1344,10 +1381,9 @@ func _try_hit_poing_tellurique() -> void:
 
 
 ## Marée de Sable — même construction que Poing Tellurique (3 phases,
-## aucun déplacement automatique). Placeholder visuel : "coup1" partagé
-## avec Poing Tellurique (même famille Terre, aucune ambiguïté avec les
-## 2 pouvoirs de Monstrification "coup2"/"coup3") — art dédié encore à
-## générer, cf. note similaire sur _start_poing_tellurique().
+## aucun déplacement automatique). Art dédié "maree_de_sable" (voir
+## MAREE_DE_SABLE_FRAME_TICK_BOUNDS ci-dessus pour le pipeline complet) —
+## remplace l'ancien placeholder "coup1".
 func _start_maree_de_sable() -> void:
 	if stats.is_dead() or _action_lock or _maree_de_sable_cooldown_remaining > 0:
 		return
@@ -1355,7 +1391,17 @@ func _start_maree_de_sable() -> void:
 	_maree_de_sable_phase = MareeDeSablePhase.ANTICIPATION
 	_maree_de_sable_tick = 0
 	_maree_de_sable_hit_applied = false
-	_sprite.play("coup1")
+	if facing.x != 0.0:
+		_sprite.flip_h = facing.x < 0.0
+	# Tick-exact (voir MAREE_DE_SABLE_FRAME_TICK_BOUNDS ci-dessus) : play()
+	# positionne l'AnimatedSprite2D sur "maree_de_sable", pause() coupe
+	# immédiatement sa propre horloge fps pour que seule _advance_
+	# maree_de_sable() décide de la frame affichée, jamais Godot — même
+	# discipline que _start_bras_faux()/_start_poing_belluaire()/
+	# _start_poing_tellurique().
+	_sprite.play("maree_de_sable")
+	_sprite.pause()
+	_sprite.frame = 0
 
 	var dir := facing
 	if dir.length_squared() < 0.0001:
@@ -1386,6 +1432,38 @@ func _advance_maree_de_sable() -> void:
 		MareeDeSablePhase.RECOVERY:
 			if _maree_de_sable_tick >= MAREE_DE_SABLE_RECOVERY_TICKS:
 				_end_maree_de_sable()
+	# Tick-exact (voir MAREE_DE_SABLE_FRAME_TICK_BOUNDS) : appliqué APRÈS la
+	# transition de phase éventuelle ci-dessus, pour que la frame reflète
+	# l'état réel de CE tick (RELEASE tick1 = contact -> frame 3 dès ce même
+	# appel, pas un tick de retard). Rien à faire si le cast vient de se
+	# terminer (_end_maree_de_sable() a remis NONE) : _handle_movement()
+	# reprend la main sur _sprite au tick suivant.
+	if _maree_de_sable_phase != MareeDeSablePhase.NONE:
+		_sprite.frame = _maree_de_sable_frame_for_tick(_maree_de_sable_global_tick())
+
+
+## Tick unique cumulé depuis le début du cast (ANTICIPATION puis RELEASE
+## puis RECOVERY mis bout à bout) — même rôle que Player._poing_belluaire_
+## global_tick()/_poing_tellurique_global_tick(), recalculé à partir des
+## compteurs par-phase existants plutôt que dupliqué en un 3e compteur.
+func _maree_de_sable_global_tick() -> int:
+	match _maree_de_sable_phase:
+		MareeDeSablePhase.ANTICIPATION:
+			return _maree_de_sable_tick
+		MareeDeSablePhase.RELEASE:
+			return MAREE_DE_SABLE_ANTICIPATION_TICKS + _maree_de_sable_tick
+		MareeDeSablePhase.RECOVERY:
+			return MAREE_DE_SABLE_ANTICIPATION_TICKS + MAREE_DE_SABLE_RELEASE_TICKS + _maree_de_sable_tick
+		_:
+			return 0
+
+
+## Même schéma que Player._poing_belluaire_frame_for_tick()/_poing_tellurique_frame_for_tick().
+func _maree_de_sable_frame_for_tick(tick: int) -> int:
+	for i in MAREE_DE_SABLE_FRAME_TICK_BOUNDS.size():
+		if tick <= MAREE_DE_SABLE_FRAME_TICK_BOUNDS[i]:
+			return i
+	return MAREE_DE_SABLE_FRAME_TICK_BOUNDS.size() - 1
 
 
 func _end_maree_de_sable() -> void:

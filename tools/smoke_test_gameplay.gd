@@ -1445,6 +1445,25 @@ func _check_maree_de_sable() -> void:
 	var in_line_slowed: bool = enemy_in_line._slow_multiplier < 1.0 and enemy_in_line._slow_ticks_remaining > 0
 	var lateral_outside_not_slowed: bool = enemy_lateral_outside._slow_multiplier == 1.0
 
+	# MANDAT DÉDIÉ MARÉE DE SABLE (polish, 2026-08-23) — écart trouvé : le
+	# ralentissement (apply_slow() ci-dessus) changeait bien la vitesse mais
+	# rien à l'écran ne le montrait (Enemy._reset_visual_color() ne
+	# connaissait pas _slow_ticks_remaining avant ce correctif). Marge de 12
+	# ticks physiques (PAS 1 seul) avant de lire self_modulate/Polygon2D.color :
+	# juste après take_damage(), Enemy._physics_process() retourne tôt
+	# plusieurs ticks de suite (hit-stop "medium" ~4 ticks via
+	# CombatFeedback.is_enemy_frozen(), PUIS recul ~6 ticks via
+	# _recoil_tick < _recoil_total_ticks) AVANT d'atteindre le code qui
+	# applique la teinte — un seul tick de marge échouait systématiquement
+	# ici (in_line_color restait au magenta de base), pas un bug de la
+	# teinte elle-même mais un test qui la lisait trop tôt.
+	for _i in 12:
+		await get_tree().physics_frame
+	var in_line_color: Color = enemy_in_line._visual.self_modulate if enemy_in_line._visual is AnimatedSprite2D else (enemy_in_line._visual as Polygon2D).color
+	var lateral_outside_color: Color = enemy_lateral_outside._visual.self_modulate if enemy_lateral_outside._visual is AnimatedSprite2D else (enemy_lateral_outside._visual as Polygon2D).color
+	var in_line_visually_tinted: bool = in_line_color != enemy_in_line._base_visual_color
+	var lateral_outside_not_tinted: bool = lateral_outside_color == enemy_lateral_outside._base_visual_color
+
 	var ended: bool = await _wait_until(
 		func(): return _player._maree_de_sable_phase == Player.MareeDeSablePhase.NONE,
 		Player.MAREE_DE_SABLE_RELEASE_TICKS + Player.MAREE_DE_SABLE_RECOVERY_TICKS + 5)
@@ -1456,8 +1475,8 @@ func _check_maree_de_sable() -> void:
 	var maree_de_sable_started_during_cooldown: bool = _player._maree_de_sable_phase != Player.MareeDeSablePhase.NONE
 
 	_checks.append({
-		"name": "maree_de_sable_input_starts_state_and_plays_placeholder_anim",
-		"pass": started and anim_during == "coup1",
+		"name": "maree_de_sable_input_starts_state_and_plays_dedicated_anim",
+		"pass": started and anim_during == "maree_de_sable",
 		"detail": {"started": started, "anim": anim_during},
 	})
 	_checks.append({
@@ -1473,6 +1492,14 @@ func _check_maree_de_sable() -> void:
 		"name": "maree_de_sable_slows_target_hit_only",
 		"pass": in_line_slowed and lateral_outside_not_slowed,
 		"detail": {"in_line_slowed": in_line_slowed, "lateral_outside_not_slowed": lateral_outside_not_slowed},
+	})
+	_checks.append({
+		"name": "maree_de_sable_slow_has_visible_tint_on_hit_target_only",
+		"pass": in_line_visually_tinted and lateral_outside_not_tinted,
+		"detail": {
+			"in_line_color": in_line_color, "in_line_base_color": enemy_in_line._base_visual_color,
+			"lateral_outside_color": lateral_outside_color, "lateral_outside_base_color": enemy_lateral_outside._base_visual_color,
+		},
 	})
 	_checks.append({
 		"name": "maree_de_sable_ends_and_unlocks_then_cooldown_blocks_second_cast",

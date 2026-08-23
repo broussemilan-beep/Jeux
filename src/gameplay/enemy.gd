@@ -108,6 +108,21 @@ var _base_visual_color: Color = Color.WHITE
 var _slow_multiplier: float = 1.0
 var _slow_ticks_remaining: int = 0
 
+## MANDAT DÉDIÉ MARÉE DE SABLE (polish, 2026-08-23) — écart trouvé : apply_slow()
+## ci-dessus changeait bien `stats.move_speed_px` (_chase_velocity le lit), mais
+## RIEN à l'écran ne le montrait — un ennemi ralenti était visuellement
+## indiscernable d'un ennemi normal tant qu'on ne mesurait pas sa vitesse de
+## déplacement à l'œil. Réutilise le SEUL mécanisme de teinte déjà câblé sur ce
+## nœud (`self_modulate`/`Polygon2D.color`, `_pulse_telegraph_color()` ci-dessous)
+## plutôt que d'inventer un 2e système : teinte ocre clair (data/palettes/
+## terre.json, rôle "contact" — même couleur que sandCrest/impactStar, aucune
+## couleur nouvelle) mélangée par-dessus la couleur de base, recalculée à
+## CHAQUE tick dans _reset_visual_color() pour composer proprement avec le
+## pulse blanc du télégraphe (qui doit rester visible même sur un ennemi
+## ralenti — l'un ne doit jamais écraser silencieusement l'autre).
+const SLOW_TINT_COLOR := Color(0.7, 0.595, 0.385, 1.0)  # HSV(40°, 45%, 70%), palette "terre" rôle "contact"
+const SLOW_TINT_STRENGTH := 0.65
+
 signal hit(amount: float)
 
 ## Nœud visuel de la cible — `Placeholder` (Polygon2D géométrique) sur le
@@ -163,6 +178,13 @@ func _physics_process(_delta: float) -> void:
 			_slow_multiplier = 1.0
 	_run_ai()
 	_update_visual_bob()
+	# Retour visuel du ralentissement (cf. _reset_visual_color()) : appelé
+	# chaque tick HORS TELEGRAPH, qui a déjà sa propre couleur par tick via
+	# _pulse_telegraph_color() (appelée depuis _run_ai() ci-dessus) — les deux
+	# sites ne se marchent jamais dessus, un seul écrit self_modulate/color
+	# par tick selon l'état.
+	if _state != State.TELEGRAPH:
+		_reset_visual_color()
 	# `move_and_slide()` UNIQUEMENT si un vrai déplacement est demandé (pas
 	# à chaque tick inconditionnellement) : appelé même à vélocité nulle,
 	# il dépénètre les CharacterBody2D déjà en collision (deux ennemis
@@ -356,18 +378,43 @@ func _chase_velocity(to_player: Vector2, dist: float) -> Vector2:
 ## shader d'outline déjà posé sur ces sprites (le modulate Godot
 ## multiplie la sortie du shader, aucun conflit).
 func _pulse_telegraph_color(progress: float) -> void:
-	var lerped: Color = _base_visual_color.lerp(Color(1.0, 1.0, 1.0, 1.0), clampf(progress, 0.0, 1.0))
+	# Part de la couleur "de repos" (base, ou teintée sable si ralenti — cf.
+	# _slow_tinted_color()) plutôt que toujours _base_visual_color brut : un
+	# ennemi ralenti QUI télégraphie un coup doit rester lisible comme
+	# "ralenti" jusqu'à ce que le flash blanc du télégraphe monte, jamais un
+	# blanc qui efface silencieusement le retour visuel du contrôle en cours.
+	var lerped: Color = _slow_tinted_color().lerp(Color(1.0, 1.0, 1.0, 1.0), clampf(progress, 0.0, 1.0))
 	if _visual is Polygon2D:
 		(_visual as Polygon2D).color = lerped
 	elif _visual is AnimatedSprite2D:
 		_visual.self_modulate = lerped
 
 
+## Ralentissement (Marée de Sable, apply_slow() ci-dessus) — teinte ocre clair
+## (SLOW_TINT_COLOR) mélangée par-dessus la couleur de base tant que
+## `_slow_ticks_remaining > 0`, sinon la couleur de base telle quelle. Recalculé
+## à chaque appel plutôt que mémorisé : suit `_slow_ticks_remaining` sans état
+## supplémentaire à synchroniser (même discipline que _slow_multiplier, qui
+## expire de la même façon par décompte de ticks, jamais un Tween).
+func _slow_tinted_color() -> Color:
+	if _slow_ticks_remaining > 0:
+		return _base_visual_color.lerp(SLOW_TINT_COLOR, SLOW_TINT_STRENGTH)
+	return _base_visual_color
+
+
+## Appelée UNE FOIS au moment où le télégraphe cède la place au coup exécuté
+## (_execute_attack(), sortie immédiate du blanc de pulse) ET, depuis le
+## correctif MANDAT DÉDIÉ MARÉE DE SABLE, à CHAQUE tick hors TELEGRAPH
+## (_physics_process ci-dessus) — c'est ce 2e site d'appel qui donne au
+## ralentissement un retour visuel réel : sans lui, la teinte ne se voyait
+## qu'à l'instant précis d'un _execute_attack(), jamais en IDLE/CHASE/RECOVER
+## où un ennemi ralenti passe l'essentiel de sa durée de ralentissement.
 func _reset_visual_color() -> void:
+	var color: Color = _slow_tinted_color()
 	if _visual is Polygon2D:
-		(_visual as Polygon2D).color = _base_visual_color
+		(_visual as Polygon2D).color = color
 	elif _visual is AnimatedSprite2D:
-		_visual.self_modulate = _base_visual_color
+		_visual.self_modulate = color
 
 
 ## `_visual` en `AnimatedSprite2D` uniquement (Crawler/Brute/Ranged, Phase

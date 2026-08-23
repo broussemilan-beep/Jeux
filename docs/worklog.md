@@ -2574,3 +2574,109 @@ sprites/cendre/cendre_frames.tres` et `assets/manifests/
 cendre_frames_cooked.json` NON dans ce commit (déjà absorbés par un
 commit parallèle, cf. note coordination ci-dessus) mais leur contenu
 Poing Tellurique est identique à ce qui a été vérifié ici.
+
+---
+
+## 2026-08-23 — Agent dédié Marée de Sable : geste de Cendre au lancement + retour visuel du ralentissement
+
+Mandat "polish complet" ciblé sur 2 écarts jamais traités pour Marée de
+Sable (Terre, Tier 2) : le geste de Cendre au temps 2 "Lancement" de la
+planche (`docs/references/terre/maree_de_sable.png`) et le ressenti
+visuel du ralentissement infligé aux ennemis touchés.
+
+**Point 1 — Geste "Lancement" : placeholder confirmé et corrigé.**
+Lecture de code + capture tick-par-tick avant correctif
+(`_start_maree_de_sable()` jouait `"coup1"`, le jab générique du combo
+à mains nues — commentaire du code le confirmait déjà explicitement)
+ont confirmé l'écart : "coup1" est un jab de profil resserré, aucun
+rapport avec la planche (stance basse très écartée, un seul bras tendu
+droit devant, sable qui jaillit de la main). Pipeline : character_id
+Cendre_v3c vérifié EN JEU (`8596a4ad`, via `get_character` avant tout
+appel — piège cape/ancien personnage déjà documenté sur ce dossier,
+évité en amont) → `animate_character` mode v3 directement sur l'état
+de base (pas de `create_character_state` : Marée de Sable ne
+transforme aucun membre, contrairement à Bras-Faux/Poing Belluaire) →
+6 frames sud, acceptées dès le 1er essai (aucune arme/lueur
+hallucinée ; un voile pâle poussiéreux apparaît à la main sur les 2
+dernières frames, lu comme le début du jet de sable annoncé par le
+prompt, cohérent avec la planche). 2 bugs de cuisson trouvés et
+corrigés avant tout commit : (a) bande de recherche du pied par défaut
+(35% du bbox) tombait dans l'écart entre les deux bottes sur les 6
+frames (stance écartée dès la 1ère frame) — élargie à 100%, vérifié
+qu'aucune frame ne porte de tissu qui traînerait sous les bottes
+(personnage R3 sans cape) ; (b) une fois le pied correctement ancré,
+la frame la plus haute dépassait le sommet du canvas partagé 64×64
+(tête rognée) — facteur d'échelle LANCZOS 53/79 ≈ 0,671 mesuré et
+appliqué uniformément aux 6 frames, même classe de correctif que
+Bras-Faux/Poing Belluaire/Poing Tellurique. Pilotage tick-exact
+(`MAREE_DE_SABLE_FRAME_TICK_BOUNDS`, même discipline que ces 3
+pouvoirs — jamais la fps autonome d'AnimatedSprite2D qui désynchronise
+la pose affichée du contact mécanique) : la frame 3 (bras tendu en
+extension complète, pose "Lancement") couvre la fin de l'ANTICIPATION
+ET le tick de contact réel. Verdict honnête : la silhouette lit
+clairement "stance basse écartée + poussée d'un bras" à l'écran,
+nettement distincte du jab de profil resserré du placeholder — écart
+réel avec la planche : le détail fin (doigts écartés, texture du
+sable qui jaillit précisément de la paume) se perd à l'échelle réelle
+du jeu (sprite ~35×55px), lisible seulement en zoomant sur les frames
+sources elles-mêmes, pas un défaut du contenu généré mais une limite
+de résolution d'affichage déjà documentée sur les autres pouvoirs à
+sprite dédié cette session.
+
+**Point 2 — Ralentissement : aucun retour visuel confirmé et corrigé.**
+Confirmé par lecture de code : `Enemy.apply_slow()` change bien
+`_slow_multiplier`/`_slow_ticks_remaining` (lu par `_chase_velocity()`
+pour la vitesse réelle), mais rien à l'écran ne le montrait — un
+ennemi ralenti était indiscernable d'un ennemi normal sans mesurer sa
+vitesse de déplacement à l'œil. Réutilise le seul mécanisme de teinte
+déjà câblé sur `Enemy` (`self_modulate`/`Polygon2D.color`, déjà
+utilisé pour le pulse blanc du télégraphe d'attaque) plutôt que
+d'inventer un 2e système : teinte ocre clair (`SLOW_TINT_COLOR`,
+HSV 40°/45%/70% — la couleur "contact" déjà verrouillée dans
+`data/palettes/terre.json`, aucune couleur nouvelle introduite, palette
+non modifiée) mélangée à 65% par-dessus la couleur de base,
+recalculée à chaque tick hors TELEGRAPH (`_reset_visual_color()`,
+étendu pour composer proprement avec le pulse de télégraphe plutôt que
+de l'écraser). Vérifié par un nouveau check smoke test
+(`maree_de_sable_slow_has_visible_tint_on_hit_target_only`) ET par
+capture réelle avant/après (couleur mesurée `(0.805, 0.387, 0.600)` vs
+base `(1, 0, 1)` sur le mannequin générique — écart net et lisible).
+
+**Incident de coordination réel (working tree partagé, même constat
+que Poing Tellurique/Bras-Faux/Gueule Vide documenté plus haut) :**
+entre la 1ère cuisson/merge de `maree_de_sable` (manifeste +
+`cendre_frames.tres`, vérifiés à 27 animations) et la vérification
+suivante, un `git reset`/checkout concurrent d'un autre agent a remis
+`enemy.gd`, la section Marée de Sable de `player.gd` et le check dédié
+de `smoke_test_gameplay.gd` à l'état HEAD — perte silencieuse de tout
+le code non encore commit, découverte en relançant le smoke test
+(`"anim":"coup1"` au lieu de `"maree_de_sable"`). Le manifeste/`.tres`
+ont survécu (déjà absorbés par le commit d'un autre agent avant le
+reset). Le code a dû être entièrement réécrit à l'identique (aucune
+perte de contenu, seulement de temps) puis re-vérifié
+(`all_pass:true`) avant tout commit cette fois, sans fenêtre
+d'exposition supplémentaire laissée ouverte entre vérification et
+commit.
+
+**Coût réel consommé** : 1 génération PixelLab (`animate_character`,
+1478/2000 restantes avant travail), 0 crédit Meshy.
+
+**Fichiers modifiés** : `src/gameplay/player.gd`
+(`MAREE_DE_SABLE_FRAME_TICK_BOUNDS`, `_start_maree_de_sable()`,
+`_advance_maree_de_sable()`, `_maree_de_sable_global_tick()`,
+`_maree_de_sable_frame_for_tick()`), `src/gameplay/enemy.gd`
+(`SLOW_TINT_COLOR`/`SLOW_TINT_STRENGTH`, `_slow_tinted_color()`,
+`_pulse_telegraph_color()` étendu, `_reset_visual_color()` étendu +
+appelée chaque tick hors TELEGRAPH), `tools/smoke_test_gameplay.gd`
+(1 check renommé + 1 nouveau check teinte), `data/pixellab_usage.jsonl`
+(4 entrées), `assets/processed/sprites/cendre/maree_de_sable/{0..5}.png`,
+`assets/source/pixellab/cendre/animations/maree_de_sable/{0..5}.png`,
+`captures/verification/2026-08-23-maree-de-sable-lancement-avant-apres.png`,
+`captures/verification/2026-08-23-maree-de-sable-ralentissement-teinte-avant-apres.png`.
+`assets/manifests/cendre_frames_cooked.json` et
+`assets/processed/sprites/cendre/cendre_frames.tres` NON dans ce
+commit (déjà absorbés par le commit `7624ba9` d'un autre agent avant
+l'incident de coordination ci-dessus) mais leur contenu Marée de Sable
+est identique à ce qui a été vérifié ici. `data/palettes/terre.json`
+lu (couleur "contact" réutilisée telle quelle pour la teinte), NON
+modifié.
