@@ -161,8 +161,95 @@ def fix_shoulder_hem_skinning(armature, mesh_obj):
     print("FIX_SHOULDER_HEM_SKINNING_APPLIED")
 
 
+def fix_hip_hem_proximity(armature, mesh_obj):
+    """CORRECTIF MANDAT CORRECTION PILOTE ROUND 2, defaut 2 (ecoharde
+    triangulaire residuelle a la hanche, voir docs/worklog.md) : le fix
+    round 1 (fix_shoulder_hem_skinning, abduction 90 deg + rebind) a
+    corrige la bavure epaule/bras mais PAS ce second point de tunique -
+    diagnostic mesure (inspect_hip_shard.py/inspect_static_proximity.py,
+    working dir non commite) : ~605-2002 sommets restent domines
+    (poids >0.9) par RightHand/LeftHand meme apres abduction a 90/135/
+    175 deg (la distance brute a la main AUGMENTE avec l'abduction, de
+    ~0.27 a plus de 1.3 unite, sans que le poids recalcule change - donc
+    PAS un probleme de distance 3D corrigible par une pose ecartee,
+    contrairement au defaut epaule/bras). Cause confirmee differente :
+    l'integralite du groupe de vertex "RightHand a poids dominant" (measure :
+    n=2002, z entre 0.566 et 0.874) est **entierement** sous la tete de
+    l'os RightHand (z=1.142, marge -0.27 a -0.58) - largement au-dela
+    d'une longueur de main/doigts plausible (~0.10-0.15 sur un
+    personnage d'~1.7 unite) - preuve que ce ne sont PAS des sommets de
+    main/gant legitimes mais un pan de tunique entier mal rattache par
+    le heat-weighting (probablement par diffusion/visibilite bloquee
+    par la geometrie, pas par distance 3D simple - une tentative de
+    vote topologique BFS en excluant les sommets suspects a confirme
+    poids inchange, preuve que le pan mal-pese est plus etendu que le
+    seul sous-ensemble a deplacement anormal).
+
+    Correctif retenu (le plus etroit qui separe reellement le tissu de
+    la main sans toucher la vraie geometrie de main/gant, verifie par
+    rendu comparatif avant/apres sur coup1/2/3) : parmi les sommets a
+    poids RightHand/LeftHand dominant (>0.5), ceux dont le Z de repos
+    est de plus de 0.18 unite SOUS la tete de l'os concerne (marge
+    choisie entre l'etendue mesuree du defaut ~0.27-0.58 et une longueur
+    de main plausible ~0.10-0.15) sont reassignes a l'os du bas du corps
+    (Hips/RightUpLeg/LeftUpLeg/RightLeg/LeftLeg) le plus proche par
+    distance de tete, poids plein, autres groupes retires. Applique
+    APRES fix_shoulder_hem_skinning (qui reste necessaire pour le
+    defaut epaule/bras, non touche par ce correctif)."""
+    scene_local = bpy.context.scene
+    scene_local.frame_set(1)
+    bpy.context.view_layer.update()
+
+    vg_index_to_name = {vg.index: vg.name for vg in mesh_obj.vertex_groups}
+
+    def weight_of(v, bone_name):
+        for g in v.groups:
+            if vg_index_to_name.get(g.group, "?") == bone_name:
+                return g.weight
+        return 0.0
+
+    hand_head_z = {}
+    for hand in ("RightHand", "LeftHand"):
+        pb = armature.pose.bones[hand]
+        hand_head_z[hand] = (armature.matrix_world @ pb.head).z
+
+    bone_head = {}
+    for name in ("Hips", "RightUpLeg", "LeftUpLeg", "RightLeg", "LeftLeg"):
+        pb = armature.pose.bones[name]
+        bone_head[name] = armature.matrix_world @ pb.head
+
+    MARGIN = 0.18
+    reassign_plan = {}
+    for v in mesh_obj.data.vertices:
+        for hand in ("RightHand", "LeftHand"):
+            w = weight_of(v, hand)
+            if w <= 0.5:
+                continue
+            p = mesh_obj.matrix_world @ v.co
+            if hand_head_z[hand] - p.z > MARGIN:
+                hip_dists = {b: (p - bone_head[b]).length for b in bone_head}
+                best = min(hip_dists, key=hip_dists.get)
+                reassign_plan[v.index] = best
+            break
+
+    vg_by_name = {vg.name: vg for vg in mesh_obj.vertex_groups}
+    for vidx, new_bone in reassign_plan.items():
+        v = mesh_obj.data.vertices[vidx]
+        old_groups = [vg_index_to_name.get(g.group, "?") for g in v.groups]
+        for gname in old_groups:
+            if gname in vg_by_name:
+                vg_by_name[gname].remove([vidx])
+        if new_bone not in vg_by_name:
+            vg_by_name[new_bone] = mesh_obj.vertex_groups.new(name=new_bone)
+            vg_by_name = {vg.name: vg for vg in mesh_obj.vertex_groups}
+        vg_by_name[new_bone].add([vidx], 1.0, "REPLACE")
+
+    print(f"FIX_HIP_HEM_PROXIMITY_APPLIED reassigned={len(reassign_plan)} margin={MARGIN}")
+
+
 if fix_weights:
     fix_shoulder_hem_skinning(armature, mesh_obj)
+    fix_hip_hem_proximity(armature, mesh_obj)
 
 action = bpy.data.actions[0]
 if armature.animation_data is None:

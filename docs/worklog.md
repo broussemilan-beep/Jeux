@@ -557,6 +557,216 @@ partagé.
 la nouvelle capture) avant tout push. Rien poussé, rien basculé en jeu,
 aucune généralisation engagée.
 
+### Correction du pilote, round 2 (2026-08-23) — quantize.py moyenne de bloc, écharde résiduelle à la hanche, comparaison 112px réelle
+
+**Contexte.** Milan a de nouveau zoomé la capture round 1 et trouvé des
+problèmes supplémentaires. Mandat explicite en 3 points ORDONNÉS (le
+point 1 conditionne le jugement des deux autres) : (1) corriger
+`quantize.py` — passer de l'échantillon central à une moyenne de bloc,
+avec test de non-régression obligatoire sur les 3 monstres AVANT toute
+généralisation ; (2) diagnostiquer une 2e écharde résiduelle à la
+hanche (pas le bras, déjà réglé round 1) ; (3) refaire la comparaison
+au VRAI format PixelLab (112px, pas 64 — erreur de Milan corrigée dans
+son propre mandat round 2).
+
+#### Point 1 — `quantize.py` : moyenne de bloc pondérée par alpha, non-régression vérifiée sur les 3 monstres
+
+**Cause confirmée** (déjà diagnostiquée round 1, jamais corrigée faute
+de mandat explicite) : `pixelate_block_center()` échantillonnait le
+pixel central d'un bloc source de 8×8 (ou plus) au lieu d'en faire la
+moyenne — un liseré de contour de 1-2px a une probabilité quasi nulle
+d'être exactement ce pixel, la rim light disparaissait donc
+entièrement après quantification.
+
+**Fix.** Deux nouvelles fonctions ajoutées à `experiments/
+blender_capture/quantize.py` : `pixelate_block_average()` (moyenne
+simple RGB+alpha) et `pixelate_block_average_alpha_weighted()` (RGB
+pondéré par alpha, alpha lui-même en moyenne simple). `pixelate_block_
+center()` originale **conservée intacte, non appelée par `main()`** —
+`quantize_normal.py` l'importe explicitement pour downscaler les normal
+maps (vecteurs XYZ), où une moyenne non-renormalisée fausserait
+l'éclairage ; aucune raison de la changer pour ce cas, vérifié en
+relisant son en-tête et confirmé par un import direct après coup
+(`quantize_normal.main` s'importe toujours sans erreur). Nouveau flag
+`--pixelate_mode={center,mean,mean_alpha}` sur `main()`, défaut
+`mean_alpha`.
+
+**Simple vs pondérée : comparaison MESURÉE, pas supposée.** Sur les 236
+blocs à alpha partiel (contour détouré) de `coup1_contact_00` à 112px :
+luminance moyenne du bloc en mode `mean` = **0.345**, en mode
+`mean_alpha` = **0.480** (+0.135) — preuve chiffrée que la moyenne
+simple assombrit le contour (elle mélange le RGB arbitraire des pixels
+100% transparents du fond, souvent sombre dans un PNG Blender, avec la
+couleur du sujet) alors que la pondération par alpha neutralise cet
+effet sans perdre la capture du rim light (les deux modes calculent
+l'alpha de sortie identiquement). **`mean_alpha` retenu comme défaut**
+pour cette raison mesurée, pas une préférence esthétique.
+
+**Test de non-régression sur les 3 monstres (OBLIGATOIRE avant
+généralisation, fait AVANT tout autre changement).** Comparé `quantize.
+py` ANCIEN (snapshot `git show HEAD:...` avant ce commit) vs NOUVEAU
+(défaut `mean_alpha`) sur une frame `attack_raw` de chaque monstre
+(`experiments/monsters_nuit/blender_out_v4/{brute,crawler}_attack_raw.
+png`, `blender_out_v5/ranged_attack_raw.png`), mêmes paramètres
+(défauts de `quantize.py`, `target_pixels=64` — le canvas réel
+committé, vérifié par `file` sur `assets/processed/sprites/{brute,
+crawler,ranged}/attaque.png`). Mesuré : différence RGB moyenne
+1.7-3.4/255, différence alpha moyenne 3.1-4.6/255, IoU de silhouette
+(seuil alpha>127) **0.99 / 0.96 / 0.89** pour brute/crawler/ranged.
+Inspection visuelle zoomée (voir `experiments/blender_capture/
+cendre_pilot/quantize_regression_round2/monster_regress/`, working dir
+non commité) : **aucune régression détectée** — les silhouettes restent
+reconnaissables et complètes (pas de membre manquant, pas de flou
+détruisant la lisibilité), la seule différence visible est un rendu
+intérieur légèrement plus lisse/moins "poivre et sel" (bruit de
+sur-brillance speculaire moins fragmenté) avec le nouveau mode, ce qui
+lit plutôt comme une amélioration qu'une dégradation. Le monstre
+`ranged` (IoU le plus bas, 0.89) montre la plus grande différence,
+concentrée sur des détails fins (arc/corde, doigts) — attendu, une
+moyenne de bloc lisse légèrement les détails sub-pixel, mais la forme
+générale reste identique et lisible au zoom. **Verdict honnête : aucune
+régression bloquante trouvée sur les 3 monstres, changement généralisé
+committé.** Si Milan voit une dégradation au zoom personnel sur un cas
+que cette vérification n'a pas couvert, le flag `--pixelate_mode=
+center` reste disponible pour revenir instantanément à l'ancien
+comportement sans toucher au reste du pipeline.
+
+#### Point 2 — écharde résiduelle à la hanche : diagnostic complet et corrigé
+
+**Diagnostic (même rigueur que round 1 — isolation par élimination,
+preuve comparative, scripts dans `experiments/blender_capture/
+cendre_pilot/quantize_regression_round2/`, working dir non commité).**
+`inspect_hip_shard.py` reproduit le pipeline actuel (`fix_shoulder_hem_
+skinning` round 1 appliqué) puis mesure le déplacement bind→contact :
+**605 sommets restent dominés (poids ~0.95-0.98) par `RightHand`** même
+après le fix round 1. Hypothèse testée : l'abduction à 90° (le
+mécanisme du fix round 1) ne sépare-t-elle pas suffisamment la main de
+ce point de tunique ? Mesuré (`inspect_abducted_proximity.py`,
+`inspect_static_proximity.py`) : la distance 3D main↔sommet **augmente**
+avec l'abduction (0.27 unité au repos → 0.86-1.33 unité à 90°/135°/175°
+d'abduction) mais **le poids recalculé ne change pas** — preuve que ce
+n'est PAS un problème de distance 3D corrigible par une pose écartée
+(contrairement au défaut épaule/bras du round 1) : le heat-weighting de
+Blender utilise une diffusion sur la surface du maillage (pas une
+distance brute), et l'intégralité du groupe de sommets "RightHand
+dominant" (n=2002, mesuré) se trouve à un Z de repos **systématiquement
+sous** la tête de l'os RightHand de 0.27 à 0.58 unité — largement
+au-delà d'une longueur de main/doigts plausible (~0.10-0.15 sur ce
+personnage) : ce ne sont PAS des sommets de main légitimes, mais un pan
+entier de tunique mal rattaché. Une première tentative de correctif par
+vote topologique (BFS sur le graphe d'arêtes, en excluant les sommets
+suspects) a **échoué** (0 sommet réassigné, profondeur testée jusqu'à
+200) — preuve que le pan mal-pesé est plus étendu que le seul
+sous-ensemble à déplacement anormal, le vote retombe toujours sur
+d'autres sommets tout aussi mal pesés.
+
+**Fix retenu** (`fix_hip_hem_proximity()`, `experiments/blender_
+capture/render_combo_cendre.py`, appliqué juste après `fix_shoulder_
+hem_skinning()`) : parmi les sommets à poids `RightHand`/`LeftHand`
+dominant (>0.5), ceux dont le Z de repos est de plus de 0.18 unité sous
+la tête de l'os concerné (marge choisie entre l'étendue mesurée du
+défaut et une longueur de main plausible) sont réassignés à l'os du bas
+du corps (`Hips`/`RightUpLeg`/`LeftUpLeg`/`RightLeg`/`LeftLeg`) le plus
+proche par distance de tête, poids plein, autres groupes retirés.
+**6959 sommets reassignés** (les deux côtés, droit et gauche).
+**Vérifié par rendu comparatif avant/après** sur les 3 coups (coup1
+contact réel, coup2 contact réel, une pose coup3-équivalente) :
+l'écharde triangulaire disparaît complètement, remplacée par l'ourlet
+jagged naturel déjà visible en pose de repos (`posture_check.png`) — et
+**la géométrie de main/gant reste intacte** (vérifié au zoom, aucun
+doigt manquant ni déformation visible). Une première version du
+correctif (distance brute à la tête d'os, sans le filtre de marge Z)
+avait sur-réassigné ~6900-7000 sommets **y compris de la vraie
+géométrie de main** (le poignet/paume est naturellement proche de la
+hanche en pose bras-le-long-du-corps) — éliminée par la mesure, pas par
+supposition, avant d'adopter le critère Z retenu.
+
+**État honnête de CHAQUE articulation, rendu brut non quantifié, 3
+coups (voir capture ci-dessous, bloc B)** :
+- **Épaule** (coup1/2/3) : propre, pas de bavure, déformation de la
+  pauldron/manche cohérente avec la pose.
+- **Coude** (coup1/2/3) : propre. Fortement raccourci/plié dans les
+  poses de coup (poing près du menton ou de la hanche), pas d'artefact
+  de clipping visible.
+- **Hanche** (coup1/2/3) : **corrigée** — écharde disparue, ourlet
+  jagged naturel sur les 3 coups (vérifié aussi sur coup2 et une pose
+  coup3-équivalente, pas seulement coup1 où le défaut était le plus
+  visible en caméra).
+- **Genou** (coup1/2/3) : **non inspectable séparément** — entièrement
+  couvert par le pantalon bouffant + bandes de jambe dans ce costume,
+  aucune bavure ni clipping visible à la jointure pantalon/botte, mais
+  il n'y a pas de "genou nu" à juger indépendamment sur ce personnage.
+  Signalé honnêtement plutôt que de prétendre une vérification qui
+  n'a pas de sens géométrique ici.
+
+#### Point 3 — résolution PixelLab réelle : 112px CONFIRMÉ (pas 64)
+
+Vérifié moi-même par `file` sur `assets/source/pixellab/cendre/
+animations/coup{1,2,3}/0.png` : **112×112, confirmé** (Milan avait
+raison de corriger son erreur du mandat round 1). **Nuance importante à
+signaler** : le canvas COOKED réellement utilisé en jeu aujourd'hui
+reste **64×64** (`assets/manifests/cendre_frames_cooked.json`,
+`out_canvas=[64,64]`, fichier non touché par ce mandat comme demandé).
+Les deux faits sont vrais simultanément : PixelLab génère nativement en
+112px, mais le pipeline de cuisson actuel downscale à 64px pour
+l'affichage en jeu. La comparaison ci-dessous est construite à 112px
+comme demandé explicitement par Milan (juger la qualité à la résolution
+native, avant tout downscale supplémentaire), pas parce que le canvas
+de jeu aurait changé.
+
+#### Nouvelle capture de validation
+
+`captures/verification/2026-08-23-cendre-migration-3d-correction-
+pilote-round2-avant-apres-112px.png` — 4 blocs : (A) 3 coups, frames de
+contact AVANT (round 1 seul)/APRÈS (round 1+2), quantifiées à 112px
+réel avec le nouveau `quantize.py` (`mean_alpha`, réglages Cendre
+retenus round 1 : `color_steps=5`, `value_band=0.08/0.97`,
+`outline_thickness=4.5`, `edge_strength=0.10`, `dither_amount=0.18`) ;
+(B) détail zoomé sur CHAQUE articulation (épaule/coude/hanche/genou)
+pour les 3 coups, rendu brut non quantifié, état APRÈS ; (B2) hanche
+AVANT/APRÈS en gros plan (le correctif marquant de ce round) ; (C)
+référence PixelLab native 112px, même échelle d'affichage. `git
+check-attr filter` vérifié : `unspecified`, pas de LFS.
+
+**Fichiers modifiés/ajoutés** : `experiments/blender_capture/quantize.
+py` (nouvelles fonctions `pixelate_block_average`, `pixelate_block_
+average_alpha_weighted`, flag `--pixelate_mode`, défaut changé —
+**changement d'architecture partagé par tous les personnages, comme
+signalé dans le mandat**), `experiments/blender_capture/
+render_combo_cendre.py` (nouvelle fonction `fix_hip_hem_proximity()`
++ appel après `fix_shoulder_hem_skinning()`), `captures/verification/
+2026-08-23-cendre-migration-3d-correction-pilote-round2-avant-apres-
+112px.png` (nouvelle capture). `experiments/blender_capture/
+quantize_normal.py` **non modifié** (toujours basé sur `pixelate_block_
+center`, inchangée). Working dir non committé (`experiments/
+blender_capture/cendre_pilot/quantize_regression_round2/` et
+`combo_render_v3/`, `combo_quantized_112_v2_before/`, `combo_quantized_
+112_v3_after/`) : scripts de diagnostic/test (`inspect_hip_shard.py`,
+`inspect_abducted_proximity.py`, `inspect_static_proximity.py`,
+`test_hip_override_v3.py` et versions précédentes conservées comme
+trace du raisonnement), rendus intermédiaires, sheet de régression
+monstres, script de capture. **Aucun fichier `.tscn`/`.gd` touché,
+aucun asset PixelLab touché, aucune génération/régénération PixelLab,
+`cendre_frames.tres`/`cendre_frames_cooked.json` non touchés, aucun
+asset monstre (`assets/processed/sprites/{brute,crawler,ranged}/...`)
+modifié** — même périmètre que les 3 commits précédents.
+
+**Coût Meshy : 0 crédit.** Tout le travail de ce round est Blender/
+Python pur sur le GLB déjà téléchargé et payé par le pilote initial ;
+`data/meshy_usage.jsonl` non modifié, confirmé.
+
+**Blocages non résolus** : aucun. Point ouvert signalé honnêtement :
+l'articulation "genou" n'a pas de sens géométrique à juger séparément
+sur ce personnage (pantalon bouffant qui couvre toute la jambe) — pas
+un défaut, une limite de la méthode d'inspection demandée par le
+mandat, documentée plutôt que masquée.
+
+**Prochain pas** : en attente du jugement de Milan (zoom personnel sur
+la nouvelle capture 112px) avant tout push. Rien poussé, rien basculé
+en jeu, aucun asset monstre modifié malgré le changement de
+`quantize.py` (changement de code seulement, pas de re-cuisson des
+assets committés).
+
 ---
 
 ## 2026-08-23 — MANDAT ROUND 4, CHANTIER 0 : le losange beige identifié — `arcSlash`, la couche CONTACT de Bras-Faux
