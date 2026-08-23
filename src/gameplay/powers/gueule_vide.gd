@@ -101,6 +101,60 @@ const CAST_SEED := 44103
 ## de committer, `scenes/gameplay/powers/gueule_vide.tscn` (offset)
 ## inchangé, l'ancrage bas (base du tendon dans la flaque) tombe déjà au
 ## bon endroit par rapport à `groundRing`/`runicStamp` sans retouche.
+##
+## PASSE DÉTAIL (2026-08-23, même session, agent dédié) : Milan jugeait la
+## v2 ci-dessus "pas assez détaillée" vs la richesse de la planche de
+## référence — traits d'encre qui gouttent à plusieurs endroits, variation
+## de texture sur la mâchoire, crocs irréguliers, éclats d'encre au sol.
+## Mandat volontairement limité au DÉTAIL, silhouette/composition en S
+## à préserver.
+##
+## FAUX-DÉPART CORRIGÉ AVANT COMMIT (leçon importante, gardée ici pour ne
+## pas la reproduire) : un 1er guide enrichi + `create_image_pixflux`
+## (strength 120) a produit un résultat que le rapport initial de l'agent
+## déclarait "silhouette intacte" — FAUX. Le coordinateur a ouvert la
+## capture de vérification lui-même (règle du mandat : juger sur l'image,
+## pas sur le résumé de l'agent) et a repéré que le corps v3 avait un plan
+## différent du v2 (silhouette compacte + queue enroulée) plutôt que le
+## même tendon fin en S avec plus de détail dedans. Vérifié ensuite par
+## analyse en composantes connexes (scipy.ndimage.label) : le splash
+## d'encre détaché de la référence (une composante séparée, ~53-74px sur
+## le v2) avait été FUSIONNÉ au corps principal en une vraie queue (corps
+## +27% de pixels, splash disparu) — un changement de composition, pas un
+## ajout de détail. Cause : (1) bug d'implémentation, le script de guide
+## relisait par erreur le fichier déjà écrasé par la sortie rejetée plutôt
+## que le guide v2 propre ; (2) même corrigé, des taches de texture
+## multi-pixels + une chaîne de gouttelettes dans l'écart pied/splash ont
+## été interprétées par pixflux comme des indices de volume/continuité.
+## LEÇON : un diff pixel-exact du GUIDE ne garantit pas que la SORTIE
+## pixflux/create_character l'a suivi fidèlement — img2img à strength 120
+## réinterprète la composition, pas seulement la couleur ; vérifier la
+## sortie réelle (composantes connexes + profil de largeur par rangée),
+## jamais seulement le guide d'entrée.
+##
+## RÉSULTAT FINAL (après 2 re-tentatives, guide simplifié — points de
+## texture 1px puis stries 1x3px, gouttes 2px avec marge de collision
+## vérifiée avant génération, plus aucun ajout entre le pied du tendon et
+## le splash détaché) : composantes connexes = corps + splash disjoints sur
+## LES 7 FRAMES de la séquence (pas seulement la référence statique),
+## profil de largeur du tendon comparé rangée par rangée au v2 original —
+## écart <= 2px partout. Crocs nettement irréguliers (tailles très
+## variées, un croc visiblement ébréché), plusieurs gouttes d'encre
+## visibles à des points distincts le long du tendon (pas seulement sous
+## la mâchoire), légère texture de surface. Écart honnête restant avec la
+## planche : la référence montre une texture de mâchoire plus organique
+## (chair déchirée) et des mares d'encre plus grandes/franches au sol que
+## ce qui a été obtenu ici — jugé suffisant pour répondre au reproche "pas
+## assez détaillé" sans prétendre à une fidélité pixel-parfaite. Canvas
+## cuit resté à 56x72 (bbox opaque max mesurée sur les 6 frames x=[7,49]
+## y=[5,69], marge confortable — aucun agrandissement nécessaire).
+## Ancienne version (composition en S, moins détaillée) archivée dans
+## `assets/source/pixellab/gueule_vide/_archive_2026-08-22_v3/` et
+## `assets/processed/sprites/gueule_vide/_archive_2026-08-22_v3/` (cp,
+## jamais mv, copiée depuis git HEAD pour garantir l'état réellement commit
+## et pas une version intermédiaire). FRAME_TICK_BOUNDS inchangé (même
+## lecture de phases que la passe composition, la richesse ajoutée ne
+## déplace aucune des 6 poses).
 const FRAME_TICK_BOUNDS: Array[int] = [5, 9, 19, 27, 34, 42]
 
 @onready var _sprite: AnimatedSprite2D = $AnimatedSprite2D
