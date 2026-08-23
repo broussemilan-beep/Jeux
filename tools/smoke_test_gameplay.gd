@@ -1363,8 +1363,8 @@ func _check_poing_tellurique() -> void:
 	var poing_tellurique_started_during_cooldown: bool = _player._poing_tellurique_phase != Player.PoingTelluriquePhase.NONE
 
 	_checks.append({
-		"name": "poing_tellurique_input_starts_state_and_plays_placeholder_anim",
-		"pass": started and anim_during == "coup1",
+		"name": "poing_tellurique_input_starts_state_and_plays_dedicated_anim",
+		"pass": started and anim_during == "poing_tellurique",
 		"detail": {"started": started, "anim": anim_during},
 	})
 	_checks.append({

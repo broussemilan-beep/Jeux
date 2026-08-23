@@ -321,6 +321,26 @@ const POING_TELLURIQUE_COOLDOWN_TICKS := 200  # ~3,3s @ 60/s, TUNABLE (non chiff
 const PoingTelluriqueRecipeId := "power.poing_tellurique.cast"
 const POING_TELLURIQUE_CAST_SEED := 51003  # Addendum A §A.5, jamais l'horloge murale.
 
+## Art dédié (agent Poing Tellurique, mandat "polish complet", 2026-08-23) :
+## anim "poing_tellurique" propre, PAS un réemploi de "coup1" (le premier
+## coup du combo à mains nues — un jab horizontal générique, aucun rapport
+## avec un impact au sol, écart confirmé par capture avant correctif et par
+## comparaison directe avec docs/references/terre/poing_tellurique.png).
+## 6 frames pose-to-pose lisibles comme les 4 temps de la planche
+## (préparation/prépare -> frappe qui descend -> impact au sol avec éclats
+## -> dissipation en se relevant), cf. docstring de _start_poing_tellurique()
+## pour le détail du pipeline de génération. Même discipline tick-exact que
+## BRAS_FAUX_FRAME_TICK_BOUNDS/POING_BELLUAIRE_FRAME_TICK_BOUNDS ci-dessus
+## (jamais la fps autonome d'AnimatedSprite2D, qui ne peut pas exprimer des
+## phases de durées inégales) : bornes calées pour que la frame 4 (impact,
+## poings au sol + éclats visibles sur le sprite lui-même) bascule PILE au
+## tick global 19 (ANTICIPATION 18 + RELEASE tick1 = contact) — aligné avec
+## la fenêtre "contact" 18-22 d'impactFlashFrame et le start_tick=18/19 de
+## dustKick/impactStar (data/recipes/power.poing_tellurique.cast.json) —
+## et que la frame 3 (accroupissement profond, juste avant l'impact) tienne
+## tout le reste de l'ANTICIPATION (jusqu'au tick 18 inclus).
+const POING_TELLURIQUE_FRAME_TICK_BOUNDS: Array[int] = [5, 10, 14, 18, 25, 42]
+
 ## Marée de Sable (Terre, Tier 2) — MANDAT AUTONOME v3 Phase 3. GDD :
 ## "Une vague de sable déferle sur une ligne devant Rank Zero, ralentissant
 ## et entravant les ennemis touchés." Portée/largeur NON chiffrées par le
@@ -1183,10 +1203,27 @@ func _try_hit_poing_belluaire() -> void:
 	CombatFeedback.register_hit("heavy", true, "heavy_impact", "medium", dir, true)
 
 
-## Poing Tellurique — même construction. Placeholder visuel : "coup1"
-## (distinct de "coup2"/Bras-Faux et "coup3"/Poing Belluaire, évite toute
-## ambiguïté visuelle entre les 3 pouvoirs de mêlée pendant que l'art
-## dédié à la matière terre/roche reste à générer).
+## Poing Tellurique — même construction que Bras-Faux/Poing Belluaire.
+##
+## Art dédié (agent Poing Tellurique, mandat "polish complet", 2026-08-23) :
+## anim "poing_tellurique" propre, PAS un réemploi de "coup1" — écart
+## confirmé (capture avant correctif : "coup1" est le 1er coup du combo à
+## mains nues, un jab horizontal, aucun geste vers le sol, contrairement à
+## la planche docs/references/terre/poing_tellurique.png qui montre un coup
+## qui frappe littéralement le sol). Pipeline : character_id Cendre_v3c EN
+## JEU (8596a4ad, vérifié via get_character AVANT l'appel — même piège que
+## Bras-Faux/Poing Belluaire, évité en amont), animate_character mode v3
+## DIRECTEMENT sur l'état de base (PAS de create_character_state : contrairement
+## à Bras-Faux/Poing Belluaire, Poing Tellurique ne transforme aucun membre,
+## c'est une POSE — même construction que coup1/coup2/coup3/dash/mort,
+## toutes générées directement sur l'état "Idle" de ce personnage), 6 frames
+## sud (accepté dès le 1er essai, aucun re-roll nécessaire : silhouette nette,
+## aucune arme/lueur/traînée halluciné, cf. data/pixellab_usage.jsonl).
+## Facteur d'échelle 53/78 mesuré sur frame0 (pose la plus proche d'un
+## repos neutre) contre idle_south cuit (même bug de classe que le facteur
+## bras_faux 51/79 — canvas animate_character v3 custom rendu à une échelle
+## globale différente du canvas partagé, jamais un problème de pose).
+## Même discipline flip_h auto-contenue que Bras-Faux/Poing Belluaire.
 func _start_poing_tellurique() -> void:
 	if stats.is_dead() or _action_lock or _poing_tellurique_cooldown_remaining > 0:
 		return
@@ -1194,7 +1231,16 @@ func _start_poing_tellurique() -> void:
 	_poing_tellurique_phase = PoingTelluriquePhase.ANTICIPATION
 	_poing_tellurique_tick = 0
 	_poing_tellurique_hit_applied = false
-	_sprite.play("coup1")
+	if facing.x != 0.0:
+		_sprite.flip_h = facing.x < 0.0
+	# Tick-exact (voir POING_TELLURIQUE_FRAME_TICK_BOUNDS ci-dessus) : play()
+	# positionne l'AnimatedSprite2D sur "poing_tellurique", pause() coupe
+	# immédiatement sa propre horloge fps pour que seule _advance_
+	# poing_tellurique() décide de la frame affichée, jamais Godot — même
+	# discipline que _start_bras_faux()/_start_poing_belluaire().
+	_sprite.play("poing_tellurique")
+	_sprite.pause()
+	_sprite.frame = 0
 
 	var dir := facing
 	if dir.length_squared() < 0.0001:
@@ -1217,6 +1263,11 @@ func _start_poing_tellurique() -> void:
 	})
 
 
+## Timeline déclarative (ANTICIPATION -> RELEASE, contact au 1er tick,
+## même convention que les autres pouvoirs de mêlée) — jamais dépendante de
+## la durée réelle de lecture du sprite. Pilotage de la frame affichée
+## tick-exact (POING_TELLURIQUE_FRAME_TICK_BOUNDS, voir doc ci-dessus),
+## même discipline que _advance_bras_faux()/_advance_poing_belluaire().
 func _advance_poing_tellurique() -> void:
 	_poing_tellurique_tick += 1
 	velocity = Vector2.ZERO  # aucun déplacement automatique (GDD ne mentionne aucun bond, contrairement à Pattes de Chasse).
@@ -1235,6 +1286,38 @@ func _advance_poing_tellurique() -> void:
 		PoingTelluriquePhase.RECOVERY:
 			if _poing_tellurique_tick >= POING_TELLURIQUE_RECOVERY_TICKS:
 				_end_poing_tellurique()
+	# Tick-exact (voir POING_TELLURIQUE_FRAME_TICK_BOUNDS) : appliqué APRÈS
+	# la transition de phase éventuelle ci-dessus, pour que la frame reflète
+	# l'état réel de CE tick (RELEASE tick1 = contact -> frame 4 dès ce même
+	# appel, pas un tick de retard). Rien à faire si le cast vient de se
+	# terminer (_end_poing_tellurique() a remis NONE) : _handle_movement()
+	# reprend la main sur _sprite au tick suivant.
+	if _poing_tellurique_phase != PoingTelluriquePhase.NONE:
+		_sprite.frame = _poing_tellurique_frame_for_tick(_poing_tellurique_global_tick())
+
+
+## Tick unique cumulé depuis le début du cast (ANTICIPATION puis RELEASE
+## puis RECOVERY mis bout à bout) — même rôle que Player._bras_faux_global_tick()
+## / Player._poing_belluaire_global_tick(), recalculé à partir des compteurs
+## par-phase existants plutôt que dupliqué en un 3e compteur.
+func _poing_tellurique_global_tick() -> int:
+	match _poing_tellurique_phase:
+		PoingTelluriquePhase.ANTICIPATION:
+			return _poing_tellurique_tick
+		PoingTelluriquePhase.RELEASE:
+			return POING_TELLURIQUE_ANTICIPATION_TICKS + _poing_tellurique_tick
+		PoingTelluriquePhase.RECOVERY:
+			return POING_TELLURIQUE_ANTICIPATION_TICKS + POING_TELLURIQUE_RELEASE_TICKS + _poing_tellurique_tick
+		_:
+			return 0
+
+
+## Même schéma que Player._bras_faux_frame_for_tick() / Player._poing_belluaire_frame_for_tick().
+func _poing_tellurique_frame_for_tick(tick: int) -> int:
+	for i in POING_TELLURIQUE_FRAME_TICK_BOUNDS.size():
+		if tick <= POING_TELLURIQUE_FRAME_TICK_BOUNDS[i]:
+			return i
+	return POING_TELLURIQUE_FRAME_TICK_BOUNDS.size() - 1
 
 
 func _end_poing_tellurique() -> void:
