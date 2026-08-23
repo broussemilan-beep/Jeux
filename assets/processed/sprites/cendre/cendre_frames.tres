@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=126 format=3]
+[gd_resource type="SpriteFrames" load_steps=144 format=3]
 
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/0.png" id="2"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/1.png" id="3"]
@@ -125,6 +125,24 @@
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/3.png" id="124"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/4.png" id="125"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/5.png" id="126"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/0.png" id="127"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/1.png" id="128"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/2.png" id="129"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/3.png" id="130"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/4.png" id="131"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/5.png" id="132"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_gueule_vide/0.png" id="133"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_gueule_vide/1.png" id="134"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_gueule_vide/2.png" id="135"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_gueule_vide/3.png" id="136"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_gueule_vide/4.png" id="137"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_gueule_vide/5.png" id="138"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/0.png" id="139"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/1.png" id="140"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/2.png" id="141"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/3.png" id="142"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/4.png" id="143"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/5.png" id="144"]
 
 [resource]
 animations = [{
@@ -621,5 +639,74 @@ animations = [{
 }],
 "loop": false,
 "name": &"poing_belluaire",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("127")
+}, {
+"duration": 1.0,
+"texture": ExtResource("128")
+}, {
+"duration": 1.0,
+"texture": ExtResource("129")
+}, {
+"duration": 1.0,
+"texture": ExtResource("130")
+}, {
+"duration": 1.0,
+"texture": ExtResource("131")
+}, {
+"duration": 1.0,
+"texture": ExtResource("132")
+}],
+"loop": false,
+"name": &"poing_tellurique",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("133")
+}, {
+"duration": 1.0,
+"texture": ExtResource("134")
+}, {
+"duration": 1.0,
+"texture": ExtResource("135")
+}, {
+"duration": 1.0,
+"texture": ExtResource("136")
+}, {
+"duration": 1.0,
+"texture": ExtResource("137")
+}, {
+"duration": 1.0,
+"texture": ExtResource("138")
+}],
+"loop": false,
+"name": &"invocation_gueule_vide",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("139")
+}, {
+"duration": 1.0,
+"texture": ExtResource("140")
+}, {
+"duration": 1.0,
+"texture": ExtResource("141")
+}, {
+"duration": 1.0,
+"texture": ExtResource("142")
+}, {
+"duration": 1.0,
+"texture": ExtResource("143")
+}, {
+"duration": 1.0,
+"texture": ExtResource("144")
+}],
+"loop": false,
+"name": &"maree_de_sable",
 "speed": 12.0
 }]
