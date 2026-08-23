@@ -44,7 +44,26 @@ var _next_run_id: int = 1
 ## Clés de layer déjà gérées explicitement par _spawn_due_layers() —
 ## tout le reste est transmis tel quel au spawn (voir plus bas, trouvé
 ## en enquêtant sur C1, invisibilité VFX Gueule Vide).
-const _RESERVED_LAYER_KEYS := ["type", "primitive", "start_tick", "end_tick", "degradable"]
+##
+## `origin_offset_px` (2026-08-22, audit fidélité Marée de Sable) :
+## LIMITE ARCHITECTURALE documentée par l'agent Terre précédent — un
+## seul `origin` par run, partagé par TOUTES les couches (celui du
+## lanceur au moment du cast), ce qui colle p.ex. dustKick/smokePuff aux
+## pieds du joueur même quand la couche core (beamSegment) a déjà
+## voyagé loin le long de `direction` — confirmé par capture réelle
+## (tick 30 : le nuage smokePuff reste sous Cendre alors que la vague a
+## déjà parcouru ~90px). Champ OPTIONNEL, scalaire, en pixels le long de
+## `direction` (jamais un Vector2 — le JSON de recette ne sait pas
+## encoder un Vector2, seul `direction` lui-même est reconstruit côté
+## gameplay avant l'appel à play()) : décale le SPAWN ORIGIN de cette
+## seule couche, sans toucher `run["origin"]` (les autres couches de ce
+## même run, et tout run futur, restent inchangés). Absent ou 0.0 (repli
+## par défaut ci-dessous, `_spawn_due_layers()`) => AUCUN changement de
+## comportement pour toute recette existante qui ne le déclare pas
+## (Invocateur/Gueule Vide, Monstrification/Bras-Faux/Poing Belluaire,
+## Poing Tellurique) — vérifié : aucune de leurs couches ne définit
+## cette clé (grep sur data/recipes/*.json).
+const _RESERVED_LAYER_KEYS := ["type", "primitive", "start_tick", "end_tick", "degradable", "origin_offset_px"]
 
 
 func _physics_process(_delta: float) -> void:
@@ -180,9 +199,19 @@ func _spawn_due_layers(run: Dictionary) -> void:
 		var primitive_name: String = layer.get("primitive", "")
 		var color_params: Dictionary = _resolve_color(run["recipe_id"], run["palette_id"], primitive_name)
 
+		# origin_offset_px (voir _RESERVED_LAYER_KEYS ci-dessus) : décale
+		# CETTE couche le long de `direction`, jamais `run["origin"]`
+		# lui-même — la valeur par défaut 0.0 reproduit exactement
+		# `run["origin"]` tel quel, comportement identique à avant ce
+		# champ pour toute recette qui ne le déclare pas.
+		var origin_offset_px: float = float(layer.get("origin_offset_px", 0.0))
+		var layer_origin: Vector2 = run["origin"]
+		if origin_offset_px != 0.0:
+			layer_origin += run["direction"] * origin_offset_px
+
 		var spawn_params := {
 			"seed": run["seed"],
-			"origin": run["origin"],
+			"origin": layer_origin,
 			"direction": run["direction"],
 			"lifetime_ticks": lifetime,
 			"run_id": run["id"],

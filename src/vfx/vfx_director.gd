@@ -52,6 +52,7 @@ var _registry: Dictionary = {
 	"converge": "res://src/vfx/primitives/converge.gd",
 	"spiral": "res://src/vfx/primitives/spiral.gd",
 	"beamSegment": "res://src/vfx/primitives/beam_segment.gd",
+	"sandCrest": "res://src/vfx/primitives/sand_crest.gd",
 	"smokePuff": "res://src/vfx/primitives/smoke_puff.gd",
 	"dustKick": "res://src/vfx/primitives/dust_kick.gd",
 	"orbital": "res://src/vfx/primitives/orbital.gd",

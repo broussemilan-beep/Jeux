@@ -56,7 +56,19 @@ func configure(params: Dictionary) -> void:
 		var a: float = (_rng.randf() * 2.0 - 1.0) * CONE_HALF_ANGLE
 		_kick_dirs.append(opposite.rotated(a))
 		_kick_speeds.append(scale_px * (0.5 + _rng.randf() * 0.5))
-		_kick_sizes.append(1.5 + _rng.randf() * 1.5)
+		# Taille proportionnelle a scale_px (2026-08-22, audit fidelite
+		# Milan) : meme classe de bug que converge.gd (voir sa note "audit
+		# fidelite Milan") — une constante fixe 1.5-3px rendait les eclats
+		# quasi invisibles des que scale_px depassait ~20px (confirme par
+		# capture reelle sur Poing Tellurique scale_px=28 et Marée de
+		# Sable scale_px=30, jusqu'ici seulement compense au niveau
+		# recette en gonflant scale_px lui-meme — un palliatif de portee/
+		# vitesse de projection, jamais une vraie correction de taille).
+		# Ratio plus bas que converge (0.22-0.36) : dustKick VOYAGE loin
+		# de l'origine (contrairement a converge, qui garde ses fragments
+		# pres du centre toute leur vie) donc peut rester lisible avec des
+		# eclats un peu plus petits en proportion.
+		_kick_sizes.append(scale_px * (0.15 + _rng.randf() * 0.11))
 
 
 func tick(ticks_elapsed: int) -> void:
