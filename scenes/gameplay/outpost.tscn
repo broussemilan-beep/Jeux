@@ -30,9 +30,11 @@ shader_parameter/aspect_ratio = 1.7778
 shader = ExtResource("14")
 shader_parameter/bloom_threshold = 0.72
 shader_parameter/bloom_intensity = 0.6
-shader_parameter/ramp_steps = 6.0
+shader_parameter/ramp_steps = 10.0
 shader_parameter/value_band_min = 0.05
 shader_parameter/value_band_max = 0.98
+shader_parameter/value_band_max_flat = 0.76
+shader_parameter/active_luma_threshold = 0.95
 
 [sub_resource type="RectangleShape2D" id="2"]
 size = Vector2(220, 300)

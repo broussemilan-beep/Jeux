@@ -10,9 +10,24 @@ shader_type canvas_item;
 uniform sampler2D screen_texture : hint_screen_texture, filter_nearest;
 uniform float bloom_threshold : hint_range(0.0, 1.0) = 0.72;
 uniform float bloom_intensity : hint_range(0.0, 2.0) = 0.6;
-uniform float ramp_steps : hint_range(2.0, 16.0) = 6.0;
+uniform float ramp_steps : hint_range(2.0, 16.0) = 10.0;
 uniform float value_band_min : hint_range(0.0, 1.0) = 0.05;
+// Plafond de posterize pour un pixel "point-lumiere/vfx actif" (cf. la note
+// deja ecrite pour la bande "character" dans data/palettes/value_bands.json :
+// "le coeur direct d'une source de lumiere ... traite comme un point-lumiere/
+// vfx actif, pas comme du decor plat"). Applique quand bright_mask ~ 1.
 uniform float value_band_max : hint_range(0.0, 1.0) = 0.98;
+// Plafond de posterize pour tout le reste ("decor plat" — sol, murs, materiau
+// non-emissif). Corrige le defaut de sursaturation (docs/STATUS.md,
+// "Plafond de bande decor systematiquement depasse pres de toute source de
+// lumiere") : sans ce 2e plafond, ramp_steps=6 poussait TOUT pixel deja
+// clair (sol sous un halo de PointLight2D, pas seulement la flamme) au
+// palier haut fixe (~83% V), au-dessus de la bande decor [15,78].
+uniform float value_band_max_flat : hint_range(0.0, 1.0) = 0.76;
+// Seuil de luminance (pixel BRUT, avant bloom de cette passe) au-dela duquel
+// un pixel est considere "coeur de source active" plutot que "decor eclaire"
+// — volontairement haut (voir commentaire dans fragment()).
+uniform float active_luma_threshold : hint_range(0.0, 1.0) = 0.95;
 
 vec3 rgb_to_hsv(vec3 c) {
 	vec4 k = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
@@ -51,8 +66,24 @@ void fragment() {
 	// deja etablie pour les sprites (quantize.py, value_band_min/max) —
 	// l'ecran entier suit la meme discipline "jamais 0% ni 100%" (§3),
 	// pas seulement les sprites pris individuellement.
+	//
+	// bright_mask distingue le coeur d'une source active (flamme elle-meme,
+	// flash VFX quasi blanc) du reste — MEME un sol largement eclaire par
+	// son halo. Volontairement un seuil tres haut (active_luma_threshold,
+	// pas bloom_threshold) : bloom_threshold (0.72) sert a decider QUOI
+	// rayonne (halo large, discipline visuelle), pas a decider QUOI est
+	// exempte de la discipline de bande decor (question differente — un
+	// seuil bas ici avait l'effet inverse du but recherche : le halo,
+	// deja elargi par le bloom lui-meme, se qualifiait "actif" sur une
+	// zone bien plus large que la flamme, aggravant le defaut au lieu de
+	// le corriger). Lu sur `base` (le pixel BRUT, avant l'ajout du bloom
+	// de cette passe) pour ne pas boucler sur sa propre contribution.
+	float scene_lum = dot(base.rgb, vec3(0.299, 0.587, 0.114));
+	float bright_mask = smoothstep(active_luma_threshold, active_luma_threshold + 0.05, scene_lum);
+	float local_value_band_max = mix(value_band_max_flat, value_band_max, bright_mask);
+
 	vec3 hsv = rgb_to_hsv(color);
-	hsv.z = clamp(hsv.z, value_band_min, value_band_max);
+	hsv.z = clamp(hsv.z, value_band_min, local_value_band_max);
 	hsv.z = floor(hsv.z * ramp_steps) / ramp_steps;
 	color = hsv_to_rgb(vec3(hsv.x, hsv.y, hsv.z));
 
