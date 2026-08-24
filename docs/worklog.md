@@ -1041,6 +1041,62 @@ ce mandat).
 **Prochain pas** : en attente du jugement de Milan (zoom personnel sur
 la nouvelle capture, comme les 5 fois précédentes). Rien poussé.
 
+### Clôture (2026-08-23) — décision de Milan : on arrête la migration 3D pour Cendre
+
+**Verdict final de Milan, après 6 rounds de test mesuré (pilote →
+correctif contact → bavure skinning/rim light/quantize 64px → moyenne
+de bloc + écharde hanche + 112px réel → cuisson 64px réel négative →
+matériau aplati) : « on arrête la migration 3D pour Cendre ». Pas un
+échec de méthode — le pilote a rempli son rôle : répondre honnêtement à
+« la 3D est-elle prête à remplacer le 2D pour Cendre ? » par un verdict
+mesuré, pas supposé : s'en approche, ne l'égale pas à 64px réel. Le
+correctif suivant connu (épaissir les bras dans le maillage) changerait
+de nature — retouche du modèle, plus un réglage de rendu — donc sort du
+cadre de ce pilote.**
+
+**Clôture propre (Partie 1 du mandat de clôture, périmètre strict —
+documentation/rangement uniquement, `render_combo_cendre.py` et
+`quantize.py` non modifiés, aucun `.tscn`/`.gd`/asset PixelLab/
+manifeste touché)** :
+- Scripts des 6 rounds consolidés dans
+  `experiments/blender_capture/cendre_pilot/README.md` : objectif et
+  verdict, ce qui a marché (auto-rig, fix skinning épaule/hanche,
+  `quantize.py --pixelate_mode=mean_alpha`, posterisation HSV Value du
+  matériau) avec pointeur commit pour chacun, ce qui n'a pas suffi et
+  pourquoi (texture d'albédo/émission haute fréquence en cause
+  principale, proportions de bras en cause secondaire), quoi réutiliser
+  tel quel si repris (`cendre_combo.glb` riggé, facteur LANCZOS 0.647,
+  méthode de test via `cook_character_frames.py` isolé) et quoi refaire
+  depuis zéro (modèle/texture, si autre personnage).
+- Répertoire scratch `experiments/blender_capture/cendre_pilot/`
+  (~139 Mo accumulés sur 6 rounds — rendus bruts par round, quantifi-
+  cations intermédiaires, scouting, calibrations jetables, GLB
+  pré-remesh) réduit à ~22 Mo : gardés `cendre_combo.glb` (GLB final
+  remeshé+riggé+animé, seul gros fichier réellement réutile) et 14
+  scripts de diagnostic/calibration/pipeline final jugés utiles à une
+  reprise, détail complet et justification du tri (gardé vs supprimé)
+  dans le README ci-dessus. Rien à annuler côté assets/manifests de
+  production : aucun fichier réel du dépôt n'avait été modifié par les
+  6 rounds (chaque test tournait en scratch isolé, vérifié à chaque
+  fois).
+- `docs/STATUS.md` : vérifié, non modifié — la section « Pipeline
+  outillage » (ligne ~86) décrit la capacité générique du tooling
+  (« Monstres/personnage 3D→pixel : Meshy → Blender → quantize.py »)
+  sans jamais affirmer que Cendre l'utilise en production ; aucune
+  autre section ne mentionne Cendre en lien avec le 3D. Rien à corriger.
+
+**Ce qui reste acquis et ACTIF, ne pas toucher** : le pipeline 3D
+complet reste fonctionnel et utilisé pour les 3 monstres (Crawler/
+Brute/Ranged, plus tolérants au bruit vu leur taille à l'écran) ;
+`quantize.py --pixelate_mode=mean_alpha` reste le défaut général du
+pipeline pixel-art (amélioration mesurée, non régressive, déjà
+généralisée depuis `888a51a`).
+
+**Sujet fermé, ne pas rouvrir sans ce contexte.** Toute reprise future
+de la migration 3D Cendre doit partir de `experiments/blender_capture/
+cendre_pilot/README.md` (verdict, causes, ce qui est réutilisable) —
+pas relire les 6 sous-sections détaillées ci-dessus depuis zéro.
+
 ---
 
 ## 2026-08-23 — MANDAT ROUND 4, CHANTIER 0 : le losange beige identifié — `arcSlash`, la couche CONTACT de Bras-Faux
