@@ -25,6 +25,32 @@ const RECOVERY_TICKS := 14
 ## derniers ticks de chaque RECOVERY") — dernier tiers de la recovery.
 const CHAIN_WINDOW_TICKS := 6
 
+## MANDAT "fluidité" (Partie 2, couche code) — généralisation de l'embryon
+## de buffer d'input qui n'existait jusqu'ici QUE pour le combo de base
+## (_attack_queued/CHAIN_WINDOW_TICKS ci-dessus) aux 5 compétences dédiées
+## (Bras-Faux/Poing Belluaire/Poing Tellurique/Marée de Sable/Gueule Vide).
+## Avant ce mandat, un appui sur un slot de pouvoir pendant `_action_lock`
+## était silencieusement perdu (chaque `_start_*()` de compétence retourne
+## tôt sur `_action_lock`, sans jamais retenir l'appui) — voir
+## `_try_activate_power_slot()`/`_queued_power_slot` plus bas.
+##
+## `INPUT_BUFFER_TICKS` est volontairement COURT ("fenêtre courte, quelques
+## ticks" du mandat) : il n'a jamais vocation à retenir un appui donné au
+## tout DÉBUT d'une longue animation (ça ressemblerait à une file d'attente
+## illimitée, pas un buffer) — seulement un appui donné PEU AVANT que la
+## fenêtre d'annulation de l'action en cours ne s'ouvre (voir
+## `<SKILL>_CANCEL_WINDOW_TICKS` sur chaque compétence ci-dessous), exactement
+## comme un joueur qui anticipe la fin d'un coup. ~0,17s @ 60/s — même
+## ordre de grandeur que les fenêtres d'input-buffer usuelles en jeu
+## d'action (100-200ms).
+##
+## Ne s'applique volontairement PAS à `_attack_queued` (embryon existant,
+## laissé TEL QUEL, non borné dans le temps) : c'est un mécanisme déjà
+## validé/expédié, le retoucher pour lui ajouter une expiration serait un
+## changement de comportement non demandé par le mandat et risquerait une
+## régression sur le combo — "étends l'embryon", pas "réécris-le".
+const INPUT_BUFFER_TICKS := 10
+
 ## Phase R4 (retour croisé Gemini/ChatGPT, MANDAT SUITE v2 : "poids du
 ## combo... coup 3 (finisher) : anticipation plus longue... ajouter une
 ## frame de stabilisation en fin de combo au lieu du retour instantané à
@@ -229,6 +255,20 @@ const BRAS_FAUX_CAST_SEED := 51001  # Addendum A §A.5 : jamais l'horloge murale
 ## la fin de la lecture fps native.
 const BRAS_FAUX_FRAME_TICK_BOUNDS: Array[int] = [5, 10, 14, 18, 29, 40]
 
+## Fenêtre d'annulation (mandat "fluidité", Partie 2) — PROPRIÉTÉ PROPRE à
+## Bras-Faux (pas une réutilisation de CHAIN_WINDOW_TICKS, le mandat exige
+## explicitement un point par animation) : dernier tiers de RECOVERY où le
+## joueur peut déjà enchaîner l'action suivante — voir
+## `_try_consume_queued_input()`/`_advance_bras_faux()`. Calée sur
+## BRAS_FAUX_FRAME_TICK_BOUNDS ci-dessus : la frame 4 (cluster "balayage",
+## dernière pose du cast) tient déjà, immobile, de RECOVERY tick 11
+## (18+29-... voir bornes) jusqu'à la fin — s'annuler dès que la pose a
+## fini de bouger ne coupe donc RIEN de visuellement nouveau, seulement la
+## tenue statique en fin de geste. Généreuse par défaut (12 des 22 ticks de
+## RECOVERY, ~55%) comme demandé, resserrable si jugé trop permissif en jeu
+## réel.
+const BRAS_FAUX_CANCEL_WINDOW_TICKS := 12
+
 ## Poing Belluaire (RANK_ZERO_POWER_SKILL_BIBLE v0.4, "Monstrification" §2)
 ## — même archétype "frappe de zone" que Bras-Faux (EXÉCUTÉ PAR LE JOUEUR,
 ## pas une entité invoquée), mais "Impact lourd" plutôt qu'un balayage :
@@ -294,6 +334,17 @@ const POING_BELLUAIRE_CAST_SEED := 51002  # Addendum A §A.5, jamais l'horloge m
 ## jusqu'à la fin du cast (20+4+26=50).
 const POING_BELLUAIRE_FRAME_TICK_BOUNDS: Array[int] = [4, 8, 12, 16, 20, 50]
 
+## Fenêtre d'annulation (mandat "fluidité", Partie 2) — PROPRIÉTÉ PROPRE à
+## Poing Belluaire, DÉLIBÉRÉMENT plus courte en proportion que Bras-Faux
+## (10 des 26 ticks de RECOVERY, ~38%, contre ~55% pour Bras-Faux) : "le
+## bon point diffère entre un coup léger et un coup lourd" (mandat) — ce
+## coup EST le plus lourd des 5 compétences (hitstop "heavy", recoil_px le
+## plus élevé, cf. commentaire au-dessus de POING_BELLUAIRE_DAMAGE), il
+## doit rester le plus long à annuler pour VENDRE son poids, pas juste
+## copier le même ratio que les autres. Reste généreuse (pas un verrou
+## total), juste proportionnellement plus engagée.
+const POING_BELLUAIRE_CANCEL_WINDOW_TICKS := 10
+
 ## Poing Tellurique (RANK_ZERO_POWER_SKILL_BIBLE v0.4, "Terre" §1) —
 ## premier pouvoir de la Classe Terre implémenté : AUCUNE palette
 ## signature existante (contrairement à Monstrification ci-dessus), donc
@@ -340,6 +391,15 @@ const POING_TELLURIQUE_CAST_SEED := 51003  # Addendum A §A.5, jamais l'horloge 
 ## et que la frame 3 (accroupissement profond, juste avant l'impact) tienne
 ## tout le reste de l'ANTICIPATION (jusqu'au tick 18 inclus).
 const POING_TELLURIQUE_FRAME_TICK_BOUNDS: Array[int] = [5, 10, 14, 18, 25, 42]
+
+## Fenêtre d'annulation (mandat "fluidité", Partie 2) — PROPRIÉTÉ PROPRE à
+## Poing Tellurique : coup au sol "medium" (ni le plus léger ni le plus
+## lourd des 5), fenêtre généreuse à mi-chemin entre Bras-Faux et Poing
+## Belluaire (12 des 20 ticks de RECOVERY, 60%) — la frame 5 ("dissipation
+## en se relevant", POING_TELLURIQUE_FRAME_TICK_BOUNDS) tient déjà tout ce
+## temps sans bouger, rien de visuel n'est coupé par une annulation dans
+## cette fenêtre.
+const POING_TELLURIQUE_CANCEL_WINDOW_TICKS := 12
 
 ## Marée de Sable (Terre, Tier 2) — MANDAT AUTONOME v3 Phase 3. GDD :
 ## "Une vague de sable déferle sur une ligne devant Rank Zero, ralentissant
@@ -395,6 +455,14 @@ const MAREE_DE_SABLE_CAST_SEED := 51004  # Addendum A §A.5, jamais l'horloge mu
 ## du RELEASE et toute la RECOVERY (14+10+18=42).
 const MAREE_DE_SABLE_FRAME_TICK_BOUNDS: Array[int] = [4, 8, 11, 15, 22, 42]
 
+## Fenêtre d'annulation (mandat "fluidité", Partie 2) — PROPRIÉTÉ PROPRE à
+## Marée de Sable : Tier CONTRÔLE (dégâts les plus faibles des 4, voir
+## MAREE_DE_SABLE_DAMAGE), pas d'impact "lourd" à vendre — fenêtre généreuse
+## proche de Bras-Faux (10 des 18 ticks de RECOVERY, ~55%). La frame 5 (voile
+## de sable qui tient jusqu'à la fin, MAREE_DE_SABLE_FRAME_TICK_BOUNDS) est
+## déjà statique sur toute cette fenêtre.
+const MAREE_DE_SABLE_CANCEL_WINDOW_TICKS := 10
+
 @export var stats: Stats = Stats.new()
 
 ## Direction de face courante (8 valeurs), utile aux futures frames
@@ -428,6 +496,17 @@ var _combo_phase: int = ComboPhase.NONE
 var _combo_tick: int = 0
 var _attack_queued: bool = false
 var _hit_applied_this_release: bool = false
+
+## Généralisation du buffer d'input aux 5 compétences dédiées (voir
+## INPUT_BUFFER_TICKS ci-dessus) — 0 = rien en file, sinon le slot 1-5
+## dont l'appui a été retenu pendant que `_action_lock` était vrai. UN SEUL
+## slot à la fois (dernier appui gagne, même discipline que _attack_queued) :
+## jamais une vraie file à plusieurs emplacements, juste "quel est le
+## prochain input". `_queued_power_ticks_remaining` porte l'expiration —
+## voir `_try_activate_power_slot()`, `_fire_queued_power_slot()`,
+## `_try_consume_queued_input()`.
+var _queued_power_slot: int = 0
+var _queued_power_ticks_remaining: int = 0
 
 ## Mandat "critique probabiliste" (verrouillé par Milan — nom de travail
 ## interne "Black Flash", JAMAIS un nom exposé au joueur : la bible n'a
@@ -623,6 +702,15 @@ func _physics_process(_delta: float) -> void:
 		_maree_de_sable_cooldown_remaining -= 1
 	if _gueule_vide_gesture_ticks_remaining > 0:
 		_gueule_vide_gesture_ticks_remaining -= 1
+	# Expiration du buffer d'input généralisé (mandat "fluidité") — décompte
+	# à CHAQUE tick, quelle que soit la branche prise plus bas, sinon un
+	# input mis en file pendant un dash/une esquive (qui n'ont pas de
+	# fenêtre d'annulation dédiée, voir le filet de sécurité en bas de
+	# fonction) ne serait jamais nettoyé à temps.
+	if _queued_power_ticks_remaining > 0:
+		_queued_power_ticks_remaining -= 1
+		if _queued_power_ticks_remaining <= 0:
+			_queued_power_slot = 0
 
 	if Input.is_action_just_pressed("attack"):
 		_attack_queued = true
@@ -661,6 +749,16 @@ func _physics_process(_delta: float) -> void:
 		_attack_queued = false
 		velocity = Vector2.ZERO
 		_start_attack(1)
+	elif _queued_power_slot > 0 and not stats.is_dead() and not _action_lock:
+		# Filet de sécurité (mandat "fluidité") : couvre les cas où
+		# `_action_lock` se lève SANS jamais traverser la fenêtre
+		# d'annulation dédiée d'une compétence (dash/esquive/hurt, qui n'en
+		# ont pas — voir _advance_dash()/_advance_dodge()/_advance_hurt())
+		# — sans ce filet, un pouvoir mis en file pendant un dash resterait
+		# en attente jusqu'à expiration au lieu de se déclencher "dès que
+		# possible" (mandat) dès que le dash se termine.
+		velocity = Vector2.ZERO
+		_fire_queued_power_slot()
 	else:
 		_handle_movement()
 
@@ -783,10 +881,23 @@ func _advance_combo() -> void:
 				_combo_tick = 0
 		ComboPhase.RECOVERY:
 			var chain_window_start := recovery_ticks - CHAIN_WINDOW_TICKS
-			if _combo_tick >= chain_window_start and _combo_step < AttackAnimName.size() and _attack_queued:
-				_attack_queued = false
-				_start_attack(_combo_step + 1)
-				return
+			if _combo_tick >= chain_window_start:
+				if _combo_step < AttackAnimName.size() and _attack_queued:
+					_attack_queued = false
+					_start_attack(_combo_step + 1)
+					return
+				# Mandat "fluidité" : la même fenêtre de chaînage du combo de
+				# base sert AUSSI de fenêtre d'annulation vers un pouvoir mis
+				# en file (`_queued_power_slot`) — couvre à la fois "presser
+				# une compétence dédiée vers la fin de coup3" (pas de coup4,
+				# le combo se relance ou saute directement vers le pouvoir)
+				# et "presser un pouvoir vers la fin de coup1/coup2 alors
+				# qu'aucun attaque n'est en file". `_try_consume_queued_input`
+				# gère aussi `_attack_queued` en interne (le cas tier3 déjà
+				# écarté par AttackAnimName.size() ci-dessus tombe ici et
+				# relance un combo tier1, comportement voulu : pas de coup4).
+				if _try_consume_queued_input(_end_combo):
+					return
 			if _combo_tick >= recovery_ticks:
 				_end_combo()
 
@@ -1048,6 +1159,14 @@ func _advance_bras_faux() -> void:
 				_bras_faux_phase = BrasFauxPhase.RECOVERY
 				_bras_faux_tick = 0
 		BrasFauxPhase.RECOVERY:
+			# Fenêtre d'annulation (BRAS_FAUX_CANCEL_WINDOW_TICKS) : dès
+			# qu'elle est ouverte, un input déjà en file (attack ou un
+			# autre slot de pouvoir) termine Bras-Faux tôt et démarre
+			# l'action suivante SANS attendre la fin de RECOVERY — voir
+			# _try_consume_queued_input().
+			if _bras_faux_tick >= BRAS_FAUX_RECOVERY_TICKS - BRAS_FAUX_CANCEL_WINDOW_TICKS:
+				if _try_consume_queued_input(_end_bras_faux):
+					return
 			if _bras_faux_tick >= BRAS_FAUX_RECOVERY_TICKS:
 				_end_bras_faux()
 	# Tick-exact (voir BRAS_FAUX_FRAME_TICK_BOUNDS) : appliqué APRÈS la
@@ -1175,6 +1294,11 @@ func _advance_poing_belluaire() -> void:
 				_poing_belluaire_phase = PoingBelluairePhase.RECOVERY
 				_poing_belluaire_tick = 0
 		PoingBelluairePhase.RECOVERY:
+			# Fenêtre d'annulation (POING_BELLUAIRE_CANCEL_WINDOW_TICKS) —
+			# même patron que Bras-Faux ci-dessus.
+			if _poing_belluaire_tick >= POING_BELLUAIRE_RECOVERY_TICKS - POING_BELLUAIRE_CANCEL_WINDOW_TICKS:
+				if _try_consume_queued_input(_end_poing_belluaire):
+					return
 			if _poing_belluaire_tick >= POING_BELLUAIRE_RECOVERY_TICKS:
 				_end_poing_belluaire()
 	# Tick-exact (voir POING_BELLUAIRE_FRAME_TICK_BOUNDS) : appliqué APRÈS
@@ -1321,6 +1445,11 @@ func _advance_poing_tellurique() -> void:
 				_poing_tellurique_phase = PoingTelluriquePhase.RECOVERY
 				_poing_tellurique_tick = 0
 		PoingTelluriquePhase.RECOVERY:
+			# Fenêtre d'annulation (POING_TELLURIQUE_CANCEL_WINDOW_TICKS) —
+			# même patron que Bras-Faux ci-dessus.
+			if _poing_tellurique_tick >= POING_TELLURIQUE_RECOVERY_TICKS - POING_TELLURIQUE_CANCEL_WINDOW_TICKS:
+				if _try_consume_queued_input(_end_poing_tellurique):
+					return
 			if _poing_tellurique_tick >= POING_TELLURIQUE_RECOVERY_TICKS:
 				_end_poing_tellurique()
 	# Tick-exact (voir POING_TELLURIQUE_FRAME_TICK_BOUNDS) : appliqué APRÈS
@@ -1430,6 +1559,11 @@ func _advance_maree_de_sable() -> void:
 				_maree_de_sable_phase = MareeDeSablePhase.RECOVERY
 				_maree_de_sable_tick = 0
 		MareeDeSablePhase.RECOVERY:
+			# Fenêtre d'annulation (MAREE_DE_SABLE_CANCEL_WINDOW_TICKS) —
+			# même patron que Bras-Faux ci-dessus.
+			if _maree_de_sable_tick >= MAREE_DE_SABLE_RECOVERY_TICKS - MAREE_DE_SABLE_CANCEL_WINDOW_TICKS:
+				if _try_consume_queued_input(_end_maree_de_sable):
+					return
 			if _maree_de_sable_tick >= MAREE_DE_SABLE_RECOVERY_TICKS:
 				_end_maree_de_sable()
 	# Tick-exact (voir MAREE_DE_SABLE_FRAME_TICK_BOUNDS) : appliqué APRÈS la
@@ -1604,7 +1738,94 @@ func _try_activate_power_slot(slot_index: int) -> void:
 		return
 	if get_power_slot_cooldown_ratio(slot_index) > 0.0:
 		return
+	# Gueule Vide reste l'EXCEPTION documentée (_cast_gueule_vide() ne pose
+	# jamais _action_lock — "l'invocation n'immobilise pas le joueur", voir
+	# le commentaire au-dessus de _power1_cooldown_remaining) : la mettre
+	# en file ici la rendrait bloquable par un _action_lock ÉTRANGER
+	# qu'elle n'a jamais eu à respecter avant ce mandat (ex. encore en
+	# pleine RECOVERY d'un dash) — une régression sur un contrat déjà
+	# validé, pas une amélioration. Elle garde donc le comportement exact
+	# d'avant ce mandat : appelée directement, seul le cooldown la borne.
+	if _action_lock and info["id"] != "gueule_vide":
+		# Buffer d'input (mandat "fluidité", généralisation de l'embryon
+		# _attack_queued aux 4 AUTRES compétences dédiées) : AVANT ce
+		# mandat, chaque `_start_*()` de ces 4 compétences retournait tôt
+		# sur son propre garde `_action_lock` (voir _start_bras_faux() etc.)
+		# — l'appui était perdu en silence si le joueur était déjà engagé
+		# dans une autre action (combo/dash/esquive/une des 5 compétences).
+		# Retenu ici une fenêtre courte (INPUT_BUFFER_TICKS) au lieu
+		# d'appeler le handler (qui no-opérerait de toute façon) : consommé
+		# soit par la fenêtre d'annulation de l'action en cours (voir
+		# `_try_consume_queued_input()`, appelé depuis chaque
+		# `_advance_*()`), soit par le filet de sécurité en fin de
+		# `_physics_process()` si l'action en cours n'a pas de fenêtre
+		# dédiée (dash/esquive/hurt). Dernier appui gagne, même discipline
+		# que `_attack_queued`.
+		_queued_power_slot = slot_index
+		_queued_power_ticks_remaining = INPUT_BUFFER_TICKS
+		return
 	call(IMPLEMENTED_SKILL_HANDLERS[info["id"]])
+
+
+## Consomme `_queued_power_slot` s'il est toujours valide (compétence
+## toujours implémentée sur le Pouvoir actif de cette run + cooldown
+## écoulé) — factorisé car appelé à la fois par le filet de sécurité de
+## `_physics_process()` (dash/esquive/hurt, sans fenêtre d'annulation
+## propre) ET par `_try_consume_queued_input()` ci-dessous (fenêtre
+## d'annulation propre à chaque compétence). Ne vérifie PAS `_action_lock`
+## lui-même — c'est aux appelants de garantir qu'il est déjà (ou vient
+## d'être) levé. Retourne true si une compétence a effectivement démarré.
+func _fire_queued_power_slot() -> bool:
+	if _queued_power_slot <= 0:
+		return false
+	var slot_index := _queued_power_slot
+	_queued_power_slot = 0
+	_queued_power_ticks_remaining = 0
+	var info: Dictionary = get_power_slot_info(slot_index)
+	if info.is_empty() or stats.is_dead() or get_power_slot_cooldown_ratio(slot_index) > 0.0:
+		return false
+	velocity = Vector2.ZERO
+	call(IMPLEMENTED_SKILL_HANDLERS[info["id"]])
+	return true
+
+
+## Fenêtres d'annulation (mandat "fluidité") — appelée depuis la RECOVERY
+## de chaque compétence dédiée (voir `<SKILL>_CANCEL_WINDOW_TICKS`) une
+## fois le tick d'annulation atteint. Priorité à `_attack_queued` (même
+## ordre que le combo lui-même) puis au pouvoir mis en file. `end_current`
+## termine proprement l'action EN COURS (pose son cooldown, lève
+## `_action_lock`) — chaque appelant passe sa propre fonction `_end_*()`
+## plutôt que de dupliquer cette étape ici. Retourne true si l'action en
+## cours a été terminée tôt pour laisser place à l'action en file (que
+## celle-ci ait effectivement pu démarrer ou non — un pouvoir invalidé
+## entre-temps, ex. cooldown qui vient d'expirer autrement, laisse
+## simplement le joueur revenir à `_handle_movement()` au tick suivant,
+## jamais un crash) — l'appelant doit alors `return` immédiatement, même
+## discipline que le chaînage déjà en place sur le combo de base.
+func _try_consume_queued_input(end_current: Callable) -> bool:
+	if _attack_queued:
+		_attack_queued = false
+		_queued_power_slot = 0
+		_queued_power_ticks_remaining = 0
+		end_current.call()
+		_start_attack(1)
+		return true
+	if _queued_power_slot > 0:
+		var slot_index := _queued_power_slot
+		# Validé AVANT de terminer l'action en cours (jamais après) : si le
+		# pouvoir en file s'avère invalide (Pouvoir actif changé entre
+		# temps, ce qui ne peut pas arriver en jeu réel mais reste vérifié
+		# par prudence), l'action en cours continue sa RECOVERY normalement
+		# au lieu d'être coupée pour rien.
+		var info: Dictionary = get_power_slot_info(slot_index)
+		if info.is_empty() or stats.is_dead() or get_power_slot_cooldown_ratio(slot_index) > 0.0:
+			_queued_power_slot = 0
+			_queued_power_ticks_remaining = 0
+			return false
+		end_current.call()
+		_fire_queued_power_slot()
+		return true
+	return false
 
 
 ## Réaction à un coup subi. Même signature qu'Enemy.take_damage() (source_
@@ -1774,13 +1995,23 @@ func _advance_dash() -> void:
 	_dash_tick += 1
 	_dash_step_absolute_tick += 1
 	var dash_data: Dictionary = _animation_composer_data.get("dash", {})
-	AnimationComposer.apply_squash(_sprite, dash_data.get("squash", []), _dash_step_absolute_tick)
+	# Smear procédural (mandat "fluidité") REMPLACE l'ancienne impulsion
+	# squash figée du JSON (voir AnimationComposer.apply_motion_smear) —
+	# celle-ci étirait toujours l'axe horizontal peu importe la direction
+	# réelle du dash, fausse dès qu'on quitte l'axe est/ouest. Le smear lui-
+	# même est appliqué APRÈS le `match` ci-dessous (une fois `velocity`
+	# recalculée pour CE tick), pas ici.
 	AnimationComposer.apply_lean(_sprite, float(dash_data.get("lean_deg", 0.0)), _dash_direction,
 		int(dash_data.get("lean_start_tick", 0)), int(dash_data.get("lean_end_tick", 0)), _dash_step_absolute_tick)
 	_apply_afterimages(dash_data, _dash_step_absolute_tick)
 	match _dash_phase:
 		DashPhase.ANTICIPATION:
 			velocity = Vector2.ZERO
+			# Garantit l'échelle neutre au tout début du dash — plus de
+			# apply_squash() ici pour la remettre à Vector2.ONE par défaut
+			# à chaque tick (voir le smear plus bas, qui ne touche PLUS le
+			# scale tant qu'il n'y a pas de vitesse réelle).
+			_sprite.scale = Vector2.ONE
 			if _dash_tick >= DASH_ANTICIPATION_TICKS:
 				_dash_phase = DashPhase.MOVE
 				_dash_tick = 0
@@ -1805,6 +2036,10 @@ func _advance_dash() -> void:
 				Vector2.ZERO, DASH_RECOVERY_INITIAL_SPEED_PX_S / DASH_RECOVERY_TICKS)
 			if _dash_tick >= DASH_RECOVERY_TICKS:
 				_end_dash()
+	# Smear procédural — lit `velocity` FRAÎCHEMENT calculée ci-dessus pour
+	# CE tick (nulle en ANTICIPATION, pic en MOVE, décroissance en
+	# RECOVERY), voir AnimationComposer.apply_motion_smear().
+	AnimationComposer.apply_motion_smear(_sprite, velocity)
 
 
 ## Décélération quadratique (rapide puis qui s'adoucit) — "vitesse max
@@ -1837,13 +2072,15 @@ func _advance_dodge() -> void:
 	_dodge_tick += 1
 	_dodge_step_absolute_tick += 1
 	var dash_data: Dictionary = _animation_composer_data.get("dash", {})
-	AnimationComposer.apply_squash(_sprite, dash_data.get("squash", []), _dodge_step_absolute_tick)
+	# Smear procédural (mandat "fluidité") REMPLACE ici aussi l'ancienne
+	# impulsion squash figée — même raisonnement que _advance_dash().
 	AnimationComposer.apply_lean(_sprite, float(dash_data.get("lean_deg", 0.0)), _dodge_direction,
 		int(dash_data.get("lean_start_tick", 0)), int(dash_data.get("lean_end_tick", 0)), _dodge_step_absolute_tick)
 	_apply_afterimages(dash_data, _dodge_step_absolute_tick)
 	match _dodge_phase:
 		DodgePhase.ANTICIPATION:
 			velocity = Vector2.ZERO
+			_sprite.scale = Vector2.ONE  # voir le même garde-fou dans _advance_dash()
 			if _dodge_tick >= DODGE_ANTICIPATION_TICKS:
 				_dodge_phase = DodgePhase.ACTIVE
 				_dodge_tick = 0
@@ -1862,6 +2099,7 @@ func _advance_dodge() -> void:
 				Vector2.ZERO, DODGE_RECOVERY_INITIAL_SPEED_PX_S / DODGE_RECOVERY_TICKS)
 			if _dodge_tick >= DODGE_RECOVERY_TICKS:
 				_end_dodge()
+	AnimationComposer.apply_motion_smear(_sprite, velocity)
 
 
 func _end_dodge() -> void:

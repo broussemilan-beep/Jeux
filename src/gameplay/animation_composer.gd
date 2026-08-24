@@ -75,6 +75,58 @@ static func apply_squash(sprite: Node2D, keyframes: Array, abs_tick: int) -> voi
 		return
 
 
+## Smear procédural (mandat "fluidité", Partie 2, "smear frames
+## procédurales") — étirement le long de l'axe du mouvement sur les
+## déplacements rapides (dash/esquive), calculé à CHAQUE tick depuis la
+## VITESSE RÉELLE du joueur, PAS depuis des keyframes pré-autorées comme
+## `apply_squash` ci-dessus. Distinction volontaire entre les deux couches :
+## `apply_squash` reste un beat ANIMÉ à la main (anticipation/impact posés
+## dans data/animation_composer/<perso>.json), le smear est une fonction
+## PURE de la vitesse instantanée — la même distinction qu'en animation
+## traditionnelle entre une pose d'anticipation dessinée et une traînée de
+## mouvement générée. Remplace, pour le dash/l'esquive, l'ancienne
+## impulsion squash figée du JSON (x=1.3/y=0.75) qui étirait toujours
+## l'axe HORIZONTAL peu importe la direction réelle du dash — juste pour
+## un dash est/ouest, fausse dès qu'on quitte l'axe horizontal (un dash
+## vers le nord s'étirait quand même en largeur). Zéro coût de génération
+## (aucun asset dédié), juste une fonction du vecteur vitesse.
+##
+## Approximation par AXE DOMINANT (horizontal vs vertical) plutôt qu'une
+## vraie rotation+scale+dérotation dans le repère du mouvement : plus
+## simple, zéro conflit avec `apply_lean` (qui écrit `rotation_degrees`
+## juste après dans l'appelant), et suffisant ici — l'art de Cendre pour
+## dash/esquive reste dessiné "sud + flip_h" (jamais une vraie rotation
+## vers la direction visée), donc étirer dans le repère LOCAL du sprite
+## (pas un repère tourné vers `velocity`) garde le smear aligné avec la
+## silhouette réellement affichée à l'écran plutôt qu'avec un repère que
+## l'art ne suit pas.
+const SMEAR_MAX_STRETCH := 0.35  # +35% dans l'axe dominant au pic de vitesse
+const SMEAR_REFERENCE_SPEED_PX_S := 900.0  # vitesse à laquelle le smear plafonne (pic du dash, voir Player._advance_dash())
+
+## `velocity` : vitesse RÉELLE du joueur pour CE tick (px/s, même valeur
+## que `Player.velocity` juste après le calcul de la phase MOVE/ACTIVE).
+## Ne touche PAS `sprite.scale` si la vitesse est quasi nulle — laisse la
+## valeur déjà posée par `apply_squash()` (appelé avant, dans l'ordre où
+## l'appelant les enchaîne) plutôt que de la forcer à IDENTITY : le smear
+## est un effet ADDITIF sur les phases où le joueur bouge vraiment, pas un
+## reset inconditionnel comme `apply_squash`/`apply_lean`.
+static func apply_motion_smear(sprite: Node2D, velocity: Vector2) -> void:
+	var speed: float = velocity.length()
+	if speed < 1.0:
+		return
+	var t: float = clampf(speed / SMEAR_REFERENCE_SPEED_PX_S, 0.0, 1.0)
+	var stretch: float = 1.0 + SMEAR_MAX_STRETCH * t
+	# Compression légère de l'axe perpendiculaire (~moitié de l'étirement) —
+	# approximation de conservation de volume, moins agressive que
+	# l'étirement pour ne jamais donner l'impression d'un sprite qui
+	# rétrécit plus qu'il ne s'étire.
+	var squeeze: float = 1.0 - SMEAR_MAX_STRETCH * 0.5 * t
+	if absf(velocity.x) >= absf(velocity.y):
+		sprite.scale = Vector2(stretch, squeeze)
+	else:
+		sprite.scale = Vector2(squeeze, stretch)
+
+
 ## `lean_deg` : amplitude max (voir _lean_notes du JSON). Rampe symétrique
 ## sur [start_tick, end_tick] — monte jusqu'au milieu de la fenêtre, puis
 ## redescend. `facing` donne le signe (bascule dans le sens du mouvement/

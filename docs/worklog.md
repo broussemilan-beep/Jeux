@@ -3862,3 +3862,249 @@ l'incident de coordination ci-dessus) mais leur contenu Marée de Sable
 est identique à ce qui a été vérifié ici. `data/palettes/terre.json`
 lu (couleur "contact" réutilisée telle quelle pour la teinte), NON
 modifié.
+
+---
+
+## 2026-08-24 — MANDAT "fluidité" (Partie 2, couche code — indépendante
+## de tout pipeline d'asset) : buffer d'input + fenêtre d'annulation
+## généralisés, smear procédural sur dash/esquive, diagnostic complet
+## (et clôture) du bug de la "tranche écrasée"
+
+**Contexte** : chantier distinct du mandat Cendre (Partie 1, ci-dessus)
+— zéro génération PixelLab/Meshy, travail de code pur sur
+`src/gameplay/player.gd`/`animation_composer.gd`/`tools/
+smoke_test_gameplay.gd`/`tools/capture_scene.gd`. Objectif : un niveau
+de fluidité type studio (buffer d'input, fenêtres d'annulation, smear)
+qui marche identiquement avec les assets Cendre actuels, plus la
+clôture du bug de la "tranche écrasée" en attente depuis le Round 4.
+
+### Buffer d'input + fenêtres d'annulation — généralisé à 4 des 5
+### compétences dédiées (Bras-Faux, Poing Belluaire, Poing Tellurique,
+### Marée de Sable), Gueule Vide traitée comme exception documentée
+
+L'embryon existant (`_attack_queued`/`CHAIN_WINDOW_TICKS`, combo de
+base seulement) a été ÉTENDU, pas recréé : un nouveau
+`_queued_power_slot`/`_queued_power_ticks_remaining`
+(`INPUT_BUFFER_TICKS := 10`, "fenêtre courte, quelques ticks" du
+mandat) retient un appui sur un slot de pouvoir pressé pendant
+`_action_lock`, au lieu de le perdre en silence comme AVANT ce mandat
+(chaque `_start_*()` de compétence retournait tôt sur son propre garde
+`_action_lock`). Consommé soit par la fenêtre d'annulation de l'action
+EN COURS (`_try_consume_queued_input()`, appelée depuis la RECOVERY de
+chaque `_advance_*()` une fois son propre `<SKILL>_CANCEL_WINDOW_TICKS`
+atteint), soit par un filet de sécurité en fin de `_physics_process()`
+pour les actions sans fenêtre dédiée (dash/esquive/hurt).
+
+Chaque compétence expose sa PROPRE constante de fenêtre d'annulation
+(pas une réutilisation de `CHAIN_WINDOW_TICKS`, comme exigé par le
+mandat), calibrée sur les `<SKILL>_FRAME_TICK_BOUNDS` existants (le
+point où la dernière frame du geste est déjà tenue statique, donc rien
+de visuel n'est coupé par une annulation dans cette fenêtre) :
+- `BRAS_FAUX_CANCEL_WINDOW_TICKS := 12` (12/22 ticks de RECOVERY, ~55%)
+- `POING_BELLUAIRE_CANCEL_WINDOW_TICKS := 10` (10/26, ~38% — délibérément
+  plus court en proportion : c'est le coup le plus LOURD des 5, "le bon
+  point diffère entre un coup léger et un coup lourd" du mandat)
+- `POING_TELLURIQUE_CANCEL_WINDOW_TICKS := 12` (12/20, 60%)
+- `MAREE_DE_SABLE_CANCEL_WINDOW_TICKS := 10` (10/18, ~55%)
+
+Le combo de base garde son propre chaînage inter-tiers inchangé (coup1
+→ coup2 → coup3), mais sa fenêtre de RECOVERY consulte AUSSI
+`_queued_power_slot` (donc presser une compétence dédiée vers la fin
+d'un coup du combo l'enchaîne aussi tôt que possible, même mécanisme
+partagé via `_try_consume_queued_input()`).
+
+**Gueule Vide, exception documentée et DÉLIBÉRÉE** : `_cast_gueule_vide()`
+ne pose jamais `_action_lock` (décision d'un round précédent — "l'invocation
+n'immobilise pas le joueur"). Première version de ce mandat mettait Gueule
+Vide en file comme les 4 autres dès qu'`_action_lock` était vrai ailleurs
+(ex. encore en RECOVERY d'un dash) — RÉGRESSION détectée par le smoke test
+lui-même (`power1_input_spawns_gueule_vide_creature` repassait au rouge,
+`spawned:false`) avant tout commit : Gueule Vide devenait bloquable par un
+verrou étranger qu'elle n'avait jamais eu à respecter. Corrigé en excluant
+explicitement `info["id"] == "gueule_vide"` du nouveau garde — elle reste
+appelée directement, exactement comme avant ce mandat, jamais mise en
+file pour SA PROPRE activation (elle reste en revanche une cible de file
+valide : une AUTRE compétence peut s'annuler vers elle).
+
+Vérifié par le smoke test (5 nouveaux checks, `tools/
+smoke_test_gameplay.gd`) : `queued_power_does_not_fire_before_cancel_window_opens`,
+`queued_power_fires_on_its_own_when_cancel_window_opens_and_ends_current_action_early`,
+`power_fired_from_cancel_window_still_completes_and_unlocks_normally`
+(scénario Bras-Faux → Poing Belluaire, buffer pressé peu avant
+l'ouverture, démarrage automatique SANS second appui, Bras-Faux paie
+quand même son cooldown), et `queued_power_input_expires_after_input_buffer_ticks_if_never_consumed`
+/ `expired_buffer_lets_current_action_run_its_full_recovery_uninterrupted`
+(scénario Poing Tellurique → Marée de Sable, appui TRÈS tôt dans
+l'anticipation : le buffer expire avant l'ouverture de la fenêtre,
+Poing Tellurique va au bout de sa RECOVERY complète, Marée de Sable ne
+démarre jamais tout seul — preuve que ce n'est PAS une file illimitée).
+
+### Smear frames procédurales — dash/esquive
+
+`AnimationComposer.apply_motion_smear(sprite, velocity)` : étirement
+non-uniforme le long de l'axe DOMINANT du mouvement (horizontal vs
+vertical), calculé à CHAQUE tick depuis la vitesse RÉELLE du joueur
+(`SMEAR_MAX_STRETCH := 0.35`, plafonné à `SMEAR_REFERENCE_SPEED_PX_S :=
+900`), PAS depuis des keyframes pré-autorées comme `apply_squash()`
+(qui reste inchangée, toujours utilisée par le combo). REMPLACE
+l'ancienne impulsion squash figée du JSON pour dash/esquive (`x=1.3,
+y=0.75` à tick4 dans `data/animation_composer/cendre.json`) : cette
+valeur était aveugle à la direction réelle du dash (toujours un
+étirement HORIZONTAL, fausse dès qu'on quitte l'axe est/ouest — un dash
+vers le nord s'étirait quand même en largeur). Le smear, généré depuis
+`_dash_direction`/`velocity`, reste correct pour les 8 directions.
+Vérifié par le check existant `dash_applies_squash_and_lean_then_resets`
+(toujours vert — le smear produit bien un scale non-identité pendant
+MOVE puis un reset propre à `_end_dash()`), pas de nouveau check dédié
+(le mécanisme est visuellement équivalent du point de vue de ce test :
+un scale qui bouge puis qui revient à `Vector2.ONE`).
+
+Root motion (mandat §, audit demandé) : dash/esquive utilisent une
+courbe de déplacement ease-out CALCULÉE en code (`_ease_out_quad()`),
+synchronisée tick-exact avec les phases ANTICIPATION/MOVE/RECOVERY de
+l'action — PAS une lecture littérale d'un déplacement encodé dans les
+pixels de l'animation (les frames de Cendre sont des poses fixes
+pose-à-pose, PixelLab, sans donnée de mouvement par frame — ce concept
+n'existe pas pour ce pipeline d'asset 2D). Le combo, lui, lit un
+`root_motion` déclaratif (`start_tick`/`end_tick`/`distance_px`) depuis
+`data/animation_composer/cendre.json`, mais CE JSON reste une valeur
+choisie à la main par un humain, pas une mesure extraite des pixels —
+la distinction "porté par l'animation vs appliqué en translation
+séparée" du mandat ne s'applique donc pas littéralement à ce pipeline :
+il n'existe PAS de sens où le déplacement pourrait être "lu depuis"
+l'animation elle-même. Ce qui EST vrai et vérifié : le déplacement
+(dash/esquive/combo) est toujours synchronisé sur les MÊMES bornes de
+tick que le changement de pose visuelle (jamais deux horloges
+séparées) — la sensation "ça glisse" signalée par le mandat, si elle
+est réelle, n'a donc pas cette cause précise. Aucun changement de code
+sur ce point (rien à corriger, le système actuel est déjà la meilleure
+approximation possible de "root motion" pour ce pipeline) — documenté
+honnêtement comme verdict plutôt que supposé.
+
+### Bug de la "tranche écrasée" — diagnostiqué, PAS un bug (misdiagnostic
+### d'un round précédent), clôturé avec preuve
+
+Repro complet AVANT toute hypothèse (discipline demandée) :
+- `bash scripts/capture_headless.sh --mode=power --power=gueule_vide
+  --tick=35` (la CRÉATURE seule) → rendu normal, tendon en S, AUCUNE
+  tranche écrasée. Élimine la créature elle-même comme source.
+- `bash scripts/capture_headless.sh --mode=player_action --action=power1
+  --active_power=invocateur --level=1 --tick=35` (le JOUEUR, exact
+  contexte de la capture originale `2026-08-23-gueule-vide-4temps/
+  after_tick35.png`) → reproduit EXACTEMENT le même visuel qu'à
+  l'époque : Cendre apparaît comme une silhouette verticale étroite.
+
+**Cause trouvée par élimination de code, pas par supposition** :
+`grep -rn "\.scale" src/ scenes/` confirme qu'AUCUN code (avant ce
+mandat) ne touche `sprite.scale` en dehors de `AnimationComposer.
+apply_squash()`, elle-même appelée UNIQUEMENT depuis le combo
+(coup1/2/3) et dash/esquive — JAMAIS depuis `_cast_gueule_vide()` ni
+`gueule_vide.gd` (la créature). À tick 35, la fenêtre de geste
+`GUEULE_VIDE_GESTURE_TICKS` (30 ticks) est déjà retombée : le joueur
+est repassé sous `_handle_movement()`, qui joue l'anim directionnelle
+réelle correspondant à `facing` — la capture (`player.facing =
+Vector2.RIGHT`, forcé par l'outil de capture) affiche donc `idle_east`.
+Comparaison directe `idle_south` (vue de face, large) vs `idle_east`
+(vue de PROFIL, naturellement étroite — capture `--mode=character
+--anim=idle_east`, les 4 frames) : `idle_east` est une silhouette de
+PROFIL parfaitement proportionnée (tête/torse/bras/jambe visibles,
+cohérents entre eux), PAS une distorsion — juste beaucoup plus fine que
+la vue de face à laquelle l'œil est habitué. C'est du reste l'anim
+qu'atteste déjà `tools/smoke_test_gameplay.gd`
+(`combo_returns_to_idle_after_full_recovery_without_input` attend
+explicitement `"idle_east"` en sortie de combo, même config de facing).
+
+**Verdict : ce n'est PAS un bug de squash/stretch, ni un scale
+résiduel, ni un bug de rendu — c'est la pose `idle_east` légitime (art
+directionnel 8 directions, mandat production v1 §6), simplement
+inhabituelle en isolation parce que la référence mentale de l'équipe
+est la vue de face.** Le round précédent a mal identifié une capture
+`idle_east` correcte comme "tranche écrasée" faute d'avoir comparé
+avec `idle_south`. Côté Marée de Sable (tick 15, capture "AVANT" de
+`2026-08-23-maree-de-sable-lancement-avant-apres.png`, qui utilisait
+encore le placeholder "coup1" avant sa pose dédiée) : ce chemin de code
+précis n'existe plus (remplacé par `_start_maree_de_sable()`/
+`_advance_maree_de_sable()`, qui n'appellent JAMAIS `apply_squash`) —
+reproduit `coup1` à tick15 avec le code actuel
+(`--mode=player_action --action=attack --tick=15`) : pose de poing
+normale, aucune tranche écrasée. Rien à corriger dans le code actuel
+sur ce second point non plus ; l'ancien chemin qui aurait pu en être la
+cause n'existe simplement plus.
+
+Aucun changement de code n'a été fait pour "corriger" ce bug — il n'y
+avait rien à corriger, seulement à démontrer par élimination que la
+cause suspectée (squash/stretch) n'est structurellement pas
+responsable, preuve à l'appui (voir captures ci-dessous).
+
+### Smoke test
+
+`bash scripts/run_gameplay_smoke_test.sh` → `"all_pass":true`, 86
+checks (81 existants inchangés + 5 nouveaux sur le buffer/la fenêtre
+d'annulation). Deux vrais bugs trouvés et corrigés PENDANT la mise au
+vert (pas juste des ajustements de marge de test) : (1) la régression
+Gueule Vide décrite plus haut, détectée par le check EXISTANT qui
+repassait au rouge ; (2) un timing de test fragile sur les 2 nouveaux
+checks (lecture d'état 0 tick après une pression, sans laisser à
+`_physics_process()` le temps de la traiter) — corrigé en repassant à
+des prédicats sur les compteurs de ticks AUTORITATIFS
+(`_bras_faux_tick`, etc.) plutôt qu'un compte d'`await` manuel, même
+discipline que le reste du fichier.
+
+### Capture livrée
+
+`captures/verification/2026-08-24-fluidite-buffer-cancel/` —
+`contact_sheet_bras_faux_to_poing_belluaire.png` (grille 10 vignettes)
++ 6 frames brutes individuelles (`frame_t00_idle_baseline.png` …
+`frame_t49_poing_belluaire_contact.png`), produites via un nouveau mode
+`--action2=/--action2_tick=` ajouté à `--mode=player_action_sequence`
+(`tools/capture_scene.gd`) — nécessaire pour capturer RÉELLEMENT
+l'enchaînement (presser Bras-Faux, PUIS Poing Belluaire pendant que
+Bras-Faux joue encore), pas deux captures isolées qui ne prouveraient
+rien sur le mécanisme. Montre : Bras-Faux (t0-t18, contact "10/10" sur
+2 ennemis), Poing Belluaire pressé à t22 alors que Bras-Faux tourne
+encore (t22/t27 : rien ne démarre, silhouette Bras-Faux inchangée), la
+bascule AUTOMATIQUE à l'ouverture de la fenêtre d'annulation (t29 :
+silhouette Poing Belluaire déjà visible, SANS second appui visible dans
+la séquence au-delà de celui de t22), puis Poing Belluaire jusqu'à son
+propre contact (t49).
+
+### Fichiers modifiés
+
+`src/gameplay/player.gd` (`INPUT_BUFFER_TICKS`,
+`<SKILL>_CANCEL_WINDOW_TICKS` ×4, `_queued_power_slot`/
+`_queued_power_ticks_remaining`, `_try_activate_power_slot()`,
+`_fire_queued_power_slot()`, `_try_consume_queued_input()`, RECOVERY de
+`_advance_bras_faux/_poing_belluaire/_poing_tellurique/_maree_de_sable/
+_combo` étendues, `_advance_dash/_advance_dodge` — smear procédural
+remplace `apply_squash` sur les données "dash"), `src/gameplay/
+animation_composer.gd` (`apply_motion_smear()`), `tools/
+smoke_test_gameplay.gd` (5 nouveaux checks + leurs 2 appels dans
+`_ready()`), `tools/capture_scene.gd` (`--action2`/`--action2_tick`/
+`--active_power`/`--level` sur `--mode=player_action_sequence`),
+`captures/verification/2026-08-24-fluidite-buffer-cancel/` (7
+fichiers). Aucune génération PixelLab/Meshy — conforme au budget du
+mandat.
+
+### Ce qui reste (verdict honnête)
+
+- Buffer/annulation généralisés à 4/5 compétences dédiées + combo ;
+  Gueule Vide documentée comme déjà maximalement fluide par conception
+  (aucune fenêtre à lui ajouter). Dash/esquive n'ont PAS reçu de
+  buffer/fenêtre d'annulation (hors scope explicite du mandat, qui ne
+  les nomme pas parmi les "5 compétences" — appui sur dash/esquive
+  pendant un verrou reste un no-op silencieux, comme avant).
+  Resserrement des `<SKILL>_CANCEL_WINDOW_TICKS` (actuellement
+  généreux par choix) à trancher par Milan après test en jeu réel.
+- Smear procédural implémenté sur dash/esquive uniquement (mandat
+  demandait "au moins un mouvement rapide représentatif" — pas fait sur
+  un coup à contact 2-3 frames, qui aurait nécessité une refonte plus
+  large de `apply_squash`/`_advance_combo` pour rester dans le budget
+  temps de ce mandat).
+- Root motion : audité, verdict "déjà la meilleure approximation
+  possible pour ce pipeline d'asset", aucun changement de code — voir
+  section dédiée ci-dessus, pas un renvoi à plus tard mais une réponse
+  définitive compte tenu du pipeline actuel (poses pose-à-pose sans
+  donnée de mouvement par frame).
+- Bug de la tranche écrasée : CLÔTURÉ, ce n'était pas un bug (art
+  `idle_east`/`idle_west` légitime mal identifié par un round
+  précédent). Aucune régression introduite, aucun correctif nécessaire.

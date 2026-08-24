@@ -63,6 +63,8 @@ func _ready() -> void:
 	await _check_poing_belluaire()
 	await _check_poing_tellurique()
 	await _check_maree_de_sable()
+	await _check_input_buffer_fires_at_cancel_window()
+	await _check_input_buffer_expires_when_never_consumed()
 	await _check_power_slot_gating()
 	await _check_player_recoils_on_taking_damage()
 	await _check_crawler_chases_and_hits_player()
@@ -1514,6 +1516,180 @@ func _check_maree_de_sable() -> void:
 	enemy_lateral_outside.queue_free()
 	enemy_beyond_range.queue_free()
 	await get_tree().physics_frame
+
+
+## MANDAT "fluidité" (Partie 2, couche code) — généralisation du buffer
+## d'input + fenêtre d'annulation aux 5 compétences dédiées
+## (Player._try_activate_power_slot()/_queued_power_slot/
+## _try_consume_queued_input()). Scénario : le joueur presse Bras-Faux
+## (power2, tier2 Monstrification), PUIS presse Poing Belluaire (power1,
+## tier1 Monstrification) alors qu'il est encore verrouillé dans Bras-Faux
+## — AVANT ce mandat, ce second appui était perdu en silence
+## (`_start_poing_belluaire()` retournait tôt sur `_action_lock`). Vérifie
+## trois choses : (1) l'appui ne démarre RIEN tant que la fenêtre
+## d'annulation de Bras-Faux (BRAS_FAUX_CANCEL_WINDOW_TICKS) n'est pas
+## ouverte — pas de déclenchement immédiat, pas un bug de double-input ;
+## (2) dès que cette fenêtre s'ouvre, Poing Belluaire démarre tout SEUL
+## (sans second appui) et Bras-Faux se termine PLUS TÔT que sa RECOVERY
+## complète (22 ticks) — "se déclenche dès que possible" ; (3) Bras-Faux
+## paie quand même son cooldown, comme une fin normale.
+func _check_input_buffer_fires_at_cancel_window() -> void:
+	await _wait_until(func(): return not _player._action_lock, 60)
+
+	RunState.active_power = "monstrification"
+	_player.stats.level = 3  # débloque poing_belluaire (tier1) ET bras_faux (tier2)
+	# Les DEUX compétences ont déjà été exercées par leurs propres checks
+	# plus haut (_check_bras_faux()/_check_poing_belluaire()) — reset direct
+	# des cooldowns plutôt que de compter sur le nombre de ticks écoulés
+	# depuis (fragile, dépendrait de l'ordre/durée des checks intercalés).
+	_player._bras_faux_cooldown_remaining = 0
+	_player._poing_belluaire_cooldown_remaining = 0
+
+	_player.global_position = Vector2(200, 2500)
+	_player.velocity = Vector2.ZERO
+	_player.facing = Vector2.RIGHT
+
+	Input.action_press("power2")
+	await get_tree().physics_frame
+	Input.action_release("power2")
+	var bras_faux_started: bool = await _wait_until(
+		func(): return _player._bras_faux_phase != Player.BrasFauxPhase.NONE, 5)
+
+	# RECOVERY-relatif : tick d'ouverture de la fenêtre d'annulation.
+	var cancel_window_start: int = Player.BRAS_FAUX_RECOVERY_TICKS - Player.BRAS_FAUX_CANCEL_WINDOW_TICKS
+
+	# Attend d'être 3 ticks (RELATIFS à RECOVERY) avant l'ouverture — via le
+	# compteur AUTORITATIF `_bras_faux_tick`, jamais un compte d'`await`
+	# manuel (l'ordre entre la reprise d'un `await physics_frame` et le
+	# `_physics_process` d'un nœud n'est pas garanti au tick près, même
+	# réserve documentée ailleurs dans ce fichier) — largement à
+	# l'intérieur d'INPUT_BUFFER_TICKS (10) pour que le buffer survive
+	# jusqu'à l'ouverture.
+	await _wait_until(
+		func(): return (_player._bras_faux_phase == Player.BrasFauxPhase.RECOVERY
+			and _player._bras_faux_tick >= cancel_window_start - 3),
+		Player.BRAS_FAUX_ANTICIPATION_TICKS + Player.BRAS_FAUX_RELEASE_TICKS + cancel_window_start + 5)
+
+	Input.action_press("power1")
+	await get_tree().physics_frame
+	Input.action_release("power1")
+	var queued_immediately: bool = await _wait_until(func(): return _player._queued_power_slot == 1, 3)
+
+	# Toujours strictement AVANT l'ouverture (tick relatif < cancel_window_start) :
+	# rien ne doit encore avoir démarré — preuve que c'est la fenêtre
+	# d'annulation qui gate le déclenchement, pas juste "le prochain input
+	# marche tout de suite".
+	var still_locked_in_bras_faux: bool = _player._bras_faux_phase == Player.BrasFauxPhase.RECOVERY \
+		and _player._bras_faux_tick < cancel_window_start \
+		and _player._poing_belluaire_phase == Player.PoingBelluairePhase.NONE
+
+	# Ouverture de la fenêtre d'annulation : Poing Belluaire doit démarrer
+	# TOUT SEUL (aucun second appui n'a été envoyé depuis "power1" ci-dessus).
+	var poing_belluaire_started: bool = await _wait_until(
+		func(): return _player._poing_belluaire_phase != Player.PoingBelluairePhase.NONE, 8)
+	var bras_faux_ended: bool = _player._bras_faux_phase == Player.BrasFauxPhase.NONE
+	var bras_faux_paid_cooldown: bool = _player._bras_faux_cooldown_remaining > 0
+	var queue_cleared_after_fire: bool = _player._queued_power_slot == 0
+
+	# Laisse Poing Belluaire terminer naturellement depuis SON tout début
+	# (ANTICIPATION+RELEASE+RECOVERY, pas juste RECOVERY : contrairement à
+	# _check_poing_belluaire() qui démarre son attente une fois déjà en
+	# RELEASE/RECOVERY, ici l'attente commence dès le tout premier tick) —
+	# vérifie que la transition n'a rien corrompu (pas de verrou fantôme).
+	var poing_belluaire_ended: bool = await _wait_until(
+		func(): return _player._poing_belluaire_phase == Player.PoingBelluairePhase.NONE,
+		Player.POING_BELLUAIRE_ANTICIPATION_TICKS + Player.POING_BELLUAIRE_RELEASE_TICKS
+			+ Player.POING_BELLUAIRE_RECOVERY_TICKS + 12)
+	var action_unlocked_after: bool = not _player._action_lock
+
+	_checks.append({
+		"name": "queued_power_does_not_fire_before_cancel_window_opens",
+		"pass": bras_faux_started and queued_immediately and still_locked_in_bras_faux,
+		"detail": {
+			"bras_faux_started": bras_faux_started, "queued_immediately": queued_immediately,
+			"still_locked_in_bras_faux": still_locked_in_bras_faux,
+		},
+	})
+	_checks.append({
+		"name": "queued_power_fires_on_its_own_when_cancel_window_opens_and_ends_current_action_early",
+		"pass": poing_belluaire_started and bras_faux_ended and bras_faux_paid_cooldown and queue_cleared_after_fire,
+		"detail": {
+			"poing_belluaire_started": poing_belluaire_started, "bras_faux_ended": bras_faux_ended,
+			"bras_faux_paid_cooldown": bras_faux_paid_cooldown, "queue_cleared_after_fire": queue_cleared_after_fire,
+		},
+	})
+	_checks.append({
+		"name": "power_fired_from_cancel_window_still_completes_and_unlocks_normally",
+		"pass": poing_belluaire_ended and action_unlocked_after,
+		"detail": {"poing_belluaire_ended": poing_belluaire_ended, "action_unlocked_after": action_unlocked_after},
+	})
+
+
+## Même mandat que ci-dessus — vérifie l'autre moitié du contrat : le
+## buffer est une fenêtre COURTE (INPUT_BUFFER_TICKS), pas une file
+## d'attente illimitée. Presse Marée de Sable (power2, tier2 Terre) tout
+## au DÉBUT de l'anticipation de Poing Tellurique (power1, tier1 Terre,
+## fenêtre d'annulation ouverte seulement au tick relatif 8 de sa RECOVERY,
+## bien après l'expiration du buffer) — l'input doit avoir expiré avant que
+## la fenêtre d'annulation ne s'ouvre, donc Poing Tellurique va au bout de
+## sa RECOVERY complète et Marée de Sable ne démarre jamais tout seul.
+func _check_input_buffer_expires_when_never_consumed() -> void:
+	await _wait_until(func(): return not _player._action_lock, 60)
+
+	RunState.active_power = "terre"
+	_player.stats.level = 3  # débloque poing_tellurique (tier1) ET maree_de_sable (tier2)
+	# Même précaution que _check_input_buffer_fires_at_cancel_window() —
+	# les deux ont déjà été exercées par leurs propres checks plus haut.
+	_player._poing_tellurique_cooldown_remaining = 0
+	_player._maree_de_sable_cooldown_remaining = 0
+
+	_player.global_position = Vector2(200, 2500)
+	_player.velocity = Vector2.ZERO
+	_player.facing = Vector2.RIGHT
+
+	Input.action_press("power1")
+	await get_tree().physics_frame
+	Input.action_release("power1")
+	var poing_tellurique_started: bool = await _wait_until(
+		func(): return _player._poing_tellurique_phase != Player.PoingTelluriquePhase.NONE, 5)
+
+	# Appui TRÈS tôt (tick ~2 d'ANTICIPATION, qui dure 18 ticks) — beaucoup
+	# plus tôt que INPUT_BUFFER_TICKS (10) avant l'ouverture de la fenêtre
+	# d'annulation (tick relatif 8 de RECOVERY, soit tick absolu 18+4+8=30).
+	Input.action_press("power2")
+	await get_tree().physics_frame
+	Input.action_release("power2")
+	var queued_right_after_press: bool = await _wait_until(func(): return _player._queued_power_slot == 2, 3)
+
+	# Attend au-delà d'INPUT_BUFFER_TICKS (10) depuis l'appui ci-dessus —
+	# le buffer doit avoir expiré tout seul, sans jamais avoir été consommé.
+	var expired: bool = await _wait_until(func(): return _player._queued_power_slot == 0, Player.INPUT_BUFFER_TICKS + 3)
+
+	# Poing Tellurique doit continuer sa RECOVERY NORMALEMENT (rien à
+	# annuler puisque le buffer a expiré) jusqu'à sa fin NATURELLE complète.
+	var ended_naturally: bool = await _wait_until(
+		func(): return _player._poing_tellurique_phase == Player.PoingTelluriquePhase.NONE,
+		Player.POING_TELLURIQUE_ANTICIPATION_TICKS + Player.POING_TELLURIQUE_RELEASE_TICKS
+			+ Player.POING_TELLURIQUE_RECOVERY_TICKS + 10)
+	var maree_de_sable_never_started: bool = _player._maree_de_sable_phase == Player.MareeDeSablePhase.NONE
+	var action_unlocked_after: bool = not _player._action_lock
+
+	_checks.append({
+		"name": "queued_power_input_expires_after_input_buffer_ticks_if_never_consumed",
+		"pass": poing_tellurique_started and queued_right_after_press and expired,
+		"detail": {
+			"poing_tellurique_started": poing_tellurique_started,
+			"queued_right_after_press": queued_right_after_press, "expired": expired,
+		},
+	})
+	_checks.append({
+		"name": "expired_buffer_lets_current_action_run_its_full_recovery_uninterrupted",
+		"pass": ended_naturally and action_unlocked_after and maree_de_sable_never_started,
+		"detail": {
+			"ended_naturally": ended_naturally, "action_unlocked_after": action_unlocked_after,
+			"maree_de_sable_never_started": maree_de_sable_never_started,
+		},
+	})
 
 
 ## Amendement GDD Pouvoir/déblocage (confirmé par Milan, docs/worklog.md) :

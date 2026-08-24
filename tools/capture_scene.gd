@@ -136,11 +136,34 @@ func _ready() -> void:
 ##   --ticks=30                     dernier tick capturé, inclus (def. 30)
 ##   --out_dir=/chemin/absolu/      dossier de sortie (créé si besoin)
 ##   --scale=1|2|4                  même convention qu'ailleurs (def. 1)
+##   --active_power=<id>            override diagnostic (mandat "fluidité",
+##                                    Partie 2) — même rôle que --active_power
+##                                    de --mode=player_action ci-dessus, requis
+##                                    ici pour capturer un ENCHAÎNEMENT entre 2
+##                                    compétences dédiées d'un même Pouvoir
+##                                    (voir --action2 ci-dessous).
+##   --level=<n>                    override diagnostic, même rôle que
+##                                    --mode=player_action.
+##   --action2=<name>               DEUXIÈME action InputMap pressée EN PLUS
+##                                    de --action, au tick --action2_tick (les
+##                                    deux ci-dessous doivent être fournis
+##                                    ensemble) — mandat "fluidité" (Partie 2) :
+##                                    seule façon de capturer RÉELLEMENT le
+##                                    buffer d'input + la fenêtre d'annulation
+##                                    en action (presser une 2e compétence
+##                                    PENDANT que la 1ère joue encore, plutôt
+##                                    que deux captures séparées qui ne
+##                                    prouveraient rien sur l'enchaînement).
+##   --action2_tick=<n>              tick (même horloge que les frames
+##                                    capturées, 0 = juste avant --action) où
+##                                    presser --action2.
 func _run_player_action_sequence_capture(args: Dictionary) -> void:
 	var action_name: String = args.get("action", "")
 	var last_tick: int = int(args.get("ticks", "30"))
 	var out_dir: String = args.get("out_dir", "")
 	var scale: int = int(args.get("scale", "1"))
+	var action2_name: String = args.get("action2", "")
+	var action2_tick: int = int(args.get("action2_tick", "-1"))
 	if action_name == "" or out_dir == "":
 		push_error("capture_scene[player_action_sequence]: --action et --out_dir sont requis.")
 		get_tree().quit(1)
@@ -149,13 +172,28 @@ func _run_player_action_sequence_capture(args: Dictionary) -> void:
 		push_error("capture_scene[player_action_sequence]: action InputMap introuvable '%s'." % action_name)
 		get_tree().quit(1)
 		return
+	if action2_name != "" and not InputMap.has_action(action2_name):
+		push_error("capture_scene[player_action_sequence]: --action2 introuvable '%s'." % action2_name)
+		get_tree().quit(1)
+		return
 	if not DirAccess.dir_exists_absolute(out_dir):
 		DirAccess.make_dir_recursive_absolute(out_dir)
+
+	# Même remarque que --mode=player_action : RunState.active_power est
+	# tiré au hasard par défaut, un dev qui veut un Pouvoir précis (requis
+	# pour --action2, qui vise une AUTRE compétence dédiée du MÊME Pouvoir)
+	# doit pouvoir le forcer en headless.
+	var forced_active_power: String = args.get("active_power", "")
+	if forced_active_power != "":
+		RunState.active_power = forced_active_power
+	var forced_level: int = int(args.get("level", "0"))
 
 	var player := PlayerScene.instantiate()
 	player.global_position = Vector2(320, 200)
 	player.facing = Vector2.RIGHT
 	add_child(player)
+	if forced_level > 0:
+		player.stats.level = forced_level
 
 	# Mêmes offsets que _run_player_action_capture()/_check_bras_faux().
 	var enemy_front := EnemyScene.instantiate()
@@ -204,16 +242,37 @@ func _run_player_action_sequence_capture(args: Dictionary) -> void:
 	await get_tree().physics_frame
 	await get_tree().process_frame
 	Input.action_release(action_name)
+	# --action2 pressée au tick 0 pile (rare, mais gardé cohérent avec le
+	# reste de la boucle ci-dessous plutôt qu'un cas à part non couvert).
+	if action2_name != "" and action2_tick == 0:
+		Input.action_press(action2_name)
+		await get_tree().physics_frame
+		await get_tree().process_frame
+		Input.action_release(action2_name)
 
 	for tick in range(1, last_tick + 1):
 		frame_paths.append(await _capture_sequence_frame_no_pause(out_dir, tick, scale))
 		if tick < last_tick:
 			await get_tree().physics_frame
 			await get_tree().process_frame
+			# Presse --action2 UNE FOIS le tick atteint (mandat "fluidité") —
+			# APRÈS avoir capturé la frame de ce même tick (la frame N montre
+			# l'état AVANT que cette pression ne prenne effet, cohérent avec
+			# la convention "tick 0 = avant --action" déjà en place ci-dessus),
+			# et APRÈS le couple physics_frame/process_frame qui fait avancer
+			# la simulation d'un tick — même point d'insertion que --action au
+			# tout début de cette fonction.
+			if action2_name != "" and tick + 1 == action2_tick:
+				Input.action_press(action2_name)
+				await get_tree().physics_frame
+				await get_tree().process_frame
+				Input.action_release(action2_name)
 
 	var report := {
 		"out_dir": out_dir,
 		"action": action_name,
+		"action2": action2_name,
+		"action2_tick": action2_tick,
 		"ticks_captured": frame_paths.size(),
 		"frames": frame_paths,
 	}
