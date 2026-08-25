@@ -1,0 +1,24 @@
+{
+  "id": "power.oeil_sans_regard.cast",
+  "family": "invocation_beam",
+  "importance_tier": 3,
+  "layers": [
+    { "type": "anticipation", "primitive": "groundRing",       "start_tick": 0,  "end_tick": 14, "degradable": false, "scale_px": 34 },
+    { "type": "core",         "primitive": "runicStamp",       "start_tick": 0,  "end_tick": 14, "degradable": false, "scale_px": 30 },
+    { "type": "core",         "primitive": "beamSegment",      "start_tick": 18, "end_tick": 26, "degradable": false, "scale_px": 128, "width_px": 10 },
+    { "type": "contact",      "primitive": "impactFlashFrame", "start_tick": 18, "end_tick": 22, "degradable": false },
+    { "type": "consequence",  "primitive": "shardBurst",       "start_tick": 26, "end_tick": 40, "degradable": true, "count": 6, "speed_px_per_tick": 3.0 }
+  ],
+  "dissipation_profile": { "value_mult": 0.5, "saturation_mult": 0.5, "opacity_mult": 0.4, "duration_ticks": 14 },
+  "palette_id": "invocateur_vide",
+  "feedback": "medium",
+  "sfx_markers": [ { "tick": 20, "event": "oeil_sans_regard_beam" } ],
+  "limits": { "particles": 8, "sprites": 6, "persistent_ticks": 48, "overdraw_budget": 0.65 },
+  "lifecycle": {
+    "cancellable_before": "release",
+    "owner_death_policy": "finish_core_then_stop_secondary",
+    "scene_change_policy": "stop_immediately",
+    "max_lifetime_ticks": 54
+  },
+  "notes": "Œil Sans Regard (Invocateur, Tier 4/5, docs/references/invocateur/oeil_sans_regard.png) — 'RAYON' : 'Un œil d'encre s'ouvre dans les airs et projette un rayon d'encre qui perce tout sur sa trajectoire.' Planche à 4 temps (labels planche) : 1. Préparation (Cendre + glyphe, œil à peine visible) / 2. Ouverture (l'œil se matérialise pleinement ouvert dans les airs, pas encore de rayon) / 3. Rayon (le rayon jaillit en diagonale, perce tout sur sa ligne) / 4. Fermeture (l'œil se referme/goutte, dissipation). PREMIÈRE recette du projet à utiliser la primitive `beamSegment` (src/vfx/primitives/beam_segment.gd — sa propre docstring la décrit déjà comme pensée pour l'archétype 'projection avant', 'encore sans exemple concret' avant cette recette) : un rayon DISCRET en segments espacés le long de `direction`, jamais un trait plein, cohérent avec le rendu 'segments d'ink' de la planche. origin = position de la créature (l'œil), PAS celle de Cendre — l'œil flotte à distance/hauteur de Cendre (voir oeil_sans_regard.gd, offset vertical au spawn) donc le rayon doit partir de LUI, pas des pieds du joueur (contrairement à Gueule Vide où créature et impact sont à la même échelle de distance). beamSegment nouveau dans cette palette (CORRECTIF v5, data/palettes/invocateur_vide.json) : rattaché au rôle 'gris-lilas désaturé' (corps principal/silhouette — le rayon EST la forme visible de l'attaque, pas un accent secondaire), aucune nouvelle couleur. 'Perce tout sur sa trajectoire' (fiche) : dégâts appliqués à TOUS les ennemis dans Targeting.enemies_in_line (pas nearest_enemy_in_radius comme Gueule Vide, ni enemies_in_arc — une ligne étroite de largeur constante, pas un cône) — côté gameplay dans oeil_sans_regard.gd, pas une primitive de cette recette (§8.1)."
+}

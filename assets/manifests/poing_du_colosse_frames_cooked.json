@@ -1,0 +1,31 @@
+{
+  "character": "poing_du_colosse",
+  "out_canvas": [
+    80,
+    96
+  ],
+  "anchor_px": [
+    40,
+    92
+  ],
+  "animations": {
+    "cast": {
+      "frames": [
+        "assets/processed/sprites/poing_du_colosse/cast/0.png",
+        "assets/processed/sprites/poing_du_colosse/cast/1.png",
+        "assets/processed/sprites/poing_du_colosse/cast/2.png",
+        "assets/processed/sprites/poing_du_colosse/cast/3.png",
+        "assets/processed/sprites/poing_du_colosse/cast/4.png",
+        "assets/processed/sprites/poing_du_colosse/cast/5.png"
+      ],
+      "canvas": [
+        80,
+        96
+      ],
+      "anchor_px": [
+        40,
+        92
+      ]
+    }
+  }
+}

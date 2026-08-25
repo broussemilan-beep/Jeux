@@ -66,6 +66,13 @@ func _ready() -> void:
 	await _check_machoire()
 	await _check_forme_bestiale()
 	await _check_pattes_de_chasse()
+	await _check_corbeau_pale()
+	await _check_poing_du_colosse()
+	await _check_oeil_sans_regard()
+	await _check_serpent_creux()
+	await _check_carapace()
+	await _check_effondrement()
+	await _check_fissure_eruptive()
 	await _check_input_buffer_fires_at_cancel_window()
 	await _check_input_buffer_expires_when_never_consumed()
 	await _check_power_slot_gating()
@@ -1515,6 +1522,714 @@ func _check_maree_de_sable() -> void:
 		"detail": {
 			"ended": ended, "action_unlocked_after": action_unlocked_after,
 			"maree_de_sable_started_during_cooldown": maree_de_sable_started_during_cooldown,
+		},
+	})
+
+	enemy_in_line.queue_free()
+	enemy_lateral_outside.queue_free()
+	enemy_beyond_range.queue_free()
+	await get_tree().physics_frame
+
+
+## CHANTIER A (2026-08-24, agent dédié Terre, plan de production v1) —
+## Carapace (tier 3, DÉFENSIF, slot "power3"). Structurellement différent
+## des 4 autres compétences Terre (voir Player.CarapacePhase/CARAPACE_* et
+## power.carapace.cast.json) : pas de _try_hit — vérifie l'activation, le
+## passage en phase ACTIVE (buff is_carapace_active() + réduction de
+## dégâts mesurée), la phase RECOVERY, puis que le multiplicateur ne
+## persiste PAS après _end_carapace(). Avance directement au bout de
+## l'ACTIVE en manipulant _carapace_tick (CARAPACE_ACTIVE_TICKS=180 —
+## attendre ces ticks un par un serait inutilement long, même discipline
+## que les autres checks qui réinitialisent directement l'état interne,
+## ex. *_cooldown_remaining = 0 plus bas).
+func _check_carapace() -> void:
+	await _wait_until(func(): return not _player._action_lock, Player.CARAPACE_RECOVERY_TICKS + 5)
+
+	RunState.active_power = "terre"
+	_player.stats.level = 6  # palier de Carapace (tier 3, data/pouvoirs/terre.json)
+
+	_player.global_position = Vector2(200, 2500)
+	_player.velocity = Vector2.ZERO
+	_player.facing = Vector2.RIGHT
+	var sprite: AnimatedSprite2D = _player.get_node("AnimatedSprite2D")
+
+	Input.action_press("power3")
+	await get_tree().physics_frame
+	Input.action_release("power3")
+	var started: bool = await _wait_until(func(): return _player._carapace_phase != Player.CarapacePhase.NONE, 5)
+	var anim_during_activation: String = sprite.animation
+
+	var reached_active: bool = await _wait_until(
+		func(): return _player._carapace_phase == Player.CarapacePhase.ACTIVE,
+		Player.CARAPACE_ACTIVATION_TICKS + 5)
+	var anim_during_active: String = sprite.animation
+	var buff_active_flag: bool = _player.is_carapace_active()
+
+	var hp_before_hit: float = _player.stats.hp
+	_player.take_damage(20.0, _player.global_position + Vector2(-10, 0))
+	var damage_taken_during_active: float = hp_before_hit - _player.stats.hp
+
+	_player._carapace_tick = Player.CARAPACE_ACTIVE_TICKS
+	var reached_recovery: bool = await _wait_until(
+		func(): return _player._carapace_phase == Player.CarapacePhase.RECOVERY, 5)
+	var anim_during_recovery: String = sprite.animation
+
+	var ended: bool = await _wait_until(
+		func(): return _player._carapace_phase == Player.CarapacePhase.NONE,
+		Player.CARAPACE_RECOVERY_TICKS + 5)
+	var action_unlocked_after: bool = not _player._action_lock
+	var buff_inactive_after_end: bool = not _player.is_carapace_active()
+
+	var hp_before_hit2: float = _player.stats.hp
+	_player.take_damage(20.0, _player.global_position + Vector2(-10, 0))
+	var damage_taken_after_end: float = hp_before_hit2 - _player.stats.hp
+
+	Input.action_press("power3")
+	await get_tree().physics_frame
+	Input.action_release("power3")
+	var carapace_started_during_cooldown: bool = _player._carapace_phase != Player.CarapacePhase.NONE
+
+	_checks.append({
+		"name": "carapace_input_starts_activation_and_plays_dedicated_anim",
+		"pass": started and anim_during_activation == "carapace_activation",
+		"detail": {"started": started, "anim": anim_during_activation},
+	})
+	_checks.append({
+		"name": "carapace_reaches_active_phase_and_plays_looping_anim",
+		"pass": reached_active and anim_during_active == "carapace_active" and buff_active_flag,
+		"detail": {"reached_active": reached_active, "anim": anim_during_active, "buff_active_flag": buff_active_flag},
+	})
+	_checks.append({
+		"name": "carapace_active_reduces_damage_taken_by_configured_multiplier",
+		"pass": is_equal_approx(damage_taken_during_active, 20.0 * Player.CARAPACE_DAMAGE_MULTIPLIER),
+		"detail": {"damage_taken_during_active": damage_taken_during_active, "expected": 20.0 * Player.CARAPACE_DAMAGE_MULTIPLIER},
+	})
+	_checks.append({
+		"name": "carapace_reaches_recovery_then_ends_and_unlocks_then_cooldown_blocks_second_cast",
+		"pass": reached_recovery and anim_during_recovery == "carapace_fin" and ended and action_unlocked_after and buff_inactive_after_end and not carapace_started_during_cooldown,
+		"detail": {
+			"reached_recovery": reached_recovery, "anim_during_recovery": anim_during_recovery,
+			"ended": ended, "action_unlocked_after": action_unlocked_after,
+			"buff_inactive_after_end": buff_inactive_after_end,
+			"carapace_started_during_cooldown": carapace_started_during_cooldown,
+		},
+	})
+	_checks.append({
+		"name": "carapace_damage_reduction_does_not_persist_after_buff_ends",
+		"pass": is_equal_approx(damage_taken_after_end, 20.0),
+		"detail": {"damage_taken_after_end": damage_taken_after_end, "expected": 20.0},
+	})
+
+	# Chauffe anti-fuite d'input (constatée empiriquement, cf. capture_scene.gd
+	# "ordre non garanti entre la reprise d'un `await` et le traitement
+	# physique des autres nœuds") : la pression power3 juste au-dessus est
+	# bloquée par le cooldown au moment où elle est traitée, MAIS sous
+	# llvmpipe/xvfb le just_pressed correspondant peut être vu une seconde
+	# fois, en retard, quelques ticks plus tard — sans conséquence tant que
+	# le cooldown est encore > 0 (blocage silencieux, idempotent). Ces
+	# quelques ticks laissent cette éventuelle 2e détection se dissiper
+	# PENDANT que le cooldown est encore plein, avant de le remettre à 0
+	# juste en dessous — sinon un power3 fantôme, retrouvant le cooldown à
+	# 0, peut se mettre en file (si _action_lock est vrai à cet instant pour
+	# une tout autre raison) et se déclencher pour de bon pendant le check
+	# suivant (_check_effondrement), qui ne presse jamais lui-même power3.
+	for i in range(4):
+		await get_tree().physics_frame
+	_player._carapace_cooldown_remaining = 0
+
+
+## Effondrement (tier 4, ZONE/IMPACT MAJEUR, slot "power4"). Vérifie la
+## forme CERCLE (half_angle_deg=180 dans _try_hit_effondrement(), pas un
+## cône comme Poing Tellurique/Bras-Faux) : un ennemi DEVANT et un ennemi
+## DERRIÈRE le lanceur sont TOUS LES DEUX touchés (preuve que ce n'est pas
+## un cône frontal), un ennemi au-delà du rayon est épargné.
+func _check_effondrement() -> void:
+	await _wait_until(func(): return not _player._action_lock, Player.EFFONDREMENT_RECOVERY_TICKS + 5)
+
+	RunState.active_power = "terre"
+	_player.stats.level = 10  # palier d'Effondrement (tier 4)
+
+	_player.global_position = Vector2(200, 2700)
+	_player.velocity = Vector2.ZERO
+	_player.facing = Vector2.RIGHT
+	var sprite: AnimatedSprite2D = _player.get_node("AnimatedSprite2D")
+
+	var enemy_front := EnemyScene.instantiate()
+	enemy_front.name = "EffondrementFront"
+	enemy_front.global_position = _player.global_position + Vector2(50, 0)  # devant, dans le rayon 70
+	add_child(enemy_front)
+
+	var enemy_behind := EnemyScene.instantiate()
+	enemy_behind.name = "EffondrementBehind"
+	enemy_behind.global_position = _player.global_position + Vector2(-50, 0)  # DERRIÈRE — hors d'un cône frontal, dans un cercle
+	add_child(enemy_behind)
+
+	var enemy_beyond_radius := EnemyScene.instantiate()
+	enemy_beyond_radius.name = "EffondrementBeyondRadius"
+	enemy_beyond_radius.global_position = _player.global_position + Vector2(0, 120)  # 120 > 70
+	add_child(enemy_beyond_radius)
+
+	await get_tree().physics_frame
+
+	var hp_front_before: float = enemy_front.stats.hp
+	var hp_behind_before: float = enemy_behind.stats.hp
+	var hp_beyond_radius_before: float = enemy_beyond_radius.stats.hp
+
+	Input.action_press("power4")
+	await get_tree().physics_frame
+	Input.action_release("power4")
+	var started: bool = await _wait_until(func(): return _player._effondrement_phase != Player.EffondrementPhase.NONE, 5)
+	var anim_during: String = sprite.animation
+
+	await _wait_until(
+		func(): return enemy_front.stats.hp < hp_front_before,
+		Player.EFFONDREMENT_ANTICIPATION_TICKS + Player.EFFONDREMENT_RELEASE_TICKS + 5)
+	var hp_front_after: float = enemy_front.stats.hp
+	var hp_behind_after: float = enemy_behind.stats.hp
+	var hp_beyond_radius_after: float = enemy_beyond_radius.stats.hp
+
+	var ended: bool = await _wait_until(
+		func(): return _player._effondrement_phase == Player.EffondrementPhase.NONE,
+		Player.EFFONDREMENT_RECOVERY_TICKS + 25)
+	var action_unlocked_after: bool = not _player._action_lock
+
+	Input.action_press("power4")
+	await get_tree().physics_frame
+	Input.action_release("power4")
+	var effondrement_started_during_cooldown: bool = _player._effondrement_phase != Player.EffondrementPhase.NONE
+
+	_checks.append({
+		"name": "effondrement_input_starts_state_and_plays_dedicated_anim",
+		"pass": started and anim_during == "effondrement",
+		"detail": {"started": started, "anim": anim_during},
+	})
+	_checks.append({
+		"name": "effondrement_hits_full_circle_front_and_behind_spares_beyond_radius",
+		"pass": hp_front_after < hp_front_before and hp_behind_after < hp_behind_before and hp_beyond_radius_after == hp_beyond_radius_before,
+		"detail": {
+			"hp_front_before": hp_front_before, "hp_front_after": hp_front_after,
+			"hp_behind_before": hp_behind_before, "hp_behind_after": hp_behind_after,
+			"hp_beyond_radius_before": hp_beyond_radius_before, "hp_beyond_radius_after": hp_beyond_radius_after,
+		},
+	})
+	_checks.append({
+		"name": "effondrement_ends_and_unlocks_then_cooldown_blocks_second_cast",
+		"pass": ended and action_unlocked_after and not effondrement_started_during_cooldown,
+		"detail": {
+			"ended": ended, "action_unlocked_after": action_unlocked_after,
+			"effondrement_started_during_cooldown": effondrement_started_during_cooldown,
+		},
+	})
+
+	enemy_front.queue_free()
+	enemy_behind.queue_free()
+	enemy_beyond_radius.queue_free()
+	await get_tree().physics_frame
+
+
+## Fissure Éruptive (tier 5, dernière compétence Terre, slot "power5").
+## Vérifie que l'impact tombe À DISTANCE (FISSURE_ERUPTIVE_RANGE_PX devant
+## le lanceur), PAS sur le lanceur lui-même comme Effondrement : un ennemi
+## AU POINT D'IMPACT est touché, un ennemi PRÈS DU LANCEUR (mais pas au
+## point d'impact) et un ennemi AU-DELÀ du petit rayon d'impact sont
+## épargnés tous les deux.
+func _check_fissure_eruptive() -> void:
+	await _wait_until(func(): return not _player._action_lock, Player.FISSURE_ERUPTIVE_RECOVERY_TICKS + 5)
+
+	RunState.active_power = "terre"
+	_player.stats.level = 15  # palier de Fissure Éruptive (tier 5)
+
+	_player.global_position = Vector2(200, 2900)
+	_player.velocity = Vector2.ZERO
+	_player.facing = Vector2.RIGHT
+	var sprite: AnimatedSprite2D = _player.get_node("AnimatedSprite2D")
+
+	var enemy_at_impact := EnemyScene.instantiate()
+	enemy_at_impact.name = "FissureEruptiveAtImpact"
+	enemy_at_impact.global_position = _player.global_position + Vector2(Player.FISSURE_ERUPTIVE_RANGE_PX, 0)
+	add_child(enemy_at_impact)
+
+	var enemy_near_caster := EnemyScene.instantiate()
+	enemy_near_caster.name = "FissureEruptiveNearCaster"
+	enemy_near_caster.global_position = _player.global_position + Vector2(20, 0)
+	add_child(enemy_near_caster)
+
+	var enemy_beyond_impact := EnemyScene.instantiate()
+	enemy_beyond_impact.name = "FissureEruptiveBeyondImpact"
+	enemy_beyond_impact.global_position = _player.global_position + Vector2(Player.FISSURE_ERUPTIVE_RANGE_PX + 80, 0)
+	add_child(enemy_beyond_impact)
+
+	await get_tree().physics_frame
+
+	var hp_at_impact_before: float = enemy_at_impact.stats.hp
+	var hp_near_caster_before: float = enemy_near_caster.stats.hp
+	var hp_beyond_impact_before: float = enemy_beyond_impact.stats.hp
+
+	Input.action_press("power5")
+	await get_tree().physics_frame
+	Input.action_release("power5")
+	var started: bool = await _wait_until(func(): return _player._fissure_eruptive_phase != Player.FissureEruptivePhase.NONE, 5)
+	var anim_during: String = sprite.animation
+
+	await _wait_until(
+		func(): return enemy_at_impact.stats.hp < hp_at_impact_before,
+		Player.FISSURE_ERUPTIVE_ANTICIPATION_TICKS + Player.FISSURE_ERUPTIVE_RELEASE_TICKS + 5)
+	var hp_at_impact_after: float = enemy_at_impact.stats.hp
+	var hp_near_caster_after: float = enemy_near_caster.stats.hp
+	var hp_beyond_impact_after: float = enemy_beyond_impact.stats.hp
+
+	var ended: bool = await _wait_until(
+		func(): return _player._fissure_eruptive_phase == Player.FissureEruptivePhase.NONE,
+		Player.FISSURE_ERUPTIVE_RECOVERY_TICKS + 25)
+	var action_unlocked_after: bool = not _player._action_lock
+
+	Input.action_press("power5")
+	await get_tree().physics_frame
+	Input.action_release("power5")
+	var fissure_eruptive_started_during_cooldown: bool = _player._fissure_eruptive_phase != Player.FissureEruptivePhase.NONE
+
+	_checks.append({
+		"name": "fissure_eruptive_input_starts_state_and_plays_dedicated_anim",
+		"pass": started and anim_during == "fissure_eruptive",
+		"detail": {"started": started, "anim": anim_during},
+	})
+	_checks.append({
+		"name": "fissure_eruptive_hits_only_at_ranged_impact_point_spares_caster_vicinity_and_beyond",
+		"pass": hp_at_impact_after < hp_at_impact_before and hp_near_caster_after == hp_near_caster_before and hp_beyond_impact_after == hp_beyond_impact_before,
+		"detail": {
+			"hp_at_impact_before": hp_at_impact_before, "hp_at_impact_after": hp_at_impact_after,
+			"hp_near_caster_before": hp_near_caster_before, "hp_near_caster_after": hp_near_caster_after,
+			"hp_beyond_impact_before": hp_beyond_impact_before, "hp_beyond_impact_after": hp_beyond_impact_after,
+		},
+	})
+	_checks.append({
+		"name": "fissure_eruptive_ends_and_unlocks_then_cooldown_blocks_second_cast",
+		"pass": ended and action_unlocked_after and not fissure_eruptive_started_during_cooldown,
+		"detail": {
+			"ended": ended, "action_unlocked_after": action_unlocked_after,
+			"fissure_eruptive_started_during_cooldown": fissure_eruptive_started_during_cooldown,
+		},
+	})
+
+	enemy_at_impact.queue_free()
+	enemy_near_caster.queue_free()
+	enemy_beyond_impact.queue_free()
+	await get_tree().physics_frame
+
+
+## CHANTIER A — agent Invocateur, les 4 compétences restantes (Corbeau
+## Pâle T2, Poing du Colosse T3, Œil Sans Regard T4, Serpent Creux T5,
+## data/pouvoirs/invocateur.json). Construction différente des 5
+## compétences dédiées ci-dessus (Bras-Faux etc., qui restent sur la
+## timeline du JOUEUR) : ces 4 suivent le patron de Gueule Vide
+## (_check_gueule_vide()) — une créature SÉPARÉE (scenes/gameplay/
+## powers/<skill>.tscn) qui pilote sa propre timeline de ticks/son propre
+## sprite (FRAME_TICK_BOUNDS), avec le dégât/ciblage résolus DANS la
+## créature, jamais dans player.gd. Note délibérée sur ce qui N'EST PAS
+## testé ici : contrairement à Gueule Vide (dont le cooldown s'arme DÈS
+## le cast, cf. _cast_gueule_vide()), ces 4 compétences arment leur
+## cooldown seulement en fin de RECOVERY (_end_corbeau_pale() etc., même
+## patron que _end_bras_faux()) — un second appui PENDANT le cast est
+## donc mis en FILE par le buffer généralisé (_queued_power_slot), pas
+## bloqué net, et peut légitimement relancer la MÊME compétence une fois
+## sa propre fenêtre d'annulation ouverte ("dernier appui gagne", déjà
+## exhaustivement vérifié pour ce mécanisme générique par
+## _check_input_buffer_fires_at_cancel_window()/_check_input_buffer_expires_when_never_consumed()
+## sur Bras-Faux/Poing Belluaire) — pas re-testé ici pour éviter de
+## dupliquer ce scénario et de le faire courir contre le cooldown réel de
+## CES 4 compétences.
+##
+## Corbeau Pâle — même construction que Gueule Vide mais la créature
+## TRANSLATE réellement en ligne droite pendant sa phase de "chasse" (voir
+## corbeau_pale.gd) : multi-cible en ligne (Targeting.enemies_in_line),
+## pas une seule morsure ciblée.
+func _check_corbeau_pale() -> void:
+	await _wait_until(func(): return not _player._action_lock, 60)
+
+	# Amendement GDD Pouvoir/déblocage : Corbeau Pâle est tier 2 de
+	# l'Invocateur (data/pouvoirs/invocateur.json, palier niveau 3), slot
+	# "power2" — voir get_unlocked_skill_for_slot().
+	RunState.active_power = "invocateur"
+	_player.stats.level = 3  # palier de Corbeau Pâle (tier 2, unlock_level 3)
+
+	_player.global_position = Vector2(200, 3400)
+	_player.velocity = Vector2.ZERO
+	_player.facing = Vector2.RIGHT
+	var sprite: AnimatedSprite2D = _player.get_node("AnimatedSprite2D")
+	var spawn_origin: Vector2 = _player.global_position + Vector2.RIGHT * Player.CORBEAU_PALE_SPAWN_DISTANCE_PX
+
+	var enemy_in_line := EnemyScene.instantiate()
+	enemy_in_line.name = "CorbeauPaleInLine"
+	enemy_in_line.global_position = spawn_origin + Vector2(60, 0)  # dans l'axe, 60px < RANGE_PX (140)
+	add_child(enemy_in_line)
+
+	var enemy_lateral_outside := EnemyScene.instantiate()
+	enemy_lateral_outside.name = "CorbeauPaleLateralOutside"
+	enemy_lateral_outside.global_position = spawn_origin + Vector2(60, 30)  # lateral 30 > HALF_WIDTH_PX (18)
+	add_child(enemy_lateral_outside)
+
+	var enemy_beyond_range := EnemyScene.instantiate()
+	enemy_beyond_range.name = "CorbeauPaleBeyondRange"
+	enemy_beyond_range.global_position = spawn_origin + Vector2(200, 0)  # 200px > RANGE_PX (140)
+	add_child(enemy_beyond_range)
+
+	await get_tree().physics_frame
+
+	var hp_in_line_before: float = enemy_in_line.stats.hp
+	var hp_lateral_outside_before: float = enemy_lateral_outside.stats.hp
+	var hp_beyond_range_before: float = enemy_beyond_range.stats.hp
+
+	Input.action_press("power2")
+	await get_tree().physics_frame
+	Input.action_release("power2")
+
+	var creature: CorbeauPale = null
+	var spawned: bool = await _wait_until(func():
+		for child in get_children():
+			if child is CorbeauPale:
+				creature = child
+				return true
+		return false
+	, Player.CORBEAU_PALE_ANTICIPATION_TICKS + 5)
+	var anim_during: String = sprite.animation
+
+	var hit_landed: bool = await _wait_until(func(): return enemy_in_line.stats.hp < hp_in_line_before, CorbeauPale.TOTAL_TICKS + 10)
+	var hp_in_line_after: float = enemy_in_line.stats.hp
+	var hp_lateral_outside_after: float = enemy_lateral_outside.stats.hp
+	var hp_beyond_range_after: float = enemy_beyond_range.stats.hp
+
+	var creature_finished: bool = await _wait_until(func(): return spawned and not is_instance_valid(creature), CorbeauPale.TOTAL_TICKS + 15)
+	var action_unlocked_after: bool = await _wait_until(func(): return not _player._action_lock, 10)
+	var cooldown_armed_after_cast: bool = _player._corbeau_pale_cooldown_remaining > 0
+
+	Input.action_press("power2")
+	await get_tree().physics_frame
+	Input.action_release("power2")
+	var creature_count_after_cooldown_press := 0
+	for child in get_children():
+		if child is CorbeauPale:
+			creature_count_after_cooldown_press += 1
+
+	_checks.append({
+		"name": "corbeau_pale_input_spawns_creature_and_plays_dedicated_gesture",
+		"pass": spawned and anim_during == "invocation_corbeau_pale",
+		"detail": {"spawned": spawned, "anim": anim_during},
+	})
+	_checks.append({
+		"name": "corbeau_pale_hits_enemy_in_line_spares_lateral_outside_and_beyond_range",
+		"pass": hit_landed and hp_lateral_outside_after == hp_lateral_outside_before and hp_beyond_range_after == hp_beyond_range_before,
+		"detail": {
+			"hit_landed": hit_landed,
+			"hp_in_line_before": hp_in_line_before, "hp_in_line_after": hp_in_line_after,
+			"hp_lateral_outside_before": hp_lateral_outside_before, "hp_lateral_outside_after": hp_lateral_outside_after,
+			"hp_beyond_range_before": hp_beyond_range_before, "hp_beyond_range_after": hp_beyond_range_after,
+		},
+	})
+	_checks.append({
+		"name": "corbeau_pale_ends_and_unlocks_then_cooldown_blocks_a_new_cast",
+		"pass": creature_finished and action_unlocked_after and cooldown_armed_after_cast and creature_count_after_cooldown_press == 1,
+		"detail": {
+			"creature_finished": creature_finished, "action_unlocked_after": action_unlocked_after,
+			"cooldown_armed_after_cast": cooldown_armed_after_cast,
+			"creature_count_after_cooldown_press": creature_count_after_cooldown_press,
+		},
+	})
+
+	enemy_in_line.queue_free()
+	enemy_lateral_outside.queue_free()
+	enemy_beyond_range.queue_free()
+	await get_tree().physics_frame
+
+
+## Poing du Colosse (INVOCATEUR, tier 3/5, palier niveau 6, slot "power3")
+## — créature STATIONNAIRE (comme Gueule Vide) mais impact en ZONE (AoE,
+## Targeting.enemies_in_arc en cercle complet, half_angle_deg=180 — voir
+## poing_du_colosse.gd) : un ennemi proche de l'impact est touché QUELLE
+## QUE SOIT sa direction, un ennemi hors du rayon est épargné.
+func _check_poing_du_colosse() -> void:
+	await _wait_until(func(): return not _player._action_lock, 60)
+
+	RunState.active_power = "invocateur"
+	_player.stats.level = 6  # palier de Poing du Colosse (tier 3, unlock_level 6)
+
+	_player.global_position = Vector2(200, 3600)
+	_player.velocity = Vector2.ZERO
+	_player.facing = Vector2.RIGHT
+	var sprite: AnimatedSprite2D = _player.get_node("AnimatedSprite2D")
+	var spawn_origin: Vector2 = _player.global_position + Vector2.RIGHT * Player.POING_DU_COLOSSE_SPAWN_DISTANCE_PX
+
+	var enemy_within_radius := EnemyScene.instantiate()
+	enemy_within_radius.name = "PoingDuColosseWithinRadius"
+	enemy_within_radius.global_position = spawn_origin + Vector2(0, 30)  # 30px < RADIUS_PX (56), AoE : la direction n'a aucun effet
+	add_child(enemy_within_radius)
+
+	var enemy_beyond_radius := EnemyScene.instantiate()
+	enemy_beyond_radius.name = "PoingDuColosseBeyondRadius"
+	enemy_beyond_radius.global_position = spawn_origin + Vector2(100, 0)  # 100px > RADIUS_PX (56)
+	add_child(enemy_beyond_radius)
+
+	await get_tree().physics_frame
+
+	var hp_within_radius_before: float = enemy_within_radius.stats.hp
+	var hp_beyond_radius_before: float = enemy_beyond_radius.stats.hp
+
+	Input.action_press("power3")
+	await get_tree().physics_frame
+	Input.action_release("power3")
+
+	var creature: PoingDuColosse = null
+	var spawned: bool = await _wait_until(func():
+		for child in get_children():
+			if child is PoingDuColosse:
+				creature = child
+				return true
+		return false
+	, Player.POING_DU_COLOSSE_ANTICIPATION_TICKS + 5)
+	var anim_during: String = sprite.animation
+
+	var hit_landed: bool = await _wait_until(func(): return enemy_within_radius.stats.hp < hp_within_radius_before, PoingDuColosse.TOTAL_TICKS + 10)
+	var hp_within_radius_after: float = enemy_within_radius.stats.hp
+	var hp_beyond_radius_after: float = enemy_beyond_radius.stats.hp
+
+	var creature_finished: bool = await _wait_until(func(): return spawned and not is_instance_valid(creature), PoingDuColosse.TOTAL_TICKS + 15)
+	var action_unlocked_after: bool = await _wait_until(func(): return not _player._action_lock, 10)
+	var cooldown_armed_after_cast: bool = _player._poing_du_colosse_cooldown_remaining > 0
+
+	Input.action_press("power3")
+	await get_tree().physics_frame
+	Input.action_release("power3")
+	var creature_count_after_cooldown_press := 0
+	for child in get_children():
+		if child is PoingDuColosse:
+			creature_count_after_cooldown_press += 1
+
+	_checks.append({
+		"name": "poing_du_colosse_input_spawns_creature_and_plays_dedicated_gesture",
+		"pass": spawned and anim_during == "invocation_poing_du_colosse",
+		"detail": {"spawned": spawned, "anim": anim_during},
+	})
+	_checks.append({
+		"name": "poing_du_colosse_hits_all_enemies_in_radius_spares_enemy_beyond_it",
+		"pass": hit_landed and hp_beyond_radius_after == hp_beyond_radius_before,
+		"detail": {
+			"hit_landed": hit_landed,
+			"hp_within_radius_before": hp_within_radius_before, "hp_within_radius_after": hp_within_radius_after,
+			"hp_beyond_radius_before": hp_beyond_radius_before, "hp_beyond_radius_after": hp_beyond_radius_after,
+		},
+	})
+	_checks.append({
+		"name": "poing_du_colosse_ends_and_unlocks_then_cooldown_blocks_a_new_cast",
+		"pass": creature_finished and action_unlocked_after and cooldown_armed_after_cast and creature_count_after_cooldown_press == 1,
+		"detail": {
+			"creature_finished": creature_finished, "action_unlocked_after": action_unlocked_after,
+			"cooldown_armed_after_cast": cooldown_armed_after_cast,
+			"creature_count_after_cooldown_press": creature_count_after_cooldown_press,
+		},
+	})
+
+	enemy_within_radius.queue_free()
+	enemy_beyond_radius.queue_free()
+	await get_tree().physics_frame
+
+
+## Œil Sans Regard (INVOCATEUR, tier 4/5, palier niveau 10, slot "power4")
+## — créature STATIONNAIRE flottante (offset vertical au spawn), rayon
+## PERCE en ligne résolu INSTANTANÉMENT à BEAM_TICK (pas une translation
+## tick par tick comme Corbeau Pâle/Serpent Creux) : Targeting.
+## enemies_in_line sur toute BEAM_LENGTH_PX, multi-cible.
+func _check_oeil_sans_regard() -> void:
+	await _wait_until(func(): return not _player._action_lock, 60)
+
+	RunState.active_power = "invocateur"
+	_player.stats.level = 10  # palier de Œil Sans Regard (tier 4, unlock_level 10)
+
+	_player.global_position = Vector2(200, 3800)
+	_player.velocity = Vector2.ZERO
+	_player.facing = Vector2.RIGHT
+	var sprite: AnimatedSprite2D = _player.get_node("AnimatedSprite2D")
+	var spawn_origin: Vector2 = (
+		_player.global_position
+		+ Vector2.RIGHT * Player.OEIL_SANS_REGARD_SPAWN_DISTANCE_PX
+		+ Vector2(0, Player.OEIL_SANS_REGARD_SPAWN_HEIGHT_OFFSET_PX)
+	)
+
+	var enemy_in_line := EnemyScene.instantiate()
+	enemy_in_line.name = "OeilSansRegardInLine"
+	enemy_in_line.global_position = spawn_origin + Vector2(60, 0)  # dans l'axe, 60px < BEAM_LENGTH_PX (128)
+	add_child(enemy_in_line)
+
+	var enemy_lateral_outside := EnemyScene.instantiate()
+	enemy_lateral_outside.name = "OeilSansRegardLateralOutside"
+	enemy_lateral_outside.global_position = spawn_origin + Vector2(60, 25)  # lateral 25 > BEAM_HALF_WIDTH_PX (12)
+	add_child(enemy_lateral_outside)
+
+	var enemy_beyond_range := EnemyScene.instantiate()
+	enemy_beyond_range.name = "OeilSansRegardBeyondRange"
+	enemy_beyond_range.global_position = spawn_origin + Vector2(200, 0)  # 200px > BEAM_LENGTH_PX (128)
+	add_child(enemy_beyond_range)
+
+	await get_tree().physics_frame
+
+	var hp_in_line_before: float = enemy_in_line.stats.hp
+	var hp_lateral_outside_before: float = enemy_lateral_outside.stats.hp
+	var hp_beyond_range_before: float = enemy_beyond_range.stats.hp
+
+	Input.action_press("power4")
+	await get_tree().physics_frame
+	Input.action_release("power4")
+
+	var creature: OeilSansRegard = null
+	var spawned: bool = await _wait_until(func():
+		for child in get_children():
+			if child is OeilSansRegard:
+				creature = child
+				return true
+		return false
+	, Player.OEIL_SANS_REGARD_ANTICIPATION_TICKS + 5)
+	var anim_during: String = sprite.animation
+
+	var hit_landed: bool = await _wait_until(func(): return enemy_in_line.stats.hp < hp_in_line_before, OeilSansRegard.TOTAL_TICKS + 10)
+	var hp_in_line_after: float = enemy_in_line.stats.hp
+	var hp_lateral_outside_after: float = enemy_lateral_outside.stats.hp
+	var hp_beyond_range_after: float = enemy_beyond_range.stats.hp
+
+	var creature_finished: bool = await _wait_until(func(): return spawned and not is_instance_valid(creature), OeilSansRegard.TOTAL_TICKS + 15)
+	var action_unlocked_after: bool = await _wait_until(func(): return not _player._action_lock, 10)
+	var cooldown_armed_after_cast: bool = _player._oeil_sans_regard_cooldown_remaining > 0
+
+	Input.action_press("power4")
+	await get_tree().physics_frame
+	Input.action_release("power4")
+	var creature_count_after_cooldown_press := 0
+	for child in get_children():
+		if child is OeilSansRegard:
+			creature_count_after_cooldown_press += 1
+
+	_checks.append({
+		"name": "oeil_sans_regard_input_spawns_creature_and_plays_dedicated_gesture",
+		"pass": spawned and anim_during == "invocation_oeil_sans_regard",
+		"detail": {"spawned": spawned, "anim": anim_during},
+	})
+	_checks.append({
+		"name": "oeil_sans_regard_beam_hits_enemy_in_line_spares_lateral_outside_and_beyond_range",
+		"pass": hit_landed and hp_lateral_outside_after == hp_lateral_outside_before and hp_beyond_range_after == hp_beyond_range_before,
+		"detail": {
+			"hit_landed": hit_landed,
+			"hp_in_line_before": hp_in_line_before, "hp_in_line_after": hp_in_line_after,
+			"hp_lateral_outside_before": hp_lateral_outside_before, "hp_lateral_outside_after": hp_lateral_outside_after,
+			"hp_beyond_range_before": hp_beyond_range_before, "hp_beyond_range_after": hp_beyond_range_after,
+		},
+	})
+	_checks.append({
+		"name": "oeil_sans_regard_ends_and_unlocks_then_cooldown_blocks_a_new_cast",
+		"pass": creature_finished and action_unlocked_after and cooldown_armed_after_cast and creature_count_after_cooldown_press == 1,
+		"detail": {
+			"creature_finished": creature_finished, "action_unlocked_after": action_unlocked_after,
+			"cooldown_armed_after_cast": cooldown_armed_after_cast,
+			"creature_count_after_cooldown_press": creature_count_after_cooldown_press,
+		},
+	})
+
+	enemy_in_line.queue_free()
+	enemy_lateral_outside.queue_free()
+	enemy_beyond_range.queue_free()
+	await get_tree().physics_frame
+
+
+## Serpent Creux (INVOCATEUR, tier 5/5, palier niveau 15, l'ultime, slot
+## "power5", GDD §6.2) — même construction que Corbeau Pâle (créature qui
+## translate réellement en ligne pendant sa phase d'attaque), portée
+## strictement supérieure à Gueule Vide comme l'exige la fiche (voir
+## serpent_creux.gd, commentaire RANGE_PX) — non re-testé chiffre pour
+## chiffre ici (déjà démontré par construction dans le commentaire du
+## script), seulement le comportement gameplay (spawn, multi-cible en
+## ligne, cooldown, fin de vie).
+func _check_serpent_creux() -> void:
+	await _wait_until(func(): return not _player._action_lock, 60)
+
+	RunState.active_power = "invocateur"
+	_player.stats.level = 15  # palier de Serpent Creux (tier 5, unlock_level 15)
+
+	_player.global_position = Vector2(200, 4000)
+	_player.velocity = Vector2.ZERO
+	_player.facing = Vector2.RIGHT
+	var sprite: AnimatedSprite2D = _player.get_node("AnimatedSprite2D")
+	var spawn_origin: Vector2 = _player.global_position + Vector2.RIGHT * Player.SERPENT_CREUX_SPAWN_DISTANCE_PX
+
+	var enemy_in_line := EnemyScene.instantiate()
+	enemy_in_line.name = "SerpentCreuxInLine"
+	enemy_in_line.global_position = spawn_origin + Vector2(80, 0)  # dans l'axe, 80px < RANGE_PX (170)
+	add_child(enemy_in_line)
+
+	var enemy_lateral_outside := EnemyScene.instantiate()
+	enemy_lateral_outside.name = "SerpentCreuxLateralOutside"
+	enemy_lateral_outside.global_position = spawn_origin + Vector2(80, 30)  # lateral 30 > HALF_WIDTH_PX (16)
+	add_child(enemy_lateral_outside)
+
+	var enemy_beyond_range := EnemyScene.instantiate()
+	enemy_beyond_range.name = "SerpentCreuxBeyondRange"
+	enemy_beyond_range.global_position = spawn_origin + Vector2(220, 0)  # 220px > RANGE_PX (170)
+	add_child(enemy_beyond_range)
+
+	await get_tree().physics_frame
+
+	var hp_in_line_before: float = enemy_in_line.stats.hp
+	var hp_lateral_outside_before: float = enemy_lateral_outside.stats.hp
+	var hp_beyond_range_before: float = enemy_beyond_range.stats.hp
+
+	Input.action_press("power5")
+	await get_tree().physics_frame
+	Input.action_release("power5")
+
+	var creature: SerpentCreux = null
+	var spawned: bool = await _wait_until(func():
+		for child in get_children():
+			if child is SerpentCreux:
+				creature = child
+				return true
+		return false
+	, Player.SERPENT_CREUX_ANTICIPATION_TICKS + 5)
+	var anim_during: String = sprite.animation
+
+	var hit_landed: bool = await _wait_until(func(): return enemy_in_line.stats.hp < hp_in_line_before, SerpentCreux.TOTAL_TICKS + 10)
+	var hp_in_line_after: float = enemy_in_line.stats.hp
+	var hp_lateral_outside_after: float = enemy_lateral_outside.stats.hp
+	var hp_beyond_range_after: float = enemy_beyond_range.stats.hp
+
+	var creature_finished: bool = await _wait_until(func(): return spawned and not is_instance_valid(creature), SerpentCreux.TOTAL_TICKS + 15)
+	var action_unlocked_after: bool = await _wait_until(func(): return not _player._action_lock, 10)
+	var cooldown_armed_after_cast: bool = _player._serpent_creux_cooldown_remaining > 0
+
+	Input.action_press("power5")
+	await get_tree().physics_frame
+	Input.action_release("power5")
+	var creature_count_after_cooldown_press := 0
+	for child in get_children():
+		if child is SerpentCreux:
+			creature_count_after_cooldown_press += 1
+
+	_checks.append({
+		"name": "serpent_creux_input_spawns_creature_and_plays_dedicated_gesture",
+		"pass": spawned and anim_during == "invocation_serpent_creux",
+		"detail": {"spawned": spawned, "anim": anim_during},
+	})
+	_checks.append({
+		"name": "serpent_creux_hits_enemy_in_line_spares_lateral_outside_and_beyond_range",
+		"pass": hit_landed and hp_lateral_outside_after == hp_lateral_outside_before and hp_beyond_range_after == hp_beyond_range_before,
+		"detail": {
+			"hit_landed": hit_landed,
+			"hp_in_line_before": hp_in_line_before, "hp_in_line_after": hp_in_line_after,
+			"hp_lateral_outside_before": hp_lateral_outside_before, "hp_lateral_outside_after": hp_lateral_outside_after,
+			"hp_beyond_range_before": hp_beyond_range_before, "hp_beyond_range_after": hp_beyond_range_after,
+		},
+	})
+	_checks.append({
+		"name": "serpent_creux_ends_and_unlocks_then_cooldown_blocks_a_new_cast",
+		"pass": creature_finished and action_unlocked_after and cooldown_armed_after_cast and creature_count_after_cooldown_press == 1,
+		"detail": {
+			"creature_finished": creature_finished, "action_unlocked_after": action_unlocked_after,
+			"cooldown_armed_after_cast": cooldown_armed_after_cast,
+			"creature_count_after_cooldown_press": creature_count_after_cooldown_press,
 		},
 	})
 

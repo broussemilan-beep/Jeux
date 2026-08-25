@@ -1,0 +1,24 @@
+{
+  "id": "power.corbeau_pale.cast",
+  "family": "invocation_projectile",
+  "importance_tier": 2,
+  "layers": [
+    { "type": "anticipation", "primitive": "groundRing",       "start_tick": 0,  "end_tick": 10, "degradable": false, "scale_px": 32 },
+    { "type": "core",         "primitive": "runicStamp",       "start_tick": 0,  "end_tick": 10, "degradable": false, "scale_px": 28 },
+    { "type": "core",         "primitive": "dustKick",         "start_tick": 10, "end_tick": 32, "degradable": false, "scale_px": 90 },
+    { "type": "contact",      "primitive": "impactFlashFrame", "start_tick": 20, "end_tick": 24, "degradable": false },
+    { "type": "consequence",  "primitive": "shardBurst",       "start_tick": 32, "end_tick": 46, "degradable": true, "count": 8, "speed_px_per_tick": 4.0 }
+  ],
+  "dissipation_profile": { "value_mult": 0.5, "saturation_mult": 0.5, "opacity_mult": 0.4, "duration_ticks": 12 },
+  "palette_id": "invocateur_vide",
+  "feedback": "light",
+  "sfx_markers": [ { "tick": 14, "event": "corbeau_pale_launch" } ],
+  "limits": { "particles": 10, "sprites": 6, "persistent_ticks": 46, "overdraw_budget": 0.6 },
+  "lifecycle": {
+    "cancellable_before": "release",
+    "owner_death_policy": "finish_core_then_stop_secondary",
+    "scene_change_policy": "stop_immediately",
+    "max_lifetime_ticks": 50
+  },
+  "notes": "Corbeau Pâle (Invocateur, Tier 2/5, docs/references/invocateur/corbeau_pale.png) — 'PROJECTILE RAPIDE' : 'Un corbeau d'encre jaillit et fonce à ras du sol sur une ligne droite.' Planche à 4 temps (labels planche) : 1. Préparation (Cendre + glyphe au sol) / 2. Invocation (le corbeau se forme depuis une éclaboussure d'encre à côté de Cendre) / 3. Chasse (le corbeau fonce à ras du sol, plusieurs cibles possibles sur sa ligne) / 4. Disparition (dissipation en volutes). Créature = asset animé dédié (src/gameplay/powers/corbeau_pale.gd, comme GueuleVide) qui TRANSLATE réellement sa position tick par tick pendant la phase 'chasse' (contrairement à Gueule Vide, stationnaire) — la couche VFX ne porte donc PAS le mouvement du corbeau lui-même (rendu par le sprite de la créature), seulement : le glyphe de Préparation (groundRing/runicStamp, ancré à l'origine du cast, pas à la position mobile du corbeau — cohérent avec la convention 'un seul VfxRecipeRegistry.play() par cast, origine fixe' déjà établie sur les 5 compétences dédiées existantes), un dustKick bas/étalé (scale_px=90) qui suggère la traînée de poussière/encre au ras du sol sur toute la durée du vol sans avoir à suivre la position réelle du corbeau (lisible même en étant ancré à l'origine, la traînée déborde naturellement vers l'avant), un impactFlashFrame ponctuel au premier contact, et un shardBurst de dissipation à la fin. Portée/dégâts/multi-cible NE sont PAS dans cette recette (§8.1) : côté gameplay dans corbeau_pale.gd (Targeting.enemies_in_line, incrémental tick par tick pendant la 'chasse' — chaque ennemi touché une seule fois, jamais une primitive de cette recette). dustKick nouveau dans cette palette (CORRECTIF v5, data/palettes/invocateur_vide.json) : rattaché au rôle 'gris cendre' existant (déjà 'transitions, smokePuff, shardBurst'), aucune nouvelle couleur. degradable=false sur les 4 premières couches (glyphe + traînée + flash) : la lisibilité du tir rapide dépend de sa traînée visible du début à la fin, jamais sacrifiée sous pression de budget — seul le shardBurst final (pure conséquence esthétique) est dégradable, même raisonnement que Gueule Vide."
+}

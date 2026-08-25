@@ -1,0 +1,25 @@
+{
+  "id": "power.poing_du_colosse.cast",
+  "family": "invocation_slam",
+  "importance_tier": 3,
+  "layers": [
+    { "type": "anticipation", "primitive": "groundRing",       "start_tick": 0,  "end_tick": 14, "degradable": false, "scale_px": 40 },
+    { "type": "core",         "primitive": "runicStamp",       "start_tick": 0,  "end_tick": 14, "degradable": false, "scale_px": 36 },
+    { "type": "contact",      "primitive": "impactStar",       "start_tick": 24, "end_tick": 30, "degradable": false, "scale_px": 42 },
+    { "type": "contact",      "primitive": "impactFlashFrame", "start_tick": 24, "end_tick": 30, "degradable": false },
+    { "type": "contact",      "primitive": "fractureLine",     "start_tick": 24, "end_tick": 40, "degradable": true,  "scale_px": 34 },
+    { "type": "consequence",  "primitive": "shardBurst",       "start_tick": 28, "end_tick": 50, "degradable": true, "count": 14, "speed_px_per_tick": 5.0 }
+  ],
+  "dissipation_profile": { "value_mult": 0.5, "saturation_mult": 0.5, "opacity_mult": 0.4, "duration_ticks": 16 },
+  "palette_id": "invocateur_vide",
+  "feedback": "heavy",
+  "sfx_markers": [ { "tick": 24, "event": "poing_du_colosse_slam" } ],
+  "limits": { "particles": 14, "sprites": 6, "persistent_ticks": 50, "overdraw_budget": 0.7 },
+  "lifecycle": {
+    "cancellable_before": "release",
+    "owner_death_policy": "finish_core_then_stop_secondary",
+    "scene_change_policy": "stop_immediately",
+    "max_lifetime_ticks": 56
+  },
+  "notes": "Poing du Colosse (Invocateur, Tier 3/5, docs/references/invocateur/poing_du_colosse.png) — 'IMPACT MAJEUR' : 'Un poing géant d'encre se matérialise et s'abat avec une force écrasante sur la zone ciblée.' Planche à 4 temps (labels planche) : 1. Préparation (Cendre + glyphe) / 2. Matérialisation (le poing géant émerge du sol, encore courbé/montant) / 3. Impact (le poing s'abat, sol fissuré, gravats projetés) / 4. Dissipation (le poing se dissout en volutes, les gravats restent au sol). Structure la plus proche de Gueule Vide parmi les 4 nouvelles compétences (créature stationnaire, un seul impact ponctuel en zone plutôt qu'une morsure dirigée) — AoE (Targeting.enemies_in_arc avec half_angle_deg=180°, 'tout ennemi dans le rayon', pas seulement le plus proche comme Gueule Vide : la planche montre des gravats qui giclent dans toutes les directions, pas une morsure ciblée) plutôt qu'une seule cible. impactStar nouveau dans cette palette (CORRECTIF v5, data/palettes/invocateur_vide.json) : rattaché au rôle 'noir d'encre' existant (déjà 'impacts, désintégration'), même famille que fractureLine/impactFlashFrame, aucune nouvelle couleur — même raisonnement que l'ajout d'impactStar à data/palettes/parasite.json pour Poing Belluaire. fractureLine en 'contact' degradable=true (24-40) : la fissure au sol qui irradie depuis le point d'impact, conséquence visible de l'impact plutôt que le contact lui-même (même raisonnement que la fractureLine de Poing Belluaire, docs/recipes/power.poing_belluaire.cast.json) — sacrifiable sous pression de budget, contrairement à impactStar/impactFlashFrame (le flash+l'éclat du coup lui-même, jamais dégradés). Portée/dégâts/rayon NE sont PAS dans cette recette (§8.1) : côté gameplay dans poing_du_colosse.gd."
+}

@@ -1,0 +1,25 @@
+{
+  "id": "power.serpent_creux.cast",
+  "family": "invocation_strike",
+  "importance_tier": 4,
+  "layers": [
+    { "type": "anticipation", "primitive": "groundRing",       "start_tick": 0,  "end_tick": 16, "degradable": false, "scale_px": 30 },
+    { "type": "core",         "primitive": "runicStamp",       "start_tick": 0,  "end_tick": 16, "degradable": false, "scale_px": 26 },
+    { "type": "core",         "primitive": "converge",         "start_tick": 16, "end_tick": 26, "degradable": false, "scale_px": 40 },
+    { "type": "contact",      "primitive": "arcSlash",         "start_tick": 26, "end_tick": 30, "degradable": false, "scale_px": 54 },
+    { "type": "contact",      "primitive": "impactFlashFrame", "start_tick": 26, "end_tick": 30, "degradable": false },
+    { "type": "consequence",  "primitive": "shardBurst",       "start_tick": 30, "end_tick": 54, "degradable": true, "count": 14, "speed_px_per_tick": 5.5 }
+  ],
+  "dissipation_profile": { "value_mult": 0.5, "saturation_mult": 0.5, "opacity_mult": 0.4, "duration_ticks": 18 },
+  "palette_id": "invocateur_vide",
+  "feedback": "heavy",
+  "sfx_markers": [ { "tick": 26, "event": "serpent_creux_strike" } ],
+  "limits": { "particles": 16, "sprites": 6, "persistent_ticks": 54, "overdraw_budget": 0.75 },
+  "lifecycle": {
+    "cancellable_before": "release",
+    "owner_death_policy": "finish_core_then_stop_secondary",
+    "scene_change_policy": "stop_immediately",
+    "max_lifetime_ticks": 60
+  },
+  "notes": "Serpent Creux (Invocateur, Tier 5/5, unlock_level 15 — le pouvoir ultime de la Classe, docs/RANK_ZERO_MASTER_GDD.md §6.2 + docs/references/invocateur/invocation_du_serpent.png, nom de fichier historique 'Invocation du Serpent', même compétence, planche MIXTE signalée par Milan). GDD §6.2 (texte officiel, seule des 4 nouvelles compétences avec une fiche bible) : 'Un serpent très fin apparaît brièvement, déjà comprimé, puis détend brutalement son corps en ligne droite pour traverser les ennemis avant de disparaître. Rôle : portée supérieure à Gueule Vide, attaque linéaire, plusieurs cibles possibles.' ÉCART DE PALETTE ASSUMÉ : la planche de référence (mixte, rendu par une source différente des 3 autres) montre un serpent bleu-cyan/cristal sur glyphe bleu clair — INCOMPATIBLE avec invocateur_vide (gris-lilas/noir d'encre, §identité de Classe constante entre TOUS les pouvoirs volés à l'Invocateur, palette non modifiable sans mesure). Tranché : structure/mise en scène de la planche suivie fidèlement (glyphe qui s'intensifie avant l'apparition, corps coiled en S puis frappe en extension), COULEUR de la planche PAS suivie — la palette invocateur_vide (gris-lilas/noir d'encre/gris cendre, déjà utilisée par Gueule Vide/Corbeau Pâle/Poing du Colosse/Œil Sans Regard) prévaut, cohérence de Classe > fidélité à une planche dont Milan a lui-même signalé le caractère mixte/hétérogène. Planche à 4 temps : 1. Préparation (main levée, particules) / 2. Invocation (glyphe intensifié, AUCUN Cendre visible dans ce panneau — un temps glyphe seul) / 3. Apparition (le serpent émerge du sol, corps en S, coiled = 'déjà comprimé') / 4. Attaque (le corps se détend/frappe, gueule ouverte). converge nouveau dans cette palette (CORRECTIF v5, data/palettes/invocateur_vide.json) : rattaché au rôle 'gris-lilas désaturé' (corps principal — la matière qui se comprime DANS la créature encore coiled, même rôle que converge sur Poing Belluaire dans parasite.json). arcSlash nouveau ici aussi : rattaché à 'noir d'encre' (impacts), la trace de la frappe qui touche. Créature (serpent_creux.gd) TRANSLATE réellement sa position pendant la phase 'attaque' (comme corbeau_pale.gd, pas stationnaire comme Gueule Vide/Poing du Colosse) — 'traverser les ennemis' : Targeting.enemies_in_line, incrémental tick par tick, chaque ennemi touché une seule fois, portée strictement supérieure à la portée totale de Gueule Vide (spawn + morsure) comme l'exige la fiche §6.2. Dégâts/portée/multi-cible NE sont PAS dans cette recette (§8.1) : côté gameplay dans serpent_creux.gd."
+}

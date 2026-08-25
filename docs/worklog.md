@@ -4291,3 +4291,157 @@ mandat.
 - Bug de la tranche écrasée : CLÔTURÉ, ce n'était pas un bug (art
   `idle_east`/`idle_west` légitime mal identifié par un round
   précédent). Aucune régression introduite, aucun correctif nécessaire.
+
+## 2026-08-25 — CHANTIER A (reprise après coupure) : Pouvoir Invocateur,
+## les 4 dernières compétences (Corbeau Pâle/Poing du Colosse/Œil Sans
+## Regard/Serpent Creux) — audit, complétion smoke test, vérification
+
+**Contexte** : reprise du travail d'un agent précédent tué par une
+interruption système en plein Chantier A (mêmes 4 compétences). Rien
+n'était perdu — tout sur disque, non commité — mais rien n'avait encore
+été vérifié ni committé. Mission : auditer d'abord, compléter seulement
+ce qui manquait.
+
+### Audit — verdict : le travail trouvé était quasi COMPLET, pas une
+### ébauche
+
+Pour chacune des 4 compétences, déjà en place et fonctionnel avant cette
+passe : sprites cuits (`assets/processed/sprites/<skill>/cast/`, 6
+frames chacun) + `.tres` (`SpriteFrames`, anim `"cast"`, `loop=false`,
+`speed=12.0`) ; geste de Cendre correspondant (`invocation_<skill>`, 6
+frames) déjà intégré dans `cendre_frames.tres` ; scènes `scenes/
+gameplay/powers/<skill>.tscn` + scripts `src/gameplay/powers/<skill>.gd`
+— chacun avec sa propre timeline de créature (FRAME_TICK_BOUNDS à 6
+paliers, `_frame_for_tick()`, `can_cancel()`/`cancel_cast()`,
+`owner_death_policy` câblée via `set_owner_stats()`, ciblage réel via
+`Targeting.enemies_in_line()`/`enemies_in_arc()` selon l'archétype :
+Corbeau Pâle et Serpent Creux TRANSLATENT en ligne (comme prévu par la
+fiche §6.2 pour Serpent Creux — portée 218px totale vs 144px pour
+Gueule Vide, vérifié supérieure), Poing du Colosse frappe en AoE cercle
+complet (`half_angle_deg=180`), Œil Sans Regard résout un rayon perçant
+INSTANTANÉMENT à `BEAM_TICK` (pas de translation, à la différence des 2
+premiers) ; recettes VFX (`data/recipes/power.<skill>.cast.json`) ;
+`src/gameplay/player.gd` avait déjà les 4 `preload()`, les 4
+`RecipeId`, les phases/ticks/cooldowns complets
+(`<SKILL>_ANTICIPATION/RELEASE/RECOVERY/CANCEL_WINDOW/COOLDOWN_TICKS`,
+`FRAME_TICK_BOUNDS`), les 4 `_cast_*()/_advance_*()/_end_*()/
+_spawn_*_creature()`, ET l'enregistrement dans
+`IMPLEMENTED_SKILL_HANDLERS`/`IMPLEMENTED_SKILL_COOLDOWN_GETTERS` — donc
+déjà branchées sur le buffer d'input généralisé
+(`_try_activate_power_slot()`/`_queued_power_slot`/
+`_try_consume_queued_input()`, commit `1571521`) exactement comme les 5
+compétences précédentes, sans aucun code supplémentaire à écrire pour
+ce point. `godot4 --headless --import` propre, zéro erreur.
+
+**Seul manque réel trouvé** : AUCUN check dans `tools/
+smoke_test_gameplay.gd` pour ces 4 compétences (confirmé par grep —
+zéro occurrence), et donc aucune capture de vérification. L'agent
+précédent a été interrompu avant d'atteindre cette étape du mandat.
+C'est le seul travail réellement effectué dans cette passe.
+
+### Complété : 12 nouveaux checks (3 par compétence), `_check_corbeau_pale()`/
+### `_check_poing_du_colosse()`/`_check_oeil_sans_regard()`/`_check_serpent_creux()`
+
+Même patron que `_check_gueule_vide()` (créature séparée, pas une
+timeline sur le Player comme Bras-Faux etc.) : démarrage+anim dédiée,
+multi-cible (ligne pour Corbeau Pâle/Œil Sans Regard/Serpent Creux —
+cible dans l'axe touchée, cible décalée latéralement ET cible hors
+portée épargnées ; cercle complet pour Poing du Colosse — cible proche
+touchée quelle que soit sa direction, cible hors rayon épargnée), fin de
+vie de la créature + déverrouillage du joueur + armement du cooldown
+qui bloque un nouveau cast.
+
+**Écart de conception trouvé et corrigé PENDANT la mise au vert** (pas
+supposé, découvert par un premier run qui cassait) : une première
+version de ces checks copiait le "second appui immédiat pendant le
+cast, doit rien spawner de plus" de `_check_gueule_vide()` — mais Gueule
+Vide arme SON cooldown DÈS le cast (`_cast_gueule_vide()`,
+`_power1_cooldown_remaining = POWER1_COOLDOWN_TICKS` immédiat), alors
+que ces 4 compétences arment le leur seulement en fin de RECOVERY
+(`_end_corbeau_pale()` etc., même patron que `_end_bras_faux()`) — un
+second appui pendant le cast est donc légitimement mis en FILE par le
+buffer généralisé et peut relancer la MÊME compétence une fois sa
+fenêtre d'annulation ouverte ("dernier appui gagne", déjà exhaustivement
+vérifié pour ce mécanisme par
+`_check_input_buffer_fires_at_cancel_window()` sur Bras-Faux/Poing
+Belluaire). Retester ce même scénario ici aurait dupliqué une
+vérification déjà faite ET produit un second cast parasite pendant le
+test (observé : `SCRIPT ERROR: Invalid call. Nonexistent function
+'get_current_tick' in base 'Nil'` — le second cast queued avait fait
+capoter la détection de la créature du test suivant). Retiré entièrement
+ce sous-scénario des 4 nouveaux checks (il n'apporte rien que
+`_check_input_buffer_fires_at_cancel_window()` ne couvre déjà) plutôt
+que de le "réparer" en dupliquant la logique de fenêtre d'annulation.
+
+**Incident de coordination réel, constaté en direct** : en cours de
+diagnostic, des lignes `print("DEBUG_QUEUE_SLOT...")`/
+`print("DEBUG_EFFONDREMENT_PRE...")` etc. sont apparues dans la sortie
+du smoke test SANS que je les aie écrites — un autre agent (Terre,
+`_check_effondrement()`/`_check_fissure_eruptive()`) modifiait
+`src/gameplay/player.gd` et `tools/smoke_test_gameplay.gd` EN DIRECT
+pendant cette session (ces lignes de debug avaient disparu au run
+suivant). Conformément à la consigne, aucun de ces deux checks/leur
+code associé n'a été touché — mes 4 nouveaux checks ont simplement été
+replacés AVANT `_check_carapace()`/`_check_effondrement()`/
+`_check_fissure_eruptive()` dans l'ordre d'appel de `_ready()` (au lieu
+d'après), pour ne pas hériter d'un `_action_lock` potentiellement laissé
+incohérent par le bug en cours de correction chez l'autre agent — un
+réordonnancement, aucune ligne de leur code touchée.
+
+### Vérification
+
+`bash scripts/run_gameplay_smoke_test.sh` → **122 checks, mes 12
+nouveaux tous verts** (`corbeau_pale_*`, `poing_du_colosse_*`,
+`oeil_sans_regard_*`, `serpent_creux_*` — 3 chacun). **3 échecs
+restants, hors scope** : `effondrement_*`/`fissure_eruptive_*` (Terre,
+chantier concurrent, en cours de correction par un autre agent au
+moment de ce run — voir incident ci-dessus) — non touchés, `all_pass`
+global reste `false` à cause d'eux, documenté honnêtement plutôt que
+maquillé.
+
+### Captures
+
+`captures/verification/2026-08-25-chantier-a-invocateur-4competences/`
+— 16 frames brutes (`<skill>_t{1..4}_<label>.png`, `capture_scene.gd
+--mode=player_action --active_power=invocateur --level=<palier>
+--action=power{2..5}`, scale=4) + 4 planches de synthèse
+(`<skill>_4temps.png`, 4 vignettes labellisées côte à côte). Verdict par
+compétence (planche vs jeu, honnête) :
+- **Corbeau Pâle** : silhouette de corbeau d'encre reconnaissable,
+  ailes déployées, translation réelle visible entre Invocation/Chasse,
+  dissipation en particules éparses en fin de séquence — conforme à
+  "un corbeau d'encre jaillit et fonce à ras du sol".
+- **Poing du Colosse** : masse rocheuse/poing géant qui se matérialise
+  (anneau de télégraphe visible), impact AoE confirmé par les 2
+  nombres de dégâts "20/20" simultanés sur les 2 cibles de test —
+  conforme à "s'abat avec une force écrasante".
+- **Œil Sans Regard** : globe/œil violet flottant (décalage vertical
+  visible dès l'Ouverture), segment de rayon visible au tick de tir —
+  conforme à "un œil s'ouvre et projette un rayon", quoique le rayon
+  capturé sur ce tick précis soit court (bayon en cours de résolution,
+  pas encore à pleine longueur) — représentatif mais pas le
+  "meilleur" instant du rayon, accepté (montre bien le mécanisme).
+- **Serpent Creux** : silhouette de serpent segmenté, gueule ouverte
+  visible en Attaque, cohérent avec "un serpent se détend en ligne
+  droite" — le plus proche visuellement de sa planche des 4.
+
+Aucune retouche demandée par ces captures — les 4 assets déjà en place
+(travail de l'agent précédent) rendent correctement, rien à régénérer.
+
+### Coût PixelLab réel dépensé PAR CETTE PASSE
+
+**0 crédit** — aucune génération PixelLab ni Meshy : tous les sprites/
+gestes/manifestes existaient déjà (travail de l'agent précédent avant
+la coupure), cette passe n'a fait que vérifier/tester/capturer.
+
+### Fichiers modifiés
+
+`tools/smoke_test_gameplay.gd` (12 nouveaux checks +
+`_check_corbeau_pale/poing_du_colosse/oeil_sans_regard/serpent_creux`
++ leurs 4 appels dans `_ready()`, replacés avant les checks Terre pour
+la raison de coordination ci-dessus),
+`captures/verification/2026-08-25-chantier-a-invocateur-4competences/`
+(20 fichiers). Aucun changement à `src/gameplay/player.gd`,
+`src/gameplay/powers/*.gd`, aux scènes, aux recettes ou aux assets — le
+travail de l'agent précédent était déjà correct et complet sur ces
+points, rien à corriger.

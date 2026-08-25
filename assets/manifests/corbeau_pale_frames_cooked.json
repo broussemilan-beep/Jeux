@@ -1,0 +1,31 @@
+{
+  "character": "corbeau_pale",
+  "out_canvas": [
+    112,
+    80
+  ],
+  "anchor_px": [
+    56,
+    76
+  ],
+  "animations": {
+    "cast": {
+      "frames": [
+        "assets/processed/sprites/corbeau_pale/cast/0.png",
+        "assets/processed/sprites/corbeau_pale/cast/1.png",
+        "assets/processed/sprites/corbeau_pale/cast/2.png",
+        "assets/processed/sprites/corbeau_pale/cast/3.png",
+        "assets/processed/sprites/corbeau_pale/cast/4.png",
+        "assets/processed/sprites/corbeau_pale/cast/5.png"
+      ],
+      "canvas": [
+        112,
+        80
+      ],
+      "anchor_px": [
+        56,
+        76
+      ]
+    }
+  }
+}

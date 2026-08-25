@@ -1,0 +1,31 @@
+{
+  "character": "oeil_sans_regard",
+  "out_canvas": [
+    72,
+    72
+  ],
+  "anchor_px": [
+    36,
+    68
+  ],
+  "animations": {
+    "cast": {
+      "frames": [
+        "assets/processed/sprites/oeil_sans_regard/cast/0.png",
+        "assets/processed/sprites/oeil_sans_regard/cast/1.png",
+        "assets/processed/sprites/oeil_sans_regard/cast/2.png",
+        "assets/processed/sprites/oeil_sans_regard/cast/3.png",
+        "assets/processed/sprites/oeil_sans_regard/cast/4.png",
+        "assets/processed/sprites/oeil_sans_regard/cast/5.png"
+      ],
+      "canvas": [
+        72,
+        72
+      ],
+      "anchor_px": [
+        36,
+        68
+      ]
+    }
+  }
+}

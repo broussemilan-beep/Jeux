@@ -475,6 +475,226 @@
         32,
         61
       ]
+    },
+    "carapace_activation": {
+      "frames": [
+        "assets/processed/sprites/cendre/carapace_activation/0.png",
+        "assets/processed/sprites/cendre/carapace_activation/1.png",
+        "assets/processed/sprites/cendre/carapace_activation/2.png",
+        "assets/processed/sprites/cendre/carapace_activation/3.png",
+        "assets/processed/sprites/cendre/carapace_activation/4.png",
+        "assets/processed/sprites/cendre/carapace_activation/5.png",
+        "assets/processed/sprites/cendre/carapace_activation/6.png"
+      ],
+      "canvas": [
+        64,
+        64
+      ],
+      "anchor_px": [
+        32,
+        61
+      ]
+    },
+    "carapace_active": {
+      "frames": [
+        "assets/processed/sprites/cendre/carapace_active/0.png",
+        "assets/processed/sprites/cendre/carapace_active/1.png",
+        "assets/processed/sprites/cendre/carapace_active/2.png",
+        "assets/processed/sprites/cendre/carapace_active/3.png",
+        "assets/processed/sprites/cendre/carapace_active/4.png"
+      ],
+      "canvas": [
+        64,
+        64
+      ],
+      "anchor_px": [
+        32,
+        61
+      ]
+    },
+    "effondrement": {
+      "frames": [
+        "assets/processed/sprites/cendre/effondrement/0.png",
+        "assets/processed/sprites/cendre/effondrement/1.png",
+        "assets/processed/sprites/cendre/effondrement/2.png",
+        "assets/processed/sprites/cendre/effondrement/3.png",
+        "assets/processed/sprites/cendre/effondrement/4.png",
+        "assets/processed/sprites/cendre/effondrement/5.png",
+        "assets/processed/sprites/cendre/effondrement/6.png"
+      ],
+      "canvas": [
+        64,
+        64
+      ],
+      "anchor_px": [
+        32,
+        61
+      ]
+    },
+    "fissure_eruptive": {
+      "frames": [
+        "assets/processed/sprites/cendre/fissure_eruptive/0.png",
+        "assets/processed/sprites/cendre/fissure_eruptive/1.png",
+        "assets/processed/sprites/cendre/fissure_eruptive/2.png",
+        "assets/processed/sprites/cendre/fissure_eruptive/3.png",
+        "assets/processed/sprites/cendre/fissure_eruptive/4.png",
+        "assets/processed/sprites/cendre/fissure_eruptive/5.png",
+        "assets/processed/sprites/cendre/fissure_eruptive/6.png"
+      ],
+      "canvas": [
+        64,
+        64
+      ],
+      "anchor_px": [
+        32,
+        61
+      ]
+    },
+    "carapace_fin": {
+      "frames": [
+        "assets/processed/sprites/cendre/carapace_activation/6.png",
+        "assets/processed/sprites/cendre/carapace_activation/5.png",
+        "assets/processed/sprites/cendre/carapace_activation/4.png",
+        "assets/processed/sprites/cendre/carapace_activation/3.png",
+        "assets/processed/sprites/cendre/carapace_activation/2.png",
+        "assets/processed/sprites/cendre/carapace_activation/1.png",
+        "assets/processed/sprites/cendre/carapace_activation/0.png"
+      ],
+      "canvas": [
+        64,
+        64
+      ],
+      "anchor_px": [
+        32,
+        61
+      ],
+      "note": "REUTILISE les memes PNG que carapace_activation, ordre inverse -- 0 nouveau fichier."
+    },
+    "machoire": {
+      "frames": [
+        "assets/processed/sprites/cendre/machoire/0.png",
+        "assets/processed/sprites/cendre/machoire/1.png",
+        "assets/processed/sprites/cendre/machoire/2.png",
+        "assets/processed/sprites/cendre/machoire/3.png",
+        "assets/processed/sprites/cendre/machoire/4.png",
+        "assets/processed/sprites/cendre/machoire/5.png"
+      ],
+      "canvas": [
+        64,
+        64
+      ],
+      "anchor_px": [
+        32,
+        61
+      ]
+    },
+    "forme_bestiale": {
+      "frames": [
+        "assets/processed/sprites/cendre/forme_bestiale/0.png",
+        "assets/processed/sprites/cendre/forme_bestiale/1.png",
+        "assets/processed/sprites/cendre/forme_bestiale/2.png",
+        "assets/processed/sprites/cendre/forme_bestiale/3.png",
+        "assets/processed/sprites/cendre/forme_bestiale/4.png",
+        "assets/processed/sprites/cendre/forme_bestiale/5.png"
+      ],
+      "canvas": [
+        64,
+        64
+      ],
+      "anchor_px": [
+        32,
+        61
+      ]
+    },
+    "pattes_de_chasse": {
+      "frames": [
+        "assets/processed/sprites/cendre/pattes_de_chasse/0.png",
+        "assets/processed/sprites/cendre/pattes_de_chasse/1.png",
+        "assets/processed/sprites/cendre/pattes_de_chasse/2.png",
+        "assets/processed/sprites/cendre/pattes_de_chasse/3.png",
+        "assets/processed/sprites/cendre/pattes_de_chasse/4.png",
+        "assets/processed/sprites/cendre/pattes_de_chasse/5.png"
+      ],
+      "canvas": [
+        64,
+        64
+      ],
+      "anchor_px": [
+        32,
+        61
+      ]
+    },
+    "invocation_corbeau_pale": {
+      "frames": [
+        "assets/processed/sprites/cendre/invocation_corbeau_pale/0.png",
+        "assets/processed/sprites/cendre/invocation_corbeau_pale/1.png",
+        "assets/processed/sprites/cendre/invocation_corbeau_pale/2.png",
+        "assets/processed/sprites/cendre/invocation_corbeau_pale/3.png",
+        "assets/processed/sprites/cendre/invocation_corbeau_pale/4.png",
+        "assets/processed/sprites/cendre/invocation_corbeau_pale/5.png"
+      ],
+      "canvas": [
+        64,
+        64
+      ],
+      "anchor_px": [
+        32,
+        61
+      ]
+    },
+    "invocation_poing_du_colosse": {
+      "frames": [
+        "assets/processed/sprites/cendre/invocation_poing_du_colosse/0.png",
+        "assets/processed/sprites/cendre/invocation_poing_du_colosse/1.png",
+        "assets/processed/sprites/cendre/invocation_poing_du_colosse/2.png",
+        "assets/processed/sprites/cendre/invocation_poing_du_colosse/3.png",
+        "assets/processed/sprites/cendre/invocation_poing_du_colosse/4.png",
+        "assets/processed/sprites/cendre/invocation_poing_du_colosse/5.png"
+      ],
+      "canvas": [
+        64,
+        64
+      ],
+      "anchor_px": [
+        32,
+        61
+      ]
+    },
+    "invocation_oeil_sans_regard": {
+      "frames": [
+        "assets/processed/sprites/cendre/invocation_oeil_sans_regard/0.png",
+        "assets/processed/sprites/cendre/invocation_oeil_sans_regard/1.png",
+        "assets/processed/sprites/cendre/invocation_oeil_sans_regard/2.png",
+        "assets/processed/sprites/cendre/invocation_oeil_sans_regard/3.png",
+        "assets/processed/sprites/cendre/invocation_oeil_sans_regard/4.png",
+        "assets/processed/sprites/cendre/invocation_oeil_sans_regard/5.png"
+      ],
+      "canvas": [
+        64,
+        64
+      ],
+      "anchor_px": [
+        32,
+        61
+      ]
+    },
+    "invocation_serpent_creux": {
+      "frames": [
+        "assets/processed/sprites/cendre/invocation_serpent_creux/0.png",
+        "assets/processed/sprites/cendre/invocation_serpent_creux/1.png",
+        "assets/processed/sprites/cendre/invocation_serpent_creux/2.png",
+        "assets/processed/sprites/cendre/invocation_serpent_creux/3.png",
+        "assets/processed/sprites/cendre/invocation_serpent_creux/4.png",
+        "assets/processed/sprites/cendre/invocation_serpent_creux/5.png"
+      ],
+      "canvas": [
+        64,
+        64
+      ],
+      "anchor_px": [
+        32,
+        61
+      ]
     }
   }
 }

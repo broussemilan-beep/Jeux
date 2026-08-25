@@ -158,6 +158,10 @@ const DODGE_COOLDOWN_TICKS := 30
 const AFTERIMAGE_FADE_SEC := 0.15
 
 const GueuleVideScene := preload("res://scenes/gameplay/powers/gueule_vide.tscn")
+const CorbeauPaleScene := preload("res://scenes/gameplay/powers/corbeau_pale.tscn")
+const PoingDuColosseScene := preload("res://scenes/gameplay/powers/poing_du_colosse.tscn")
+const OeilSansRegardScene := preload("res://scenes/gameplay/powers/oeil_sans_regard.tscn")
+const SerpentCreuxScene := preload("res://scenes/gameplay/powers/serpent_creux.tscn")
 
 ## Invocation "Gueule Vide" (INVOCATEUR, data/recipes/power.gueule_vide.cast.json) :
 ## "Portée d'invocation : 4m". La créature apparaît à une distance fixe
@@ -463,6 +467,228 @@ const MAREE_DE_SABLE_FRAME_TICK_BOUNDS: Array[int] = [4, 8, 11, 15, 22, 42]
 ## déjà statique sur toute cette fenêtre.
 const MAREE_DE_SABLE_CANCEL_WINDOW_TICKS := 10
 
+## Carapace (Terre, Tier 3, DÉFENSIF) — CHANTIER A (2026-08-24, agent dédié
+## Terre, plan de production v1). GDD/planche (docs/references/terre/
+## carapace.png) : "La peau et le torse se couvrent de plaques rocheuses,
+## augmentant la résistance aux dégâts" — un ÉTAT SOUTENU (buff actif sur
+## une durée), pas un impact ponctuel. Traité STRUCTURELLEMENT différemment
+## des 4 autres compétences Terre (mandat l'exige explicitement, même
+## distinction déjà notée pour Poing Tellurique) : 3 phases ACTIVATION/
+## ACTIVE/RECOVERY (pas ANTICIPATION/RELEASE/RECOVERY — il n'y a pas de
+## "contact", Carapace ne touche jamais un ennemi). Voir
+## power.carapace.cast.json pour le détail complet du raisonnement recette
+## + la raison (architecturale, pas paresseuse) pour laquelle `_action_lock`
+## reste vrai sur toute la durée (orbital, la couche VFX signature de
+## l'état actif, est ancrée à une origine FIXE capturée au cast — aucune
+## primitive de VfxDirector ne suit une entité qui se déplace ; laisser le
+## joueur bouger ferait dériver les fragments de roche loin de lui,
+## contrairement à la planche qui montre "3. CARAPACE ACTIVE" en posture
+## statique).
+const CARAPACE_ACTIVATION_TICKS := 24
+const CARAPACE_ACTIVE_TICKS := 180  # ~3s @ 60/s, TUNABLE — pas chiffré par le GDD.
+const CARAPACE_RECOVERY_TICKS := 24  # miroir de l'activation (carapace_fin = carapace_activation rejouée à l'envers).
+const CARAPACE_DAMAGE_MULTIPLIER := 0.65  # 35% de dégâts en moins pendant tout le buff, TUNABLE.
+const CARAPACE_COOLDOWN_TICKS := 360  # généreux, cohérent avec un buff long plutôt qu'un impact ponctuel, TUNABLE.
+const CarapaceRecipeId := "power.carapace.cast"
+const CARAPACE_CAST_SEED := 51006  # Addendum A §A.5, jamais l'horloge murale.
+
+## Art dédié (agent Terre, CHANTIER A 2026-08-24) : Carapace TRANSFORME la
+## peau/le torse (plaques rocheuses) — une MUTATION comme Bras-Faux/Poing
+## Belluaire (create_character_state), PAS une simple pose comme Poing
+## Tellurique/Marée de Sable. Pipeline : create_character_state sur
+## Cendre_v3c (8596a4ad, vérifié via get_character) -> nouvel état "Carapace"
+## (b51c67c6, plaques brun-gris anguleuses sur torse/épaules/avant-bras,
+## fragments flottants) accepté au 1er essai. "carapace_activation" (6
+## frames + référence) = interpolation v3 DIRECTE entre la rotation sud de
+## l'état Idle (frame de départ) et la rotation sud du nouvel état Carapace
+## (frame d'arrivée) — garantit que la dernière frame colle exactement à
+## l'état déjà validé, pas une régénération indépendante qui pourrait
+## diverger. "carapace_active" (4 frames + référence) = respiration/dérive
+## d'un fragment généré DIRECTEMENT sur le character_id Carapace (état
+## stable, pas une transition). "carapace_fin" : AUCUNE génération
+## supplémentaire — réutilise les 7 mêmes PNG que carapace_activation, dans
+## l'ordre INVERSE (armure qui se détache = l'activation rejouée à
+## l'envers, cf. assets/manifests/cendre_frames_cooked.json).
+##
+## Pilotage tick-exact ACTIVATION (même discipline que MAREE_DE_SABLE_
+## FRAME_TICK_BOUNDS ci-dessus) : bornes calées sur le contenu réel des 7
+## frames (0-2 quasi-idle, 3 = plaques qui claquent sur le torse, 4-5 =
+## armure qui se densifie, 6 = armure complète) — le "claquage" (frame 3)
+## tombe au même tick que impactFlashFrame (tick 10, power.carapace.cast.json).
+const CARAPACE_ACTIVATION_FRAME_TICK_BOUNDS: Array[int] = [3, 6, 9, 14, 18, 21, 24]
+## RECOVERY : mêmes bornes relatives que l'activation, appliquées à
+## "carapace_fin" (déjà en ordre inverse — frame 0 = armure complète, frame
+## 6 = idle) : l'armure part complète et se dissout au même rythme qu'elle
+## s'était formée, symétrie délibérée plutôt qu'une 2e mesure séparée.
+const CARAPACE_RECOVERY_FRAME_TICK_BOUNDS: Array[int] = [3, 6, 9, 14, 18, 21, 24]
+## Boucle ACTIVE : 4 frames animées (+ 1 référence identique à frame0,
+## jamais rejouée — voir CARAPACE_ACTIVE_LOOP_FRAME_COUNT) qui tournent en
+## continu tant que l'état soutenu dure, contrairement à toutes les autres
+## compétences Terre (une seule passe linéaire jamais bouclée). Chaque
+## frame tient CARAPACE_ACTIVE_LOOP_FRAME_TICKS ticks avant de passer à la
+## suivante, modulo le nombre de frames — jamais la fps autonome
+## d'AnimatedSprite2D (même bug de classe que documenté 4 fois ce cycle,
+## mais ici la question ne se poserait même pas sans ce pilotage : Godot ne
+## boucle pas nativement une fenêtre de N frames au milieu d'une anim plus
+## longue).
+const CARAPACE_ACTIVE_LOOP_FRAME_COUNT := 4
+const CARAPACE_ACTIVE_LOOP_FRAME_TICKS := 10
+
+## Fenêtre d'annulation (mandat "fluidité") — PROPRIÉTÉ PROPRE à Carapace :
+## contrairement aux 4 autres compétences Terre, PAS de fenêtre pendant
+## ACTIVATION ni ACTIVE (un bouclier qu'on peut annuler à volonté avant sa
+## fin naturelle perdrait son sens défensif — décision délibérée, pas un
+## oubli) — seule la toute fin de RECOVERY (queue, même convention que les
+## autres) accepte un input mis en file, une fois l'armure déjà retirée.
+const CARAPACE_CANCEL_WINDOW_TICKS := 10
+
+## Effondrement (Terre, Tier 4, ZONE, IMPACT MAJEUR) — CHANTIER A
+## (2026-08-24). GDD/planche (docs/references/terre/effondrement.png) :
+## "Les fissures se propagent, convergent vers Rank Zero, puis le sol
+## s'effondre et explose à l'impact" — AoE centré sur le LANCEUR (pas un
+## cône frontal comme Poing Tellurique/Bras-Faux, ni une ligne comme Marée
+## de Sable), anticipation plus longue qu'un impact simple (tier "majeur").
+const EFFONDREMENT_ANTICIPATION_TICKS := 30
+const EFFONDREMENT_RELEASE_TICKS := 6
+const EFFONDREMENT_RECOVERY_TICKS := 26
+const EFFONDREMENT_RADIUS_PX := 70.0  # AoE circulaire autour du lanceur, plus large que Poing Tellurique (44px, un arc).
+const EFFONDREMENT_DAMAGE := 22.0  # TUNABLE, la plus élevée des 5 compétences Terre — "impact majeur" de la fiche.
+const EFFONDREMENT_COOLDOWN_TICKS := 340  # généreux, cohérent avec des dégâts/portée au-dessus des 4 autres.
+const EffondrementRecipeId := "power.effondrement.cast"
+const EFFONDREMENT_CAST_SEED := 51007  # Addendum A §A.5, jamais l'horloge murale.
+
+## Art dédié (agent Terre, CHANTIER A 2026-08-24) : Effondrement ne
+## transforme aucun membre — une POSE, comme Poing Tellurique/Marée de
+## Sable (animate_character v3 direct sur l'état "Idle", pas de
+## create_character_state). Prompt : bras levés haut ensemble puis abattus
+## au sol, stance large, accroupissement profond à l'impact — 6 frames sud
+## + référence acceptées dès le 1er essai (0-2 lever progressif, 3-4 zénith
+## bras en X puis rapprochés, 5-6 accroupissement profond bras au sol).
+## Cohérent avec la planche : temps 1-2 (Propagation/Convergence) montrent
+## Cendre debout/normal — le sprite lève simplement les bras pendant que le
+## VFX (groundRing/fractureLine) porte les fissures ; temps 3-4
+## (Compression/Impact) sont majoritairement portés par le VFX (converge/
+## shardBurst/smokePuff), le sprite reste figé en accroupissement profond
+## (frame 6) — aucune primitive "pic de roche" dédiée n'existe dans le
+## registre actuel, limite documentée dans power.effondrement.cast.json.
+##
+## Pilotage tick-exact : frame 6 (accroupissement/impact) couvre TOUT le
+## RELEASE + toute la RECOVERY (31 à 62) — le sprite ne bouge plus une fois
+## le coup porté, seul le VFX continue de jouer l'explosion/la retombée.
+const EFFONDREMENT_FRAME_TICK_BOUNDS: Array[int] = [4, 9, 14, 20, 25, 30, 62]
+
+## Fenêtre d'annulation : queue de RECOVERY, un peu plus généreuse que
+## Poing Tellurique (12 vs 12 des ~26 ticks de recovery, même proportion
+## ~45%) — cohérent avec un impact déjà "vendu" dès le tick 31.
+const EFFONDREMENT_CANCEL_WINDOW_TICKS := 12
+
+## Fissure Éruptive (Terre, Tier 5, dernière compétence Terre) — CHANTIER A
+## (2026-08-24). GDD/planche (docs/references/terre/fissure_eruptive.png,
+## 4 temps : Préparation/Fissure/Soulèvement/Retombée) : effet RANGÉ, PAS
+## centré sur le lanceur (contrairement à Effondrement) — la fissure part
+## de Rank Zero et voyage au sol avant que les pics n'émergent à distance.
+const FISSURE_ERUPTIVE_ANTICIPATION_TICKS := 20
+const FISSURE_ERUPTIVE_RELEASE_TICKS := 8
+const FISSURE_ERUPTIVE_RECOVERY_TICKS := 30
+const FISSURE_ERUPTIVE_RANGE_PX := 110.0  # distance parcourue par la fissure avant l'éruption — la plus longue portée Terre.
+const FISSURE_ERUPTIVE_IMPACT_RADIUS_PX := 40.0  # petit AoE circulaire AU POINT D'IMPACT, pas au lanceur.
+const FISSURE_ERUPTIVE_DAMAGE := 18.0  # TUNABLE, entre Marée de Sable (8, contrôle) et Effondrement (22, impact majeur).
+const FISSURE_ERUPTIVE_COOLDOWN_TICKS := 260
+const FissureEruptiveRecipeId := "power.fissure_eruptive.cast"
+const FISSURE_ERUPTIVE_CAST_SEED := 51008  # Addendum A §A.5, jamais l'horloge murale.
+
+## Art dédié (agent Terre, CHANTIER A 2026-08-24) : Fissure Éruptive est la
+## SEULE compétence Terre dont la planche montre un objet tenu (bâton
+## planté au sol) — prompt PixelLab a délibérément INCLUS "gripping a plain
+## rough wooden staff" plutôt que les exclusions négatives "no weapon"
+## systématiques des 4 autres pouvoirs Terre (écart assumé, documenté dans
+## data/pixellab_usage.jsonl). 6 frames sud + référence acceptées au 1er
+## essai avec UNE réserve honnête : frame 3 (transition) montre une forme
+## ambiguë près des mains/tête (ni clairement un bâton ni un artefact net)
+## — frames 4-6 résolvent clairement en un outil tenu à deux mains planté
+## au sol (silhouette proche d'une pioche/pelle plutôt qu'un bâton
+## parfaitement lisse, mais lit sans ambiguïté comme un OUTIL DE TERRE
+## planté — accepté, pas de reroll pour une nuance sur 1 frame de transition
+## occupant 1 seul tick à l'écran, discipline anti-reroll-infini).
+##
+## Pilotage tick-exact : frame 6 (outil planté) couvre le RELEASE et toute
+## la RECOVERY (20 à 58) pendant que le VFX (groundRing/shardBurst/
+## smokePuff, tous décalés via origin_offset_px=FISSURE_ERUPTIVE_RANGE_PX)
+## joue le Soulèvement/la Retombée À DISTANCE du personnage.
+const FISSURE_ERUPTIVE_FRAME_TICK_BOUNDS: Array[int] = [3, 7, 11, 14, 18, 23, 58]
+
+## Fenêtre d'annulation : queue de RECOVERY, proportion proche des 4 autres
+## compétences Terre (~40% des 30 ticks de recovery).
+const FISSURE_ERUPTIVE_CANCEL_WINDOW_TICKS := 12
+
+## Corbeau Pâle / Poing du Colosse / Œil Sans Regard / Serpent Creux
+## (INVOCATEUR, Tiers 2-5 — MANDAT ROUND 4 / PLAN DE PRODUCTION, agent
+## Invocateur, docs/references/invocateur/) : contrairement à Gueule Vide
+## (aucun _action_lock, "l'invocation n'immobilise pas le joueur" —
+## exception documentée ci-dessus, jugée "déjà maximalement fluide" et
+## donc non retouchée), ces 4 compétences REÇOIVENT le patron ANTICIPATION/
+## RELEASE/RECOVERY + _action_lock + <SKILL>_CANCEL_WINDOW_TICKS déjà
+## établi sur Bras-Faux/Poing Belluaire/Poing Tellurique/Marée de Sable
+## (mandat "fluidité", commit 1571521) — branché DÈS la construction,
+## comme l'exige le mandat ("pas de round de polish séparé après coup").
+## Raison du choix : les 4 planches de référence montrent Cendre engagé
+## dans un geste de cast à part entière sur plusieurs temps (contrairement
+## au simple "bras tendu en arrière-plan" de Gueule Vide), et ce sont des
+## compétences plus lourdes (Tier 2 à 5, jusqu'à l'ultime) qui méritent
+## d'être de vraies actions engageantes, pas un aparté sans conséquence.
+##
+## Double timeline assumée et documentée (comme Gueule Vide) : CETTE
+## timeline (ANTICIPATION/RELEASE/RECOVERY) ne pilote QUE le geste de
+## CENDRE LUI-MÊME (son propre AnimatedSprite2D, "invocation_<skill>",
+## 6 frames) et son _action_lock — la créature/l'effet invoqué est une
+## scène séparée (src/gameplay/powers/<skill>.gd, patron GueuleVide :
+## FRAME_TICK_BOUNDS/tick propre/contact via Targeting) instanciée au
+## RELEASE (tick 1, même convention que _try_hit_bras_faux() etc.) et qui
+## vit sa propre vie ensuite, DÉCOUPLÉE de _action_lock — Cendre peut donc
+## se remettre à bouger (RECOVERY) pendant que la créature achève sa
+## propre timeline plus longue, exactement comme Gueule Vide aujourd'hui.
+## Durées/dégâts/portées TUNABLE (aucune fiche bible chiffrée pour ces 4
+## compétences, sauf Serpent Creux §6.2 — "portée supérieure à Gueule
+## Vide, attaque linéaire, plusieurs cibles possibles", respecté dans
+## serpent_creux.gd).
+
+const CorbeauPaleRecipeId := "power.corbeau_pale.cast"
+const CORBEAU_PALE_ANTICIPATION_TICKS := 12
+const CORBEAU_PALE_RELEASE_TICKS := 4
+const CORBEAU_PALE_RECOVERY_TICKS := 16
+const CORBEAU_PALE_CANCEL_WINDOW_TICKS := 10
+const CORBEAU_PALE_COOLDOWN_TICKS := 200  # ~3,3s @ 60/s — compétence rapide/légère (Tier 2), cooldown court.
+const CORBEAU_PALE_SPAWN_DISTANCE_PX := 32.0  # ~1m — le corbeau se forme tout près de Cendre avant de foncer (RANGE_PX propre, corbeau_pale.gd).
+const CORBEAU_PALE_FRAME_TICK_BOUNDS: Array[int] = [6, 12, 16, 22, 27, 32]
+
+const PoingDuColosseRecipeId := "power.poing_du_colosse.cast"
+const POING_DU_COLOSSE_ANTICIPATION_TICKS := 18
+const POING_DU_COLOSSE_RELEASE_TICKS := 6
+const POING_DU_COLOSSE_RECOVERY_TICKS := 22
+const POING_DU_COLOSSE_CANCEL_WINDOW_TICKS := 12
+const POING_DU_COLOSSE_COOLDOWN_TICKS := 300  # 5s @ 60/s — "impact majeur" (Tier 3), le plus lourd des 4.
+const POING_DU_COLOSSE_SPAWN_DISTANCE_PX := 64.0  # ~2m — plus proche que Gueule Vide (96px, 3m) : un poing s'abat, il n'a pas besoin d'approcher.
+const POING_DU_COLOSSE_FRAME_TICK_BOUNDS: Array[int] = [8, 16, 24, 32, 39, 46]
+
+const OeilSansRegardRecipeId := "power.oeil_sans_regard.cast"
+const OEIL_SANS_REGARD_ANTICIPATION_TICKS := 16
+const OEIL_SANS_REGARD_RELEASE_TICKS := 6
+const OEIL_SANS_REGARD_RECOVERY_TICKS := 20
+const OEIL_SANS_REGARD_CANCEL_WINDOW_TICKS := 10
+const OEIL_SANS_REGARD_COOLDOWN_TICKS := 280  # ~4,7s @ 60/s — Tier 4, pierce en ligne.
+const OEIL_SANS_REGARD_SPAWN_DISTANCE_PX := 64.0  # ~2m devant Cendre
+const OEIL_SANS_REGARD_SPAWN_HEIGHT_OFFSET_PX := -40.0  # l'œil flotte "dans les airs" (fiche planche) — décalage vertical (Y négatif = vers le haut de l'écran), pas au sol comme les autres créatures.
+const OEIL_SANS_REGARD_FRAME_TICK_BOUNDS: Array[int] = [7, 14, 22, 29, 36, 42]
+
+const SerpentCreuxRecipeId := "power.serpent_creux.cast"
+const SERPENT_CREUX_ANTICIPATION_TICKS := 20
+const SERPENT_CREUX_RELEASE_TICKS := 6
+const SERPENT_CREUX_RECOVERY_TICKS := 24
+const SERPENT_CREUX_CANCEL_WINDOW_TICKS := 12
+const SERPENT_CREUX_COOLDOWN_TICKS := 400  # ~6,7s @ 60/s — l'ultime (Tier 5/5), le plus long cooldown de la Classe.
+const SERPENT_CREUX_SPAWN_DISTANCE_PX := 48.0  # ~1,5m — "déjà comprimé" tout près de Cendre, voir serpent_creux.gd RANGE_PX pour la portée réelle après relâchement.
+const SERPENT_CREUX_FRAME_TICK_BOUNDS: Array[int] = [9, 18, 26, 35, 43, 50]
+
 @export var stats: Stats = Stats.new()
 
 ## Direction de face courante (8 valeurs), utile aux futures frames
@@ -622,6 +848,94 @@ var _maree_de_sable_tick: int = 0
 var _maree_de_sable_hit_applied: bool = false
 var _maree_de_sable_cooldown_remaining: int = 0
 
+## Carapace (Terre, Tier 3, DÉFENSIF) — 3 phases ACTIVATION/ACTIVE/RECOVERY
+## (pas ANTICIPATION/RELEASE/RECOVERY, voir le bloc de constantes CARAPACE_*
+## plus haut pour le raisonnement complet). _carapace_active_loop_tick est
+## un compteur SÉPARÉ de _carapace_tick : ce dernier reset à chaque
+## transition de phase (même convention que tous les autres pouvoirs),
+## alors que la boucle de respiration doit tourner en continu sur toute la
+## durée d'ACTIVE sans se resynchroniser à rien d'autre qu'elle-même.
+enum CarapacePhase { NONE, ACTIVATION, ACTIVE, RECOVERY }
+var _carapace_phase: int = CarapacePhase.NONE
+var _carapace_tick: int = 0
+var _carapace_active_loop_tick: int = 0
+var _carapace_cooldown_remaining: int = 0
+
+## Effondrement (Terre, Tier 4) — même discipline ANTICIPATION/RELEASE/
+## RECOVERY que Bras-Faux/Poing Belluaire/Poing Tellurique/Marée de Sable.
+enum EffondrementPhase { NONE, ANTICIPATION, RELEASE, RECOVERY }
+var _effondrement_phase: int = EffondrementPhase.NONE
+var _effondrement_tick: int = 0
+var _effondrement_hit_applied: bool = false
+var _effondrement_cooldown_remaining: int = 0
+
+## Fissure Éruptive (Terre, Tier 5) — même discipline ANTICIPATION/RELEASE/
+## RECOVERY que les autres compétences Terre à impact ponctuel.
+enum FissureEruptivePhase { NONE, ANTICIPATION, RELEASE, RECOVERY }
+var _fissure_eruptive_phase: int = FissureEruptivePhase.NONE
+var _fissure_eruptive_tick: int = 0
+var _fissure_eruptive_hit_applied: bool = false
+var _fissure_eruptive_cooldown_remaining: int = 0
+
+## Mâchoire / Forme Bestiale — même discipline ANTICIPATION/RELEASE/RECOVERY
+## que Bras-Faux/Poing Belluaire/Poing Tellurique/Marée de Sable ci-dessus
+## (aucun déplacement automatique, _action_lock pendant toute l'action).
+enum MachoirePhase { NONE, ANTICIPATION, RELEASE, RECOVERY }
+var _machoire_phase: int = MachoirePhase.NONE
+var _machoire_tick: int = 0
+var _machoire_hit_applied: bool = false
+var _machoire_cooldown_remaining: int = 0
+
+enum FormeBestialePhase { NONE, ANTICIPATION, RELEASE, RECOVERY }
+var _forme_bestiale_phase: int = FormeBestialePhase.NONE
+var _forme_bestiale_tick: int = 0
+var _forme_bestiale_hit_applied: bool = false
+var _forme_bestiale_cooldown_remaining: int = 0
+
+## Pattes de Chasse — ANTICIPATION/MOVE/RECOVERY comme le dash (DashPhase
+## ci-dessus), PAS ANTICIPATION/RELEASE/RECOVERY : seul pouvoir de
+## Monstrification avec un déplacement automatique du joueur pendant
+## l'action (voir PATTES_DE_CHASSE_* ci-dessus).
+enum PattesDeChassePhase { NONE, ANTICIPATION, MOVE, RECOVERY }
+var _pattes_de_chasse_phase: int = PattesDeChassePhase.NONE
+var _pattes_de_chasse_tick: int = 0
+var _pattes_de_chasse_hit_applied: bool = false
+var _pattes_de_chasse_cooldown_remaining: int = 0
+var _pattes_de_chasse_direction: Vector2 = Vector2.ZERO
+var _pattes_de_chasse_recovery_velocity: Vector2 = Vector2.ZERO
+
+## Corbeau Pâle / Poing du Colosse / Œil Sans Regard / Serpent Creux
+## (INVOCATEUR) — même discipline ANTICIPATION/RELEASE/RECOVERY que
+## Bras-Faux/Poing Belluaire/Poing Tellurique/Marée de Sable ci-dessus
+## (_action_lock pendant toute l'action, aucun déplacement automatique du
+## joueur), voir le bloc de constantes CORBEAU_PALE_*/POING_DU_COLOSSE_*/
+## OEIL_SANS_REGARD_*/SERPENT_CREUX_* plus haut pour le raisonnement
+## complet (double timeline : Cendre lui-même ici, la créature invoquée
+## sur sa propre horloge séparée dans src/gameplay/powers/<skill>.gd).
+enum CorbeauPalePhase { NONE, ANTICIPATION, RELEASE, RECOVERY }
+var _corbeau_pale_phase: int = CorbeauPalePhase.NONE
+var _corbeau_pale_tick: int = 0
+var _corbeau_pale_spawned: bool = false
+var _corbeau_pale_cooldown_remaining: int = 0
+
+enum PoingDuColossePhase { NONE, ANTICIPATION, RELEASE, RECOVERY }
+var _poing_du_colosse_phase: int = PoingDuColossePhase.NONE
+var _poing_du_colosse_tick: int = 0
+var _poing_du_colosse_spawned: bool = false
+var _poing_du_colosse_cooldown_remaining: int = 0
+
+enum OeilSansRegardPhase { NONE, ANTICIPATION, RELEASE, RECOVERY }
+var _oeil_sans_regard_phase: int = OeilSansRegardPhase.NONE
+var _oeil_sans_regard_tick: int = 0
+var _oeil_sans_regard_spawned: bool = false
+var _oeil_sans_regard_cooldown_remaining: int = 0
+
+enum SerpentCreuxPhase { NONE, ANTICIPATION, RELEASE, RECOVERY }
+var _serpent_creux_phase: int = SerpentCreuxPhase.NONE
+var _serpent_creux_tick: int = 0
+var _serpent_creux_spawned: bool = false
+var _serpent_creux_cooldown_remaining: int = 0
+
 ## Recul du joueur sous un coup ennemi (G, GDD §10 — voir take_damage()
 ## ci-dessous) : même construction qu'Enemy._recoil_ticks_remaining, mais
 ## portée par sa propre timeline (ACTIVE/NONE) au lieu d'une simple
@@ -678,7 +992,8 @@ func _physics_process(_delta: float) -> void:
 	# production v1 §4, CameraDirector, J2) : direction du dash en cours
 	# uniquement, Vector2.ZERO sinon (get_lookahead_offset() le gère déjà).
 	var lookahead: Vector2 = CameraDirector.get_lookahead_offset(
-		_dash_direction if _dash_phase != DashPhase.NONE else Vector2.ZERO)
+		_dash_direction if _dash_phase != DashPhase.NONE
+		else (_pattes_de_chasse_direction if _pattes_de_chasse_phase == PattesDeChassePhase.MOVE else Vector2.ZERO))
 	_camera.offset = CombatFeedback.get_shake_offset() + lookahead
 	_camera.zoom = CameraDirector.get_zoom()
 	# Phase R4 : hit-stop asymétrique — le joueur consulte SON compteur
@@ -700,6 +1015,26 @@ func _physics_process(_delta: float) -> void:
 		_poing_tellurique_cooldown_remaining -= 1
 	if _maree_de_sable_cooldown_remaining > 0:
 		_maree_de_sable_cooldown_remaining -= 1
+	if _carapace_cooldown_remaining > 0:
+		_carapace_cooldown_remaining -= 1
+	if _effondrement_cooldown_remaining > 0:
+		_effondrement_cooldown_remaining -= 1
+	if _fissure_eruptive_cooldown_remaining > 0:
+		_fissure_eruptive_cooldown_remaining -= 1
+	if _machoire_cooldown_remaining > 0:
+		_machoire_cooldown_remaining -= 1
+	if _forme_bestiale_cooldown_remaining > 0:
+		_forme_bestiale_cooldown_remaining -= 1
+	if _pattes_de_chasse_cooldown_remaining > 0:
+		_pattes_de_chasse_cooldown_remaining -= 1
+	if _corbeau_pale_cooldown_remaining > 0:
+		_corbeau_pale_cooldown_remaining -= 1
+	if _poing_du_colosse_cooldown_remaining > 0:
+		_poing_du_colosse_cooldown_remaining -= 1
+	if _oeil_sans_regard_cooldown_remaining > 0:
+		_oeil_sans_regard_cooldown_remaining -= 1
+	if _serpent_creux_cooldown_remaining > 0:
+		_serpent_creux_cooldown_remaining -= 1
 	if _gueule_vide_gesture_ticks_remaining > 0:
 		_gueule_vide_gesture_ticks_remaining -= 1
 	# Expiration du buffer d'input généralisé (mandat "fluidité") — décompte
@@ -741,6 +1076,26 @@ func _physics_process(_delta: float) -> void:
 		_advance_poing_tellurique()
 	elif _maree_de_sable_phase != MareeDeSablePhase.NONE:
 		_advance_maree_de_sable()
+	elif _carapace_phase != CarapacePhase.NONE:
+		_advance_carapace()
+	elif _effondrement_phase != EffondrementPhase.NONE:
+		_advance_effondrement()
+	elif _fissure_eruptive_phase != FissureEruptivePhase.NONE:
+		_advance_fissure_eruptive()
+	elif _machoire_phase != MachoirePhase.NONE:
+		_advance_machoire()
+	elif _forme_bestiale_phase != FormeBestialePhase.NONE:
+		_advance_forme_bestiale()
+	elif _pattes_de_chasse_phase != PattesDeChassePhase.NONE:
+		_advance_pattes_de_chasse()
+	elif _corbeau_pale_phase != CorbeauPalePhase.NONE:
+		_advance_corbeau_pale()
+	elif _poing_du_colosse_phase != PoingDuColossePhase.NONE:
+		_advance_poing_du_colosse()
+	elif _oeil_sans_regard_phase != OeilSansRegardPhase.NONE:
+		_advance_oeil_sans_regard()
+	elif _serpent_creux_phase != SerpentCreuxPhase.NONE:
+		_advance_serpent_creux()
 	elif _combo_step > 0:
 		_advance_combo()
 	elif _hurt_phase != HurtPhase.NONE:
@@ -1085,6 +1440,330 @@ func _cast_gueule_vide() -> void:
 
 	var creature: Node2D = GueuleVideScene.instantiate()
 	creature.global_position = global_position + dir * POWER1_SPAWN_DISTANCE_PX
+	get_parent().add_child(creature)
+	creature.set_owner_stats(stats)
+
+
+## Corbeau Pâle (INVOCATEUR, Tier 2/5) — CONTRAIREMENT à Gueule Vide,
+## POSE _action_lock (voir le bloc de constantes CORBEAU_PALE_* plus
+## haut pour le raisonnement) : Cendre reste engagé dans son geste de cast
+## (ANTICIPATION/RELEASE/RECOVERY, même patron que _start_bras_faux())
+## pendant que la créature elle-même (instanciée au RELEASE, tick 1) vit
+## sa propre timeline séparée et plus longue (corbeau_pale.gd).
+func _cast_corbeau_pale() -> void:
+	if stats.is_dead() or _action_lock or _corbeau_pale_cooldown_remaining > 0:
+		return
+	_action_lock = true
+	_corbeau_pale_phase = CorbeauPalePhase.ANTICIPATION
+	_corbeau_pale_tick = 0
+	_corbeau_pale_spawned = false
+	if facing.x != 0.0:
+		_sprite.flip_h = facing.x < 0.0
+	_sprite.play("invocation_corbeau_pale")
+	_sprite.pause()
+	_sprite.frame = 0
+
+
+func _advance_corbeau_pale() -> void:
+	_corbeau_pale_tick += 1
+	velocity = Vector2.ZERO
+	match _corbeau_pale_phase:
+		CorbeauPalePhase.ANTICIPATION:
+			if _corbeau_pale_tick >= CORBEAU_PALE_ANTICIPATION_TICKS:
+				_corbeau_pale_phase = CorbeauPalePhase.RELEASE
+				_corbeau_pale_tick = 0
+		CorbeauPalePhase.RELEASE:
+			if _corbeau_pale_tick == 1 and not _corbeau_pale_spawned:
+				_spawn_corbeau_pale_creature()
+				_corbeau_pale_spawned = true
+			if _corbeau_pale_tick >= CORBEAU_PALE_RELEASE_TICKS:
+				_corbeau_pale_phase = CorbeauPalePhase.RECOVERY
+				_corbeau_pale_tick = 0
+		CorbeauPalePhase.RECOVERY:
+			if _corbeau_pale_tick >= CORBEAU_PALE_RECOVERY_TICKS - CORBEAU_PALE_CANCEL_WINDOW_TICKS:
+				if _try_consume_queued_input(_end_corbeau_pale):
+					return
+			if _corbeau_pale_tick >= CORBEAU_PALE_RECOVERY_TICKS:
+				_end_corbeau_pale()
+	if _corbeau_pale_phase != CorbeauPalePhase.NONE:
+		_sprite.frame = _corbeau_pale_frame_for_tick(_corbeau_pale_global_tick())
+
+
+func _end_corbeau_pale() -> void:
+	_corbeau_pale_phase = CorbeauPalePhase.NONE
+	_corbeau_pale_tick = 0
+	_action_lock = false
+	_corbeau_pale_cooldown_remaining = CORBEAU_PALE_COOLDOWN_TICKS
+
+
+func _corbeau_pale_global_tick() -> int:
+	match _corbeau_pale_phase:
+		CorbeauPalePhase.ANTICIPATION:
+			return _corbeau_pale_tick
+		CorbeauPalePhase.RELEASE:
+			return CORBEAU_PALE_ANTICIPATION_TICKS + _corbeau_pale_tick
+		CorbeauPalePhase.RECOVERY:
+			return CORBEAU_PALE_ANTICIPATION_TICKS + CORBEAU_PALE_RELEASE_TICKS + _corbeau_pale_tick
+		_:
+			return 0
+
+
+func _corbeau_pale_frame_for_tick(tick: int) -> int:
+	for i in CORBEAU_PALE_FRAME_TICK_BOUNDS.size():
+		if tick <= CORBEAU_PALE_FRAME_TICK_BOUNDS[i]:
+			return i
+	return CORBEAU_PALE_FRAME_TICK_BOUNDS.size() - 1
+
+
+func _spawn_corbeau_pale_creature() -> void:
+	var dir := facing
+	if dir.length_squared() < 0.0001:
+		dir = Vector2.DOWN
+	dir = dir.normalized()
+	var creature: Node2D = CorbeauPaleScene.instantiate()
+	creature.travel_direction = dir
+	creature.global_position = global_position + dir * CORBEAU_PALE_SPAWN_DISTANCE_PX
+	get_parent().add_child(creature)
+	creature.set_owner_stats(stats)
+
+
+## Poing du Colosse (INVOCATEUR, Tier 3/5) — même patron que Corbeau Pâle
+## ci-dessus (double timeline). Anticipation/recovery plus longues (geste
+## plus lourd, "impact majeur") — voir POING_DU_COLOSSE_* plus haut.
+func _cast_poing_du_colosse() -> void:
+	if stats.is_dead() or _action_lock or _poing_du_colosse_cooldown_remaining > 0:
+		return
+	_action_lock = true
+	_poing_du_colosse_phase = PoingDuColossePhase.ANTICIPATION
+	_poing_du_colosse_tick = 0
+	_poing_du_colosse_spawned = false
+	if facing.x != 0.0:
+		_sprite.flip_h = facing.x < 0.0
+	_sprite.play("invocation_poing_du_colosse")
+	_sprite.pause()
+	_sprite.frame = 0
+
+
+func _advance_poing_du_colosse() -> void:
+	_poing_du_colosse_tick += 1
+	velocity = Vector2.ZERO
+	match _poing_du_colosse_phase:
+		PoingDuColossePhase.ANTICIPATION:
+			if _poing_du_colosse_tick >= POING_DU_COLOSSE_ANTICIPATION_TICKS:
+				_poing_du_colosse_phase = PoingDuColossePhase.RELEASE
+				_poing_du_colosse_tick = 0
+		PoingDuColossePhase.RELEASE:
+			if _poing_du_colosse_tick == 1 and not _poing_du_colosse_spawned:
+				_spawn_poing_du_colosse_creature()
+				_poing_du_colosse_spawned = true
+			if _poing_du_colosse_tick >= POING_DU_COLOSSE_RELEASE_TICKS:
+				_poing_du_colosse_phase = PoingDuColossePhase.RECOVERY
+				_poing_du_colosse_tick = 0
+		PoingDuColossePhase.RECOVERY:
+			if _poing_du_colosse_tick >= POING_DU_COLOSSE_RECOVERY_TICKS - POING_DU_COLOSSE_CANCEL_WINDOW_TICKS:
+				if _try_consume_queued_input(_end_poing_du_colosse):
+					return
+			if _poing_du_colosse_tick >= POING_DU_COLOSSE_RECOVERY_TICKS:
+				_end_poing_du_colosse()
+	if _poing_du_colosse_phase != PoingDuColossePhase.NONE:
+		_sprite.frame = _poing_du_colosse_frame_for_tick(_poing_du_colosse_global_tick())
+
+
+func _end_poing_du_colosse() -> void:
+	_poing_du_colosse_phase = PoingDuColossePhase.NONE
+	_poing_du_colosse_tick = 0
+	_action_lock = false
+	_poing_du_colosse_cooldown_remaining = POING_DU_COLOSSE_COOLDOWN_TICKS
+
+
+func _poing_du_colosse_global_tick() -> int:
+	match _poing_du_colosse_phase:
+		PoingDuColossePhase.ANTICIPATION:
+			return _poing_du_colosse_tick
+		PoingDuColossePhase.RELEASE:
+			return POING_DU_COLOSSE_ANTICIPATION_TICKS + _poing_du_colosse_tick
+		PoingDuColossePhase.RECOVERY:
+			return POING_DU_COLOSSE_ANTICIPATION_TICKS + POING_DU_COLOSSE_RELEASE_TICKS + _poing_du_colosse_tick
+		_:
+			return 0
+
+
+func _poing_du_colosse_frame_for_tick(tick: int) -> int:
+	for i in POING_DU_COLOSSE_FRAME_TICK_BOUNDS.size():
+		if tick <= POING_DU_COLOSSE_FRAME_TICK_BOUNDS[i]:
+			return i
+	return POING_DU_COLOSSE_FRAME_TICK_BOUNDS.size() - 1
+
+
+func _spawn_poing_du_colosse_creature() -> void:
+	var dir := facing
+	if dir.length_squared() < 0.0001:
+		dir = Vector2.DOWN
+	dir = dir.normalized()
+	var creature: Node2D = PoingDuColosseScene.instantiate()
+	creature.global_position = global_position + dir * POING_DU_COLOSSE_SPAWN_DISTANCE_PX
+	get_parent().add_child(creature)
+	creature.set_owner_stats(stats)
+
+
+## Œil Sans Regard (INVOCATEUR, Tier 4/5) — même patron que Corbeau Pâle/
+## Poing du Colosse ci-dessus. La créature (l'œil) flotte "dans les airs"
+## (fiche planche) — décalage vertical au spawn, voir OEIL_SANS_REGARD_
+## SPAWN_HEIGHT_OFFSET_PX plus haut.
+func _cast_oeil_sans_regard() -> void:
+	if stats.is_dead() or _action_lock or _oeil_sans_regard_cooldown_remaining > 0:
+		return
+	_action_lock = true
+	_oeil_sans_regard_phase = OeilSansRegardPhase.ANTICIPATION
+	_oeil_sans_regard_tick = 0
+	_oeil_sans_regard_spawned = false
+	if facing.x != 0.0:
+		_sprite.flip_h = facing.x < 0.0
+	_sprite.play("invocation_oeil_sans_regard")
+	_sprite.pause()
+	_sprite.frame = 0
+
+
+func _advance_oeil_sans_regard() -> void:
+	_oeil_sans_regard_tick += 1
+	velocity = Vector2.ZERO
+	match _oeil_sans_regard_phase:
+		OeilSansRegardPhase.ANTICIPATION:
+			if _oeil_sans_regard_tick >= OEIL_SANS_REGARD_ANTICIPATION_TICKS:
+				_oeil_sans_regard_phase = OeilSansRegardPhase.RELEASE
+				_oeil_sans_regard_tick = 0
+		OeilSansRegardPhase.RELEASE:
+			if _oeil_sans_regard_tick == 1 and not _oeil_sans_regard_spawned:
+				_spawn_oeil_sans_regard_creature()
+				_oeil_sans_regard_spawned = true
+			if _oeil_sans_regard_tick >= OEIL_SANS_REGARD_RELEASE_TICKS:
+				_oeil_sans_regard_phase = OeilSansRegardPhase.RECOVERY
+				_oeil_sans_regard_tick = 0
+		OeilSansRegardPhase.RECOVERY:
+			if _oeil_sans_regard_tick >= OEIL_SANS_REGARD_RECOVERY_TICKS - OEIL_SANS_REGARD_CANCEL_WINDOW_TICKS:
+				if _try_consume_queued_input(_end_oeil_sans_regard):
+					return
+			if _oeil_sans_regard_tick >= OEIL_SANS_REGARD_RECOVERY_TICKS:
+				_end_oeil_sans_regard()
+	if _oeil_sans_regard_phase != OeilSansRegardPhase.NONE:
+		_sprite.frame = _oeil_sans_regard_frame_for_tick(_oeil_sans_regard_global_tick())
+
+
+func _end_oeil_sans_regard() -> void:
+	_oeil_sans_regard_phase = OeilSansRegardPhase.NONE
+	_oeil_sans_regard_tick = 0
+	_action_lock = false
+	_oeil_sans_regard_cooldown_remaining = OEIL_SANS_REGARD_COOLDOWN_TICKS
+
+
+func _oeil_sans_regard_global_tick() -> int:
+	match _oeil_sans_regard_phase:
+		OeilSansRegardPhase.ANTICIPATION:
+			return _oeil_sans_regard_tick
+		OeilSansRegardPhase.RELEASE:
+			return OEIL_SANS_REGARD_ANTICIPATION_TICKS + _oeil_sans_regard_tick
+		OeilSansRegardPhase.RECOVERY:
+			return OEIL_SANS_REGARD_ANTICIPATION_TICKS + OEIL_SANS_REGARD_RELEASE_TICKS + _oeil_sans_regard_tick
+		_:
+			return 0
+
+
+func _oeil_sans_regard_frame_for_tick(tick: int) -> int:
+	for i in OEIL_SANS_REGARD_FRAME_TICK_BOUNDS.size():
+		if tick <= OEIL_SANS_REGARD_FRAME_TICK_BOUNDS[i]:
+			return i
+	return OEIL_SANS_REGARD_FRAME_TICK_BOUNDS.size() - 1
+
+
+func _spawn_oeil_sans_regard_creature() -> void:
+	var dir := facing
+	if dir.length_squared() < 0.0001:
+		dir = Vector2.DOWN
+	dir = dir.normalized()
+	var creature: Node2D = OeilSansRegardScene.instantiate()
+	creature.beam_direction = dir
+	creature.global_position = global_position + dir * OEIL_SANS_REGARD_SPAWN_DISTANCE_PX + Vector2(0, OEIL_SANS_REGARD_SPAWN_HEIGHT_OFFSET_PX)
+	get_parent().add_child(creature)
+	creature.set_owner_stats(stats)
+
+
+## Serpent Creux (INVOCATEUR, Tier 5/5 — l'ultime) — même patron que les
+## 3 précédents. GDD §6.2 : "portée supérieure à Gueule Vide, attaque
+## linéaire, plusieurs cibles possibles" — respecté côté portée dans
+## serpent_creux.gd (RANGE_PX), pas ici.
+func _cast_serpent_creux() -> void:
+	if stats.is_dead() or _action_lock or _serpent_creux_cooldown_remaining > 0:
+		return
+	_action_lock = true
+	_serpent_creux_phase = SerpentCreuxPhase.ANTICIPATION
+	_serpent_creux_tick = 0
+	_serpent_creux_spawned = false
+	if facing.x != 0.0:
+		_sprite.flip_h = facing.x < 0.0
+	_sprite.play("invocation_serpent_creux")
+	_sprite.pause()
+	_sprite.frame = 0
+
+
+func _advance_serpent_creux() -> void:
+	_serpent_creux_tick += 1
+	velocity = Vector2.ZERO
+	match _serpent_creux_phase:
+		SerpentCreuxPhase.ANTICIPATION:
+			if _serpent_creux_tick >= SERPENT_CREUX_ANTICIPATION_TICKS:
+				_serpent_creux_phase = SerpentCreuxPhase.RELEASE
+				_serpent_creux_tick = 0
+		SerpentCreuxPhase.RELEASE:
+			if _serpent_creux_tick == 1 and not _serpent_creux_spawned:
+				_spawn_serpent_creux_creature()
+				_serpent_creux_spawned = true
+			if _serpent_creux_tick >= SERPENT_CREUX_RELEASE_TICKS:
+				_serpent_creux_phase = SerpentCreuxPhase.RECOVERY
+				_serpent_creux_tick = 0
+		SerpentCreuxPhase.RECOVERY:
+			if _serpent_creux_tick >= SERPENT_CREUX_RECOVERY_TICKS - SERPENT_CREUX_CANCEL_WINDOW_TICKS:
+				if _try_consume_queued_input(_end_serpent_creux):
+					return
+			if _serpent_creux_tick >= SERPENT_CREUX_RECOVERY_TICKS:
+				_end_serpent_creux()
+	if _serpent_creux_phase != SerpentCreuxPhase.NONE:
+		_sprite.frame = _serpent_creux_frame_for_tick(_serpent_creux_global_tick())
+
+
+func _end_serpent_creux() -> void:
+	_serpent_creux_phase = SerpentCreuxPhase.NONE
+	_serpent_creux_tick = 0
+	_action_lock = false
+	_serpent_creux_cooldown_remaining = SERPENT_CREUX_COOLDOWN_TICKS
+
+
+func _serpent_creux_global_tick() -> int:
+	match _serpent_creux_phase:
+		SerpentCreuxPhase.ANTICIPATION:
+			return _serpent_creux_tick
+		SerpentCreuxPhase.RELEASE:
+			return SERPENT_CREUX_ANTICIPATION_TICKS + _serpent_creux_tick
+		SerpentCreuxPhase.RECOVERY:
+			return SERPENT_CREUX_ANTICIPATION_TICKS + SERPENT_CREUX_RELEASE_TICKS + _serpent_creux_tick
+		_:
+			return 0
+
+
+func _serpent_creux_frame_for_tick(tick: int) -> int:
+	for i in SERPENT_CREUX_FRAME_TICK_BOUNDS.size():
+		if tick <= SERPENT_CREUX_FRAME_TICK_BOUNDS[i]:
+			return i
+	return SERPENT_CREUX_FRAME_TICK_BOUNDS.size() - 1
+
+
+func _spawn_serpent_creux_creature() -> void:
+	var dir := facing
+	if dir.length_squared() < 0.0001:
+		dir = Vector2.DOWN
+	dir = dir.normalized()
+	var creature: Node2D = SerpentCreuxScene.instantiate()
+	creature.travel_direction = dir
+	creature.global_position = global_position + dir * SERPENT_CREUX_SPAWN_DISTANCE_PX
 	get_parent().add_child(creature)
 	creature.set_owner_stats(stats)
 
@@ -1627,6 +2306,820 @@ func _try_hit_maree_de_sable() -> void:
 	CombatFeedback.register_hit("medium", true, "heavy_impact", "light", dir, true)
 
 
+## Carapace (Terre, Tier 3, DÉFENSIF) — voir le bloc de constantes CARAPACE_*
+## et power.carapace.cast.json pour le raisonnement complet (état soutenu,
+## PAS un impact ponctuel : 3 phases ACTIVATION/ACTIVE/RECOVERY, aucune
+## fonction _try_hit_carapace() — Carapace ne touche jamais un ennemi).
+func _start_carapace() -> void:
+	if stats.is_dead() or _action_lock or _carapace_cooldown_remaining > 0:
+		return
+	_action_lock = true
+	_carapace_phase = CarapacePhase.ACTIVATION
+	_carapace_tick = 0
+	_carapace_active_loop_tick = 0
+	velocity = Vector2.ZERO  # "aucun déplacement automatique" — voir CARAPACE_* ci-dessus (VFX orbital ancré à une origine fixe).
+	if facing.x != 0.0:
+		_sprite.flip_h = facing.x < 0.0
+	# Tick-exact (voir CARAPACE_ACTIVATION_FRAME_TICK_BOUNDS) : play()
+	# positionne l'AnimatedSprite2D sur "carapace_activation", pause() coupe
+	# immédiatement sa propre horloge fps, même discipline que tous les
+	# autres pouvoirs à sprite dédié de ce fichier.
+	_sprite.play("carapace_activation")
+	_sprite.pause()
+	_sprite.frame = 0
+
+	VfxRecipeRegistry.play(CarapaceRecipeId, {
+		"origin": global_position,
+		"seed": CARAPACE_CAST_SEED,
+		"direction": facing,
+	})
+
+
+## Timeline à 3 phases (ACTIVATION -> ACTIVE -> RECOVERY, voir CarapacePhase)
+## — PAS ANTICIPATION/RELEASE/RECOVERY : il n'y a pas de "release"/contact,
+## seulement une transition vers un état soutenu puis un retour. La bascule
+## de sprite ("carapace_activation" -> "carapace_active" en boucle ->
+## "carapace_fin") se fait aux DEUX changements de phase, jamais au milieu.
+func _advance_carapace() -> void:
+	_carapace_tick += 1
+
+	match _carapace_phase:
+		CarapacePhase.ACTIVATION:
+			if _carapace_tick >= CARAPACE_ACTIVATION_TICKS:
+				_carapace_phase = CarapacePhase.ACTIVE
+				_carapace_tick = 0
+				_carapace_active_loop_tick = 0
+				_sprite.play("carapace_active")
+				_sprite.pause()
+				_sprite.frame = 0
+		CarapacePhase.ACTIVE:
+			_carapace_active_loop_tick += 1
+			if _carapace_tick >= CARAPACE_ACTIVE_TICKS:
+				_carapace_phase = CarapacePhase.RECOVERY
+				_carapace_tick = 0
+				_sprite.play("carapace_fin")
+				_sprite.pause()
+				_sprite.frame = 0
+		CarapacePhase.RECOVERY:
+			# Fenêtre d'annulation (CARAPACE_CANCEL_WINDOW_TICKS) — SEULE
+			# fenêtre de tout le cast, voir la constante ci-dessus pour la
+			# raison (ACTIVATION/ACTIVE n'en ont délibérément pas).
+			if _carapace_tick >= CARAPACE_RECOVERY_TICKS - CARAPACE_CANCEL_WINDOW_TICKS:
+				if _try_consume_queued_input(_end_carapace):
+					return
+			if _carapace_tick >= CARAPACE_RECOVERY_TICKS:
+				_end_carapace()
+
+	# Appliqué APRÈS la transition de phase éventuelle ci-dessus, même
+	# discipline que _advance_poing_tellurique()/_advance_maree_de_sable() :
+	# la frame reflète l'état réel de CE tick, jamais un tick de retard.
+	match _carapace_phase:
+		CarapacePhase.ACTIVATION:
+			_sprite.frame = _carapace_frame_for_tick(_carapace_tick, CARAPACE_ACTIVATION_FRAME_TICK_BOUNDS)
+		CarapacePhase.ACTIVE:
+			# Boucle continue (voir CARAPACE_ACTIVE_LOOP_FRAME_TICKS/_COUNT ci-
+			# dessus) — jamais la fps autonome d'AnimatedSprite2D, et jamais un
+			# tick "global" cumulé depuis le cast (la boucle n'a pas de fin
+			# naturelle avant CARAPACE_ACTIVE_TICKS, contrairement aux autres
+			# compétences qui jouent une séquence linéaire une seule fois).
+			_sprite.frame = (_carapace_active_loop_tick / CARAPACE_ACTIVE_LOOP_FRAME_TICKS) % CARAPACE_ACTIVE_LOOP_FRAME_COUNT
+		CarapacePhase.RECOVERY:
+			_sprite.frame = _carapace_frame_for_tick(_carapace_tick, CARAPACE_RECOVERY_FRAME_TICK_BOUNDS)
+
+
+## Générique (contrairement aux autres compétences Terre) car ACTIVATION et
+## RECOVERY partagent la MÊME table de bornes (CARAPACE_ACTIVATION_FRAME_
+## TICK_BOUNDS == CARAPACE_RECOVERY_FRAME_TICK_BOUNDS, symétrie délibérée —
+## "carapace_fin" est déjà les frames de "carapace_activation" en ordre
+## inverse, donc la MÊME cadence d'affichage produit la transition miroir).
+func _carapace_frame_for_tick(tick: int, bounds: Array[int]) -> int:
+	for i in bounds.size():
+		if tick <= bounds[i]:
+			return i
+	return bounds.size() - 1
+
+
+func _end_carapace() -> void:
+	_carapace_phase = CarapacePhase.NONE
+	_carapace_tick = 0
+	_carapace_active_loop_tick = 0
+	_action_lock = false
+	_carapace_cooldown_remaining = CARAPACE_COOLDOWN_TICKS
+
+
+## Lu par Player.take_damage() (CARAPACE_DAMAGE_MULTIPLIER) — vrai dès le
+## début de l'ACTIVATION (l'armure qui se forme compte déjà comme une
+## protection en cours d'installation, pas seulement une fois complète) et
+## jusqu'à la fin de la RECOVERY (les plaques encore visibles en train de
+## se détacher protègent encore un peu), jamais après _end_carapace().
+func is_carapace_active() -> bool:
+	return _carapace_phase != CarapacePhase.NONE
+
+
+func get_carapace_cooldown_ratio() -> float:
+	return float(_carapace_cooldown_remaining) / float(CARAPACE_COOLDOWN_TICKS)
+
+
+## Effondrement (Terre, Tier 4, ZONE, IMPACT MAJEUR) — même discipline
+## ANTICIPATION/RELEASE/RECOVERY que Bras-Faux/Poing Belluaire/Poing
+## Tellurique/Marée de Sable, voir le bloc de constantes EFFONDREMENT_* et
+## power.effondrement.cast.json pour le raisonnement complet.
+func _start_effondrement() -> void:
+	if stats.is_dead() or _action_lock or _effondrement_cooldown_remaining > 0:
+		return
+	_action_lock = true
+	_effondrement_phase = EffondrementPhase.ANTICIPATION
+	_effondrement_tick = 0
+	_effondrement_hit_applied = false
+	velocity = Vector2.ZERO  # aucun déplacement automatique (GDD ne mentionne aucun bond).
+	if facing.x != 0.0:
+		_sprite.flip_h = facing.x < 0.0
+	_sprite.play("effondrement")
+	_sprite.pause()
+	_sprite.frame = 0
+
+	var dir := facing
+	if dir.length_squared() < 0.0001:
+		dir = Vector2.DOWN
+	dir = dir.normalized()
+	VfxRecipeRegistry.play(EffondrementRecipeId, {
+		"origin": global_position,
+		"seed": EFFONDREMENT_CAST_SEED,
+		"direction": dir,
+	})
+
+
+func _advance_effondrement() -> void:
+	_effondrement_tick += 1
+
+	match _effondrement_phase:
+		EffondrementPhase.ANTICIPATION:
+			if _effondrement_tick >= EFFONDREMENT_ANTICIPATION_TICKS:
+				_effondrement_phase = EffondrementPhase.RELEASE
+				_effondrement_tick = 0
+		EffondrementPhase.RELEASE:
+			if _effondrement_tick == 1 and not _effondrement_hit_applied:
+				_try_hit_effondrement()
+				_effondrement_hit_applied = true
+			if _effondrement_tick >= EFFONDREMENT_RELEASE_TICKS:
+				_effondrement_phase = EffondrementPhase.RECOVERY
+				_effondrement_tick = 0
+		EffondrementPhase.RECOVERY:
+			if _effondrement_tick >= EFFONDREMENT_RECOVERY_TICKS - EFFONDREMENT_CANCEL_WINDOW_TICKS:
+				if _try_consume_queued_input(_end_effondrement):
+					return
+			if _effondrement_tick >= EFFONDREMENT_RECOVERY_TICKS:
+				_end_effondrement()
+
+	if _effondrement_phase != EffondrementPhase.NONE:
+		_sprite.frame = _effondrement_frame_for_tick(_effondrement_global_tick())
+
+
+func _effondrement_global_tick() -> int:
+	match _effondrement_phase:
+		EffondrementPhase.ANTICIPATION:
+			return _effondrement_tick
+		EffondrementPhase.RELEASE:
+			return EFFONDREMENT_ANTICIPATION_TICKS + _effondrement_tick
+		EffondrementPhase.RECOVERY:
+			return EFFONDREMENT_ANTICIPATION_TICKS + EFFONDREMENT_RELEASE_TICKS + _effondrement_tick
+		_:
+			return 0
+
+
+func _effondrement_frame_for_tick(tick: int) -> int:
+	for i in EFFONDREMENT_FRAME_TICK_BOUNDS.size():
+		if tick <= EFFONDREMENT_FRAME_TICK_BOUNDS[i]:
+			return i
+	return EFFONDREMENT_FRAME_TICK_BOUNDS.size() - 1
+
+
+func _end_effondrement() -> void:
+	_effondrement_phase = EffondrementPhase.NONE
+	_effondrement_tick = 0
+	_action_lock = false
+	_effondrement_cooldown_remaining = EFFONDREMENT_COOLDOWN_TICKS
+
+
+## Zone circulaire centrée sur le LANCEUR (half_angle_deg=180 couvre tout le
+## cercle mathématiquement, voir targeting.gd/power.effondrement.cast.json)
+## — contrairement au cône frontal de Poing Tellurique/Bras-Faux ou à la
+## ligne de Marée de Sable. Réutilise Targeting.enemies_in_arc() tel quel,
+## aucune nouvelle fonction de ciblage.
+func _try_hit_effondrement() -> void:
+	var dir := facing
+	if dir.length_squared() < 0.0001:
+		dir = Vector2.DOWN
+	dir = dir.normalized()
+	var targets: Array = Targeting.enemies_in_arc(get_tree(), global_position, dir, EFFONDREMENT_RADIUS_PX, 180.0)
+	if targets.is_empty():
+		return
+	for target in targets:
+		target.take_damage(EFFONDREMENT_DAMAGE, global_position)
+
+	CombatFeedback.register_hit("heavy", true, "heavy_impact", "medium", dir, true)
+
+
+func get_effondrement_cooldown_ratio() -> float:
+	return float(_effondrement_cooldown_remaining) / float(EFFONDREMENT_COOLDOWN_TICKS)
+
+
+## Fissure Éruptive (Terre, Tier 5) — même discipline ANTICIPATION/RELEASE/
+## RECOVERY, voir le bloc de constantes FISSURE_ERUPTIVE_* et
+## power.fissure_eruptive.cast.json pour le raisonnement complet (effet
+## RANGÉ, l'impact tombe à FISSURE_ERUPTIVE_RANGE_PX devant le lanceur, pas
+## sur le lanceur lui-même comme Effondrement).
+func _start_fissure_eruptive() -> void:
+	if stats.is_dead() or _action_lock or _fissure_eruptive_cooldown_remaining > 0:
+		return
+	_action_lock = true
+	_fissure_eruptive_phase = FissureEruptivePhase.ANTICIPATION
+	_fissure_eruptive_tick = 0
+	_fissure_eruptive_hit_applied = false
+	velocity = Vector2.ZERO
+	if facing.x != 0.0:
+		_sprite.flip_h = facing.x < 0.0
+	_sprite.play("fissure_eruptive")
+	_sprite.pause()
+	_sprite.frame = 0
+
+	var dir := facing
+	if dir.length_squared() < 0.0001:
+		dir = Vector2.DOWN
+	dir = dir.normalized()
+	VfxRecipeRegistry.play(FissureEruptiveRecipeId, {
+		"origin": global_position,
+		"seed": FISSURE_ERUPTIVE_CAST_SEED,
+		"direction": dir,
+	})
+
+
+func _advance_fissure_eruptive() -> void:
+	_fissure_eruptive_tick += 1
+
+	match _fissure_eruptive_phase:
+		FissureEruptivePhase.ANTICIPATION:
+			if _fissure_eruptive_tick >= FISSURE_ERUPTIVE_ANTICIPATION_TICKS:
+				_fissure_eruptive_phase = FissureEruptivePhase.RELEASE
+				_fissure_eruptive_tick = 0
+		FissureEruptivePhase.RELEASE:
+			if _fissure_eruptive_tick == 1 and not _fissure_eruptive_hit_applied:
+				_try_hit_fissure_eruptive()
+				_fissure_eruptive_hit_applied = true
+			if _fissure_eruptive_tick >= FISSURE_ERUPTIVE_RELEASE_TICKS:
+				_fissure_eruptive_phase = FissureEruptivePhase.RECOVERY
+				_fissure_eruptive_tick = 0
+		FissureEruptivePhase.RECOVERY:
+			if _fissure_eruptive_tick >= FISSURE_ERUPTIVE_RECOVERY_TICKS - FISSURE_ERUPTIVE_CANCEL_WINDOW_TICKS:
+				if _try_consume_queued_input(_end_fissure_eruptive):
+					return
+			if _fissure_eruptive_tick >= FISSURE_ERUPTIVE_RECOVERY_TICKS:
+				_end_fissure_eruptive()
+
+	if _fissure_eruptive_phase != FissureEruptivePhase.NONE:
+		_sprite.frame = _fissure_eruptive_frame_for_tick(_fissure_eruptive_global_tick())
+
+
+func _fissure_eruptive_global_tick() -> int:
+	match _fissure_eruptive_phase:
+		FissureEruptivePhase.ANTICIPATION:
+			return _fissure_eruptive_tick
+		FissureEruptivePhase.RELEASE:
+			return FISSURE_ERUPTIVE_ANTICIPATION_TICKS + _fissure_eruptive_tick
+		FissureEruptivePhase.RECOVERY:
+			return FISSURE_ERUPTIVE_ANTICIPATION_TICKS + FISSURE_ERUPTIVE_RELEASE_TICKS + _fissure_eruptive_tick
+		_:
+			return 0
+
+
+func _fissure_eruptive_frame_for_tick(tick: int) -> int:
+	for i in FISSURE_ERUPTIVE_FRAME_TICK_BOUNDS.size():
+		if tick <= FISSURE_ERUPTIVE_FRAME_TICK_BOUNDS[i]:
+			return i
+	return FISSURE_ERUPTIVE_FRAME_TICK_BOUNDS.size() - 1
+
+
+func _end_fissure_eruptive() -> void:
+	_fissure_eruptive_phase = FissureEruptivePhase.NONE
+	_fissure_eruptive_tick = 0
+	_action_lock = false
+	_fissure_eruptive_cooldown_remaining = FISSURE_ERUPTIVE_COOLDOWN_TICKS
+
+
+## Impact À DISTANCE (pas au lanceur, contrairement à Effondrement) — même
+## décalage que les couches VFX via `origin_offset_px` (power.
+## fissure_eruptive.cast.json). half_angle_deg=180 = petit cercle complet
+## au point d'impact, même technique de réutilisation de Targeting.
+## enemies_in_arc() que _try_hit_effondrement() ci-dessus.
+func _try_hit_fissure_eruptive() -> void:
+	var dir := facing
+	if dir.length_squared() < 0.0001:
+		dir = Vector2.DOWN
+	dir = dir.normalized()
+	var impact_origin: Vector2 = global_position + dir * FISSURE_ERUPTIVE_RANGE_PX
+	var targets: Array = Targeting.enemies_in_arc(get_tree(), impact_origin, dir, FISSURE_ERUPTIVE_IMPACT_RADIUS_PX, 180.0)
+	if targets.is_empty():
+		return
+	for target in targets:
+		target.take_damage(FISSURE_ERUPTIVE_DAMAGE, impact_origin)
+
+	CombatFeedback.register_hit("heavy", true, "heavy_impact", "medium", dir, true)
+
+
+func get_fissure_eruptive_cooldown_ratio() -> float:
+	return float(_fissure_eruptive_cooldown_remaining) / float(FISSURE_ERUPTIVE_COOLDOWN_TICKS)
+
+
+## Mâchoire (RANK_ZERO_POWER_SKILL_BIBLE, "Monstrification" T3, docs/references/
+## monstrification/machoire.png — "Burst rapproché") — même archétype
+## "melee_impact" que Poing Belluaire (un seul burst frontal, PAS un balayage) :
+## "1 Préparation / 2 Apparition / 3 Morsure + Coup / 4 Disparition". Timeline
+## 42 ticks : 16 anticipation (le bras se transforme en gueule, temps 1+2 dans
+## une seule phase code, même discipline que les autres pouvoirs de mêlée déjà
+## en jeu) / 4 release (la morsure ET le coup simultanés, contact au 1er tick
+## comme le combo) / 22 recovery (la gueule se rétracte, temps 4). Portée/angle
+## intermédiaires entre Bras-Faux (balayage 90°) et Poing Belluaire (coup
+## frontal 60°) : un "burst" mord plus large qu'un simple poing mais reste un
+## engagement rapproché, pas un balayage de zone. Dégâts/cooldown NON chiffrés
+## par la fiche (même statut que les 4 autres pouvoirs de la Classe) : valeurs
+## de départ TUNABLE, légèrement au-dessus de Poing Tellurique (tier3 vs tier1
+## de Terre) mais sous Poing Belluaire (qui reste "LE" coup le plus lourd/
+## interrompant documenté par le GDD).
+const MACHOIRE_ANTICIPATION_TICKS := 16
+const MACHOIRE_RELEASE_TICKS := 4
+const MACHOIRE_RECOVERY_TICKS := 22
+const MACHOIRE_RANGE_PX := 46.0  # ~1.45m, entre Poing Belluaire (40) et Bras-Faux/Poing Tellurique (44-48).
+const MACHOIRE_HALF_ANGLE_DEG := 40.0  # arc total ~80°, un "burst" mord plus large qu'un coup frontal pur (60°).
+const MACHOIRE_DAMAGE := 15.0  # TUNABLE, entre Poing Tellurique (14) et Poing Belluaire (16).
+const MACHOIRE_COOLDOWN_TICKS := 200  # ~3,3s @ 60/s, TUNABLE, entre Bras-Faux (180) et Poing Belluaire (240).
+const MachoireRecipeId := "power.machoire.cast"
+const MACHOIRE_CAST_SEED := 51005  # Addendum A §A.5, jamais l'horloge murale — suite de la série 5100x déjà utilisée par les 4 autres pouvoirs de Monstrification/Terre.
+
+## 6 frames pose-à-pose (machoire/0..5.png) pilotées tick-exact — même
+## discipline que BRAS_FAUX_FRAME_TICK_BOUNDS/POING_BELLUAIRE_FRAME_TICK_BOUNDS
+## ci-dessus, jamais la fps autonome d'AnimatedSprite2D (bug de classe déjà
+## trouvé et corrigé 4 fois ce cycle — construit tick-exact dès la 1ère passe
+## cette fois, pas de round de polish séparé, cf. MANDAT ROUND 4). Bornes
+## calées sur le contact réel (ANTICIPATION 16 + RELEASE tick1 = tick global
+## 17) : la frame qui montre la gueule refermée/le coup en cours doit basculer
+## PILE à ce tick, jamais un tick dérivé du fps. Valeurs affinées après
+## inspection visuelle des 6 frames réelles (voir docs/worklog.md, section
+## Mâchoire) — pas un simple découpage arithmétique en 6 tranches égales.
+const MACHOIRE_FRAME_TICK_BOUNDS: Array[int] = [5, 10, 14, 18, 28, 42]
+
+## Fenêtre d'annulation (même discipline que <SKILL>_CANCEL_WINDOW_TICKS sur
+## les 4 autres pouvoirs de Monstrification) — coup "burst" de poids
+## intermédiaire (ni le plus léger Bras-Faux, ni le plus lourd Poing
+## Belluaire) : fenêtre à mi-chemin, 12 des 22 ticks de RECOVERY (~55%, même
+## proportion que Bras-Faux).
+const MACHOIRE_CANCEL_WINDOW_TICKS := 12
+
+## Forme Bestiale (RANK_ZERO_POWER_SKILL_BIBLE, "Monstrification" T4,
+## docs/references/monstrification/forme_bestiale.png — "Transformation
+## majeure") — data/pouvoirs/monstrification.json la documente explicitement
+## comme "la seule vraie transformation complète de toute la bible" : traitée
+## avec un gabarit au-dessus des 4 autres pouvoirs de la Classe (portée/arc/
+## dégâts/recul/cooldown tous au maximum de la Classe), PAS un simple nouveau
+## sprite de poing/membre comme Bras-Faux/Poing Belluaire/Mâchoire. "1
+## Préparation / 2 Transformation / 3 Attaque large / 4 Retour brutal" — la
+## seule compétence de la Classe qui documente explicitement une "attaque
+## LARGE" (pas un simple coup/balayage de portée normale). Timeline 64 ticks
+## (la plus longue de la Classe, délibéré — une transformation majeure prend
+## plus de temps à se lire) : 24 anticipation (le corps entier se transforme,
+## temps 1+début temps 2) / 6 release (l'attaque large à deux bras, temps 2
+## fin + temps 3, contact au 1er tick) / 34 recovery (le retour à la forme
+## humaine, temps 4 "Retour brutal" — la plus longue recovery de la Classe,
+## cohérent avec "brutal"). Portée/arc nettement plus larges que les 4 autres
+## pouvoirs (arc ~140° contre 60-90°, portée ~1,9m contre 1,25-1,5m) : "attaque
+## large" du GDD, pas une frappe ciblée. Dégâts/recul/cooldown NON chiffrés par
+## la fiche : valeurs de départ TUNABLE, toutes au-dessus de Poing Belluaire
+## (jusqu'ici le pouvoir le plus lourd de la Classe) — cohérent avec le statut
+## de transformation majeure/palier de niveau le plus tardif avant Pattes de
+## Chasse (unlock_level 14, contre 1/3/6 pour les 3 autres).
+const FORME_BESTIALE_ANTICIPATION_TICKS := 24
+const FORME_BESTIALE_RELEASE_TICKS := 6
+const FORME_BESTIALE_RECOVERY_TICKS := 34
+const FORME_BESTIALE_RANGE_PX := 60.0  # ~1.9m, la plus longue portée de mêlée de la Classe.
+const FORME_BESTIALE_HALF_ANGLE_DEG := 70.0  # arc total ~140°, "attaque large" — largement au-dessus des 4 autres pouvoirs.
+const FORME_BESTIALE_DAMAGE := 26.0  # TUNABLE, au-dessus de Poing Belluaire (16) — le coup le plus lourd de la Classe.
+const FORME_BESTIALE_RECOIL_PX := 48.0  # TUNABLE, > Poing Belluaire (40) — "brutal".
+const FORME_BESTIALE_RECOIL_TICKS := 10
+const FORME_BESTIALE_COOLDOWN_TICKS := 340  # ~5,7s @ 60/s, TUNABLE, le plus long de la Classe — une transformation majeure ne se répète pas à la cadence d'un simple coup.
+const FormeBestialeRecipeId := "power.forme_bestiale.cast"
+const FORME_BESTIALE_CAST_SEED := 51006  # Addendum A §A.5, jamais l'horloge murale.
+
+## 6 frames pose-à-pose (forme_bestiale/0..5.png) pilotées tick-exact — même
+## discipline que les 4 autres pouvoirs de mêlée de la Classe, construite
+## tick-exact dès la 1ère passe (MANDAT ROUND 4, pas de round de polish
+## séparé). Bornes calées sur le contact réel (ANTICIPATION 24 + RELEASE
+## tick1 = tick global 25). Valeurs affinées après inspection visuelle des 6
+## frames réelles (voir docs/worklog.md, section Forme Bestiale).
+const FORME_BESTIALE_FRAME_TICK_BOUNDS: Array[int] = [8, 16, 22, 26, 34, 64]
+
+## Fenêtre d'annulation — généreuse en proportion (18 des 34 ticks de
+## RECOVERY, ~53%, même ordre de grandeur que Bras-Faux/Mâchoire) malgré la
+## timeline la plus longue de la Classe : "Retour brutal" tient déjà sa pose
+## finale sans bouger sur une bonne partie de cette fenêtre (même
+## raisonnement que documenté sur Bras-Faux/Poing Belluaire/Poing Tellurique
+## ci-dessus), rien de visuel n'est coupé par une annulation dans cette
+## fenêtre.
+const FORME_BESTIALE_CANCEL_WINDOW_TICKS := 18
+
+## Pattes de Chasse (RANK_ZERO_POWER_SKILL_BIBLE, "Monstrification" T5,
+## docs/references/monstrification/pattes_de_chasse.png — "Mobilité
+## offensive") — SEUL pouvoir de la Classe avec un déplacement automatique du
+## joueur pendant l'action (les 4 autres sont tous "aucun déplacement
+## automatique" par construction, cf. commentaires ci-dessus) : "1
+## Préparation / 2 Bond / 3 Frappe en mouvement / 4 Atterrissage". 3 phases
+## ANTICIPATION/MOVE/RECOVERY comme le dash (_advance_dash() ci-dessous),
+## PAS ANTICIPATION/RELEASE/RECOVERY comme les 4 autres pouvoirs de mêlée de
+## la Classe — le "Bond" EST le déplacement, pas un simple appui visuel bref
+## pendant qu'une autre couche porte le mouvement (même exception documentée
+## sur le dash, §6.2 du doc VFX). Timeline 40 ticks : 10 anticipation
+## (accroupissement, temps 1 "Préparation") / 14 move (le bond + la frappe en
+## mouvement, temps 2+3 — le joueur avance réellement de
+## PATTES_DE_CHASSE_DISTANCE_PX sur cette fenêtre, la frappe elle-même a lieu
+## à PATTES_DE_CHASSE_STRIKE_TICK) / 16 recovery (l'atterrissage qui se stabilise,
+## temps 4). Portée de frappe/largeur NON chiffrées par le GDD (même statut
+## que les 4 autres pouvoirs) : bande étroite façon Targeting.enemies_in_line
+## (Marée de Sable), pas un cône — "peut toucher plusieurs ennemis" en ligne
+## sur le trajet du bond, jamais une seule cible. Dégâts modérés (mobilité
+## D'ABORD, dégâts ensuite — même logique que Marée de Sable, tier CONTRÔLE/
+## UTILITÉ plutôt que dégâts purs) : TUNABLE, sous Mâchoire.
+const PATTES_DE_CHASSE_ANTICIPATION_TICKS := 10
+const PATTES_DE_CHASSE_MOVE_TICKS := 14
+const PATTES_DE_CHASSE_RECOVERY_TICKS := 16
+const PATTES_DE_CHASSE_DISTANCE_PX := 70.0  # ~2.2m, bond solide mais plus court que le dash (80px) — un pouvoir de mêlée, pas un remplacement du dash.
+## Tick (RELATIF à la phase MOVE, 1-indexed comme les autres compteurs
+## _*_tick) où la frappe elle-même a lieu — à peu près à mi-bond, cohérent
+## avec "Frappe en mouvement" (temps 3, ni au tout début du bond temps 2, ni
+## à l'atterrissage temps 4).
+const PATTES_DE_CHASSE_STRIKE_TICK := 7
+const PATTES_DE_CHASSE_RANGE_PX := 50.0  # longueur de la bande de frappe devant la position du joueur AU tick de frappe.
+const PATTES_DE_CHASSE_HALF_WIDTH_PX := 18.0
+const PATTES_DE_CHASSE_DAMAGE := 14.0  # TUNABLE, mobilité/utilité d'abord — même ordre de grandeur que Poing Tellurique.
+const PATTES_DE_CHASSE_COOLDOWN_TICKS := 200  # ~3,3s @ 60/s, TUNABLE.
+const PattesDeChasseRecipeId := "power.pattes_de_chasse.cast"
+const PATTES_DE_CHASSE_CAST_SEED := 51007  # Addendum A §A.5, jamais l'horloge murale.
+
+## 6 frames pose-à-pose (pattes_de_chasse/0..5.png) pilotées tick-exact —
+## même discipline que les 4 autres pouvoirs de mêlée. Bornes calées sur le
+## tick de frappe réel (ANTICIPATION 10 + PATTES_DE_CHASSE_STRIKE_TICK 7 =
+## tick global 17). Valeurs affinées après inspection visuelle des 6 frames
+## réelles (voir docs/worklog.md, section Pattes de Chasse).
+const PATTES_DE_CHASSE_FRAME_TICK_BOUNDS: Array[int] = [8, 11, 14, 16, 28, 40]
+
+## Fenêtre d'annulation — la plus courte en proportion de toute la Classe (10
+## des 16 ticks de RECOVERY, ~62%) : un pouvoir de mobilité doit rester
+## réactif, l'esprit même de "peut s'enchaîner vite" plutôt qu'un coup lourd
+## qu'on veut faire durer à l'écran.
+const PATTES_DE_CHASSE_CANCEL_WINDOW_TICKS := 10
+
+
+## Mâchoire — même construction que Bras-Faux/Poing Belluaire (create_character_state
+## sur un membre, PAS une simple pose comme Poing Tellurique/Marée de Sable).
+##
+## Art dédié (agent Monstrification, 2026-08-24, MANDAT ROUND 4 — construit
+## tick-exact dès cette 1ère passe, pas de round de polish séparé) : anim
+## "machoire" propre, bras droit réellement transformé en gueule organique
+## béante (create_character_state sur le character_id Cendre_v3c EN JEU
+## (8596a4ad, vérifié via get_character AVANT tout appel — même piège déjà
+## rencontré deux fois sur ce dossier, évité en amont) puis animate_character
+## mode v3 sur cet état, 6 frames sud, cf. data/pixellab_usage.jsonl). Même
+## discipline flip_h auto-contenue que les 4 autres pouvoirs de mêlée.
+func _start_machoire() -> void:
+	if stats.is_dead() or _action_lock or _machoire_cooldown_remaining > 0:
+		return
+	_action_lock = true
+	_machoire_phase = MachoirePhase.ANTICIPATION
+	_machoire_tick = 0
+	_machoire_hit_applied = false
+	if facing.x != 0.0:
+		_sprite.flip_h = facing.x < 0.0
+	# Tick-exact (voir MACHOIRE_FRAME_TICK_BOUNDS ci-dessus) : play() positionne
+	# l'AnimatedSprite2D sur "machoire", pause() coupe immédiatement sa propre
+	# horloge fps pour que seule _advance_machoire() décide de la frame
+	# affichée, jamais Godot — même discipline que les 4 autres pouvoirs.
+	_sprite.play("machoire")
+	_sprite.pause()
+	_sprite.frame = 0
+
+	var dir := facing
+	if dir.length_squared() < 0.0001:
+		dir = Vector2.DOWN
+	dir = dir.normalized()
+	VfxRecipeRegistry.play(MachoireRecipeId, {
+		"origin": global_position,
+		"seed": MACHOIRE_CAST_SEED,
+		"direction": dir,
+	})
+
+
+func _advance_machoire() -> void:
+	_machoire_tick += 1
+	velocity = Vector2.ZERO  # "aucun déplacement automatique" — même construction que Bras-Faux/Poing Belluaire.
+	match _machoire_phase:
+		MachoirePhase.ANTICIPATION:
+			if _machoire_tick >= MACHOIRE_ANTICIPATION_TICKS:
+				_machoire_phase = MachoirePhase.RELEASE
+				_machoire_tick = 0
+		MachoirePhase.RELEASE:
+			if _machoire_tick == 1 and not _machoire_hit_applied:
+				_try_hit_machoire()
+				_machoire_hit_applied = true
+			if _machoire_tick >= MACHOIRE_RELEASE_TICKS:
+				_machoire_phase = MachoirePhase.RECOVERY
+				_machoire_tick = 0
+		MachoirePhase.RECOVERY:
+			# Fenêtre d'annulation (MACHOIRE_CANCEL_WINDOW_TICKS) — même patron
+			# que les 4 autres pouvoirs de mêlée ci-dessus.
+			if _machoire_tick >= MACHOIRE_RECOVERY_TICKS - MACHOIRE_CANCEL_WINDOW_TICKS:
+				if _try_consume_queued_input(_end_machoire):
+					return
+			if _machoire_tick >= MACHOIRE_RECOVERY_TICKS:
+				_end_machoire()
+	if _machoire_phase != MachoirePhase.NONE:
+		_sprite.frame = _machoire_frame_for_tick(_machoire_global_tick())
+
+
+func _machoire_global_tick() -> int:
+	match _machoire_phase:
+		MachoirePhase.ANTICIPATION:
+			return _machoire_tick
+		MachoirePhase.RELEASE:
+			return MACHOIRE_ANTICIPATION_TICKS + _machoire_tick
+		MachoirePhase.RECOVERY:
+			return MACHOIRE_ANTICIPATION_TICKS + MACHOIRE_RELEASE_TICKS + _machoire_tick
+		_:
+			return 0
+
+
+func _machoire_frame_for_tick(tick: int) -> int:
+	for i in MACHOIRE_FRAME_TICK_BOUNDS.size():
+		if tick <= MACHOIRE_FRAME_TICK_BOUNDS[i]:
+			return i
+	return MACHOIRE_FRAME_TICK_BOUNDS.size() - 1
+
+
+func _end_machoire() -> void:
+	_machoire_phase = MachoirePhase.NONE
+	_machoire_tick = 0
+	_action_lock = false
+	_machoire_cooldown_remaining = MACHOIRE_COOLDOWN_TICKS
+
+
+## "Morsure + Coup" (temps 3 de la planche) : DEUX actions simultanées dans le
+## GDD, mais un seul jet de dégâts côté gameplay (même discipline que Poing
+## Belluaire — pas de mécanique séparée pour "la morsure" vs "le coup", la
+## recette VFX porte déjà la distinction visuelle avec ses 2 couches contact
+## séparées, cf. data/recipes/power.machoire.cast.json).
+func _try_hit_machoire() -> void:
+	var dir := facing
+	if dir.length_squared() < 0.0001:
+		dir = Vector2.DOWN
+	dir = dir.normalized()
+	var targets: Array = Targeting.enemies_in_arc(get_tree(), global_position, dir, MACHOIRE_RANGE_PX, MACHOIRE_HALF_ANGLE_DEG)
+	if targets.is_empty():
+		return
+	for target in targets:
+		target.take_damage(MACHOIRE_DAMAGE, global_position)
+
+	CombatFeedback.register_hit("medium", true, "heavy_impact", "light", dir, true)
+
+
+## Forme Bestiale — "la seule vraie transformation complète de toute la
+## bible" (data/pouvoirs/monstrification.json, notes) : create_character_state
+## sur le CORPS ENTIER (canvas source élargi à 96×100, contre 56-72px de large
+## pour les 4 autres pouvoirs de la Classe — la silhouette doit se lire
+## nettement plus grande/massive qu'un simple bras/jambe transformé), pas
+## juste un membre comme Bras-Faux/Poing Belluaire/Mâchoire/Pattes de Chasse.
+##
+## Art dédié (agent Monstrification, 2026-08-24) : anim "forme_bestiale"
+## propre, character_id Cendre_v3c EN JEU vérifié via get_character AVANT
+## l'appel (8596a4ad, même piège déjà rencontré deux fois évité en amont),
+## create_character_state (corps entier -> bête hybride hanchée, deux bras
+## griffus/tendons organiques massifs, tête à crâne conservée) puis
+## animate_character mode v3, 6 frames sud (balayage large à deux bras).
+func _start_forme_bestiale() -> void:
+	if stats.is_dead() or _action_lock or _forme_bestiale_cooldown_remaining > 0:
+		return
+	_action_lock = true
+	_forme_bestiale_phase = FormeBestialePhase.ANTICIPATION
+	_forme_bestiale_tick = 0
+	_forme_bestiale_hit_applied = false
+	if facing.x != 0.0:
+		_sprite.flip_h = facing.x < 0.0
+	# Tick-exact (voir FORME_BESTIALE_FRAME_TICK_BOUNDS) : même discipline
+	# play()+pause()+frame=0 que les 4 autres pouvoirs de mêlée de la Classe.
+	_sprite.play("forme_bestiale")
+	_sprite.pause()
+	_sprite.frame = 0
+
+	var dir := facing
+	if dir.length_squared() < 0.0001:
+		dir = Vector2.DOWN
+	dir = dir.normalized()
+	VfxRecipeRegistry.play(FormeBestialeRecipeId, {
+		"origin": global_position,
+		"seed": FORME_BESTIALE_CAST_SEED,
+		"direction": dir,
+	})
+
+
+func _advance_forme_bestiale() -> void:
+	_forme_bestiale_tick += 1
+	velocity = Vector2.ZERO  # "aucun déplacement automatique" — l'attaque large tient sur place, contrairement à Pattes de Chasse.
+	match _forme_bestiale_phase:
+		FormeBestialePhase.ANTICIPATION:
+			if _forme_bestiale_tick >= FORME_BESTIALE_ANTICIPATION_TICKS:
+				_forme_bestiale_phase = FormeBestialePhase.RELEASE
+				_forme_bestiale_tick = 0
+		FormeBestialePhase.RELEASE:
+			if _forme_bestiale_tick == 1 and not _forme_bestiale_hit_applied:
+				_try_hit_forme_bestiale()
+				_forme_bestiale_hit_applied = true
+			if _forme_bestiale_tick >= FORME_BESTIALE_RELEASE_TICKS:
+				_forme_bestiale_phase = FormeBestialePhase.RECOVERY
+				_forme_bestiale_tick = 0
+		FormeBestialePhase.RECOVERY:
+			if _forme_bestiale_tick >= FORME_BESTIALE_RECOVERY_TICKS - FORME_BESTIALE_CANCEL_WINDOW_TICKS:
+				if _try_consume_queued_input(_end_forme_bestiale):
+					return
+			if _forme_bestiale_tick >= FORME_BESTIALE_RECOVERY_TICKS:
+				_end_forme_bestiale()
+	if _forme_bestiale_phase != FormeBestialePhase.NONE:
+		_sprite.frame = _forme_bestiale_frame_for_tick(_forme_bestiale_global_tick())
+
+
+func _forme_bestiale_global_tick() -> int:
+	match _forme_bestiale_phase:
+		FormeBestialePhase.ANTICIPATION:
+			return _forme_bestiale_tick
+		FormeBestialePhase.RELEASE:
+			return FORME_BESTIALE_ANTICIPATION_TICKS + _forme_bestiale_tick
+		FormeBestialePhase.RECOVERY:
+			return FORME_BESTIALE_ANTICIPATION_TICKS + FORME_BESTIALE_RELEASE_TICKS + _forme_bestiale_tick
+		_:
+			return 0
+
+
+func _forme_bestiale_frame_for_tick(tick: int) -> int:
+	for i in FORME_BESTIALE_FRAME_TICK_BOUNDS.size():
+		if tick <= FORME_BESTIALE_FRAME_TICK_BOUNDS[i]:
+			return i
+	return FORME_BESTIALE_FRAME_TICK_BOUNDS.size() - 1
+
+
+func _end_forme_bestiale() -> void:
+	_forme_bestiale_phase = FormeBestialePhase.NONE
+	_forme_bestiale_tick = 0
+	_action_lock = false
+	_forme_bestiale_cooldown_remaining = FORME_BESTIALE_COOLDOWN_TICKS
+
+
+## "Attaque large" (temps 3) : arc le plus ouvert de la Classe
+## (FORME_BESTIALE_HALF_ANGLE_DEG=70°, total 140°) — touche potentiellement
+## TOUS les ennemis proches, pas une seule cible (Targeting.enemies_in_arc(),
+## même fonction que Bras-Faux/Poing Belluaire/Mâchoire/Poing Tellurique,
+## juste un arc nettement plus généreux).
+func _try_hit_forme_bestiale() -> void:
+	var dir := facing
+	if dir.length_squared() < 0.0001:
+		dir = Vector2.DOWN
+	dir = dir.normalized()
+	var targets: Array = Targeting.enemies_in_arc(get_tree(), global_position, dir, FORME_BESTIALE_RANGE_PX, FORME_BESTIALE_HALF_ANGLE_DEG)
+	if targets.is_empty():
+		return
+	for target in targets:
+		target.take_damage(FORME_BESTIALE_DAMAGE, global_position, FORME_BESTIALE_RECOIL_PX, FORME_BESTIALE_RECOIL_TICKS)
+
+	# Le coup le plus lourd de la Classe (hitstop "heavy", plus fort que
+	# Poing Belluaire) — cohérent avec "transformation majeure"/"Retour
+	# brutal".
+	CombatFeedback.register_hit("heavy", true, "heavy_impact", "medium", dir, true)
+
+
+## Pattes de Chasse — SEUL pouvoir de Monstrification avec un déplacement
+## automatique du joueur (voir PATTES_DE_CHASSE_* ci-dessus, "Mobilité
+## offensive"). create_character_state sur les DEUX JAMBES (canvas source
+## élargi à 56×88 pour la stance accroupie plus large que la pose neutre),
+## pas un bras comme Bras-Faux/Poing Belluaire/Mâchoire.
+##
+## Art dédié (agent Monstrification, 2026-08-24) : anim "pattes_de_chasse"
+## propre, character_id Cendre_v3c EN JEU vérifié via get_character AVANT
+## l'appel (8596a4ad, même piège déjà rencontré deux fois évité en amont),
+## create_character_state (jambes -> membres digitigrades griffus organiques)
+## puis animate_character mode v3, 6 frames sud (accroupissement -> bond ->
+## frappe en mouvement -> atterrissage bas).
+func _start_pattes_de_chasse() -> void:
+	if stats.is_dead() or _action_lock or _pattes_de_chasse_cooldown_remaining > 0:
+		return
+	var dir := facing
+	if dir.length_squared() < 0.0001:
+		dir = Vector2.DOWN
+	_pattes_de_chasse_direction = dir.normalized()
+
+	_action_lock = true
+	_pattes_de_chasse_phase = PattesDeChassePhase.ANTICIPATION
+	_pattes_de_chasse_tick = 0
+	_pattes_de_chasse_hit_applied = false
+	if _pattes_de_chasse_direction.x != 0.0:
+		_sprite.flip_h = _pattes_de_chasse_direction.x < 0.0
+	# Tick-exact (voir PATTES_DE_CHASSE_FRAME_TICK_BOUNDS) : même discipline
+	# play()+pause()+frame=0 que les 4 autres pouvoirs de mêlée de la Classe.
+	_sprite.play("pattes_de_chasse")
+	_sprite.pause()
+	_sprite.frame = 0
+
+	VfxRecipeRegistry.play(PattesDeChasseRecipeId, {
+		"origin": global_position,
+		"seed": PATTES_DE_CHASSE_CAST_SEED,
+		"direction": _pattes_de_chasse_direction,
+	})
+
+
+## ANTICIPATION/MOVE/RECOVERY (même construction que _advance_dash()) : MOVE
+## déplace RÉELLEMENT le joueur (ease-out, même formule que le dash) et
+## applique un jet de dégâts unique à PATTES_DE_CHASSE_STRIKE_TICK ("Frappe
+## en mouvement", temps 3) — ni au tout début du bond, ni à l'atterrissage.
+func _advance_pattes_de_chasse() -> void:
+	_pattes_de_chasse_tick += 1
+	match _pattes_de_chasse_phase:
+		PattesDeChassePhase.ANTICIPATION:
+			velocity = Vector2.ZERO
+			if _pattes_de_chasse_tick >= PATTES_DE_CHASSE_ANTICIPATION_TICKS:
+				_pattes_de_chasse_phase = PattesDeChassePhase.MOVE
+				_pattes_de_chasse_tick = 0
+		PattesDeChassePhase.MOVE:
+			var progress_before: float = _ease_out_quad(float(_pattes_de_chasse_tick - 1) / PATTES_DE_CHASSE_MOVE_TICKS)
+			var progress_after: float = _ease_out_quad(float(_pattes_de_chasse_tick) / PATTES_DE_CHASSE_MOVE_TICKS)
+			var step_px: float = (progress_after - progress_before) * PATTES_DE_CHASSE_DISTANCE_PX
+			velocity = _pattes_de_chasse_direction * (step_px * Engine.physics_ticks_per_second)
+			if _pattes_de_chasse_tick == PATTES_DE_CHASSE_STRIKE_TICK and not _pattes_de_chasse_hit_applied:
+				_try_hit_pattes_de_chasse()
+				_pattes_de_chasse_hit_applied = true
+			if _pattes_de_chasse_tick >= PATTES_DE_CHASSE_MOVE_TICKS:
+				_pattes_de_chasse_phase = PattesDeChassePhase.RECOVERY
+				_pattes_de_chasse_tick = 0
+				_pattes_de_chasse_recovery_velocity = _pattes_de_chasse_direction * DASH_RECOVERY_INITIAL_SPEED_PX_S * 0.5
+		PattesDeChassePhase.RECOVERY:
+			velocity = _pattes_de_chasse_recovery_velocity
+			_pattes_de_chasse_recovery_velocity = _pattes_de_chasse_recovery_velocity.move_toward(
+				Vector2.ZERO, (DASH_RECOVERY_INITIAL_SPEED_PX_S * 0.5) / PATTES_DE_CHASSE_RECOVERY_TICKS)
+			if _pattes_de_chasse_tick >= PATTES_DE_CHASSE_RECOVERY_TICKS - PATTES_DE_CHASSE_CANCEL_WINDOW_TICKS:
+				if _try_consume_queued_input(_end_pattes_de_chasse):
+					return
+			if _pattes_de_chasse_tick >= PATTES_DE_CHASSE_RECOVERY_TICKS:
+				_end_pattes_de_chasse()
+	if _pattes_de_chasse_phase != PattesDeChassePhase.NONE:
+		_sprite.frame = _pattes_de_chasse_frame_for_tick(_pattes_de_chasse_global_tick())
+
+
+func _pattes_de_chasse_global_tick() -> int:
+	match _pattes_de_chasse_phase:
+		PattesDeChassePhase.ANTICIPATION:
+			return _pattes_de_chasse_tick
+		PattesDeChassePhase.MOVE:
+			return PATTES_DE_CHASSE_ANTICIPATION_TICKS + _pattes_de_chasse_tick
+		PattesDeChassePhase.RECOVERY:
+			return PATTES_DE_CHASSE_ANTICIPATION_TICKS + PATTES_DE_CHASSE_MOVE_TICKS + _pattes_de_chasse_tick
+		_:
+			return 0
+
+
+func _pattes_de_chasse_frame_for_tick(tick: int) -> int:
+	for i in PATTES_DE_CHASSE_FRAME_TICK_BOUNDS.size():
+		if tick <= PATTES_DE_CHASSE_FRAME_TICK_BOUNDS[i]:
+			return i
+	return PATTES_DE_CHASSE_FRAME_TICK_BOUNDS.size() - 1
+
+
+func _end_pattes_de_chasse() -> void:
+	_pattes_de_chasse_phase = PattesDeChassePhase.NONE
+	_pattes_de_chasse_tick = 0
+	velocity = Vector2.ZERO
+	_action_lock = false
+	_pattes_de_chasse_cooldown_remaining = PATTES_DE_CHASSE_COOLDOWN_TICKS
+
+
+## Bande devant la position ACTUELLE du joueur (Targeting.enemies_in_line(),
+## même fonction que Marée de Sable) — pas un cône : "peut toucher plusieurs
+## ennemis" sur le trajet du bond, jamais une seule cible. Appelée au tick de
+## frappe (voir _advance_pattes_de_chasse()), donc `global_position` reflète
+## déjà le déplacement accumulé jusqu'à ce tick, pas la position de départ.
+func _try_hit_pattes_de_chasse() -> void:
+	var dir := _pattes_de_chasse_direction
+	if dir.length_squared() < 0.0001:
+		dir = Vector2.DOWN
+	var targets: Array = Targeting.enemies_in_line(get_tree(), global_position, dir, PATTES_DE_CHASSE_RANGE_PX, PATTES_DE_CHASSE_HALF_WIDTH_PX)
+	if targets.is_empty():
+		return
+	for target in targets:
+		target.take_damage(PATTES_DE_CHASSE_DAMAGE, global_position)
+
+	CombatFeedback.register_hit("medium", true, "heavy_impact", "light", dir, true)
+
+
 func is_dead() -> bool:
 	return stats.is_dead()
 
@@ -1668,6 +3161,34 @@ func get_maree_de_sable_cooldown_ratio() -> float:
 	return float(_maree_de_sable_cooldown_remaining) / float(MAREE_DE_SABLE_COOLDOWN_TICKS)
 
 
+func get_machoire_cooldown_ratio() -> float:
+	return float(_machoire_cooldown_remaining) / float(MACHOIRE_COOLDOWN_TICKS)
+
+
+func get_forme_bestiale_cooldown_ratio() -> float:
+	return float(_forme_bestiale_cooldown_remaining) / float(FORME_BESTIALE_COOLDOWN_TICKS)
+
+
+func get_pattes_de_chasse_cooldown_ratio() -> float:
+	return float(_pattes_de_chasse_cooldown_remaining) / float(PATTES_DE_CHASSE_COOLDOWN_TICKS)
+
+
+func get_corbeau_pale_cooldown_ratio() -> float:
+	return float(_corbeau_pale_cooldown_remaining) / float(CORBEAU_PALE_COOLDOWN_TICKS)
+
+
+func get_poing_du_colosse_cooldown_ratio() -> float:
+	return float(_poing_du_colosse_cooldown_remaining) / float(POING_DU_COLOSSE_COOLDOWN_TICKS)
+
+
+func get_oeil_sans_regard_cooldown_ratio() -> float:
+	return float(_oeil_sans_regard_cooldown_remaining) / float(OEIL_SANS_REGARD_COOLDOWN_TICKS)
+
+
+func get_serpent_creux_cooldown_ratio() -> float:
+	return float(_serpent_creux_cooldown_remaining) / float(SERPENT_CREUX_COOLDOWN_TICKS)
+
+
 ## Amendement GDD Pouvoir/déblocage (confirmé par Milan, docs/worklog.md :
 ## 1 seul Pouvoir par run tiré au hasard — RunState.active_power — 5
 ## compétences débloquées par palier de niveau, ordre FIXE par Pouvoir).
@@ -1683,6 +3204,16 @@ const IMPLEMENTED_SKILL_HANDLERS := {
 	"poing_belluaire": "_start_poing_belluaire",
 	"poing_tellurique": "_start_poing_tellurique",
 	"maree_de_sable": "_start_maree_de_sable",
+	"carapace": "_start_carapace",
+	"effondrement": "_start_effondrement",
+	"fissure_eruptive": "_start_fissure_eruptive",
+	"machoire": "_start_machoire",
+	"forme_bestiale": "_start_forme_bestiale",
+	"pattes_de_chasse": "_start_pattes_de_chasse",
+	"corbeau_pale": "_cast_corbeau_pale",
+	"poing_du_colosse": "_cast_poing_du_colosse",
+	"oeil_sans_regard": "_cast_oeil_sans_regard",
+	"serpent_creux": "_cast_serpent_creux",
 }
 const IMPLEMENTED_SKILL_COOLDOWN_GETTERS := {
 	"gueule_vide": "get_power1_cooldown_ratio",
@@ -1690,6 +3221,16 @@ const IMPLEMENTED_SKILL_COOLDOWN_GETTERS := {
 	"poing_belluaire": "get_poing_belluaire_cooldown_ratio",
 	"poing_tellurique": "get_poing_tellurique_cooldown_ratio",
 	"maree_de_sable": "get_maree_de_sable_cooldown_ratio",
+	"carapace": "get_carapace_cooldown_ratio",
+	"effondrement": "get_effondrement_cooldown_ratio",
+	"fissure_eruptive": "get_fissure_eruptive_cooldown_ratio",
+	"machoire": "get_machoire_cooldown_ratio",
+	"forme_bestiale": "get_forme_bestiale_cooldown_ratio",
+	"pattes_de_chasse": "get_pattes_de_chasse_cooldown_ratio",
+	"corbeau_pale": "get_corbeau_pale_cooldown_ratio",
+	"poing_du_colosse": "get_poing_du_colosse_cooldown_ratio",
+	"oeil_sans_regard": "get_oeil_sans_regard_cooldown_ratio",
+	"serpent_creux": "get_serpent_creux_cooldown_ratio",
 }
 
 
@@ -1853,6 +3394,19 @@ func _try_consume_queued_input(end_current: Callable) -> bool:
 func take_damage(amount: float, source_position: Vector2, recoil_strength_px: float = 27.0, recoil_ticks: int = 6) -> void:
 	if stats.is_dead() or is_invincible():
 		return
+	# Carapace (Terre, Tier 3, CHANTIER A 2026-08-24) : "augmente la
+	# résistance aux dégâts" — seul effet de Carapace, appliqué ICI plutôt
+	# qu'un flag générique sur Stats (aucune autre compétence Terre n'a
+	# besoin de modifier les dégâts subis, pas la peine de généraliser un
+	# système de buffs pour un seul cas). is_carapace_active() couvre
+	# ACTIVATION+ACTIVE+RECOVERY (voir sa docstring) : la réduction
+	# s'applique dès que l'armure est visible à l'écran. `amount` est
+	# réassigné (pas une variable locale séparée) pour que TOUT ce qui
+	# suit dans cette fonction (apply_damage, le nombre de dégâts affiché)
+	# lise la même valeur déjà réduite — jamais afficher un nombre plus
+	# gros que les PV réellement perdus.
+	if is_carapace_active():
+		amount *= CARAPACE_DAMAGE_MULTIPLIER
 	stats.apply_damage(amount)
 	# Mandat critique probabiliste : "une seule touche reçue remet la
 	# chance à 5%" — reset NET (pas une décroissance), à TOUT moment
@@ -2156,6 +3710,14 @@ func _on_sprite_animation_finished() -> void:
 		return  # même discipline (_end_poing_tellurique())
 	if _maree_de_sable_phase != MareeDeSablePhase.NONE:
 		return  # même discipline (_end_maree_de_sable())
+	if _corbeau_pale_phase != CorbeauPalePhase.NONE:
+		return  # même discipline (_end_corbeau_pale())
+	if _poing_du_colosse_phase != PoingDuColossePhase.NONE:
+		return  # même discipline (_end_poing_du_colosse())
+	if _oeil_sans_regard_phase != OeilSansRegardPhase.NONE:
+		return  # même discipline (_end_oeil_sans_regard())
+	if _serpent_creux_phase != SerpentCreuxPhase.NONE:
+		return  # même discipline (_end_serpent_creux())
 	if _hurt_phase != HurtPhase.NONE:
 		return  # le recul gère son propre verrou via sa timeline de ticks (_end_hurt())
 	if _sprite.animation == "mort":
@@ -2175,6 +3737,10 @@ func die() -> void:
 	_poing_belluaire_phase = PoingBelluairePhase.NONE
 	_poing_tellurique_phase = PoingTelluriquePhase.NONE
 	_maree_de_sable_phase = MareeDeSablePhase.NONE
+	_corbeau_pale_phase = CorbeauPalePhase.NONE
+	_poing_du_colosse_phase = PoingDuColossePhase.NONE
+	_oeil_sans_regard_phase = OeilSansRegardPhase.NONE
+	_serpent_creux_phase = SerpentCreuxPhase.NONE
 	_action_lock = true
 	_sprite.play("mort")
 	Sfx.play("death")

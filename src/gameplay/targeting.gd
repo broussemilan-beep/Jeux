@@ -41,6 +41,18 @@ static func enemies_in_arc(tree: SceneTree, origin: Vector2, facing: Vector2, ra
 	dir = dir.normalized()
 	var half_angle_rad: float = deg_to_rad(half_angle_deg)
 	var radius_sq: float = radius_px * radius_px
+	# CHANTIER A (Terre, 2026-08-24) : half_angle_deg=180 est le patron
+	# documenté (Effondrement, power.effondrement.cast.json) pour représenter
+	# un cercle COMPLET plutôt qu'un cône — mais une cible exactement à
+	# l'opposé de `dir` (180° pile, ex. l'ennemi "derrière" du smoke test)
+	# donne un angle_to dont l'arrondi flottant (Vector2.angle_to() vs
+	# deg_to_rad(180.0)) peut dépasser half_angle_rad d'un epsilon et se
+	# faire exclure à tort — constaté empiriquement (comparaison stricte
+	# `<=` fragile pile à la frontière mathématique). Un cône >=180° n'a de
+	# toute façon plus de "côté exclu" possible : sauter la comparaison
+	# d'angle entièrement dans ce cas élimine le risque plutôt que de le
+	# masquer avec une marge arbitraire.
+	var is_full_circle: bool = half_angle_rad >= PI - 0.0001
 
 	var hits: Array = []
 	for candidate in tree.get_nodes_in_group("enemies"):
@@ -51,8 +63,8 @@ static func enemies_in_arc(tree: SceneTree, origin: Vector2, facing: Vector2, ra
 		var to_candidate: Vector2 = candidate.global_position - origin
 		if to_candidate.length_squared() > radius_sq:
 			continue
-		if to_candidate.length_squared() < 0.0001:
-			hits.append(candidate)  # exactement sur l'origine : dans tous les cônes possibles.
+		if is_full_circle or to_candidate.length_squared() < 0.0001:
+			hits.append(candidate)  # cercle complet, ou exactement sur l'origine (dans tous les cônes possibles).
 			continue
 		var angle_to: float = absf(dir.angle_to(to_candidate.normalized()))
 		if angle_to <= half_angle_rad:
