@@ -92,6 +92,60 @@ var _recoil_total_ticks: int = 0
 var _recoil_total_distance_px: float = 0.0
 var _recoil_direction: Vector2 = Vector2.ZERO
 
+## CHANTIER C (production v1, "Monstres : animations d'interaction") —
+## HitResponse directionnel/chancellement/projection, côté ENNEMI cette
+## fois (le HitResponse autoload existant ne fait que flash/chiffre/mort,
+## générique aux 3 archétypes — §4 GDD ; la sélection de LA bonne
+## réaction selon la direction/l'enchaînement/le poids est propre à
+## chaque cible, donc portée ici, sur Enemy, même choix d'architecture
+## que _recoil_tick/_slow_multiplier ci-dessus).
+##
+## Direction (4 minimum, GDD Chantier C) : classée sur l'axe dominant du
+## vecteur "vers l'attaquant" (voir _select_directional_reaction()) —
+## gauche/droite (miroir via flip_h, UNE seule pose "touche_lateral"
+## capturée, même convention que le flip_h déjà utilisé pour le
+## déplacement) + avant/arrière (2 poses distinctes, "touche_avant"/
+## "touche_arriere" — l'un ne peut pas être un miroir de l'autre).
+##
+## Chancellement (enchaînement de coups) : STAGGER_TRIGGER_HITS coups
+## reçus en moins de STAGGER_WINDOW_TICKS déclenchent State.STAGGER
+## (IA suspendue, comme le recul) — pose "chancelle" tenue
+## STAGGER_DURATION_TICKS, flip_h alterné à cadence FIXE
+## (STAGGER_FLIP_PERIOD_TICKS, jamais le FPS autonome de l'anim — même
+## discipline tick-exact que <SKILL>_FRAME_TICK_BOUNDS côté Player) pour
+## simuler un vacillement gauche-droite sans frame supplémentaire.
+##
+## Projection + rebond (monstres LÉGERS uniquement, GDD : "le Crawler est
+## projeté" vs "le Brute encaisse sans bouger") : PUREMENT dérivé de la
+## présence de l'anim "projete" dans le SpriteFrames de CE monstre
+## (Crawler/Ranged en ont une, Brute non — cohérent avec la discipline
+## du fichier "pas de variation que le runtime peut dériver d'une
+## configuration existante", aucun 2e seuil numérique à synchroniser
+## avec recoil_multiplier). La pose d'impact directionnelle tient
+## IMPACT_POSE_HOLD_TICKS ticks puis cède la place à "projete" pour le
+## reste du recul (déjà mis à l'échelle par recoil_multiplier — un
+## Crawler vole plus loin qu'un Ranged, même pose, distance différente),
+## puis un rebond procédural (BOUNCE_*, décalage vertical du sprite,
+## même technique que _update_visual_bob()/le bob de marche — aucune
+## frame supplémentaire nécessaire) avant de rendre la main à l'IA.
+const STAGGER_WINDOW_TICKS: int = 50
+const STAGGER_TRIGGER_HITS: int = 3
+const STAGGER_DURATION_TICKS: int = 24
+const STAGGER_FLIP_PERIOD_TICKS: int = 6
+const IMPACT_POSE_HOLD_TICKS: int = 2
+const BOUNCE_DURATION_TICKS: int = 10
+const BOUNCE_HEIGHT_PX: float = 6.0
+
+var _last_hit_tick: int = -1000000
+var _consecutive_hits: int = 0
+var _pending_projection: bool = false
+var _projection_pose_active: bool = false
+var _bounce_tick: int = 0
+var _bounce_total_ticks: int = 0
+var _stagger_tick: int = 0
+var _stagger_total_ticks: int = 0
+var _pre_stagger_flip_h: bool = false
+
 var _state: int = State.IDLE
 var _state_tick: int = 0
 var _cooldown_remaining: int = 0
@@ -164,9 +218,34 @@ func _physics_process(_delta: float) -> void:
 		return
 	if _recoil_tick < _recoil_total_ticks:
 		_recoil_tick += 1
+		# Projection (monstres légers, cf. bloc de doc au-dessus de
+		# _pending_projection) : la pose d'impact directionnelle tient
+		# IMPACT_POSE_HOLD_TICKS ticks puis cède la place à "projete" pour
+		# le reste du vol — swap unique (_projection_pose_active garde
+		# l'idempotence, jamais un sprite.play() répété à chaque tick qui
+		# relancerait la pose en boucle).
+		if _pending_projection and not _projection_pose_active and _recoil_tick >= IMPACT_POSE_HOLD_TICKS:
+			_projection_pose_active = true
+			_apply_hit_reaction("projete", _visual is AnimatedSprite2D and (_visual as AnimatedSprite2D).flip_h)
 		var step_px: float = AnimationComposer.ease_out_step_px(_recoil_tick, _recoil_total_ticks, _recoil_total_distance_px)
 		velocity = _recoil_direction * (step_px * Engine.physics_ticks_per_second)
 		move_and_slide()
+		if _recoil_tick >= _recoil_total_ticks and _pending_projection:
+			# Recul terminé sur un monstre léger : enchaîne directement sur
+			# le rebond procédural (aucune frame supplémentaire — même
+			# technique que le bob de marche, _update_visual_bob()).
+			_pending_projection = false
+			_projection_pose_active = false
+			_bounce_tick = 0
+			_bounce_total_ticks = BOUNCE_DURATION_TICKS
+		return
+	if _bounce_tick < _bounce_total_ticks:
+		_bounce_tick += 1
+		_advance_bounce()
+		return
+	if _stagger_tick < _stagger_total_ticks:
+		_stagger_tick += 1
+		_advance_stagger()
 		return
 	if is_dead():
 		return
@@ -247,6 +326,13 @@ func take_damage(amount: float, source_position: Vector2, recoil_strength_px: fl
 	# jamais les sauter silencieusement.
 	HitResponse.flash_sprite(_visual)
 	HitResponse.spawn_damage_number(amount, global_position, get_parent())
+
+	if not is_dead():
+		# CHANTIER C : réaction directionnelle/chancellement/projection —
+		# seulement sur un coup qui ne tue pas (la mort a sa propre
+		# animation "mort" côté Ranged, _die() ci-dessous — jamais les deux
+		# à la fois sur le même impact).
+		_on_hit_reaction(away)
 
 	if is_dead():
 		# H1 (GDD §20 : "combats -> XP/loot/maîtrise") — avant _die(),
@@ -427,6 +513,135 @@ func _play_visual_animation(anim_name: String) -> void:
 		var sprite: AnimatedSprite2D = _visual
 		if sprite.sprite_frames != null and sprite.sprite_frames.has_animation(anim_name):
 			sprite.play(anim_name)
+
+
+## CHANTIER C — point d'entrée appelé par take_damage() sur tout coup
+## NON mortel. `incoming` : direction du coup qui vient d'être encaissé
+## (vers l'ATTAQUANT, donc l'opposé de `away`/`_recoil_direction` qui
+## pointe vers OÙ l'ennemi est repoussé — les deux sont bien distincts,
+## jamais interchangés).
+##
+## Ordre de décision (jamais les deux à la fois sur le même coup) :
+##  1. Enchaînement détecté (STAGGER_TRIGGER_HITS coups en moins de
+##     STAGGER_WINDOW_TICKS) -> arme le chancellement, qui prendra le
+##     relais APRÈS que le recul (+ projection/rebond éventuels) de CE
+##     coup se soit terminé (cf. _physics_process) — jamais à la place,
+##     l'impact de ce coup précis reste visible avant le vacillement.
+##  2. Sinon, pose d'impact directionnelle immédiate (les 4 directions
+##     minimum du mandat) ; si ce monstre a une anim "projete"
+##     (monstre LÉGER, cf. doc au-dessus de _pending_projection), elle
+##     prendra le relais après IMPACT_POSE_HOLD_TICKS, gérée par
+##     _physics_process — jamais posée ici directement, elle dépend du
+##     déroulé du recul qui vient tout juste d'être armé par
+##     take_damage() au-dessus de cet appel.
+func _on_hit_reaction(away: Vector2) -> void:
+	var incoming: Vector2 = -away
+	var now_tick: int = Engine.get_physics_frames()
+	if now_tick - _last_hit_tick <= STAGGER_WINDOW_TICKS:
+		_consecutive_hits += 1
+	else:
+		_consecutive_hits = 1
+	_last_hit_tick = now_tick
+
+	var reaction: Dictionary = _select_directional_reaction(incoming)
+	_apply_hit_reaction(reaction["anim"], reaction["flip"])
+
+	if _visual is AnimatedSprite2D:
+		var sprite: AnimatedSprite2D = _visual
+		_pending_projection = sprite.sprite_frames != null and sprite.sprite_frames.has_animation("projete")
+	_projection_pose_active = false
+
+	if _consecutive_hits >= STAGGER_TRIGGER_HITS:
+		_consecutive_hits = 0
+		if _visual is AnimatedSprite2D:
+			var sprite2: AnimatedSprite2D = _visual
+			if sprite2.sprite_frames != null and sprite2.sprite_frames.has_animation("chancelle"):
+				# Armé tout de suite MAIS consommé seulement une fois le
+				# recul (+ rebond éventuel) de CE coup écoulé — le gate de
+				# _physics_process vérifie le recul et le rebond AVANT le
+				# chancellement (ordre des `if`/`return` ci-dessus), donc
+				# _stagger_tick ne commence à avancer qu'après, jamais en
+				# coupant la pose d'impact/projection de ce même coup.
+				_pre_stagger_flip_h = sprite2.flip_h
+				_stagger_tick = 0
+				_stagger_total_ticks = STAGGER_DURATION_TICKS
+
+
+## Sélectionne la réaction directionnelle (4 directions minimum, GDD
+## Chantier C) selon l'axe DOMINANT de `incoming` (direction vers
+## l'attaquant) : latéral (gauche/droite, un seul pose "touche_lateral"
+## + flip_h — canonique = coup venu de la DROITE, non-flippé) sinon
+## avant/arrière. "Avant" = l'attaquant est du côté caméra (Y+, plus
+## proche du joueur qui regarde l'écran) — "arrière" = à l'opposé (Y-) ;
+## convention arbitraire mais fixée UNE fois ici, jamais réinterprétée
+## ailleurs.
+func _select_directional_reaction(incoming: Vector2) -> Dictionary:
+	if absf(incoming.x) >= absf(incoming.y):
+		return {"anim": "touche_lateral", "flip": incoming.x < 0.0}
+	if incoming.y < 0.0:
+		return {"anim": "touche_arriere", "flip": _visual is AnimatedSprite2D and (_visual as AnimatedSprite2D).flip_h}
+	return {"anim": "touche_avant", "flip": _visual is AnimatedSprite2D and (_visual as AnimatedSprite2D).flip_h}
+
+
+## Joue `anim_name` immédiatement si ce monstre l'a dans son SpriteFrames
+## (silencieux sinon, même discipline que _play_visual_animation()) —
+## une seule frame par réaction (idle/attaque/mort le sont déjà dans ce
+## pipeline), donc `sprite.play()` seul suffit pour un affichage
+## tick-exact : rien à faire avancer, aucune FPS autonome à contourner.
+func _apply_hit_reaction(anim_name: String, flip: bool) -> void:
+	if not (_visual is AnimatedSprite2D):
+		return
+	var sprite: AnimatedSprite2D = _visual
+	if sprite.sprite_frames == null or not sprite.sprite_frames.has_animation(anim_name):
+		return
+	sprite.flip_h = flip
+	sprite.play(anim_name)
+
+
+## Rebond procédural post-projection (monstres légers) — décalage
+## vertical du sprite en cloche (sin, pic à mi-parcours), même technique
+## que le bob de marche (_update_visual_bob()) : aucune frame
+## supplémentaire, piloté tick par tick (jamais un Tween en temps réel,
+## même discipline que le reste de ce fichier).
+func _advance_bounce() -> void:
+	if not (_visual is AnimatedSprite2D):
+		return
+	var sprite: AnimatedSprite2D = _visual
+	var t: float = float(_bounce_tick) / float(BOUNCE_DURATION_TICKS)
+	sprite.position.y = -sin(PI * t) * BOUNCE_HEIGHT_PX
+	if _bounce_tick >= _bounce_total_ticks:
+		sprite.position.y = 0.0
+		if sprite.sprite_frames != null and sprite.sprite_frames.has_animation("chancelle") and _stagger_total_ticks > 0 and _stagger_tick == 0:
+			pass  # le chancellement (déjà armé par _on_hit_reaction) prend le relais au tick suivant, via le gate de _physics_process
+		else:
+			_play_visual_animation("idle")
+
+
+## Chancellement (enchaînement de coups) — pose "chancelle" tenue tout le
+## long, flip_h basculé à cadence FIXE (STAGGER_FLIP_PERIOD_TICKS,
+## jamais le FPS autonome — même discipline tick-exact que
+## <SKILL>_FRAME_TICK_BOUNDS côté Player) pour simuler un vacillement
+## gauche-droite sans frame supplémentaire. Restaure le flip_h
+## pré-chancellement en sortie (sinon un ennemi immobile resterait
+## flippé au hasard jusqu'à son prochain déplacement, _update_visual_bob()
+## ne touchant flip_h qu'en State.CHASE).
+func _advance_stagger() -> void:
+	if not (_visual is AnimatedSprite2D):
+		return
+	var sprite: AnimatedSprite2D = _visual
+	if sprite.sprite_frames == null or not sprite.sprite_frames.has_animation("chancelle"):
+		_stagger_tick = 0
+		_stagger_total_ticks = 0
+		return
+	if sprite.animation != &"chancelle":
+		sprite.play("chancelle")
+	var phase: int = (_stagger_tick / STAGGER_FLIP_PERIOD_TICKS) % 2
+	sprite.flip_h = _pre_stagger_flip_h != (phase == 1)
+	if _stagger_tick >= _stagger_total_ticks:
+		sprite.flip_h = _pre_stagger_flip_h
+		_stagger_tick = 0
+		_stagger_total_ticks = 0
+		_play_visual_animation("idle")
 
 
 ## MANDAT AUTONOME v3 Phase 2 (Meshy/Blender) : les 3 archétypes ont

@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=15 format=3]
+[gd_resource type="SpriteFrames" load_steps=20 format=3]
 
 [ext_resource type="CanvasTexture" path="res://assets/processed/sprites/ranged/idle_canvas.tres" id="1"]
 [ext_resource type="CanvasTexture" path="res://assets/processed/sprites/ranged/attaque_canvas.tres" id="2"]
@@ -14,6 +14,11 @@
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/ranged/marche_3.png" id="12"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/ranged/marche_4.png" id="13"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/ranged/marche_5.png" id="14"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/ranged/touche_lateral.png" id="15"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/ranged/touche_avant.png" id="16"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/ranged/touche_arriere.png" id="17"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/ranged/chancelle.png" id="18"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/ranged/projete.png" id="19"]
 
 [resource]
 animations = [{
@@ -77,5 +82,45 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("14")
+}]
+}, {
+"name": &"touche_lateral",
+"speed": 5.0,
+"loop": false,
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("15")
+}]
+}, {
+"name": &"touche_avant",
+"speed": 5.0,
+"loop": false,
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("16")
+}]
+}, {
+"name": &"touche_arriere",
+"speed": 5.0,
+"loop": false,
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("17")
+}]
+}, {
+"name": &"chancelle",
+"speed": 5.0,
+"loop": false,
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("18")
+}]
+}, {
+"name": &"projete",
+"speed": 5.0,
+"loop": false,
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("19")
 }]
 }]

@@ -1,5 +1,188 @@
 # Worklog — Rank Zero
 
+## 2026-08-24 — CHANTIER C (PLAN DE PRODUCTION v1) : Monstres, animations d'interaction
+
+**Contexte.** Agent indépendant, chantier "Monstres : animations
+d'interaction" du PLAN DE PRODUCTION vers la v1 complète (réaction
+directionnelle 4 directions min/monstre, chancellement sur enchaînement,
+projection + rebond pour les monstres légers, réaction différenciée par
+poids — recoil_multiplier existait déjà en code, PAS l'animation).
+
+**Vérifié avant de commencer (état réel, jamais supposé)** : les 3 rigs
+Meshy sont toujours valides et déjà téléchargés localement
+(`experiments/monsters_nuit/meshy_output_v2/{crawler,brute}_final_rigged.glb`
+— rig manuel Blender, 13/12 os — et `ranged_rigged.glb` — auto-rig Meshy
+réussi, squelette Mixamo-like `Hips/Spine*/Left-RightArm/.../neck/Head`,
+`rig_task_id=01a024b4-...` déjà payé le 2026-08-21). `crawler_frames.tres`/
+`brute_frames.tres` n'avaient que idle+attaque (1 frame chacune, aucune
+notion de direction) + marche (4 frames, Phase 2 MANDAT AUTONOME v3) ;
+`ranged_frames.tres` idem + mort (6 frames). Bones confirmés par script
+(`list_bones.py`, headless) avant toute pose : Crawler
+`pelvis/chest/neck/head/front_{L,R}_upper/lower/back_{L,R}_upper/lower/tail`,
+Brute `pelvis/chest/neck/head/arm_{L,R}_upper/lower/leg_{L,R}_upper/lower`,
+Ranged `Hips/Spine02/Spine01/Spine/neck/Head/Left-RightArm/ForeArm/Hand/
+Left-RightUpLeg/Leg/Foot`.
+
+**Décision technique (les 3 monstres, même pipeline)** : AUCUN appel
+Meshy — mêmes rigs déjà payés, poses à la main sur le squelette existant
+(même technique que `pose_walk_{crawler,brute}.py` déjà en place pour la
+marche, généralisée à Ranged qui n'avait jamais reçu cette technique
+jusqu'ici — testée et confirmée fonctionnelle sur son squelette Mixamo-
+like par un rendu de calibration avant de figer les poses finales).
+3 nouveaux scripts `experiments/blender_capture/pose_hit_reactions_
+{crawler,brute,ranged}.py`, même cadrage que idle/attaque/marche
+(`cam_size=2.6`, `target_z` par monstre déjà établi), `quantize.py`
+réutilisé tel quel (`--target_saturation=0.55`, réglages par défaut
+sinon — même calibration que le reste de chaque monstre, aucun paramètre
+retouché). **14 poses rendues, 0 crédit Meshy** (solde avant/après
+vérifié : 823/823) :
+- Crawler (léger, `recoil_multiplier=1.6`) : `touche_lateral`/
+  `touche_avant`/`touche_arriere`/`chancelle`/`projete` (5).
+- Brute (lourd, `recoil_multiplier=0.35`) : `touche_lateral`/
+  `touche_avant`/`touche_arriere`/`chancelle` (4, PAS de `projete` —
+  "encaisse sans bouger" est une trait catégorique, amplitudes de
+  rotation ~2× plus faibles que Crawler sur les 4 poses, cf. docstring
+  du script).
+- Ranged (léger, `recoil_multiplier=1.4`) : mêmes 5 que Crawler.
+
+**Câblage jeu (`src/gameplay/enemy.gd`)** — la logique de sélection
+n'existait pas côté ennemi avant cette passe (le mandat le confirmait) :
+- **4 directions minimum** : `_select_directional_reaction()` classe le
+  coup entrant sur l'axe DOMINANT du vecteur "vers l'attaquant" (opposé
+  de `away`, déjà calculé par `take_damage()`) — latéral (une seule pose
+  `touche_lateral` + `flip_h`, canonique = coup venu de la droite, même
+  convention que le flip_h déjà utilisé pour le déplacement) sinon avant/
+  arrière (2 poses distinctes, `touche_avant`/`touche_arriere` — "avant"
+  = attaquant côté caméra, convention fixée une fois, jamais réinterprétée
+  ailleurs). Posée immédiatement dans `_on_hit_reaction()`, appelée par
+  `take_damage()` sur tout coup NON mortel (la mort garde sa propre
+  priorité, `_die()`/anim "mort").
+- **Chancellement (enchaînement)** : `STAGGER_TRIGGER_HITS=3` coups en
+  moins de `STAGGER_WINDOW_TICKS=50` (tick source :
+  `Engine.get_physics_frames()`, compteur autoritatif, jamais un
+  compteur maison) arment `State` "chancelle" — consommé par
+  `_physics_process` UNE FOIS le recul (+ rebond éventuel) du coup
+  déclencheur écoulé (jamais à la place, l'impact de ce coup précis
+  reste visible avant le vacillement). Pilotage tick-exact : `flip_h`
+  bascule à cadence FIXE (`STAGGER_FLIP_PERIOD_TICKS=6`, jamais le FPS
+  autonome de l'anim) pour simuler un vacillement gauche-droite sans
+  frame supplémentaire — même discipline que `<SKILL>_FRAME_TICK_BOUNDS`/
+  `_frame_for_tick()` côté Player, appliquée ici à l'ennemi comme demandé
+  par le mandat.
+- **Projection + rebond (monstres légers)** : PUREMENT dérivé de
+  `sprite_frames.has_animation("projete")` — aucun 2e seuil numérique à
+  synchroniser avec `recoil_multiplier` (Crawler/Ranged en ont une,
+  Brute non, cohérent avec la discipline du fichier "pas de variation
+  que le runtime peut dériver d'une configuration existante"). La pose
+  d'impact directionnelle tient `IMPACT_POSE_HOLD_TICKS=2` puis cède la
+  place à `projete` pour le reste du recul (déjà mis à l'échelle par
+  `recoil_multiplier`, aucune 2e distance à gérer), puis un rebond
+  procédural (`_advance_bounce()`, décalage vertical du sprite en
+  cloche/sin — même technique que le bob de marche déjà en place,
+  aucune frame supplémentaire) avant de rendre la main à l'IA.
+
+**Vérification.**
+`bash scripts/run_gameplay_smoke_test.sh` → `"all_pass":true`, 89 checks
+(86 existants inchangés + 3 nouveaux) :
+- `crawler_hit_reaction_differs_by_incoming_direction` — droite/gauche/
+  face/dos donnent 3 anims distinctes + `flip_h` correctement inversé
+  entre droite et gauche.
+- `brute_staggers_after_three_consecutive_hits_in_window_not_before` —
+  2 coups n'arment PAS le chancellement, le 3e si, "chancelle" joue
+  effectivement après le recul.
+- `crawler_is_projected_and_bounces_brute_stays_planted` — Crawler
+  traverse "projete" + rebond, déplacement mesuré 43.2px (27×1.6) vs
+  Brute 9.45px (27×0.35, ratio ~4.6×), Brute n'a pas de "projete" et ne
+  rebondit jamais.
+
+`godot4 --headless --rendering-driver vulkan --import` propre après
+chaque changement (les erreurs `corbeau_pale`/`poing_du_colosse`/
+`oeil_sans_regard`/`serpent_creux` observées dans les logs sont d'un
+AUTRE agent en cours en parallèle sur les compétences Cendre — fichiers
+non touchés par ce chantier, vérifié via `git status`).
+
+**Nouveau mode de capture** (`tools/capture_scene.gd`,
+`--mode=enemy_hit_reaction`) : instancie un monstre réel, lui inflige
+`--hits` coups depuis `--direction`, capture une SÉQUENCE de frames (pas
+une pose isolée — discipline de vérification du mandat). 15 séquences
+capturées (3 monstres × 4 directions + 3 monstres × combo 3 coups),
+0 crédit Meshy (rendu Godot local, `xvfb-run` + Vulkan logiciel, même
+écart documenté que le reste du pipeline de capture).
+
+### Capture livrée
+
+`captures/verification/2026-08-24-chantier-c-monstres-hitresponse/` —
+9 planches synthétiques (recadrées + upscale ×4, étiquetées) :
+- `{crawler,brute,ranged}_directions.png` : les 4 réactions
+  directionnelles côte à côte (tick 1, juste après l'impact — avant le
+  flash et avant le swap vers "projete").
+- `{crawler,ranged}_projection_bounce.png` : séquence 9 ticks (t0→t38)
+  montrant idle → flash → `projete` → rebond → réinstallation, avec un
+  déplacement horizontal visible sur toute la séquence.
+- `brute_planted_no_projection.png` : même séquence de ticks sur Brute —
+  silhouette qui reste au même endroit à l'écran du premier au dernier
+  tick, contraste direct avec les 2 planches ci-dessus.
+- `{crawler,brute,ranged}_stagger.png` : séquence 3-coups → chancelle.
+
+### Verdict honnête, par monstre et par type de réaction
+
+- **Directionnel (4 min.)** : FAIT sur les 3 monstres. Crawler/Ranged
+  nettement lisibles (poses très différentes : cabrage avant, hunch
+  arrière, lean latéral miroir). Brute lisible en jeu réel (couleurs/
+  silhouette) mais SUBTIL sur les captures recadrées à cette résolution
+  — amplitude de rotation volontairement réduite (~moitié) pour rester
+  cohérent avec "encaisse sans bouger", mesurable/vérifié par le smoke
+  test mais pas toujours évident à l'œil sur une planche 64px. Point à
+  retester en jeu réel par Milan avant de trancher si l'amplitude Brute
+  doit remonter.
+- **Chancellement** : FAIT, générique aux 3 archétypes (ne dépend pas du
+  poids). Vérifié par smoke test (armement au 3e coup, pas avant) et
+  visible en capture (planches `*_stagger.png`) — wobble présent mais
+  lui aussi plus subtil sur Brute que sur Crawler/Ranged à cette
+  résolution, même remarque que ci-dessus.
+- **Projection + rebond (légers)** : FAIT sur Crawler ET Ranged (les 2
+  archétypes "légers" du jeu, `recoil_multiplier` 1.6/1.4 — le mandat ne
+  nommait explicitement que le Crawler, Ranged inclus par cohérence avec
+  le même statut de poids). Nettement visible en capture (déplacement
+  horizontal net sur toute la séquence de rebond).
+- **Différenciation par poids** : FAIT et le plus net des 4 — la
+  planche `brute_planted_no_projection.png` montre une silhouette
+  immobile à l'écran sur 38 ticks, à comparer directement aux 2 planches
+  `*_projection_bounce.png` qui montrent un déplacement continu. Chiffres
+  à l'appui (smoke test) : 43.2px de recul mesuré pour Crawler contre
+  9.45px pour Brute sur un coup de force identique.
+
+### Ce qui reste / non fait
+
+- Amplitude des poses Brute : fonctionnelle et vérifiée par test, mais
+  visuellement plus discrète que souhaitable sur une planche recadrée —
+  resserrage éventuel à trancher par Milan après test en jeu réel (pas
+  un bug, un choix de calibration).
+- Pas de nouvelle pose "rebond" dédiée : le rebond est 100% procédural
+  (décalage vertical du sprite, même technique que le bob de marche
+  déjà en place) — décision délibérée pour rester dans le budget de ce
+  chantier, cohérente avec la discipline du fichier ("pas de frame que
+  le runtime peut dériver"), mais signalée ici en cas de désaccord.
+- Aucune 5e/6e direction (diagonales) — le mandat demandait "4 minimum",
+  non fait au-delà.
+
+### Fichiers modifiés
+
+`src/gameplay/enemy.gd` (constantes/état
+STAGGER_*/IMPACT_POSE_HOLD_TICKS/BOUNCE_*, `_on_hit_reaction()`/
+`_select_directional_reaction()`/`_apply_hit_reaction()`/
+`_advance_bounce()`/`_advance_stagger()`, gates `_physics_process`),
+`assets/processed/sprites/{crawler,brute,ranged}/*_frames.tres` (5/4/5
+nouvelles animations), 14 nouveaux PNG 64×64 dans ces mêmes dossiers,
+`experiments/blender_capture/pose_hit_reactions_{crawler,brute,
+ranged}.py` (nouveaux), `tools/capture_scene.gd`
+(`--mode=enemy_hit_reaction`), `tools/smoke_test_gameplay.gd` (3
+nouveaux checks + leurs 3 appels dans `_ready()`),
+`captures/verification/2026-08-24-chantier-c-monstres-hitresponse/` (9
+fichiers). **0 crédit Meshy dépensé** (solde 823cr avant/après,
+vérifié — tout le travail vient de rendu Blender local sur des rigs déjà
+payés).
+
 Journal de session, §16.5 de `docs/ARCHITECTURE_VFX_v3.md` : "Fin de
 session : mettre à jour docs/worklog.md (fait / branché ou non /
 prochain pas). C'est la mémoire inter-sessions — le repo est le cerveau."

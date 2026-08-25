@@ -97,6 +97,9 @@ extends Node2D
 
 const PlayerScene := preload("res://scenes/gameplay/player.tscn")
 const EnemyScene := preload("res://scenes/gameplay/enemy.tscn")
+const EnemyCrawlerScene := preload("res://scenes/gameplay/enemy_crawler.tscn")
+const EnemyBruteScene := preload("res://scenes/gameplay/enemy_brute.tscn")
+const EnemyRangedScene := preload("res://scenes/gameplay/enemy_ranged.tscn")
 
 
 func _ready() -> void:
@@ -112,6 +115,8 @@ func _ready() -> void:
 		await _run_scene_capture(args)
 	elif mode == "player_action_sequence":
 		await _run_player_action_sequence_capture(args)
+	elif mode == "enemy_hit_reaction":
+		await _run_enemy_hit_reaction_capture(args)
 	else:
 		await _run_primitive_capture(args)
 
@@ -291,6 +296,88 @@ func _capture_sequence_frame_no_pause(out_dir: String, tick: int, scale: int) ->
 	var path := out_dir.path_join("frame_%04d.png" % tick)
 	_save_png(img, path)
 	return path
+
+
+## --mode=enemy_hit_reaction (CHANTIER C, production v1, "Monstres :
+## animations d'interaction") : instancie UN monstre réel (crawler/brute/
+## ranged), lui inflige `--hits` coups de take_damage() venant de
+## `--direction` (même convention que Enemy._select_directional_reaction()
+## et les checks smoke test — right=(50,0), left=(-50,0), front=(0,50),
+## back=(0,-50)), capture une SÉQUENCE de frames (tick 0 = idle avant tout
+## coup, puis 1 frame par tick jusqu'à `--ticks`) — jamais une pose
+## isolée, la discipline de vérification du mandat demande la réaction EN
+## MOUVEMENT. Même technique "process_frame sans pause" que
+## _run_player_action_sequence_capture() (une pause/dégel répétée a déjà
+## cassé du rendu VFX ailleurs dans ce fichier, note ci-dessus).
+##   --monster=crawler|brute|ranged
+##   --direction=right|left|front|back
+##   --hits=1                        nombre de take_damage() successifs (un par
+##                                    tick, 3 = déclenche le chancellement,
+##                                    STAGGER_TRIGGER_HITS dans enemy.gd)
+##   --ticks=30                      ticks capturés APRÈS le dernier coup
+##   --out_dir=/chemin/absolu/
+##   --scale=1|2|4
+func _run_enemy_hit_reaction_capture(args: Dictionary) -> void:
+	var monster_name: String = args.get("monster", "crawler")
+	var direction: String = args.get("direction", "right")
+	var hits: int = int(args.get("hits", "1"))
+	var last_tick: int = int(args.get("ticks", "30"))
+	var out_dir: String = args.get("out_dir", "")
+	var scale: int = int(args.get("scale", "1"))
+	if out_dir == "":
+		push_error("capture_scene[enemy_hit_reaction]: --out_dir requis.")
+		get_tree().quit(1)
+		return
+	if not DirAccess.dir_exists_absolute(out_dir):
+		DirAccess.make_dir_recursive_absolute(out_dir)
+
+	var scene: PackedScene
+	match monster_name:
+		"brute":
+			scene = EnemyBruteScene
+		"ranged":
+			scene = EnemyRangedScene
+		_:
+			scene = EnemyCrawlerScene
+
+	var offsets: Dictionary = {
+		"right": Vector2(50, 0), "left": Vector2(-50, 0),
+		"front": Vector2(0, 50), "back": Vector2(0, -50),
+	}
+	var offset: Vector2 = offsets.get(direction, Vector2(50, 0))
+
+	var enemy := scene.instantiate()
+	enemy.global_position = Vector2(320, 220)
+	add_child(enemy)
+
+	await get_tree().physics_frame
+	for i in range(3):  # chauffe de rendu, même remarque que player_action_sequence
+		await get_tree().process_frame
+
+	var frame_paths: Array[String] = []
+	frame_paths.append(await _capture_sequence_frame_no_pause(out_dir, 0, scale))
+
+	for h in range(hits):
+		if not is_instance_valid(enemy):
+			break
+		enemy.take_damage(5.0, enemy.global_position + offset)
+		await get_tree().physics_frame
+		await get_tree().process_frame
+
+	for tick in range(1, last_tick + 1):
+		if not is_instance_valid(enemy):
+			break
+		frame_paths.append(await _capture_sequence_frame_no_pause(out_dir, tick, scale))
+		if tick < last_tick:
+			await get_tree().physics_frame
+			await get_tree().process_frame
+
+	var report := {
+		"out_dir": out_dir, "monster": monster_name, "direction": direction,
+		"hits": hits, "ticks_captured": frame_paths.size(), "frames": frame_paths,
+	}
+	print("CAPTURE_RESULT ", JSON.stringify(report))
+	get_tree().quit(0)
 
 
 ## --mode=scene (Chantier B, vérification décor) : instancie une scène

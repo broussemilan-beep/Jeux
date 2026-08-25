@@ -63,6 +63,9 @@ func _ready() -> void:
 	await _check_poing_belluaire()
 	await _check_poing_tellurique()
 	await _check_maree_de_sable()
+	await _check_machoire()
+	await _check_forme_bestiale()
+	await _check_pattes_de_chasse()
 	await _check_input_buffer_fires_at_cancel_window()
 	await _check_input_buffer_expires_when_never_consumed()
 	await _check_power_slot_gating()
@@ -70,6 +73,9 @@ func _ready() -> void:
 	await _check_crawler_chases_and_hits_player()
 	await _check_brute_telegraphs_before_hitting()
 	await _check_ranged_keeps_distance_and_fires_projectile()
+	await _check_enemy_directional_hit_reaction()
+	await _check_enemy_stagger_on_consecutive_hits()
+	await _check_weight_differentiates_projection_vs_planted()
 	_check_stats_add_xp_levels_up()
 	await _check_enemy_death_awards_xp_to_player()
 	await _check_boss_attack_rotation_hits_player_with_all_four_attacks()
@@ -1518,6 +1524,285 @@ func _check_maree_de_sable() -> void:
 	await get_tree().physics_frame
 
 
+## MANDAT PLAN DE PRODUCTION, Chantier A — agent Monstrification, les 3
+## compétences restantes (Mâchoire T3, Forme Bestiale T4, Pattes de Chasse
+## T5). Mâchoire — même construction que _check_bras_faux()/
+## _check_poing_belluaire() ci-dessus (archétype "melee_impact", slot3 =
+## tier3 de monstrification.json).
+func _check_machoire() -> void:
+	await _wait_until(func(): return not _player._action_lock, Player.MACHOIRE_RECOVERY_TICKS + 5)
+
+	RunState.active_power = "monstrification"
+	_player.stats.level = 6  # palier de Mâchoire (tier 3, unlock_level 6)
+
+	_player.global_position = Vector2(200, 2600)
+	_player.velocity = Vector2.ZERO
+	_player.facing = Vector2.RIGHT
+	var sprite: AnimatedSprite2D = _player.get_node("AnimatedSprite2D")
+
+	var enemy_front := EnemyScene.instantiate()
+	enemy_front.name = "MachoireFront"
+	enemy_front.global_position = _player.global_position + Vector2(30, 0)  # 0° — dans l'arc
+	add_child(enemy_front)
+
+	var enemy_side := EnemyScene.instantiate()
+	enemy_side.name = "MachoireSide"
+	var side_dir := Vector2.RIGHT.rotated(deg_to_rad(25.0))
+	enemy_side.global_position = _player.global_position + side_dir * 30.0  # 25° — dans l'arc (demi-angle 40°)
+	add_child(enemy_side)
+
+	var enemy_outside := EnemyScene.instantiate()
+	enemy_outside.name = "MachoireOutside"
+	var outside_dir := Vector2.RIGHT.rotated(deg_to_rad(90.0))
+	enemy_outside.global_position = _player.global_position + outside_dir * 30.0  # 90° — hors arc
+	add_child(enemy_outside)
+
+	await get_tree().physics_frame
+
+	var hp_front_before: float = enemy_front.stats.hp
+	var hp_side_before: float = enemy_side.stats.hp
+	var hp_outside_before: float = enemy_outside.stats.hp
+
+	Input.action_press("power3")
+	await get_tree().physics_frame
+	Input.action_release("power3")
+	var started: bool = await _wait_until(func(): return _player._machoire_phase != Player.MachoirePhase.NONE, 5)
+	var anim_during: String = sprite.animation
+
+	await _wait_until(
+		func(): return enemy_front.stats.hp < hp_front_before,
+		Player.MACHOIRE_ANTICIPATION_TICKS + Player.MACHOIRE_RELEASE_TICKS + 5)
+	var hp_front_after: float = enemy_front.stats.hp
+	var hp_side_after: float = enemy_side.stats.hp
+	var hp_outside_after: float = enemy_outside.stats.hp
+
+	var ended: bool = await _wait_until(
+		func(): return _player._machoire_phase == Player.MachoirePhase.NONE, Player.MACHOIRE_RECOVERY_TICKS + 5)
+	var action_unlocked_after: bool = not _player._action_lock
+
+	Input.action_press("power3")
+	await get_tree().physics_frame
+	Input.action_release("power3")
+	var machoire_started_during_cooldown: bool = _player._machoire_phase != Player.MachoirePhase.NONE
+
+	_checks.append({
+		"name": "machoire_input_starts_state_and_plays_dedicated_anim",
+		"pass": started and anim_during == "machoire",
+		"detail": {"started": started, "anim": anim_during},
+	})
+	_checks.append({
+		"name": "machoire_hits_all_enemies_in_arc_spares_enemy_outside",
+		"pass": hp_front_after < hp_front_before and hp_side_after < hp_side_before and hp_outside_after == hp_outside_before,
+		"detail": {
+			"hp_front_before": hp_front_before, "hp_front_after": hp_front_after,
+			"hp_side_before": hp_side_before, "hp_side_after": hp_side_after,
+			"hp_outside_before": hp_outside_before, "hp_outside_after": hp_outside_after,
+		},
+	})
+	_checks.append({
+		"name": "machoire_ends_and_unlocks_then_cooldown_blocks_second_cast",
+		"pass": ended and action_unlocked_after and not machoire_started_during_cooldown,
+		"detail": {
+			"ended": ended, "action_unlocked_after": action_unlocked_after,
+			"machoire_started_during_cooldown": machoire_started_during_cooldown,
+		},
+	})
+
+	enemy_front.queue_free()
+	enemy_side.queue_free()
+	enemy_outside.queue_free()
+	await get_tree().physics_frame
+
+
+## Forme Bestiale — même construction, arc le plus large de la Classe
+## (FORME_BESTIALE_HALF_ANGLE_DEG=70°, slot4 = tier4, unlock_level 14).
+func _check_forme_bestiale() -> void:
+	await _wait_until(func(): return not _player._action_lock, Player.FORME_BESTIALE_RECOVERY_TICKS + 5)
+
+	RunState.active_power = "monstrification"
+	_player.stats.level = 14  # palier de Forme Bestiale (tier 4, unlock_level 14)
+
+	_player.global_position = Vector2(200, 2900)
+	_player.velocity = Vector2.ZERO
+	_player.facing = Vector2.RIGHT
+	var sprite: AnimatedSprite2D = _player.get_node("AnimatedSprite2D")
+
+	var enemy_front := EnemyScene.instantiate()
+	enemy_front.name = "FormeBestialeFront"
+	enemy_front.global_position = _player.global_position + Vector2(40, 0)  # 0° — dans l'arc
+	add_child(enemy_front)
+
+	var enemy_wide := EnemyScene.instantiate()
+	enemy_wide.name = "FormeBestialeWide"
+	var wide_dir := Vector2.RIGHT.rotated(deg_to_rad(60.0))
+	enemy_wide.global_position = _player.global_position + wide_dir * 40.0  # 60° — dans l'arc large (demi-angle 70°)
+	add_child(enemy_wide)
+
+	var enemy_outside := EnemyScene.instantiate()
+	enemy_outside.name = "FormeBestialeOutside"
+	var outside_dir := Vector2.RIGHT.rotated(deg_to_rad(150.0))
+	enemy_outside.global_position = _player.global_position + outside_dir * 40.0  # 150° — hors arc même large
+	add_child(enemy_outside)
+
+	await get_tree().physics_frame
+
+	var hp_front_before: float = enemy_front.stats.hp
+	var hp_wide_before: float = enemy_wide.stats.hp
+	var hp_outside_before: float = enemy_outside.stats.hp
+
+	Input.action_press("power4")
+	await get_tree().physics_frame
+	Input.action_release("power4")
+	var started: bool = await _wait_until(func(): return _player._forme_bestiale_phase != Player.FormeBestialePhase.NONE, 5)
+	var anim_during: String = sprite.animation
+
+	await _wait_until(
+		func(): return enemy_front.stats.hp < hp_front_before,
+		Player.FORME_BESTIALE_ANTICIPATION_TICKS + Player.FORME_BESTIALE_RELEASE_TICKS + 5)
+	var hp_front_after: float = enemy_front.stats.hp
+	var hp_wide_after: float = enemy_wide.stats.hp
+	var hp_outside_after: float = enemy_outside.stats.hp
+
+	var ended: bool = await _wait_until(
+		func(): return _player._forme_bestiale_phase == Player.FormeBestialePhase.NONE,
+		Player.FORME_BESTIALE_RELEASE_TICKS + Player.FORME_BESTIALE_RECOVERY_TICKS + 5)
+	var action_unlocked_after: bool = not _player._action_lock
+
+	Input.action_press("power4")
+	await get_tree().physics_frame
+	Input.action_release("power4")
+	var forme_bestiale_started_during_cooldown: bool = _player._forme_bestiale_phase != Player.FormeBestialePhase.NONE
+
+	_checks.append({
+		"name": "forme_bestiale_input_starts_state_and_plays_dedicated_anim",
+		"pass": started and anim_during == "forme_bestiale",
+		"detail": {"started": started, "anim": anim_during},
+	})
+	_checks.append({
+		"name": "forme_bestiale_hits_all_enemies_in_wide_arc_spares_enemy_outside",
+		"pass": hp_front_after < hp_front_before and hp_wide_after < hp_wide_before and hp_outside_after == hp_outside_before,
+		"detail": {
+			"hp_front_before": hp_front_before, "hp_front_after": hp_front_after,
+			"hp_wide_before": hp_wide_before, "hp_wide_after": hp_wide_after,
+			"hp_outside_before": hp_outside_before, "hp_outside_after": hp_outside_after,
+		},
+	})
+	_checks.append({
+		"name": "forme_bestiale_ends_and_unlocks_then_cooldown_blocks_second_cast",
+		"pass": ended and action_unlocked_after and not forme_bestiale_started_during_cooldown,
+		"detail": {
+			"ended": ended, "action_unlocked_after": action_unlocked_after,
+			"forme_bestiale_started_during_cooldown": forme_bestiale_started_during_cooldown,
+		},
+	})
+
+	enemy_front.queue_free()
+	enemy_wide.queue_free()
+	enemy_outside.queue_free()
+	await get_tree().physics_frame
+
+
+## Pattes de Chasse — SEUL pouvoir de Monstrification avec un déplacement
+## automatique (voir Player.PATTES_DE_CHASSE_* / _advance_pattes_de_chasse()) :
+## vérifie à la fois le déplacement (comme _check_dash()) ET le jet de
+## dégâts en ligne au tick de frappe (comme _check_maree_de_sable(), mais
+## Targeting.enemies_in_line() depuis la position ATTEINTE au tick de
+## frappe, pas la position de départ — slot5 = tier5, unlock_level 18).
+func _check_pattes_de_chasse() -> void:
+	await _wait_until(func(): return not _player._action_lock, Player.PATTES_DE_CHASSE_RECOVERY_TICKS + 5)
+
+	RunState.active_power = "monstrification"
+	_player.stats.level = 18  # palier de Pattes de Chasse (tier 5, unlock_level 18)
+
+	_player.global_position = Vector2(200, 3200)
+	_player.velocity = Vector2.ZERO
+	_player.facing = Vector2.RIGHT
+	var sprite: AnimatedSprite2D = _player.get_node("AnimatedSprite2D")
+	var pos_before: Vector2 = _player.global_position
+
+	# Position atteinte au tick de frappe ≈ pos_before + DISTANCE * (STRIKE_TICK/MOVE_TICKS)
+	# (progression ease-out, donc une sous-estimation prudente — placé bien
+	# en-deça pour rester robuste à la courbe réelle).
+	var strike_progress_estimate: float = float(Player.PATTES_DE_CHASSE_STRIKE_TICK) / float(Player.PATTES_DE_CHASSE_MOVE_TICKS)
+	var strike_x_estimate: float = pos_before.x + Player.PATTES_DE_CHASSE_DISTANCE_PX * strike_progress_estimate
+
+	var enemy_in_line := EnemyScene.instantiate()
+	enemy_in_line.name = "PattesDeChasseInLine"
+	enemy_in_line.global_position = Vector2(strike_x_estimate + 10.0, pos_before.y)  # devant la position de frappe, dans la bande
+	add_child(enemy_in_line)
+
+	var enemy_lateral_outside := EnemyScene.instantiate()
+	enemy_lateral_outside.name = "PattesDeChasseLateralOutside"
+	enemy_lateral_outside.global_position = Vector2(strike_x_estimate + 10.0, pos_before.y + 40.0)  # lateral 40 > half_width 18
+	add_child(enemy_lateral_outside)
+
+	await get_tree().physics_frame
+
+	var hp_in_line_before: float = enemy_in_line.stats.hp
+	var hp_lateral_outside_before: float = enemy_lateral_outside.stats.hp
+
+	Input.action_press("power5")
+	await get_tree().physics_frame
+	Input.action_release("power5")
+	var started: bool = await _wait_until(func(): return _player._pattes_de_chasse_phase != Player.PattesDeChassePhase.NONE, 5)
+	var anim_during: String = sprite.animation
+
+	var moved_during_move: bool = await _wait_until(
+		func(): return _player._pattes_de_chasse_phase == Player.PattesDeChassePhase.MOVE and _player.global_position.x > pos_before.x + 5.0,
+		Player.PATTES_DE_CHASSE_ANTICIPATION_TICKS + 5)
+
+	var hit_landed: bool = await _wait_until(
+		func(): return enemy_in_line.stats.hp < hp_in_line_before,
+		Player.PATTES_DE_CHASSE_ANTICIPATION_TICKS + Player.PATTES_DE_CHASSE_MOVE_TICKS + 5)
+	var hp_in_line_after: float = enemy_in_line.stats.hp
+	var hp_lateral_outside_after: float = enemy_lateral_outside.stats.hp
+
+	var ended: bool = await _wait_until(
+		func(): return _player._pattes_de_chasse_phase == Player.PattesDeChassePhase.NONE,
+		Player.PATTES_DE_CHASSE_MOVE_TICKS + Player.PATTES_DE_CHASSE_RECOVERY_TICKS + 5)
+	var pos_after: Vector2 = _player.global_position
+	var action_unlocked_after: bool = not _player._action_lock
+	var displaced_forward: bool = pos_after.x > pos_before.x + Player.PATTES_DE_CHASSE_DISTANCE_PX * 0.5
+
+	Input.action_press("power5")
+	await get_tree().physics_frame
+	Input.action_release("power5")
+	var pattes_de_chasse_started_during_cooldown: bool = _player._pattes_de_chasse_phase != Player.PattesDeChassePhase.NONE
+
+	_checks.append({
+		"name": "pattes_de_chasse_input_starts_state_and_plays_dedicated_anim",
+		"pass": started and anim_during == "pattes_de_chasse",
+		"detail": {"started": started, "anim": anim_during},
+	})
+	_checks.append({
+		"name": "pattes_de_chasse_moves_player_forward_during_move_phase",
+		"pass": moved_during_move,
+		"detail": {"moved_during_move": moved_during_move},
+	})
+	_checks.append({
+		"name": "pattes_de_chasse_hits_enemy_in_line_spares_lateral_outside",
+		"pass": hit_landed and hp_in_line_after < hp_in_line_before and hp_lateral_outside_after == hp_lateral_outside_before,
+		"detail": {
+			"hit_landed": hit_landed,
+			"hp_in_line_before": hp_in_line_before, "hp_in_line_after": hp_in_line_after,
+			"hp_lateral_outside_before": hp_lateral_outside_before, "hp_lateral_outside_after": hp_lateral_outside_after,
+		},
+	})
+	_checks.append({
+		"name": "pattes_de_chasse_ends_displaced_and_unlocks_then_cooldown_blocks_second_cast",
+		"pass": ended and displaced_forward and action_unlocked_after and not pattes_de_chasse_started_during_cooldown,
+		"detail": {
+			"ended": ended, "pos_before": pos_before, "pos_after": pos_after,
+			"displaced_forward": displaced_forward, "action_unlocked_after": action_unlocked_after,
+			"pattes_de_chasse_started_during_cooldown": pattes_de_chasse_started_during_cooldown,
+		},
+	})
+
+	enemy_in_line.queue_free()
+	enemy_lateral_outside.queue_free()
+	await get_tree().physics_frame
+
+
 ## MANDAT "fluidité" (Partie 2, couche code) — généralisation du buffer
 ## d'input + fenêtre d'annulation aux 5 compétences dédiées
 ## (Player._try_activate_power_slot()/_queued_power_slot/
@@ -1892,6 +2177,137 @@ func _check_ranged_keeps_distance_and_fires_projectile() -> void:
 	})
 	ranged.queue_free()
 	await get_tree().physics_frame
+
+
+## CHANTIER C (production v1, "Monstres : animations d'interaction") —
+## 4 directions minimum : latéral (droite non-flippé/gauche flippé, une
+## seule pose "touche_lateral" en miroir — même convention que le flip_h
+## déjà utilisé pour le déplacement) + avant/arrière (2 poses distinctes).
+## Une instance FRAÎCHE de Crawler par direction (jamais la même,
+## évite toute contamination de _consecutive_hits/_stagger_* entre les
+## 4 mesures — même discipline d'isolation que les autres checks
+## d'ennemis de ce fichier).
+func _check_enemy_directional_hit_reaction() -> void:
+	var results: Dictionary = {}
+	var offsets: Dictionary = {
+		"right": Vector2(50, 0), "left": Vector2(-50, 0),
+		"front": Vector2(0, 50), "back": Vector2(0, -50),
+	}
+	for dir_name in offsets.keys():
+		var crawler := EnemyCrawlerScene.instantiate()
+		crawler.name = "CrawlerDir_%s" % dir_name
+		crawler.global_position = Vector2(700, 700)
+		add_child(crawler)
+		await get_tree().physics_frame
+		var sprite: AnimatedSprite2D = crawler.get_node("Visual")
+		crawler.take_damage(5.0, crawler.global_position + offsets[dir_name])
+		results[dir_name] = {"anim": str(sprite.animation), "flip_h": sprite.flip_h}
+		crawler.queue_free()
+		await get_tree().physics_frame
+
+	var pass_directional: bool = (
+		results["right"]["anim"] == "touche_lateral" and not results["right"]["flip_h"]
+		and results["left"]["anim"] == "touche_lateral" and results["left"]["flip_h"]
+		and results["front"]["anim"] == "touche_avant"
+		and results["back"]["anim"] == "touche_arriere"
+	)
+	_checks.append({
+		"name": "crawler_hit_reaction_differs_by_incoming_direction",
+		"pass": pass_directional,
+		"detail": results,
+	})
+
+
+## Chancellement (enchaînement de coups) : STAGGER_TRIGGER_HITS (3) coups
+## dans STAGGER_WINDOW_TICKS n'arment PAS le chancellement avant le 3e
+## (2 coups seuls = simple encaissement répété, pas encore un
+## "enchaînement"), puis la pose "chancelle" doit effectivement jouer une
+## fois le recul du 3e coup écoulé — Brute (lourd, sans "projete") choisi
+## ici pour vérifier que le chancellement ne dépend PAS de la présence de
+## la pose de projection (mécanisme générique aux 3 archétypes).
+func _check_enemy_stagger_on_consecutive_hits() -> void:
+	var brute := EnemyBruteScene.instantiate()
+	brute.name = "BruteStagger"
+	brute.global_position = Vector2(750, 750)
+	add_child(brute)
+	await get_tree().physics_frame
+	var sprite: AnimatedSprite2D = brute.get_node("Visual")
+	var source: Vector2 = brute.global_position + Vector2(50, 0)
+
+	brute.take_damage(5.0, source)
+	await get_tree().physics_frame
+	brute.take_damage(5.0, source)
+	var stagger_armed_after_two: bool = brute._stagger_total_ticks > 0
+	brute.take_damage(5.0, source)
+	var stagger_armed_after_three: bool = brute._stagger_total_ticks > 0
+
+	var chancelle_played: bool = await _wait_until(func(): return sprite.animation == &"chancelle", 20)
+
+	brute.queue_free()
+	await get_tree().physics_frame
+	_checks.append({
+		"name": "brute_staggers_after_three_consecutive_hits_in_window_not_before",
+		"pass": (not stagger_armed_after_two) and stagger_armed_after_three and chancelle_played,
+		"detail": {
+			"stagger_armed_after_two": stagger_armed_after_two,
+			"stagger_armed_after_three": stagger_armed_after_three,
+			"chancelle_played": chancelle_played,
+		},
+	})
+
+
+## Réaction différenciée par poids (GDD Chantier C : "le Brute encaisse
+## sans bouger, le Crawler est projeté" — recoil_multiplier existait déjà
+## en code, cette passe n'ajoute QUE l'animation). Crawler (léger,
+## recoil_multiplier=1.6, a la pose "projete") doit traverser un état
+## "projete" puis un rebond procédural, et finir déplacé nettement plus
+## loin que Brute (lourd, recoil_multiplier=0.35, PAS de pose "projete"
+## dans son SpriteFrames — donc jamais de rebond non plus, cf.
+## _pending_projection dans enemy.gd).
+func _check_weight_differentiates_projection_vs_planted() -> void:
+	var crawler := EnemyCrawlerScene.instantiate()
+	crawler.name = "CrawlerProjection"
+	crawler.global_position = Vector2(800, 800)
+	add_child(crawler)
+	await get_tree().physics_frame
+	var crawler_sprite: AnimatedSprite2D = crawler.get_node("Visual")
+	var crawler_pos_before: Vector2 = crawler.global_position
+	crawler.take_damage(5.0, crawler_pos_before + Vector2(-50, 0))
+	var saw_projete: bool = await _wait_until(func(): return crawler_sprite.animation == &"projete", 10)
+	await _wait_until(func(): return crawler._recoil_tick >= crawler._recoil_total_ticks and crawler._bounce_total_ticks > 0, 20)
+	var crawler_bounced: bool = crawler._bounce_total_ticks > 0
+	await _wait_until(func(): return crawler._bounce_tick >= crawler._bounce_total_ticks, 20)
+	var crawler_displacement: float = crawler_pos_before.distance_to(crawler.global_position)
+	crawler.queue_free()
+	await get_tree().physics_frame
+
+	var brute := EnemyBruteScene.instantiate()
+	brute.name = "BruteNoProjection"
+	brute.global_position = Vector2(850, 800)
+	add_child(brute)
+	await get_tree().physics_frame
+	var brute_sprite: AnimatedSprite2D = brute.get_node("Visual")
+	var brute_has_projete_anim: bool = brute_sprite.sprite_frames.has_animation("projete")
+	var brute_pos_before: Vector2 = brute.global_position
+	brute.take_damage(5.0, brute_pos_before + Vector2(-50, 0))
+	await _wait_until(func(): return brute._recoil_tick >= brute._recoil_total_ticks, 20)
+	var brute_displacement: float = brute_pos_before.distance_to(brute.global_position)
+	var brute_bounce_total: int = brute._bounce_total_ticks
+	brute.queue_free()
+	await get_tree().physics_frame
+
+	_checks.append({
+		"name": "crawler_is_projected_and_bounces_brute_stays_planted",
+		"pass": (
+			saw_projete and crawler_bounced and not brute_has_projete_anim
+			and brute_bounce_total == 0 and crawler_displacement > brute_displacement * 2.0
+		),
+		"detail": {
+			"saw_projete": saw_projete, "crawler_bounced": crawler_bounced,
+			"crawler_displacement_px": crawler_displacement, "brute_displacement_px": brute_displacement,
+			"brute_has_projete_anim": brute_has_projete_anim, "brute_bounce_total": brute_bounce_total,
+		},
+	})
 
 
 ## H1 (GDD §17/§20/§21 : "XP, niveau") : logique pure sur Stats, sans
