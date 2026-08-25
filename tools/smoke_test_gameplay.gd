@@ -1688,6 +1688,18 @@ func _check_effondrement() -> void:
 	var hp_behind_after: float = enemy_behind.stats.hp
 	var hp_beyond_radius_after: float = enemy_beyond_radius.stats.hp
 
+	# Marge élargie (+25, pas le +5 habituel) — constaté empiriquement (agent
+	# Terre, CHANTIER A) : sous xvfb/llvmpipe, Input.is_action_just_pressed()
+	# peut voir un "power4" retardé de plusieurs dizaines de ticks après
+	# l'appui synthétique du haut de cette fonction (même famille de
+	# décalage physics/render déjà documentée pour capture_scene.gd) — sur
+	# ANTICIPATION+RELEASE aussi longs qu'Effondrement (36 ticks), cet écho
+	# tombe parfois DANS la fenêtre d'annulation de sa propre RECOVERY,
+	# consommé comme un input en file légitime (comportement CORRECT du
+	# système d'annulation généralisé face à ce qu'il reçoit) et termine le
+	# cast un peu plus tôt que les 26 ticks nominaux — la marge de +5 des
+	# autres compétences Terre (bien plus courtes) ne suffit pas toujours à
+	# voir cette fin anticipée avant expiration du budget de ce `_wait_until`.
 	var ended: bool = await _wait_until(
 		func(): return _player._effondrement_phase == Player.EffondrementPhase.NONE,
 		Player.EFFONDREMENT_RECOVERY_TICKS + 25)
@@ -1778,6 +1790,11 @@ func _check_fissure_eruptive() -> void:
 	var hp_near_caster_after: float = enemy_near_caster.stats.hp
 	var hp_beyond_impact_after: float = enemy_beyond_impact.stats.hp
 
+	# Marge élargie (+25) — même remarque que _check_effondrement() juste
+	# au-dessus : ANTICIPATION+RELEASE=28 ticks laisse le temps à un écho
+	# tardif de "power5" (xvfb/llvmpipe) de retomber dans la fenêtre
+	# d'annulation de la RECOVERY et d'y être consommé légitimement, un peu
+	# avant les 30 ticks nominaux.
 	var ended: bool = await _wait_until(
 		func(): return _player._fissure_eruptive_phase == Player.FissureEruptivePhase.NONE,
 		Player.FISSURE_ERUPTIVE_RECOVERY_TICKS + 25)

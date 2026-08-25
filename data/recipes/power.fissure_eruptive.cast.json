@@ -1,0 +1,25 @@
+{
+  "id": "power.fissure_eruptive.cast",
+  "family": "ranged_eruption",
+  "importance_tier": 3,
+  "layers": [
+    { "type": "anticipation", "primitive": "fractureLine",     "start_tick": 10, "end_tick": 20, "degradable": false, "scale_px": 110 },
+    { "type": "core",         "primitive": "converge",         "start_tick": 14, "end_tick": 22, "degradable": false, "scale_px": 30, "count": 10, "origin_offset_px": 110 },
+    { "type": "core",         "primitive": "groundRing",       "start_tick": 20, "end_tick": 50, "degradable": false, "scale_px": 42, "origin_offset_px": 110 },
+    { "type": "contact",      "primitive": "impactFlashFrame", "start_tick": 20, "end_tick": 22, "degradable": false, "scale_px": 30, "origin_offset_px": 110 },
+    { "type": "contact",      "primitive": "shardBurst",       "start_tick": 20, "end_tick": 34, "degradable": true,  "count": 12, "speed_px_per_tick": 4.0, "origin_offset_px": 110 },
+    { "type": "consequence",  "primitive": "smokePuff",        "start_tick": 30, "end_tick": 58, "degradable": true,  "scale_px": 26, "origin_offset_px": 110 }
+  ],
+  "dissipation_profile": { "value_mult": 0.5, "saturation_mult": 0.5, "opacity_mult": 0.4, "duration_ticks": 16 },
+  "palette_id": "terre",
+  "feedback": "heavy",
+  "sfx_markers": [ { "tick": 20, "event": "fissure_eruptive_impact" } ],
+  "limits": { "particles": 6, "sprites": 6, "persistent_ticks": 58, "overdraw_budget": 0.7 },
+  "lifecycle": {
+    "cancellable_before": "release",
+    "owner_death_policy": "finish_core_then_stop_secondary",
+    "scene_change_policy": "stop_immediately",
+    "max_lifetime_ticks": 62
+  },
+  "notes": "CHANTIER A (2026-08-24, agent dédié Terre) — Fissure Éruptive (Terre Tier 5, dernière compétence Terre). Planche (docs/references/terre/fissure_eruptive.png, 4 temps : 1.Préparation, 2.Fissure, 3.Soulèvement, 4.Retombée) montre un effet RANGÉ, pas centré sur le lanceur (contrairement à Poing Tellurique/Effondrement) : la fissure part de Rank Zero et voyage au sol avant que les pics n'émergent à distance. Traduit en DEUX groupes de couches distinctes : (a) près du lanceur — fractureLine SEULE couche à `origin` non décalé, `scale_px`=110 = FISSURE_ERUPTIVE_RANGE_PX, la fissure qui voyage littéralement jusqu'au point d'impact ; (b) au point d'impact — `origin_offset_px`=110 (déjà généralisé par VfxRecipeRegistry, cf. audit fidélité Marée de Sable 2026-08-22) sur converge/groundRing/impactFlashFrame/shardBurst/smokePuff, TOUTES décalées le long de `direction` pour apparaître là où la fissure arrive, pas aux pieds du lanceur. groundRing porte visuellement '3.Soulèvement' (les pics qui restent debout, tenue 20-50 = jusqu'à la toute fin de la RECOVERY, aucune primitive 'spike' dédiée n'existe dans le registre — même limite déjà documentée pour Effondrement). Geste de Cendre : SEULE compétence Terre dont la planche montre un objet tenu (bâton planté au sol) — prompt PixelLab a délibérément INCLUS 'gripping a plain rough wooden staff' plutôt que les exclusions négatives 'no weapon' systématiques des 4 autres pouvoirs Terre, écart assumé et documenté dans data/pixellab_usage.jsonl (résultat : silhouette proche d'un outil de terre planté, pas un bâton parfaitement lisse — accepté, cf. verdict honnête). Cible : Targeting.enemies_in_arc() depuis `global_position + facing*FISSURE_ERUPTIVE_RANGE_PX`, half_angle_deg=180 (petit cercle au point d'impact, pas au lanceur — même technique de réutilisation que Effondrement)."
+}

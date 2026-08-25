@@ -1,0 +1,25 @@
+{
+  "id": "power.effondrement.cast",
+  "family": "zone_impact",
+  "importance_tier": 3,
+  "layers": [
+    { "type": "anticipation", "primitive": "groundRing",       "start_tick": 0,  "end_tick": 36, "degradable": false, "scale_px": 55 },
+    { "type": "anticipation", "primitive": "fractureLine",     "start_tick": 0,  "end_tick": 20, "degradable": true,  "scale_px": 50 },
+    { "type": "core",         "primitive": "converge",         "start_tick": 20, "end_tick": 31, "degradable": false, "scale_px": 36, "count": 12 },
+    { "type": "contact",      "primitive": "impactFlashFrame", "start_tick": 31, "end_tick": 33, "degradable": false, "scale_px": 45 },
+    { "type": "contact",      "primitive": "shardBurst",       "start_tick": 31, "end_tick": 45, "degradable": true,  "count": 14, "speed_px_per_tick": 4.5 },
+    { "type": "consequence",  "primitive": "smokePuff",        "start_tick": 33, "end_tick": 61, "degradable": true,  "scale_px": 30 }
+  ],
+  "dissipation_profile": { "value_mult": 0.5, "saturation_mult": 0.5, "opacity_mult": 0.4, "duration_ticks": 16 },
+  "palette_id": "terre",
+  "feedback": "heavy",
+  "sfx_markers": [ { "tick": 31, "event": "effondrement_impact" } ],
+  "limits": { "particles": 6, "sprites": 6, "persistent_ticks": 62, "overdraw_budget": 0.7 },
+  "lifecycle": {
+    "cancellable_before": "release",
+    "owner_death_policy": "finish_core_then_stop_secondary",
+    "scene_change_policy": "stop_immediately",
+    "max_lifetime_ticks": 65
+  },
+  "notes": "CHANTIER A (2026-08-24, agent dédié Terre) — Effondrement (Terre Tier 4, ZONE/IMPACT MAJEUR), 1ère compétence Terre implémentée depuis Marée de Sable. 4 temps de la planche (docs/references/terre/effondrement.png) : 1.PROPAGATION + 2.CONVERGENCE traduits en anticipation (0-36 ticks, ~0,6s — plus long que l'anticipation Poing Tellurique 18 ticks, cohérent avec un tier 'zone/impact majeur' qui doit se sentir plus chargé) : groundRing isotrope pour 'les fissures qui se propagent autour de Rank Zero' (planche : cracks radiaux tout autour du personnage, jamais une seule direction — groundRing, déjà isotrope par construction, sert mieux ce temps que plusieurs fractureLine qui auraient nécessité une direction par couche, non supporté par VfxRecipeRegistry qui ne lit qu'UNE direction par run) + fractureLine unique en accent (degradable, sacrifiable sous budget). 3.COMPRESSION traduit par converge (20-31, matière qui se rassemble juste avant l'impact — les 'pics' eux-mêmes ne sont pas représentés par une primitive dédiée, aucune primitive 'spike' n'existe dans le registre actuel ; converge + la pose du sprite (Cendre profondément accroupi, bras au sol dès la frame 5-6) portent cette lecture à la place). 4.IMPACT FINAL : impactFlashFrame + shardBurst (éclats anguleux, cône dans `direction`) + smokePuff (poussière qui retombe, tient jusqu'à la fin de la RECOVERY). Cible : Targeting.enemies_in_arc() avec half_angle_deg=180 (cercle complet autour de `origin`, pas un cône dirigé) — 'Zone' de la fiche implique un AoE centré sur le lanceur, contrairement au cône frontal de Poing Tellurique/Bras-Faux ou à la ligne de Marée de Sable ; réutilise la fonction existante plutôt que d'ajouter une nouvelle primitive de ciblage (un demi-angle de 180° couvre mathématiquement tout le cercle, vérifié dans targeting.gd)."
+}

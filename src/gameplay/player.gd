@@ -3737,6 +3737,20 @@ func die() -> void:
 	_poing_belluaire_phase = PoingBelluairePhase.NONE
 	_poing_tellurique_phase = PoingTelluriquePhase.NONE
 	_maree_de_sable_phase = MareeDeSablePhase.NONE
+	# CHANTIER A (Terre, 2026-08-24) : les 3 compétences Terre à impact
+	# ponctuel/état soutenu ajoutées ce chantier manquaient ici — constaté
+	# en capture (carapace_active en armure PUIS l'armure disparaît sans
+	# jamais passer par "carapace_fin" quand le joueur meurt en plein
+	# ACTIVE, ex. les 2 placeholders de capture_scene.gd qui restent au
+	# contact tout du long). Sans ce reset, _carapace_phase (ou
+	# _effondrement_phase/_fissure_eruptive_phase) reste bloqué sur une
+	# valeur != NONE alors que _action_lock est déjà remis à `true` deux
+	# lignes plus bas par mort — cohérent avec le patron déjà en place pour
+	# bras_faux/poing_belluaire/poing_tellurique/maree_de_sable ci-dessus,
+	# pas une exception nouvelle.
+	_carapace_phase = CarapacePhase.NONE
+	_effondrement_phase = EffondrementPhase.NONE
+	_fissure_eruptive_phase = FissureEruptivePhase.NONE
 	_corbeau_pale_phase = CorbeauPalePhase.NONE
 	_poing_du_colosse_phase = PoingDuColossePhase.NONE
 	_oeil_sans_regard_phase = OeilSansRegardPhase.NONE

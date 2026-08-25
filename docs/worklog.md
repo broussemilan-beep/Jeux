@@ -4445,3 +4445,171 @@ la raison de coordination ci-dessus),
 `src/gameplay/powers/*.gd`, aux scènes, aux recettes ou aux assets — le
 travail de l'agent précédent était déjà correct et complet sur ces
 points, rien à corriger.
+
+## 2026-08-25 — CHANTIER A (reprise après coupure) : Pouvoir Terre, les
+## 3 dernières compétences (Carapace/Effondrement/Fissure Éruptive) —
+## audit, correction de 3 bugs réels, câblage smoke test, captures
+
+**Contexte** : même histoire que l'entrée Invocateur juste au-dessus —
+un agent Terre précédent tué en plein Chantier A, rien perdu (tout sur
+disque, non commité), rien encore vérifié ni committé. Mission : auditer
+d'abord.
+
+### Audit — verdict : conception ET implémentation déjà quasi complètes,
+### 3 bugs réels trouvés par le test, pas par la lecture
+
+Déjà en place et correctement pensé AVANT cette passe (lu en entier dans
+`src/gameplay/player.gd`, lignes ~470-630) : les 26 frames des 4
+animations (`carapace_activation` 7, `carapace_active` 5,
+`effondrement` 7, `fissure_eruptive` 7) déjà cuites et déjà câblées dans
+`cendre_frames.tres` (`carapace_fin` = `carapace_activation` rejouée en
+ordre inverse, 0 fichier supplémentaire — confirmé en lisant les
+`ExtResource` du `.tres`, exactement comme documenté) ; les 3 recettes
+JSON ; les constantes `CARAPACE_*`/`EFFONDREMENT_*`/
+`FISSURE_ERUPTIVE_*` (paliers de tick, dégâts, rayon/portée) ; Carapace
+correctement traitée comme un ÉTAT SOUTENU à 3 phases ACTIVATION/ACTIVE/
+RECOVERY (pas ANTICIPATION/RELEASE/RECOVERY comme les compétences
+d'impact) avec une boucle de respiration pilotée manuellement
+(`_carapace_active_loop_tick`, jamais l'horloge fps autonome
+d'AnimatedSprite2D) et AUCUNE fenêtre d'annulation pendant ACTIVATION/
+ACTIVE (décision délibérée documentée : un bouclier annulable à volonté
+perdrait son sens défensif) ; les 3 `_start_*/_advance_*/_end_*()` ;
+l'enregistrement dans `IMPLEMENTED_SKILL_HANDLERS`/
+`IMPLEMENTED_SKILL_COOLDOWN_GETTERS` (buffer d'input généralisé,
+commit `1571521`, déjà branché). `poing_tellurique`/`maree_de_sable`
+(déjà en jeu) n'ont ni scène ni script séparés — tout dans `player.gd` —
+et Carapace/Effondrement/Fissure Éruptive suivent la même convention
+(contrairement à Invocateur, qui invoque une créature séparée) : aucun
+`scenes/gameplay/powers/*.tscn` à créer pour ces 3, vérifié en
+comparant aux 5 compétences Terre déjà en jeu.
+
+**Seul manque structurel** : comme pour Invocateur, zéro check dans
+`tools/smoke_test_gameplay.gd` pour ces 3 compétences — l'agent précédent
+avait été interrompu avant cette étape.
+
+### 3 bugs réels trouvés (par le test, pas par la lecture du code)
+
+**1. Fuite de cooldown Carapace → bloquait le lancement d'Effondrement**
+(`tools/smoke_test_gameplay.gd`) : le test de Carapace vérifie qu'un 2e
+appui PENDANT le cooldown ne relance rien, puis force
+`_carapace_cooldown_remaining = 0` pour ne pas polluer les checks
+suivants. Sous xvfb/llvmpipe, `Input.is_action_just_pressed("power3")`
+peut être vu EN RETARD de plusieurs dizaines de ticks après l'appui
+synthétique (même famille de décalage physics/render déjà documentée
+pour `capture_scene.gd`) — remettre le cooldown à 0 immédiatement
+"démasquait" cet écho tardif : il retombait pendant `_check_effondrement()`,
+`_action_lock` étant vrai à ce moment pour une tout autre raison
+(cooldown-blocked press de Pattes de Chasse, chantier concurrent), donc
+mis en FILE puis déclenché pour de vrai — Carapace se relançait au
+milieu du test d'Effondrement, qui ne pouvait alors jamais démarrer
+(`_action_lock` déjà pris). Isolé par trace `print()` ciblée (retirée
+après diagnostic), corrigé en laissant 4 ticks de battement AVANT la
+remise à 0 du cooldown (voir commentaire ajouté dans `_check_carapace()`).
+**2. Frontière flottante 180° dans `Targeting.enemies_in_arc()`**
+(`src/gameplay/targeting.gd`) : Effondrement documente
+`half_angle_deg=180` comme un CERCLE COMPLET (mandat explicite : frappe
+devant ET derrière). Un ennemi placé EXACTEMENT à 180° de la direction
+du lanceur (le cas de test "derrière") pouvait être exclu par une
+comparaison stricte `angle_to <= half_angle_rad` fragile à l'arrondi
+flottant entre `Vector2.angle_to()` et `deg_to_rad(180.0)` — confirmé
+en traçant les cibles réellement trouvées (`Targeting.enemies_in_arc`
+ne retournait que l'ennemi de face, jamais celui de derrière, de façon
+reproductible sur 2 runs). Corrigé en sautant entièrement la comparaison
+d'angle dès que `half_angle_rad >= PI - epsilon` (un cône ≥180° n'a de
+toute façon plus de "côté exclu" possible) — plus robuste qu'une marge
+arbitraire, et ne change rien aux cônes plus étroits (Bras-Faux/Poing
+Tellurique/etc.).
+**3. `Player.die()` ne réinitialisait pas les 3 nouvelles phases** —
+constaté en capture (`--mode=player_action_sequence`, Carapace en armure
+qui disparaît sans jamais jouer `carapace_fin` quand le joueur meurt en
+pleine ACTIVE, ex. les 2 ennemis placeholder de `capture_scene.gd`
+restés au contact pendant 100+ ticks). `die()` remettait déjà à `NONE`
+les phases de Bras-Faux/Poing Belluaire/Poing Tellurique/Marée de
+Sable/Corbeau Pâle/Poing du Colosse/Œil Sans Regard/Serpent Creux mais
+PAS `_carapace_phase`/`_effondrement_phase`/`_fissure_eruptive_phase` —
+oubli lors de leur ajout. Ajouté au même endroit, même patron. N'a
+jamais fait échouer le smoke test lui-même (qui ne laisse jamais le
+joueur mourir en pleine Carapace) — trouvé uniquement grâce à la capture
+demandée par le mandat, qui simule un scénario que le smoke test ne
+couvre pas.
+
+### Marge de test élargie (documentée, pas une compensation aveugle)
+
+`_check_effondrement()`/`_check_fissure_eruptive()` : le budget du
+`_wait_until(phase==NONE)` final est passé de +5 à +25 ticks — même
+cause que le bug n°1 (écho tardif de `is_action_just_pressed`, cette
+fois retombant dans la fenêtre d'annulation de leur PROPRE RECOVERY et
+consommé légitimement par le système d'annulation généralisé, qui
+termine alors le cast un peu avant les ticks nominaux) — le comportement
+gameplay est CORRECT dans ce cas (le système d'annulation fait
+exactement ce qu'il doit face à un input qu'il reçoit), seule la marge
+d'observation du test était trop juste. Commentaire explicatif ajouté
+aux deux endroits.
+
+### Vérification
+
+`bash scripts/run_gameplay_smoke_test.sh` → **`"all_pass":true`**,
+confirmé stable sur 4 runs consécutifs (headless direct ×3 + script
+officiel ×1) après les 3 corrections ci-dessus. Avant correction : 4
+échecs (`effondrement_hits_full_circle_*`, `effondrement_ends_and_
+unlocks_*`, `fissure_eruptive_ends_and_unlocks_*`, plus
+`oeil_sans_regard_*` — chantier Invocateur concurrent, non touché, déjà
+documenté dans leur propre entrée ci-dessus et redevenu vert de
+lui-même une fois la fuite de cooldown Carapace corrigée).
+
+### Captures
+
+Par compétence, comme demandé (4 temps en mouvement pour Effondrement/
+Fissure Éruptive ; état soutenu réellement actif sur plusieurs ticks
+pour Carapace) — `capture_scene.gd --mode=player_action_sequence`,
+`--active_power=terre`, scale=2 :
+- `captures/verification/2026-08-24-terre-effondrement-4temps/` — 5
+  frames (`t00` Propagation, `t10` Convergence, `t15` Compression, `t21`
+  Impact Final avec les 2 nombres de dégâts "22/22" visibles simultanément
+  devant ET derrière — preuve visuelle du cercle complet après le fix
+  n°2 ci-dessus —, `t55` Retombée) + planche de synthèse.
+- `captures/verification/2026-08-24-terre-fissure-eruptive-4temps/` — 4
+  frames (`t00` Préparation, `t10` Fissure — la ligne de fracture qui
+  voyage visiblement du lanceur vers le point d'impact, `t18`
+  Soulèvement — l'anneau/le pilier qui se forme À DISTANCE, pas aux
+  pieds du lanceur, contrairement à Effondrement —, `t50` Retombée) +
+  planche de synthèse.
+- `captures/verification/2026-08-24-terre-carapace-etat-soutenu/` — 5
+  frames (`t000` idle avant cast, `t012` activation en cours, `t024`
+  début d'ACTIVE, `t060` et `t100` ACTIVE toujours soutenue, armure et
+  fragments flottants visibles à chaque tick — la sustention réelle sur
+  90+ ticks, pas une seule frame isolée) + planche de synthèse. Capture
+  volontairement arrêtée avant la fin naturelle (~228 ticks) : les 2
+  ennemis placeholder de `capture_scene.gd` plantés au contact tout du
+  long finissent par tuer le joueur vers t~110-130 (artefact de l'outil
+  de capture — 2 monstres au contact sans interruption pendant 3+
+  secondes, pas un scénario de jeu réel), ce qui a permis de trouver le
+  bug n°3 mais rendait les frames tardives (`carapace_fin`) non
+  représentatives pour cette planche ; le mandat pour Carapace ne
+  demande que l'état soutenu, pas la transition de fin.
+
+### Coût PixelLab réel dépensé PAR CETTE PASSE
+
+**0 crédit** — vérifié via `get_balance` en amont de toute action : les
+26 frames (7+5+7+7) étaient déjà toutes générées par l'agent précédent.
+Cette passe n'a fait que diagnostiquer/corriger du code et capturer.
+
+### Fichiers modifiés
+
+`src/gameplay/targeting.gd` (fix frontière 180°), `src/gameplay/
+player.gd` (3 lignes ajoutées à `die()`), `tools/smoke_test_gameplay.gd`
+(3 nouveaux checks + leurs appels dans `_ready()`, marge de test
+élargie + commentaire sur `_check_carapace()`/`_check_effondrement()`/
+`_check_fissure_eruptive()`), `captures/verification/2026-08-24-terre-
+effondrement-4temps/`, `captures/verification/2026-08-24-terre-fissure-
+eruptive-4temps/`, `captures/verification/2026-08-24-terre-carapace-
+etat-soutenu/` (14 fichiers au total). Aucun changement aux assets, aux
+recettes JSON, ni aux scènes — déjà corrects et complets.
+
+**Note de coordination** : `src/gameplay/player.gd` et `tools/
+smoke_test_gameplay.gd` sont des fichiers partagés activement modifiés
+par l'agent Invocateur pendant cette même session (voir leur entrée
+ci-dessus, qui documente avoir vu mes propres lignes de debug
+apparaître dans la sortie du smoke test) — aucune ligne touchant
+Corbeau Pâle/Poing du Colosse/Œil Sans Regard/Serpent Creux n'a été
+modifiée par cette passe.

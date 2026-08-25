@@ -1,0 +1,23 @@
+{
+  "id": "power.carapace.cast",
+  "family": "defensive_sustain",
+  "importance_tier": 2,
+  "layers": [
+    { "type": "activation", "primitive": "converge",         "start_tick": 0,   "end_tick": 24,  "degradable": false, "scale_px": 30, "count": 10 },
+    { "type": "activation", "primitive": "impactFlashFrame",  "start_tick": 10,  "end_tick": 12,  "degradable": false, "scale_px": 20 },
+    { "type": "core",       "primitive": "orbital",           "start_tick": 24,  "end_tick": 204, "degradable": false, "scale_px": 18, "count": 3 },
+    { "type": "consequence","primitive": "dustKick",          "start_tick": 204, "end_tick": 228, "degradable": true,  "scale_px": 20 }
+  ],
+  "dissipation_profile": { "value_mult": 0.5, "saturation_mult": 0.5, "opacity_mult": 0.4, "duration_ticks": 14 },
+  "palette_id": "terre",
+  "feedback": "medium",
+  "sfx_markers": [ { "tick": 10, "event": "carapace_activate" }, { "tick": 204, "event": "carapace_crumble" } ],
+  "limits": { "particles": 4, "sprites": 4, "persistent_ticks": 228, "overdraw_budget": 0.6 },
+  "lifecycle": {
+    "cancellable_before": "none",
+    "owner_death_policy": "stop_immediately",
+    "scene_change_policy": "stop_immediately",
+    "max_lifetime_ticks": 232
+  },
+  "notes": "CHANTIER A (2026-08-24, agent dédié Terre, plan de production v1) — Carapace (Terre Tier 3, DÉFENSIF) est structurellement différente des 4 autres compétences Terre déjà en jeu : un ÉTAT SOUTENU (buff de résistance aux dégâts pendant sa durée), pas un impact ponctuel. 4 temps de la planche (docs/references/terre/carapace.png : 1.ACTIVATION, 3.CARAPACE ACTIVE, 4.FIN — pas de '2.' étiqueté séparément sur la planche, la transition est continue) traduits en 3 phases côté gameplay (ACTIVATION/ACTIVE/RECOVERY, Player.CarapacePhase) : converge (0-24, la roche qui se rassemble ET se plaque sur le corps, aligné sur le sprite dédié carapace_activation dont le 'claquage' visible tombe vers le tick 10 — impactFlashFrame à ce même tick vend le moment où l'armure se verrouille), orbital (24-204, ACTIVE — fragments de roche qui orbitent lentement autour de Cendre pendant tout l'état soutenu, SEULE couche protégée sur une aussi longue durée : c'est la signature visuelle du buff, elle ne doit jamais disparaître avant la fin réelle), dustKick (204-228, RECOVERY — poussière/éclats qui tombent quand les plaques se détachent, sprite carapace_fin en parallèle). `direction` non utilisé par aucune couche ici (converge/orbital/impactFlashFrame/dustKick sont toutes isotropes ou lisent seulement `origin` — contrairement à Poing Tellurique qui inversait `direction` pour dustKick, Carapace n'a pas de 'sens du coup' à représenter). Mouvement : `_action_lock` reste VRAI sur toute la durée (ACTIVATION+ACTIVE+RECOVERY), pas seulement l'activation/la fin comme les autres pouvoirs à impact ponctuel — décision délibérée documentée dans player.gd/docs/worklog.md : la couche orbital est ancrée à un `origin` FIXE capturé au cast (limite architecturale de VfxRecipeRegistry/VfxDirector, aucune primitive ne suit une entité qui se déplace), donc laisser le joueur bouger librement pendant l'ACTIVE ferait dériver visuellement les fragments loin du personnage — la planche elle-même montre '3. CARAPACE ACTIVE' en posture statique bras écartés, pas mi-foulée, ce qui confirme que l'immobilité n'est pas qu'une contrainte technique mais une lecture cohérente avec la référence."
+}
