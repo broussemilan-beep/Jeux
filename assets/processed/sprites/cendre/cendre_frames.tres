@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=212 format=3]
+[gd_resource type="SpriteFrames" load_steps=224 format=3]
 
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/0.png" id="2"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/1.png" id="3"]
@@ -103,115 +103,134 @@
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/2.png" id="102"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/3.png" id="103"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/4.png" id="104"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/0.png" id="105"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/1.png" id="106"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/2.png" id="107"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/3.png" id="108"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/4.png" id="109"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/0.png" id="110"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/1.png" id="111"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/2.png" id="112"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/3.png" id="113"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/4.png" id="114"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/0.png" id="115"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/1.png" id="116"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/2.png" id="117"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/3.png" id="118"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/4.png" id="119"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/5.png" id="120"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/0.png" id="121"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/1.png" id="122"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/2.png" id="123"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/3.png" id="124"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/4.png" id="125"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/5.png" id="126"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/0.png" id="127"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/1.png" id="128"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/2.png" id="129"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/3.png" id="130"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/4.png" id="131"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/5.png" id="132"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_gueule_vide/0.png" id="133"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_gueule_vide/1.png" id="134"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_gueule_vide/2.png" id="135"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_gueule_vide/3.png" id="136"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_gueule_vide/4.png" id="137"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_gueule_vide/5.png" id="138"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/0.png" id="139"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/1.png" id="140"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/2.png" id="141"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/3.png" id="142"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/4.png" id="143"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/5.png" id="144"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/5.png" id="105"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/6.png" id="106"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/7.png" id="107"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/8.png" id="108"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/0.png" id="109"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/1.png" id="110"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/2.png" id="111"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/3.png" id="112"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/4.png" id="113"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/5.png" id="114"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/6.png" id="115"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/7.png" id="116"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/8.png" id="117"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/0.png" id="118"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/1.png" id="119"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/2.png" id="120"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/3.png" id="121"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/4.png" id="122"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/5.png" id="123"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/6.png" id="124"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/7.png" id="125"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/8.png" id="126"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/0.png" id="127"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/1.png" id="128"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/2.png" id="129"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/3.png" id="130"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/4.png" id="131"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/5.png" id="132"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/0.png" id="133"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/1.png" id="134"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/2.png" id="135"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/3.png" id="136"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/4.png" id="137"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/5.png" id="138"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/0.png" id="139"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/1.png" id="140"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/2.png" id="141"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/3.png" id="142"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/4.png" id="143"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/5.png" id="144"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_gueule_vide/0.png" id="145"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_gueule_vide/1.png" id="146"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_gueule_vide/2.png" id="147"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_gueule_vide/3.png" id="148"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_gueule_vide/4.png" id="149"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_gueule_vide/5.png" id="150"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/0.png" id="151"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/1.png" id="152"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/2.png" id="153"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/3.png" id="154"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/4.png" id="155"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/5.png" id="156"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_activation/0.png" id="157"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_activation/1.png" id="158"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_activation/2.png" id="159"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_activation/3.png" id="160"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_activation/4.png" id="161"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_activation/5.png" id="162"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_activation/6.png" id="163"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_active/0.png" id="164"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_active/1.png" id="165"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_active/2.png" id="166"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_active/3.png" id="167"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_active/4.png" id="168"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/effondrement/0.png" id="169"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/effondrement/1.png" id="170"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/effondrement/2.png" id="171"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/effondrement/3.png" id="172"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/effondrement/4.png" id="173"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/effondrement/5.png" id="174"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/effondrement/6.png" id="175"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/fissure_eruptive/0.png" id="176"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/fissure_eruptive/1.png" id="177"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/fissure_eruptive/2.png" id="178"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/fissure_eruptive/3.png" id="179"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/fissure_eruptive/4.png" id="180"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/fissure_eruptive/5.png" id="181"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/fissure_eruptive/6.png" id="182"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_activation/6.png" id="183"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_activation/5.png" id="184"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_activation/4.png" id="185"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_activation/3.png" id="186"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_activation/2.png" id="187"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_activation/1.png" id="188"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_activation/0.png" id="189"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/0.png" id="190"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/1.png" id="191"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/2.png" id="192"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/3.png" id="193"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/4.png" id="194"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/5.png" id="195"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/0.png" id="196"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/1.png" id="197"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/2.png" id="198"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/3.png" id="199"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/4.png" id="200"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/5.png" id="201"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/0.png" id="202"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/1.png" id="203"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/2.png" id="204"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/3.png" id="205"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/4.png" id="206"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/5.png" id="207"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_corbeau_pale/0.png" id="208"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_corbeau_pale/1.png" id="209"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_corbeau_pale/2.png" id="210"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_corbeau_pale/3.png" id="211"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_corbeau_pale/4.png" id="212"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_corbeau_pale/5.png" id="213"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_poing_du_colosse/0.png" id="214"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_poing_du_colosse/1.png" id="215"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_poing_du_colosse/2.png" id="216"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_poing_du_colosse/3.png" id="217"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_poing_du_colosse/4.png" id="218"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_poing_du_colosse/5.png" id="219"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_oeil_sans_regard/0.png" id="220"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_oeil_sans_regard/1.png" id="221"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_oeil_sans_regard/2.png" id="222"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_oeil_sans_regard/3.png" id="223"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_oeil_sans_regard/4.png" id="224"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_oeil_sans_regard/5.png" id="225"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_serpent_creux/0.png" id="226"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_serpent_creux/1.png" id="227"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_serpent_creux/2.png" id="228"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_serpent_creux/3.png" id="229"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_serpent_creux/4.png" id="230"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_serpent_creux/5.png" id="231"]
 
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_activation/0.png" id="145"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_activation/1.png" id="146"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_activation/2.png" id="147"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_activation/3.png" id="148"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_activation/4.png" id="149"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_activation/5.png" id="150"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_activation/6.png" id="151"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_active/0.png" id="152"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_active/1.png" id="153"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_active/2.png" id="154"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_active/3.png" id="155"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_active/4.png" id="156"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/effondrement/0.png" id="157"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/effondrement/1.png" id="158"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/effondrement/2.png" id="159"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/effondrement/3.png" id="160"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/effondrement/4.png" id="161"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/effondrement/5.png" id="162"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/effondrement/6.png" id="163"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/fissure_eruptive/0.png" id="164"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/fissure_eruptive/1.png" id="165"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/fissure_eruptive/2.png" id="166"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/fissure_eruptive/3.png" id="167"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/fissure_eruptive/4.png" id="168"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/fissure_eruptive/5.png" id="169"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/fissure_eruptive/6.png" id="170"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/0.png" id="171"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/1.png" id="172"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/2.png" id="173"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/3.png" id="174"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/4.png" id="175"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/5.png" id="176"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/0.png" id="177"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/1.png" id="178"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/2.png" id="179"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/3.png" id="180"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/4.png" id="181"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/5.png" id="182"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/0.png" id="183"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/1.png" id="184"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/2.png" id="185"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/3.png" id="186"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/4.png" id="187"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/5.png" id="188"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_corbeau_pale/0.png" id="190"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_corbeau_pale/1.png" id="191"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_corbeau_pale/2.png" id="192"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_corbeau_pale/3.png" id="193"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_corbeau_pale/4.png" id="194"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_corbeau_pale/5.png" id="195"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_poing_du_colosse/0.png" id="196"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_poing_du_colosse/1.png" id="197"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_poing_du_colosse/2.png" id="198"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_poing_du_colosse/3.png" id="199"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_poing_du_colosse/4.png" id="200"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_poing_du_colosse/5.png" id="201"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_oeil_sans_regard/0.png" id="202"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_oeil_sans_regard/1.png" id="203"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_oeil_sans_regard/2.png" id="204"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_oeil_sans_regard/3.png" id="205"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_oeil_sans_regard/4.png" id="206"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_oeil_sans_regard/5.png" id="207"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_serpent_creux/0.png" id="208"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_serpent_creux/1.png" id="209"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_serpent_creux/2.png" id="210"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_serpent_creux/3.png" id="211"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_serpent_creux/4.png" id="212"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_serpent_creux/5.png" id="213"]
 [resource]
 animations = [{
 "frames": [{
@@ -604,109 +623,99 @@ animations = [{
 "speed": 15.0
 }, {
 "frames": [{
-"duration": 1.0,
+"duration": 0.4,
 "texture": ExtResource("100")
 }, {
-"duration": 1.0,
+"duration": 0.2,
 "texture": ExtResource("101")
 }, {
-"duration": 1.0,
+"duration": 0.2,
 "texture": ExtResource("102")
 }, {
-"duration": 1.0,
+"duration": 0.2,
 "texture": ExtResource("103")
 }, {
-"duration": 1.0,
+"duration": 0.2,
 "texture": ExtResource("104")
+}, {
+"duration": 0.2,
+"texture": ExtResource("105")
+}, {
+"duration": 0.2,
+"texture": ExtResource("106")
+}, {
+"duration": 0.8,
+"texture": ExtResource("107")
+}, {
+"duration": 2.8,
+"texture": ExtResource("108")
 }],
 "loop": false,
 "name": &"coup1",
 "speed": 12.0
 }, {
 "frames": [{
-"duration": 1.0,
-"texture": ExtResource("105")
-}, {
-"duration": 1.0,
-"texture": ExtResource("106")
-}, {
-"duration": 1.0,
-"texture": ExtResource("107")
-}, {
-"duration": 1.0,
-"texture": ExtResource("108")
-}, {
-"duration": 1.0,
+"duration": 0.4,
 "texture": ExtResource("109")
+}, {
+"duration": 0.2,
+"texture": ExtResource("110")
+}, {
+"duration": 0.4,
+"texture": ExtResource("111")
+}, {
+"duration": 0.2,
+"texture": ExtResource("112")
+}, {
+"duration": 0.2,
+"texture": ExtResource("113")
+}, {
+"duration": 0.2,
+"texture": ExtResource("114")
+}, {
+"duration": 0.4,
+"texture": ExtResource("115")
+}, {
+"duration": 0.4,
+"texture": ExtResource("116")
+}, {
+"duration": 2.8,
+"texture": ExtResource("117")
 }],
 "loop": false,
 "name": &"coup2",
 "speed": 12.0
 }, {
 "frames": [{
-"duration": 1.0,
-"texture": ExtResource("110")
-}, {
-"duration": 1.0,
-"texture": ExtResource("111")
-}, {
-"duration": 1.0,
-"texture": ExtResource("112")
-}, {
-"duration": 1.0,
-"texture": ExtResource("113")
-}, {
-"duration": 1.0,
-"texture": ExtResource("114")
-}],
-"loop": false,
-"name": &"coup3",
-"speed": 12.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("115")
-}, {
-"duration": 1.0,
-"texture": ExtResource("116")
-}, {
-"duration": 1.0,
-"texture": ExtResource("117")
-}, {
-"duration": 1.0,
+"duration": 0.4,
 "texture": ExtResource("118")
 }, {
-"duration": 1.0,
+"duration": 0.4,
 "texture": ExtResource("119")
 }, {
-"duration": 1.0,
+"duration": 0.4,
 "texture": ExtResource("120")
-}],
-"loop": false,
-"name": &"bras_faux",
-"speed": 12.0
 }, {
-"frames": [{
-"duration": 1.0,
+"duration": 0.6,
 "texture": ExtResource("121")
 }, {
-"duration": 1.0,
+"duration": 0.4,
 "texture": ExtResource("122")
 }, {
-"duration": 1.0,
+"duration": 0.2,
 "texture": ExtResource("123")
 }, {
-"duration": 1.0,
+"duration": 0.8,
 "texture": ExtResource("124")
 }, {
-"duration": 1.0,
+"duration": 2.0,
 "texture": ExtResource("125")
 }, {
-"duration": 1.0,
+"duration": 2.0,
 "texture": ExtResource("126")
 }],
 "loop": false,
-"name": &"poing_belluaire",
+"name": &"coup3",
 "speed": 12.0
 }, {
 "frames": [{
@@ -729,7 +738,7 @@ animations = [{
 "texture": ExtResource("132")
 }],
 "loop": false,
-"name": &"poing_tellurique",
+"name": &"bras_faux",
 "speed": 12.0
 }, {
 "frames": [{
@@ -752,7 +761,7 @@ animations = [{
 "texture": ExtResource("138")
 }],
 "loop": false,
-"name": &"invocation_gueule_vide",
+"name": &"poing_belluaire",
 "speed": 12.0
 }, {
 "frames": [{
@@ -775,7 +784,7 @@ animations = [{
 "texture": ExtResource("144")
 }],
 "loop": false,
-"name": &"maree_de_sable",
+"name": &"poing_tellurique",
 "speed": 12.0
 }, {
 "frames": [{
@@ -796,15 +805,15 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("150")
-}, {
-"duration": 1.0,
-"texture": ExtResource("151")
 }],
 "loop": false,
-"name": &"carapace_activation",
+"name": &"invocation_gueule_vide",
 "speed": 12.0
 }, {
 "frames": [{
+"duration": 1.0,
+"texture": ExtResource("151")
+}, {
 "duration": 1.0,
 "texture": ExtResource("152")
 }, {
@@ -820,34 +829,34 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("156")
 }],
-"loop": true,
-"name": &"carapace_active",
-"speed": 8.0
+"loop": false,
+"name": &"maree_de_sable",
+"speed": 12.0
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("157")
+"texture": ExtResource("189")
 }, {
 "duration": 1.0,
-"texture": ExtResource("158")
+"texture": ExtResource("188")
 }, {
 "duration": 1.0,
-"texture": ExtResource("159")
+"texture": ExtResource("187")
 }, {
 "duration": 1.0,
-"texture": ExtResource("160")
+"texture": ExtResource("186")
 }, {
 "duration": 1.0,
-"texture": ExtResource("161")
+"texture": ExtResource("185")
 }, {
 "duration": 1.0,
-"texture": ExtResource("162")
+"texture": ExtResource("184")
 }, {
 "duration": 1.0,
-"texture": ExtResource("163")
+"texture": ExtResource("183")
 }],
 "loop": false,
-"name": &"effondrement",
+"name": &"carapace_activation",
 "speed": 12.0
 }, {
 "frames": [{
@@ -865,44 +874,18 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("168")
+}],
+"loop": true,
+"name": &"carapace_active",
+"speed": 8.0
 }, {
+"frames": [{
 "duration": 1.0,
 "texture": ExtResource("169")
 }, {
 "duration": 1.0,
 "texture": ExtResource("170")
-}],
-"loop": false,
-"name": &"fissure_eruptive",
-"speed": 12.0
 }, {
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("151")
-}, {
-"duration": 1.0,
-"texture": ExtResource("150")
-}, {
-"duration": 1.0,
-"texture": ExtResource("149")
-}, {
-"duration": 1.0,
-"texture": ExtResource("148")
-}, {
-"duration": 1.0,
-"texture": ExtResource("147")
-}, {
-"duration": 1.0,
-"texture": ExtResource("146")
-}, {
-"duration": 1.0,
-"texture": ExtResource("145")
-}],
-"loop": false,
-"name": &"carapace_fin",
-"speed": 12.0
-}, {
-"frames": [{
 "duration": 1.0,
 "texture": ExtResource("171")
 }, {
@@ -917,15 +900,15 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("175")
-}, {
-"duration": 1.0,
-"texture": ExtResource("176")
 }],
 "loop": false,
-"name": &"machoire",
+"name": &"effondrement",
 "speed": 12.0
 }, {
 "frames": [{
+"duration": 1.0,
+"texture": ExtResource("176")
+}, {
 "duration": 1.0,
 "texture": ExtResource("177")
 }, {
@@ -945,7 +928,7 @@ animations = [{
 "texture": ExtResource("182")
 }],
 "loop": false,
-"name": &"forme_bestiale",
+"name": &"fissure_eruptive",
 "speed": 12.0
 }, {
 "frames": [{
@@ -966,9 +949,12 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("188")
+}, {
+"duration": 1.0,
+"texture": ExtResource("189")
 }],
 "loop": false,
-"name": &"pattes_de_chasse",
+"name": &"carapace_fin",
 "speed": 12.0
 }, {
 "frames": [{
@@ -991,7 +977,7 @@ animations = [{
 "texture": ExtResource("195")
 }],
 "loop": false,
-"name": &"invocation_corbeau_pale",
+"name": &"machoire",
 "speed": 12.0
 }, {
 "frames": [{
@@ -1014,7 +1000,7 @@ animations = [{
 "texture": ExtResource("201")
 }],
 "loop": false,
-"name": &"invocation_poing_du_colosse",
+"name": &"forme_bestiale",
 "speed": 12.0
 }, {
 "frames": [{
@@ -1037,7 +1023,7 @@ animations = [{
 "texture": ExtResource("207")
 }],
 "loop": false,
-"name": &"invocation_oeil_sans_regard",
+"name": &"pattes_de_chasse",
 "speed": 12.0
 }, {
 "frames": [{
@@ -1060,7 +1046,75 @@ animations = [{
 "texture": ExtResource("213")
 }],
 "loop": false,
+"name": &"invocation_corbeau_pale",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("214")
+}, {
+"duration": 1.0,
+"texture": ExtResource("215")
+}, {
+"duration": 1.0,
+"texture": ExtResource("216")
+}, {
+"duration": 1.0,
+"texture": ExtResource("217")
+}, {
+"duration": 1.0,
+"texture": ExtResource("218")
+}, {
+"duration": 1.0,
+"texture": ExtResource("219")
+}],
+"loop": false,
+"name": &"invocation_poing_du_colosse",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("220")
+}, {
+"duration": 1.0,
+"texture": ExtResource("221")
+}, {
+"duration": 1.0,
+"texture": ExtResource("222")
+}, {
+"duration": 1.0,
+"texture": ExtResource("223")
+}, {
+"duration": 1.0,
+"texture": ExtResource("224")
+}, {
+"duration": 1.0,
+"texture": ExtResource("225")
+}],
+"loop": false,
+"name": &"invocation_oeil_sans_regard",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("226")
+}, {
+"duration": 1.0,
+"texture": ExtResource("227")
+}, {
+"duration": 1.0,
+"texture": ExtResource("228")
+}, {
+"duration": 1.0,
+"texture": ExtResource("229")
+}, {
+"duration": 1.0,
+"texture": ExtResource("230")
+}, {
+"duration": 1.0,
+"texture": ExtResource("231")
+}],
+"loop": false,
 "name": &"invocation_serpent_creux",
 "speed": 12.0
-}
-]
+}]

@@ -3,9 +3,9 @@
   "kind": "character_animation",
   "source": "pixellab",
   "pixellab_character_id": "8596a4ad-0a0b-4d82-b99b-db8a73c01e33",
-  "pixellab_animation_group_id": "019fa57a-3c99-4cf3-9acd-9ae19a10f4ba",
+  "pixellab_animation_group_id": "3aa47267-2aae-4378-a9cc-316696bf5c1d",
   "pixellab_mode": "v3_custom",
-  "pixellab_action_description": "spinning backhand strike continuing a combo's momentum, torso rotating through the hit",
+  "pixellab_action_description": "a rising knee strike combined with an upward uppercut, character crouches low first then explodes upward, knee driving up high and the fist rising in an uppercut arc above shoulder height at the peak, a clear vertical upward motion - no magic, no glow, no light effects, purely physical",
   "character": "cendre",
   "godot_animation_name": "coup2",
   "direction": "south",
@@ -14,7 +14,7 @@
   "importance_tier": 1,
   "license": "internal",
   "seed": null,
-  "frames": 5,
+  "frames": 9,
   "cell": [
     96,
     96
@@ -24,18 +24,23 @@
     92
   ],
   "frame_ticks": [
-    4,
-    4,
-    4,
-    4,
-    4
+    2,
+    1,
+    2,
+    1,
+    1,
+    1,
+    2,
+    2,
+    14
   ],
+  "frame_ticks_note": "MANDAT retours de playtest reel, point 5 : NOUVEAU concept (remplace 'spinning backhand strike' juge illisible en vue fixe - un seul bras tendu de cote sur la frame 3, ambigu). 9 frames (etait 5). Timing cale sur le decoupage tick existant (player.gd non modifie) : idx0-5 (6 frames, crouch->explosion) = ANTICIPATION_TICKS=8 ; idx6-7 (genou+poing leves ensemble, PUIS poing au plus haut) = RELEASE_TICKS=4 (le tick de _try_hit() tombe pendant ce cluster) ; idx8 (retour au sol) = RECOVERY_TICKS=14. Total 26 = 8+4+14, identique au budget existant. Verifie en jeu reel via capture_headless.sh --mode=player_action_sequence --action=attack --action2=attack --action2_tick=20 (chaine coup1->coup2 dans la fenetre de chainage reelle) --ticks=29 : le degat (chiffre '10') s'affiche avec la pose genou+poing leves visible, voir captures/phase1/hero_combo_2.png (regenere).",
   "loop": false,
   "source_frames_dir": "assets/source/pixellab/cendre/animations/coup2/",
   "processed_frames_dir": "assets/processed/sprites/cendre/coup2/",
   "sprite_frames_resource": "assets/processed/sprites/cendre/cendre_frames.tres",
   "capture_path": "captures/phase1/hero_combo_2.png",
-  "capture_note": "frame 3, cape/silhouette la plus dynamique de l'animation",
+  "capture_note": "MANDAT retours de playtest reel, point 5 : capture RÉGÉNÉRÉE en jeu réel (chainage reel coup1->coup2 via capture_headless.sh --mode=player_action_sequence, tick29, tous variants 1x/2x/4x neutral/loaded regeneres pareil) - montre desormais frame 6 (index 0-based sur 9 frames), genou releve haut ET poing en arc montant au-dessus de l'epaule, simultanement. PAS l'ancienne garde generique quasi-identique a coup1 (diagnostic initial du mandat : 'un bras tendu de cote sur la frame 3, reste ambigu'). Comparaison avant/apres committee dans captures/verification/2026-08-26-combo-poses-avant-apres.png.",
   "combo": {
     "step": 2,
     "of": 3,
@@ -47,7 +52,7 @@
     "attack_range_px": 48.0
   },
   "validated_auto": true,
-  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK sur toutes les frames apres R3. Meme correctif value-band que Phase 1.1 (nudge des pixels sous le plancher 15% V, ici le contour/ombre sombre du nouveau personnage a (30,30,30) => 11.76%V, nudge HSV vers 17%V, 3810 pixels sur les 8 animations, imperceptible visuellement).",
+  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK sur les 9 nouvelles frames source (assets/source/pixellab/cendre/animations/coup2/). Meme correctif value-band que Phase 1.1/R3 (nudge des pixels sous le plancher 15%V vers 17%V) applique a ce nouveau lot (582 pixels sur les 9 frames de coup2).",
   "human_label_ref": null,
   "capture_variants": {
     "neutral_1x": "captures/phase1/hero_combo_2.png",
@@ -58,5 +63,12 @@
     "loaded_4x": "captures/phase1/hero_combo_2_loaded_4x.png"
   },
   "r3_regenerated": true,
-  "r3_note": "Regenere R3 (mandat production v1 SS1.1/SS1.2) depuis reference_v3_turnaround_raw.png (sans cape) - personnage Cendre_v3c (32x84px), remplace le personnage v2 (avec cape, f6b77b57...)."
+  "r3_note": "Regenere R3 (mandat production v1 SS1.1/SS1.2) depuis reference_v3_turnaround_raw.png (sans cape) - personnage Cendre_v3c (32x84px), remplace le personnage v2 (avec cape, f6b77b57...).",
+  "mandat_playtest_reel_point5": {
+    "date": "2026-08-26",
+    "diagnostic": "L'ancienne animation ('spinning backhand strike', 5 frames) etait la seule des 3 un peu distincte (bras tendu de cote sur la frame 3) mais restait ambigue - jugee insuffisamment lisible en vue fixe (pas de vraie rotation visible en 2D figee). Remplacee par un concept a vecteur de force different des deux autres coups (vertical montant, vs horizontal pour coup1 et vertical descendant pour coup3).",
+    "reroll_count": 0,
+    "note": "Accepte au premier essai - genou et poing montent clairement ensemble, aucun halo/artefact parasite detecte sur les 9 frames.",
+    "canvas_fix": "Meme correctif que coup1/coup3 (voir hero_combo_1.json mandat_playtest_reel_point5.canvas_fix) - scale LANCZOS 55/79 + --foot-band-frac=1.0, applique uniformement aux 3 animations dans le meme appel de cuisson."
+  }
 }

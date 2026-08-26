@@ -5384,3 +5384,137 @@ juste avant ce commit.
 **Coût réel** : 0 génération PixelLab/Meshy/SpriteCook — diagnostic,
 correctif et vérification purement logiques ; capture via le rendu du
 jeu lui-même (aucun asset généré).
+
+## 2026-08-26 — MANDAT RETOURS DE PLAYTEST RÉEL, point 5 (dernier point) : refonte visuelle des 3 poses de contact du combo de base de Cendre
+
+**Diagnostic (déjà fait avant cette passe, non refait) : voir prompt du
+mandat.** Aucune des 3 anciennes animations (coup1/2/3, 5 frames chacune)
+ne montrait un impact réellement commis — PixelLab avait produit une
+simple progression idle→garde à chaque fois, jamais la pose de pic
+décrite dans le prompt d'origine.
+
+**Régénération** : `animate_character` mode v3, direction sud
+uniquement (discipline batch existante), `frame_count=8` (+ frame de
+référence conservée = 9 frames stockées, contre 5 avant) :
+- **coup1** (garde le concept jab) : "a quick straight punch... the arm
+  fully extended and locked out at the peak..." — pic réel au bras tendu,
+  frame 7 (index 0-based).
+- **coup2** (NOUVEAU concept, remplace "spinning backhand strike" jugé
+  illisible en vue fixe) : "a rising knee strike combined with an
+  upward uppercut..." — genou et poing levés ensemble, frame 6.
+- **coup3** (garde le concept smash à 2 poings, force le pic overhead) :
+  "both fists raised high above the head... then slammed straight
+  down..." — 2 poings au-dessus de la tête au pic du windup (frame 4),
+  impact/contact mécanique à la frame 6.
+
+Acceptées **au premier essai, 0 re-roll** sur les 3 — aucun halo/artefact
+parasite détecté sur les 27 frames (vocabulaire "no magic/no glow/no
+light effects/purely physical" repris avec succès, cf. précédent
+2026-08-18).
+
+**Bug de canvas découvert et corrigé (pas un nouveau pipeline inventé)**
+: le lot de génération actuel (2026-08-26, même lot que
+`maree_de_sable`/`invocation_corbeau_pale` déjà livrés) rend Cendre_v3c à
+~79-80px de haut brut, contre les ~54-56px attendus par la convention de
+canvas cuit partagé (64×64, ancrage pied à `(32,61)`, établie sur
+idle/hurt/mort/dash). Sans correctif, la **tête était intégralement
+rognée sur les 27 frames** (y compris la frame de référence neutre),
+un régression bien plus grave que le problème d'origine. Root cause à
+deux niveaux :
+1. `foot_anchor()` (bande centrale 35%, pensée pour ignorer une cape)
+   rate les vrais pieds sur les stances de combat larges — même bug déjà
+   documenté et corrigé pour Poing Tellurique ("pieds écartés au-delà de
+   la bande, tombe dans l'entrejambe"). Corrigé ici par
+   `--foot-band-frac=1.0` (safe, Cendre_v3c n'a plus de cape).
+2. Une fois les pieds correctement repérés, la tête dépassait quand même
+   le budget vertical (61px) — le personnage est simplement rendu plus
+   grand dans ce lot. Corrigé par le MÊME facteur d'échelle LANCZOS
+   pré-cuisson déjà documenté pour Bras-Faux (51/79) et Poing Tellurique
+   (53/78) : mesuré frame0 (79px) contre la cible idle_south/poing_tellurique
+   cuits (~55px) → facteur **55/79 ≈ 0,696**, appliqué aux 27 frames
+   AVANT `cook_character_frames.py` (jamais dans le script lui-même,
+   convention établie). Résultat : seule la frame la plus extrême
+   (coup2/7, poing au plus haut) perd 1-2px de doigt en haut du canvas —
+   même ordre de grandeur que ce qui existe déjà ailleurs dans le
+   pipeline, aucune tête perdue.
+
+**Value-band (même correctif que Phase 1.1/R3)** :
+`scripts/validate_pixels.py --category character` sur les 27 frames
+source nudgées → 2663 pixels sous le plancher 15%V (contour à
+(30,30,30) ≈ 11,76%V, même root cause que R3) nudgés vers 17%V,
+imperceptible visuellement. **`ok=true` sur les 27 frames après
+correctif.**
+
+**Timing non-uniforme (bible d'animation §2, exigence explicite du
+mandat) — calé EXACTEMENT sur le découpage tick déjà existant du code,
+`player.gd` non modifié** : plutôt qu'un tableau arbitraire, les
+`frame_ticks` de chaque manifeste ont été construits pour que le nombre
+de ticks tenus par les frames d'anticipation corresponde pile à
+`ANTICIPATION_TICKS` (8, ou 12 pour le tier3/coup3), que la frame de pic
+tienne pile `RELEASE_TICKS` (4 — le tick où `_try_hit()` s'applique), et
+que la frame de retour tienne `RECOVERY_TICKS` (14, ou 20 pour coup3).
+Total : 26 ticks pour coup1/coup2 (8+4+14, identique au budget existant),
+36 pour coup3 (12+4+20). Câblé via un ajout ciblé à
+`scripts/build_sprite_frames.py` (`--frame-ticks name:t1,t2,...` →
+`duration = tick/(60/fps)` par frame) — script de pipeline, aucune
+modification de `player.gd`/buffer d'input/fenêtres d'annulation/smear.
+**Vérifié en jeu réel** (`capture_headless.sh --mode=player_action
+--action=attack --tick=9` pour coup1, `--mode=player_action_sequence
+--action2=attack --action2_tick=20 --ticks=29` pour coup1→coup2 chaîné) :
+la frame de pic s'affiche PILE au tick où le dégât s'applique (chiffre
+"10" visible sur la capture coup2), pas un hasard de fps comme avant.
+
+**Intégration pipeline** : `cook_character_frames.py` relancé en mode
+MERGE (script ponctuel, même contournement que Bras-Faux/Poing
+Belluaire/Poing Tellurique — le script écrase tout le manifeste s'il
+n'est appelé qu'avec un sous-ensemble d'anims) — `cendre_frames_cooked.json`
+passe de 36 à toujours 39 animations (coup1/2/3 remplacées, les 36
+autres identiques). `cendre_frames.tres` régénéré en entier (39
+animations, même fps/loop que l'existant pour les 36 inchangées,
+`carapace_active` à fps=8 préservé tel quel malgré le refus du script
+— fps=8 ne divise pas 60 exactement, incohérence pré-existante du
+`.tres` committé, non touchée).
+
+**Vérifié** : `godot4 --import` propre, `run_gameplay_smoke_test.sh`
+(**"all_pass":true**, ~130 checks dont `attack_input_starts_coup1`,
+`combo_hit_damages_enemy_in_range`, `chain_window_press_advances_to_coup2`,
+`combo_tier1_hitstop_light_no_shake`, `combo_tier2_spawns_arc_slash`,
+`combo_tier3_hitstop_medium_longer_than_tier1_with_shake`,
+`root_motion_displaces_player_forward_during_coup1` — zéro régression).
+
+**Vérification visuelle** : `captures/verification/2026-08-26-combo-poses-
+avant-apres.png` (3 anciennes poses vs 3 nouvelles, côte à côte,
+frames processées réelles du jeu) + `2026-08-26-reference-loup-de-faille-
+FRACTURE.png`/`.txt` (référence externe FRACTURE fournie par Milan,
+provenance documentée, n'est pas un asset de Rank Zero). Captures
+`captures/phase1/hero_combo_1.png`/`hero_combo_2.png` (+ tous les
+variants 1x/2x/4x neutral/loaded) **régénérées en jeu réel** via
+`capture_headless.sh` (chaînage réel d'input pour coup2). `hero_combo_3.png`
+**NON régénéré en jeu réel** — nécessiterait une 3e pression d'input
+chaînée, non supportée par `--mode=player_action_sequence` (une seule
+`--action2`) ; référence visuelle du nouveau pic laissée sur la frame
+cuite elle-même (`assets/processed/sprites/cendre/coup3/4.png`) +
+la comparaison committée, honnêtement documenté dans `capture_note` du
+manifeste plutôt que de faire semblant.
+
+**Coût réel PixelLab** : balance avant 1277 generations_remaining (723
+used) → après **1271 generations_remaining (729 used) : 6 générations
+consommées** pour les 3 animations (l'estimation affichée par l'outil
+était de 1 génération/anim, le coût réel mesuré est le double — écart
+honnêtement rapporté, pas de re-roll effectué donc ce chiffre est le
+coût plancher réel de cette passe).
+
+**Verdict honnête sur la distinction visuelle à l'échelle réelle
+(32×84px, canvas cuit 64×64)** : les 3 pics sont **réellement distincts**
+en silhouette — coup1 (bras tendu à l'horizontale, avant-corps), coup2
+(un genou levé + un poing levé, asymétrique, vertical montant), coup3
+(2 bras symétriques au-dessus de la tête, vertical). Aux échelles 1x/2x
+du jeu réel, coup1 et coup3 restent parfaitement lisibles. **Réserve
+honnête sur coup2** : le poing levé seul (sans le genou, si le joueur ne
+regarde que le haut du corps) peut à l'œil rapide évoquer un salut/une
+garde plutôt qu'un coup — c'est la jambe asymétrique qui porte
+l'essentiel de la distinction, un peu plus qu'attendu au départ. Pas un
+échec (le mouvement EST different et se voit en jeu, confirmé par la
+capture chaînée réelle), mais moins immédiatement lisible qu'un pur
+geste de bras comme coup1/coup3 — à garder à l'œil si un futur retour de
+playtest le signale.

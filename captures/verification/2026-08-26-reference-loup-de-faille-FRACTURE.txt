@@ -1,0 +1,7 @@
+Provenance : capture fournie par l'utilisateur (Milan), copiee depuis
+/tmp/wolf_ref/invocation-loup.png sur la machine de developpement.
+Montre la competence "Loup de Faille" du jeu FRACTURE (un autre projet
+de ce meme depot de jeux), donnee comme reference externe de qualite de
+pic d'animation / lisibilite de pose pour comparaison, dans le cadre du
+MANDAT retours de playtest reel, point 5 (refonte du combo de base de
+Cendre, Rank Zero). N'est PAS un asset de Rank Zero.

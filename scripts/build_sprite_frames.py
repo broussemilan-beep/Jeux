@@ -33,9 +33,24 @@ def main() -> int:
     p.add_argument("--cooked-manifest", required=True)
     p.add_argument("--anim", action="append", required=True,
                     help="name:fps=N:loop=true|false")
+    p.add_argument("--frame-ticks", action="append", default=[],
+                    help="name:t1,t2,...,tN — timing NON-UNIFORME par frame (mandat "
+                         "'retours de playtest réel' point 5, bible d'animation §2). "
+                         "Optionnel : sans cette option toutes les frames de l'anim "
+                         "gardent la duree uniforme 1.0 (comportement historique). "
+                         "Chaque t_i est un nombre de ticks (60 ticks/s, meme unite que "
+                         "ANTICIPATION_TICKS/RECOVERY_TICKS de player.gd) ; converti en "
+                         "'duration' Godot (multiplicateur de la periode 1/fps) par "
+                         "t_i / (60/fps). La liste doit avoir exactement autant "
+                         "d'elements que l'anim a de frames dans le manifeste cuit.")
     p.add_argument("--out", required=True)
     p.add_argument("--repo-root", default=os.getcwd())
     args = p.parse_args()
+
+    frame_ticks_config: dict[str, list[float]] = {}
+    for entry in args.frame_ticks:
+        name, ticks_str = entry.split(":", 1)
+        frame_ticks_config[name] = [float(t) for t in ticks_str.split(",")]
 
     with open(args.cooked_manifest) as f:
         cooked = json.load(f)
@@ -80,9 +95,20 @@ def main() -> int:
         if anim_name not in anim_config:
             continue
         cfg = anim_config[anim_name]
+        ticks = frame_ticks_config.get(anim_name)
+        if ticks is not None:
+            if len(ticks) != len(data["frames"]):
+                print(f"ERREUR: --frame-ticks pour '{anim_name}' a {len(ticks)} valeurs "
+                      f"mais l'anim a {len(data['frames'])} frames dans le manifeste cuit.",
+                      file=sys.stderr)
+                return 1
+            ticks_per_unit = 60.0 / cfg["fps"]
+            durations = [t / ticks_per_unit for t in ticks]
+        else:
+            durations = [1.0] * len(data["frames"])
         frame_entries = [
-            '{\n"duration": 1.0,\n"texture": ExtResource("%d")\n}' % tex_id_map[fp]
-            for fp in data["frames"]
+            '{\n"duration": %s,\n"texture": ExtResource("%d")\n}' % (repr(dur), tex_id_map[fp])
+            for fp, dur in zip(data["frames"], durations)
         ]
         frames_str = ", ".join(frame_entries)
         block = (
