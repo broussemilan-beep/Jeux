@@ -34,7 +34,30 @@ const CONTACT_TICK := 20
 ## PX_PER_METER (même échelle que le combo de Player, ATTACK_RANGE_PX).
 ## Dégâts non chiffrés par la fiche (contrairement au combo, 10.0) —
 ## valeur par défaut alignée sur le dégât combo, à faire trancher par Milan.
-const ATTACK_RANGE_PX := 48.0
+##
+## CORRECTIF (2026-08-26, MANDAT RETOURS DE PLAYTEST RÉEL, point 4 —
+## "Gueule Vide imperceptible en jeu réel") : la valeur d'origine (48px)
+## combinée à POWER1_SPAWN_DISTANCE_PX (96px, Player._cast_gueule_vide())
+## ne mord que dans la bande [48px, 144px] devant le joueur (rayon centré
+## sur la créature, elle-même à 96px). Un ennemi DÉJÀ EN TRAIN D'ATTAQUER
+## le joueur au corps-à-corps — le déclencheur le plus probable pour
+## lancer une invocation de riposte — est par construction à SA portée de
+## contact à lui (`Enemy.attack_range_px` : 28px Crawler, 52px Brute à
+## peine dans l'ancienne bande), donc dans l'angle mort entre le joueur et
+## la créature : la morsure ne touchait jamais la cible la plus commune.
+## Reproduit et confirmé par un nouveau check dédié AVANT ce correctif
+## (`gueule_vide_hits_enemy_at_realistic_melee_contact_range`,
+## tools/smoke_test_gameplay.gd — rouge avec 48px, vert avec 96px).
+## Remontée à 96px = POWER1_SPAWN_DISTANCE_PX : le bord proche de la bande
+## (spawn_distance - range) tombe à 0, la morsure couvre donc TOUT le
+## chemin entre le joueur et la créature (aucun angle mort), jusqu'à
+## 192px au-delà — un rayon de morsure large plutôt qu'un simple cône
+## fin, cohérent avec une "gueule qui engloutit ce qui l'entoure" plus
+## qu'avec une morsure chirurgicale à 1,5m pile. Écart honnête avec la
+## fiche (~1,5m devenu ~3m) : nécessaire pour éliminer l'angle mort,
+## documenté ici plutôt que masqué, à revalider par Milan si la fiche
+## doit rester la référence numérique stricte.
+const ATTACK_RANGE_PX := 96.0
 const ATTACK_DAMAGE := 10.0
 
 ## Addendum A, §A.5 : "aucune source de hasard non seedée dans le chemin

@@ -793,12 +793,19 @@ func _check_gueule_vide_hits_enemy_at_realistic_melee_range() -> void:
 	await get_tree().physics_frame
 	Input.action_release("power1")
 
+	# Recherche AVEC nouvelle tentative après le hit, pas une seule lecture
+	# immédiate après le relâchement : le _physics_process() de Player qui
+	# instancie la créature (Player._cast_gueule_vide()) tourne au tick
+	# PHYSIQUE suivant la pression, pas de façon synchrone à l'intérieur de
+	# ce même appel — une recherche one-shot juste après release() peut donc
+	# rater la créature alors qu'elle apparaît bien une frame plus tard
+	# (constaté : `get_children()` ne la contenait pas encore à cet instant
+	# précis lors de la mise au point de ce check).
 	var creature: GueuleVide = null
 	for child in get_children():
 		if child is GueuleVide:
 			creature = child
 			break
-	print("DEBUG_TMP2 children_right_after_release=", get_children().map(func(c): return c.name))
 
 	var hit_landed: bool = await _wait_until(func(): return enemy.stats.hp < hp_before, GueuleVide.TOTAL_TICKS + 10)
 	if creature == null:
@@ -806,7 +813,6 @@ func _check_gueule_vide_hits_enemy_at_realistic_melee_range() -> void:
 			if child is GueuleVide:
 				creature = child
 				break
-	print("DEBUG_TMP3 children_after_hit_wait=", get_children().map(func(c): return c.name), " creature_found_late=", creature != null)
 
 	_checks.append({
 		"name": "gueule_vide_hits_enemy_at_realistic_melee_contact_range",
@@ -823,10 +829,23 @@ func _check_gueule_vide_hits_enemy_at_realistic_melee_range() -> void:
 	# fuiter un "shardBurst" qui n'a rien à voir avec ce que ce check-là
 	# vérifie — même bug de non-isolation inter-check que documenté au-
 	# dessus pour "EnemyForGueuleVide" resté dans le groupe "enemies".
-	var creature_gone := true
 	if creature != null:
-		creature_gone = await _wait_until(func(): return not is_instance_valid(creature), GueuleVide.TOTAL_TICKS + 10)
-	print("DEBUG_TMP creature_found=", creature != null, " creature_gone=", creature_gone, " spawn_log_size=", VfxDirector.spawn_log.size())
+		await _wait_until(func(): return not is_instance_valid(creature), GueuleVide.TOTAL_TICKS + 10)
+
+	# Cette morsure a déclenché son propre hit-stop + punch-zoom caméra
+	# (CombatFeedback.register_hit(), même mécanisme que le combo — voir
+	# gueule_vide.gd::_resolve_contact()). Sans attendre leur retour à
+	# l'état neutre ICI, un check ULTÉRIEUR qui suppose une caméra/un
+	# hit-stop au repos (ex. camera_punch_zoom_triggers_on_medium_hit_
+	# not_light, qui lit CameraDirector.get_punch_zoom() juste après un
+	# coup "light" et attend Vector2.ONE) peut lire un résidu qui n'a rien
+	# à voir avec CE qu'il teste — même famille de bug de non-isolation
+	# inter-check que le commentaire "Phase R4" de
+	# src/vfx/vfx_recipe_registry.gd (_physics_process) documente déjà
+	# pour VfxDirector.spawn_log.
+	await _wait_until(func():
+		return not CombatFeedback.is_frozen() and CameraDirector.get_punch_zoom() == Vector2.ONE
+	, CameraDirector.PUNCH_ZOOM_TICKS + 20)
 	await get_tree().physics_frame
 
 
@@ -857,7 +876,6 @@ func _check_gueule_vide_owner_death_policy() -> void:
 				return true
 		return false
 	, 35)
-	print("DEBUG_TMP4 spawn_log=", VfxDirector.spawn_log)
 
 	# weakref() plutôt qu'une capture directe de `creature` dans ce 3e
 	# lambda : GDScript logge une erreur "Lambda capture ... was freed"

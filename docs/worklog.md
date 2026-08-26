@@ -5248,3 +5248,139 @@ laissés tels quels pour le commit de l'autre agent.
 **Coût réel** : 0 génération PixelLab/Meshy/SpriteCook — reproduction,
 correctif et vérification purement logiques, capture via le rendu du
 jeu lui-même (aucun asset généré).
+
+## 2026-08-26 — MANDAT RETOURS DE PLAYTEST RÉEL, point 4 : Gueule Vide imperceptible en jeu réel — bug de portée réel (PAS l'hypothèse lisibilité), confirmé et corrigé
+
+**Contexte.** Milan a joué le build web déployé et signalé, après
+plusieurs rounds déjà faits sur la lisibilité de cette compétence
+(composition, détail, contraste VFX v2-v5) : "Gueule Vide (T1
+Invocateur, `_cast_gueule_vide()`, `scenes/gameplay/powers/
+gueule_vide.tscn`) — un truc apparaît et ne fait rien." Deux hypothèses
+à trancher dans l'ordre : (1) bug de portée/ciblage réel (motif déjà
+rencontré sur Effondrement : une cible exactement à 180° exclue par un
+arrondi flottant dans `Targeting.enemies_in_arc()`) ; (2) si les dégâts
+tombent bien, un problème de LISIBILITÉ (flash/recul/chiffre de dégâts
+insuffisants).
+
+**Méthode imposée : auditer en jeu réel, pas en capture isolée.**
+`tools/smoke_test_gameplay.gd::_check_gueule_vide()` existait déjà et
+vérifiait mécaniquement cooldown, dégâts et recul — TOUS au vert avant
+toute modification, ce qui orientait fortement vers l'hypothèse 2. Mais
+son placement d'ennemi (`spawn_pos + Vector2(20, 0)`, à 20px de la
+créature) est artificiellement commode : jamais la position RÉELLE d'un
+ennemi en train d'attaquer le joueur au corps-à-corps.
+
+**Hypothèse 1 (portée/ciblage), sous-question a — même bug qu'Effondrement ?**
+Non. `gueule_vide.gd::_resolve_contact()` utilise
+`Targeting.nearest_enemy_in_radius()` (rayon pur, aucun calcul d'angle),
+PAS `Targeting.enemies_in_arc()` (qui, seule, fait le `angle_to()` sujet
+à l'arrondi flottant à 180°). Aucune exposition possible au bug
+d'Effondrement — helper structurellement différent.
+
+**Hypothèse 1, sous-question b — un bug DISTINCT de portée existe-t-il quand même ?**
+Oui, confirmé par reproduction en jeu réel (pas en supposition) : un
+nouveau check dédié,
+`gueule_vide_hits_enemy_at_realistic_melee_contact_range`
+(`tools/smoke_test_gameplay.gd`), place un Crawler exactement à SA
+propre portée de contact réelle (28px du joueur, `scenes/gameplay/
+enemy_crawler.tscn::attack_range_px`) — la position où un Crawler
+s'arrête RÉELLEMENT pour mordre le joueur, pas une position de test
+arbitraire. Rouge avant correctif. Root cause : la créature ne se
+déplace jamais (aucun code de mouvement dans `gueule_vide.gd`) ; elle
+mord dans un rayon `ATTACK_RANGE_PX` (48px, valeur d'origine) centré sur
+SA PROPRE position, elle-même à `POWER1_SPAWN_DISTANCE_PX` (96px,
+`Player._cast_gueule_vide()`) devant le joueur — elle ne pouvait donc
+toucher qu'un ennemi situé entre 48px et 144px du joueur. Un ennemi déjà
+au contact du joueur (28px Crawler, 52px Brute — à peine dans l'ancienne
+bande) tombe dans l'angle mort entre le joueur et la créature : le
+déclencheur le plus probable pour lancer une invocation de riposte
+(un ennemi déjà en train d'attaquer) ratait systématiquement.
+
+**Correctif** : `ATTACK_RANGE_PX` 48px -> 96px
+(`src/gameplay/powers/gueule_vide.gd`) — le bord proche de la bande
+(spawn_distance - range) tombe à 0, la morsure couvre donc tout le
+chemin entre le joueur et la créature (aucun angle mort), jusqu'à 192px
+au-delà. Écart honnête avec la fiche de référence ("~1,5m devant la
+créature", ~3m obtenu) documenté dans le code plutôt que masqué, à
+revalider par Milan si la fiche doit rester la référence numérique
+stricte. Le check dédié passe au vert après correctif, et
+`gueule_vide_contact_damages_enemy_in_range`/
+`gueule_vide_contact_applies_recoil_to_enemy` (position déjà en zone)
+restent verts — aucune régression sur le cas déjà couvert.
+
+**Hypothèse 2 (lisibilité) — écartée pour la cause RÉELLE, mais un warning réel corrigé quand même.**
+Comparaison avec les autres compétences dédiées (Bras-Faux, Poing
+Belluaire, Poing Tellurique, Marée de Sable, les 4 Invocateur déjà
+livrées) : toutes portent leurs dégâts via `Enemy.take_damage()`
+(`src/gameplay/enemy.gd`), qui appelle INCONDITIONNELLEMENT
+`HitResponse.flash_sprite()` et `HitResponse.spawn_damage_number()` sur
+tout coup qui touche (avant le `return` de mort) — Gueule Vide fait de
+même (`_resolve_contact()` appelle `target.take_damage(...)`, "même
+schéma que Player._try_hit()"), donc les MÊMES primitives que partout
+ailleurs dans le jeu. `CombatFeedback.register_hit()` (shake +
+camera-punch) est déjà câblé aussi (fix antérieur documenté dans ce même
+fichier). Rien à corriger côté HitResponse.
+
+Le warning cité par le mandat ("aucun rôle de palette 'invocateur_vide'
+ne mentionne la primitive 'impactFlashFrame' — repli gris neutre",
+`VfxRecipeRegistry._resolve_color()`) est RÉEL et confirmé dans les logs
+— `data/palettes/invocateur_vide.json` disait déjà en note (CORRECTIF
+v5) que 'noir d'encre' couvrait "impacts... même famille que
+fractureLine/impactFlashFrame", mais le texte `usage` réel ne contenait
+que le mot générique "impacts" — `_resolve_color()` fait un matching
+EXACT de sous-chaîne sur le nom de la primitive ('impactflashframe'),
+"impacts" ne matche pas. Corrigé : "impactFlashFrame" ajouté
+littéralement au `usage` de 'noir d'encre' (CORRECTIF v6, aucune valeur
+HSV touchée). MAIS lecture de `src/vfx/primitives/impact_flash_frame.gd`
+confirme que `_draw()` ignore complètement hue_deg/saturation_percent —
+cette primitive dessine TOUJOURS un flash quasi-blanc par design (§4 de
+l'archi VFX), indépendamment du rôle de palette résolu. Ce correctif
+élimine donc un warning réel et aligne le texte sur l'intention déjà
+documentée en v5 (bonne hygiène, 5 recettes affectées : gueule_vide,
+poing_du_colosse, corbeau_pale, oeil_sans_regard, serpent_creux), mais
+**n'est PAS la cause de l'invisibilité réelle** — confirmé par lecture de
+code ET par reproduction en jeu réel : la vraie cause était le bug de
+portée ci-dessus.
+
+**Vérification visuelle (avant/après un impact réel)** :
+`scripts/capture_headless.sh --mode=player_action --action=power1
+--active_power=invocateur --level=1 --tick=22 --scale=3`, ennemi par
+défaut de l'outil à 30px du joueur (quasi identique aux 28px réels de
+Crawler). AVANT (`ATTACK_RANGE_PX=48` temporaire) :
+`captures/verification/2026-08-26-gueule-vide-portee-avant.png` — la
+créature mord (flash blanc d'`impactFlashFrame` visible), mais AUCUNE
+réaction sur l'ennemi : pas de teinte de hit, pas de chiffre de dégâts.
+APRÈS (`ATTACK_RANGE_PX=96`) :
+`captures/verification/2026-08-26-gueule-vide-portee-apres.png` — même
+tick, même mise en scène : chiffre "10" magenta bien visible au-dessus
+de l'ennemi, teinte de hit sur son sprite. Différence nette et honnête
+entre les deux images.
+
+**Tests de non-régression** : re-`--import` puis
+`run_gameplay_smoke_test.sh` et `run_vfx_recipe_smoke_test.sh` —
+`"all_pass":true` sur les deux, relancé plusieurs fois de suite pour
+confirmer la stabilité (le nouveau check
+`gueule_vide_hits_enemy_at_realistic_melee_contact_range` inclut une
+attente explicite de fin de créature + retour au calme hit-stop/
+camera-punch avant de rendre la main, pour ne pas polluer
+`VfxDirector.spawn_log`/`CameraDirector` partagés vus par les checks
+suivants — même famille de bug de non-isolation inter-check que
+documenté dans `src/vfx/vfx_recipe_registry.gd`, Phase R4).
+
+**Discipline fichier partagé.** `tools/smoke_test_gameplay.gd` portait
+du travail en cours d'autres agents concurrents (points 2/3 du même
+mandat) pendant cette passe. Un `git stash` déclenché par un autre agent
+("recoil-fix") a mis de côté le travail de plusieurs agents simultanément
+(dont celui-ci) le temps qu'il édite `enemy.gd` seul ; le `git stash pop`
+tenté ensuite a conflit proprement sur `tools/smoke_test_gameplay.gd`
+(un autre agent avait entre-temps réappliqué SA propre partie
+indépendamment) — abandonné sans rien écraser, la pile reste conservée
+intacte (`stash@{0}`, à supprimer par un humain une fois confirmé
+redondant), et les 2 modifications qui manquaient (`gueule_vide.gd`,
+`tools/smoke_test_gameplay.gd`) ont été réappliquées manuellement
+au-dessus de l'état déjà présent sur disque, revérifiées par `git diff`
+juste avant ce commit.
+
+**Coût réel** : 0 génération PixelLab/Meshy/SpriteCook — diagnostic,
+correctif et vérification purement logiques ; capture via le rendu du
+jeu lui-même (aucun asset généré).
