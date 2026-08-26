@@ -97,6 +97,7 @@ func _ready() -> void:
 	await _check_gate_entrance_detects_player_once_and_targets_the_gate_scene()
 	await _check_gate_premiere_wires_exit_signal_to_a_handler()
 	await _check_character_screen_toggles_open_closed_and_shows_class_none()
+	await _check_player_death_restart_flow()
 
 	_report()
 
@@ -3546,6 +3547,64 @@ func _check_character_screen_toggles_open_closed_and_shows_class_none() -> void:
 	})
 	screen.queue_free()
 	await get_tree().process_frame
+
+
+## MANDAT "retours de playtest réel" (point 1, PRIORITÉ ABSOLUE) — softlock
+## confirmé par Milan en jeu réel : `die()` verrouillait tout et rien nulle
+## part ne permettait d'en sortir (aucun new_run()/restart() dans tout le
+## dépôt). DERNIER check de toute la suite, volontairement : au-delà du
+## seuil, un appui "attack" appelle pour de vrai `RunState.start_new_run()`,
+## qui appelle `change_scene_to_file()` — un changement de scène réel qui
+## remplace CE nœud de test lui-même. Testé empiriquement (traces de
+## debug temporaires, retirées après coup) : `_process_death_restart()`
+## se déclenche bien exactement au tick attendu et `RunState.player_stats`
+## change bien d'objet — mais AUCUN `await get_tree().physics_frame`
+## postérieur à ce tick ne reprend jamais dans ce fichier (le nœud qui
+## attend est celui que `change_scene_to_file()` vient de remplacer) :
+## plusieurs variantes testées (lecture immédiate, tick supplémentaire,
+## `_wait_until()`) font toutes stagner le process indéfiniment dès que le
+## tick déclencheur a réellement eu lieu. Ce dernier check s'arrête donc
+## volontairement AVANT le tick qui franchit le seuil — il vérifie tout ce
+## qui est observable en toute sécurité depuis ce nœud (verrouillage à la
+## mort, délai anti-appui-accidentel) ; le déclenchement réel au-delà du
+## seuil est vérifié par lecture directe de `_process_death_restart()`/
+## `RunState.start_new_run()` (voir leurs commentaires) plutôt que rejoué
+## ici, pour ne pas rendre toute la suite de smoke test fragile à un
+## changement de scène réel au milieu de son exécution.
+func _check_player_death_restart_flow() -> void:
+	var stats_before_death: Stats = _player.stats
+	_player.take_damage(999999.0, _player.global_position + Vector2(-10, 0))
+	var died_flag: bool = _player.stats.is_dead()
+	var anim_after_death: String = _player._sprite.animation
+	var action_lock_after_death: bool = _player._action_lock
+	var death_ticks_reset: bool = _player._death_ticks == 0
+
+	# Avant le seuil (DEATH_RESTART_INPUT_ENABLED_TICKS - 1 ticks, "attack"
+	# tenu à chaque tick) : aucune relance ne doit se déclencher — le délai
+	# est volontaire (voir le commentaire de la constante dans player.gd),
+	# contre un appui accidentel juste après la mort. S'arrête volontairement
+	# UN tick avant le seuil (voir le commentaire de fonction ci-dessus).
+	for i in range(Player.DEATH_RESTART_INPUT_ENABLED_TICKS - 1):
+		Input.action_press("attack")
+		await get_tree().physics_frame
+		Input.action_release("attack")
+
+	var scene_unchanged_before_threshold: bool = (
+		is_instance_valid(_player) and RunState.player_stats == stats_before_death)
+
+	_checks.append({
+		"name": "player_death_locks_action_plays_mort_and_resets_death_ticks",
+		"pass": died_flag and anim_after_death == "mort" and action_lock_after_death and death_ticks_reset,
+		"detail": {
+			"died_flag": died_flag, "anim_after_death": anim_after_death,
+			"action_lock_after_death": action_lock_after_death, "death_ticks_reset": death_ticks_reset,
+		},
+	})
+	_checks.append({
+		"name": "death_restart_input_is_ignored_before_threshold_ticks",
+		"pass": scene_unchanged_before_threshold,
+		"detail": {"scene_unchanged_before_threshold": scene_unchanged_before_threshold},
+	})
 
 
 func _report() -> void:

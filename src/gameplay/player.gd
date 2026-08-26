@@ -14,6 +14,19 @@ class_name Player
 
 const AttackAnimName := ["coup1", "coup2", "coup3"]
 
+## MANDAT "retours de playtest réel" (point 1, PRIORITÉ ABSOLUE) — softlock
+## confirmé : `die()` verrouillait l'input et jouait "mort" mais rien
+## n'existait nulle part dans le dépôt pour en sortir (aucune fonction
+## new_run()/restart(), déjà signalé comme un manque dans docs/worklog.md
+## au sujet de RunState). GDD ne prévoit aucun écran de fin/narratif pour
+## ce cas — option minimale explicitement autorisée par Milan : "un état
+## mort qui permet de relancer une nouvelle run sans recharger la page".
+## Délai avant d'accepter l'input de relance (au lieu d'un restart instantané
+## dès `die()`) : laisse la frame "mort" se lire au moins une seconde avant
+## qu'un appui accidentel (ex. la touche qui vient de tuer le joueur,
+## encore enfoncée) ne relance déjà la run suivante.
+const DEATH_RESTART_INPUT_ENABLED_TICKS := 60
+
 ## Timeline d'un coup, en ticks (60/s) — §6.2 du doc VFX donne des
 ## fourchettes pour les VFX/animations premium (anticipation 25-40%,
 ## release 5-12%, recovery 35-55%) ; ces chiffres respectent ces
@@ -707,6 +720,11 @@ var facing: Vector2 = Vector2.DOWN
 ## pas fusionner deux minuteries distinctes).
 var _action_lock: bool = false
 
+## MANDAT "retours de playtest réel" (point 1) — voir DEATH_RESTART_INPUT_
+## ENABLED_TICKS ci-dessus. Remonte à 0 dans `die()`, incrémenté à chaque
+## tick tant que `stats.is_dead()` (voir `_process_death_restart()`).
+var _death_ticks: int = 0
+
 ## Phase 2.1 (MANDAT SUITE v2) : famille "footstep" — pas de données de
 ## contact au sol par frame pour l'instant (8 directions, aucune n'a de
 ## marqueur dédié), donc un pas toutes les FOOTSTEP_PERIOD_TICKS tant que
@@ -1001,6 +1019,10 @@ func _physics_process(_delta: float) -> void:
 	# CombatFeedback.register_hit() route déjà les deux compteurs selon
 	# `attacker_is_player`, ce nœud n'a qu'à lire celui qui le concerne).
 	if CombatFeedback.is_player_frozen():
+		return
+
+	if stats.is_dead():
+		_process_death_restart()
 		return
 
 	if _power1_cooldown_remaining > 0:
@@ -3756,5 +3778,24 @@ func die() -> void:
 	_oeil_sans_regard_phase = OeilSansRegardPhase.NONE
 	_serpent_creux_phase = SerpentCreuxPhase.NONE
 	_action_lock = true
+	_death_ticks = 0
 	_sprite.play("mort")
 	Sfx.play("death")
+
+
+## MANDAT "retours de playtest réel" (point 1) — appelée chaque tick tant
+## que `stats.is_dead()` (voir le early-return ajouté dans _physics_process),
+## à la place de tout le reste (mouvement/attaque/pouvoirs restent tous
+## verrouillés par `stats.is_dead()` déjà vérifié dans chacune de leurs
+## fonctions d'entrée, mais rien ne les court-circuitait explicitement ici
+## avant ce mandat — d'où le softlock : la boucle continuait de tourner
+## sans jamais rien faire de nouveau). "attack" réutilisé comme touche de
+## relance plutôt qu'une nouvelle action dédiée : déjà bindé clavier+souris
+## (voir commentaire en tête de fichier), aucun nouvel écran/asset à
+## inventer pour ce mandat.
+func _process_death_restart() -> void:
+	_death_ticks += 1
+	if _death_ticks < DEATH_RESTART_INPUT_ENABLED_TICKS:
+		return
+	if Input.is_action_just_pressed("attack"):
+		RunState.start_new_run()

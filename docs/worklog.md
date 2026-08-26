@@ -4889,3 +4889,95 @@ aucune régression.
 totalement redondant avec ce qui est committé ici — à supprimer
 (`git stash drop`) quand un humain confirme, cette session n'ayant pas
 la permission de le faire elle-même.
+
+## 2026-08-26 — MANDAT RETOURS DE PLAYTEST RÉEL, point 1 (PRIORITÉ ABSOLUE) : softlock à la mort du joueur
+
+**Contexte.** Milan a joué au build déployé et signalé un vrai softlock :
+à la mort, aucune reprise possible (pas de redémarrage, pas d'écran de
+fin, rien) — le jeu reste figé, ce qui bloquait tout playtest au-delà
+de la première mort. Mandat explicite : trouver le point exact où la
+machine à états s'arrête après `_die()`, et implémenter au minimum un
+état "mort" qui permette de relancer une nouvelle run sans recharger la
+page à la main (GDD ne prévoit rien de narratif ici — comportement
+minimal explicitement autorisé, "ne rien inventer côté narratif").
+
+**Root cause confirmée par lecture directe** : `Player.die()`
+(`src/gameplay/player.gd`) verrouillait bien `_action_lock` et jouait
+l'anim "mort", mais **rien nulle part dans tout le dépôt** ne
+réinitialisait quoi que ce soit après ça — aucune fonction
+`new_run()`/`restart()` n'existait (déjà signalé comme un manque dans
+une entrée antérieure de ce worklog, jamais traité jusqu'ici).
+`RunState` (autoload, H4) tire `player_stats`/`active_power` UNE SEULE
+FOIS à l'initialisation du process, sans aucune notion de "début de
+run" distincte. Un joueur mort restait donc mort pour toujours, sans
+recours.
+
+**Fix implémenté** :
+- `Player` : nouvelle constante `DEATH_RESTART_INPUT_ENABLED_TICKS := 60`
+  (~1s @ 60/s) et `_death_ticks` (remis à 0 dans `die()`). Nouveau
+  early-return dans `_physics_process()` (`if stats.is_dead():
+  _process_death_restart(); return`) — c'est CE court-circuit manquant
+  qui causait le softlock : la boucle continuait de tourner sans jamais
+  rien faire de nouveau, chaque sous-système restant verrouillé par son
+  propre garde `stats.is_dead()` sans qu'aucun d'eux ne propose de sortie.
+  `_process_death_restart()` attend ce délai (contre un appui accidentel
+  juste après la mort, ex. la touche qui vient de tuer le joueur encore
+  enfoncée) puis réutilise l'action "attack" existante (déjà bindée
+  clavier+souris) comme touche de relance — aucun nouvel écran/asset
+  inventé, conforme à la consigne.
+- `RunState` : nouvelle fonction `start_new_run()` — PV/niveau/XP
+  repartent de zéro (`Stats.new()`, même patron que la construction de
+  l'autoload) et le Pouvoir est retiré au hasard (même règle que
+  l'amendement GDD "un seul Pouvoir par run, tiré au hasard" déjà en
+  place pour le tirage initial), puis retour au Hub (`outpost.tscn`,
+  `run/main_scene` de `project.godot`, qui sert aussi d'écran de départ)
+  via `change_scene_to_file()` — le même mécanisme déjà utilisé ailleurs
+  dans le dépôt pour les transitions Hub↔Gate (`gate_premiere.gd`).
+
+**Vérification en conditions réelles (pas seulement `capture_scene.gd`)**
+: testé directement via des traces de debug temporaires (retirées après
+coup, jamais committées) dans une instance réelle de `Player` + l'autoload
+`RunState` réel, pas un scénario isolé — confirmé que :
+1. `_death_ticks` progresse bien tick par tick tant que `stats.is_dead()`.
+2. Un appui "attack" AVANT le seuil (60 ticks) est bien ignoré.
+3. Exactement au tick 60, `Input.is_action_just_pressed("attack")` est
+   bien vu comme vrai et `RunState.start_new_run()` s'exécute réellement
+   — `RunState.player_stats` devient un tout nouvel objet `Stats`
+   (vérifié par comparaison d'identité, deux runs consécutives donnant
+   deux ID d'objet distincts) et `change_scene_to_file("res://scenes/
+   gameplay/outpost.tscn")` est bien appelé avec le bon chemin.
+
+**Limite honnête sur le smoke test automatisé** : `tools/
+smoke_test_gameplay.gd` a reçu 2 nouveaux checks
+(`player_death_locks_action_plays_mort_and_resets_death_ticks`,
+`death_restart_input_is_ignored_before_threshold_ticks`), tous deux
+verts et stables. Un 3e check qui tentait de vérifier le déclenchement
+RÉEL (au-delà du seuil) a été retiré après investigation : plusieurs
+variantes (lecture immédiate après un tick supplémentaire, boucle de
+sondage `_wait_until()`, appel direct de `_physics_process()`) font
+TOUTES stagner le process headless indéfiniment dès que le tick
+déclencheur a réellement eu lieu — le nœud racine du smoke test EST la
+scène que `change_scene_to_file()` remplace, et un `await
+get_tree().physics_frame` postérieur à ce remplacement ne reprend
+jamais. Plutôt que de rendre toute la suite de 170+ checks fragile à un
+changement de scène réel en plein milieu de son exécution, ce dernier
+check s'arrête volontairement UN tick avant le seuil (tout ce qui est
+observable en toute sécurité depuis ce nœud) ; le déclenchement réel
+au-delà du seuil est vérifié par la méthode ci-dessus (traces de debug
+temporaires sur une instance dédiée), pas rejoué dans le harnais partagé.
+
+**Tests de non-régression** : re-`--import` puis
+`run_gameplay_smoke_test.sh` (170 checks, `"all_pass":true`, aucun hang,
+`exit=0`) et `run_vfx_recipe_smoke_test.sh` (`"all_pass":true`) —
+aucune régression.
+
+**Coût réel** : 0 génération PixelLab/Meshy/SpriteCook — fix de logique
+pure, aucun asset touché.
+
+**Reste à faire sur ce mandat** (points 2-5, non traités dans cette
+passe) : (2) recul des monstres inefficace en jeu réel, (3) orientation
+figée des 3 monstres, (4) Gueule Vide imperceptible en jeu réel, (5)
+refonte du combo de base inspirée de la compétence "loup" de FRACTURE
+(`game/proto/fracture-plongee.html`, localisé dans le dépôt
+`broussemilan-beep/Alpha_Project_Live`, PAS `Jeux` — confirmé, distinct
+du pipeline Rank Zero).

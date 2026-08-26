@@ -33,3 +33,21 @@ var player_stats: Stats = Stats.new()
 ## champ par défaut se résout à la construction du nœud — avant la
 ## garantie que les autres autoloads de la liste soient déjà prêts.
 var active_power: String = ["invocateur", "monstrification", "terre"].pick_random()
+
+
+## MANDAT "retours de playtest réel" (point 1, softlock à la mort) — jusqu'ici
+## la seule "notion de début de run" de tout le dépôt était l'initialisation
+## de cet autoload au démarrage du process (voir commentaires ci-dessus,
+## déjà signalé comme un manque). GDD §20 ne prévoit aucun écran de fin pour
+## ce cas — comportement minimal choisi (autorisé explicitement par Milan) :
+## PV/niveau/XP repartent de zéro (nouveau Stats, même patron que la
+## construction ci-dessus) et le Pouvoir est retiré au hasard (même règle
+## que l'amendement GDD "un seul Pouvoir par run, tiré au hasard" — une
+## nouvelle run tire donc un nouveau Pouvoir, pas nécessairement le même),
+## puis retour au Hub (outpost.tscn, `run/main_scene` de project.godot) qui
+## sert aussi d'écran de départ. Appelée par Player._process_death_restart()
+## une fois l'input de relance détecté.
+func start_new_run() -> void:
+	player_stats = Stats.new()
+	active_power = ["invocateur", "monstrification", "terre"].pick_random()
+	get_tree().change_scene_to_file("res://scenes/gameplay/outpost.tscn")
