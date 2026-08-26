@@ -4746,3 +4746,146 @@ de cette passe — chantier Décor concurrent en cours. Mis de côté via
 `git stash push` sur ces 2 fichiers uniquement avant toute
 intervention, restaurés (`git stash pop`) sans y toucher ni les
 committer une fois ce chantier terminé.
+
+---
+
+## 2026-08-26 — CHANTIER B DÉCOR (reprise post-coupure) : point 2 (intensité lumière) reconstruit et committé, point 3 (variété de props) traité
+
+**Contexte.** L'agent Décor précédent (chantier posterize + intensité,
+entrées ci-dessus) a été tué deux fois par des incidents système
+pendant qu'il travaillait sur le point 2 (relever l'intensité des
+braseros/torches d'`outpost`/`gate_premiere` maintenant que le posterize
+est corrigé). Son travail *process* est perdu, mais pas ses fichiers.
+Reprise de zéro sur ce qui restait : vérifier/committer le point 2, puis
+attaquer le point 3 (variété de props), seul point jamais commencé.
+
+### Point 2 — reconstruction de l'intensité lumière
+
+**Ce qui a été trouvé en arrivant, avant tout changement.** `git diff`
+sur `outpost.tscn`/`gate_premiere.tscn` était **vide** — contrairement à
+ce qu'indiquait le briefing de reprise, les valeurs d'`energy`/
+`texture_scale` étaient encore aux valeurs "AVANT" (outpost braseros
+0.55/1.3 ; gate_premiere braseros 1.5/2.4, torches 0.85/1.3). Root cause
+retrouvée par `git reflog` : un commit `c055328` ("decor(outpost,
+gate_premiere): intensite lumiere remontee...") avait bien été fait,
+puis **annulé par un `git reset` vers HEAD~1** avant que les 10
+compétences Chantier A ne soient recommitées proprement par-dessus
+(`69609c3`, `caa3ef2`, `1c2f1ad`) — le point 2 s'est perdu dans ce reset
+sans jamais être recommité. Un `git stash` orphelin
+(`wip-decor-other-agent-stash-aside`, jamais popé) trouvé dans le dépôt
+contenait **exactement** le même diff que celui reconstruit ci-dessous
+(vérifié `git stash show -p` == `git diff` une fois les valeurs
+réappliquées, caractère pour caractère) — confirmation indépendante que
+les valeurs suivantes sont bien celles déjà mesurées et validées par
+l'agent précédent, pas une invention de cette passe. Ce stash n'a pas pu
+être supprimé (`git stash drop` refusé par le classifieur de permissions
+de cette session) — il reste dans le dépôt, redondant mais inoffensif ;
+à nettoyer manuellement si souhaité.
+
+**Valeurs réappliquées** (identiques au commit message de `c055328` et à
+la capture déjà présente `captures/verification/2026-08-24-decor-
+intensite-relevee-avant-apres.png`) :
+- `outpost` : PropBrazier1/2 — `energy` 0.55→**1.5**, `texture_scale`
+  1.3→**2.4** (valeur déjà acceptée sur gate_premiere, pas une valeur
+  inventée).
+- `gate_premiere` : PropBrazier1-4 — `energy` 1.5→**2.0**,
+  `texture_scale` 2.4→**2.8** ; PropTorchStand1-3 — `energy`
+  0.85→**1.1**, `texture_scale` 1.3→**1.6**.
+
+**Re-vérification indépendante** (au-delà de la capture déjà validée) :
+nouvelle capture headless (`tools/capture_scene.gd --mode=scene`) sur
+les 4 mêmes positions + `scripts/validate_pixels.py --category decor`
+sur une bande y<200. Violation locale mesurée : 0.02% sur les 4
+positions (outpost brazier1/2, gate_premiere brazier1) — sous le
+plafond décor, dans le même sens que les chiffres déjà documentés
+(0.6%-2.3%) mais pas identique en valeur : l'écart vient du fait que ma
+bande y<200 englobe quelques pixels de la barre de compétences du HUD
+(échantillon de violation localisé à y=19, x=517-613, identique sur les
+3 scènes indépendamment de la position caméra — signature d'un élément
+d'UI en écran fixe, pas du décor), alors que la mesure d'origine
+isolait le sol seul. Dans les deux cas : violation négligeable,
+cohérent avec le rendu visuel (capture inchangée, toujours l'aspect
+"riche/atmosphérique" déjà jugé bon).
+
+**Tests de non-régression** : `godot4 --headless --rendering-driver
+vulkan --import` puis `run_gameplay_smoke_test.sh` et
+`run_vfx_recipe_smoke_test.sh` → **`"all_pass":true`** sur les deux.
+
+**Commit** : scènes + `captures/verification/2026-08-24-decor-
+intensite-relevee-avant-apres.png` (untracked jusqu'ici, committée avec
+ce point).
+
+### Point 3 — variété de props (caisses, piliers, débris)
+
+**Cadrage.** `docs/worklog.md` (entrée 2026-08-23 ci-dessus) avait déjà
+tranché : la **densité** de props est suffisante, le manque identifié
+est la **variété** — plusieurs instances du même prop (pillier, débris,
+gravats) réutilisent la texture strictement identique (seul un
+mirroring horizontal les distingue, parfois même pas). Budget vérifié
+avant toute génération : `get_balance` (PixelLab) = 1337 générations
+restantes sur abonnement, $0 de crédit cash ; `get_credit_balance`
+(SpriteCook) = 27 crédits, **non utilisés** (aucun appel SpriteCook
+cette passe).
+
+**Approche retenue** : 2 techniques, pas une seule, pour rester
+proportionné au budget :
+1. **PixelLab `edit_image`** (payant, ~20 générations/appel) sur les 2
+   props les plus répétés visuellement en jeu : `prop_pillar.png` →
+   variante "mossy" (fissures + mousse, même silhouette/palette) et
+   `prop_debris.png` → variante "alt" (autre agencement de gravats).
+   Coût réel mesuré (`get_balance` avant/après) : **60 générations**
+   (723 utilisées après vs 663 avant, $0 cash — quota d'abonnement).
+   Un 3e appel (`prop_crate.png` → variante caisse) a aussi été tenté
+   (~20 générations) mais **le résultat était quasi indiscernable de
+   l'original** une fois comparé côte à côte à l'échelle réelle —
+   dépense non concluante, assumée telle quelle (le fichier généré
+   n'est pas utilisé dans les scènes).
+2. **Recolor HSV gratuit (PIL, 0 génération, 0 crédit)** pour la caisse
+   et les gravats chauds (`prop_rubble_warm.png`) : rotation de teinte +
+   désaturation appliquée pixel par pixel sur l'image existante (même
+   alpha, même silhouette, même ombrage — juste une palette différente).
+   Résultat nettement plus distinct que la tentative payante équivalente
+   sur la caisse, pour un coût nul — utilisé à la place.
+
+**Fichiers ajoutés** (`assets/processed/sprites/world/`) :
+`prop_pillar_mossy.png` (PixelLab), `prop_debris_alt.png` (PixelLab),
+`prop_crate_weathered.png` (recolor HSV gratuit),
+`prop_rubble_cool.png` (recolor HSV gratuit) — + leurs `.import`.
+
+**Appliqué dans les scènes** (`outpost.tscn`/`gate_premiere.tscn`
+uniquement, `test_arena.tscn` non touchée — hors scope) :
+- `outpost` : PropPillar2 → `prop_pillar_mossy.png` (PropPillar1 garde
+  l'original — 2 piliers désormais visuellement distincts au lieu
+  d'une simple copie miroir).
+- `gate_premiere` : PropPillar2/4 → `prop_pillar_mossy.png`
+  (PropPillar1/3 gardent l'original — alternance plutôt que 4 copies
+  identiques) ; PropDebris2 → `prop_debris_alt.png` (PropDebris1/3
+  gardent l'original) ; PropRubble3 → `prop_rubble_cool.png`
+  (PropRubble2/4 gardent l'original, gravats "chauds") ; PropCrate1 →
+  `prop_crate_weathered.png` (différencie la caisse de gate_premiere de
+  celle d'outpost — chaque scène n'a qu'une seule caisse, donc la
+  variété se joue entre scènes plutôt qu'à l'intérieur d'une scène).
+
+**Vérification visuelle** : grille avant/après zoomée
+(`captures/verification/2026-08-26-decor-props-variete-avant-apres.png`,
+10 positions caméra, chaque variante à côté de son original) — la
+mousse du pilier, le recolor froid des gravats et le recolor "weathered"
+de la caisse sont tous nettement visibles à l'écran ; la variante de
+débris est plus subtile mais réellement différente (agencement des
+blocs, teinte plus grise). Verdict honnête : bon résultat pour piliers/
+gravats/caisse, résultat plus marginal pour les débris — pas de
+sur-vente.
+
+**Tests de non-régression** (après ajout des assets + modifications de
+scène) : re-`--import` puis `run_gameplay_smoke_test.sh` et
+`run_vfx_recipe_smoke_test.sh` → **`"all_pass":true"`** sur les deux,
+aucune régression.
+
+**Coût réel total de cette passe** : **60 générations PixelLab**
+(abonnement, $0 cash), **0 crédit SpriteCook**, **0 crédit Meshy**.
+
+**Point d'attention pour une session future** : un `git stash`
+(`wip-decor-other-agent-stash-aside`) reste dans le dépôt, désormais
+totalement redondant avec ce qui est committé ici — à supprimer
+(`git stash drop`) quand un humain confirme, cette session n'ayant pas
+la permission de le faire elle-même.

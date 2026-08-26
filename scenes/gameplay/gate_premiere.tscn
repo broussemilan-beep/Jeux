@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=3]
+[gd_scene load_steps=37 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/gameplay/player.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/gameplay/enemy_crawler.tscn" id="2"]
@@ -33,6 +33,10 @@
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/world/prop_torch_stand.png" id="31"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/world/prop_vegetation.png" id="32"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/world/prop_banner_post.png" id="33"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/world/prop_pillar_mossy.png" id="34"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/world/prop_debris_alt.png" id="35"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/world/prop_rubble_cool.png" id="36"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/world/prop_crate_weathered.png" id="37"]
 
 [sub_resource type="ShaderMaterial" id="1"]
 shader = ExtResource("9")
@@ -184,14 +188,16 @@ texture = ExtResource("19")
 
 [node name="Glow" type="PointLight2D" parent="PropBrazier1"]
 color = Color(1, 0.5, 0.2, 1)
-energy = 1.5
-texture_scale = 2.4
+energy = 2.0
+texture_scale = 2.8
 texture = SubResource("7")
 
 [node name="PropPillar2" type="Sprite2D" parent="."]
+; Variante visuelle (CHANTIER B point 3, variete de props) : meme pilier,
+; texture "mossy" plutot qu'une copie identique de PropPillar1/3.
 position = Vector2(1950, 380)
 scale = Vector2(-1, 1)
-texture = ExtResource("20")
+texture = ExtResource("34")
 
 [node name="PropRubble2" type="Sprite2D" parent="."]
 position = Vector2(2620, 360)
@@ -203,8 +209,8 @@ texture = ExtResource("19")
 
 [node name="Glow" type="PointLight2D" parent="PropBrazier2"]
 color = Color(1, 0.48, 0.18, 1)
-energy = 1.5
-texture_scale = 2.4
+energy = 2.0
+texture_scale = 2.8
 texture = SubResource("7")
 
 [node name="PropDebris1" type="Sprite2D" parent="."]
@@ -212,17 +218,21 @@ position = Vector2(100, 380)
 texture = ExtResource("22")
 
 [node name="PropDebris2" type="Sprite2D" parent="."]
+; Variante visuelle (CHANTIER B point 3) : autre agencement de gravats,
+; meme palette/style, plutot qu'une copie identique de PropDebris1/3.
 position = Vector2(900, 380)
 scale = Vector2(-1, 1)
-texture = ExtResource("22")
+texture = ExtResource("35")
 
 [node name="PropPillar3" type="Sprite2D" parent="."]
 position = Vector2(1500, 260)
 texture = ExtResource("20")
 
 [node name="PropRubble3" type="Sprite2D" parent="."]
+; Variante visuelle (CHANTIER B point 3) : gravats teinte froide (recolor
+; HSV gratuit, 0 credit), pour rompre la repetition avec PropRubble2/4.
 position = Vector2(1700, 400)
-texture = ExtResource("21")
+texture = ExtResource("36")
 
 [node name="PropDebris3" type="Sprite2D" parent="."]
 position = Vector2(2150, 400)
@@ -234,13 +244,19 @@ scale = Vector2(-1, 1)
 texture = ExtResource("21")
 
 [node name="PropPillar4" type="Sprite2D" parent="."]
+; Variante visuelle (CHANTIER B point 3) : meme pilier "mossy" que
+; PropPillar2, pour alterner plutot que 4 copies identiques.
 position = Vector2(3450, 400)
 scale = Vector2(-1, 1)
-texture = ExtResource("20")
+texture = ExtResource("34")
 
 [node name="PropCrate1" type="Sprite2D" parent="."]
+; Variante visuelle (CHANTIER B point 3) : caisse "weathered" (recolor HSV
+; gratuit) pour differencier de la caisse d'outpost.tscn (meme texture
+; sinon dans les 2 scenes, aucune caisse repetee a l'interieur d'une
+; scene donnee).
 position = Vector2(380, 400)
-texture = ExtResource("29")
+texture = ExtResource("37")
 
 [node name="PropIdol1" type="Sprite2D" parent="."]
 position = Vector2(1100, 400)
@@ -252,8 +268,8 @@ texture = ExtResource("31")
 
 [node name="Glow" type="PointLight2D" parent="PropTorchStand1"]
 color = Color(1, 0.78, 0.5, 1)
-energy = 0.85
-texture_scale = 1.3
+energy = 1.1
+texture_scale = 1.6
 texture = SubResource("7")
 
 [node name="PropVegetation1" type="Sprite2D" parent="."]
@@ -273,8 +289,8 @@ texture = ExtResource("19")
 
 [node name="Glow" type="PointLight2D" parent="PropBrazier3"]
 color = Color(1, 0.5, 0.2, 1)
-energy = 1.5
-texture_scale = 2.4
+energy = 2.0
+texture_scale = 2.8
 texture = SubResource("7")
 
 [node name="PropTorchStand2" type="Sprite2D" parent="."]
@@ -286,8 +302,8 @@ texture = ExtResource("31")
 
 [node name="Glow" type="PointLight2D" parent="PropTorchStand2"]
 color = Color(1, 0.78, 0.5, 1)
-energy = 0.85
-texture_scale = 1.3
+energy = 1.1
+texture_scale = 1.6
 texture = SubResource("7")
 
 [node name="PropTorchStand3" type="Sprite2D" parent="."]
@@ -299,8 +315,8 @@ texture = ExtResource("31")
 
 [node name="Glow" type="PointLight2D" parent="PropTorchStand3"]
 color = Color(1, 0.78, 0.5, 1)
-energy = 0.85
-texture_scale = 1.3
+energy = 1.1
+texture_scale = 1.6
 texture = SubResource("7")
 
 [node name="PropBrazier4" type="Sprite2D" parent="."]
@@ -313,8 +329,8 @@ texture = ExtResource("19")
 
 [node name="Glow" type="PointLight2D" parent="PropBrazier4"]
 color = Color(1, 0.48, 0.18, 1)
-energy = 1.5
-texture_scale = 2.4
+energy = 2.0
+texture_scale = 2.8
 texture = SubResource("7")
 
 [node name="Player" parent="." instance=ExtResource("1")]
