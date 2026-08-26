@@ -117,6 +117,8 @@ func _ready() -> void:
 		await _run_player_action_sequence_capture(args)
 	elif mode == "enemy_hit_reaction":
 		await _run_enemy_hit_reaction_capture(args)
+	elif mode == "enemy_chase_facing":
+		await _run_enemy_chase_facing_capture(args)
 	else:
 		await _run_primitive_capture(args)
 
@@ -378,6 +380,122 @@ func _run_enemy_hit_reaction_capture(args: Dictionary) -> void:
 	}
 	print("CAPTURE_RESULT ", JSON.stringify(report))
 	get_tree().quit(0)
+
+
+## --mode=enemy_chase_facing (MANDAT playtest réel, retour Milan 2026-08-26 :
+##   "les 3 monstres restent TOUS orientés dans la même direction ... ne le
+##   font jamais") : livrable avant/après de VÉRIFICATION VISUELLE demandé
+##   par le mandat, complément de _check_enemy_faces_chase_direction_in_
+##   multiple_directions() (tools/smoke_test_gameplay.gd, assertion logique
+##   sur flip_h) — ici on capture le RENDU réel, deux PNG montrant le même
+##   monstre chasser un Joueur réel posé successivement à GAUCHE puis à
+##   DROITE de sa position de départ (le Joueur ne se déplace pas
+##   lui-même, c'est le monstre qui chasse — Targeting.get_player() n'a
+##   besoin que d'un Joueur vivant dans le groupe "player", aucune pression
+##   d'input requise).
+##   --monster=crawler|brute|ranged (def. crawler)
+##   --offset_px=200                distance Joueur/monstre à chaque
+##                                   repositionnement (def. 200 — hors
+##                                   attack_range_px des 3 archétypes ET
+##                                   sous aggro_radius_px, garantit un vrai
+##                                   CHASE en mouvement, jamais un
+##                                   télégraphe immobile ni un retour à IDLE)
+##   --ticks=40                     ticks physiques attendus après chaque
+##                                   repositionnement du Joueur avant de
+##                                   capturer (def. 40 — laisse le monstre
+##                                   quitter IDLE, entrer CHASE, et
+##                                   _update_visual_bob() poser flip_h)
+##   --out_dir=/chemin/absolu/      écrit facing_left.png puis facing_right.png
+##   --scale=1|2|4                  même convention qu'ailleurs (def. 1)
+func _run_enemy_chase_facing_capture(args: Dictionary) -> void:
+	var monster_name: String = args.get("monster", "crawler")
+	var offset_px: float = float(args.get("offset_px", "200"))
+	var wait_ticks: int = int(args.get("ticks", "40"))
+	var out_dir: String = args.get("out_dir", "")
+	var scale: int = int(args.get("scale", "1"))
+	if out_dir == "":
+		push_error("capture_scene[enemy_chase_facing]: --out_dir requis.")
+		get_tree().quit(1)
+		return
+	if not DirAccess.dir_exists_absolute(out_dir):
+		DirAccess.make_dir_recursive_absolute(out_dir)
+
+	var scene: PackedScene
+	match monster_name:
+		"brute":
+			scene = EnemyBruteScene
+		"ranged":
+			scene = EnemyRangedScene
+		_:
+			scene = EnemyCrawlerScene
+
+	var enemy := scene.instantiate()
+	enemy.global_position = Vector2(320, 220)
+	add_child(enemy)
+
+	var player := PlayerScene.instantiate()
+	add_child(player)
+
+	# --- Moitié 1 : Joueur posé à GAUCHE de la position de DÉPART du monstre
+	# -> le monstre doit chasser vers -x (flip_h attendu = true,
+	# "touche_lateral" gauche, même convention que
+	# _select_directional_reaction()). ---
+	player.global_position = enemy.global_position + Vector2(-offset_px, 0)
+	await get_tree().physics_frame
+	for i in range(wait_ticks):
+		await get_tree().physics_frame
+
+	var visual_left: AnimatedSprite2D = enemy.get_node("Visual")
+	var flip_h_left: bool = visual_left.flip_h
+	var velocity_x_left: float = enemy.velocity.x
+	var state_left: int = enemy._state
+
+	await _freeze_and_wait_render()
+	var img_left: Image = get_viewport().get_texture().get_image()
+	if scale > 1:
+		img_left.resize(img_left.get_width() * scale, img_left.get_height() * scale, Image.INTERPOLATE_NEAREST)
+	var path_left := out_dir.path_join("facing_left.png")
+	var err_left := _save_png(img_left, path_left)
+
+	# --- Moitié 2 : Joueur téléporté à DROITE de la position COURANTE du
+	# monstre (déjà avancé vers -x pendant la moitié 1 — ancrer sur cette
+	# position à CE moment précis, jamais sur la position de départ figée,
+	# sous peine de sortir du rayon d'aggro : `offset_px` cumulé à la
+	# distance déjà parcourue dépasserait `aggro_radius_px` et le monstre
+	# retomberait en IDLE au lieu de renverser son cap — piège trouvé en
+	# vérifiant le premier essai de cette capture, diagnostic explicite
+	# dans le rapport JSON ci-dessous, "state":0/IDLE inattendu) -> le
+	# monstre doit RENVERSER son cap et chasser vers +x (flip_h attendu =
+	# false). Dégèle d'abord : le monstre doit continuer de chasser
+	# RÉELLEMENT, pas reprendre depuis un état gelé artificiellement. ---
+	get_tree().paused = false
+	player.global_position = enemy.global_position + Vector2(offset_px, 0)
+
+	for i in range(wait_ticks):
+		await get_tree().physics_frame
+
+	var flip_h_right: bool = visual_left.flip_h
+	var velocity_x_right: float = enemy.velocity.x
+	var state_right: int = enemy._state
+
+	await _freeze_and_wait_render()
+	var img_right: Image = get_viewport().get_texture().get_image()
+	if scale > 1:
+		img_right.resize(img_right.get_width() * scale, img_right.get_height() * scale, Image.INTERPOLATE_NEAREST)
+	var path_right := out_dir.path_join("facing_right.png")
+	var err_right := _save_png(img_right, path_right)
+
+	var report := {
+		"out_dir": out_dir, "monster": monster_name, "offset_px": offset_px, "ticks": wait_ticks,
+		"facing_left_png": path_left, "facing_left_save_err": err_left,
+		"facing_right_png": path_right, "facing_right_save_err": err_right,
+		"diagnostic": {
+			"left_half": {"flip_h": flip_h_left, "velocity_x": velocity_x_left, "state": state_left},
+			"right_half": {"flip_h": flip_h_right, "velocity_x": velocity_x_right, "state": state_right},
+		},
+	}
+	print("CAPTURE_RESULT ", JSON.stringify(report))
+	get_tree().quit(0 if (err_right == OK and err_left == OK) else 1)
 
 
 ## --mode=scene (Chantier B, vérification décor) : instancie une scène
