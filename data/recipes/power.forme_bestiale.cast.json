@@ -1,0 +1,25 @@
+{
+  "id": "power.forme_bestiale.cast",
+  "family": "melee_sweep",
+  "importance_tier": 1,
+  "layers": [
+    { "type": "anticipation", "primitive": "converge",         "start_tick": 0,  "end_tick": 24, "degradable": false, "scale_px": 40 },
+    { "type": "core",         "primitive": "ribbonTrail",      "start_tick": 18, "end_tick": 30, "degradable": false, "scale_px": 56, "sweep_deg": 160 },
+    { "type": "contact",      "primitive": "arcSlash",         "start_tick": 25, "end_tick": 30, "degradable": false, "scale_px": 40 },
+    { "type": "contact",      "primitive": "impactFlashFrame", "start_tick": 25, "end_tick": 30, "degradable": false },
+    { "type": "contact",      "primitive": "impactStar",       "start_tick": 25, "end_tick": 30, "degradable": false, "scale_px": 34 },
+    { "type": "contact",      "primitive": "fractureLine",     "start_tick": 25, "end_tick": 44, "degradable": true,  "scale_px": 34 }
+  ],
+  "dissipation_profile": { "value_mult": 0.5, "saturation_mult": 0.5, "opacity_mult": 0.4, "duration_ticks": 18 },
+  "palette_id": "parasite",
+  "feedback": "heavy",
+  "sfx_markers": [ { "tick": 25, "event": "forme_bestiale_impact" } ],
+  "limits": { "particles": 6, "sprites": 6, "persistent_ticks": 64, "overdraw_budget": 0.7 },
+  "lifecycle": {
+    "cancellable_before": "release",
+    "owner_death_policy": "finish_core_then_stop_secondary",
+    "scene_change_policy": "stop_immediately",
+    "max_lifetime_ticks": 68
+  },
+  "notes": "'La seule vraie transformation complète de toute la bible' (data/pouvoirs/monstrification.json, notes) — importance_tier=1 (le plus haut de tous les pouvoirs de Monstrification, AU-DESSUS de Bras-Faux/Poing Belluaire/Poing Tellurique/Machoire qui sont tous 2), même statut que le combo/Gueule Vide. RÉFÉRENCE VISUELLE (docs/references/monstrification/forme_bestiale.png, POUVOIR : MONSTRIFICATION — FORME BESTIALE, FOR+AGI, TIER 4, 'Transformation majeure') : 4 temps Préparation/Transformation/Attaque large/Retour brutal. Timeline joueur 64 ticks (24 anticipation + 6 release + 34 recovery, cf. player.gd FORME_BESTIALE_*), la plus longue des 5 pouvoirs de Monstrification déjà en jeu — délibéré, une transformation majeure a besoin de plus de temps à se lire que 'frappe de zone'. anticipation 0-24 : converge, plus large (scale_px 40, vs 26-32 sur les autres pouvoirs) pour vendre une transformation de CORPS ENTIER, pas d'un seul membre (temps 1 'Préparation' + le DÉBUT de temps 2 'Transformation'). core 18-30 : ribbonTrail sweep_deg 160 (contre 100 sur Bras-Faux) — 'Attaque large' du GDD, un balayage à deux bras nettement plus ouvert que n'importe quel autre pouvoir de la Classe. contact 25-30 : arcSlash+impactFlashFrame+impactStar, tous à la plus grande échelle de la famille (34-40px) pour un coup qui doit se lire comme le plus lourd du Pouvoir. fractureLine 25-44 (degradable=true, conséquence du 'Retour brutal' — le sol se fissure sous le poids de la créature qui frappe puis reprend forme humaine) : fenêtre la plus longue (19 ticks) de toutes les couches conséquence de la Classe, cohérent avec une recovery elle-même la plus longue (34 ticks). Portée/arc/dégâts/recul/cooldown NE sont PAS dans cette recette (§8.1) — côté gameplay dans player.gd, constantes FORME_BESTIALE_*. Palette 'parasite' RÉUTILISÉE telle quelle (aucune valeur modifiée, toutes les primitives déjà nommées dans le champ `usage` d'un rôle existant) — SEULE l'échelle (scale_px) et l'ouverture (sweep_deg) changent pour vendre le poids/l'ampleur, jamais une couleur en dur ni une nouvelle primitive."
+}

@@ -1,0 +1,24 @@
+{
+  "id": "power.pattes_de_chasse.cast",
+  "family": "leap_strike",
+  "importance_tier": 2,
+  "layers": [
+    { "type": "anticipation", "primitive": "converge",         "start_tick": 0,  "end_tick": 10, "degradable": false, "scale_px": 24 },
+    { "type": "core",         "primitive": "ribbonTrail",      "start_tick": 6,  "end_tick": 20, "degradable": false, "scale_px": 34, "sweep_deg": 50 },
+    { "type": "contact",      "primitive": "arcSlash",         "start_tick": 14, "end_tick": 18, "degradable": false, "scale_px": 28 },
+    { "type": "contact",      "primitive": "impactFlashFrame", "start_tick": 14, "end_tick": 18, "degradable": false },
+    { "type": "contact",      "primitive": "fractureLine",     "start_tick": 18, "end_tick": 30, "degradable": true,  "scale_px": 22 }
+  ],
+  "dissipation_profile": { "value_mult": 0.5, "saturation_mult": 0.5, "opacity_mult": 0.4, "duration_ticks": 12 },
+  "palette_id": "parasite",
+  "feedback": "medium",
+  "sfx_markers": [ { "tick": 14, "event": "pattes_de_chasse_strike" } ],
+  "limits": { "particles": 5, "sprites": 5, "persistent_ticks": 40, "overdraw_budget": 0.6 },
+  "lifecycle": {
+    "cancellable_before": "release",
+    "owner_death_policy": "finish_core_then_stop_secondary",
+    "scene_change_policy": "stop_immediately",
+    "max_lifetime_ticks": 44
+  },
+  "notes": "Nouvel archétype 'leap_strike' (aucun pouvoir existant ne combine déplacement du joueur + frappe — Bras-Faux/Poing Belluaire/Poing Tellurique/Machoire sont tous 'aucun déplacement automatique' par construction, Marée de Sable est une ligne qui voyage mais le JOUEUR reste immobile) : PAS une réutilisation forcée de 'melee_sweep'/'melee_impact', une vraie 3e famille pour rester honnête sur ce qui distingue ce pouvoir — même discipline que 'line_wave' ajouté pour Marée de Sable. RÉFÉRENCE VISUELLE (docs/references/monstrification/pattes_de_chasse.png, POUVOIR : MONSTRIFICATION — PATTES DE CHASSE, AGI+FOR, TIER 3->5 (Milan, voir notes de data/pouvoirs/monstrification.json), 'Mobilité offensive') : 4 temps Préparation/Bond/Frappe en mouvement/Atterrissage. Timeline joueur 40 ticks (10 anticipation + 14 move + 16 recovery, cf. player.gd PATTES_DE_CHASSE_*) : anticipation 0-10 = converge (temps 1 'Préparation', crouch/matière qui gagne les jambes), core 6-20 = ribbonTrail sweep_deg 50 (traînée du bond ET de la frappe en mouvement, temps 2+3 combinés en une seule couche continue — le joueur se déplace RÉELLEMENT pendant cette fenêtre, contrairement à toutes les autres couches ribbonTrail de la Classe qui habillent un pivot sur place), contact 14-18 = arcSlash+impactFlashFrame au tick de frappe (PATTES_DE_CHASSE_STRIKE_TICK côté player.gd), fractureLine 18-30 (degradable=true, marques de griffes/impact au sol de l'Atterrissage, temps 4). Portée/largeur de ligne/dégâts/cooldown/distance de bond NE sont PAS dans cette recette (§8.1) — côté gameplay dans player.gd, constantes PATTES_DE_CHASSE_*. Palette 'parasite' RÉUTILISÉE telle quelle (aucune valeur modifiée, toutes les primitives déjà nommées dans le champ `usage` d'un rôle existant), aucune nouvelle primitive (dustKick de la Classe Terre délibérément ÉCARTÉ pour la marque d'atterrissage — fractureLine réutilisée à la place, seule primitive de conséquence déjà couverte par cette palette)."
+}

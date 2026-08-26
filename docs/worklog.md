@@ -4613,3 +4613,136 @@ ci-dessus, qui documente avoir vu mes propres lignes de debug
 apparaître dans la sortie du smoke test) — aucune ligne touchant
 Corbeau Pâle/Poing du Colosse/Œil Sans Regard/Serpent Creux n'a été
 modifiée par cette passe.
+
+## 2026-08-25 — Chantier A Monstrification (Mâchoire/Forme Bestiale/Pattes de Chasse) : reprise après incident système, captures manquantes complétées
+
+**Contexte.** Un agent précédent sur ce chantier a été tué par un
+incident système avant de finir, puis une seconde fois (process perdu,
+fichiers sur disque conservés). Reprise en 2 temps : (1) audit de ce
+qui était réellement déjà fait vs. seulement présent sur disque non
+committé, (2) complétion du travail manquant identifié par Milan.
+
+**Audit — déjà fait et vérifié (rien régénéré).** Le code gameplay des
+3 compétences (`_start_machoire()`/`_start_forme_bestiale()`/
+`_start_pattes_de_chasse()`, constantes de tick/cooldown,
+`MachoireRecipeId`/`FormeBestialeRecipeId`/`PattesDeChasseRecipeId`)
+ainsi que les 3 checks smoke test (`_check_machoire()`/
+`_check_forme_bestiale()`/`_check_pattes_de_chasse()`) sont déjà
+committés sur `main` (caa3ef2) et déjà appelés dans `_ready()`. Relancé
+`scripts/run_gameplay_smoke_test.sh` en tout début de passe : déjà
+`"all_pass":true` avant toute intervention.
+
+**Problème critique trouvé et résolu en premier.** `cendre_frames.tres`
+(committé dans caa3ef2) référence déjà en `ext_resource` les 18 PNG des
+3 compétences (`assets/processed/sprites/cendre/{machoire,
+forme_bestiale,pattes_de_chasse}/{0..5}.png`) — mais ces PNG (+ leurs
+`.import`) ainsi que les 3 recettes VFX
+(`data/recipes/power.{machoire,forme_bestiale,pattes_de_chasse}.cast.json`)
+étaient encore UNTRACKED sur le disque de l'agent précédent. Un clone
+frais de `origin/main` aurait donc cassé ces 3 compétences (ressources
+manquantes) malgré un code qui compile et un smoke test vert en local.
+Vérifié fichier par fichier que le contenu sur disque est cohérent (6
+PNG + `.import` par compétence, chemins `.tres` correspondant exactement
+aux fichiers présents) avant de les committer tels quels — rien
+régénéré, aucun appel PixelLab. Les 3 recettes JSON relues : cohérentes
+avec les patterns déjà en place (palette `parasite` réutilisée sans
+modification, notes détaillées référençant les bonnes planches/tiers/
+constantes `player.gd`).
+
+**Travail complété — captures 4-temps manquantes.** Seule Mâchoire
+avait sa planche de vérification 4-temps
+(`captures/verification/2026-08-24-monstrification-machoire-4temps/`,
+elle aussi untracked — committée avec ce chantier). Forme Bestiale et
+Pattes de Chasse n'avaient aucune capture. Générées via
+`godot4 --headless --rendering-driver vulkan --import` puis
+`tools/capture_scene.gd --mode=player_action_sequence
+--active_power=monstrification --level=<palier> --action=power<slot>`
+(slot résolu via l'ordre `tier` de `data/pouvoirs/monstrification.json` :
+Mâchoire=power3/palier 6, Forme Bestiale=power4/palier 14, Pattes de
+Chasse=power5/palier 18 — confirmé en lisant `pouvoir_registry.gd`,
+`get_unlocked_skill_for_slot()` trie par tier et indexe 1:1 les slots).
+Frames choisies aux ticks correspondant aux 4 temps du GDD (mêmes bornes
+que `FORME_BESTIALE_FRAME_TICK_BOUNDS`/`PATTES_DE_CHASSE_FRAME_TICK_BOUNDS`
+dans `player.gd`), composées en planche de synthèse au même format que
+celui de Mâchoire (fond noir, 4 panneaux labellisés, footer, scale x3
+NEAREST) via un script Python (PIL) ad hoc, pas de script réutilisable
+laissé dans le dépôt :
+- `captures/verification/2026-08-25-monstrification-forme-bestiale-4temps/`
+  — 4 frames (`tick06` Préparation, `tick20` Transformation, `tick26`
+  Attaque large — "26/26" dégâts visibles sur les 2 ennemis, `tick50`
+  Retour brutal — reversion complète à la forme humaine, cohérent avec
+  la planche de référence qui montre le personnage humain + gravats
+  pour ce 4e temps) + planche de synthèse.
+- `captures/verification/2026-08-25-monstrification-pattes-de-chasse-4temps/`
+  — 4 frames (`tick04` Préparation, `tick13` Bond, `tick17` Frappe en
+  mouvement — "14/14" dégâts au tick de frappe réel, `tick21`
+  Atterrissage) + planche de synthèse.
+
+**Anomalie observée (outil de capture, pas un bug gameplay) — Pattes
+de Chasse.** Au-delà du tick ~21, la capture en séquence montre le
+sprite revenir à l'anim idle (perte de la pose griffée) alors que les
+constantes (`PATTES_DE_CHASSE_RECOVERY_TICKS`) prévoient une RECOVERY
+jusqu'au tick 40. Le smoke test
+(`pattes_de_chasse_ends_displaced_and_unlocks_then_cooldown_blocks_second_cast`)
+passe et prouve que le cycle complet (anticipation/move/recovery) se
+déroule normalement sans les 2 ennemis placeholder collés au joueur —
+seule la scène de capture les place en contact permanent pendant tout
+le bond, même catégorie d'artefact que celui déjà documenté pour
+Carapace (2026-08-24, "2 ennemis placeholder plantés au contact").
+N'ayant pas accès à un moyen propre de le confirmer sans toucher
+`capture_scene.gd`/`player.gd` (hors mandat), la planche de Pattes de
+Chasse utilise le dernier tick au rendu propre (`tick21`, encore dans
+le même index de frame que `tick17`) plutôt qu'un tick de RECOVERY
+tardif — déclaré explicitement dans le footer de la planche. Aucune
+frame cassée/vide livrée.
+
+**Tier Pattes de Chasse.** La recette JSON documente déjà l'écart
+connu : planche de référence imprimée "TIER 3", mais
+`data/pouvoirs/monstrification.json` le résout à tier 5 (dernier des 5
+paliers de Monstrification, cf. décision Milan citée dans les notes de
+la recette). Footer de planche écrit "T5" (source de vérité actuelle),
+pas "T3" (texte de la planche d'art non retouché).
+
+**Vérification visuelle.** Comparaison côte à côte avec
+`docs/references/monstrification/{forme_bestiale,pattes_de_chasse}.png` :
+silhouette reconnaissable sur les 8 frames captées, 4 temps distincts
+par compétence, aucune frame vide/cassée. Les rectangles magenta et
+nombres de dégâts visibles sont les mêmes overlays de debug HUD
+(cooldown bar, damage numbers placeholder) déjà présents et acceptés
+sur la planche Mâchoire existante — pas une régression.
+
+**Re-vérification finale.**
+`godot4 --headless --rendering-driver vulkan --import` puis
+`bash scripts/run_gameplay_smoke_test.sh` → **`"all_pass":true`**,
+tous les checks machoire/forme_bestiale/pattes_de_chasse verts, aucune
+régression sur le reste de la suite (167 checks).
+
+### Coût PixelLab réel dépensé PAR CETTE PASSE
+
+**0 crédit** — vérifié via `get_balance` en tout début de passe et de
+nouveau à la fin (723/2000 générations utilisées, inchangé) : les 18
+PNG (6×3 compétences) étaient déjà tous générés par l'agent précédent.
+Cette passe n'a fait qu'auditer, committer les assets/recettes déjà
+présents sur disque, capturer et composer des planches de vérification
+(script Python/PIL local, aucun appel service externe).
+
+### Fichiers ajoutés
+
+`assets/processed/sprites/cendre/{machoire,forme_bestiale,
+pattes_de_chasse}/{0..5}.png(+.import)` (36 fichiers, déjà générés,
+committés tels quels), `data/recipes/power.{machoire,forme_bestiale,
+pattes_de_chasse}.cast.json` (déjà écrits, committés tels quels),
+`captures/verification/2026-08-24-monstrification-machoire-4temps/`
+(déjà généré par l'agent précédent, untracked jusqu'ici — committé avec
+ce chantier), `captures/verification/2026-08-25-monstrification-
+forme-bestiale-4temps/`, `captures/verification/2026-08-25-
+monstrification-pattes-de-chasse-4temps/` (nouveau, cette passe). Aucun
+changement à `src/gameplay/player.gd` ni `tools/smoke_test_gameplay.gd`
+— déjà corrects, aucun bug réel ne le justifiait.
+
+**Note de coordination.** `scenes/gameplay/gate_premiere.tscn` et
+`scenes/gameplay/outpost.tscn` étaient modifiés (non commités) au début
+de cette passe — chantier Décor concurrent en cours. Mis de côté via
+`git stash push` sur ces 2 fichiers uniquement avant toute
+intervention, restaurés (`git stash pop`) sans y toucher ni les
+committer une fois ce chantier terminé.
