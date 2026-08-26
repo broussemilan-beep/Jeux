@@ -55,6 +55,7 @@ func _ready() -> void:
 	await _check_critical_hit()
 	await _check_dash()
 	await _check_gueule_vide()
+	await _check_gueule_vide_hits_enemy_at_realistic_melee_range()
 	await _check_gueule_vide_owner_death_policy()
 	await _check_hit_response()
 	await _check_animation_composer_and_camera()
@@ -80,9 +81,11 @@ func _ready() -> void:
 	await _check_crawler_chases_and_hits_player()
 	await _check_brute_telegraphs_before_hitting()
 	await _check_ranged_keeps_distance_and_fires_projectile()
+	await _check_enemy_faces_chase_direction_in_multiple_directions()
 	await _check_enemy_directional_hit_reaction()
 	await _check_enemy_stagger_on_consecutive_hits()
 	await _check_weight_differentiates_projection_vs_planted()
+	await _check_enemy_recoil_holds_real_separation_during_active_chase()
 	_check_stats_add_xp_levels_up()
 	await _check_enemy_death_awards_xp_to_player()
 	await _check_boss_attack_rotation_hits_player_with_all_four_attacks()
@@ -749,6 +752,84 @@ func _check_gueule_vide() -> void:
 	await get_tree().physics_frame
 
 
+## MANDAT RETOURS DE PLAYTEST RÉEL, point 4 ("Gueule Vide imperceptible en
+## jeu réel") — diagnostic AVANT hypothèse (discipline demandée) : la
+## créature ne se déplace jamais (aucun code de mouvement dans
+## gueule_vide.gd), elle mord dans un rayon ATTACK_RANGE_PX (48px) centré
+## sur SA PROPRE position, elle-même à POWER1_SPAWN_DISTANCE_PX (96px) du
+## joueur. Elle ne peut donc toucher qu'un ennemi situé entre 48px et
+## 144px du joueur (bande centrée sur elle) — un ennemi DÉJÀ EN TRAIN
+## D'ATTAQUER le joueur au corps-à-corps (le moment le plus probable pour
+## lancer une invocation "de contre") est lui, par construction, à sa
+## propre portée de contact (`attack_range_px` côté Enemy — 28px pour
+## Crawler, `scenes/gameplay/enemy_crawler.tscn`), donc DANS l'angle mort
+## entre le joueur et la créature, hors du rayon de morsure. Ce check
+## reproduit ce scénario réaliste (ennemi à portée de contact Crawler, pas
+## la position artificiellement commode du check `_check_gueule_vide()`
+## ci-dessus) pour vérifier si le coup part vraiment dans les conditions
+## de jeu les plus courantes.
+func _check_gueule_vide_hits_enemy_at_realistic_melee_range() -> void:
+	RunState.active_power = "invocateur"
+	_player.facing = Vector2.RIGHT
+
+	# _check_gueule_vide() juste avant a déjà consommé le cooldown de
+	# power1 (6s = 360 ticks) — sans attendre qu'il retombe ici, la
+	# pression ci-dessous ne spawnerait RIEN et ce check "réussirait" pour
+	# la mauvaise raison (aucun cast, donc aucun dégât, jamais un hit
+	# manqué détecté). Attendre le retour à 0 AVANT de presser, pas après.
+	await _wait_until(func(): return _player._power1_cooldown_remaining <= 0, Player.POWER1_COOLDOWN_TICKS + 10)
+
+	var enemy := EnemyCrawlerScene.instantiate()
+	enemy.name = "EnemyMeleeRangeForGueuleVide"
+	# Crawler.attack_range_px = 28px — distance à laquelle il s'arrête pour
+	# mordre le joueur en vrai combat (scenes/gameplay/enemy_crawler.tscn).
+	enemy.global_position = _player.global_position + Vector2.RIGHT * 28.0
+	add_child(enemy)
+	await get_tree().physics_frame
+
+	var hp_before: float = enemy.stats.hp
+
+	Input.action_press("power1")
+	await get_tree().physics_frame
+	Input.action_release("power1")
+
+	var creature: GueuleVide = null
+	for child in get_children():
+		if child is GueuleVide:
+			creature = child
+			break
+	print("DEBUG_TMP2 children_right_after_release=", get_children().map(func(c): return c.name))
+
+	var hit_landed: bool = await _wait_until(func(): return enemy.stats.hp < hp_before, GueuleVide.TOTAL_TICKS + 10)
+	if creature == null:
+		for child in get_children():
+			if child is GueuleVide:
+				creature = child
+				break
+	print("DEBUG_TMP3 children_after_hit_wait=", get_children().map(func(c): return c.name), " creature_found_late=", creature != null)
+
+	_checks.append({
+		"name": "gueule_vide_hits_enemy_at_realistic_melee_contact_range",
+		"pass": hit_landed,
+		"detail": {"hit_landed": hit_landed, "enemy_distance_from_player_px": 28.0},
+	})
+
+	enemy.queue_free()
+	# Attendre que CETTE créature termine réellement son cast (jusqu'à son
+	# shardBurst de désintégration, ticks 27-42) avant de rendre la main —
+	# sinon elle continue de tourner en arrière-plan pendant le check
+	# SUIVANT (_check_gueule_vide_owner_death_policy(), qui vide puis
+	# relit VfxDirector.spawn_log pour SA PROPRE créature) et peut y faire
+	# fuiter un "shardBurst" qui n'a rien à voir avec ce que ce check-là
+	# vérifie — même bug de non-isolation inter-check que documenté au-
+	# dessus pour "EnemyForGueuleVide" resté dans le groupe "enemies".
+	var creature_gone := true
+	if creature != null:
+		creature_gone = await _wait_until(func(): return not is_instance_valid(creature), GueuleVide.TOTAL_TICKS + 10)
+	print("DEBUG_TMP creature_found=", creature != null, " creature_gone=", creature_gone, " spawn_log_size=", VfxDirector.spawn_log.size())
+	await get_tree().physics_frame
+
+
 ## Addendum A, §A.4 : "owner_death_policy": "finish_core_then_stop_secondary"
 ## — instance dédiée (pas _player, déjà exercé/mort ailleurs dans cette
 ## suite) pour isoler ce scénario. Position loin des autres checks pour
@@ -776,6 +857,7 @@ func _check_gueule_vide_owner_death_policy() -> void:
 				return true
 		return false
 	, 35)
+	print("DEBUG_TMP4 spawn_log=", VfxDirector.spawn_log)
 
 	# weakref() plutôt qu'une capture directe de `creature` dans ce 3e
 	# lambda : GDScript logge une erreur "Lambda capture ... was freed"
@@ -2912,6 +2994,88 @@ func _check_ranged_keeps_distance_and_fires_projectile() -> void:
 	await get_tree().physics_frame
 
 
+## MANDAT PLAYTEST RÉEL (retour Milan, build web déployé, 2026-08-26) : "les 3
+## monstres restent TOUS orientés dans la même direction en jeu réel — ils
+## devraient se tourner vers le joueur ou vers leur direction de déplacement,
+## mais ne le font jamais." Reproduction en conditions de jeu réelles (pas une
+## capture isolée à un instant T, comme exigé par le mandat) : chacun des 3
+## archétypes (Crawler/Brute/Ranged — "les 3 monstres", pas seulement un
+## échantillon) chassé successivement vers +x PUIS vers -x (le joueur déplacé
+## de l'autre côté en cours de route, comme un joueur qui contourne le
+## monstre) doit voir son `Visual.flip_h` suivre le signe de sa vitesse RÉELLE
+## de poursuite dans les DEUX cas, pas seulement au premier contact — sinon
+## `_update_visual_bob()` (src/gameplay/enemy.gd, PARTAGÉE par les 3 scènes
+## d'archétype) ne fait illusion qu'une fois puis se fige, ce qu'une capture à
+## un seul instant ne peut pas distinguer d'un comportement correct.
+##
+## `offset_px` par archétype : > `attack_range_px` (jamais un contact
+## immédiat, sinon le monstre irait direct en TELEGRAPH sans jamais bouger
+## visuellement) ET assez sous `aggro_radius_px` pour absorber le
+## déplacement du monstre DURANT `wait_ticks` sans jamais en sortir (RANGED :
+## aussi > preferred_range_px+range_tolerance_px, sinon il resterait immobile
+## dans sa bande de tolérance au lieu de vraiment chasser/s'orienter).
+func _check_enemy_faces_chase_direction_in_multiple_directions() -> void:
+	var configs: Array[Dictionary] = [
+		{"name": "crawler", "scene": EnemyCrawlerScene, "offset_px": 200.0, "wait_ticks": 30},
+		{"name": "brute", "scene": EnemyBruteScene, "offset_px": 150.0, "wait_ticks": 40},
+		{"name": "ranged", "scene": EnemyRangedScene, "offset_px": 210.0, "wait_ticks": 30},
+	]
+	var per_monster: Dictionary = {}
+	var all_pass := true
+
+	for cfg in configs:
+		var enemy: Enemy = cfg["scene"].instantiate()
+		enemy.name = "FacingCheck_%s" % cfg["name"]
+		enemy.global_position = Vector2(1200, 1200)  # zone isolée, aucun autre check n'y pose rien
+		add_child(enemy)
+		await get_tree().physics_frame
+
+		var sprite: AnimatedSprite2D = enemy.get_node("Visual")
+		var offset_px: float = cfg["offset_px"]
+		var wait_ticks: int = cfg["wait_ticks"]
+
+		# --- Poursuite vers +x (joueur posé à droite) ---
+		_player.global_position = enemy.global_position + Vector2(offset_px, 0)
+		var chasing_right: bool = await _wait_until(
+			func(): return enemy._state == Enemy.State.CHASE and enemy.velocity.x > 0.0, 60)
+		# Quelques ticks de plus : _update_visual_bob() tourne APRÈS _run_ai()
+		# dans le même _physics_process, laisser une marge pour que flip_h se
+		# soit bien mis à jour avant de le lire.
+		for i in range(wait_ticks):
+			await get_tree().physics_frame
+		var flip_while_chasing_right: bool = sprite.flip_h
+
+		# --- Le joueur contourne le monstre : posé à gauche de la position
+		# COURANTE (déjà avancée vers +x ci-dessus, jamais la position de
+		# départ figée — sinon `offset_px` cumulé à la distance déjà
+		# parcourue risquerait de dépasser `aggro_radius_px` et de faire
+		# retomber le monstre en IDLE au lieu de renverser son cap) — le
+		# monstre doit inverser son cap ET son orientation, pas rester figé
+		# sur flip_h du premier passage. ---
+		_player.global_position = enemy.global_position + Vector2(-offset_px, 0)
+		var chasing_left: bool = await _wait_until(
+			func(): return enemy._state == Enemy.State.CHASE and enemy.velocity.x < 0.0, 60)
+		for i in range(wait_ticks):
+			await get_tree().physics_frame
+		var flip_while_chasing_left: bool = sprite.flip_h
+
+		var this_pass: bool = chasing_right and not flip_while_chasing_right and chasing_left and flip_while_chasing_left
+		all_pass = all_pass and this_pass
+		per_monster[cfg["name"]] = {
+			"pass": this_pass,
+			"chasing_right": chasing_right, "flip_while_chasing_right": flip_while_chasing_right,
+			"chasing_left": chasing_left, "flip_while_chasing_left": flip_while_chasing_left,
+		}
+		enemy.queue_free()
+		await get_tree().physics_frame
+
+	_checks.append({
+		"name": "enemy_flips_to_face_actual_chase_direction_both_ways",
+		"pass": all_pass,
+		"detail": per_monster,
+	})
+
+
 ## CHANTIER C (production v1, "Monstres : animations d'interaction") —
 ## 4 directions minimum : latéral (droite non-flippé/gauche flippé, une
 ## seule pose "touche_lateral" en miroir — même convention que le flip_h
@@ -3041,6 +3205,98 @@ func _check_weight_differentiates_projection_vs_planted() -> void:
 			"brute_has_projete_anim": brute_has_projete_anim, "brute_bounce_total": brute_bounce_total,
 		},
 	})
+
+
+## MANDAT DÉDIÉ RECUL RÉEL (Milan, playtest build web, 2026-08-26) : "les
+## monstres ne sont pas repoussés en jeu réel, le joueur ne peut jamais
+## créer de distance, se fait enchaîner." Le check ci-dessus
+## (`_check_weight_differentiates_projection_vs_planted`) et les autres
+## checks recul de ce fichier (`combo_hit_applies_recoil_to_enemy`,
+## `gueule_vide_contact_applies_recoil_to_enemy`) NE PEUVENT PAS attraper
+## ce bug : ils posent l'ennemi hors d'aggro ou lisent `enemy.tscn`
+## générique (`aggro_radius_px = 0.0`), donc `_run_ai()` n'y relance
+## JAMAIS de CHASE après le recul. Ce check pose au contraire un Crawler
+## en poursuite active RÉELLE (hors de SON PROPRE attack_range_px, donc
+## en CHASE à vitesse pleine) au moment précis où le joueur riposte —
+## reproduction en conditions de combat réel, pas une capture isolée à un
+## instant T.
+##
+## Root cause (confirmée par reproduction AVANT ce fix, cf. docs/
+## worklog.md) : le recul déplaçait déjà bien `global_position` (aucun
+## bug côté `_recoil_tick`/`take_damage()` eux-mêmes), mais rien
+## n'empêchait `_run_ai()` de relancer la CHASE à pleine vitesse
+## (`move_speed_px`) DÈS le tick suivant la fin du recul — un Crawler
+## (150px/s) refermait en 2-3 ticks les quelques px qu'un coup de tier1
+## (4px × recoil_multiplier) venait de créer, invisible à l'écran. Fixé
+## en armant `State.RECOVER` dans `Enemy.take_damage()` (voir enemy.gd) :
+## même principe que `Player._action_lock`/`_hurt_phase`
+## (`_advance_hurt()`), qui bloque déjà tout mouvement volontaire du
+## joueur pendant SON propre recul — ici appliqué à la PROPRE IA de
+## l'ennemi.
+##
+## N'utilise AUCUN chiffre codé en dur pour la fenêtre de tenue : dérivé
+## de `_recoil_total_ticks`/`attack_recover_ticks` (déjà exportés/tunés
+## par archétype), pour ne jamais désynchroniser ce check d'un futur
+## retuning de ces valeurs.
+func _check_enemy_recoil_holds_real_separation_during_active_chase() -> void:
+	await _wait_until(func(): return not _player._action_lock, 60)
+	_player.global_position = Vector2(200, 2300)
+	_player.velocity = Vector2.ZERO
+	_player.stats.hp = 100.0
+	# Déterminisme (même discipline que _ready()) : un critique roulé ici
+	# ne changerait pas le recul (dérivé du tier, pas du critique), mais
+	# éviter toute variance non seedée superflue sur ce check précis.
+	_player._combo_crit_chance_percent = 0.0
+
+	var crawler := EnemyCrawlerScene.instantiate()
+	crawler.name = "CrawlerRecoilHold"
+	# 60px : hors de son propre attack_range_px (28px) — il CHASE donc
+	# activement, à vraie vitesse, PAS un mannequin immobile — mais assez
+	# près pour entrer dans l'ATTACK_RANGE_PX (48px) du joueur en
+	# quelques ticks de fermeture, comme un vrai corps-à-corps.
+	crawler.global_position = _player.global_position + Vector2(60, 0)
+	add_child(crawler)
+	await get_tree().physics_frame
+
+	var chasing: bool = await _wait_until(func(): return crawler._state == Enemy.State.CHASE, 60)
+
+	var hp_before: float = crawler.stats.hp
+	Input.action_press("attack")
+	await get_tree().physics_frame
+	Input.action_release("attack")
+	var hit_landed: bool = await _wait_until(func(): return crawler.stats.hp < hp_before, 30)
+	var dist_at_hit: float = _player.global_position.distance_to(crawler.global_position)
+
+	# Fenêtre garantie sans reprise de poursuite (recul + State.RECOVER,
+	# armés ensemble par take_damage()) — mesurée 2 ticks AVANT sa fin
+	# théorique (marge pour l'arrondi ease-out et un éventuel hit-stop
+	# résiduel), jamais après : au-delà, on mesurerait la reprise de
+	# CHASE elle-même, pas la tenue du recul.
+	var hold_ticks: int = maxi(1, crawler._recoil_total_ticks + crawler.attack_recover_ticks - 2)
+	for i in range(hold_ticks):
+		await get_tree().physics_frame
+	var dist_during_hold: float = _player.global_position.distance_to(crawler.global_position)
+
+	# Garde-fou symétrique : l'IA doit bien reprendre APRÈS cette fenêtre
+	# (pas un blocage permanent) — un recul qui "tient" pour toujours
+	# serait un bug tout aussi faux que celui corrigé ici.
+	var resumed_chase: bool = await _wait_until(
+		func(): return (
+			crawler._state == Enemy.State.CHASE
+			and _player.global_position.distance_to(crawler.global_position) < dist_during_hold - 1.0),
+		60)
+
+	_checks.append({
+		"name": "enemy_recoil_holds_real_separation_during_active_chase_then_resumes",
+		"pass": chasing and hit_landed and dist_during_hold >= dist_at_hit - 0.5 and resumed_chase,
+		"detail": {
+			"chasing": chasing, "hit_landed": hit_landed,
+			"dist_at_hit": dist_at_hit, "dist_during_hold": dist_during_hold,
+			"hold_ticks": hold_ticks, "resumed_chase": resumed_chase,
+		},
+	})
+	crawler.queue_free()
+	await get_tree().physics_frame
 
 
 ## H1 (GDD §17/§20/§21 : "XP, niveau") : logique pure sur Stats, sans

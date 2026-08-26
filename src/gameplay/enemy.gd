@@ -334,6 +334,38 @@ func take_damage(amount: float, source_position: Vector2, recoil_strength_px: fl
 		# à la fois sur le même impact).
 		_on_hit_reaction(away)
 
+		# MANDAT DÉDIÉ RECUL RÉEL (Milan, playtest build web 2026-08-26 :
+		# "les monstres ne sont pas repoussés, le joueur ne peut jamais
+		# créer de distance, se fait enchaîner"). Root cause confirmée par
+		# reproduction en combat réel (Player+Enemy chasant vraiment l'un
+		# l'autre, PAS un take_damage() isolé sur un mannequin/ennemi hors
+		# d'aggro comme les checks existants ci-dessous) : le recul lui-même
+		# déplace bien `global_position` (aucun bug là), mais dès que
+		# `_recoil_tick` atteint `_recoil_total_ticks`, `_physics_process`
+		# retombe DIRECTEMENT dans `_run_ai()` sans transition — si l'état
+		# d'avant le coup était CHASE (le cas normal en combat), l'IA
+		# relance IMMÉDIATEMENT `move_speed_px` plein régime vers le
+		# joueur et referme en 2-3 ticks les quelques px que le recul
+		# venait de créer (4-22px selon le tier de combo, contre 150px/s
+		# de vitesse de poursuite Crawler) — invisible à l'écran. Player a
+		# déjà exactement ce garde-fou côté lui : `_action_lock`/
+		# `_hurt_phase` (voir Player.take_damage()/_advance_hurt()) bloque
+		# tout mouvement volontaire pendant SON propre recul ; rien
+		# d'équivalent n'existait ici pour empêcher la PROPRE IA de
+		# l'ennemi de reprendre aussi sec. Fix : armer State.RECOVER
+		# (immobile, `_run_ai()` ne fait plus rien avancer) pour la même
+		# durée que sa propre récupération d'attaque — pas un chiffre
+		# inventé, `attack_recover_ticks`/`attack_cooldown_ticks` sont déjà
+		# tunés par archétype (Crawler léger et court, Brute long) et
+		# encaisser un coup casse tout autant l'élan d'attaque de CET
+		# ennemi que sa position. Posé ICI (pas dans _physics_process) :
+		# `_run_ai()` ne tourne de toute façon pas tant que recul/bounce/
+		# stagger n'ont pas fini (gates en tête de _physics_process), donc
+		# cet état attend simplement d'être consulté, quelle que soit la
+		# séquence de réaction qui précède.
+		_state = State.RECOVER
+		_state_tick = 0
+
 	if is_dead():
 		# H1 (GDD §20 : "combats -> XP/loot/maîtrise") — avant _die(),
 		# jamais après (Targeting.get_player() ne dépend pas de CET ennemi).

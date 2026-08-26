@@ -4981,3 +4981,270 @@ refonte du combo de base inspirée de la compétence "loup" de FRACTURE
 (`game/proto/fracture-plongee.html`, localisé dans le dépôt
 `broussemilan-beep/Alpha_Project_Live`, PAS `Jeux` — confirmé, distinct
 du pipeline Rank Zero).
+
+## 2026-08-26 — MANDAT RETOURS DE PLAYTEST RÉEL, point 3 : orientation figée des 3 monstres — reproduit, PAS un bug de code, build web déployé obsolète
+
+**Contexte.** Milan a joué au build web déployé et signalé que Crawler/
+Brute/Ranged restent TOUS orientés dans la même direction en jeu réel —
+jamais un flip vers le joueur ni vers leur direction de déplacement.
+Mandat explicite : reproduire en conditions de jeu RÉELLES (plusieurs
+dizaines de ticks physiques, monstre qui chasse dans plusieurs
+directions successives) AVANT toute hypothèse, sur le pattern
+`tools/smoke_test_gameplay.gd` — jamais une capture isolée à un seul
+instant T.
+
+**Reproduction (méthode imposée).** `Enemy._update_visual_bob()`
+(`src/gameplay/enemy.gd`, méthode PARTAGÉE par les 3 scènes
+d'archétype — un seul script pour Crawler/Brute/Ranged, cf. tête de
+fichier) pose déjà `sprite.flip_h = velocity.x < 0.0` à CHAQUE tick où
+`_state == State.CHASE and velocity != Vector2.ZERO`, même convention
+que `Player._sprite.flip_h = facing.x < 0.0`. Avant de faire confiance à
+la lecture statique du code, ajout d'un check RÉEL dans
+`tools/smoke_test_gameplay.gd`
+(`_check_enemy_faces_chase_direction_in_multiple_directions`) : les 3
+archétypes (pas un échantillon — "les 3 monstres" du mandat) sont
+chassés vers +x PUIS vers -x (le Joueur téléporté de l'autre côté en
+cours de route, comme un joueur qui contourne le monstre), avec
+assertion sur le SIGNE RÉEL de `velocity.x` ET sur `Visual.flip_h` dans
+les deux sens. **Résultat : `pass: true` pour Crawler, Brute ET
+Ranged** — le monstre inverse bien son cap ET son orientation.
+
+Complément VISUEL (le mandat demande un avant/après capturé, pas
+seulement une assertion logique) : nouveau mode `--mode=enemy_chase_facing`
+dans `tools/capture_scene.gd` (Joueur réel + monstre réel, aucune
+pression d'input — c'est l'IA de l'ennemi qui chasse tout seul via
+`Targeting.get_player()`) qui capture deux PNG, le Joueur posé à gauche
+puis à droite du monstre. Trois runs (Crawler/Brute/Ranged), committés
+dans `captures/verification/2026-08-26-enemy-facing/` (`facing_left.png`/
+`facing_right.png` à la racine pour Crawler, sous `brute/` et `ranged/`
+pour les deux autres) : les silhouettes sont bien des MIROIRS l'une de
+l'autre entre les deux moitiés (tête/museau qui bascule de gauche à
+droite), confirmé par inspection pixel des crops zoomés avant de
+committer les captures finales.
+
+**Piège rencontré en construisant cette reproduction** (documenté ici
+plutôt que caché, cf. discipline habituelle de ce worklog) : la 1re
+version de `_run_enemy_chase_facing_capture()` recalculait la 2e moitié
+depuis la position de DÉPART figée du monstre plutôt que sa position
+COURANTE — le monstre ayant déjà avancé pendant la 1re moitié, le
+Joueur retombait silencieusement du MÊME côté relatif (voire, dans un
+essai intermédiaire, hors `aggro_radius_px` — le monstre retombait en
+IDLE au lieu de renverser son cap). Trouvé en relisant les deux PNG
+produits (silhouette identique dans les deux, pas mirroir) puis
+confirmé par un diagnostic JSON ajouté au rapport de capture
+(`flip_h`/`velocity_x`/`state` de chaque moitié) — jamais laissé en
+l'état sur la seule foi d'un "ça a l'air pareil".
+
+**Conclusion sur le point 3 : AUCUN bug de `flip_h` dans le code actuel
+(HEAD).** Les 3 archétypes s'orientent déjà correctement selon leur
+direction de poursuite réelle, vérifié à la fois par assertion logique
+(smoke test, tick-exact) et par rendu réel (capture, pixel-exact). Ce
+constat contredit l'hypothèse de départ du mandat ("probablement jamais
+mis à jour") — traité comme un résultat de mesure, pas ignoré au profit
+de l'hypothèse.
+
+**Root cause probable du signalement de Milan : le build web DÉPLOYÉ
+est obsolète, pas le code source.** Investigation git : le flip
+`velocity.x`-based existe depuis la toute première version commitée de
+`enemy.gd` (`642b988`, 2026-08-22 21:26) — mais le dernier commit à
+avoir RÉELLEMENT régénéré `docs/index.pck`/`docs/index.wasm` (le
+binaire que `docs/index.html`, la page GitHub Pages jouée par Milan,
+charge réellement) est `e97083a` ("Redeploie le build web apres MANDAT
+ROUND 4", 2026-08-23 12:41). Aucun commit "Redeploie le build web..."
+n'existe après celui-là dans tout l'historique — le build web déployé
+date donc de 3 jours et d'environ 15 commits avant ce jour
+(`git log --oneline e97083a..HEAD -- . | wc -l`), manquant TOUT le
+travail de Chantier A (monstrification Terre/Invocateur), Chantier B
+(décor), Chantier C (réactions directionnelles des monstres) et même le
+fix du softlock à la mort (point 1 de CE MÊME mandat, `01f34ae` — donc
+le build que Milan a joué softlockait probablement encore à la mort au
+moment du playtest, malgré le fix déjà mergé sur `main`). Un build
+obsolète peut légitimement montrer un comportement différent de HEAD
+sans qu'aucun bug de HEAD ne soit en cause — cohérent avec ce que la
+reproduction en conditions réelles montre ici.
+
+**Recommandation (aucune action prise ici, hors scope du mandat "ne
+rien casser en simultané avec l'agent point 2") :** regénérer et
+committer `docs/index.pck`/`docs/index.wasm` depuis `HEAD` (même
+procédure que les commits "Redeploie le build web apres ..."
+précédents) avant tout nouveau playtest de Milan sur le build déployé —
+sans quoi n'importe quel constat de playtest futur restera invalidé par
+ce même décalage, pas seulement pour ce point 3.
+
+**Aucun changement à `src/gameplay/enemy.gd`.** Un autre agent
+travaillait en parallèle sur ce même fichier pendant cette session
+(point 2 du mandat, recul des monstres inefficace — `State.RECOVER` armé
+après un coup encaissé) ; ses modifications ont été laissées intactes
+et ne sont PAS committées par cette entrée (commit ciblé sur les seuls
+fichiers de ce point 3, vérifié via `git diff`/`git status` avant
+commit). Un aléa de working tree partagé a d'ailleurs fait perdre puis
+retrouver (réappliqué à l'identique) les deux premières éditions de
+`tools/smoke_test_gameplay.gd`/`tools/capture_scene.gd` de cette
+session — signalé ici par transparence, sans impact sur le résultat
+final (revérifié par un nouveau run complet après réapplication).
+
+**Tests de non-régression.** Re-`--import` puis
+`run_gameplay_smoke_test.sh`, relancé 5 fois de suite pendant cette
+session : le nouveau check
+`enemy_flips_to_face_actual_chase_direction_both_ways` passe **au vert
+les 5/5 fois**, pour Crawler/Brute/Ranged. Deux checks PRÉEXISTANTS sans
+rapport avec ce point 3 (`gueule_vide_owner_death_cancels_degradable_layer`,
+`camera_punch_zoom_triggers_on_medium_hit_not_light` — tous deux des
+fenêtres de tick/hit-stop mesurées en temps réel, cf. leurs docstrings)
+ont chacun échoué une fois isolée sur ces 5 runs, jamais deux fois de
+suite, jamais en même temps que l'autre — flake déjà connu du harnais
+sous charge hôte (sandbox partagé, rendu logiciel llvmpipe), sans
+rapport avec `enemy.gd`/l'orientation des monstres ni avec les fichiers
+touchés par cette entrée. Documenté ici plutôt que masqué ; le dernier
+run avant commit est vert sur tout sauf ce genre de flake ponctuel,
+aucune régression réelle associée à ce point 3.
+
+**Coût réel** : 0 génération PixelLab/Meshy/SpriteCook — reproduction et
+vérification pures, aucun asset généré.
+
+**Reste à faire sur ce mandat** (points 2, 4, 5 — point 2 traité en
+parallèle par un autre agent pendant cette même session, points 4/5 non
+traités ici) : (4) Gueule Vide imperceptible en jeu réel, (5) refonte du
+combo de base inspirée de la compétence "loup" de FRACTURE. Et, en
+préalable à tout futur retour de playtest : redéployer `docs/index.pck`/
+`docs/index.wasm` depuis `HEAD` (voir recommandation ci-dessus).
+
+## 2026-08-26 — MANDAT RETOURS DE PLAYTEST RÉEL, point 2 : monstres jamais repoussés en combat réel — reproduit, root cause identifiée, corrigé
+
+**Contexte.** Agent indépendant, point 2 du même mandat que ci-dessus
+("les monstres ne sont pas repoussés par les coups du joueur en jeu
+réel, alors que `recoil_multiplier` existe déjà en code et que les
+animations de réaction du Chantier C laissaient penser que le recul
+fonctionnait — le joueur ne peut jamais créer de distance, se fait
+enchaîner"). Hypothèse de départ (Milan, motif déjà rencontré ailleurs
+dans ce projet) : le recul agirait seulement dans des scénarios isolés
+(`tools/capture_scene.gd`/`take_damage()` appelé à la main), pas via le
+vrai chemin de combat.
+
+**Méthode imposée respectée : reproduction en conditions de jeu réelles
+AVANT toute hypothèse.** Un Player + un Enemy_crawler.tscn RÉELS
+(mêmes scènes que le jeu, pas de mannequin) instanciés dans un script
+headless jetable (même principe que `tools/smoke_test_gameplay.gd` :
+vrais ticks physiques, vraie IA, aucun snapshot isolé), positionnés à
+60px l'un de l'autre — hors du `attack_range_px` du Crawler (28px, donc
+il CHASE réellement, vitesse pleine) mais dans l'`ATTACK_RANGE_PX` du
+Joueur (48px) une fois la fermeture commencée. Le Joueur presse
+"attack" (vrai `Input.action_press`), le coup part, encaisse le
+Crawler, puis on suit `global_position`/`_state`/`velocity` tick par
+tick.
+
+**Constat n°1 (l'hypothèse de Milan, telle quelle, est FAUSSE) :**
+`Enemy.take_damage()` déplace bel et bien `global_position` en combat
+réel — le recul (`_recoil_tick`/`_recoil_total_ticks`, `AnimationComposer.
+ease_out_step_px()`) fonctionne identiquement, que l'ennemi soit un
+mannequin isolé ou un Crawler en pleine poursuite. Aucun court-circuit
+de `take_damage()` en combat réel, contrairement à l'hypothèse de
+départ — mesuré, pas supposé.
+
+**Constat n°2 (la vraie root cause) :** dès que `_recoil_tick` atteint
+`_recoil_total_ticks`, `Enemy._physics_process()` retombe DIRECTEMENT
+dans `_run_ai()` sans aucune transition. Si l'état d'avant le coup était
+CHASE (le cas normal en combat — l'ennemi poursuivait déjà le joueur
+avant de se faire toucher), l'IA relance IMMÉDIATEMENT `move_speed_px`
+plein régime et referme en 2-3 ticks les quelques px qu'un coup de
+combo tier1 (4px × `recoil_multiplier`, ex. 6.4px pour Crawler) venait
+de créer — invisible à l'écran, cohérent au pixel près avec "le joueur
+ne peut jamais créer de distance". Confirmé numériquement sur la
+reproduction : à 21 ticks après l'impact, la distance Joueur-Crawler
+était déjà REDESCENDUE sous la distance mesurée AU MOMENT de l'impact
+(30.2px contre 33.7px au moment du coup) — le monstre avait déjà
+regagné puis dépassé le terrain que le recul venait de lui faire
+perdre.
+
+**Comparaison avec `Player`, comme demandé par le mandat :**
+`Player.take_damage()`/`_advance_hurt()` posent déjà exactement le
+garde-fou qui manquait ici — `_action_lock = true` pendant tout le
+recul (`_hurt_phase = HurtPhase.ACTIVE`), qui bloque `_handle_movement()`
+et empêche le joueur de revenir volontairement sur l'attaquant pendant
+qu'il encaisse. Rien d'équivalent n'existait côté `Enemy` pour empêcher
+sa PROPRE IA de reprendre aussi sec — `enemy_crawler.gd`/`enemy_brute.gd`/
+`enemy_ranged.gd` n'existent d'ailleurs pas en tant que scripts séparés
+(les 3 archétypes partagent `enemy.gd`, seuls les `@export` des 3
+`.tscn` changent), donc aucune substitution de `_physics_process()`
+n'était en cause non plus — la vraie cause est l'absence de toute
+timeline de récupération consultée après le recul, pas une réécriture
+cachée quelque part.
+
+**Fix (`src/gameplay/enemy.gd`, `take_damage()`)** : sur tout coup non
+mortel, armer `_state = State.RECOVER` (`_state_tick = 0`) juste après
+`_on_hit_reaction()`. `State.RECOVER` existe déjà (utilisé après que
+CET ennemi ait lui-même atterri un coup) et immobilise `_run_ai()`
+pendant `attack_recover_ticks`, puis renvoie vers CHASE en armant
+`_cooldown_remaining = attack_cooldown_ticks` — aucun chiffre inventé,
+seulement une réutilisation d'un état et de champs déjà exportés/tunés
+par archétype (Crawler léger et court, Brute long). Posé dans
+`take_damage()` et pas dans `_physics_process()` : `_run_ai()` ne
+tourne de toute façon pas tant que recul/bounce/chancellement n'ont pas
+fini (gates déjà en tête de `_physics_process()`), donc l'état attend
+simplement d'être consulté, quelle que soit la séquence de réaction qui
+précède (recul seul, recul+projection+rebond, ou recul+chancellement
+après 3 coups).
+
+**Preuve (reproduction identique avant/après, même position, même tick
+de capture = 21 après l'impact) :**
+- AVANT (code désactivé temporairement pour la capture) :
+  `captures/verification/2026-08-26-enemy-recoil-chase/avant-enchaine-sans-recul.png`
+  — Crawler déjà quasi superposé au Joueur, `distance=30.2px`,
+  `_state=CHASE` (déjà reparti).
+- APRÈS (fix actif) :
+  `captures/verification/2026-08-26-enemy-recoil-chase/apres-recul-tenu.png`
+  — même position de départ, même tick, écart clairement visible,
+  `distance=40.2px`, `_state=RECOVER` (encore immobilisé).
+
+**Nouveau check** dans `tools/smoke_test_gameplay.gd` :
+`enemy_recoil_holds_real_separation_during_active_chase_then_resumes`
+— pose un Crawler en CHASE réelle (pas un mannequin hors d'aggro comme
+les checks recul préexistants, qui ne pouvaient PAS attraper ce bug),
+le joueur frappe, puis vérifie (1) que la distance mesurée pendant la
+fenêtre de tenue (`_recoil_total_ticks + attack_recover_ticks`, dérivé
+des champs réels du Crawler, jamais un chiffre codé en dur) reste ≥ la
+distance au moment de l'impact, ET (2) garde-fou symétrique : l'IA
+reprend bien la CHASE ensuite (pas un blocage permanent — un recul qui
+"tient" pour toujours serait un bug tout aussi faux que celui corrigé
+ici).
+
+**Non-régression.** Re-`--import` puis `run_gameplay_smoke_test.sh`,
+relancé 4 fois de suite : `all_pass:true` sur 3/4 runs (127 checks). Le
+run restant a affiché deux échecs isolés,
+`gueule_vide_owner_death_cancels_degradable_layer` et
+`camera_punch_zoom_triggers_on_medium_hit_not_light` — tous deux déjà
+documentés comme flake connu du harnais par l'entrée précédente de ce
+même worklog (point 3, ci-dessus, fenêtres de tick/hit-stop mesurées en
+temps réel sous charge hôte), sans rapport avec `enemy.gd`/le recul ni
+avec les fichiers touchés ici ; aucune des deux n'a échoué deux fois de
+suite ni en même temps que l'autre sur l'ensemble des runs. Le nouveau
+check dédié au recul est passé au vert sur les 4/4 runs.
+
+**Discipline fichier partagé.** `enemy.gd` n'était touché par aucun
+autre agent au moment de cette édition (`git status`/`git diff` vérifiés
+avant modification). `tools/smoke_test_gameplay.gd`,
+`tools/capture_scene.gd`, `src/gameplay/powers/gueule_vide.gd` et
+`docs/worklog.md` portaient en revanche du travail en cours d'un autre
+agent (même mandat, points 3/4 en parallèle) au moment de committer —
+un premier `git stash` (pensé comme isolation propre) a coïncidé avec
+une sauvegarde concurrente de cet autre agent et s'est révélé plus
+risqué que prévu sur ce working tree partagé ; abandonné au profit
+d'éditions additives directes sur le fichier vivant, à des emplacements
+distincts de ceux touchés par l'autre agent, revérifiées par `git diff`
+juste avant ce commit pour confirmer qu'aucun contenu de l'autre agent
+n'a été perdu ou altéré. Conséquence assumée : le commit qui porte cette
+entrée inclut aussi, dans `tools/smoke_test_gameplay.gd` et
+`docs/worklog.md`, le travail encore non committé de l'autre agent
+(point 3 du même mandat) — la granularité fichier de `git` ne permet pas
+de séparer proprement deux hunks additifs dans un même fichier sans un
+patch interactif jugé trop risqué à mener à l'aveugle sur un fichier
+activement réécrit par un processus concurrent ; préserver son travail
+intact (vérifié par `git diff`) a été jugé plus sûr que le laisser hors
+commit. `tools/capture_scene.gd`, `src/gameplay/powers/gueule_vide.gd`
+et `captures/verification/2026-08-26-enemy-facing/` restent en revanche
+explicitement HORS de ce commit (jamais touchés par cette entrée),
+laissés tels quels pour le commit de l'autre agent.
+
+**Coût réel** : 0 génération PixelLab/Meshy/SpriteCook — reproduction,
+correctif et vérification purement logiques, capture via le rendu du
+jeu lui-même (aucun asset généré).
