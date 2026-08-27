@@ -164,6 +164,18 @@ func _ready() -> void:
 ##   --action2_tick=<n>              tick (même horloge que les frames
 ##                                    capturées, 0 = juste avant --action) où
 ##                                    presser --action2.
+##   --action3=<name>                TROISIÈME action InputMap, même
+##                                    mécanique qu'--action2 (bible §3bis,
+##                                    2026-08-27 — nécessaire pour vérifier
+##                                    coup3 d'un combo de base à 3 coups en
+##                                    jeu réel, pas seulement les 2 premiers
+##                                    coups). Extension symétrique minimale,
+##                                    aucun nouveau pipeline : même code que
+##                                    --action2 ci-dessous, dupliqué pour un
+##                                    3e appui plutôt que généralisé en
+##                                    tableau (2 usages connus à ce jour,
+##                                    pas de raison d'anticiper un 4e).
+##   --action3_tick=<n>              tick où presser --action3 (même horloge).
 func _run_player_action_sequence_capture(args: Dictionary) -> void:
 	var action_name: String = args.get("action", "")
 	var last_tick: int = int(args.get("ticks", "30"))
@@ -171,6 +183,8 @@ func _run_player_action_sequence_capture(args: Dictionary) -> void:
 	var scale: int = int(args.get("scale", "1"))
 	var action2_name: String = args.get("action2", "")
 	var action2_tick: int = int(args.get("action2_tick", "-1"))
+	var action3_name: String = args.get("action3", "")
+	var action3_tick: int = int(args.get("action3_tick", "-1"))
 	if action_name == "" or out_dir == "":
 		push_error("capture_scene[player_action_sequence]: --action et --out_dir sont requis.")
 		get_tree().quit(1)
@@ -181,6 +195,10 @@ func _run_player_action_sequence_capture(args: Dictionary) -> void:
 		return
 	if action2_name != "" and not InputMap.has_action(action2_name):
 		push_error("capture_scene[player_action_sequence]: --action2 introuvable '%s'." % action2_name)
+		get_tree().quit(1)
+		return
+	if action3_name != "" and not InputMap.has_action(action3_name):
+		push_error("capture_scene[player_action_sequence]: --action3 introuvable '%s'." % action3_name)
 		get_tree().quit(1)
 		return
 	if not DirAccess.dir_exists_absolute(out_dir):
@@ -274,12 +292,23 @@ func _run_player_action_sequence_capture(args: Dictionary) -> void:
 				await get_tree().physics_frame
 				await get_tree().process_frame
 				Input.action_release(action2_name)
+			# Même point d'insertion, même logique, pour un 3e appui —
+			# indépendant du bloc --action2 ci-dessus (les deux peuvent
+			# tomber sur le même tick sans interférence, même s'il n'existe
+			# pas de cas d'usage connu qui les ferait coïncider).
+			if action3_name != "" and tick + 1 == action3_tick:
+				Input.action_press(action3_name)
+				await get_tree().physics_frame
+				await get_tree().process_frame
+				Input.action_release(action3_name)
 
 	var report := {
 		"out_dir": out_dir,
 		"action": action_name,
 		"action2": action2_name,
 		"action2_tick": action2_tick,
+		"action3": action3_name,
+		"action3_tick": action3_tick,
 		"ticks_captured": frame_paths.size(),
 		"frames": frame_paths,
 	}

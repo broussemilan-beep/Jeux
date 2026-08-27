@@ -3,9 +3,9 @@
   "kind": "character_animation",
   "source": "pixellab",
   "pixellab_character_id": "8596a4ad-0a0b-4d82-b99b-db8a73c01e33",
-  "pixellab_animation_group_id": "3aa47267-2aae-4378-a9cc-316696bf5c1d",
+  "pixellab_animation_group_id": "32138937-6c80-465c-99a9-4b2c77ad1884",
   "pixellab_mode": "v3_custom",
-  "pixellab_action_description": "a rising knee strike combined with an upward uppercut, character crouches low first then explodes upward, knee driving up high and the fist rising in an uppercut arc above shoulder height at the peak, a clear vertical upward motion - no magic, no glow, no light effects, purely physical",
+  "pixellab_action_description": "a rising knee strike combined with an upward uppercut, character crouches low first then explodes upward, knee driven up bent at an extreme, almost impossible angle above hip height, the fist rising in an exaggerated uppercut arc far above the head at the peak, torso twisted and arched dramatically backward beyond natural range to power the strike, a clear vertical upward motion - silhouette must stay clearly readable, not more limbs, not cluttered, exaggerated ANGLE not exaggerated complexity - no magic, no glow, no light effects, purely physical",
   "character": "cendre",
   "godot_animation_name": "coup2",
   "direction": "south",
@@ -26,21 +26,21 @@
   "frame_ticks": [
     2,
     1,
+    1,
     2,
     1,
     1,
-    1,
-    2,
-    2,
-    14
+    4,
+    7,
+    7
   ],
-  "frame_ticks_note": "MANDAT retours de playtest reel, point 5 : NOUVEAU concept (remplace 'spinning backhand strike' juge illisible en vue fixe - un seul bras tendu de cote sur la frame 3, ambigu). 9 frames (etait 5). Timing cale sur le decoupage tick existant (player.gd non modifie) : idx0-5 (6 frames, crouch->explosion) = ANTICIPATION_TICKS=8 ; idx6-7 (genou+poing leves ensemble, PUIS poing au plus haut) = RELEASE_TICKS=4 (le tick de _try_hit() tombe pendant ce cluster) ; idx8 (retour au sol) = RECOVERY_TICKS=14. Total 26 = 8+4+14, identique au budget existant. Verifie en jeu reel via capture_headless.sh --mode=player_action_sequence --action=attack --action2=attack --action2_tick=20 (chaine coup1->coup2 dans la fenetre de chainage reelle) --ticks=29 : le degat (chiffre '10') s'affiche avec la pose genou+poing leves visible, voir captures/phase1/hero_combo_2.png (regenere).",
+  "frame_ticks_note": "BIBLE SS3bis (mandat permanent, 2026-08-27, contraste/exageration facon Yomi Hustle) - 3e passe sur ce pilote, remplace la generation 'coup2_knee_uppercut' du 2026-08-26. Job PixelLab initial (a3db7671...) echoue silencieusement (visible seulement via list_jobs, jamais liste dans get_character) - regenere une 2e fois avant tout traitement, aucune frame de l'echec utilisee. Timing recale sur le VRAI pic de CETTE generation, identifie par inspection visuelle frame par frame (bande comparative des 9 frames, pas une seule image devinee) : le genou ET le poing sont simultanement au plus haut, torse arque en arriere, a l'index 6 - PAS l'index 7 (ou le genou est deja redescendu au sol, une autre pose : l'atterrissage). idx0-5 (6 frames, crouch->explosion) = ANTICIPATION_TICKS=8 ; idx6 (LE pic reel, genou+poing simultanement au plus haut) = RELEASE_TICKS=4 (tick de _try_hit()) ; idx7-8 (atterrissage puis recuperation) = RECOVERY_TICKS=14. Total 26 = 8+4+14, identique au budget existant, player.gd non modifie.",
   "loop": false,
   "source_frames_dir": "assets/source/pixellab/cendre/animations/coup2/",
   "processed_frames_dir": "assets/processed/sprites/cendre/coup2/",
   "sprite_frames_resource": "assets/processed/sprites/cendre/cendre_frames.tres",
   "capture_path": "captures/phase1/hero_combo_2.png",
-  "capture_note": "MANDAT retours de playtest reel, point 5 : capture RÉGÉNÉRÉE en jeu réel (chainage reel coup1->coup2 via capture_headless.sh --mode=player_action_sequence, tick29, tous variants 1x/2x/4x neutral/loaded regeneres pareil) - montre desormais frame 6 (index 0-based sur 9 frames), genou releve haut ET poing en arc montant au-dessus de l'epaule, simultanement. PAS l'ancienne garde generique quasi-identique a coup1 (diagnostic initial du mandat : 'un bras tendu de cote sur la frame 3, reste ambigu'). Comparaison avant/apres committee dans captures/verification/2026-08-26-combo-poses-avant-apres.png.",
+  "capture_note": "BIBLE SS3bis (2026-08-27) : capture_path laisse pointant vers l'ancien fichier committe le 2026-08-26 (pose 'realiste' round precedent), volontairement conserve comme reference AVANT dans le panneau de comparaison (captures/verification/2026-08-27-combo-exagere-vfx-yomi.png). POINT DE VIGILANCE explicite du mandat (erreur reelle survenue sur cette meme animation lors du round precedent : une capture statique decalee d'une frame de transition avait ete committee par erreur a la place du vrai pic) : pour CETTE passe, la frame de pic (assets/processed/sprites/cendre/coup2/6.png) a ete verifiee VISUELLEMENT avec le Read tool (pas seulement via le rapport du pipeline), en comparant explicitement aux frames voisines 5 et 7 pour confirmer qu'il s'agit bien du sommet du mouvement et non d'une frame de transition - voir mandat_playtest_reel_point5 -> bible_3bis... ci-dessous pour le detail de cette verification. Complete par une capture en jeu reel CHAINEE (capture_headless.sh --mode=player_action_sequence --action=attack --action2=attack --action2_tick=14, chainage reel coup1->coup2) qui confirme a la fois la pose (genou+poing simultanement leves) ET la couleur VFX du tier2 (arcSlash+impactStar, hue 15 deg, sat 94%, val 91%, mesure exact sur le pixel rendu) au tick du degat.",
   "combo": {
     "step": 2,
     "of": 3,
@@ -52,7 +52,7 @@
     "attack_range_px": 48.0
   },
   "validated_auto": true,
-  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK sur les 9 nouvelles frames source (assets/source/pixellab/cendre/animations/coup2/). Meme correctif value-band que Phase 1.1/R3 (nudge des pixels sous le plancher 15%V vers 17%V) applique a ce nouveau lot (582 pixels sur les 9 frames de coup2).",
+  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK sur les 9 nouvelles frames source (assets/source/pixellab/cendre/animations/coup2/) apres correctif. Meme correctif value-band que les passes precedentes (nudge des pixels sous le plancher 15%V vers 17%V) applique a ce nouveau lot (830 pixels sur les 9 frames de coup2, 2404 sur les 27 frames coup1+2+3 au total : 783+830+791).",
   "human_label_ref": null,
   "capture_variants": {
     "neutral_1x": "captures/phase1/hero_combo_2.png",
@@ -70,5 +70,13 @@
     "reroll_count": 0,
     "note": "Accepte au premier essai - genou et poing montent clairement ensemble, aucun halo/artefact parasite detecte sur les 9 frames.",
     "canvas_fix": "Meme correctif que coup1/coup3 (voir hero_combo_1.json mandat_playtest_reel_point5.canvas_fix) - scale LANCZOS 55/79 + --foot-band-frac=1.0, applique uniformement aux 3 animations dans le meme appel de cuisson."
+  },
+  "bible_3bis_axe2_exageration_pose": {
+    "date": "2026-08-27",
+    "mandat": "Bible d'animation SS3bis (mandat permanent, contraste/exageration facon Yomi Hustle), axe 2 : pousser angle de coude/genou + torsion du torse AU-DELA de l'anatomie realiste de la generation precedente (2026-08-26), sans perdre la lisibilite de silhouette. 3e generation PixelLab sur ce personnage pour ce coup.",
+    "prompt_delta": "vs. v2 (hero_combo_2.json avant cette passe) : ajout explicite 'knee driven up bent at an extreme, almost impossible angle', 'the fist rising in an exaggerated uppercut arc far above the head', 'torso twisted and arched dramatically backward beyond natural range', et de la clause de garde-fou de lisibilite.",
+    "reroll_count": 1,
+    "reroll_reason": "Le tout premier job PixelLab (a3db7671-f44e-4148-bfbc-7ff35d441911) a echoue cote serveur (visible uniquement via list_jobs, jamais apparu dans get_character malgre ~7 minutes d'attente et plusieurs sondages) - regenere via un 2e appel animate_character, reussi. Cout reel de ce reroll inclus dans le rapport final (coup2 seul consomme 2 generations comme coup1/coup3, le job echoue n'a rien facture).",
+    "verdict_pixel_art": "Accepte au 2e essai (echec du 1er etait un probleme d'infrastructure PixelLab, pas un rejet qualite). Verifie visuellement frame par frame (bande comparative idx3-8) plutot que suppose : idx6 montre clairement genou ET poing simultanement au plus haut, torse arque - c'est un point de vigilance EXPLICITE du mandat (la meme animation avait deja subi une erreur de frame decalee lors du round precedent), traite avec le niveau de rigueur demande. Silhouette reste lisible comme 'genou+uppercut' a l'echelle cuite, meme reserve honnete que dans le round precedent (documentee alors dans docs/worklog.md, toujours valide ici) : c'est la jambe asymetrique qui porte l'essentiel de la distinction avec un pur geste de bras, un peu plus qu'un simple coup de poing generique. Voir verdict complet dans docs/worklog.md et le panneau de comparaison committe."
   }
 }

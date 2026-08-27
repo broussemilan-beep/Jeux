@@ -100,10 +100,27 @@ const ATTACK_DAMAGE := 10.0
 ## BAS (jamais vers le haut) sur toute ambiguïté de palier — un tier
 ## en-dessous de la couverture pleine reste un tier de base, jamais un
 ## plafond consommé par avance sur les tiers 5-6 futurs.
+## Couleur VFX par tier — bible d'animation §3bis (MANDAT PERMANENT,
+## 2026-08-27, "contraste façon Yomi Hustle"), exécuté ici sur le pilote
+## (combo de base) uniquement, pas sur le reste du jeu. Axe 1 du mandat :
+## pousser saturation/value des primitives déjà posées sur le coup
+## au-delà de la précédente passe de lisibilité (Gueule Vide/Poing
+## Tellurique, `data/palettes/invocateur_vide.json`/`terre.json` —
+## saturation max observée là-bas 55%/65%). Ici : 88-100%, nettement
+## au-dessus, `value_percent` proche du plafond dur `MAX_VALUE_HSV=0.92`
+## partagé par arcSlash/impactStar/ribbonTrail (jamais dépassé — le
+## clamp des primitives le ferait de toute façon, mais choisi
+## intentionnellement, pas laissé au hasard du clamp).
+## 3 teintes distinctes, une escalade chaude cohérente avec l'identité
+## "Cendre/braise" du personnage plutôt qu'une couleur arbitraire par
+## coup : ambre (jab) -> orange-rouge (knee-uppercut) -> rouge
+## incandescent (overhead smash, le coup le plus lourd du combo de
+## base). Escalade de teinte ET d'intensité, pas seulement d'intensité —
+## lisible même sans comparer les 3 coups côte à côte.
 const COMBO_TIER_FEEDBACK := [
-	{"hitstop": "light", "recoil_px": 4.0, "shake": "", "arc_slash": false},
-	{"hitstop": "light", "recoil_px": 8.0, "shake": "", "arc_slash": true},
-	{"hitstop": "medium", "recoil_px": 14.0, "shake": "light", "arc_slash": false},
+	{"hitstop": "light", "recoil_px": 4.0, "shake": "", "arc_slash": false, "hue_deg": 30.0, "saturation_percent": 88.0, "value_percent": 90.0},
+	{"hitstop": "light", "recoil_px": 8.0, "shake": "", "arc_slash": true, "hue_deg": 15.0, "saturation_percent": 94.0, "value_percent": 91.0},
+	{"hitstop": "medium", "recoil_px": 14.0, "shake": "light", "arc_slash": false, "hue_deg": 5.0, "saturation_percent": 100.0, "value_percent": 92.0},
 ]
 
 ## Timeline du dash, en ticks (60/s) — mandat combat (B4) : "se lit
@@ -1426,7 +1443,19 @@ func _try_hit() -> void:
 
 	# arcSlash sur le coup 2 seulement (mandat : "arc visuel bref sur 2
 	# ticks") — trace du geste qui a touché, couche CONTACT protégée au
-	# même titre que impactFlashFrame ci-dessus.
+	# même titre que impactFlashFrame ci-dessus. Bible §3bis (2026-08-27)
+	# : couleur du tier appliquée (hue/saturation/value), là où l'appel
+	# retombait avant sur la couleur par défaut du script (gris/blanc
+	# 0% saturation) faute de paramètre. Restriction coup2 CONSERVÉE
+	# volontairement, pas étendue aux 3 coups : la forme "croissant" de
+	# arcSlash représente une trajectoire BALAYÉE/courbe (§7.1) — ça
+	# correspond au geste montant du genou-uppercut de coup2, mais pas
+	# à coup1 (jab, trajectoire droite) ni coup3 (smash overhead,
+	# trajectoire verticale droite). Y mettre un croissant courbe
+	# mentirait sur la trajectoire réelle du coup et nuirait à la
+	# lisibilité de silhouette — exactement ce que le mandat interdit de
+	# sacrifier. coup1/coup3 gardent impactStar (radial, neutre sur la
+	# trajectoire) comme seule "trace" en plus du flash.
 	if tier["arc_slash"]:
 		VfxDirector.spawn("arcSlash", {
 			"seed": 0,
@@ -1434,8 +1463,50 @@ func _try_hit() -> void:
 			"direction": facing,
 			"lifetime_ticks": 2,
 			"scale_px": 28.0,
+			"hue_deg": tier["hue_deg"],
+			"saturation_percent": tier["saturation_percent"],
+			"value_percent": tier["value_percent"],
 			"degradable": false,
 		})
+
+	# impactStar sur CHAQUE coup (mandat bible §3bis : "les éclats" du
+	# mandat) — silhouette secondaire dentelée qui reste après le flash
+	# neutre, teintée à la couleur du tier. Contrairement à arcSlash,
+	# c'est une forme radiale qui ne suggère aucune trajectoire
+	# particulière : elle convient aux 3 coups sans mentir sur le
+	# mouvement, d'où sa présence systématique là où arcSlash est
+	# volontairement réservé à coup2 (voir commentaire ci-dessus).
+	VfxDirector.spawn("impactStar", {
+		"seed": 0,
+		"origin": target.global_position,
+		"lifetime_ticks": 3,
+		"scale_px": 22.0,
+		"hue_deg": tier["hue_deg"],
+		"saturation_percent": tier["saturation_percent"],
+		"value_percent": tier["value_percent"],
+		"degradable": false,
+	})
+
+	# ribbonTrail sur CHAQUE coup, "ligne de sol" façon Yomi Hustle
+	# (bible §3bis, axe 1) — instruction explicite de Milan : essayer
+	# d'abord de pousser ribbonTrail avant d'inventer une primitive.
+	# sweep_deg réduit à 16° (par défaut 90°, un large swing) pour lire
+	# comme une ligne fine directionnelle plutôt qu'un arc large — testé
+	# en jeu réel (voir docs/worklog.md, entrée de cette passe) plutôt
+	# que deviné. Couleur du tier, ancré au point de contact comme les
+	# 2 primitives ci-dessus, brève (3 ticks, même durée qu'impactStar).
+	VfxDirector.spawn("ribbonTrail", {
+		"seed": 0,
+		"origin": target.global_position,
+		"direction": facing,
+		"lifetime_ticks": 3,
+		"scale_px": 36.0,
+		"sweep_deg": 16.0,
+		"hue_deg": tier["hue_deg"],
+		"saturation_percent": tier["saturation_percent"],
+		"value_percent": tier["value_percent"],
+		"degradable": false,
+	})
 
 
 ## Invocation "Gueule Vide" — instancie la créature en avant du joueur

@@ -3,9 +3,9 @@
   "kind": "character_animation",
   "source": "pixellab",
   "pixellab_character_id": "8596a4ad-0a0b-4d82-b99b-db8a73c01e33",
-  "pixellab_animation_group_id": "23b63b19-ebe2-421f-ae97-29319209a6c7",
+  "pixellab_animation_group_id": "0c798baa-f594-4285-a80a-547b5e61dd32",
   "pixellab_mode": "v3_custom",
-  "pixellab_action_description": "both fists raised high above the head together at the peak of the windup, then slammed straight down together with full body weight at the moment of impact, feet planted wide, a clear overhead-to-downward vertical arc visible across the animation - no magic, no glow, no light effects, purely physical, no raised leg, no kick",
+  "pixellab_action_description": "both fists raised high above the head at the peak of the windup, elbows bent at an extreme, almost impossible angle, torso arched and twisted dramatically backward beyond natural range to load the strike, then both fists slammed straight down together with the torso whipping forward at an exaggerated angle on impact - silhouette must stay clearly readable, not more limbs, not cluttered, exaggerated ANGLE not exaggerated complexity - no magic, no glow, no light effects, purely physical",
   "character": "cendre",
   "godot_animation_name": "coup3",
   "direction": "south",
@@ -27,20 +27,20 @@
     2,
     2,
     2,
-    3,
+    2,
     2,
     1,
+    1,
     4,
-    10,
-    10
+    20
   ],
-  "frame_ticks_note": "MANDAT retours de playtest reel, point 5 : garde le concept smash a 2 poings, force le pic overhead reel (l'ancienne version ne montrait NI poings leves NI geste vers le bas - meme garde generique que coup1). 9 frames (etait 5). Timing cale sur le decoupage tick existant du code (player.gd non modifie, tier3/finisher : COMBO_TIER_ANTICIPATION_TICKS[2]=12, COMBO_TIER_RECOVERY_TICKS[2]=20, RELEASE_TICKS=4) : idx0-5 (6 frames, montee + tenue overhead - le pic du WINDUP est visible ici, idx3-4) = ANTICIPATION_TICKS(tier3)=12 ; idx6 (le vrai moment d'IMPACT, poings ramenes devant le corps, stance large) = RELEASE_TICKS=4 (tick de _try_hit()) ; idx7-8 (retour au calme) = RECOVERY_TICKS(tier3)=20. Total 36 = 12+4+20, identique au budget tier3 existant. Note : la frame de CAPTURE choisie (idx4, voir capture_note) montre le pic du WINDUP (2 poings au-dessus de la tete, la description du mandat), PAS la frame de contact mecanique idx6 (poings ramenes plus bas) - les deux sont des poses fortes et distinctes, mais idx4 est visuellement la plus lisible/iconique des deux pour representer 'les 2 poings overhead'.",
+  "frame_ticks_note": "BIBLE SS3bis (mandat permanent, 2026-08-27, contraste/exageration facon Yomi Hustle) - 3e passe sur ce pilote, remplace la generation 'coup3_overhead_smash' du 2026-08-26. Timing recale sur le VRAI pic de CETTE generation, identifie par bande comparative des 9 frames (pas suppose identique a l'ancien decoupage idx6) : idx4-6 montrent tous les 2 poings tenus au-dessus de la tete (windup HOLD, pas un pic unique) ; l'IMPACT reel (poings ramenes bas dans une position basse et dynamique, torse penche en avant) est a l'idx7, PAS idx6 comme dans la generation precedente - confirme par mesure objective du bbox alpha (top_y le plus bas du groupe idx4-8 : 22px, contre 14-17px pour idx4-6 qui restent en position haute). idx0-6 (7 frames, montee + tenue overhead) = ANTICIPATION_TICKS(tier3)=12 ; idx7 (LE vrai moment d'impact, poings bas) = RELEASE_TICKS=4 (tick de _try_hit()) ; idx8 (retour au calme) = RECOVERY_TICKS(tier3)=20. Total 36 = 12+4+20, identique au budget tier3 existant.",
   "loop": false,
   "source_frames_dir": "assets/source/pixellab/cendre/animations/coup3/",
   "processed_frames_dir": "assets/processed/sprites/cendre/coup3/",
   "sprite_frames_resource": "assets/processed/sprites/cendre/cendre_frames.tres",
   "capture_path": "captures/phase1/hero_combo_3.png",
-  "capture_note": "MANDAT retours de playtest reel, point 5 : capture NON regeneree en jeu reel cette fois (le 3e coup du combo necessiterait de chainer 2 pressions supplementaires d'input dans les fenetres de chainage reelles ; l'outil capture_scene.gd --mode=player_action_sequence ne supporte qu'UNE seconde pression --action2, pas de --action3 - hors scope d'etendre cet outil de capture pour ce mandat content-only). La reference visuelle a jour pour ce mandat est la frame source/cuite elle-meme : assets/processed/sprites/cendre/coup3/4.png (index 0-based sur 9 frames) montre les 2 poings clairement leves au-dessus de la tete au pic du windup - voir comparaison committee dans captures/verification/2026-08-26-combo-poses-avant-apres.png (colonne APRES, ligne coup3). Le fichier captures/phase1/hero_combo_3.png ci-dessous reste l'ANCIEN rendu (pre-mandat, pose de garde generique) tant qu'une vraie capture en jeu chainee n'est pas produite.",
+  "capture_note": "BIBLE SS3bis (2026-08-27) : capture_path laisse pointant vers l'ancien fichier committe le 2026-08-26 (pose 'realiste' round precedent, elle-meme deja documentee comme non regeneree en jeu reel a l'epoque - voir known_limitation ci-dessous), volontairement conserve comme reference AVANT dans le panneau de comparaison (captures/verification/2026-08-27-combo-exagere-vfx-yomi.png). La reference visuelle a jour pour CETTE passe est assets/processed/sprites/cendre/coup3/7.png (frame d'impact reelle, verifiee visuellement avec le Read tool en la comparant explicitement aux frames voisines 6 et 8 pour confirmer qu'il s'agit bien du vrai impact et non d'une frame de transition de la tenue overhead - point de vigilance explicite du mandat). Toujours PAS de capture en jeu reel CHAINEE sur 3 coups pour hero_combo_3.png lui-meme (meme limitation outillage que la passe precedente : capture_scene.gd ne supportait qu'UN --action2), MAIS cette limitation a ete levee pour la VERIFICATION VFX de cette passe : --action3/--action3_tick ajoutes a tools/capture_scene.gd (extension symetrique minimale du meme mecanisme qu'--action2, voir docs/worklog.md) et utilises pour produire une capture reelle CHAINEE coup1->coup2->coup3 qui confirme a la fois que le 3e coup s'enchaine reellement en jeu ET que la couleur VFX du tier3 (impactStar, hue 5 deg, sat 100%, val 92%, mesure exact sur le pixel rendu) s'applique au tick du degat.",
   "combo": {
     "step": 3,
     "of": 3,
@@ -53,9 +53,9 @@
     "note_chain_window": "dernier coup du combo - pas de fenetre de chainage, section 4 de player.gd (_advance_combo) exclut explicitement le 3e coup"
   },
   "validated_auto": true,
-  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK sur les 9 nouvelles frames source (assets/source/pixellab/cendre/animations/coup3/). Meme correctif value-band que Phase 1.1/R3 (nudge des pixels sous le plancher 15%V vers 17%V) applique a ce nouveau lot (539 pixels sur les 9 frames de coup3).",
+  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK sur les 9 nouvelles frames source (assets/source/pixellab/cendre/animations/coup3/) apres correctif. Meme correctif value-band que les passes precedentes (nudge des pixels sous le plancher 15%V vers 17%V) applique a ce nouveau lot (791 pixels sur les 9 frames de coup3, 2404 sur les 27 frames coup1+2+3 au total : 783+830+791).",
   "human_label_ref": null,
-  "known_limitation": "MANDAT playtest reel point 5 (2026-08-26) : known_limitation precedente (halo blanc parasite sur l'ancienne generation) resolue par le remplacement complet de l'animation - aucun halo detecte sur les 9 nouvelles frames. Nouvelle limitation : capture_path (captures/phase1/hero_combo_3.png) n'a PAS ete regeneree en jeu reel pour cette passe (voir capture_note) - contrairement a coup1/coup2, verifies par capture_headless.sh en jeu reel avec chainage d'input reel et confirmation du degat applique.",
+  "known_limitation": "MANDAT playtest reel point 5 (2026-08-26) : known_limitation precedente (halo blanc parasite sur l'ancienne generation) resolue par le remplacement complet de l'animation - aucun halo detecte sur les 9 nouvelles frames. capture_path (captures/phase1/hero_combo_3.png) n'a jamais ete regeneree en jeu reel pour le concept 'realiste' - toujours vrai apres cette passe (voir capture_note pour ce qui A ete verifie en jeu reel pour la passe exageree : le VFX chaine sur 3 coups, pas le sprite statique).",
   "capture_variants": {
     "neutral_1x": "captures/phase1/hero_combo_3.png",
     "neutral_2x": "captures/phase1/hero_combo_3_neutral_2x.png",
@@ -72,5 +72,12 @@
     "reroll_count": 0,
     "note": "Accepte au premier essai - windup overhead net (idx3-4) et impact vers le bas net (idx6), aucun halo/artefact parasite detecte (contrairement au tout premier essai historique de cette animation, voir known_limitation/data/pixellab_usage.jsonl).",
     "canvas_fix": "Meme correctif que coup1/coup2 (voir hero_combo_1.json mandat_playtest_reel_point5.canvas_fix) - scale LANCZOS 55/79 + --foot-band-frac=1.0, applique uniformement aux 3 animations dans le meme appel de cuisson."
+  },
+  "bible_3bis_axe2_exageration_pose": {
+    "date": "2026-08-27",
+    "mandat": "Bible d'animation SS3bis (mandat permanent, contraste/exageration facon Yomi Hustle), axe 2 : pousser angle de coude/genou + torsion du torse AU-DELA de l'anatomie realiste de la generation precedente (2026-08-26), sans perdre la lisibilite de silhouette. 3e generation PixelLab sur ce personnage pour ce coup.",
+    "prompt_delta": "vs. v2 (hero_combo_3.json avant cette passe) : ajout explicite 'elbows bent at an extreme, almost impossible angle', 'torso arched and twisted dramatically backward beyond natural range', 'torso whipping forward at an exaggerated angle on impact', et de la clause de garde-fou de lisibilite. Retire 'grounded'/'feet planted wide' de l'ancien prompt (redondant avec le nouveau descriptif, sans impact sur le concept).",
+    "reroll_count": 0,
+    "verdict_pixel_art": "Accepte au premier essai, aucun halo/artefact parasite detecte sur les 9 frames. Point de vigilance traite avec rigueur (cf. avertissement explicite du mandat sur une erreur similaire deja commise pour coup2 lors du round precedent) : le pic d'impact a ETE VERIFIE comme etant idx7 et non idx6 (qui n'est qu'une frame de la TENUE overhead, un plateau de 3 frames quasi-identiques idx4-6) via mesure de bbox ET inspection visuelle comparative, pas suppose par analogie avec l'ancienne generation. Silhouette reste lisible comme 'smash a 2 poings' a l'echelle cuite - la pose d'impact (poings bas, torse penche, stance dynamique) reste distincte des 2 autres coups. Reserve honnete : le plateau overhead (idx4-6) rend le WINDUP moins 'un seul pic net' qu'avant (l'ancienne version isolait idx3-4 comme LE pic overhead) - c'est un compromis accepte pour privilegier la lisibilite du vrai impact (idx7) plutot que de choisir arbitrairement laquelle des 3 poses overhead quasi-identiques est 'la' reference. Voir verdict complet dans docs/worklog.md et le panneau de comparaison committe."
   }
 }

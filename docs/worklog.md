@@ -5518,3 +5518,236 @@ l'essentiel de la distinction, un peu plus qu'attendu au départ. Pas un
 capture chaînée réelle), mais moins immédiatement lisible qu'un pur
 geste de bras comme coup1/coup3 — à garder à l'œil si un futur retour de
 playtest le signale.
+
+## 2026-08-27 — BIBLE D'ANIMATION §3bis (mandat permanent) : contraste/exagération façon Yomi Hustle, exécuté sur le pilote (combo de base de Cendre)
+
+**Contexte du mandat** : Milan a ajouté un §3bis PERMANENT à la bible
+d'animation — deux principes empruntés à Yomi Hustle (contraste VFX
+radical ; exagération de pose au-delà de l'anatomie réaliste, silhouette
+toujours lisible), avec un 3e axe EXPLICITEMENT exclu (pas de fond noir —
+Addendum C reste intact, contraste VFX-vs-fond jamais assombrissement de
+l'ambiant). Exécution demandée ici : uniquement le pilote (combo de base
+coup1/coup2/coup3), pas tout le jeu. Fichier bible littéral non retrouvé
+dans `docs/` sous ce nom exact lors de cette passe (`grep -rl "Yomi"
+docs/` ne remonte que ce worklog) — exécuté sur la base de l'essentiel du
+mandat donné directement par Milan, sans bloquer dessus.
+
+### Axe 1 — Contraste VFX radical (`src/gameplay/player.gd::_try_hit()`)
+
+**Diagnostic de départ (déjà vérifié par Milan, repris tel quel)** :
+`impactFlashFrame` (flash blanc quasi-plein, par design — hors scope,
+non touché) et `arcSlash` (coup2 seulement, sans couleur — retombait sur
+gris/blanc 0% saturation faute de paramètre) étaient les deux seules
+primitives déjà posées sur le coup, ni `impactStar` ni `ribbonTrail`
+n'étaient utilisées dans le combo.
+
+**Fait** :
+1. `COMBO_TIER_FEEDBACK` (const, 3 tiers) étendu avec `hue_deg`/
+   `saturation_percent`/`value_percent` par tier — escalade chaude
+   cohérente avec l'identité "Cendre/braise" : ambre (30°, sat 88%, val
+   90%) → orange-rouge (15°, sat 94%, val 91%) → rouge incandescent (5°,
+   sat 100%, val 92%, plafond dur `MAX_VALUE_HSV`). Nettement au-dessus
+   du plafond de saturation de la précédente passe de lisibilité
+   (Gueule Vide 55%, Poing Tellurique 65% — `data/palettes/
+   invocateur_vide.json`/`terre.json`).
+2. `arcSlash` (coup2 uniquement) alimenté avec la couleur du tier —
+   restriction à coup2 CONSERVÉE et documentée en commentaire : sa forme
+   "croissant" représente une trajectoire balayée/courbe, cohérente avec
+   le genou-uppercut (coup2) mais pas avec un jab droit (coup1) ni un
+   smash vertical (coup3) — y mettre un croissant mentirait sur la
+   trajectoire réelle, contraire au principe de lisibilité.
+3. `impactStar` (nouveau, sur les 3 coups) — forme radiale neutre sur la
+   trajectoire, "les éclats" du mandat.
+4. `ribbonTrail` (nouveau, sur les 3 coups) — testé D'ABORD comme
+   instruit avant d'envisager une nouvelle primitive : `sweep_deg`
+   réduit de 90° (défaut) à 16° pour lire comme une ligne fine
+   directionnelle ("ligne de sol" façon Yomi Hustle) plutôt qu'un large
+   arc. Fonctionne : confirmé en jeu réel (voir Vérification), aucune
+   nouvelle primitive nécessaire.
+5. `impactFlashFrame` **non touché**, conforme à l'exclusion de scope.
+
+### Axe 2 — Exagération de pose (PixelLab, `hero_combo_{1,2,3}.json`)
+
+Character re-vérifié via `mcp__pixellab__get_character` AVANT tout appel
+(`8596a4ad-0a0b-4d82-b99b-db8a73c01e33`, Cendre_v3c) — piège déjà
+rencontré, évité. 3e génération sur ce personnage pour ces 3 animations
+(v1 garde générique 2026-08-20 → v2 extension réaliste 2026-08-26 → v3
+exagération 2026-08-27), même pipeline que le round précédent : mode v3,
+sud uniquement, `frame_count=8`, "no magic/no glow/no light effects/
+purely physical" + nouvelle clause explicite "silhouette must stay
+clearly readable, not more limbs, not cluttered, exaggerated ANGLE not
+exaggerated complexity" (reprise textuelle de l'instruction de Milan) et
+un descriptif d'angle extrême par coup (coude/genou "at an extreme,
+almost impossible angle", torse "twisted/arched dramatically beyond
+natural range").
+
+**Incident** : le job coup2 (1re tentative, `a3db7671...`) a échoué côté
+serveur PixelLab — jamais apparu dans `get_character` malgré ~7 minutes
+d'attente et plusieurs sondages, visible uniquement via
+`list_jobs(include_recent=true)`. Aucun coût facturé. Regénéré via un 2e
+appel, réussi.
+
+**Point de vigilance CRITIQUE (rigueur explicitement exigée par Milan,
+erreur réelle survenue au round précédent sur coup2)** : pour les 3
+animations, le "pic" a été identifié par MESURE OBJECTIVE (bbox alpha de
+chaque frame source, largeur pour coup1/coup2, hauteur/top_y pour
+coup3) ET inspection visuelle comparative des frames voisines — jamais
+supposé par analogie avec l'ancien découpage de frames.
+- **coup1** : pic à l'idx6 (bbox 74px de large), PAS idx7 (66px) — un
+  calque naïf de l'ancien timing (qui plaçait le pic à idx7) aurait
+  choisi une frame moins extrême que le vrai maximum.
+- **coup2** : pic à l'idx6 (genou ET poing simultanément au plus haut,
+  torse arqué), PAS idx7 (genou déjà redescendu — l'atterrissage, une
+  pose différente). C'est la MÊME animation dont une capture statique
+  avait été committée décalée d'une frame lors du round précédent —
+  traitée avec un soin particulier pour cette raison.
+- **coup3** : pic (impact réel) à l'idx7 (poings ramenés bas, stance
+  dynamique), PAS idx6 qui n'est qu'une des 3 frames quasi-identiques
+  (idx4-6) du plateau de tenue overhead — confirmé par bbox (top_y=22
+  contre 14-17 pour idx4-6).
+
+**Value-band** : même correctif que les passes précédentes (nudge des
+pixels sous le plancher 15%V vers 17%V, contour sombre du personnage) —
+783 pixels coup1 + 791 coup3 (1er lot de nudge, 1574 au total) + 830
+pixels coup2 (2e lot, généré/nudgé séparément après l'échec serveur) =
+**2404 pixels au total sur les 27 frames source de cette passe**,
+chiffre exact recalculé et propagé de façon cohérente dans les 3
+manifestes `hero_combo_{1,2,3}.json` (un premier jet avait une erreur
+d'addition sur coup1/coup3 et un total "3253" non recalculé, corrigés
+avant commit plutôt que laissés incohérents).
+
+**Canvas** : même correctif LANCZOS que le round précédent (facteur
+0.696, mesuré à nouveau sur cette génération — frame0 de référence
+toujours ~80px brut, cible cuite ~55-56px, cohérent avec le round
+précédent) + `--foot-band-frac=1.0`. Aucune frame clippée (vérifié
+programmatiquement sur les 27 frames cuites : aucun bbox touchant les
+bords du canvas 64×64).
+
+**Manifeste `.tres`** : `cendre_frames.tres` (224 ressources externes,
+39 animations) — MERGE ciblé comme le round précédent : seuls les 3 blocs
+`"frames"` de coup1/coup2/coup3 remplacés (nouvelles durées, mêmes
+`ExtResource` ids 100-126 puisque les chemins de fichiers sont
+inchangés — seul le contenu des PNG a changé), les 36 autres animations
+et leurs déclarations `ext_resource` intouchées (diff : 26 lignes
+changées, uniquement des valeurs `"duration"`).
+
+### Vérification
+
+`godot4 --import` propre, `run_gameplay_smoke_test.sh` **"all_pass":
+true** (~139 checks, aucune régression) — exécuté deux fois (après le
+code VFX seul, puis après les nouvelles poses).
+
+**Rigueur sur les captures (exigence explicite de Milan)** : pour
+chaque coup, plusieurs ticks ont été rendus AUTOUR du pic attendu (pas
+un seul tick deviné) via `capture_headless.sh --mode=player_action`,
+puis le pixel réel a été échantillonné en Python (HSV exact) et l'image
+inspectée VISUELLEMENT avec le Read tool avant de la considérer comme
+preuve. Résultat coup1 (hors combo, capture isolée) : HSV rendu exact
+`(230,129,28)` → hue 30.0°, sat 87.8%, val 90.2%, dans la bande vfx
+[20,92] et nettement au-dessus du plafond précédent (65%).
+
+**Preuve en jeu réel, combo 3 coups CHAÎNÉ** (pas seulement 2 comme le
+round précédent) : `tools/capture_scene.gd` étendu avec `--action3`/
+`--action3_tick` (extension symétrique minimale du mécanisme
+`--action2` existant, même point d'insertion, aucun nouveau pipeline) —
+nécessaire car `hero_combo_3` n'avait encore jamais été vérifié par un
+vrai enchaînement à 3 coups. `capture_headless.sh --mode=
+player_action_sequence --action=attack --action2=attack
+--action2_tick=12 --action3=attack --action3_tick=22 --ticks=40` :
+**note de fiabilité honnête** — la capture séquentielle sans pause
+(`await physics_frame`/`process_frame` réels, pas de tick-lock) s'est
+avérée non-déterministe d'un run à l'autre pour les mêmes paramètres
+(observé : `action2_tick=14` a réussi une fois puis échoué à la
+tentative suivante, forçant une re-bisection empirique) — limite de
+l'outil déjà latente, pas introduite par cette passe, documentée ici
+plutôt que passée sous silence. Un run réussi (`action2_tick=12`,
+`action3_tick=22`) a été retenu et committé :
+- tick 6 : coup1, HSV rendu `(230,129,28)` = hue 30.0°/sat 87.8%/val 90.2%
+- tick 17 : coup2, HSV rendu `(232,68,14)` = hue 14.9°/sat 94.0%/val 91.0%
+- tick 29 : coup3, HSV rendu `(235,20,0)` = hue 5.1°/sat 100.0%/val 92.2%
+
+Les 3 valeurs correspondent EXACTEMENT (aux arrondis près) aux valeurs
+configurées dans `COMBO_TIER_FEEDBACK` — la primitive reproduit le
+paramètre demandé au pixel près, dans la bande vfx et nettement au-dessus
+du plafond de 65% de la passe précédente. Poses confirmées VISUELLEMENT
+identiques aux frames de pic désignées (idx6/idx6/idx7) sur les 3 crops,
+pas de frame de transition.
+
+`scripts/validate_pixels.py --category vfx` appliqué en complément sur
+des captures isolées (fond + placeholder ennemi masqués) : ~20 pixels
+de bord anti-aliasé (sur 4300-14700 pixels opaques par image, <0.5%)
+tombent sous le plancher 20% — artefact d'anti-aliasing de bordure
+propre à une capture composée sur fond opaque (le script est conçu pour
+des assets à vrai fond transparent, pas des screenshots de gameplay
+composés), pas un défaut du choix de couleur des primitives : le
+remplissage réel (mesuré ci-dessus) est exact et dans la bande.
+
+### Coût réel PixelLab
+
+`get_balance` avant : **1271 generations_remaining (729 used)**. Après :
+**1265 generations_remaining (735 used)** — **6 générations
+consommées** pour les 3 animations acceptées (2/anim, même écart
+estimation-vs-réel que le round précédent), **0 génération facturée**
+pour le job coup2 échoué côté serveur. `data/pixellab_usage.jsonl` :
+4 entrées ajoutées (3 acceptées + 1 échec).
+
+### Verdict honnête
+
+**Axe 1 (VFX)** : ce qui marche — l'escalade de teinte/saturation par
+coup est mesurable au pixel et lit clairement comme une intensification,
+même à l'échelle du jeu ; `ribbonTrail` à `sweep_deg` réduit donne bien
+la "ligne de vitesse" demandée sans nouvelle primitive. Réserve
+honnête — à vitesse de jeu normale (pas en pause sur un screenshot),
+`impactStar`/`arcSlash` restent petits (22-28px) et le flash blanc
+neutre d'`impactFlashFrame` domine visuellement les 2 premiers ticks ;
+le contraste existe et est mesuré, mais sa lecture en combat réel à
+pleine vitesse (jamais testée ici, seulement en capture tick-par-tick)
+reste probablement plus subtile qu'en capture figée.
+
+**Axe 2 (poses)** : ce qui marche — coup1 mesuré +25% d'extension de
+bbox vs le round précédent, silhouette toujours lisible comme un jab ;
+coup2 lit comme genou-uppercut (genou+poing simultanément hauts, torse
+arqué) ; coup3 gagne un impact plus dynamique/distinct de la tenue
+overhead que l'ancienne pose de contact. Réserve honnête — à la
+résolution finale (32×84 affiché), la différence d'ANGLE entre le round
+réaliste et le round exagéré est un changement de DEGRÉ mesurable
+(bras/genou/torse un peu plus loin) plus qu'un changement de LECTURE du
+geste ; visible en comparaison directe côte à côte (voir capture
+committée) mais probablement moins spectaculaire en combat réel à
+vitesse normale que ce que le mandat Yomi Hustle laisse espérer. coup3
+perd aussi un pic overhead net (3 frames quasi identiques idx4-6, contre
+un pic isolé net idx3-4 dans le round précédent) au profit d'un meilleur
+impact — compromis assumé, pas gratuit. La réserve déjà notée au round
+précédent sur coup2 (poing seul visible = confusion possible avec un
+salut) reste valide, ni résolue ni aggravée par cette passe.
+
+### Captures committées
+
+- `captures/verification/2026-08-27-combo-exagere-vfx-yomi.png` :
+  panneau complet — 3 anciennes poses (round réaliste) vs 3 nouvelles
+  (round exagéré) côte à côte, panneau texte des 2 principes Yomi Hustle
+  (étiqueté explicitement "référence textuelle, PAS une capture du jeu
+  original" — aucune image de Yomi Hustle téléchargée ni utilisée),
+  preuve VFX zoomée par coup, verdict honnête par axe.
+- `captures/verification/2026-08-27-combo-3coups-chaine-jeu-reel.png` :
+  les 3 hits du combo réellement chaîné en jeu (capture_headless.sh),
+  poses + couleur VFX visibles ensemble aux 3 ticks de dégât réels.
+
+### Fichiers modifiés
+
+- `src/gameplay/player.gd` (axe 1 : couleurs par tier + impactStar/
+  ribbonTrail sur `_try_hit()`)
+- `tools/capture_scene.gd` (`--action3`/`--action3_tick`, extension
+  outillage dev pour vérifier un combo 3 coups en jeu réel)
+- `assets/manifests/hero_combo_{1,2,3}.json` (nouveaux
+  `pixellab_animation_group_id`/prompts/`frame_ticks`/notes)
+- `assets/source/pixellab/cendre/animations/coup{1,2,3}/*.png` (27
+  frames source remplacées)
+- `assets/processed/sprites/cendre/coup{1,2,3}/*.png` (27 frames cuites
+  remplacées, idx0 inchangé — référence partagée identique)
+- `assets/processed/sprites/cendre/cendre_frames.tres` (durées coup1/2/3
+  seulement)
+- `data/pixellab_usage.jsonl` (4 entrées)
+- `captures/verification/2026-08-27-combo-exagere-vfx-yomi.png` (nouveau)
+- `captures/verification/2026-08-27-combo-3coups-chaine-jeu-reel.png`
+  (nouveau)

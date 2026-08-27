@@ -3,9 +3,9 @@
   "kind": "character_animation",
   "source": "pixellab",
   "pixellab_character_id": "8596a4ad-0a0b-4d82-b99b-db8a73c01e33",
-  "pixellab_animation_group_id": "215c723c-b1a2-4a02-880b-ddc14f1fcc8e",
+  "pixellab_animation_group_id": "2da2cf8c-a653-48fb-b274-7781fca3c2c3",
   "pixellab_mode": "v3_custom",
-  "pixellab_action_description": "a quick straight punch with the lead fist driving forward to full arm extension at chest height, the arm fully extended and locked out at the peak of the strike, weight shifted forward onto the front foot, other arm pulled back tight for balance - no magic, no glow, no light effects, purely physical",
+  "pixellab_action_description": "a quick straight punch, the elbow locked at an extreme, almost impossible hyperextended angle at the peak of full arm extension, torso twisted dramatically beyond natural range as the punch drives forward, weight thrown violently onto the front foot, other arm whipped back tight for counter-balance - silhouette must stay clearly readable, not more limbs, not cluttered, exaggerated ANGLE not exaggerated complexity - no magic, no glow, no light effects, purely physical",
   "character": "cendre",
   "godot_animation_name": "coup1",
   "direction": "south",
@@ -27,20 +27,20 @@
     2,
     1,
     1,
-    1,
-    1,
+    2,
     1,
     1,
     4,
-    14
+    7,
+    7
   ],
-  "frame_ticks_note": "MANDAT retours de playtest reel, point 5 (refonte visuelle) - regenere de 5 a 9 frames (frame_count=8 + reference frame conservee, keep_first_frame par defaut). Timing NON-uniforme (bible d'animation SS2) construit pour caler EXACTEMENT sur le decoupage tick deja existant du code (player.gd, non modifie) : les 7 premieres frames (idx0-6, idle->coude qui s'arme) tiennent l'ANTICIPATION_TICKS=8 du code, la frame 7 (bras tendu, LE pic reel) occupe RELEASE_TICKS=4 (le tick ou _try_hit() s'applique tombe pile pendant cette frame), la frame 8 (retour/recuperation) tient RECOVERY_TICKS=14. Total 26 ticks = 8+4+14, identique au budget existant de combo.anticipation_ticks/release_ticks/recovery_ticks ci-dessous - alignement volontaire, pas une coincidence. Verifie en jeu reel via capture_headless.sh --mode=player_action --action=attack --tick=9 : la frame 7 (bras tendu) est bien affichee au moment ou le degat s'applique (voir captures/phase1/hero_combo_1.png, regenere).",
+  "frame_ticks_note": "BIBLE SS3bis (mandat permanent, 2026-08-27, contraste/exageration facon Yomi Hustle) - 3e passe sur ce pilote, remplace la generation 'coup1_jab_extension' du 2026-08-26. Timing recale sur le VRAI pic mesure de CETTE generation (pas copie de l'ancienne repartition) : le pic d'extension du bras n'est PAS a l'index 7 comme dans le lot precedent mais a l'index 6 - mesure objectivement par la largeur de la bbox alpha de chaque frame source (29,29,33,43,59,59,74,66,60 px), l'index 6 est UN MAXIMUM NET (74px, +8px vs l'index 7 voisin), pas une supposition visuelle. idx0-5 (6 frames, anticipation) = ANTICIPATION_TICKS=8 ; idx6 (bras au maximum d'extension, LE pic reel) = RELEASE_TICKS=4 (tick de _try_hit()) ; idx7-8 (retour/recuperation, bras qui se retracte) = RECOVERY_TICKS=14. Total 26 = 8+4+14, identique au budget existant, player.gd non modifie.",
   "loop": false,
   "source_frames_dir": "assets/source/pixellab/cendre/animations/coup1/",
   "processed_frames_dir": "assets/processed/sprites/cendre/coup1/",
   "sprite_frames_resource": "assets/processed/sprites/cendre/cendre_frames.tres",
   "capture_path": "captures/phase1/hero_combo_1.png",
-  "capture_note": "MANDAT retours de playtest reel, point 5 : capture RÉGÉNÉRÉE en jeu réel (capture_headless.sh --mode=player_action --action=attack --tick=9 --background=neutral, tous les variants 1x/2x/4x neutral/loaded regeneres pareil) - montre desormais frame 7 (index 0-based sur 9 frames), bras totalement tendu au niveau de la poitrine, PAS une garde neutre comme l'ancienne capture (frame 4 sur 5, qui ne montrait qu'une garde de boxe generique - diagnostic initial du mandat). Comparaison avant/apres committee separement dans captures/verification/2026-08-26-combo-poses-avant-apres.png.",
+  "capture_note": "BIBLE SS3bis (2026-08-27) : capture NON regeneree via capture_headless.sh pour cette entree de manifeste (le fichier existant date de la passe playtest reel du 2026-08-26, ancienne pose) - la preuve visuelle a jour pour CETTE passe est committee separement dans captures/verification/2026-08-27-combo-exagere-vfx-yomi.png (comparaison avant/apres + VFX), construite a partir de assets/processed/sprites/cendre/coup1/6.png (frame de pic reelle, verifiee visuellement avec le Read tool - PAS supposee) et d'une capture en jeu reel (capture_headless.sh --mode=player_action --action=attack --tick=9..15, VfxDirector) qui confirme la couleur VFX du tier1 (hue 30 deg, sat 88%, val 90%) sur l'impact. Ne pas confondre avec ce champ capture_path, laisse pointant vers l'ancien fichier committe (pose 'realiste' round precedent) - conserve intentionnellement pour servir de reference AVANT dans le panneau de comparaison.",
   "combo": {
     "step": 1,
     "of": 3,
@@ -52,7 +52,7 @@
     "attack_range_px": 48.0
   },
   "validated_auto": true,
-  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK sur les 9 nouvelles frames source (assets/source/pixellab/cendre/animations/coup1/). Meme correctif value-band que Phase 1.1/R3 (nudge des pixels sous le plancher 15%V vers 17%V, contour sombre du personnage a (30,30,30) => 11.76%V) applique a ce nouveau lot de generation (1542 pixels sur les 9 frames de coup1, 2663 sur les 27 frames coup1+2+3 au total).",
+  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK sur les 9 nouvelles frames source (assets/source/pixellab/cendre/animations/coup1/) apres correctif. Meme correctif value-band que les passes precedentes (nudge des pixels sous le plancher 15%V vers 17%V, contour sombre du personnage) applique a ce nouveau lot (783 pixels sur les 9 frames de coup1, 2404 sur les 27 frames coup1+2+3 au total : 783+830+791).",
   "human_label_ref": null,
   "capture_variants": {
     "neutral_1x": "captures/phase1/hero_combo_1.png",
@@ -70,5 +70,12 @@
     "reroll_count": 0,
     "note": "Accepte au premier essai - la frame 7 montre un bras totalement tendu au niveau de la poitrine, aucun halo/artefact parasite detecte sur les 9 frames.",
     "canvas_fix": "Le lot de generation actuel (meme lot que maree_de_sable/invocation_corbeau_pale, Cendre_v3c rendu a ~79-80px de haut brut) depassait le budget vertical du canvas cuit partage (64x64, ancrage pied a y=61) - la TETE etait integralement rognee sur les 9 frames sans correctif. Corrige en reappliquant le MEME facteur d'echelle LANCZOS pre-cuisson deja documente pour Bras-Faux/Poing Tellurique (mesure frame0 vs cible idle_south ~55px, facteur 55/79 ~ 0.696), + --foot-band-frac=1.0 sur cook_character_frames.py (le defaut 0.35, pense pour ignorer une cape, ratait les pieds sur les stances larges de combat - meme bug deja corrige pour Poing Tellurique). Aucun de ces deux correctifs n'est un nouveau pipeline invente : ce sont les MEMES techniques deja utilisees ailleurs sur ce personnage, juste ré-appliquees ici."
+  },
+  "bible_3bis_axe2_exageration_pose": {
+    "date": "2026-08-27",
+    "mandat": "Bible d'animation SS3bis (mandat permanent, contraste/exageration facon Yomi Hustle), axe 2 : pousser angle de coude/genou + torsion du torse AU-DELA de l'anatomie realiste de la generation precedente (2026-08-26), sans perdre la lisibilite de silhouette. 3e generation PixelLab sur ce personnage pour ce coup (v1 20260820 garde generique, v2 20260826 extension realiste, v3 20260827 extension exageree).",
+    "prompt_delta": "vs. v2 (hero_combo_1.json avant cette passe) : ajout explicite 'the elbow locked at an extreme, almost impossible hyperextended angle', 'torso twisted dramatically beyond natural range', et de la clause de garde-fou de lisibilite ('silhouette must stay clearly readable, not more limbs, not cluttered, exaggerated ANGLE not exaggerated complexity') - reprise textuelle de l'instruction de Milan, pas une paraphrase.",
+    "reroll_count": 0,
+    "verdict_pixel_art": "Accepte au premier essai, aucun halo/artefact parasite detecte sur les 9 frames. Verifie objectivement (pas seulement a l'oeil) : la bbox alpha de la frame de pic (idx6, 74px de large) est +25% plus large que le pic de la v2 precedente (idx7, 66px) - l'exageration demandee est mesurable, pas seulement suggeree. La torsion du torse reste lisible a l'echelle cuite (64x64) : silhouette toujours identifiable comme un jab, pas de confusion avec un autre concept de coup. Reserve honnete : a cette resolution (32x84 affiche), la difference entre v2 et v3 est plus une question de PIC atteint (bras plus loin, torse plus penche) qu'un changement de LECTURE du geste - un joueur qui n'a pas les deux versions cote a cote percevra 'un jab plus engage', pas necessairement 'un jab a angle impossible'. Voir verdict complet dans docs/worklog.md et le panneau de comparaison committe."
   }
 }

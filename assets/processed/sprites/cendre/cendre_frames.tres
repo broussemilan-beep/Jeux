@@ -632,7 +632,7 @@ animations = [{
 "duration": 0.2,
 "texture": ExtResource("102")
 }, {
-"duration": 0.2,
+"duration": 0.4,
 "texture": ExtResource("103")
 }, {
 "duration": 0.2,
@@ -641,13 +641,13 @@ animations = [{
 "duration": 0.2,
 "texture": ExtResource("105")
 }, {
-"duration": 0.2,
+"duration": 0.8,
 "texture": ExtResource("106")
 }, {
-"duration": 0.8,
+"duration": 1.4,
 "texture": ExtResource("107")
 }, {
-"duration": 2.8,
+"duration": 1.4,
 "texture": ExtResource("108")
 }],
 "loop": false,
@@ -661,10 +661,10 @@ animations = [{
 "duration": 0.2,
 "texture": ExtResource("110")
 }, {
-"duration": 0.4,
+"duration": 0.2,
 "texture": ExtResource("111")
 }, {
-"duration": 0.2,
+"duration": 0.4,
 "texture": ExtResource("112")
 }, {
 "duration": 0.2,
@@ -673,13 +673,13 @@ animations = [{
 "duration": 0.2,
 "texture": ExtResource("114")
 }, {
-"duration": 0.4,
+"duration": 0.8,
 "texture": ExtResource("115")
 }, {
-"duration": 0.4,
+"duration": 1.4,
 "texture": ExtResource("116")
 }, {
-"duration": 2.8,
+"duration": 1.4,
 "texture": ExtResource("117")
 }],
 "loop": false,
@@ -696,7 +696,7 @@ animations = [{
 "duration": 0.4,
 "texture": ExtResource("120")
 }, {
-"duration": 0.6,
+"duration": 0.4,
 "texture": ExtResource("121")
 }, {
 "duration": 0.4,
@@ -705,13 +705,13 @@ animations = [{
 "duration": 0.2,
 "texture": ExtResource("123")
 }, {
-"duration": 0.8,
+"duration": 0.2,
 "texture": ExtResource("124")
 }, {
-"duration": 2.0,
+"duration": 0.8,
 "texture": ExtResource("125")
 }, {
-"duration": 2.0,
+"duration": 4.0,
 "texture": ExtResource("126")
 }],
 "loop": false,
