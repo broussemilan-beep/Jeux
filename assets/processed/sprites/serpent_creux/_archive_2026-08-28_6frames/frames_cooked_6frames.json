@@ -1,0 +1,31 @@
+{
+  "character": "serpent_creux",
+  "out_canvas": [
+    88,
+    104
+  ],
+  "anchor_px": [
+    44,
+    100
+  ],
+  "animations": {
+    "cast": {
+      "frames": [
+        "assets/processed/sprites/serpent_creux/cast/0.png",
+        "assets/processed/sprites/serpent_creux/cast/1.png",
+        "assets/processed/sprites/serpent_creux/cast/2.png",
+        "assets/processed/sprites/serpent_creux/cast/3.png",
+        "assets/processed/sprites/serpent_creux/cast/4.png",
+        "assets/processed/sprites/serpent_creux/cast/5.png"
+      ],
+      "canvas": [
+        88,
+        104
+      ],
+      "anchor_px": [
+        44,
+        100
+      ]
+    }
+  }
+}

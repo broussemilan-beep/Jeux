@@ -47,9 +47,28 @@ const DAMAGE := 18.0  # Tier 5/5, l'ultime — au-dessus de toutes les compéten
 ## Addendum A §A.5 — suite de la séquence CAST_SEED.
 const CAST_SEED := 51008
 
-## 6 frames pose-à-pose sur les 60 ticks ci-dessus. frame3 couvre le
-## début de la frappe (STRIKE_START_TICK=26, borne exacte frame2/frame3).
-const FRAME_TICK_BOUNDS: Array[int] = [10, 18, 26, 40, 50, 60]
+## PASSE DENSITÉ (2026-08-28, MANDAT campagne "densité d'animation +
+## richesse visuelle", bible §2, cible 12-18 frames) : régénéré en v3
+## PixelLab (même character 2c05878d, nouvelle animation "cast_dense" à
+## 17 frames sud, frame_count=16+keep_first_frame). Lecture visuelle
+## réelle des 17 frames (pas supposée) : 0-7 = corps coiled en S, tenu
+## quasi identique (respiration lente, anticipation) ; 8-11 = la gueule
+## s'ouvre progressivement toujours coiled (tension qui monte) ; 12-14 =
+## LE relâchement/la frappe (le corps se détend et s'étire hors du S en
+## 2-3 frames à peine — écart honnête avec la description demandée :
+## PixelLab a produit un "coup net" plus court qu'un long étirement en
+## ligne, mais la frappe brutale EST bien visible, cohérent avec "attaque
+## linéaire brutale" de la fiche) ; 15-16 = éclat/dissolution. Répartition
+## non-uniforme : 12 frames sur formation+préparation (0-26t, beaucoup sur
+## l'anticipation), 3 frames SEULEMENT sur la frappe (26-30t, le coup
+## net), la dernière de ces 3 (frame 14, corps étiré) tenue jusqu'à 46t
+## pour couvrir la translation réelle du corps pendant la phase d'attaque
+## (même convention que l'ancien frame3 tenu 26-40t), 2 frames sur la
+## dissipation (46-60t). STRIKE_START_TICK (26, inchangé) tombe sur la
+## fin du frame 11 (dernier frame "coiled tendu"), juste avant le début
+## du frame 12 (1er frame de frappe) — cohérent avec le mandat original
+## "frame3 couvre le début de la frappe, borne exacte".
+const FRAME_TICK_BOUNDS: Array[int] = [3, 6, 9, 12, 15, 18, 19, 20, 21, 23, 24, 26, 27, 29, 46, 53, 60]
 
 @onready var _sprite: AnimatedSprite2D = $AnimatedSprite2D
 
