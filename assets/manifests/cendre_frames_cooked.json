@@ -14,7 +14,18 @@
         "assets/processed/sprites/cendre/idle_south/0.png",
         "assets/processed/sprites/cendre/idle_south/1.png",
         "assets/processed/sprites/cendre/idle_south/2.png",
-        "assets/processed/sprites/cendre/idle_south/3.png"
+        "assets/processed/sprites/cendre/idle_south/3.png",
+        "assets/processed/sprites/cendre/idle_south/4.png",
+        "assets/processed/sprites/cendre/idle_south/5.png",
+        "assets/processed/sprites/cendre/idle_south/6.png",
+        "assets/processed/sprites/cendre/idle_south/7.png",
+        "assets/processed/sprites/cendre/idle_south/8.png",
+        "assets/processed/sprites/cendre/idle_south/9.png",
+        "assets/processed/sprites/cendre/idle_south/10.png",
+        "assets/processed/sprites/cendre/idle_south/11.png",
+        "assets/processed/sprites/cendre/idle_south/12.png",
+        "assets/processed/sprites/cendre/idle_south/13.png",
+        "assets/processed/sprites/cendre/idle_south/14.png"
       ],
       "canvas": [
         64,
@@ -144,7 +155,16 @@
         "assets/processed/sprites/cendre/deplacement_south/2.png",
         "assets/processed/sprites/cendre/deplacement_south/3.png",
         "assets/processed/sprites/cendre/deplacement_south/4.png",
-        "assets/processed/sprites/cendre/deplacement_south/5.png"
+        "assets/processed/sprites/cendre/deplacement_south/5.png",
+        "assets/processed/sprites/cendre/deplacement_south/6.png",
+        "assets/processed/sprites/cendre/deplacement_south/7.png",
+        "assets/processed/sprites/cendre/deplacement_south/8.png",
+        "assets/processed/sprites/cendre/deplacement_south/9.png",
+        "assets/processed/sprites/cendre/deplacement_south/10.png",
+        "assets/processed/sprites/cendre/deplacement_south/11.png",
+        "assets/processed/sprites/cendre/deplacement_south/12.png",
+        "assets/processed/sprites/cendre/deplacement_south/13.png",
+        "assets/processed/sprites/cendre/deplacement_south/14.png"
       ],
       "canvas": [
         64,
@@ -345,7 +365,15 @@
         "assets/processed/sprites/cendre/coup1/5.png",
         "assets/processed/sprites/cendre/coup1/6.png",
         "assets/processed/sprites/cendre/coup1/7.png",
-        "assets/processed/sprites/cendre/coup1/8.png"
+        "assets/processed/sprites/cendre/coup1/8.png",
+        "assets/processed/sprites/cendre/coup1/9.png",
+        "assets/processed/sprites/cendre/coup1/10.png",
+        "assets/processed/sprites/cendre/coup1/11.png",
+        "assets/processed/sprites/cendre/coup1/12.png",
+        "assets/processed/sprites/cendre/coup1/13.png",
+        "assets/processed/sprites/cendre/coup1/14.png",
+        "assets/processed/sprites/cendre/coup1/15.png",
+        "assets/processed/sprites/cendre/coup1/16.png"
       ],
       "canvas": [
         64,
@@ -366,7 +394,15 @@
         "assets/processed/sprites/cendre/coup2/5.png",
         "assets/processed/sprites/cendre/coup2/6.png",
         "assets/processed/sprites/cendre/coup2/7.png",
-        "assets/processed/sprites/cendre/coup2/8.png"
+        "assets/processed/sprites/cendre/coup2/8.png",
+        "assets/processed/sprites/cendre/coup2/9.png",
+        "assets/processed/sprites/cendre/coup2/10.png",
+        "assets/processed/sprites/cendre/coup2/11.png",
+        "assets/processed/sprites/cendre/coup2/12.png",
+        "assets/processed/sprites/cendre/coup2/13.png",
+        "assets/processed/sprites/cendre/coup2/14.png",
+        "assets/processed/sprites/cendre/coup2/15.png",
+        "assets/processed/sprites/cendre/coup2/16.png"
       ],
       "canvas": [
         64,
@@ -387,7 +423,15 @@
         "assets/processed/sprites/cendre/coup3/5.png",
         "assets/processed/sprites/cendre/coup3/6.png",
         "assets/processed/sprites/cendre/coup3/7.png",
-        "assets/processed/sprites/cendre/coup3/8.png"
+        "assets/processed/sprites/cendre/coup3/8.png",
+        "assets/processed/sprites/cendre/coup3/9.png",
+        "assets/processed/sprites/cendre/coup3/10.png",
+        "assets/processed/sprites/cendre/coup3/11.png",
+        "assets/processed/sprites/cendre/coup3/12.png",
+        "assets/processed/sprites/cendre/coup3/13.png",
+        "assets/processed/sprites/cendre/coup3/14.png",
+        "assets/processed/sprites/cendre/coup3/15.png",
+        "assets/processed/sprites/cendre/coup3/16.png"
       ],
       "canvas": [
         64,

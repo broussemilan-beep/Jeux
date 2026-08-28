@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=241 format=3]
+[gd_resource type="SpriteFrames" load_steps=285 format=3]
 
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/0.png" id="2"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/1.png" id="3"]
@@ -240,21 +240,98 @@
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_serpent_creux/3.png" id="229"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_serpent_creux/4.png" id="230"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_serpent_creux/5.png" id="231"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/4.png" id="1010"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/5.png" id="1011"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/6.png" id="1012"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/7.png" id="1013"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/8.png" id="1014"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/9.png" id="1015"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/10.png" id="1016"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/11.png" id="1017"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/12.png" id="1018"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/13.png" id="1019"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/14.png" id="1020"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement_south/6.png" id="1021"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement_south/7.png" id="1022"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement_south/8.png" id="1023"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement_south/9.png" id="1024"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement_south/10.png" id="1025"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement_south/11.png" id="1026"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement_south/12.png" id="1027"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement_south/13.png" id="1028"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement_south/14.png" id="1029"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/9.png" id="1030"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/10.png" id="1031"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/11.png" id="1032"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/12.png" id="1033"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/13.png" id="1034"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/14.png" id="1035"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/15.png" id="1036"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/16.png" id="1037"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/9.png" id="1038"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/10.png" id="1039"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/11.png" id="1040"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/12.png" id="1041"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/13.png" id="1042"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/14.png" id="1043"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/15.png" id="1044"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/16.png" id="1045"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/9.png" id="1046"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/10.png" id="1047"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/11.png" id="1048"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/12.png" id="1049"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/13.png" id="1050"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/14.png" id="1051"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/15.png" id="1052"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/16.png" id="1053"]
 
 [resource]
 animations = [{
 "frames": [{
-"duration": 1.0,
+"duration": 0.3,
 "texture": ExtResource("2")
 }, {
-"duration": 1.0,
+"duration": 0.3,
 "texture": ExtResource("3")
 }, {
-"duration": 1.0,
+"duration": 0.3,
 "texture": ExtResource("4")
 }, {
-"duration": 1.0,
+"duration": 0.3,
 "texture": ExtResource("5")
+}, {
+"duration": 0.3,
+"texture": ExtResource("1010")
+}, {
+"duration": 0.3,
+"texture": ExtResource("1011")
+}, {
+"duration": 0.3,
+"texture": ExtResource("1012")
+}, {
+"duration": 0.3,
+"texture": ExtResource("1013")
+}, {
+"duration": 0.3,
+"texture": ExtResource("1014")
+}, {
+"duration": 0.3,
+"texture": ExtResource("1015")
+}, {
+"duration": 0.3,
+"texture": ExtResource("1016")
+}, {
+"duration": 0.3,
+"texture": ExtResource("1017")
+}, {
+"duration": 0.3,
+"texture": ExtResource("1018")
+}, {
+"duration": 0.3,
+"texture": ExtResource("1019")
+}, {
+"duration": 0.3,
+"texture": ExtResource("1020")
 }],
 "loop": true,
 "name": &"idle_south",
@@ -380,23 +457,50 @@ animations = [{
 "speed": 6.0
 }, {
 "frames": [{
-"duration": 1.0,
+"duration": 0.5,
 "texture": ExtResource("34")
 }, {
-"duration": 1.0,
+"duration": 0.3333333333,
 "texture": ExtResource("35")
 }, {
-"duration": 1.0,
+"duration": 0.5,
 "texture": ExtResource("36")
 }, {
-"duration": 1.0,
+"duration": 0.3333333333,
 "texture": ExtResource("37")
 }, {
-"duration": 1.0,
+"duration": 0.5,
 "texture": ExtResource("38")
 }, {
-"duration": 1.0,
+"duration": 0.3333333333,
 "texture": ExtResource("39")
+}, {
+"duration": 0.5,
+"texture": ExtResource("1021")
+}, {
+"duration": 0.3333333333,
+"texture": ExtResource("1022")
+}, {
+"duration": 0.5,
+"texture": ExtResource("1023")
+}, {
+"duration": 0.3333333333,
+"texture": ExtResource("1024")
+}, {
+"duration": 0.5,
+"texture": ExtResource("1025")
+}, {
+"duration": 0.3333333333,
+"texture": ExtResource("1026")
+}, {
+"duration": 0.3333333333,
+"texture": ExtResource("1027")
+}, {
+"duration": 0.3333333333,
+"texture": ExtResource("1028")
+}, {
+"duration": 0.3333333333,
+"texture": ExtResource("1029")
 }],
 "loop": true,
 "name": &"deplacement_south",
@@ -633,7 +737,7 @@ animations = [{
 "speed": 15.0
 }, {
 "frames": [{
-"duration": 0.4,
+"duration": 0.2,
 "texture": ExtResource("100")
 }, {
 "duration": 0.2,
@@ -642,7 +746,7 @@ animations = [{
 "duration": 0.2,
 "texture": ExtResource("102")
 }, {
-"duration": 0.4,
+"duration": 0.2,
 "texture": ExtResource("103")
 }, {
 "duration": 0.2,
@@ -651,21 +755,45 @@ animations = [{
 "duration": 0.2,
 "texture": ExtResource("105")
 }, {
-"duration": 0.8,
+"duration": 0.2,
 "texture": ExtResource("106")
 }, {
-"duration": 1.4,
+"duration": 0.2,
 "texture": ExtResource("107")
 }, {
-"duration": 1.4,
+"duration": 0.2,
 "texture": ExtResource("108")
+}, {
+"duration": 0.2,
+"texture": ExtResource("1030")
+}, {
+"duration": 0.2,
+"texture": ExtResource("1031")
+}, {
+"duration": 0.2,
+"texture": ExtResource("1032")
+}, {
+"duration": 0.2,
+"texture": ExtResource("1033")
+}, {
+"duration": 0.2,
+"texture": ExtResource("1034")
+}, {
+"duration": 0.2,
+"texture": ExtResource("1035")
+}, {
+"duration": 0.8,
+"texture": ExtResource("1036")
+}, {
+"duration": 2.8,
+"texture": ExtResource("1037")
 }],
 "loop": false,
 "name": &"coup1",
 "speed": 12.0
 }, {
 "frames": [{
-"duration": 0.4,
+"duration": 0.2,
 "texture": ExtResource("109")
 }, {
 "duration": 0.2,
@@ -674,7 +802,7 @@ animations = [{
 "duration": 0.2,
 "texture": ExtResource("111")
 }, {
-"duration": 0.4,
+"duration": 0.2,
 "texture": ExtResource("112")
 }, {
 "duration": 0.2,
@@ -683,33 +811,57 @@ animations = [{
 "duration": 0.2,
 "texture": ExtResource("114")
 }, {
-"duration": 0.8,
+"duration": 0.2,
 "texture": ExtResource("115")
 }, {
-"duration": 1.4,
+"duration": 0.2,
 "texture": ExtResource("116")
 }, {
-"duration": 1.4,
+"duration": 0.2,
 "texture": ExtResource("117")
+}, {
+"duration": 0.2,
+"texture": ExtResource("1038")
+}, {
+"duration": 0.2,
+"texture": ExtResource("1039")
+}, {
+"duration": 0.2,
+"texture": ExtResource("1040")
+}, {
+"duration": 0.2,
+"texture": ExtResource("1041")
+}, {
+"duration": 0.8,
+"texture": ExtResource("1042")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1043")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1044")
+}, {
+"duration": 0.8,
+"texture": ExtResource("1045")
 }],
 "loop": false,
 "name": &"coup2",
 "speed": 12.0
 }, {
 "frames": [{
-"duration": 0.4,
+"duration": 0.2,
 "texture": ExtResource("118")
 }, {
-"duration": 0.4,
+"duration": 0.2,
 "texture": ExtResource("119")
 }, {
-"duration": 0.4,
+"duration": 0.2,
 "texture": ExtResource("120")
 }, {
-"duration": 0.4,
+"duration": 0.2,
 "texture": ExtResource("121")
 }, {
-"duration": 0.4,
+"duration": 0.2,
 "texture": ExtResource("122")
 }, {
 "duration": 0.2,
@@ -718,11 +870,35 @@ animations = [{
 "duration": 0.2,
 "texture": ExtResource("124")
 }, {
-"duration": 0.8,
+"duration": 0.2,
 "texture": ExtResource("125")
 }, {
-"duration": 4.0,
+"duration": 0.2,
 "texture": ExtResource("126")
+}, {
+"duration": 0.2,
+"texture": ExtResource("1046")
+}, {
+"duration": 0.2,
+"texture": ExtResource("1047")
+}, {
+"duration": 0.2,
+"texture": ExtResource("1048")
+}, {
+"duration": 0.2,
+"texture": ExtResource("1049")
+}, {
+"duration": 0.2,
+"texture": ExtResource("1050")
+}, {
+"duration": 0.8,
+"texture": ExtResource("1051")
+}, {
+"duration": 2.0,
+"texture": ExtResource("1052")
+}, {
+"duration": 2.0,
+"texture": ExtResource("1053")
 }],
 "loop": false,
 "name": &"coup3",

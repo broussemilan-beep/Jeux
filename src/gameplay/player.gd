@@ -280,21 +280,14 @@ const BRAS_FAUX_CAST_SEED := 51001  # Addendum A §A.5 : jamais l'horloge murale
 ## tick de contact plutôt qu'avant ou après. Constat identique à celui de
 ## POING_BELLUAIRE_FRAME_TICK_BOUNDS (même bug de architecture, trouvé
 ## indépendamment par l'agent Poing Belluaire sur son propre pouvoir).
-## DENSIFIÉ (campagne "densité d'animation", agent Monstrification) : 6 ->
-## 16 frames, silhouette de départ/fin INCHANGÉE (mêmes deux ancres
-## `custom_start_frame_url`/`end_frame_url` que la refonte "courbe en C"
-## déjà validée — seules les 14 poses intermédiaires sont nouvelles).
-## Répartition NON uniforme (règle du projet, mandat densité §2) : 8
-## frames sur l'anticipation (2-12, le crochet se love), 4 sur le
-## contact/pic (14-18, le balayage lui-même — VÉRIFIÉ par capture
-## réelle tick-par-tick, capture_headless.sh --mode=player_action_sequence,
-## que le contact tombe au tick 14 = PILE le tick où le _bras_faux_tick
-## atteint BRAS_FAUX_ANTICIPATION_TICKS, pas 15 comme la lecture rapide du
-## code le laisserait croire — l'index 8 (borne 14) est donc déjà la pose
-## de contact, pas la dernière pose d'anticipation), 4 sur la recovery
-## (24-40). Beaucoup de frames là où l'œil a le temps de les voir, peu
-## sur le pic pour garder l'impression de vitesse.
-const BRAS_FAUX_FRAME_TICK_BOUNDS: Array[int] = [2, 4, 6, 8, 9, 10, 11, 12, 14, 15, 17, 18, 24, 30, 36, 40]
+## Bornes ci-dessous calées pour que la frame 3 (première pose du cluster
+## "balayage") bascule PILE au tick global 15 (ANTICIPATION 14 + RELEASE
+## tick1 = contact) au lieu d'un tick arbitraire dérivé du fps, et que les
+## frames 4/5 (même cluster visuel, mais on garde la table à 6 entrées
+## comme GueuleVide/PoingBelluaire) se répartissent sur le reste de
+## RELEASE+RECOVERY plutôt que de figer instantanément sur la frame 5 dès
+## la fin de la lecture fps native.
+const BRAS_FAUX_FRAME_TICK_BOUNDS: Array[int] = [5, 10, 14, 18, 29, 40]
 
 ## Fenêtre d'annulation (mandat "fluidité", Partie 2) — PROPRIÉTÉ PROPRE à
 ## Bras-Faux (pas une réutilisation de CHAIN_WINDOW_TICKS, le mandat exige
@@ -413,32 +406,39 @@ const POING_TELLURIQUE_COOLDOWN_TICKS := 200  # ~3,3s @ 60/s, TUNABLE (non chiff
 const PoingTelluriqueRecipeId := "power.poing_tellurique.cast"
 const POING_TELLURIQUE_CAST_SEED := 51003  # Addendum A §A.5, jamais l'horloge murale.
 
-## Art dédié (agent Poing Tellurique, mandat "polish complet", 2026-08-23) :
-## anim "poing_tellurique" propre, PAS un réemploi de "coup1" (le premier
-## coup du combo à mains nues — un jab horizontal générique, aucun rapport
-## avec un impact au sol, écart confirmé par capture avant correctif et par
-## comparaison directe avec docs/references/terre/poing_tellurique.png).
-## 6 frames pose-to-pose lisibles comme les 4 temps de la planche
-## (préparation/prépare -> frappe qui descend -> impact au sol avec éclats
-## -> dissipation en se relevant), cf. docstring de _start_poing_tellurique()
-## pour le détail du pipeline de génération. Même discipline tick-exact que
-## BRAS_FAUX_FRAME_TICK_BOUNDS/POING_BELLUAIRE_FRAME_TICK_BOUNDS ci-dessus
-## (jamais la fps autonome d'AnimatedSprite2D, qui ne peut pas exprimer des
-## phases de durées inégales) : bornes calées pour que la frame 4 (impact,
-## poings au sol + éclats visibles sur le sprite lui-même) bascule PILE au
-## tick global 19 (ANTICIPATION 18 + RELEASE tick1 = contact) — aligné avec
-## la fenêtre "contact" 18-22 d'impactFlashFrame et le start_tick=18/19 de
-## dustKick/impactStar (data/recipes/power.poing_tellurique.cast.json) —
-## et que la frame 3 (accroupissement profond, juste avant l'impact) tienne
-## tout le reste de l'ANTICIPATION (jusqu'au tick 18 inclus).
-const POING_TELLURIQUE_FRAME_TICK_BOUNDS: Array[int] = [5, 10, 14, 18, 25, 42]
+## Art dédié (agent Poing Tellurique, mandat "polish complet", 2026-08-23 ;
+## PASSE DENSITÉ DE FRAMES, agent dédié Terre, 2026-08-28) : anim
+## "poing_tellurique" propre, PAS un réemploi de "coup1". 16 frames
+## pose-to-pose (mandat densité "12-18 frames premium", remplace les 6
+## frames d'origine — RÉGÉNÉRATION COMPLÈTE via animate_character v3,
+## même character_id Cendre_v3c 8596a4ad, même prompt "purely physical,
+## no glow/no light effects" ; le contraste VFX déjà posé — data/palettes/
+## terre.json, primitives groundRing/impactStar — n'est PAS touché par
+## cette passe, seul le sprite du personnage change) : 0-10 anticipation
+## (montée en garde -> bras levés haut, répartition FINE et volontairement
+## NON UNIFORME — la plupart des frames sur l'anticipation, jamais un
+## découpage régulier), 11-12 contact/pic (SEULEMENT 2 frames, la plus
+## courte tenue possible : frame 11 = accroupissement le plus profond,
+## poings au plus bas), 13-15 dissipation en se relevant. Frame de contact
+## choisie par MESURE réelle (bounding-box alpha), pas par supposition :
+## bbox_top de chaque frame cuite mesuré après cuisson (top=9 debout ->
+## 33 accroupissement max, atteint aux frames 11 ET 12, jamais avant) —
+## la frame 11 est la PREMIÈRE à atteindre ce minimum, donc la frappe
+## commence pile là. Bornes calées pour que la frame 11 bascule PILE au
+## tick global 19 (ANTICIPATION 18 + RELEASE tick1 = contact) — toujours
+## aligné avec la fenêtre "contact" 18-22 d'impactFlashFrame et le
+## start_tick=18/19 de dustKick/impactStar (data/recipes/
+## power.poing_tellurique.cast.json), revérifié après régénération (capture
+## en jeu, pas supposé).
+const POING_TELLURIQUE_FRAME_TICK_BOUNDS: Array[int] = [2, 4, 6, 8, 10, 12, 13, 14, 15, 16, 18, 19, 22, 28, 34, 42]
 
 ## Fenêtre d'annulation (mandat "fluidité", Partie 2) — PROPRIÉTÉ PROPRE à
 ## Poing Tellurique : coup au sol "medium" (ni le plus léger ni le plus
 ## lourd des 5), fenêtre généreuse à mi-chemin entre Bras-Faux et Poing
-## Belluaire (12 des 20 ticks de RECOVERY, 60%) — la frame 5 ("dissipation
-## en se relevant", POING_TELLURIQUE_FRAME_TICK_BOUNDS) tient déjà tout ce
-## temps sans bouger, rien de visuel n'est coupé par une annulation dans
+## Belluaire (12 des 20 ticks de RECOVERY, 60%) — tombe dans les frames
+## 13-15 ("dissipation en se relevant", POING_TELLURIQUE_FRAME_TICK_BOUNDS,
+## PASSE DENSITÉ 2026-08-28) : la dissipation est déjà bien engagée à ce
+## stade, aucune pose de contact n'est coupée par une annulation dans
 ## cette fenêtre.
 const POING_TELLURIQUE_CANCEL_WINDOW_TICKS := 12
 
@@ -485,23 +485,34 @@ const MAREE_DE_SABLE_CAST_SEED := 51004  # Addendum A §A.5, jamais l'horloge mu
 ## traîne sous les bottes sur ce personnage R3 sans cape, donc aucun risque
 ## de retomber sur le bug cape que cette bande visait à l'origine).
 ##
-## Pilotage tick-exact (même discipline que POING_BELLUAIRE_FRAME_TICK_BOUNDS/
-## POING_TELLURIQUE_FRAME_TICK_BOUNDS ci-dessus, jamais la fps autonome
-## d'AnimatedSprite2D qui désynchronise le contact mécanique de la pose
-## affichée — bug de classe déjà trouvé et corrigé sur ces deux pouvoirs) :
-## bornes calées pour que la frame 3 (bras tendu en extension complète,
-## pose "Lancement" de la planche) couvre la fin de l'ANTICIPATION ET le
-## tick de contact (RELEASE tick1 = tick global 15 = ANTICIPATION 14 + 1),
-## puis frames 4-5 (voile de sable qui grossit à la main) tiennent le reste
-## du RELEASE et toute la RECOVERY (14+10+18=42).
-const MAREE_DE_SABLE_FRAME_TICK_BOUNDS: Array[int] = [4, 8, 11, 15, 22, 42]
+## PASSE DENSITÉ DE FRAMES (agent dédié Terre, 2026-08-28) : 16 frames
+## pose-to-pose (mandat "12-18 frames premium", remplace les 6 frames
+## d'origine — RÉGÉNÉRATION COMPLÈTE via animate_character v3, même
+## character_id Cendre_v3c, prompt "purely physical, no glow/no light
+## trail" ; le contraste VFX déjà posé — data/palettes/terre.json,
+## sandCrest — n'est PAS touché, seul le sprite du personnage change).
+## Frame de contact choisie par MESURE réelle (bord droit du bbox alpha
+## après cuisson, pas par supposition) : l'extension du bras grandit
+## progressivement (43->53px) et atteint son maximum pour la PREMIÈRE fois
+## à la frame 11 (53px, plateau jusqu'à la frame 13) — c'est donc la
+## frame 11 qui porte le contact, pas une frame médiane devinée. 0-10
+## anticipation (stance qui s'élargit, bras qui se replie puis commence
+## l'extension — répartition fine et volontairement NON UNIFORME, la
+## plupart des frames ici), 11-12 contact/pic (SEULEMENT 2 frames : bras
+## en extension complète, la plus courte tenue possible), 13-15
+## dissipation (bras qui se relâche vers une position neutre). Bornes
+## calées pour que la frame 11 bascule PILE au tick global 15
+## (ANTICIPATION 14 + RELEASE tick1 = contact), revérifié après
+## régénération (capture en jeu, pas supposé).
+const MAREE_DE_SABLE_FRAME_TICK_BOUNDS: Array[int] = [2, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 24, 30, 36, 42]
 
 ## Fenêtre d'annulation (mandat "fluidité", Partie 2) — PROPRIÉTÉ PROPRE à
 ## Marée de Sable : Tier CONTRÔLE (dégâts les plus faibles des 4, voir
 ## MAREE_DE_SABLE_DAMAGE), pas d'impact "lourd" à vendre — fenêtre généreuse
-## proche de Bras-Faux (10 des 18 ticks de RECOVERY, ~55%). La frame 5 (voile
-## de sable qui tient jusqu'à la fin, MAREE_DE_SABLE_FRAME_TICK_BOUNDS) est
-## déjà statique sur toute cette fenêtre.
+## proche de Bras-Faux (10 des 18 ticks de RECOVERY, ~55%) — tombe dans les
+## frames 14-15 (bras qui se relâche vers une position neutre,
+## MAREE_DE_SABLE_FRAME_TICK_BOUNDS, PASSE DENSITÉ 2026-08-28), la
+## dissipation est déjà bien engagée à ce stade.
 const MAREE_DE_SABLE_CANCEL_WINDOW_TICKS := 10
 
 ## Carapace (Terre, Tier 3, DÉFENSIF) — CHANTIER A (2026-08-24, agent dédié
