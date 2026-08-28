@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=285 format=3]
+[gd_resource type="SpriteFrames" load_steps=305 format=3]
 
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/0.png" id="2"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/1.png" id="3"]
@@ -147,24 +147,44 @@
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/3.png" id="136"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/4.png" id="137"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/5.png" id="138"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/0.png" id="139"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/1.png" id="140"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/2.png" id="141"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/3.png" id="142"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/4.png" id="143"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/5.png" id="144"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/0.png" id="2001"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/1.png" id="2002"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/2.png" id="2003"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/3.png" id="2004"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/4.png" id="2005"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/5.png" id="2006"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/6.png" id="2007"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/7.png" id="2008"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/8.png" id="2009"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/9.png" id="2010"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/10.png" id="2011"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/11.png" id="2012"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/12.png" id="2013"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/13.png" id="2014"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/14.png" id="2015"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/15.png" id="2016"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_gueule_vide/0.png" id="145"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_gueule_vide/1.png" id="146"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_gueule_vide/2.png" id="147"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_gueule_vide/3.png" id="148"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_gueule_vide/4.png" id="149"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_gueule_vide/5.png" id="150"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/0.png" id="151"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/1.png" id="152"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/2.png" id="153"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/3.png" id="154"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/4.png" id="155"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/5.png" id="156"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/0.png" id="2101"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/1.png" id="2102"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/2.png" id="2103"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/3.png" id="2104"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/4.png" id="2105"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/5.png" id="2106"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/6.png" id="2107"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/7.png" id="2108"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/8.png" id="2109"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/9.png" id="2110"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/10.png" id="2111"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/11.png" id="2112"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/12.png" id="2113"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/13.png" id="2114"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/14.png" id="2115"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/maree_de_sable/15.png" id="2116"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_activation/0.png" id="157"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_activation/1.png" id="158"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/carapace_activation/2.png" id="159"]
@@ -981,23 +1001,53 @@ animations = [{
 "speed": 12.0
 }, {
 "frames": [{
-"duration": 1.0,
-"texture": ExtResource("139")
+"duration": 0.4,
+"texture": ExtResource("2001")
 }, {
-"duration": 1.0,
-"texture": ExtResource("140")
+"duration": 0.4,
+"texture": ExtResource("2002")
 }, {
-"duration": 1.0,
-"texture": ExtResource("141")
+"duration": 0.4,
+"texture": ExtResource("2003")
 }, {
-"duration": 1.0,
-"texture": ExtResource("142")
+"duration": 0.4,
+"texture": ExtResource("2004")
 }, {
-"duration": 1.0,
-"texture": ExtResource("143")
+"duration": 0.4,
+"texture": ExtResource("2005")
 }, {
-"duration": 1.0,
-"texture": ExtResource("144")
+"duration": 0.4,
+"texture": ExtResource("2006")
+}, {
+"duration": 0.2,
+"texture": ExtResource("2007")
+}, {
+"duration": 0.2,
+"texture": ExtResource("2008")
+}, {
+"duration": 0.2,
+"texture": ExtResource("2009")
+}, {
+"duration": 0.2,
+"texture": ExtResource("2010")
+}, {
+"duration": 0.4,
+"texture": ExtResource("2011")
+}, {
+"duration": 0.2,
+"texture": ExtResource("2012")
+}, {
+"duration": 0.6,
+"texture": ExtResource("2013")
+}, {
+"duration": 1.2,
+"texture": ExtResource("2014")
+}, {
+"duration": 1.2,
+"texture": ExtResource("2015")
+}, {
+"duration": 1.6,
+"texture": ExtResource("2016")
 }],
 "loop": false,
 "name": &"poing_tellurique",
@@ -1027,23 +1077,53 @@ animations = [{
 "speed": 12.0
 }, {
 "frames": [{
-"duration": 1.0,
-"texture": ExtResource("151")
+"duration": 0.4,
+"texture": ExtResource("2101")
 }, {
-"duration": 1.0,
-"texture": ExtResource("152")
+"duration": 0.4,
+"texture": ExtResource("2102")
 }, {
-"duration": 1.0,
-"texture": ExtResource("153")
+"duration": 0.4,
+"texture": ExtResource("2103")
 }, {
-"duration": 1.0,
-"texture": ExtResource("154")
+"duration": 0.2,
+"texture": ExtResource("2104")
 }, {
-"duration": 1.0,
-"texture": ExtResource("155")
+"duration": 0.2,
+"texture": ExtResource("2105")
 }, {
-"duration": 1.0,
-"texture": ExtResource("156")
+"duration": 0.2,
+"texture": ExtResource("2106")
+}, {
+"duration": 0.2,
+"texture": ExtResource("2107")
+}, {
+"duration": 0.2,
+"texture": ExtResource("2108")
+}, {
+"duration": 0.2,
+"texture": ExtResource("2109")
+}, {
+"duration": 0.2,
+"texture": ExtResource("2110")
+}, {
+"duration": 0.2,
+"texture": ExtResource("2111")
+}, {
+"duration": 0.2,
+"texture": ExtResource("2112")
+}, {
+"duration": 1.8,
+"texture": ExtResource("2113")
+}, {
+"duration": 1.2,
+"texture": ExtResource("2114")
+}, {
+"duration": 1.2,
+"texture": ExtResource("2115")
+}, {
+"duration": 1.2,
+"texture": ExtResource("2116")
 }],
 "loop": false,
 "name": &"maree_de_sable",
