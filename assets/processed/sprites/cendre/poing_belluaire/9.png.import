@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://byavhtl6gbg3n"
-path="res://.godot/imported/2.png-b594bd58b68cb35b7446cff5d1679ae5.ctex"
+uid="uid://dt16r6ik3cxb5"
+path="res://.godot/imported/9.png-7850bbcd911a72e1848fd9eb70a16488.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/processed/sprites/cendre/poing_belluaire/2.png"
-dest_files=["res://.godot/imported/2.png-b594bd58b68cb35b7446cff5d1679ae5.ctex"]
+source_file="res://assets/processed/sprites/cendre/poing_belluaire/9.png"
+dest_files=["res://.godot/imported/9.png-7850bbcd911a72e1848fd9eb70a16488.ctex"]
 
 [params]
 

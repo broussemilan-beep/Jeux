@@ -363,10 +363,18 @@ const POING_BELLUAIRE_CAST_SEED := 51002  # Addendum A §A.5, jamais l'horloge m
 ## frozen()) SANS geler le sprite (AnimatedSprite2D avance sur son
 ## `_process` propre, jamais gated par ce freeze) — la pose de contact
 ## réelle continuait donc de dériver pendant le gel plutôt que d'être
-## tenue. Bornes ci-dessous calées pour que frame5 bascule PILE au tick
-## global 21 (ANTICIPATION 20 + RELEASE tick1 = contact) et tienne
-## jusqu'à la fin du cast (20+4+26=50).
-const POING_BELLUAIRE_FRAME_TICK_BOUNDS: Array[int] = [4, 8, 12, 16, 20, 50]
+## tenue.
+## DENSIFIÉ (campagne "densité d'animation", agent Monstrification) : 6 ->
+## 14 frames (dans la fourchette 12-18 du mandat ; la génération v3 ne
+## convergeait plus proprement vers la pose de fin au-delà de l'index 13
+## sur 16 demandées — 2 frames de fin rejetées après contrôle visuel
+## réel plutôt que gardées par défaut, voir docs/worklog.md). Silhouette
+## de départ/fin INCHANGÉE (mêmes deux ancres `custom_start_frame_url`/
+## `end_frame_url` que l'animation déjà validée). Répartition non
+## uniforme : 7 frames sur l'anticipation (3-20), 4 sur le contact/pic
+## (21-24, encadrant le tick de contact réel 21 = ANTICIPATION 20 +
+## RELEASE tick1, cf. audit ci-dessus), 3 sur la recovery (32-50).
+const POING_BELLUAIRE_FRAME_TICK_BOUNDS: Array[int] = [3, 6, 9, 12, 15, 18, 20, 21, 22, 23, 24, 32, 41, 50]
 
 ## Fenêtre d'annulation (mandat "fluidité", Partie 2) — PROPRIÉTÉ PROPRE à
 ## Poing Belluaire, DÉLIBÉRÉMENT plus courte en proportion que Bras-Faux

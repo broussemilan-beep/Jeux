@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=315 format=3]
+[gd_resource type="SpriteFrames" load_steps=323 format=3]
 
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/0.png" id="2"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/1.png" id="3"]
@@ -147,6 +147,14 @@
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/3.png" id="136"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/4.png" id="137"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/5.png" id="138"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/6.png" id="1200"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/7.png" id="1201"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/8.png" id="1202"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/9.png" id="1203"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/10.png" id="1204"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/11.png" id="1205"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/12.png" id="1206"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/13.png" id="1207"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/0.png" id="2001"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/1.png" id="2002"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/2.png" id="2003"]
@@ -1005,6 +1013,30 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("138")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1200")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1201")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1202")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1203")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1204")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1205")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1206")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1207")
 }],
 "loop": false,
 "name": &"poing_belluaire",
