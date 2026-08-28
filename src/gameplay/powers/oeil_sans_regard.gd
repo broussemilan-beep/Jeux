@@ -35,9 +35,21 @@ const DAMAGE := 12.0  # Tier 4/5, pierce multi-cible — entre Gueule Vide (10, 
 ## Addendum A §A.5 — suite de la séquence CAST_SEED.
 const CAST_SEED := 51007
 
-## 6 frames pose-à-pose sur les 48 ticks ci-dessus. frame3 couvre
-## BEAM_TICK (22, borne exacte de la frontière frame2/frame3).
-const FRAME_TICK_BOUNDS: Array[int] = [8, 14, 22, 30, 38, 48]
+## PASSE DENSITÉ (2026-08-28, MANDAT campagne "densité d'animation +
+## richesse visuelle", bible §2, cible 12-18 frames) : régénéré en v3
+## PixelLab (même character bac7d236, nouvelle animation "cast_dense" à
+## 17 frames sud, frame_count=16+keep_first_frame). Lecture visuelle
+## réelle : 0-3 = œil grand ouvert tenu (anticipation) ; 4-7 = paupière
+## qui se resserre progressivement (préparation, tension qui monte) ;
+## 8-10 = LE clignement/tir, resserrement final rapide en 2-3 frames à
+## peine ("beaucoup sur l'anticipation, 2-3 sur le contact") ; 11-16 =
+## fermeture complète + gouttes (6 frames, désintégration, richesse
+## ajoutée). Répartition non-uniforme : 8 frames sur ouverture+
+## préparation (0-20t), 3 SEULEMENT sur le tir (20-30t), 6 sur la
+## fermeture/dissipation (30-48t). BEAM_TICK (22, inchangé) tombe pile
+## sur la borne exacte frame7/frame8 (même convention que l'ancien
+## mandat), soit le tout premier frame du "resserrement final".
+const FRAME_TICK_BOUNDS: Array[int] = [3, 7, 11, 14, 15, 17, 18, 20, 22, 25, 30, 34, 38, 41, 44, 46, 48]
 
 @onready var _sprite: AnimatedSprite2D = $AnimatedSprite2D
 
