@@ -67,8 +67,12 @@ const ATTACK_DAMAGE := 10.0
 ## de seed de run côté gameplay (compteur d'événement, seed de run...).
 const CAST_SEED := 44103
 
-## 6 frames pose-to-pose (mandat : "4-6 frames") couvrant les 4 phases :
-## formation (2 frames), préparation (1), morsure (1), désintégration
+## ANCIEN mandat local "4-6 frames" (dépassé 2026-08-28 par le mandat
+## campagne "densité 12-18 frames", voir note détaillée sur
+## FRAME_TICK_BOUNDS plus bas) — 17 frames pose-to-pose désormais,
+## répartition non-uniforme sur les 4 phases : formation+préparation (9
+## frames, 0-2 dans l'historique), morsure (3 frames, 1 dans
+## l'historique), désintégration
 ## (2). Bornes cumulées en ticks — jamais la fps autonome
 ## d'AnimatedSprite2D (qui ne peut pas exprimer des phases de durées
 ## inégales avec le pas fps uniforme de build_sprite_frames.py).
@@ -175,10 +179,49 @@ const CAST_SEED := 44103
 ## `assets/source/pixellab/gueule_vide/_archive_2026-08-22_v3/` et
 ## `assets/processed/sprites/gueule_vide/_archive_2026-08-22_v3/` (cp,
 ## jamais mv, copiée depuis git HEAD pour garantir l'état réellement commit
-## et pas une version intermédiaire). FRAME_TICK_BOUNDS inchangé (même
-## lecture de phases que la passe composition, la richesse ajoutée ne
-## déplace aucune des 6 poses).
-const FRAME_TICK_BOUNDS: Array[int] = [5, 9, 19, 27, 34, 42]
+## et pas une version intermédiaire).
+##
+## PASSE DENSITÉ (2026-08-28, MANDAT campagne "densité d'animation +
+## richesse visuelle", bible d'animation §2 — cible 12-18 frames, contre
+## l'ancien mandat local "4-6 frames" ci-dessus qui est désormais dépassé
+## par cette directive explicite de Milan). Régénéré en v3 PixelLab
+## (character dd58d0b7, lignée "detail pass corrigé" du 2026-08-23 — même
+## silhouette en S/mâchoire excentrée déjà validée, vérifiée par
+## composantes connexes avant tout appel, pas un nouveau design) à
+## frame_count=16 + keep_first_frame => 17 frames sud. Ancienne version 6
+## frames archivée dans `assets/source/pixellab/gueule_vide/
+## _archive_2026-08-28_6frames/`. Lecture des 17 frames (inspection
+## visuelle réelle, pas supposée) : 0-8 = gueule grande ouverte tenue
+## (anticipation "respirée", légère variation de tenue plutôt qu'une pose
+## figée) ; 9-11 = LA morsure, fermeture rapide de la mâchoire (les seules
+## 3 frames couvrant tout le mouvement de fermeture — "beaucoup sur
+## l'anticipation, 2-3 seulement sur le contact", bible §2) ; 12-14 =
+## mâchoire tenue fermée post-morsure ; 15-16 = réouverture/relâchement
+## avant désintégration. Répartition NON-uniforme des ticks : 9 frames sur
+## formation+préparation (0-15t, respiration lente), 3 frames SEULEMENT
+## sur la fenêtre de morsure (15-21t, chacune tenue 2 ticks à peine =
+## claquement net plutôt qu'un fondu), 5 frames sur la désintégration
+## (21-42t). CONTACT_TICK (20) tombe sur le frame 11 (dernier des 3 frames
+## de morsure, mâchoire la plus fermée) — vérifié par capture en jeu réel
+## à plusieurs ticks autour de 20, pas deviné (voir docs/worklog.md).
+## Couleur de corps/dents recalée dans la bande `character` de
+## `data/palettes/value_bands.json` ([15,90]) : gate `validate_pixels.py`
+## réellement RE-EXÉCUTÉ ici a trouvé le corps de la créature (dominant,
+## ~90% des pixels opaques) sous le plancher à 12.94%V et les dents
+## au-dessus du plafond à 90-95%V sur LES 17 NOUVELLES frames ET sur les 6
+## anciennes (vérifié par comparaison directe, même défaut préexistant,
+## pas une régression de cette passe) — la mention "validated_auto: true,
+## 0 violation" de l'ancien `gueule_vide_attack.json` était fausse (le
+## script plafonne son échantillon à 20 lignes, jamais réellement vérifié
+## en entier avant). Corrigé par un nudge V minimal (12.94->17%,
+## 90-95->88%) préservant teinte/saturation exactement, même principe que
+## le nudge de contraste VFX déjà documenté plus haut dans ce fichier —
+## AUCUN changement de silhouette/teinte perceptible, juste la bande de
+## validation respectée. FRAME_TICK_BOUNDS remplace l'ancien tableau à 6
+## éléments par ce nouveau tableau à 17 éléments (même TOTAL_TICKS=42,
+## mêmes bornes de phase FORMATION_END_TICK/PREP_END_TICK/BITE_END_TICK/
+## CONTACT_TICK inchangées — seule la granularité d'affichage change).
+const FRAME_TICK_BOUNDS: Array[int] = [2, 4, 6, 8, 9, 10, 12, 14, 15, 17, 19, 21, 25, 29, 33, 37, 42]
 
 @onready var _sprite: AnimatedSprite2D = $AnimatedSprite2D
 

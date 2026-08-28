@@ -1,0 +1,31 @@
+{
+  "character": "gueule_vide",
+  "out_canvas": [
+    56,
+    72
+  ],
+  "anchor_px": [
+    28,
+    68
+  ],
+  "animations": {
+    "cast": {
+      "frames": [
+        "assets/processed/sprites/gueule_vide/cast/0.png",
+        "assets/processed/sprites/gueule_vide/cast/1.png",
+        "assets/processed/sprites/gueule_vide/cast/2.png",
+        "assets/processed/sprites/gueule_vide/cast/3.png",
+        "assets/processed/sprites/gueule_vide/cast/4.png",
+        "assets/processed/sprites/gueule_vide/cast/5.png"
+      ],
+      "canvas": [
+        56,
+        72
+      ],
+      "anchor_px": [
+        28,
+        68
+      ]
+    }
+  }
+}
