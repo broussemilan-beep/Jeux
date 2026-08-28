@@ -280,14 +280,21 @@ const BRAS_FAUX_CAST_SEED := 51001  # Addendum A §A.5 : jamais l'horloge murale
 ## tick de contact plutôt qu'avant ou après. Constat identique à celui de
 ## POING_BELLUAIRE_FRAME_TICK_BOUNDS (même bug de architecture, trouvé
 ## indépendamment par l'agent Poing Belluaire sur son propre pouvoir).
-## Bornes ci-dessous calées pour que la frame 3 (première pose du cluster
-## "balayage") bascule PILE au tick global 15 (ANTICIPATION 14 + RELEASE
-## tick1 = contact) au lieu d'un tick arbitraire dérivé du fps, et que les
-## frames 4/5 (même cluster visuel, mais on garde la table à 6 entrées
-## comme GueuleVide/PoingBelluaire) se répartissent sur le reste de
-## RELEASE+RECOVERY plutôt que de figer instantanément sur la frame 5 dès
-## la fin de la lecture fps native.
-const BRAS_FAUX_FRAME_TICK_BOUNDS: Array[int] = [5, 10, 14, 18, 29, 40]
+## DENSIFIÉ (campagne "densité d'animation", agent Monstrification) : 6 ->
+## 16 frames, silhouette de départ/fin INCHANGÉE (mêmes deux ancres
+## `custom_start_frame_url`/`end_frame_url` que la refonte "courbe en C"
+## déjà validée — seules les 14 poses intermédiaires sont nouvelles).
+## Répartition NON uniforme (règle du projet, mandat densité §2) : 8
+## frames sur l'anticipation (2-12, le crochet se love), 4 sur le
+## contact/pic (14-18, le balayage lui-même — VÉRIFIÉ par capture
+## réelle tick-par-tick, capture_headless.sh --mode=player_action_sequence,
+## que le contact tombe au tick 14 = PILE le tick où le _bras_faux_tick
+## atteint BRAS_FAUX_ANTICIPATION_TICKS, pas 15 comme la lecture rapide du
+## code le laisserait croire — l'index 8 (borne 14) est donc déjà la pose
+## de contact, pas la dernière pose d'anticipation), 4 sur la recovery
+## (24-40). Beaucoup de frames là où l'œil a le temps de les voir, peu
+## sur le pic pour garder l'impression de vitesse.
+const BRAS_FAUX_FRAME_TICK_BOUNDS: Array[int] = [2, 4, 6, 8, 9, 10, 11, 12, 14, 15, 17, 18, 24, 30, 36, 40]
 
 ## Fenêtre d'annulation (mandat "fluidité", Partie 2) — PROPRIÉTÉ PROPRE à
 ## Bras-Faux (pas une réutilisation de CHAIN_WINDOW_TICKS, le mandat exige

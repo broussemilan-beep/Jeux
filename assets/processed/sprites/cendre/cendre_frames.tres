@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=224 format=3]
+[gd_resource type="SpriteFrames" load_steps=241 format=3]
 
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/0.png" id="2"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/1.png" id="3"]
@@ -131,6 +131,16 @@
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/3.png" id="130"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/4.png" id="131"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/5.png" id="132"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/6.png" id="1000"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/7.png" id="1001"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/8.png" id="1002"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/9.png" id="1003"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/10.png" id="1004"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/11.png" id="1005"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/12.png" id="1006"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/13.png" id="1007"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/14.png" id="1008"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/15.png" id="1009"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/0.png" id="133"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/1.png" id="134"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/2.png" id="135"]
@@ -736,6 +746,36 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("132")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1000")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1001")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1002")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1003")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1004")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1005")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1006")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1007")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1008")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1009")
 }],
 "loop": false,
 "name": &"bras_faux",
