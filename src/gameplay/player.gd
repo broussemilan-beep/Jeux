@@ -2831,13 +2831,21 @@ const FORME_BESTIALE_COOLDOWN_TICKS := 340  # ~5,7s @ 60/s, TUNABLE, le plus lon
 const FormeBestialeRecipeId := "power.forme_bestiale.cast"
 const FORME_BESTIALE_CAST_SEED := 51006  # Addendum A §A.5, jamais l'horloge murale.
 
-## 6 frames pose-à-pose (forme_bestiale/0..5.png) pilotées tick-exact — même
-## discipline que les 4 autres pouvoirs de mêlée de la Classe, construite
-## tick-exact dès la 1ère passe (MANDAT ROUND 4, pas de round de polish
-## séparé). Bornes calées sur le contact réel (ANTICIPATION 24 + RELEASE
-## tick1 = tick global 25). Valeurs affinées après inspection visuelle des 6
-## frames réelles (voir docs/worklog.md, section Forme Bestiale).
-const FORME_BESTIALE_FRAME_TICK_BOUNDS: Array[int] = [8, 16, 22, 26, 34, 64]
+## DENSIFIÉ (campagne "densité d'animation", agent Monstrification) : 6 ->
+## 16 frames, silhouette de départ/fin INCHANGÉE (mêmes deux ancres
+## `custom_start_frame_url`/`end_frame_url` = frame 0 et frame 5 de
+## l'animation déjà validée). Progression plus subtile que les 4 autres
+## pouvoirs de la Classe (constaté par mesure de diff pixel-à-pixel
+## entre frames consécutives avant cuisson, pas supposé) : les deux
+## poses ancres sont déjà toutes les deux le corps entièrement
+## transformé (Forme Bestiale = "la seule vraie transformation complète",
+## frame 0 n'est PAS une pose neutre humaine ici), donc la variation
+## réelle porte sur les bras qui se rétractent, pas sur une silhouette
+## qui change radicalement — fidèle à la source, pas un défaut de
+## génération. Répartition non uniforme : 8 frames sur l'anticipation
+## (3-22), 4 sur le contact/pic (25-30, au tick de contact réel 25 =
+## ANTICIPATION 24 + RELEASE tick1), 4 sur la recovery (40-64).
+const FORME_BESTIALE_FRAME_TICK_BOUNDS: Array[int] = [3, 6, 9, 12, 15, 18, 20, 22, 25, 27, 29, 30, 40, 48, 56, 64]
 
 ## Fenêtre d'annulation — généreuse en proportion (18 des 34 ticks de
 ## RECOVERY, ~53%, même ordre de grandeur que Bras-Faux/Mâchoire) malgré la

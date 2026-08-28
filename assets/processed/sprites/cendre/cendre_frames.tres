@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=333 format=3]
+[gd_resource type="SpriteFrames" load_steps=343 format=3]
 
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/0.png" id="2"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/1.png" id="3"]
@@ -248,6 +248,16 @@
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/3.png" id="199"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/4.png" id="200"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/5.png" id="201"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/6.png" id="1400"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/7.png" id="1401"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/8.png" id="1402"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/9.png" id="1403"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/10.png" id="1404"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/11.png" id="1405"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/12.png" id="1406"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/13.png" id="1407"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/14.png" id="1408"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/15.png" id="1409"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/0.png" id="202"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/1.png" id="203"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/2.png" id="204"]
@@ -1376,6 +1386,36 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("201")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1400")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1401")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1402")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1403")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1404")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1405")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1406")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1407")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1408")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1409")
 }],
 "loop": false,
 "name": &"forme_bestiale",

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cwbx07okq4arv"
-path="res://.godot/imported/2.png-7c3ef6257f100bbcb7eb1c8514668f3c.ctex"
+uid="uid://dhom5hsmot2y2"
+path="res://.godot/imported/12.png-8efc20211652549bc1395d31e91a4ffa.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/processed/sprites/cendre/forme_bestiale/2.png"
-dest_files=["res://.godot/imported/2.png-7c3ef6257f100bbcb7eb1c8514668f3c.ctex"]
+source_file="res://assets/processed/sprites/cendre/forme_bestiale/12.png"
+dest_files=["res://.godot/imported/12.png-8efc20211652549bc1395d31e91a4ffa.ctex"]
 
 [params]
 
