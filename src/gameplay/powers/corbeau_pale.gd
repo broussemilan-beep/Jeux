@@ -43,11 +43,25 @@ const DAMAGE := 10.0  # même ordre que Gueule Vide (même Tier 2/5), la différ
 ## Suite de la séquence 51001 (Bras-Faux) .. 51004 (Marée de Sable).
 const CAST_SEED := 51005
 
-## 6 frames pose-à-pose sur les 46 ticks ci-dessus — bornes cumulées,
-## jamais la fps autonome d'AnimatedSprite2D (même discipline que
-## GueuleVide.FRAME_TICK_BOUNDS). frame2/frame3 couvrent la fenêtre de
-## chasse/contact (14-34), frame4/5 la dissipation.
-const FRAME_TICK_BOUNDS: Array[int] = [6, 14, 24, 34, 40, 46]
+## PASSE DENSITÉ (2026-08-28, MANDAT campagne "densité d'animation +
+## richesse visuelle", bible §2, cible 12-18 frames) : régénéré en v3
+## PixelLab (même character 8c16db64, nouvelle animation "cast_dense" à
+## 17 frames sud, frame_count=16+keep_first_frame). Lecture visuelle
+## réelle : 0-3 = corbeau en vol/formation, ailes qui se resserrent
+## (anticipation) ; 4-6 = forme compacte tenue (préparation) ; 7-9 = LE
+## lancement, ailes qui se déploient en grand d'un coup (2-3 frames,
+## "beaucoup sur l'anticipation, 2-3 sur le contact") ; 10 = vol
+## étendu/rapide tenu longtemps (couvre toute la translation réelle du
+## corbeau pendant la chasse, même convention que l'ancien frame2 tenu
+## 14-34t) ; 11-16 = dissipation en volutes (6 frames, richesse ajoutée
+## sur cette phase). Répartition non-uniforme : 7 frames sur
+## formation+préparation (0-14t), 3 SEULEMENT sur le lancement
+## (14-20t), 1 frame tenue sur la translation (20-34t), 6 sur la
+## dissipation (34-46t). sfx_marker "corbeau_pale_launch" (tick=14,
+## inchangé) tombe sur la fin du dernier frame de préparation (frame 6),
+## juste avant le 1er frame de lancement (frame 7) — même discipline que
+## l'ancien mandat "frame borne exacte".
+const FRAME_TICK_BOUNDS: Array[int] = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 34, 36, 38, 40, 42, 44, 46]
 
 @onready var _sprite: AnimatedSprite2D = $AnimatedSprite2D
 
