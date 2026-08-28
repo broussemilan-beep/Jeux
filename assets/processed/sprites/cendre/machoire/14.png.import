@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://h4o7p64ctkoc"
-path="res://.godot/imported/3.png-0012edb264ab768135464d329bcd5742.ctex"
+uid="uid://belviox5kwj0w"
+path="res://.godot/imported/14.png-0e1fdfb49693428fdb44f9fb573bef7a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/processed/sprites/cendre/machoire/3.png"
-dest_files=["res://.godot/imported/3.png-0012edb264ab768135464d329bcd5742.ctex"]
+source_file="res://assets/processed/sprites/cendre/machoire/14.png"
+dest_files=["res://.godot/imported/14.png-0e1fdfb49693428fdb44f9fb573bef7a.ctex"]
 
 [params]
 

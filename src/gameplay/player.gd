@@ -2766,17 +2766,21 @@ const MACHOIRE_COOLDOWN_TICKS := 200  # ~3,3s @ 60/s, TUNABLE, entre Bras-Faux (
 const MachoireRecipeId := "power.machoire.cast"
 const MACHOIRE_CAST_SEED := 51005  # Addendum A §A.5, jamais l'horloge murale — suite de la série 5100x déjà utilisée par les 4 autres pouvoirs de Monstrification/Terre.
 
-## 6 frames pose-à-pose (machoire/0..5.png) pilotées tick-exact — même
-## discipline que BRAS_FAUX_FRAME_TICK_BOUNDS/POING_BELLUAIRE_FRAME_TICK_BOUNDS
-## ci-dessus, jamais la fps autonome d'AnimatedSprite2D (bug de classe déjà
-## trouvé et corrigé 4 fois ce cycle — construit tick-exact dès la 1ère passe
-## cette fois, pas de round de polish séparé, cf. MANDAT ROUND 4). Bornes
-## calées sur le contact réel (ANTICIPATION 16 + RELEASE tick1 = tick global
-## 17) : la frame qui montre la gueule refermée/le coup en cours doit basculer
-## PILE à ce tick, jamais un tick dérivé du fps. Valeurs affinées après
-## inspection visuelle des 6 frames réelles (voir docs/worklog.md, section
-## Mâchoire) — pas un simple découpage arithmétique en 6 tranches égales.
-const MACHOIRE_FRAME_TICK_BOUNDS: Array[int] = [5, 10, 14, 18, 28, 42]
+## DENSIFIÉ (campagne "densité d'animation", agent Monstrification) : 6 ->
+## 16 frames, silhouette de départ/fin INCHANGÉE (mêmes deux ancres
+## `custom_start_frame_url`/`end_frame_url` = frame 0 et frame 5 de
+## l'animation déjà validée — seules les 14 poses intermédiaires sont
+## nouvelles). Répartition NON uniforme (mandat densité §2) : 8 frames sur
+## l'anticipation (2-15, la gueule se love dans le bras), 4 sur le
+## contact/pic (16-20, encadrant le tick de hit théorique 17 = ANTICIPATION
+## 16 + RELEASE tick1), 4 sur la recovery (27-42). VÉRIFIÉ par capture
+## réelle tick-par-tick (capture_headless.sh --mode=player_action_sequence)
+## que la pose de morsure/coup est déjà pleinement affichée sur toute cette
+## fenêtre de contact, pas seulement au tick exact du hit — le pic visuel
+## couvre large la fenêtre où le hit peut réellement tomber, jamais un
+## tick deviné à l'aveugle. Beaucoup de frames là où l'œil a le temps de
+## les voir, peu sur le pic pour garder l'impression de vitesse.
+const MACHOIRE_FRAME_TICK_BOUNDS: Array[int] = [2, 4, 6, 8, 10, 12, 14, 15, 16, 17, 19, 20, 27, 32, 37, 42]
 
 ## Fenêtre d'annulation (même discipline que <SKILL>_CANCEL_WINDOW_TICKS sur
 ## les 4 autres pouvoirs de Monstrification) — coup "burst" de poids

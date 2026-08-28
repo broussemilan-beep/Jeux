@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=305 format=3]
+[gd_resource type="SpriteFrames" load_steps=315 format=3]
 
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/0.png" id="2"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/1.png" id="3"]
@@ -224,6 +224,16 @@
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/3.png" id="193"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/4.png" id="194"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/5.png" id="195"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/6.png" id="1100"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/7.png" id="1101"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/8.png" id="1102"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/9.png" id="1103"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/10.png" id="1104"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/11.png" id="1105"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/12.png" id="1106"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/13.png" id="1107"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/14.png" id="1108"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/15.png" id="1109"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/0.png" id="196"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/1.png" id="197"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/2.png" id="198"]
@@ -1271,6 +1281,36 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("195")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1100")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1101")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1102")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1103")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1104")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1105")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1106")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1107")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1108")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1109")
 }],
 "loop": false,
 "name": &"machoire",
