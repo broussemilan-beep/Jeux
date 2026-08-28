@@ -2885,12 +2885,17 @@ const PATTES_DE_CHASSE_COOLDOWN_TICKS := 200  # ~3,3s @ 60/s, TUNABLE.
 const PattesDeChasseRecipeId := "power.pattes_de_chasse.cast"
 const PATTES_DE_CHASSE_CAST_SEED := 51007  # Addendum A §A.5, jamais l'horloge murale.
 
-## 6 frames pose-à-pose (pattes_de_chasse/0..5.png) pilotées tick-exact —
-## même discipline que les 4 autres pouvoirs de mêlée. Bornes calées sur le
-## tick de frappe réel (ANTICIPATION 10 + PATTES_DE_CHASSE_STRIKE_TICK 7 =
-## tick global 17). Valeurs affinées après inspection visuelle des 6 frames
-## réelles (voir docs/worklog.md, section Pattes de Chasse).
-const PATTES_DE_CHASSE_FRAME_TICK_BOUNDS: Array[int] = [8, 11, 14, 16, 28, 40]
+## DENSIFIÉ (campagne "densité d'animation", agent Monstrification) : 6 ->
+## 16 frames, silhouette de départ/fin INCHANGÉE (mêmes deux ancres
+## `custom_start_frame_url`/`end_frame_url` = frame 0 et frame 5 de
+## l'animation déjà validée). Bornes calées sur le tick de frappe réel
+## (ANTICIPATION 10 + PATTES_DE_CHASSE_STRIKE_TICK 7 = tick global 17,
+## inchangé). Répartition non uniforme : 5 frames sur l'anticipation
+## (2-10), 3 sur l'approche du bond (12-16), 2 SEULEMENT au contact (17-18,
+## la fenêtre la plus serrée de toute la Classe — la frappe elle-même est
+## quasi instantanée dans le GDD), 2 sur la fin du bond (21-24), 4 sur
+## l'atterrissage/recovery (29-40).
+const PATTES_DE_CHASSE_FRAME_TICK_BOUNDS: Array[int] = [2, 4, 6, 8, 10, 12, 14, 16, 17, 18, 21, 24, 29, 33, 37, 40]
 
 ## Fenêtre d'annulation — la plus courte en proportion de toute la Classe (10
 ## des 16 ticks de RECOVERY, ~62%) : un pouvoir de mobilité doit rester

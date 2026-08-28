@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=323 format=3]
+[gd_resource type="SpriteFrames" load_steps=333 format=3]
 
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/0.png" id="2"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/1.png" id="3"]
@@ -254,6 +254,16 @@
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/3.png" id="205"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/4.png" id="206"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/5.png" id="207"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/6.png" id="1300"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/7.png" id="1301"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/8.png" id="1302"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/9.png" id="1303"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/10.png" id="1304"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/11.png" id="1305"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/12.png" id="1306"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/13.png" id="1307"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/14.png" id="1308"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/15.png" id="1309"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_corbeau_pale/0.png" id="208"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_corbeau_pale/1.png" id="209"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_corbeau_pale/2.png" id="210"]
@@ -1389,6 +1399,36 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("207")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1300")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1301")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1302")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1303")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1304")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1305")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1306")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1307")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1308")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1309")
 }],
 "loop": false,
 "name": &"pattes_de_chasse",

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://7a6lem0fajoa"
-path="res://.godot/imported/2.png-d0c6c72005b9882563c1fd6594e410e8.ctex"
+uid="uid://b2e633443wbxo"
+path="res://.godot/imported/7.png-d2fe7a87d737805e9506347e595f0f76.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/processed/sprites/cendre/pattes_de_chasse/2.png"
-dest_files=["res://.godot/imported/2.png-d0c6c72005b9882563c1fd6594e410e8.ctex"]
+source_file="res://assets/processed/sprites/cendre/pattes_de_chasse/7.png"
+dest_files=["res://.godot/imported/7.png-d2fe7a87d737805e9506347e595f0f76.ctex"]
 
 [params]
 
