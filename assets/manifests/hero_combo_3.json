@@ -24,20 +24,20 @@
     92
   ],
   "frame_ticks": [
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
+    0.857143,
+    0.857143,
+    0.857143,
+    0.857143,
+    0.857143,
+    0.857143,
+    0.857143,
+    0.857143,
+    0.857143,
+    0.857143,
+    0.857143,
+    0.857143,
+    0.857143,
+    0.857143,
     4,
     10,
     10
@@ -102,5 +102,6 @@
     },
     "pipeline": "identique a hero_combo_1.json.densite_2026_08_28.pipeline.",
     "peak_verification": "bbox alpha (top_y) + inspection visuelle Read tool (planche idx0-16 complete + zoom idx12-16) sur les 2 generations - 1re rejetee avant integration, aucune frame committee."
-  }
+  },
+  "frame_ticks_fix_2026-08-28": "AUDIT VERIFICATION PERSONNELLE (campagne densite) : la somme des frame_ticks (38) depassait le budget de ticks gameplay reel pour ce coup (ANTICIPATION_TICKS+RELEASE_TICKS+RECOVERY_TICKS du tier concerne dans player.gd), donc le pic visuel (frame de contact) s'affichait plusieurs ticks APRES le tick reel ou le degat s'applique (_try_hit(), verifie par capture en jeu reel sur coup1 : ~8 ticks de retard). Cause : 14 frames d'anticipation generees a 1 tick chacune (via \"speed\":12.0 + \"duration\":0.2 dans cendre_frames.tres) alors que la vraie fenetre ANTICIPATION du gameplay ne dure que 12 ticks pour ce tier de combo (ANTICIPATION_TICKS/COMBO_TIER_ANTICIPATION_TICKS, player.gd, INCHANGE - hors scope, jamais touche a la logique/timing de combat). Corrige en compressant UNIQUEMENT le bloc anticipation (14 frames -> duree totale 12 ticks, 0.857143 tick/frame), le bloc contact+recuperation restant EXACTEMENT inchange (il correspondait deja pile a RELEASE_TICKS+RECOVERY_TICKS du tier). Nouveau total frame_ticks = 36.000002 ticks, egal au budget gameplay reel du tier. Verifie par smoke test (all_pass:true) et par nouvelle capture en jeu reel avant commit."
 }

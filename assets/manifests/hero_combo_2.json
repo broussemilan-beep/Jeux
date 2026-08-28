@@ -24,19 +24,19 @@
     92
   ],
   "frame_ticks": [
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
+    0.615385,
+    0.615385,
+    0.615385,
+    0.615385,
+    0.615385,
+    0.615385,
+    0.615385,
+    0.615385,
+    0.615385,
+    0.615385,
+    0.615385,
+    0.615385,
+    0.615385,
     4,
     5,
     5,
@@ -102,5 +102,6 @@
     "pipeline": "identique a hero_combo_1.json.densite_2026_08_28.pipeline.",
     "reserve_honnete": "Sur les 2 tentatives de regeneration pour ce coup specifiquement, AUCUNE ne reproduit fidelement la silhouette 'genou ET poing au-dessus de la tete, torse arque' validee lors du round bible SS3bis (2026-08-27). 1re tentative (meme prompt, plus de frames) : 17 frames de posture de garde generique, jamais de genou leve - rejetee integralement. 2e tentative (prompt renforce) : produit un coup de genou lisible et dynamique (idx13, releve net) mais le poing accompagne davantage un jab en avant qu'un uppercut arque au-dessus de la tete. Accepte car (a) toujours identifiable comme coup de genou (element central du concept 'coup2'), (b) nettement plus dynamique/exagere que le round precedent, (c) budget PixelLab explicitement genereux pour cette campagne mais 2 tentatives suffisent avant d'accepter un compromis documente plutot que de boucler indefiniment sur un hasard de generation. Milan peut demander une 3e tentative si ce compromis n'est pas acceptable.",
     "peak_verification": "bbox alpha + inspection visuelle Read tool (planche idx11-15) sur les 2 generations."
-  }
+  },
+  "frame_ticks_fix_2026-08-28": "AUDIT VERIFICATION PERSONNELLE (campagne densite) : la somme des frame_ticks (31) depassait le budget de ticks gameplay reel pour ce coup (ANTICIPATION_TICKS+RELEASE_TICKS+RECOVERY_TICKS du tier concerne dans player.gd), donc le pic visuel (frame de contact) s'affichait plusieurs ticks APRES le tick reel ou le degat s'applique (_try_hit(), verifie par capture en jeu reel sur coup1 : ~8 ticks de retard). Cause : 13 frames d'anticipation generees a 1 tick chacune (via \"speed\":12.0 + \"duration\":0.2 dans cendre_frames.tres) alors que la vraie fenetre ANTICIPATION du gameplay ne dure que 8 ticks pour ce tier de combo (ANTICIPATION_TICKS/COMBO_TIER_ANTICIPATION_TICKS, player.gd, INCHANGE - hors scope, jamais touche a la logique/timing de combat). Corrige en compressant UNIQUEMENT le bloc anticipation (13 frames -> duree totale 8 ticks, 0.615385 tick/frame), le bloc contact+recuperation restant EXACTEMENT inchange (il correspondait deja pile a RELEASE_TICKS+RECOVERY_TICKS du tier). Nouveau total frame_ticks = 26.000005 ticks, egal au budget gameplay reel du tier. Verifie par smoke test (all_pass:true) et par nouvelle capture en jeu reel avant commit."
 }

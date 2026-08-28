@@ -24,21 +24,21 @@
     92
   ],
   "frame_ticks": [
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
+    0.533333,
+    0.533333,
+    0.533333,
+    0.533333,
+    0.533333,
+    0.533333,
+    0.533333,
+    0.533333,
+    0.533333,
+    0.533333,
+    0.533333,
+    0.533333,
+    0.533333,
+    0.533333,
+    0.533333,
     4,
     14
   ],
@@ -101,5 +101,6 @@
     },
     "pipeline": "identique au patron etabli (animate_character mode v3, direction south seule, frame_count=16 pair, meme clause 'no magic/no glow/no light effects/purely physical' + garde-fou silhouette) - AUCUN nouveau pipeline invente. Scale LANCZOS 0.7 (raw 112px -> cuit 56px, meme invariant que les passes precedentes ~0.696) + binarisation de l'alpha post-resize (seuil 128) ajoutee cette passe : le LANCZOS sur RGBA introduisait un liseré semi-transparent (jusqu'a 22-29% des pixels du canvas en alpha intermediaire) que scripts/validate_pixels.py rejette (alpha_ok=false, ratio max 2%) - non documente dans les passes precedentes, corrige ici et a documenter pour les prochaines regenerations de ce personnage.",
     "peak_verification": "bbox alpha (largeur) sur les 17 frames cuites + inspection visuelle Read tool d'une planche contact (idx13-16) - PAS suppose par analogie avec l'ancien decoupage 9 frames (index differents, generation differente)."
-  }
+  },
+  "frame_ticks_fix_2026-08-28": "AUDIT VERIFICATION PERSONNELLE (campagne densite) : la somme des frame_ticks (33) depassait le budget de ticks gameplay reel pour ce coup (ANTICIPATION_TICKS+RELEASE_TICKS+RECOVERY_TICKS du tier concerne dans player.gd), donc le pic visuel (frame de contact) s'affichait plusieurs ticks APRES le tick reel ou le degat s'applique (_try_hit(), verifie par capture en jeu reel sur coup1 : ~8 ticks de retard). Cause : 15 frames d'anticipation generees a 1 tick chacune (via \"speed\":12.0 + \"duration\":0.2 dans cendre_frames.tres) alors que la vraie fenetre ANTICIPATION du gameplay ne dure que 8 ticks pour ce tier de combo (ANTICIPATION_TICKS/COMBO_TIER_ANTICIPATION_TICKS, player.gd, INCHANGE - hors scope, jamais touche a la logique/timing de combat). Corrige en compressant UNIQUEMENT le bloc anticipation (15 frames -> duree totale 8 ticks, 0.533333 tick/frame), le bloc contact+recuperation restant EXACTEMENT inchange (il correspondait deja pile a RELEASE_TICKS+RECOVERY_TICKS du tier). Nouveau total frame_ticks = 25.999995 ticks, egal au budget gameplay reel du tier. Verifie par smoke test (all_pass:true) et par nouvelle capture en jeu reel avant commit."
 }

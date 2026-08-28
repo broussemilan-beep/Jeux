@@ -5751,3 +5751,59 @@ salut) reste valide, ni résolue ni aggravée par cette passe.
 - `captures/verification/2026-08-27-combo-exagere-vfx-yomi.png` (nouveau)
 - `captures/verification/2026-08-27-combo-3coups-chaine-jeu-reel.png`
   (nouveau)
+
+## 2026-08-28 — Vérification personnelle post-campagne "densité d'animation" + correctif décalage pic/tick sur le combo
+
+Après la campagne (4 agents parallèles, 16 animations 6→14-17 frames),
+vérification personnelle avant push (règle du projet : jamais de push
+sans vérification humaine réelle, pas le verdict que l'agent écrit sur
+lui-même) :
+
+1. **Travail non committé récupéré.** Un correctif de collision d'ID de
+   ressources (`ext_resource` dupliqués entre plusieurs skills dans
+   `cendre_frames.tres`, renumérotation symétrique 82/82) et une
+   correction de commentaire (`MACHOIRE_FRAME_TICK_BOUNDS`, tick de
+   contact réel 16 pas 17) étaient restés non committés par un agent à
+   court de tours. Vérifiés (import + smoke test complet, all_pass:true
+   sur ~130 checks) puis committés (`6010bc7`).
+
+2. **Bug réel trouvé et corrigé : décalage pic visuel / tick de dégât
+   sur coup1 et coup2.** L'agent Base avait signalé un doute ("pic
+   visuel ~8 ticks après le dégât réel sur coup1, pas revérifié sur
+   coup2/coup3"). Audit : la densification (5→17 frames) a fait passer
+   la durée totale de lecture de l'animation (`frame_ticks` cuits dans
+   `cendre_frames.tres` via `speed`/`duration`) à 33 ticks pour coup1 et
+   31 pour coup2, alors que le budget gameplay réel du coup (tickable
+   par `player.gd`, INCHANGÉ, hors scope) est de 26 ticks pour ces deux
+   coups (`ANTICIPATION_TICKS=8 + RELEASE_TICKS=4 + RECOVERY_TICKS=14`).
+   Coup3 était proche (38 vs budget réel 36, tier3 différent) — écart
+   jugé négligeable, non touché. Cause précise : les 15 (coup1) / 13
+   (coup2) frames d'anticipation générées à 1 tick chacune dépassent à
+   elles seules le budget ANTICIPATION_TICKS réel (8 ticks) — le bloc
+   contact+récupération, lui, correspondait déjà exactement à
+   RELEASE_TICKS+RECOVERY_TICKS (aucune correction nécessaire dessus).
+
+   Corrigé en compressant UNIQUEMENT le bloc anticipation (durée totale
+   ramenée à 8 ticks pour coup1/coup2, 12 pour coup3 — cf.
+   `COMBO_TIER_ANTICIPATION_TICKS`, tier3 = +4), bloc contact/récup
+   inchangé. Aucune génération PixelLab, aucune image perdue — seul le
+   timing de lecture (`duration` par frame dans `cendre_frames.tres`)
+   est modifié. `player.gd` non touché (hors scope, confirmé par diff).
+
+   Vérifié par capture réelle multi-ticks (`capture_headless.sh
+   --mode=player_action_sequence`) : le flash d'impact/l'éclat coloré
+   par coup (couleur bible §3bis) coïncide désormais avec une pose
+   bras-tendu/genou-levé nettement engagée, au lieu d'une pose encore
+   proche de la garde neutre observée avant correctif. Smoke test vert
+   après correctif (all_pass:true).
+
+3. **Reste non re-vérifié individuellement par mes soins** : les 14
+   autres animations de la campagne (5 Invocateur, 5 Monstrification, 3
+   Terre traitées + 3 Terre non traitées faute de temps par l'agent).
+   Vérifiées uniquement via le smoke test fonctionnel (hits/dégâts/
+   cooldowns corrects pour toutes) et les captures avant/après
+   committées par chaque agent — pas de vérification visuelle tick-par-
+   tick individuelle de chacune, contrairement à coup1/coup2 ci-dessus.
+
+Fichiers modifiés : `assets/processed/sprites/cendre/cendre_frames.tres`,
+`assets/manifests/hero_combo_{1,2,3}.json`.
