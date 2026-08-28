@@ -2787,14 +2787,11 @@ const MACHOIRE_CAST_SEED := 51005  # Addendum A §A.5, jamais l'horloge murale �
 ## l'animation déjà validée — seules les 14 poses intermédiaires sont
 ## nouvelles). Répartition NON uniforme (mandat densité §2) : 8 frames sur
 ## l'anticipation (2-15, la gueule se love dans le bras), 4 sur le
-## contact/pic (16-20, encadrant le tick de hit théorique 17 = ANTICIPATION
-## 16 + RELEASE tick1), 4 sur la recovery (27-42). VÉRIFIÉ par capture
-## réelle tick-par-tick (capture_headless.sh --mode=player_action_sequence)
-## que la pose de morsure/coup est déjà pleinement affichée sur toute cette
-## fenêtre de contact, pas seulement au tick exact du hit — le pic visuel
-## couvre large la fenêtre où le hit peut réellement tomber, jamais un
-## tick deviné à l'aveugle. Beaucoup de frames là où l'œil a le temps de
-## les voir, peu sur le pic pour garder l'impression de vitesse.
+## contact/pic (16-20 — le tick de contact réel est 16, PAS 17 : même
+## audit que BRAS_FAUX_FRAME_TICK_BOUNDS, le hit se déclenche dès que
+## _tick atteint MACHOIRE_ANTICIPATION_TICKS, pas au tick suivant), 4 sur
+## la recovery (27-42). Beaucoup de frames là où l'œil a le temps de les
+## voir, peu sur le pic pour garder l'impression de vitesse.
 const MACHOIRE_FRAME_TICK_BOUNDS: Array[int] = [2, 4, 6, 8, 10, 12, 14, 15, 16, 17, 19, 20, 27, 32, 37, 42]
 
 ## Fenêtre d'annulation (même discipline que <SKILL>_CANCEL_WINDOW_TICKS sur

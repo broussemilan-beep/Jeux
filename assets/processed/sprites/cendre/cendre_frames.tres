@@ -141,20 +141,21 @@
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/13.png" id="1007"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/14.png" id="1008"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/bras_faux/15.png" id="1009"]
+
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/0.png" id="133"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/1.png" id="134"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/2.png" id="135"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/3.png" id="136"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/4.png" id="137"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/5.png" id="138"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/6.png" id="1200"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/7.png" id="1201"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/8.png" id="1202"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/9.png" id="1203"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/10.png" id="1204"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/11.png" id="1205"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/12.png" id="1206"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/13.png" id="1207"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/6.png" id="6000"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/7.png" id="6001"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/8.png" id="6002"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/9.png" id="6003"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/10.png" id="6004"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/11.png" id="6005"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/12.png" id="6006"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_belluaire/13.png" id="6007"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/0.png" id="2001"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/1.png" id="2002"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/poing_tellurique/2.png" id="2003"]
@@ -232,48 +233,48 @@
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/3.png" id="193"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/4.png" id="194"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/5.png" id="195"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/6.png" id="1100"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/7.png" id="1101"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/8.png" id="1102"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/9.png" id="1103"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/10.png" id="1104"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/11.png" id="1105"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/12.png" id="1106"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/13.png" id="1107"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/14.png" id="1108"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/15.png" id="1109"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/6.png" id="6020"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/7.png" id="6021"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/8.png" id="6022"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/9.png" id="6023"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/10.png" id="6024"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/11.png" id="6025"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/12.png" id="6026"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/13.png" id="6027"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/14.png" id="6028"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/machoire/15.png" id="6029"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/0.png" id="196"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/1.png" id="197"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/2.png" id="198"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/3.png" id="199"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/4.png" id="200"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/5.png" id="201"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/6.png" id="1400"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/7.png" id="1401"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/8.png" id="1402"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/9.png" id="1403"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/10.png" id="1404"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/11.png" id="1405"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/12.png" id="1406"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/13.png" id="1407"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/14.png" id="1408"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/15.png" id="1409"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/6.png" id="6060"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/7.png" id="6061"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/8.png" id="6062"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/9.png" id="6063"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/10.png" id="6064"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/11.png" id="6065"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/12.png" id="6066"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/13.png" id="6067"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/14.png" id="6068"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/forme_bestiale/15.png" id="6069"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/0.png" id="202"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/1.png" id="203"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/2.png" id="204"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/3.png" id="205"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/4.png" id="206"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/5.png" id="207"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/6.png" id="1300"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/7.png" id="1301"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/8.png" id="1302"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/9.png" id="1303"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/10.png" id="1304"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/11.png" id="1305"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/12.png" id="1306"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/13.png" id="1307"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/14.png" id="1308"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/15.png" id="1309"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/6.png" id="6040"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/7.png" id="6041"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/8.png" id="6042"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/9.png" id="6043"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/10.png" id="6044"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/11.png" id="6045"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/12.png" id="6046"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/13.png" id="6047"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/14.png" id="6048"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/pattes_de_chasse/15.png" id="6049"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_corbeau_pale/0.png" id="208"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_corbeau_pale/1.png" id="209"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_corbeau_pale/2.png" id="210"]
@@ -298,50 +299,50 @@
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_serpent_creux/3.png" id="229"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_serpent_creux/4.png" id="230"]
 [ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/invocation_serpent_creux/5.png" id="231"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/4.png" id="1010"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/5.png" id="1011"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/6.png" id="1012"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/7.png" id="1013"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/8.png" id="1014"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/9.png" id="1015"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/10.png" id="1016"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/11.png" id="1017"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/12.png" id="1018"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/13.png" id="1019"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/14.png" id="1020"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement_south/6.png" id="1021"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement_south/7.png" id="1022"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement_south/8.png" id="1023"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement_south/9.png" id="1024"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement_south/10.png" id="1025"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement_south/11.png" id="1026"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement_south/12.png" id="1027"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement_south/13.png" id="1028"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement_south/14.png" id="1029"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/9.png" id="1030"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/10.png" id="1031"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/11.png" id="1032"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/12.png" id="1033"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/13.png" id="1034"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/14.png" id="1035"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/15.png" id="1036"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/16.png" id="1037"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/9.png" id="1038"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/10.png" id="1039"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/11.png" id="1040"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/12.png" id="1041"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/13.png" id="1042"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/14.png" id="1043"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/15.png" id="1044"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/16.png" id="1045"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/9.png" id="1046"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/10.png" id="1047"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/11.png" id="1048"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/12.png" id="1049"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/13.png" id="1050"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/14.png" id="1051"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/15.png" id="1052"]
-[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/16.png" id="1053"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/4.png" id="2117"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/5.png" id="2118"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/6.png" id="2119"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/7.png" id="2120"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/8.png" id="2121"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/9.png" id="2122"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/10.png" id="2123"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/11.png" id="2124"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/12.png" id="2125"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/13.png" id="2126"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/idle_south/14.png" id="2127"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement_south/6.png" id="2128"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement_south/7.png" id="2129"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement_south/8.png" id="2130"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement_south/9.png" id="2131"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement_south/10.png" id="2132"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement_south/11.png" id="2133"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement_south/12.png" id="2134"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement_south/13.png" id="2135"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/deplacement_south/14.png" id="2136"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/9.png" id="2137"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/10.png" id="2138"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/11.png" id="2139"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/12.png" id="2140"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/13.png" id="2141"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/14.png" id="2142"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/15.png" id="2143"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup1/16.png" id="2144"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/9.png" id="2145"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/10.png" id="2146"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/11.png" id="2147"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/12.png" id="2148"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/13.png" id="2149"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/14.png" id="2150"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/15.png" id="2151"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup2/16.png" id="2152"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/9.png" id="2153"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/10.png" id="2154"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/11.png" id="2155"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/12.png" id="2156"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/13.png" id="2157"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/14.png" id="2158"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/15.png" id="2159"]
+[ext_resource type="Texture2D" path="res://assets/processed/sprites/cendre/coup3/16.png" id="2160"]
 
 [resource]
 animations = [{
@@ -359,37 +360,37 @@ animations = [{
 "texture": ExtResource("5")
 }, {
 "duration": 0.3,
-"texture": ExtResource("1010")
+"texture": ExtResource("2117")
 }, {
 "duration": 0.3,
-"texture": ExtResource("1011")
+"texture": ExtResource("2118")
 }, {
 "duration": 0.3,
-"texture": ExtResource("1012")
+"texture": ExtResource("2119")
 }, {
 "duration": 0.3,
-"texture": ExtResource("1013")
+"texture": ExtResource("2120")
 }, {
 "duration": 0.3,
-"texture": ExtResource("1014")
+"texture": ExtResource("2121")
 }, {
 "duration": 0.3,
-"texture": ExtResource("1015")
+"texture": ExtResource("2122")
 }, {
 "duration": 0.3,
-"texture": ExtResource("1016")
+"texture": ExtResource("2123")
 }, {
 "duration": 0.3,
-"texture": ExtResource("1017")
+"texture": ExtResource("2124")
 }, {
 "duration": 0.3,
-"texture": ExtResource("1018")
+"texture": ExtResource("2125")
 }, {
 "duration": 0.3,
-"texture": ExtResource("1019")
+"texture": ExtResource("2126")
 }, {
 "duration": 0.3,
-"texture": ExtResource("1020")
+"texture": ExtResource("2127")
 }],
 "loop": true,
 "name": &"idle_south",
@@ -534,31 +535,31 @@ animations = [{
 "texture": ExtResource("39")
 }, {
 "duration": 0.5,
-"texture": ExtResource("1021")
+"texture": ExtResource("2128")
 }, {
 "duration": 0.3333333333,
-"texture": ExtResource("1022")
+"texture": ExtResource("2129")
 }, {
 "duration": 0.5,
-"texture": ExtResource("1023")
+"texture": ExtResource("2130")
 }, {
 "duration": 0.3333333333,
-"texture": ExtResource("1024")
+"texture": ExtResource("2131")
 }, {
 "duration": 0.5,
-"texture": ExtResource("1025")
+"texture": ExtResource("2132")
 }, {
 "duration": 0.3333333333,
-"texture": ExtResource("1026")
+"texture": ExtResource("2133")
 }, {
 "duration": 0.3333333333,
-"texture": ExtResource("1027")
+"texture": ExtResource("2134")
 }, {
 "duration": 0.3333333333,
-"texture": ExtResource("1028")
+"texture": ExtResource("2135")
 }, {
 "duration": 0.3333333333,
-"texture": ExtResource("1029")
+"texture": ExtResource("2136")
 }],
 "loop": true,
 "name": &"deplacement_south",
@@ -823,28 +824,28 @@ animations = [{
 "texture": ExtResource("108")
 }, {
 "duration": 0.2,
-"texture": ExtResource("1030")
+"texture": ExtResource("2137")
 }, {
 "duration": 0.2,
-"texture": ExtResource("1031")
+"texture": ExtResource("2138")
 }, {
 "duration": 0.2,
-"texture": ExtResource("1032")
+"texture": ExtResource("2139")
 }, {
 "duration": 0.2,
-"texture": ExtResource("1033")
+"texture": ExtResource("2140")
 }, {
 "duration": 0.2,
-"texture": ExtResource("1034")
+"texture": ExtResource("2141")
 }, {
 "duration": 0.2,
-"texture": ExtResource("1035")
+"texture": ExtResource("2142")
 }, {
 "duration": 0.8,
-"texture": ExtResource("1036")
+"texture": ExtResource("2143")
 }, {
 "duration": 2.8,
-"texture": ExtResource("1037")
+"texture": ExtResource("2144")
 }],
 "loop": false,
 "name": &"coup1",
@@ -879,28 +880,28 @@ animations = [{
 "texture": ExtResource("117")
 }, {
 "duration": 0.2,
-"texture": ExtResource("1038")
+"texture": ExtResource("2145")
 }, {
 "duration": 0.2,
-"texture": ExtResource("1039")
+"texture": ExtResource("2146")
 }, {
 "duration": 0.2,
-"texture": ExtResource("1040")
+"texture": ExtResource("2147")
 }, {
 "duration": 0.2,
-"texture": ExtResource("1041")
+"texture": ExtResource("2148")
 }, {
 "duration": 0.8,
-"texture": ExtResource("1042")
+"texture": ExtResource("2149")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1043")
+"texture": ExtResource("2150")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1044")
+"texture": ExtResource("2151")
 }, {
 "duration": 0.8,
-"texture": ExtResource("1045")
+"texture": ExtResource("2152")
 }],
 "loop": false,
 "name": &"coup2",
@@ -935,28 +936,28 @@ animations = [{
 "texture": ExtResource("126")
 }, {
 "duration": 0.2,
-"texture": ExtResource("1046")
+"texture": ExtResource("2153")
 }, {
 "duration": 0.2,
-"texture": ExtResource("1047")
+"texture": ExtResource("2154")
 }, {
 "duration": 0.2,
-"texture": ExtResource("1048")
+"texture": ExtResource("2155")
 }, {
 "duration": 0.2,
-"texture": ExtResource("1049")
+"texture": ExtResource("2156")
 }, {
 "duration": 0.2,
-"texture": ExtResource("1050")
+"texture": ExtResource("2157")
 }, {
 "duration": 0.8,
-"texture": ExtResource("1051")
+"texture": ExtResource("2158")
 }, {
 "duration": 2.0,
-"texture": ExtResource("1052")
+"texture": ExtResource("2159")
 }, {
 "duration": 2.0,
-"texture": ExtResource("1053")
+"texture": ExtResource("2160")
 }],
 "loop": false,
 "name": &"coup3",
@@ -1035,28 +1036,28 @@ animations = [{
 "texture": ExtResource("138")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1200")
+"texture": ExtResource("6000")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1201")
+"texture": ExtResource("6001")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1202")
+"texture": ExtResource("6002")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1203")
+"texture": ExtResource("6003")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1204")
+"texture": ExtResource("6004")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1205")
+"texture": ExtResource("6005")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1206")
+"texture": ExtResource("6006")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1207")
+"texture": ExtResource("6007")
 }],
 "loop": false,
 "name": &"poing_belluaire",
@@ -1335,34 +1336,34 @@ animations = [{
 "texture": ExtResource("195")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1100")
+"texture": ExtResource("6020")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1101")
+"texture": ExtResource("6021")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1102")
+"texture": ExtResource("6022")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1103")
+"texture": ExtResource("6023")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1104")
+"texture": ExtResource("6024")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1105")
+"texture": ExtResource("6025")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1106")
+"texture": ExtResource("6026")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1107")
+"texture": ExtResource("6027")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1108")
+"texture": ExtResource("6028")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1109")
+"texture": ExtResource("6029")
 }],
 "loop": false,
 "name": &"machoire",
@@ -1388,34 +1389,34 @@ animations = [{
 "texture": ExtResource("201")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1400")
+"texture": ExtResource("6060")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1401")
+"texture": ExtResource("6061")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1402")
+"texture": ExtResource("6062")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1403")
+"texture": ExtResource("6063")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1404")
+"texture": ExtResource("6064")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1405")
+"texture": ExtResource("6065")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1406")
+"texture": ExtResource("6066")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1407")
+"texture": ExtResource("6067")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1408")
+"texture": ExtResource("6068")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1409")
+"texture": ExtResource("6069")
 }],
 "loop": false,
 "name": &"forme_bestiale",
@@ -1441,34 +1442,34 @@ animations = [{
 "texture": ExtResource("207")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1300")
+"texture": ExtResource("6040")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1301")
+"texture": ExtResource("6041")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1302")
+"texture": ExtResource("6042")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1303")
+"texture": ExtResource("6043")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1304")
+"texture": ExtResource("6044")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1305")
+"texture": ExtResource("6045")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1306")
+"texture": ExtResource("6046")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1307")
+"texture": ExtResource("6047")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1308")
+"texture": ExtResource("6048")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1309")
+"texture": ExtResource("6049")
 }],
 "loop": false,
 "name": &"pattes_de_chasse",
