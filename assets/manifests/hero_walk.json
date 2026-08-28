@@ -3,8 +3,7 @@
   "kind": "character_animation",
   "source": "pixellab",
   "pixellab_character_id": "8596a4ad-0a0b-4d82-b99b-db8a73c01e33",
-  "pixellab_animation_group_id": "2c976e9a-8faf-4b43-849a-f37861264862",
-  "pixellab_template_animation_id": "walk",
+  "pixellab_animation_group_id": "92ccfa30-b5d4-4fbe-8c16-5fd86769bef8",
   "character": "cendre",
   "godot_animation_name": "deplacement",
   "direction": "south",
@@ -13,7 +12,7 @@
   "importance_tier": 1,
   "license": "internal",
   "seed": null,
-  "frames": 6,
+  "frames": 15,
   "cell": [
     96,
     96
@@ -23,21 +22,30 @@
     92
   ],
   "frame_ticks": [
-    6,
-    6,
-    6,
-    6,
-    6,
-    6
+    3,
+    2,
+    3,
+    2,
+    3,
+    2,
+    3,
+    2,
+    3,
+    2,
+    3,
+    2,
+    2,
+    2,
+    2
   ],
   "loop": true,
   "source_frames_dir": "assets/source/pixellab/cendre/animations/deplacement/",
-  "processed_frames_dir": "assets/processed/sprites/cendre/deplacement/",
+  "processed_frames_dir": "assets/processed/sprites/cendre/deplacement_south/",
   "sprite_frames_resource": "assets/processed/sprites/cendre/cendre_frames.tres",
   "capture_path": "captures/phase1/hero_walk.png",
-  "capture_note": "frame 3 (foulee la plus large, plus lisible qu'une pose neutre en capture statique), fond neutre, capture headless",
+  "capture_note": "frame 3 (foulee la plus large, plus lisible qu'une pose neutre en capture statique), fond neutre, capture headless | MANDAT DENSITE 2026-08-28 : capture_path pointe encore vers l'ancienne pose 6 frames - preuve a jour dans captures/verification/2026-08-28-densite-locomotion-avant-apres.png.",
   "validated_auto": true,
-  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK sur toutes les frames apres R3. Meme correctif value-band que Phase 1.1 (nudge des pixels sous le plancher 15% V, ici le contour/ombre sombre du nouveau personnage a (30,30,30) => 11.76%V, nudge HSV vers 17%V, 3810 pixels sur les 8 animations, imperceptible visuellement).",
+  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK sur les 15 frames cuites. Value-band nudge bidirectionnel : 658 pixels nudges sur ce lot.",
   "human_label_ref": null,
   "capture_variants": {
     "neutral_1x": "captures/phase1/hero_walk.png",
@@ -48,5 +56,18 @@
     "loaded_4x": "captures/phase1/hero_walk_loaded_4x.png"
   },
   "r3_regenerated": true,
-  "r3_note": "Regenere R3 (mandat production v1 SS1.1/SS1.2) depuis reference_v3_turnaround_raw.png (sans cape) - personnage Cendre_v3c (32x84px), remplace le personnage v2 (avec cape, f6b77b57...)."
+  "r3_note": "Regenere R3 (mandat production v1 SS1.1/SS1.2) depuis reference_v3_turnaround_raw.png (sans cape) - personnage Cendre_v3c (32x84px), remplace le personnage v2 (avec cape, f6b77b57...).",
+  "pixellab_mode": "v3_custom",
+  "pixellab_action_description": "a walking cycle, steady forward stride, natural alternating arm swing, weight shifting smoothly from foot to foot, head level - no magic, no glow, no light effects, purely physical",
+  "frame_ticks_note": "MANDAT DENSITE (2026-08-28). Deplacement de mode template ('walk', fixe a 6-8 frames selon la version PixelLab, jamais assez pour la cible bible SS2) vers mode v3 custom (meme mecanisme que le combo, frame_count controlable jusqu'a 16). Boucle : pas de pic contact a preserver, repartition quasi-uniforme (2-3 ticks/frame, alternee) totalisant 36 ticks/cycle - identique au budget de l'ancienne anim 6 frames (6 ticks x 6 = 36), juste plus de poses distinctes dans le meme temps de cycle reel (aucun changement de vitesse de jeu).",
+  "densite_2026_08_28": {
+    "mandat": "voir hero_combo_1.json.densite_2026_08_28.mandat. Cette anim sert AUSSI la marche (input faible) et la course (input plein, meme frames rejouees plus vite cote player.gd - pas de 2e anim separee).",
+    "avant": {
+      "frames": 6
+    },
+    "apres": {
+      "frames": 15
+    },
+    "pipeline": "voir hero_combo_1.json.densite_2026_08_28.pipeline. Changement de mode delibere (template -> v3 custom) documente explicitement ci-dessus, seule deviation du 'patron etabli' de cette campagne, necessaire car le mode template plafonne a 8-10 frames pour ce type d'anim (walking-10 = 10f max), insuffisant pour la cible 12-18."
+  }
 }

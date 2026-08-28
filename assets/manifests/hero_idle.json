@@ -3,8 +3,7 @@
   "kind": "character_animation",
   "source": "pixellab",
   "pixellab_character_id": "8596a4ad-0a0b-4d82-b99b-db8a73c01e33",
-  "pixellab_animation_group_id": "9064ebc5-cf5f-427d-a570-9de63cfd2c30",
-  "pixellab_template_animation_id": "breathing-idle",
+  "pixellab_animation_group_id": "a082b8aa-1aec-4254-8b6d-859bc384d1d0",
   "character": "cendre",
   "direction": "south",
   "note_direction": "seule la direction sud existe pour l'instant (discipline batch section 5.3) - 7 directions restantes dans un batch ulterieur avec estimation Milan",
@@ -12,7 +11,7 @@
   "importance_tier": 1,
   "license": "internal",
   "seed": null,
-  "frames": 4,
+  "frames": 15,
   "cell": [
     96,
     96
@@ -22,19 +21,30 @@
     92
   ],
   "frame_ticks": [
-    10,
-    10,
-    10,
-    10
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3
   ],
   "loop": true,
   "source_frames_dir": "assets/source/pixellab/cendre/animations/idle/",
-  "processed_frames_dir": "assets/processed/sprites/cendre/idle/",
+  "processed_frames_dir": "assets/processed/sprites/cendre/idle_south/",
   "sprite_frames_resource": "assets/processed/sprites/cendre/cendre_frames.tres",
   "capture_path": "captures/phase1/hero_idle.png",
-  "capture_note": "frame 0, fond neutre, capture headless (tools/capture_scene.gd --mode=character)",
+  "capture_note": "frame 0, fond neutre, capture headless (tools/capture_scene.gd --mode=character) | MANDAT DENSITE 2026-08-28 : capture_path pointe encore vers l'ancienne pose 4 frames - preuve a jour dans captures/verification/2026-08-28-densite-locomotion-avant-apres.png.",
   "validated_auto": true,
-  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK sur toutes les frames apres R3. Meme correctif value-band que Phase 1.1 (nudge des pixels sous le plancher 15% V, ici le contour/ombre sombre du nouveau personnage a (30,30,30) => 11.76%V, nudge HSV vers 17%V, 3810 pixels sur les 8 animations, imperceptible visuellement).",
+  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK sur les 15 frames cuites. Value-band nudge bidirectionnel : 329 pixels nudges sur ce lot.",
   "human_label_ref": null,
   "capture_variants": {
     "neutral_1x": "captures/phase1/hero_idle.png",
@@ -45,5 +55,18 @@
     "loaded_4x": "captures/phase1/hero_idle_loaded_4x.png"
   },
   "r3_regenerated": true,
-  "r3_note": "Regenere R3 (mandat production v1 SS1.1/SS1.2) depuis reference_v3_turnaround_raw.png (sans cape) - personnage Cendre_v3c (32x84px), remplace le personnage v2 (avec cape, f6b77b57...)."
+  "r3_note": "Regenere R3 (mandat production v1 SS1.1/SS1.2) depuis reference_v3_turnaround_raw.png (sans cape) - personnage Cendre_v3c (32x84px), remplace le personnage v2 (avec cape, f6b77b57...).",
+  "pixellab_mode": "v3_custom",
+  "pixellab_action_description": "a subtle breathing idle stance, standing at rest with slow relaxed weight shift, chest rising and falling gently, shoulders loose, no aggressive posture, calm resting pose - no magic, no glow, no light effects, purely physical",
+  "frame_ticks_note": "MANDAT DENSITE (2026-08-28). Meme changement de mode que hero_walk.json (template 'breathing-idle', 4 frames commits malgre un plafond documente a 8 -> v3 custom, frame_count=14+1 ref=15). Boucle, pas de pic a preserver, ticks uniformes (3/frame, 45 ticks/cycle, contre 10 ticks x 4 = 40 avant - cycle legerement plus long mais coherent, juste plus de poses de respiration distinctes).",
+  "densite_2026_08_28": {
+    "mandat": "voir hero_combo_1.json.densite_2026_08_28.mandat.",
+    "avant": {
+      "frames": 4
+    },
+    "apres": {
+      "frames": 15
+    },
+    "pipeline": "voir hero_walk.json.densite_2026_08_28.pipeline (meme deviation mode template -> v3 custom, meme justification)."
+  }
 }

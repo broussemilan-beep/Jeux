@@ -3,9 +3,9 @@
   "kind": "character_animation",
   "source": "pixellab",
   "pixellab_character_id": "8596a4ad-0a0b-4d82-b99b-db8a73c01e33",
-  "pixellab_animation_group_id": "0c798baa-f594-4285-a80a-547b5e61dd32",
+  "pixellab_animation_group_id": "633876ff-84dc-462b-b2bd-fb213f6b96c3",
   "pixellab_mode": "v3_custom",
-  "pixellab_action_description": "both fists raised high above the head at the peak of the windup, elbows bent at an extreme, almost impossible angle, torso arched and twisted dramatically backward beyond natural range to load the strike, then both fists slammed straight down together with the torso whipping forward at an exaggerated angle on impact - silhouette must stay clearly readable, not more limbs, not cluttered, exaggerated ANGLE not exaggerated complexity - no magic, no glow, no light effects, purely physical",
+  "pixellab_action_description": "both fists raised high together above the head at the peak of the windup, elbows bent at an extreme almost impossible angle, torso arched and twisted dramatically backward - then in a single decisive motion both fists are driven straight DOWN together in front of the body like a two-handed hammer blow, torso whipping forward and bending at the waist on impact, knees bent low absorbing the strike - the final impact pose must clearly show both fists low and close together in front of the body, NOT spread apart to the sides - silhouette must stay clearly readable, not more limbs, not cluttered, exaggerated ANGLE not exaggerated complexity - no magic, no glow, no light effects, purely physical",
   "character": "cendre",
   "godot_animation_name": "coup3",
   "direction": "south",
@@ -14,7 +14,7 @@
   "importance_tier": 1,
   "license": "internal",
   "seed": null,
-  "frames": 9,
+  "frames": 17,
   "cell": [
     96,
     96
@@ -24,17 +24,25 @@
     92
   ],
   "frame_ticks": [
-    2,
-    2,
-    2,
-    2,
-    2,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
     1,
     1,
     4,
-    20
+    10,
+    10
   ],
-  "frame_ticks_note": "BIBLE SS3bis (mandat permanent, 2026-08-27, contraste/exageration facon Yomi Hustle) - 3e passe sur ce pilote, remplace la generation 'coup3_overhead_smash' du 2026-08-26. Timing recale sur le VRAI pic de CETTE generation, identifie par bande comparative des 9 frames (pas suppose identique a l'ancien decoupage idx6) : idx4-6 montrent tous les 2 poings tenus au-dessus de la tete (windup HOLD, pas un pic unique) ; l'IMPACT reel (poings ramenes bas dans une position basse et dynamique, torse penche en avant) est a l'idx7, PAS idx6 comme dans la generation precedente - confirme par mesure objective du bbox alpha (top_y le plus bas du groupe idx4-8 : 22px, contre 14-17px pour idx4-6 qui restent en position haute). idx0-6 (7 frames, montee + tenue overhead) = ANTICIPATION_TICKS(tier3)=12 ; idx7 (LE vrai moment d'impact, poings bas) = RELEASE_TICKS=4 (tick de _try_hit()) ; idx8 (retour au calme) = RECOVERY_TICKS(tier3)=20. Total 36 = 12+4+20, identique au budget tier3 existant.",
+  "frame_ticks_note": "MANDAT DENSITE (2026-08-28). 2e generation utilisee (1re, meme prompt que bible SS3bis avec frame_count=16, rejetee : le pic idx16 montrait les 2 poings ecartes largement sur les cotes, pas 'ramenes bas ensemble' - regression vs la silhouette validee round precedent). 2e generation (prompt renforce, 'NOT spread apart to the sides') acceptee : idx3-11 = windup overhead HOLD (9 frames quasi identiques, coherent avec le plateau deja observe round precedent), idx12-16 = les 2 poings ramenes bas ensemble avec torse penche en avant - pic reel a idx14 (lean le plus profond, mesure par top_y bbox = 17, le plus haut de toute la sequence = position la plus basse/avancee). idx0-13 (14 frames, anticipation incluant le windup hold) = 1 tick chacune (14 ticks, vs ANTICIPATION_TICKS_tier3=12, ecart +2 ticks/+33ms seulement - le plus proche des 3 coups de ce lot). idx14 (pic) = 4 ticks. idx15-16 (2 frames recuperation) = 10+10=20 ticks = RECOVERY_TICKS_tier3 exact.",
   "loop": false,
   "source_frames_dir": "assets/source/pixellab/cendre/animations/coup3/",
   "processed_frames_dir": "assets/processed/sprites/cendre/coup3/",
@@ -53,7 +61,7 @@
     "note_chain_window": "dernier coup du combo - pas de fenetre de chainage, section 4 de player.gd (_advance_combo) exclut explicitement le 3e coup"
   },
   "validated_auto": true,
-  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK sur les 9 nouvelles frames source (assets/source/pixellab/cendre/animations/coup3/) apres correctif. Meme correctif value-band que les passes precedentes (nudge des pixels sous le plancher 15%V vers 17%V) applique a ce nouveau lot (791 pixels sur les 9 frames de coup3, 2404 sur les 27 frames coup1+2+3 au total : 783+830+791).",
+  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK sur les 17 frames cuites. Value-band nudge bidirectionnel : 431 pixels nudges sur ce lot.",
   "human_label_ref": null,
   "known_limitation": "MANDAT playtest reel point 5 (2026-08-26) : known_limitation precedente (halo blanc parasite sur l'ancienne generation) resolue par le remplacement complet de l'animation - aucun halo detecte sur les 9 nouvelles frames. capture_path (captures/phase1/hero_combo_3.png) n'a jamais ete regeneree en jeu reel pour le concept 'realiste' - toujours vrai apres cette passe (voir capture_note pour ce qui A ete verifie en jeu reel pour la passe exageree : le VFX chaine sur 3 coups, pas le sprite statique).",
   "capture_variants": {
@@ -79,5 +87,20 @@
     "prompt_delta": "vs. v2 (hero_combo_3.json avant cette passe) : ajout explicite 'elbows bent at an extreme, almost impossible angle', 'torso arched and twisted dramatically backward beyond natural range', 'torso whipping forward at an exaggerated angle on impact', et de la clause de garde-fou de lisibilite. Retire 'grounded'/'feet planted wide' de l'ancien prompt (redondant avec le nouveau descriptif, sans impact sur le concept).",
     "reroll_count": 0,
     "verdict_pixel_art": "Accepte au premier essai, aucun halo/artefact parasite detecte sur les 9 frames. Point de vigilance traite avec rigueur (cf. avertissement explicite du mandat sur une erreur similaire deja commise pour coup2 lors du round precedent) : le pic d'impact a ETE VERIFIE comme etant idx7 et non idx6 (qui n'est qu'une frame de la TENUE overhead, un plateau de 3 frames quasi-identiques idx4-6) via mesure de bbox ET inspection visuelle comparative, pas suppose par analogie avec l'ancienne generation. Silhouette reste lisible comme 'smash a 2 poings' a l'echelle cuite - la pose d'impact (poings bas, torse penche, stance dynamique) reste distincte des 2 autres coups. Reserve honnete : le plateau overhead (idx4-6) rend le WINDUP moins 'un seul pic net' qu'avant (l'ancienne version isolait idx3-4 comme LE pic overhead) - c'est un compromis accepte pour privilegier la lisibilite du vrai impact (idx7) plutot que de choisir arbitrairement laquelle des 3 poses overhead quasi-identiques est 'la' reference. Voir verdict complet dans docs/worklog.md et le panneau de comparaison committe."
+  },
+  "densite_2026_08_28": {
+    "mandat": "voir hero_combo_1.json.densite_2026_08_28.mandat (identique).",
+    "avant": {
+      "frames": 9,
+      "peak_idx": 7,
+      "peak_description": "poings ramenes bas dans une position basse et dynamique, torse penche en avant (silhouette validee round precedent)"
+    },
+    "apres": {
+      "frames": 17,
+      "peak_idx": 14,
+      "peak_description": "poings ramenes bas ensemble, torse penche au maximum - silhouette conforme a la reference validee, meilleur match des 3 coups sur cette campagne"
+    },
+    "pipeline": "identique a hero_combo_1.json.densite_2026_08_28.pipeline.",
+    "peak_verification": "bbox alpha (top_y) + inspection visuelle Read tool (planche idx0-16 complete + zoom idx12-16) sur les 2 generations - 1re rejetee avant integration, aucune frame committee."
   }
 }

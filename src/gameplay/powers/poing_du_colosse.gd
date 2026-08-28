@@ -37,10 +37,33 @@ const DAMAGE := 20.0
 ## Addendum A §A.5 — suite de la séquence CAST_SEED (voir corbeau_pale.gd).
 const CAST_SEED := 51006
 
-## 6 frames pose-à-pose sur les 54 ticks ci-dessus. frame3 couvre
-## CONTACT_TICK (26, dans la fenêtre 24-32) — même discipline que
-## GueuleVide.FRAME_TICK_BOUNDS.
-const FRAME_TICK_BOUNDS: Array[int] = [8, 16, 24, 32, 42, 54]
+## PASSE DENSITÉ (2026-08-28, MANDAT campagne "densité d'animation +
+## richesse visuelle", bible §2, cible 12-18 frames) : régénéré en v3
+## PixelLab (même character 2aa4f476, nouvelle animation "cast_dense_v2"
+## à 17 frames sud, frame_count=16+keep_first_frame — 1er essai
+## "cast_dense" REJETÉ avant tout cook/commit : la description initiale
+## ne produisait quasi aucune variation de silhouette entre les 17
+## frames, jamais retenu dans le jeu ; 2e essai avec une description
+## beaucoup plus explicite/exagérée a produit un vrai contraste
+## poing-levé/poing-abattu, voir data/pixellab_usage — aucun crédit du
+## 1er essai gaspillé au-delà du coût de génération lui-même, discipline
+## "sans compter mais mesuré" du mandat). Lecture visuelle réelle des 17
+## frames : 0-11 = poing levé tenu (variation subtile de la goutte
+## d'encre, "respiration" plutôt qu'un vrai mouvement de levée — écart
+## honnête avec la description "rise dramatically" demandée, non
+## retenté une 3e fois vu le temps disponible) ; 12 = début
+## d'effondrement/transition ; 13-16 = LE poing abattu à plat au sol
+## (silhouette nettement plus large et basse, contraste net avec le
+## poing levé — c'est ce contraste qui vend l'impact, pas une vraie
+## trajectoire de chute). Répartition non-uniforme : 12 frames sur
+## formation+préparation (0-24t, "beaucoup sur l'anticipation" — le
+## poing levé tenu, menaçant), 3 SEULEMENT sur l'impact (24-32t, la
+## transition + les 2 premières frames du poing abattu), 2 frames tenues
+## longtemps sur la dissipation (32-54t, le cratère qui se stabilise).
+## CONTACT_TICK (26, inchangé) tombe sur le frame 13 (la 1ère frame
+## nettement "à plat au sol" du poing abattu, pas la transition) —
+## vérifié par capture en jeu réel à plusieurs ticks autour de 26.
+const FRAME_TICK_BOUNDS: Array[int] = [3, 6, 9, 12, 14, 16, 17, 18, 20, 21, 22, 24, 25, 27, 32, 43, 54]
 
 @onready var _sprite: AnimatedSprite2D = $AnimatedSprite2D
 

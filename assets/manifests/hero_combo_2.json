@@ -3,9 +3,9 @@
   "kind": "character_animation",
   "source": "pixellab",
   "pixellab_character_id": "8596a4ad-0a0b-4d82-b99b-db8a73c01e33",
-  "pixellab_animation_group_id": "32138937-6c80-465c-99a9-4b2c77ad1884",
+  "pixellab_animation_group_id": "dfe31e76-9af4-4c4c-9e9a-8a0d8433108d",
   "pixellab_mode": "v3_custom",
-  "pixellab_action_description": "a rising knee strike combined with an upward uppercut, character crouches low first then explodes upward, knee driven up bent at an extreme, almost impossible angle above hip height, the fist rising in an exaggerated uppercut arc far above the head at the peak, torso twisted and arched dramatically backward beyond natural range to power the strike, a clear vertical upward motion - silhouette must stay clearly readable, not more limbs, not cluttered, exaggerated ANGLE not exaggerated complexity - no magic, no glow, no light effects, purely physical",
+  "pixellab_action_description": "character crouches down low first, then explosively rises: the knee snaps up bent at an extreme, almost impossible angle well above hip height while at the exact same instant the fist punches upward past the head in a sharp uppercut arc, torso arched and twisted dramatically backward beyond natural range - the peak moment must clearly show BOTH the raised knee AND the raised fist near/above head height at once, a martial-arts knee-and-uppercut combo, strong vertical upward energy - silhouette must stay clearly readable, not more limbs, not cluttered, exaggerated ANGLE not exaggerated complexity - no magic, no glow, no light effects, purely physical",
   "character": "cendre",
   "godot_animation_name": "coup2",
   "direction": "south",
@@ -14,7 +14,7 @@
   "importance_tier": 1,
   "license": "internal",
   "seed": null,
-  "frames": 9,
+  "frames": 17,
   "cell": [
     96,
     96
@@ -24,17 +24,25 @@
     92
   ],
   "frame_ticks": [
-    2,
     1,
     1,
-    2,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
     1,
     1,
     4,
-    7,
-    7
+    5,
+    5,
+    4
   ],
-  "frame_ticks_note": "BIBLE SS3bis (mandat permanent, 2026-08-27, contraste/exageration facon Yomi Hustle) - 3e passe sur ce pilote, remplace la generation 'coup2_knee_uppercut' du 2026-08-26. Job PixelLab initial (a3db7671...) echoue silencieusement (visible seulement via list_jobs, jamais liste dans get_character) - regenere une 2e fois avant tout traitement, aucune frame de l'echec utilisee. Timing recale sur le VRAI pic de CETTE generation, identifie par inspection visuelle frame par frame (bande comparative des 9 frames, pas une seule image devinee) : le genou ET le poing sont simultanement au plus haut, torse arque en arriere, a l'index 6 - PAS l'index 7 (ou le genou est deja redescendu au sol, une autre pose : l'atterrissage). idx0-5 (6 frames, crouch->explosion) = ANTICIPATION_TICKS=8 ; idx6 (LE pic reel, genou+poing simultanement au plus haut) = RELEASE_TICKS=4 (tick de _try_hit()) ; idx7-8 (atterrissage puis recuperation) = RECOVERY_TICKS=14. Total 26 = 8+4+14, identique au budget existant, player.gd non modifie.",
+  "frame_ticks_note": "MANDAT DENSITE (2026-08-28). 2 regenerations necessaires sur cette anim specifiquement (voir densite_2026_08_28.reserve_honnete ci-dessous) : 1re tentative (meme prompt que la passe bible SS3bis, frame_count=16) n'a jamais produit la silhouette validee genou+poing leves - rejetee AVANT integration (aucune frame de cette 1re tentative committee). 2e tentative (prompt renforce, insistant explicitement sur genou+poing simultanes) accepte avec reserve : pic idx13 montre un genou releve net + poing projete en avant (frappe genou dynamique, lisible), mais PAS un arc d'uppercut classique (le poing ne passe pas au-dessus de la tete) - compromis assume, voir verdict honnete. idx0-12 (13 frames, anticipation, le squat) = 1 tick chacune (13 ticks, vs ANTICIPATION_TICKS=8, ecart +5 ticks/+83ms, memes reserves que coup1). idx13 (pic) = 4 ticks. idx14-16 (3 frames recuperation) = 5+5+4=14 ticks = RECOVERY_TICKS exact.",
   "loop": false,
   "source_frames_dir": "assets/source/pixellab/cendre/animations/coup2/",
   "processed_frames_dir": "assets/processed/sprites/cendre/coup2/",
@@ -52,7 +60,7 @@
     "attack_range_px": 48.0
   },
   "validated_auto": true,
-  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK sur les 9 nouvelles frames source (assets/source/pixellab/cendre/animations/coup2/) apres correctif. Meme correctif value-band que les passes precedentes (nudge des pixels sous le plancher 15%V vers 17%V) applique a ce nouveau lot (830 pixels sur les 9 frames de coup2, 2404 sur les 27 frames coup1+2+3 au total : 783+830+791).",
+  "validated_auto_detail": "scripts/validate_pixels.py --category character : OK sur les 17 frames cuites. Value-band nudge bidirectionnel : 422 pixels nudges sur ce lot.",
   "human_label_ref": null,
   "capture_variants": {
     "neutral_1x": "captures/phase1/hero_combo_2.png",
@@ -78,5 +86,21 @@
     "reroll_count": 1,
     "reroll_reason": "Le tout premier job PixelLab (a3db7671-f44e-4148-bfbc-7ff35d441911) a echoue cote serveur (visible uniquement via list_jobs, jamais apparu dans get_character malgre ~7 minutes d'attente et plusieurs sondages) - regenere via un 2e appel animate_character, reussi. Cout reel de ce reroll inclus dans le rapport final (coup2 seul consomme 2 generations comme coup1/coup3, le job echoue n'a rien facture).",
     "verdict_pixel_art": "Accepte au 2e essai (echec du 1er etait un probleme d'infrastructure PixelLab, pas un rejet qualite). Verifie visuellement frame par frame (bande comparative idx3-8) plutot que suppose : idx6 montre clairement genou ET poing simultanement au plus haut, torse arque - c'est un point de vigilance EXPLICITE du mandat (la meme animation avait deja subi une erreur de frame decalee lors du round precedent), traite avec le niveau de rigueur demande. Silhouette reste lisible comme 'genou+uppercut' a l'echelle cuite, meme reserve honnete que dans le round precedent (documentee alors dans docs/worklog.md, toujours valide ici) : c'est la jambe asymetrique qui porte l'essentiel de la distinction avec un pur geste de bras, un peu plus qu'un simple coup de poing generique. Voir verdict complet dans docs/worklog.md et le panneau de comparaison committe."
+  },
+  "densite_2026_08_28": {
+    "mandat": "voir hero_combo_1.json.densite_2026_08_28.mandat (identique).",
+    "avant": {
+      "frames": 9,
+      "peak_idx": 6,
+      "peak_description": "genou et poing simultanement au plus haut, torse arque (silhouette validee round precedent)"
+    },
+    "apres": {
+      "frames": 17,
+      "peak_idx": 13,
+      "peak_description": "genou releve net (frappe genou) + poing projete en avant - lisible comme frappe dynamique mais l'arc d'uppercut du poing au-dessus de la tete n'est plus net"
+    },
+    "pipeline": "identique a hero_combo_1.json.densite_2026_08_28.pipeline.",
+    "reserve_honnete": "Sur les 2 tentatives de regeneration pour ce coup specifiquement, AUCUNE ne reproduit fidelement la silhouette 'genou ET poing au-dessus de la tete, torse arque' validee lors du round bible SS3bis (2026-08-27). 1re tentative (meme prompt, plus de frames) : 17 frames de posture de garde generique, jamais de genou leve - rejetee integralement. 2e tentative (prompt renforce) : produit un coup de genou lisible et dynamique (idx13, releve net) mais le poing accompagne davantage un jab en avant qu'un uppercut arque au-dessus de la tete. Accepte car (a) toujours identifiable comme coup de genou (element central du concept 'coup2'), (b) nettement plus dynamique/exagere que le round precedent, (c) budget PixelLab explicitement genereux pour cette campagne mais 2 tentatives suffisent avant d'accepter un compromis documente plutot que de boucler indefiniment sur un hasard de generation. Milan peut demander une 3e tentative si ce compromis n'est pas acceptable.",
+    "peak_verification": "bbox alpha + inspection visuelle Read tool (planche idx11-15) sur les 2 generations."
   }
 }
