@@ -536,6 +536,92 @@ cassé.
 Livrable : `output/cartoon_c7/best/combo_cartoon.rbxmx`, comparateur dans
 le viewer (4ᵉ onglet "recréation référence").
 
+## Cycle 8 — mesure pixel rigoureuse (l'utilisateur a demandé « exactement »)
+
+Le cycle 7 recréait la *structure* de la vidéo à l'impression visuelle. Sur
+demande explicite d'une reproduction exacte, une seconde passe a été faite
+avec des mesures objectives plutôt qu'une lecture à l'oeil — et a trouvé
+une vraie erreur.
+
+### Méthode
+
+- Extraction **native** de la vidéo (108 frames, ~58,4 fps réelles, contre
+  les 22 captures ponctuelles du cycle 7) avec `imageio-ffmpeg`.
+- Pour chaque temps fort, un **crop agrandi avec grille de coordonnées**
+  en pixels (pas une estimation visuelle — des coordonnées lues
+  directement) pour mesurer la direction des membres visibles.
+- Calage temporel à la frame vidéo près (`(idx-1)/58.4` s), plus précis
+  d'un ordre de grandeur que le pas de 0,1–0,25 s du cycle 7.
+
+### Ce que la mesure a corrigé
+
+**La jambe ne fait pas une seule montée tenue.** Elle fait DEUX montées
+distinctes : kick 1 (t=0,086–0,308s, monte puis **redescend aussitôt**),
+un creux où le corps se redresse (t=0,308–0,462s), puis kick 2
+(t=0,462–0,908s, remonte plus haut, **celui-là est tenu**, hang-time
+confirmé sur 17 frames consécutives ≈ 0,3s réelles). Le cycle 7 avait fusionné
+ces deux mouvements en une seule montée continue — invisible à la densité
+d'échantillonnage utilisée alors, visible dès qu'on regarde chaque frame
+native.
+
+### Plafond de la méthode — atteint, documenté, pas contourné
+
+En essayant de pousser la mesure au niveau du membre individuel (angle 3D
+exact de chaque Motor6D, pas seulement le timing), deux limites réelles
+sont apparues, vérifiées concrètement sur les frames plutôt que supposées :
+
+- **Occlusion.** Sur les frames avec flash d'impact (ex. t=0,086s),
+  plusieurs boîtes du rig se chevauchent au point qu'aucune arête n'est
+  attribuable avec certitude à un membre précis. Zoomer davantage
+  n'y change rien — l'information n'est simplement pas dans l'image à cet
+  instant.
+- **Ambiguïté de profondeur monoculaire.** Une caméra fixe unique ne peut
+  pas distinguer un membre qui pointe vers elle d'un membre qui pointe à
+  l'opposé — la silhouette 2D est identique dans les deux cas. C'est une
+  limite de l'information disponible, pas de la méthode de mesure.
+
+Décision assumée en conséquence (validée avec l'utilisateur avant de
+continuer) : le calage temporel des 16 temps forts est mesuré à la frame
+près (objectif, sans ambiguïté) ; les angles de la jambe active reprennent
+l'ordre de grandeur du cycle 7 (déjà informé par la même lecture visuelle)
+plutôt qu'une nouvelle inversion caméra-par-membre qui n'aurait pas
+convergé mieux sur les frames à occlusion ; torse/bras/tête suivent la
+même mécanique que le cycle 6/7 (contrepoids, fermeture pendant le spin),
+retimés sur la structure à deux montées.
+
+### Bug réel trouvé en vérifiant, pas supposé
+
+Le premier export du cycle 8 échouait `no_punch_thrust` : le retour rapide
+des bras vers la garde après le spin (1,42→1,55s) faisait passer l'allonge
+et la vitesse d'extension au-dessus du seuil pendant **un seul échantillon
+sur 120/s** — un vrai artefact de vitesse (le segment linéaire allait trop
+vite sur trop peu de temps), pas une fausse alerte du détecteur. Corrigé
+en insérant un point intermédiaire (t=1,49s) qui étale le retour sur deux
+segments au lieu d'un seul trop rapide. Revérifié : `no_punch_thrust` passe
+avec marge (allonge max 1,24 stud contre un seuil de 1,2).
+
+### Résultat
+
+| | cycle 7 (impression visuelle) | cycle 8 (mesure pixel) |
+|---|---|---|
+| structure temporelle | montée unique tenue | **deux montées + creux, mesuré** |
+| calage temporel | ±0,1–0,25s | **±0,017s (frame vidéo)** |
+| structure R6 | 100 | 100 |
+| total (brut) | 70.5 | 91.1 |
+| total (+ filtre cartoon) | 95.5 | 90.1 |
+
+Livrable : `output/cartoon_c8/best/combo_cartoon.rbxmx`. Vérifié par le
+même round-trip moteur que tous les cycles précédents (`resolve_rbxmx.py`) :
+pose racine correctement ignorée (0 stud/deg), amplitude Torso Y résolue
+2,07 studs.
+
+**Ce qui reste une approximation, explicitement** : les angles exacts de
+la jambe active pendant les phases occultées par le VFX, et tout ce
+qu'une caméra fixe unique ne peut pas trancher par nature. Le seul chemin
+vers un exact réel serait le fichier source (projet Moon Animator/`.rbxl`),
+pas davantage de mesure sur la vidéo — ce plafond a été vérifié
+concrètement, pas supposé.
+
 ## Piste 1 — exagération algorithmique post-hoc (Cartoon Animation Filter)
 
 Ajoutée après coup, sur la base d'un brief de recherche qui la classait

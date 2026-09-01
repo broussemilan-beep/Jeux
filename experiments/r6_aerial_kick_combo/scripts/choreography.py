@@ -541,4 +541,174 @@ def cycle_7():
     return keyframes, phases, preview_times, engine_opts
 
 
-CYCLES = {1: cycle_1, 2: cycle_2, 3: cycle_3, 4: cycle_4, 5: cycle_5, 6: cycle_6, 7: cycle_7}
+def cycle_8():
+    """Cycle 8 -- deuxieme passe sur la reference video du cycle 7, apres
+    une mesure BEAUCOUP plus rigoureuse : extraction native (108 frames,
+    ~58.4 fps reelles, imageio-ffmpeg) au lieu des 22 captures ponctuelles
+    du cycle 7, mesure de coordonnees pixel (pas d'estimation a l'oeil) sur
+    des crops agrandis avec grille de reference, calage temporel a la
+    frame video pres.
+
+    CORRECTION STRUCTURELLE trouvee par cette mesure plus fine (invisible
+    a la densite du cycle 7) : la jambe ne fait PAS une seule montee
+    continue tenue en l'air. Elle fait DEUX montees distinctes :
+      - kick 1, t=0.086-0.308 : montee rapide, PAS tenue
+      - creux, t=0.308-0.462 : redescend, corps se redresse brievement
+      - kick 2, t=0.462-0.908 : remonte plus haut, CETTE fois tenue
+        (hang-time 0.616-0.908, ~0.3s -- confirme, present aussi au
+        cycle 7 mais attribue par erreur a une seule montee ininterrompue)
+
+    Plafond de la methode, atteint et documente plutot que contourne en
+    silence (voir echange avec l'utilisateur) : sur les frames avec flash
+    d'impact (ex. t=0.086), les aretes de plusieurs membres se chevauchent
+    au point qu'on ne peut PAS determiner avec certitude quelle arete
+    appartient a quel segment -- ce n'est pas resolu par plus de zoom. Et
+    une camera fixe unique ne distingue pas un membre qui pointe VERS la
+    camera d'un membre qui pointe a l'oppose (silhouette 2D identique) --
+    ambiguite de profondeur monoculaire, pas un manque de rigueur.
+    Consequence assumee : le calage temporel des 16 temps forts ci-dessous
+    est mesure a la frame pres (objectif, non ambigu) ; les angles de la
+    jambe active reprennent l'ordre de grandeur du cycle 7 (deja informe
+    par la meme lecture visuelle) plutot qu'une nouvelle inversion
+    camera-par-membre qui n'aurait pas convergé mieux que ca sur les
+    frames a VFX ; torse/bras/tete suivent la meme mecanique que cycle 7
+    (contrepoids, fermeture pendant le spin), retimes sur la nouvelle
+    structure a deux montees.
+
+    16 temps forts mesures (t en secondes, video source, 108 frames a
+    ~58.4 fps) :
+      0.000-0.086  fente immobile (aucun mouvement mesure sur 6 frames)
+      0.086        flash d'impact, lancement
+      0.188        kick 1 -- pic (PAS tenu, redescend aussitot)
+      0.308-0.445  creux -- la jambe redescend, corps se redresse
+      0.462        relance vers kick 2
+      0.616-0.908  kick 2 -- tenu (hang-time confirme sur 17 frames a
+                   58.4 fps, ~0.3s reel)
+      0.925-1.010  la jambe redescend
+      1.010-1.216  ramasse bas, compact
+      1.318        lancement du spin
+      1.370        pic du spin (rafale de pixels sur les captures)
+      1.421        fin de la rotation rapide
+      1.438-1.524  jambe qui se replie, anneau au sol
+      1.541-1.729  posture d'atterrissage tenue (17 frames stables)
+      1.747+       transition vers la position debout (segment grand-angle)
+    """
+    keyframes = [
+        _kf(0.00,
+            **{"Right Arm": (50, 0, -25), "Left Arm": (50, 0, 25)}),
+
+        # Fente, immobile 0.000-0.086 (aucun changement mesure sur les
+        # 6 premieres frames video).
+        _kf(0.086, root_pos=(0, -0.55, 0.05), Torso=(-38, 0, 0), Head=(18, 0, 0),
+            **{"Right Leg": (-52, 0, 8), "Left Leg": (22, 0, -6),
+               "Right Arm": (-68, 0, -18), "Left Arm": (-62, 0, 22)}),
+
+        # KICK 1 -- montee rapide, non tenue.
+        _kf(0.188, root_pos=(0.02, 0.55, -0.02), Torso=(6, 6, -8),
+            **{"Right Leg": (108, 15, 12), "Left Leg": (0, 0, -8),
+               "Right Arm": (-22, 0, -35), "Left Arm": (22, 0, 28)}),
+
+        # CREUX -- redescend, corps se redresse (trouve par la mesure
+        # fine, absent du cycle 7).
+        _kf(0.40, root_pos=(0, 0.55, 0), Torso=(2, 4, -2),
+            **{"Right Leg": (18, 5, 2), "Left Leg": (-6, 0, -4),
+               "Right Arm": (5, 0, -10), "Left Arm": (10, 0, 10)}),
+
+        # Relance vers kick 2.
+        _kf(0.50, root_pos=(0.03, 0.85, -0.05), Torso=(15, 10, -14), Head=(-10, 12, 0),
+            **{"Right Leg": (70, 20, 18), "Left Leg": (-6, 0, -8),
+               "Right Arm": (-16, 0, -48), "Left Arm": (28, 0, 38)}),
+
+        # KICK 2 -- montee au pic, tenue.
+        _kf(0.62, root_pos=(0.05, 1.45, -0.08), Torso=(24, 16, -12), Head=(-18, 16, 0),
+            **{"Right Leg": (158, 26, 16), "Left Leg": (-6, 0, -8),
+               "Right Arm": (-14, 0, -58), "Left Arm": (36, 0, 46)}),
+
+        # Toujours tenu -- derive minime pour eviter un segment degenere.
+        _kf(0.86, root_pos=(0.03, 1.42, -0.06), Torso=(23, 17, -11), Head=(-16, 17, 0),
+            **{"Right Leg": (161, 27, 16), "Left Leg": (-7, 0, -8),
+               "Right Arm": (-16, 0, -57), "Left Arm": (35, 0, 45)}),
+
+        # La jambe redescend.
+        _kf(1.01, root_pos=(0, 0.65, 0), Torso=(2, 8, -3),
+            **{"Right Leg": (55, 12, 8), "Left Leg": (-14, 0, -5),
+               "Right Arm": (10, 0, -20), "Left Arm": (14, 0, 18)}),
+
+        # Ramasse bas, compact -- chargement du spin.
+        _kf(1.22, root_pos=(0, -0.28, 0), Torso=(-16, 3, 0), Head=(6, -10, 0),
+            **{"Right Leg": (-14, 0, 4), "Left Leg": (-20, 0, -6),
+               "Right Arm": (48, 0, -38), "Left Arm": (48, 0, 38)}),
+
+        # SPIN -- lancement.
+        _kf(1.318, root_pos=(0, 0.28, 0.05), HumanoidRootPart=(0, -130, 10),
+            Torso=(8, -110, 14), Head=(0, -95, 0),
+            **{"Left Leg": (28, 22, -68), "Right Leg": (-10, 0, 8),
+               "Right Arm": (-28, 0, 58), "Left Arm": (-18, 0, -48)}),
+
+        # Pic du spin -- extension maximale de la jambe gauche.
+        _kf(1.37, root_pos=(0, 0.32, 0.05), HumanoidRootPart=(0, -250, 5),
+            Torso=(3, -240, 8), Head=(0, -35, 0),
+            **{"Left Leg": (65, 15, -135), "Right Leg": (-5, 0, 5),
+               "Right Arm": (-12, 0, 74), "Left Arm": (-8, 0, -60)}),
+
+        # Fin de la rotation rapide -- la jambe se rassemble, les bras
+        # commencent a se refermer (pas encore la garde -- voir point
+        # intermediaire suivant).
+        _kf(1.421, root_pos=(0, 0.10, 0), HumanoidRootPart=(0, -258, 0),
+            Torso=(-4, -252, 0),
+            **{"Left Leg": (18, 4, -35), "Right Leg": (-6, 0, 3),
+               "Right Arm": (10, 0, 30), "Left Arm": (5, 0, -22)}),
+
+        # Point intermediaire -- ralentit le retour des bras vers la garde
+        # (trouve en corrigeant un vrai bug : le retour direct 1.421->1.55
+        # faisait passer brièvement l'allonge+detente au-dessus du
+        # seuil "aucun coup de poing" pendant 1 echantillon sur 120/s,
+        # cf. no_punch_thrust -- un vrai artefact de vitesse, pas une
+        # fausse alerte).
+        _kf(1.49, root_pos=(0, -0.02, 0), HumanoidRootPart=(0, -35, 0),
+            Torso=(-5, -35, 0),
+            **{"Right Leg": (-3, 0, 3), "Left Leg": (-3, 0, -3),
+               "Right Arm": (32, 0, 0), "Left Arm": (28, 0, 0)}),
+
+        # Pivot correctif d'atterrissage -- retour face -Z. Amplitude bras
+        # volontairement retenue ici (45 et non 55) : le segment precedent
+        # (1.49) est court (0.06s) et une cible trop haute y faisait
+        # repasser brièvement au-dessus du seuil no_punch_thrust --
+        # la garde complete est atteinte juste apres, au point suivant.
+        _kf(1.55, root_pos=(0, -0.12, 0), HumanoidRootPart=(0, -30, 0),
+            Torso=(-6, -30, 0), Head=(4, 0, 0),
+            **{"Right Leg": (-6, 0, 4), "Left Leg": (-6, 0, -4),
+               "Right Arm": (45, 0, -15), "Left Arm": (45, 0, 15)}),
+
+        # Posture d'atterrissage TENUE (17 frames stables mesurees,
+        # 1.541-1.729) -- derive minime pour eviter un segment degenere.
+        _kf(1.73, root_pos=(0, -0.10, 0), HumanoidRootPart=(0, -28, 0),
+            Torso=(-5, -28, 0), Head=(3, 0, 0),
+            **{"Right Leg": (-5, 0, 3), "Left Leg": (-5, 0, -3),
+               "Right Arm": (53, 0, -29), "Left Arm": (53, 0, 29)}),
+
+        # Transition vers la position debout.
+        _kf(1.85, root_pos=(0, -0.02, 0), HumanoidRootPart=(0, -6, 0),
+            Torso=(-1, -6, 0),
+            **{"Right Leg": (-2, 0, 1), "Left Leg": (-2, 0, -1),
+               "Right Arm": (52, 0, -26), "Left Arm": (52, 0, 26)}),
+
+        # Repos, garde tenue, boucle propre.
+        _kf(1.95,
+            **{"Right Arm": (50, 0, -25), "Left Arm": (50, 0, 25)}),
+    ]
+
+    phases = [
+        {"name": "anticipation", "t0": 0.00, "t1": 0.086, "expected_reversals": {}},
+        {"name": "kick1", "t0": 0.086, "t1": 0.40, "expected_reversals": {}},
+        {"name": "kick2_tenu", "t0": 0.40, "t1": 1.01, "expected_reversals": {}},
+        {"name": "ramasse", "t0": 1.01, "t1": 1.318, "expected_reversals": {}},
+        {"name": "spin", "t0": 1.318, "t1": 1.55, "expected_reversals": {}},
+        {"name": "atterrissage", "t0": 1.55, "t1": 1.95, "expected_reversals": {}},
+    ]
+    preview_times = [0.0, 0.086, 0.188, 0.40, 0.62, 1.22, 1.37, 1.73, 1.95]
+    engine_opts = {"handle_type": "VECTOR"}
+    return keyframes, phases, preview_times, engine_opts
+
+
+CYCLES = {1: cycle_1, 2: cycle_2, 3: cycle_3, 4: cycle_4, 5: cycle_5, 6: cycle_6, 7: cycle_7, 8: cycle_8}

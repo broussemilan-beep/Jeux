@@ -66,9 +66,9 @@ if __name__ == "__main__":
             # idem + exageration cartoon, au gain le plus fort qui respecte
             # encore la contrainte "aucun coup de poing"
             "cartoon": build_variant(6, k_gain=0.0015, sigma_s=0.035, alpha=1.0),
-            # recreation de la reference video (lunge -> montee tenue ->
-            # ramasse -> spin -> pivot d'atterrissage), + filtre cartoon
-            "reference": build_variant(7, k_gain=0.0015, sigma_s=0.06, alpha=1.0),
+            # recreation de la reference video (cycle 8 : mesure pixel
+            # rigoureuse, structure double-montee corrigee), + filtre cartoon
+            "reference": build_variant(8, k_gain=0.0015, sigma_s=0.06, alpha=0.0),
         },
     }
     path = os.environ.get("PREVIEW_OUT", "/tmp/combo_ab_data.json")
