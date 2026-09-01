@@ -250,6 +250,87 @@ cd scripts
 python3 run_cycle.py --cycle 5     # régénère output/cycle5/{combo.rbxmx,metrics.json,poses.png,curves.png}
 ```
 
+## Piste 1 — exagération algorithmique post-hoc (Cartoon Animation Filter)
+
+Ajoutée après coup, sur la base d'un brief de recherche qui la classait
+priorité 1. Les deux filtres sont implémentés dans
+`scripts/cartoon_filter.py`, le balayage dans `scripts/run_filter.py`.
+
+- **Cartoon Animation Filter** (Wang, Drucker, Agrawala, Cohen, SIGGRAPH
+  2006) : `x*(t) = x(t) − k·G(x″(t))`. Le signe fait tout : quand le geste
+  accélère on soustrait du positif → la courbe part légèrement à l'envers
+  (anticipation) ; quand il décélère on soustrait du négatif → elle dépasse
+  la pose puis y revient (follow-through). ~40 lignes, aucune dépendance,
+  aucune hypothèse sur le squelette (appliqué 3× par Motor6D, un par axe).
+- **Slow In / Slow Out** (Kwon & van de Panne, SIGGRAPH 2006) : time-warp
+  par segment, `u' = (1−α)·u + α·smoothstep(u)`. Ne touche à aucune valeur
+  de pose, seulement à la distribution du temps entre elles.
+
+### Deux bugs de mesure trouvés (et pourquoi ils comptent ici)
+
+Ma suite de mesures avait été construite pour détecter du tortillement NON
+VOULU. Le filtre ajoute délibérément un aller-retour : mesurée avec les
+seuls outils des cycles 1-5, la variante filtrée aurait été pénalisée
+exactement pour ce qu'on lui demande de faire. D'où `filter_response` +
+`exaggeration_score` — et deux erreurs à corriger en route :
+
+1. **Le follow-through mesuré sur la position absolue.** Je mesurais de
+   combien la courbe dépasse la *valeur* de la keyframe dans le sens
+   d'arrivée — ce qui compte comme « dépassement » un mouvement qui
+   continue simplement sa course après une pose de milieu de geste.
+   Symptôme : l'animation NON filtrée affichait un follow-through massif,
+   et le score d'exagération sortait à 0.0 pour les 19 variantes. Corrigé
+   en mesurant la contribution du filtre (`filtré − original`), pas la
+   position absolue.
+2. **Le ringing mesuré sur l'écart au lieu de la vitesse.** Je comptais
+   les alternances de signe de `filtré − original`. Or un simple retiming
+   est monotone : il ne *peut pas* faire osciller un signal, mais son
+   écart alterne forcément de signe (le warp avance le signal sur une
+   moitié de segment, le retarde sur l'autre). Le contrôle l'a rendu
+   visible : SISO seul, filtre cartoon à l'arrêt (k=0), affichait
+   ringing=14 — structurellement impossible. Corrigé en comptant les
+   inversions de sens de la **vitesse du signal filtré**, comparées à
+   celles de l'original, avec un budget de 2 par segment (le retour du
+   dépassement + l'anticipation du coup suivant). Contrôle re-passé :
+   SISO seul → ringing=0 à tout α, comme il se doit.
+
+Sans le second correctif, la conclusion aurait été « SISO est
+inutilisable, il fait osciller les courbes » — l'inverse exact du
+résultat réel.
+
+### Balayage (19 variantes × 2 bases)
+
+| Base | k (s²) | σ (s) | α | Exagération | Ringing | Continuité | Structure | **Total** |
+|---|---|---|---|---|---|---|---|---|
+| cycle 5 | — | — | — | — | 0 | 42.5 | 100 | 71.6 |
+| cycle 2 | — | — | — | — | 0 | 20.9 | 100 | 68.4 |
+| cycle 5 | 0.0015 | 0.06 | 1.0 | 99.8 | 0 | 63.4 | 100 | 94.5 |
+| **cycle 2** | **0.0015** | **0.06** | **1.0** | **99.9** | **0** | **77.9** | **100** | **96.7** |
+
+Réglage retenu : **k=0.0015 s², σ=0.06 s, α=1.0 sur la choré. du cycle 2**
+→ dépassement moyen 10,2 % de l'amplitude de segment (anticipation 1,4 à
+5,0° et follow-through 1,9 à 5,2° selon l'articulation), zéro ringing,
+contrainte R6 toujours à 100 %.
+
+### Le résultat retourne une conclusion des cycles 1-5
+
+Le filtre appliqué à la choré. **brute** (cycle 2) bat celui appliqué au
+cycle 5 (96.7 vs 94.5) — alors que le cycle 5 était mon meilleur résultat
+manuel. Raison : les 8 keyframes flanquantes que j'avais placées à la main
+au cycle 5 pour adoucir les sommets sont une approximation discrète de ce
+que SISO fait continûment. Les deux mécanismes façonnent la même
+accélération et se gênent (le cycle 5 subdivise les segments, donc l'ease
+par segment de SISO agit sur des sous-segments déjà adoucis : continuité
+63.4 contre 77.9 sur la base brute).
+
+Autrement dit : le travail manuel du cycle 5 devient inutile une fois le
+filtre en place, et le pipeline se simplifie — choré. brute + 2 filtres,
+au lieu de choré. + keyframes de calage à la main.
+
+Livrable de cette piste :
+**`output/cartoon_c2/best/combo_cartoon.rbxmx`**, balayage complet et
+mesures par articulation dans `output/cartoon_c2/sweep.json`.
+
 ## Prochaine étape (hors scope de ce tour)
 
 Ce tour livre l'animation exportée, pas son intégration. Import réel dans

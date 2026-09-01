@@ -116,6 +116,160 @@ def twist_reversals(samples, sample_hz, phases, joints=None, noise_floor_deg=3.0
     return report
 
 
+def filter_response(orig_samples, filt_samples, sample_hz, keyframe_times,
+                    joints=None, window_s=0.10):
+    """Mesure la SIGNATURE du post-traitement d'exageration (piste 1),
+    pas seulement "est-ce que ca a bouge".
+
+    Necessaire parce que twist_reversals et curve_smoothness ont ete
+    concus pour detecter du tortillement NON VOULU -- or le Cartoon
+    Filter ajoute deliberement un aller-retour (anticipation avant la
+    pose, depassement apres). Mesures avec ces seuls outils, les deux
+    variantes seraient penalisees exactement pour ce qu'on leur demande
+    de faire. On mesure donc separement :
+
+    - anticipation_deg : de combien la courbe part A L'ENVERS du geste
+      juste avant chaque pose cle (effet voulu).
+    - followthrough_deg : de combien elle DEPASSE la pose cle juste
+      apres, dans le sens d'arrivee (effet voulu).
+    - ringing_lobes : nombre d'alternances de signe de (filtre - original)
+      A L'INTERIEUR d'un meme intervalle de keyframes, au-dela de la
+      premiere. La reponse propre du filtre a UNE keyframe est UN lobe ;
+      au-dela, la courbe oscille -- ca, c'est un vrai defaut (defaut
+      classique d'un k trop grand ou d'un sigma trop petit).
+
+    Les amplitudes sont aussi rendues en % de l'amplitude du segment,
+    seule forme comparable entre une hanche qui balaye 90 deg et une tete
+    qui bouge de 5 deg."""
+    joints = joints or [p for p in PART_ORDER if p != "HumanoidRootPart"]
+    dt = 1.0 / sample_hz
+    win = max(2, int(round(window_s * sample_hz)))
+    kts = sorted(keyframe_times)
+    report = {}
+
+    for part in joints:
+        orig = np.array([s[1] for s in orig_samples[part]], dtype=float)
+        filt = np.array([s[1] for s in filt_samples[part]], dtype=float)
+        excursion = orig.max(axis=0) - orig.min(axis=0)
+        axis_i = int(np.argmax(excursion))
+        if excursion[axis_i] < 1.0:
+            report[part] = {"axis": "none (immobile)", "anticipation_deg": 0.0,
+                            "followthrough_deg": 0.0, "followthrough_pct": 0.0,
+                            "ringing_lobes": 0, "max_delta_deg": 0.0}
+            continue
+
+        o = orig[:, axis_i]
+        f = filt[:, axis_i]
+        delta = f - o
+        n = len(o)
+
+        antic, follow, follow_pct = [], [], []
+        for k in range(1, len(kts) - 1):
+            i_k = int(round(kts[k] * sample_hz))
+            if i_k <= win or i_k >= n - win:
+                continue
+            seg_amp = max(abs(o[i_k] - o[max(0, i_k - win * 2)]),
+                          abs(o[min(n - 1, i_k + win * 2)] - o[i_k]), 1e-6)
+            sign_in = np.sign(o[i_k] - o[i_k - win])
+            sign_out = np.sign(o[i_k + win] - o[i_k])
+            # On mesure la CONTRIBUTION DU FILTRE (delta = filtre - original),
+            # jamais la position absolue par rapport a la pose cle : sans ca,
+            # un mouvement qui continue simplement sa course apres la pose
+            # (cas normal d'une keyframe en milieu de geste) serait compte
+            # comme un depassement, et l'animation NON filtree afficherait un
+            # "follow-through" massif -- exactement le faux positif observe
+            # au premier passage de ce balayage.
+            if sign_in != 0:
+                past = delta[i_k:i_k + win] * sign_in
+                follow.append(max(0.0, float(np.max(past))))
+                follow_pct.append(follow[-1] / seg_amp * 100.0)
+            if sign_out != 0:
+                back = -delta[i_k - win:i_k] * sign_out
+                antic.append(max(0.0, float(np.max(back))))
+
+        # Ringing = le signal FILTRE oscille, pas "le signal filtre differe
+        # de l'original". Mesure sur les inversions de sens de la VITESSE du
+        # signal filtre, comparees a celles de l'original, segment par
+        # segment.
+        #
+        # Pourquoi pas sur delta = filtre - original (premiere version, fausse) :
+        # un simple retiming (SISO) est monotone, il ne PEUT PAS creer
+        # d'oscillation -- pourtant delta y alterne forcement de signe (le
+        # warp avance le signal sur une moitie de segment et le retarde sur
+        # l'autre). Mesure sur delta, SISO seul -- filtre cartoon a l'arret,
+        # k=0 -- affichait ringing=14, ce qui est structurellement impossible.
+        # Une inversion de sens reelle se lit sur la vitesse, pas sur l'ecart.
+        #
+        # Tolerance de 2 inversions par segment au-dela de l'original : c'est
+        # exactement le budget de l'effet VOULU (le retour du depassement en
+        # debut de segment + l'anticipation du coup suivant en fin de
+        # segment). Au-dela, la courbe oscille vraiment.
+        vel_o = np.gradient(o, dt)
+        vel_f = np.gradient(f, dt)
+        ringing = 0
+        for k in range(len(kts) - 1):
+            i0 = math.ceil(kts[k] * sample_hz)
+            i1 = math.floor(kts[k + 1] * sample_hz)
+            vo, vf = vel_o[i0:i1 + 1], vel_f[i0:i1 + 1]
+            if len(vf) < 4:
+                continue
+            floor = 0.02 * max(np.max(np.abs(vel_f)), 1e-6)
+
+            def _reversals(v):
+                s = np.sign(v[np.abs(v) > floor])
+                return int(np.sum(s[1:] != s[:-1])) if len(s) > 1 else 0
+
+            ringing += max(0, _reversals(vf) - _reversals(vo) - 2)
+
+        report[part] = {
+            "axis": ("x", "y", "z")[axis_i],
+            "anticipation_deg": round(float(np.mean(antic)) if antic else 0.0, 2),
+            "followthrough_deg": round(float(np.mean(follow)) if follow else 0.0, 2),
+            "followthrough_pct": round(float(np.mean(follow_pct)) if follow_pct else 0.0, 1),
+            "ringing_lobes": ringing,
+            "max_delta_deg": round(float(np.max(np.abs(delta))), 2),
+        }
+
+    return report
+
+
+def exaggeration_score(response, structural, continuity, target_pct=10.0, spread_pct=8.0):
+    """Critere de selection pour les variantes filtrees. Volontairement
+    DIFFERENT de composite_score : ici l'aller-retour est l'objectif, pas
+    le defaut, donc "no_twist" n'a plus de sens comme penalite et est
+    remplace par (a) proprete du lobe et (b) amplitude d'exageration dans
+    une bande utile.
+
+    Bande cible : un depassement moyen d'environ 10 % de l'amplitude du
+    segment (bande large 8 %). Choix de metier assume, pas une constante
+    issue du papier : en dessous de ~5 % l'effet ne se lit pas a l'ecran,
+    au-dela de ~20 % la pose cle cesse d'etre lisible (le personnage
+    "depasse" plus qu'il ne frappe). Le score decroit donc des deux
+    cotes, il ne recompense pas "toujours plus"."""
+    ft_pcts = [v["followthrough_pct"] for v in response.values() if v["followthrough_pct"] > 0]
+    mean_ft = float(np.mean(ft_pcts)) if ft_pcts else 0.0
+    exagg = 100.0 * math.exp(-((mean_ft - target_pct) / spread_pct) ** 2)
+
+    total_ringing = sum(v["ringing_lobes"] for v in response.values())
+    clean = max(0.0, 100.0 - 20.0 * total_ringing)
+
+    n_ok = sum(1 for ok, _ in structural.values() if ok)
+    struct = 100.0 * n_ok / len(structural) if structural else 0.0
+
+    worst_mean = max((v["mean"] for v in continuity.values()), default=0.0)
+    cont = 100.0 * math.exp(-3.0 * worst_mean)
+
+    return {
+        "exaggeration_in_band": round(exagg, 1),
+        "mean_followthrough_pct": round(mean_ft, 1),
+        "clean_lobes": round(clean, 1),
+        "ringing_total": total_ringing,
+        "velocity_continuity": round(cont, 1),
+        "structural": round(struct, 1),
+        "total": round(0.25 * exagg + 0.25 * clean + 0.15 * cont + 0.35 * struct, 1),
+    }
+
+
 def r6_structural_compliance(objs, keyframes, samples):
     """Verifications structurelles automatiques de la contrainte R6 non
     negociable. Retourne dict de checks -> (ok: bool, detail: str)."""
