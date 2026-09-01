@@ -1,0 +1,739 @@
+{
+  "cycle": 2,
+  "duration_s": 2.36,
+  "n_keyframes_exported": 72,
+  "smoothness_per_joint": {
+    "Torso": 0.0013068399127852308,
+    "Head": 0.0002837239872801087,
+    "Right Arm": 0.0007602588708735003,
+    "Left Arm": 0.0011064811257274767,
+    "Right Leg": 0.0007544007809623963,
+    "Left Leg": 0.0009088556493082022,
+    "_aggregate_max": 0.0013068399127852308
+  },
+  "velocity_continuity_at_keyframes": {
+    "Torso": {
+      "per_keyframe": [
+        [
+          0.18,
+          0.11162875474030097
+        ],
+        [
+          0.36,
+          0.09157745347756005
+        ],
+        [
+          0.62,
+          0.22861569840140178
+        ],
+        [
+          0.88,
+          0.1764113412055493
+        ],
+        [
+          1.16,
+          0.30692842853181374
+        ],
+        [
+          1.42,
+          0.10144759660822954
+        ],
+        [
+          1.66,
+          0.23882776864116254
+        ],
+        [
+          1.86,
+          0.7371057485883032
+        ],
+        [
+          2.05,
+          0.6335657839938588
+        ],
+        [
+          2.2,
+          0.17832971149684054
+        ]
+      ],
+      "mean": 0.2804438285685021
+    },
+    "Head": {
+      "per_keyframe": [
+        [
+          0.18,
+          0.0
+        ],
+        [
+          0.36,
+          0.47434131603029706
+        ],
+        [
+          0.62,
+          0.8221892265408326
+        ],
+        [
+          0.88,
+          0.28849072620817207
+        ],
+        [
+          1.16,
+          1.4464278745666879
+        ],
+        [
+          1.42,
+          0.6500009522986293
+        ],
+        [
+          1.66,
+          0.0
+        ],
+        [
+          1.86,
+          0.0
+        ],
+        [
+          2.05,
+          0.0
+        ],
+        [
+          2.2,
+          0.0
+        ]
+      ],
+      "mean": 0.3681450095644619
+    },
+    "Right Arm": {
+      "per_keyframe": [
+        [
+          0.18,
+          0.39690248703830594
+        ],
+        [
+          0.36,
+          0.708456517601125
+        ],
+        [
+          0.62,
+          1.1907028562454833
+        ],
+        [
+          0.88,
+          0.8118222811340051
+        ],
+        [
+          1.16,
+          0.845980706868971
+        ],
+        [
+          1.42,
+          0.7014789157967695
+        ],
+        [
+          1.66,
+          0.7885909401907724
+        ],
+        [
+          1.86,
+          0.43014036593426214
+        ],
+        [
+          2.05,
+          0.0
+        ],
+        [
+          2.2,
+          0.0
+        ]
+      ],
+      "mean": 0.5874075070809694
+    },
+    "Left Arm": {
+      "per_keyframe": [
+        [
+          0.18,
+          0.3891445179413374
+        ],
+        [
+          0.36,
+          0.3184862795552994
+        ],
+        [
+          0.62,
+          0.49253812527877544
+        ],
+        [
+          0.88,
+          0.43376748984382485
+        ],
+        [
+          1.16,
+          1.109145612095905
+        ],
+        [
+          1.42,
+          0.8970311879262757
+        ],
+        [
+          1.66,
+          0.7731769169887486
+        ],
+        [
+          1.86,
+          0.4217327197862685
+        ],
+        [
+          2.05,
+          0.0
+        ],
+        [
+          2.2,
+          0.0
+        ]
+      ],
+      "mean": 0.48350228494164343
+    },
+    "Right Leg": {
+      "per_keyframe": [
+        [
+          0.18,
+          0.07499996158019132
+        ],
+        [
+          0.36,
+          0.8396529101595454
+        ],
+        [
+          0.62,
+          1.133022616310535
+        ],
+        [
+          0.88,
+          0.3620984582749735
+        ],
+        [
+          1.16,
+          0.41056037463023254
+        ],
+        [
+          1.42,
+          0.19049713590948456
+        ],
+        [
+          1.66,
+          1.031249545365598
+        ],
+        [
+          1.86,
+          1.1052624380288485
+        ],
+        [
+          2.05,
+          0.40526283823518866
+        ],
+        [
+          2.2,
+          0.09687497118514349
+        ]
+      ],
+      "mean": 0.5649481249679741
+    },
+    "Left Leg": {
+      "per_keyframe": [
+        [
+          0.18,
+          0.174999969904484
+        ],
+        [
+          0.36,
+          0.23103693237227133
+        ],
+        [
+          0.62,
+          0.09013826543922805
+        ],
+        [
+          0.88,
+          0.5758182039666264
+        ],
+        [
+          1.16,
+          1.2166920378207702
+        ],
+        [
+          1.42,
+          0.5428882467285989
+        ],
+        [
+          1.66,
+          1.0312497238576321
+        ],
+        [
+          1.86,
+          1.1447357909528064
+        ],
+        [
+          2.05,
+          0.34473671751050095
+        ],
+        [
+          2.2,
+          0.09687496870386499
+        ]
+      ],
+      "mean": 0.5449170857256783
+    }
+  },
+  "twist_reversals": {
+    "seg_0_0.00-0.18": {
+      "Torso": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "x"
+      },
+      "Head": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "none (excursion<noise_floor)"
+      },
+      "Right Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "none (excursion<noise_floor)"
+      },
+      "Left Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "none (excursion<noise_floor)"
+      },
+      "Right Leg": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "x"
+      },
+      "Left Leg": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "x"
+      }
+    },
+    "seg_1_0.18-0.36": {
+      "Torso": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "x"
+      },
+      "Head": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "none (excursion<noise_floor)"
+      },
+      "Right Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "x"
+      },
+      "Left Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "x"
+      },
+      "Right Leg": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "x"
+      },
+      "Left Leg": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "x"
+      }
+    },
+    "seg_2_0.36-0.62": {
+      "Torso": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "y"
+      },
+      "Head": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "y"
+      },
+      "Right Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "z"
+      },
+      "Left Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "z"
+      },
+      "Right Leg": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "z"
+      },
+      "Left Leg": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "x"
+      }
+    },
+    "seg_3_0.62-0.88": {
+      "Torso": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "y"
+      },
+      "Head": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "y"
+      },
+      "Right Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "z"
+      },
+      "Left Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "y"
+      },
+      "Right Leg": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "z"
+      },
+      "Left Leg": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "y"
+      }
+    },
+    "seg_4_0.88-1.16": {
+      "Torso": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "y"
+      },
+      "Head": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "y"
+      },
+      "Right Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "y"
+      },
+      "Left Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "y"
+      },
+      "Right Leg": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "z"
+      },
+      "Left Leg": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "z"
+      }
+    },
+    "seg_5_1.16-1.42": {
+      "Torso": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "y"
+      },
+      "Head": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "y"
+      },
+      "Right Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "z"
+      },
+      "Left Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "z"
+      },
+      "Right Leg": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "z"
+      },
+      "Left Leg": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "z"
+      }
+    },
+    "seg_6_1.42-1.66": {
+      "Torso": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "x"
+      },
+      "Head": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "none (excursion<noise_floor)"
+      },
+      "Right Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "z"
+      },
+      "Left Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "z"
+      },
+      "Right Leg": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "x"
+      },
+      "Left Leg": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "x"
+      }
+    },
+    "seg_7_1.66-1.86": {
+      "Torso": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "x"
+      },
+      "Head": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "none (excursion<noise_floor)"
+      },
+      "Right Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "z"
+      },
+      "Left Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "z"
+      },
+      "Right Leg": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "x"
+      },
+      "Left Leg": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "x"
+      }
+    },
+    "seg_8_1.86-2.05": {
+      "Torso": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "y"
+      },
+      "Head": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "none (excursion<noise_floor)"
+      },
+      "Right Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "none (excursion<noise_floor)"
+      },
+      "Left Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "none (excursion<noise_floor)"
+      },
+      "Right Leg": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "x"
+      },
+      "Left Leg": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "x"
+      }
+    },
+    "seg_9_2.05-2.20": {
+      "Torso": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "y"
+      },
+      "Head": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "none (excursion<noise_floor)"
+      },
+      "Right Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "none (excursion<noise_floor)"
+      },
+      "Left Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "none (excursion<noise_floor)"
+      },
+      "Right Leg": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "x"
+      },
+      "Left Leg": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "x"
+      }
+    },
+    "seg_10_2.20-2.36": {
+      "Torso": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "x"
+      },
+      "Head": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "none (excursion<noise_floor)"
+      },
+      "Right Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "none (excursion<noise_floor)"
+      },
+      "Left Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "none (excursion<noise_floor)"
+      },
+      "Right Leg": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "x"
+      },
+      "Left Leg": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "x"
+      }
+    }
+  },
+  "structural_checks": {
+    "six_rigid_segments_only": {
+      "ok": true,
+      "detail": "parts=['Head', 'HumanoidRootPart', 'Left Arm', 'Left Leg', 'Right Arm', 'Right Leg', 'Torso']"
+    },
+    "only_root_translates": {
+      "ok": true,
+      "detail": "ok"
+    },
+    "rotation_within_sane_range": {
+      "ok": true,
+      "detail": "max_angles={Torso:180deg, Head:24deg, Right Arm:72deg, Left Arm:58deg, Right Leg:122deg, Left Leg:115deg}"
+    },
+    "no_punch_like_arm_pose": {
+      "ok": true,
+      "detail": "ok"
+    },
+    "neutral_forward_rest_at_start_and_end": {
+      "ok": true,
+      "detail": "start_ok=True end_ok=True"
+    },
+    "kicks_only_no_punches_by_construction": {
+      "ok": true,
+      "detail": "verifie manuellement via choregraphie (voir cycle report) + no_punch_like_arm_pose ci-dessus"
+    }
+  },
+  "composite_score": {
+    "smoothness_intra_segment": 100.0,
+    "velocity_continuity_at_keyframes": 17.2,
+    "no_twist": 100.0,
+    "structural": 100.0,
+    "total": 87.6
+  }
+}
