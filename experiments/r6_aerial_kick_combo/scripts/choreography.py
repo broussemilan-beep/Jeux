@@ -419,4 +419,126 @@ def cycle_6():
     return keyframes, phases, preview_times, engine_opts
 
 
-CYCLES = {1: cycle_1, 2: cycle_2, 3: cycle_3, 4: cycle_4, 5: cycle_5, 6: cycle_6}
+def cycle_7():
+    """Cycle 7 -- recreation d'une reference video fournie par l'utilisateur
+    (capture d'ecran Roblox Studio/Moon Animator, "Linear Easing Test" par
+    EclipseThemDev, rig R6, meme contrainte 6-segments-rigides que ce
+    projet). Video decodee via ffmpeg (imageio-ffmpeg, pas de systeme
+    ffmpeg/libva utilisable ici -- voir note dans le rapport), 22
+    extractions a haute resolution entre t=0.00 et t=1.70s pour lire la
+    pose corps par corps.
+
+    RECREATION, pas reproduction pixel-exacte : je n'ai pas les courbes
+    sources (fichier Moon Animator propietaire, non fourni), seulement
+    l'image. Ce qui est repris est la STRUCTURE et le TIMING du mouvement
+    lus sur les captures ; les valeurs d'angle sont les miennes. Les VFX de
+    la reference (trainee lumineuse le long de la jambe, anneau de
+    choc au sol, eclats a l'impact) ne sont PAS recreees -- ce pipeline
+    exporte un KeyframeSequence (animation de corps uniquement), pas des
+    ParticleEmitter/Beam ; ce serait un travail separe, cote Studio.
+
+    Structure lue sur les captures (t en secondes, video source) :
+      0.00-0.20  fente profonde (lunge) : torse penche en avant, jambe
+                 arriere tendue en arriere, bras qui trainent -- charge
+                 avant l'impulsion, flash d'impact au pied vers 0.20.
+      0.20-0.90  jambe qui monte de la hanche jusqu'a la quasi-verticale,
+                 A L'AVANT du corps (verifie sur t=0.30 : trainee devant
+                 le torse, pas derriere), torse qui bascule en arriere en
+                 contrepoids -- TENUE en l'air de 0.60 a 0.90 (hang-time
+                 marque, pas un pic instantane).
+      0.90-1.30  la jambe redescend, corps se ramasse en crouch bas et
+                 compact -- chargement du spin.
+      1.30-1.50  liberation rapide en spin (eclats/traits de vitesse sur
+                 les captures), tres bref (~0.2s reel).
+      1.50-1.70  retour a une posture debout neutre.
+
+    Reproduit ici avec le moteur du projet (hanche+bassin-root, jamais de
+    pli de jambe inexistant, jamais de coup de poing -- verifie comme
+    toujours par measure.no_punch_thrust) : jambe DROITE pour la montee
+    tenue, jambe GAUCHE pour le spin (asymetrie deliberee, cf. la garde
+    asymetrique jamais faite au cycle 6)."""
+    keyframes = [
+        _kf(0.00,
+            **{"Right Arm": (50, 0, -25), "Left Arm": (50, 0, 25)}),
+
+        # Fente profonde : torse tres penche en avant, jambe arriere
+        # tendue, bras qui trainent en arriere (contrepoids du sprinteur).
+        _kf(0.10, root_pos=(0, -0.55, 0.05), Torso=(-38, 0, 0), Head=(18, 0, 0),
+            **{"Right Leg": (-52, 0, 8), "Left Leg": (22, 0, -6),
+               "Right Arm": (-68, 0, -18), "Left Arm": (-62, 0, 22)}),
+
+        # Impulsion : le corps commence a se redresser et a monter.
+        _kf(0.22, root_pos=(0, 0.35, 0.02), Torso=(-8, 8, -10),
+            **{"Right Leg": (-70, 20, 18), "Left Leg": (8, 0, -10),
+               "Right Arm": (-28, 0, -42), "Left Arm": (18, 0, 32)}),
+
+        # La jambe droite balaie vers le haut, A L'AVANT du corps.
+        _kf(0.42, root_pos=(0.05, 0.95, -0.05), Torso=(18, 12, -18), Head=(-12, 12, 0),
+            **{"Right Leg": (100, 28, 22), "Left Leg": (-8, 0, -10),
+               "Right Arm": (-18, 0, -55), "Left Arm": (30, 0, 42)}),
+
+        # TENUE en l'air -- hang-time marque (0.60 a 0.90 dans la reference).
+        _kf(0.62, root_pos=(0.05, 1.45, -0.08), Torso=(24, 16, -12), Head=(-18, 16, 0),
+            **{"Right Leg": (158, 26, 16), "Left Leg": (-6, 0, -8),
+               "Right Arm": (-14, 0, -58), "Left Arm": (36, 0, 46)}),
+
+        # Deuxieme point de tenue, quasi identique -- une derive minime pour
+        # eviter un segment degenere, pas une vraie deuxieme pose.
+        _kf(0.86, root_pos=(0.03, 1.42, -0.06), Torso=(23, 17, -11), Head=(-16, 17, 0),
+            **{"Right Leg": (161, 27, 16), "Left Leg": (-7, 0, -8),
+               "Right Arm": (-16, 0, -57), "Left Arm": (35, 0, 45)}),
+
+        # La jambe redescend, le corps entame le ramasse.
+        _kf(1.02, root_pos=(0, 0.65, 0), Torso=(2, 8, -3),
+            **{"Right Leg": (55, 12, 8), "Left Leg": (-14, 0, -5),
+               "Right Arm": (10, 0, -20), "Left Arm": (14, 0, 18)}),
+
+        # Crouch bas, compact -- chargement du spin (bras ramenes au corps,
+        # meme mecanique de fermeture que le cycle 6).
+        _kf(1.22, root_pos=(0, -0.28, 0), Torso=(-16, 3, 0), Head=(6, -10, 0),
+            **{"Right Leg": (-14, 0, 4), "Left Leg": (-20, 0, -6),
+               "Right Arm": (48, 0, -38), "Left Arm": (48, 0, 38)}),
+
+        # SPIN -- liberation rapide (jambe gauche), corps qui tourne vite.
+        _kf(1.36, root_pos=(0, 0.28, 0.05), HumanoidRootPart=(0, -130, 10),
+            Torso=(8, -110, 14), Head=(0, -95, 0),
+            **{"Left Leg": (28, 22, -68), "Right Leg": (-10, 0, 8),
+               "Right Arm": (-28, 0, 58), "Left Arm": (-18, 0, -48)}),
+
+        # Pic du spin -- extension maximale de la jambe gauche.
+        _kf(1.48, root_pos=(0, 0.32, 0.05), HumanoidRootPart=(0, -250, 5),
+            Torso=(3, -240, 8), Head=(0, -35, 0),
+            **{"Left Leg": (65, 15, -135), "Right Leg": (-5, 0, 5),
+               "Right Arm": (-12, 0, 74), "Left Arm": (-8, 0, -60)}),
+
+        # La jambe se rassemble, le corps a fini l'essentiel du tour.
+        _kf(1.58, root_pos=(0, 0.10, 0), HumanoidRootPart=(0, -258, 0),
+            Torso=(-4, -252, 0),
+            **{"Left Leg": (18, 4, -35), "Right Leg": (-6, 0, 3)}),
+
+        # Pivot correctif d'atterrissage -- retour face -Z (comme au
+        # cycle 6 apres le kick2 : un vrai athlete re-cale son appui apres
+        # un spin, ce n'est jamais instantane).
+        _kf(1.75, root_pos=(0, -0.12, 0), HumanoidRootPart=(0, -30, 0),
+            Torso=(-6, -30, 0), Head=(4, 0, 0),
+            **{"Right Leg": (-6, 0, 4), "Left Leg": (-6, 0, -4),
+               "Right Arm": (55, 0, -30), "Left Arm": (55, 0, 30)}),
+
+        # Repos, garde tenue, boucle propre.
+        _kf(1.92,
+            **{"Right Arm": (50, 0, -25), "Left Arm": (50, 0, 25)}),
+    ]
+
+    phases = [
+        {"name": "anticipation", "t0": 0.00, "t1": 0.22, "expected_reversals": {}},
+        {"name": "montee_tenue", "t0": 0.22, "t1": 1.02, "expected_reversals": {}},
+        {"name": "ramasse", "t0": 1.02, "t1": 1.36, "expected_reversals": {}},
+        {"name": "spin", "t0": 1.36, "t1": 1.75, "expected_reversals": {}},
+        {"name": "atterrissage", "t0": 1.75, "t1": 1.92, "expected_reversals": {}},
+    ]
+    preview_times = [0.0, 0.10, 0.42, 0.62, 1.22, 1.48, 1.92]
+    engine_opts = {"handle_type": "VECTOR"}
+    return keyframes, phases, preview_times, engine_opts
+
+
+CYCLES = {1: cycle_1, 2: cycle_2, 3: cycle_3, 4: cycle_4, 5: cycle_5, 6: cycle_6, 7: cycle_7}

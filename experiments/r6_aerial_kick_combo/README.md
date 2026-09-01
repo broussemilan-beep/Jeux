@@ -460,6 +460,82 @@ mesure « même forme », pas « en avance ». Remplacée par une **traversée d
 seuil** — à quel instant chacun atteint la mi-course de la rotation du
 corps.
 
+## Cycle 7 — recréation d'une référence vidéo fournie
+
+L'utilisateur a fourni une capture d'écran (22.66s, `.mov`) de Roblox
+Studio/Moon Animator ("Linear Easing Test" par EclipseThemDev) montrant un
+rig R6 — même contrainte 6-segments-rigides que ce projet — exécuter un
+mouvement de combat, et a demandé de le recréer.
+
+### Décodage (blocage outillage, contourné)
+
+`ffmpeg`/`ffprobe` système présents (`/usr/bin`) mais cassés : dépendance
+manquante `libcaca.so.0`, elle-même indisponible sur le miroir apt de ce
+sandbox (404 sur plusieurs paquets liés à `libva`). Contourné avec
+`pip install imageio-ffmpeg`, qui embarque un binaire ffmpeg statique
+indépendant des libs système — extraction de frames à 4, 10 fps puis 22
+frames ciblées en pleine résolution entre t=0.00 et t=1.70s (le point de
+boucle vidéo) pour lire la pose précisément.
+
+### Lecture de la structure (pas une copie des courbes)
+
+Aucun fichier source (le `.rbxm`/projet Moon Animator n'a pas été fourni,
+seule la vidéo) — impossible de recréer les courbes exactes. Ce qui est
+repris est la **structure et le timing** lus sur les captures :
+
+1. **0.00–0.20s — fente profonde** : torse très penché en avant, jambe
+   arrière tendue en arrière, bras qui traînent (contrepoids de
+   sprinteur), flash d'impact au pied vers 0.20.
+2. **0.20–0.90s — montée tenue** : la jambe balaie de la hanche jusqu'à la
+   quasi-verticale, confirmé **à l'avant du corps** (capture à t=0.30 :
+   traînée devant le torse, pas derrière), torse qui bascule en arrière en
+   contrepoids — **tenue en l'air** marquée de 0.60 à 0.90 (hang-time
+   délibéré, pas un pic instantané que j'aurais pu manquer en survolant).
+3. **0.90–1.30s — ramassé** : la jambe redescend, le corps se compacte en
+   crouch bas, chargement du spin.
+4. **1.30–1.50s — spin** : libération rapide (éclats/traits de vitesse sur
+   les captures), très bref, ~0.2s réel.
+5. **1.50–1.70s — atterrissage** : retour à une posture debout neutre.
+
+Reproduit avec le moteur déjà construit pour ce projet — hanche + bassin-root
+pour la montée et le spin, jamais de pli de jambe inexistant, jamais de
+coup de poing (le détecteur de détente du cycle 6 réutilisé tel quel) —
+jambe droite pour la montée tenue, jambe gauche pour le spin (asymétrie
+délibérée, contrairement à la garde symétrique du cycle 6).
+
+### Ce qui n'est PAS recréé
+
+- **Aucun VFX.** Traînée lumineuse le long de la jambe, anneau de choc au
+  sol, éclats à l'impact : ce pipeline exporte un `KeyframeSequence`
+  (animation de corps Motor6D), pas des `ParticleEmitter`/`Beam`. Un projet
+  séparé côté Studio.
+- **Pas pixel-exact.** Les angles sont les miens, dérivés de la lecture
+  visuelle — pas les courbes de l'auteur original.
+
+### Résultat mesuré
+
+Passe le même pipeline que les cycles précédents, y compris le détecteur
+de détente corrigé au cycle 6 (des bras actifs pendant une fente profonde
+et un spin sont exactement le cas qu'il doit couvrir) :
+
+| | brut | + filtre cartoon (k=0.0015, σ=0.06, α=1.0) |
+|---|---|---|
+| structure R6 | 100 | 100 |
+| continuité de vitesse | 35.1 | 70.3 |
+| exagération dans la bande | — | 99.8 |
+| **total** | 70.5 | **95.5** |
+
+`no_punch_thrust` : allonge max 1.27 stud, détente max 18.0 stud/s — passe
+avec la même marge que les autres cycles, pas par technicité (12 des 18
+variantes du balayage échouent ce contrôle, cf. cycle 6).
+`rotation_within_sane_range` signale un pic Torso à 179.9° — vérifié à la
+main : c'est le passage éphémère (0.017s) par "face arrière" au milieu du
+spin, physiquement inévitable pour un tour de plus de 180°, pas un flip
+cassé.
+
+Livrable : `output/cartoon_c7/best/combo_cartoon.rbxmx`, comparateur dans
+le viewer (4ᵉ onglet "recréation référence").
+
 ## Piste 1 — exagération algorithmique post-hoc (Cartoon Animation Filter)
 
 Ajoutée après coup, sur la base d'un brief de recherche qui la classait
