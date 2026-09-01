@@ -69,6 +69,12 @@ if __name__ == "__main__":
             # recreation de la reference video (cycle 8 : mesure pixel
             # rigoureuse, structure double-montee corrigee), + filtre cartoon
             "reference": build_variant(8, k_gain=0.0015, sigma_s=0.06, alpha=0.0),
+            # cycle 9 : meme structure/timing mesures que le cycle 8, mais
+            # amplitudes de pose et contraste de tenue bien plus marques
+            # (retour utilisateur "pas assez abuse le mouvement style
+            # manga"), + le gagnant du balayage recalibre sur une cible
+            # d'exageration relevee a 22% (etait 10%) -- k=0.006, sigma=0.09
+            "manga": build_variant(9, k_gain=0.006, sigma_s=0.09, alpha=0.0),
         },
     }
     path = os.environ.get("PREVIEW_OUT", "/tmp/combo_ab_data.json")

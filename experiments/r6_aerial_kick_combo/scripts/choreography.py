@@ -711,4 +711,152 @@ def cycle_8():
     return keyframes, phases, preview_times, engine_opts
 
 
-CYCLES = {1: cycle_1, 2: cycle_2, 3: cycle_3, 4: cycle_4, 5: cycle_5, 6: cycle_6, 7: cycle_7, 8: cycle_8}
+def cycle_9():
+    """Cycle 9 -- exageration manga poussee bien plus loin, sur retour
+    direct de l'utilisateur ("pas assez abuse le mouvement style manga")
+    apres le cycle 8. Meme structure/timing mesures au cycle 8 (double
+    montee + creux, spin, atterrissage) -- ce qui change, c'est
+    l'AMPLITUDE des poses elles-memes, pas seulement le post-traitement.
+
+    L'exageration manga vient de DEUX endroits distincts, pousses tous les
+    deux ici plutot qu'un seul :
+      1. Le DESSIN des poses -- crouch plus profond, jambe tenue plus pres
+         de la verticale stricte, spin qui va au-dela d'un simple demi-tour
+         (~330 deg, presque un tour complet, contre ~250 avant), tete/bras
+         qui accompagnent plus large. Ca ne depend d'AUCUN filtre --
+         c'est ce qu'on demande au corps de faire.
+      2. Le CONTRASTE de rythme -- le vrai signal manga n'est pas juste
+         "plus grand", c'est un ecart de vitesse : les COUPS (kick1,
+         relance kick2, lancement du spin) sont rendus plus RAPIDES
+         (moins de temps entre deux keyframes), alors que les TENUES
+         (pic du kick2, atterrissage) restent aussi longues sinon plus.
+         Rapide-puis-fige, jamais une vitesse uniforme.
+
+    La cible du filtre cartoon (measure.exaggeration_score) a aussi ete
+    relevee de 10% a 22% de depassement -- independant de ce cycle, mais
+    complementaire : le filtre exagere davantage un mouvement qui est
+    deja lui-meme plus grand.
+
+    no_punch_thrust reverifie a chaque ajustement (les bras plus larges
+    et plus rapides sont exactement le cas qui avait fait echouer une
+    premiere version du cycle 8) -- voir le rapport d'execution."""
+    keyframes = [
+        _kf(0.00,
+            **{"Right Arm": (58, 0, -32), "Left Arm": (58, 0, 32)}),
+
+        # Fente -- plus profonde qu'au cycle 8 (root plus bas, torse plus
+        # penche), toujours au meme instant mesure (0.086s).
+        _kf(0.086, root_pos=(0, -0.75, 0.06), Torso=(-48, 0, 0), Head=(22, 0, 0),
+            **{"Right Leg": (-62, 0, 10), "Left Leg": (28, 0, -8),
+               "Right Arm": (-78, 0, -22), "Left Arm": (-70, 0, 26)}),
+
+        # KICK 1 -- monte plus vite (t=0.086->0.15, contre 0.086->0.188)
+        # et plus haut, mais PAS tenue (le contraste vient d'ici : un coup
+        # rapide avant la tenue longue).
+        _kf(0.15, root_pos=(0.02, 0.75, -0.03), Torso=(8, 8, -10),
+            **{"Right Leg": (128, 18, 14), "Left Leg": (2, 0, -10),
+               "Right Arm": (-28, 0, -42), "Left Arm": (26, 0, 34)}),
+
+        # Creux -- redescend, plus vite qu'au cycle 8 (0.15->0.32 contre
+        # 0.188->0.40).
+        _kf(0.32, root_pos=(0, 0.60, 0), Torso=(3, 5, -3),
+            **{"Right Leg": (20, 6, 3), "Left Leg": (-8, 0, -5),
+               "Right Arm": (6, 0, -12), "Left Arm": (12, 0, 12)}),
+
+        # Relance -- snap rapide vers kick 2 (0.32->0.42).
+        _kf(0.42, root_pos=(0.04, 1.05, -0.06), Torso=(18, 12, -17), Head=(-13, 14, 0),
+            **{"Right Leg": (85, 24, 20), "Left Leg": (-8, 0, -10),
+               "Right Arm": (-20, 0, -55), "Left Arm": (33, 0, 44)}),
+
+        # KICK 2 -- pic, plus haut qu'au cycle 8 (172 contre 158 -- pres
+        # de la verticale stricte), root qui monte plus haut (1.75 contre
+        # 1.45 -- plus d'air-time visuel).
+        _kf(0.58, root_pos=(0.06, 1.75, -0.10), Torso=(28, 19, -15), Head=(-22, 20, 0),
+            **{"Right Leg": (172, 30, 18), "Left Leg": (-8, 0, -10),
+               "Right Arm": (-18, 0, -68), "Left Arm": (42, 0, 54)}),
+
+        # Tenue -- ETIREE (0.58->0.92, soit 0.34s contre 0.24 au cycle 8) :
+        # le contraste avec les coups rapides se lit d'autant mieux que la
+        # pause dure plus longtemps. Derive minime pour eviter un segment
+        # degenere.
+        _kf(0.92, root_pos=(0.04, 1.72, -0.08), Torso=(27, 20, -14), Head=(-20, 21, 0),
+            **{"Right Leg": (175, 31, 18), "Left Leg": (-9, 0, -10),
+               "Right Arm": (-20, 0, -67), "Left Arm": (41, 0, 53)}),
+
+        # La jambe redescend -- plus vite (0.92->0.98).
+        _kf(0.98, root_pos=(0, 0.70, 0), Torso=(3, 9, -4),
+            **{"Right Leg": (60, 14, 9), "Left Leg": (-16, 0, -6),
+               "Right Arm": (14, 0, -24), "Left Arm": (18, 0, 22)}),
+
+        # Ramasse -- plus bas/compact qu'au cycle 8 (charge davantage le
+        # spin qui suit).
+        _kf(1.14, root_pos=(0, -0.42, 0), Torso=(-22, 4, 0), Head=(8, -13, 0),
+            **{"Right Leg": (-18, 0, 5), "Left Leg": (-26, 0, -8),
+               "Right Arm": (56, 0, -44), "Left Arm": (56, 0, 44)}),
+
+        # SPIN -- lancement, plus rapide (1.14->1.22 contre 1.22->1.318).
+        _kf(1.22, root_pos=(0, 0.32, 0.06), HumanoidRootPart=(0, -155, 12),
+            Torso=(10, -130, 16), Head=(0, -105, 0),
+            **{"Left Leg": (32, 26, -78), "Right Leg": (-12, 0, 9),
+               "Right Arm": (-34, 0, 68), "Left Arm": (-22, 0, -56)}),
+
+        # Pic du spin -- rotation totale portee a ~330 deg (quasi un tour
+        # complet, contre ~250 au cycle 8) pour un spin plus spectaculaire ;
+        # jambe gauche toujours en extension maximale.
+        _kf(1.28, root_pos=(0, 0.38, 0.06), HumanoidRootPart=(0, -330, 6),
+            Torso=(4, -318, 10), Head=(0, -45, 0),
+            **{"Left Leg": (72, 17, -148), "Right Leg": (-6, 0, 6),
+               "Right Arm": (-14, 0, 86), "Left Arm": (-10, 0, -70)}),
+
+        # Fin de la rotation -- la jambe se rassemble.
+        _kf(1.34, root_pos=(0, 0.14, 0), HumanoidRootPart=(0, -340, 0),
+            Torso=(-5, -333, 0),
+            **{"Left Leg": (20, 5, -38), "Right Leg": (-7, 0, 3),
+               "Right Arm": (12, 0, 34), "Left Arm": (6, 0, -25)}),
+
+        # Point intermediaire -- ralentit le retour des bras vers la garde
+        # (meme correctif qu'au cycle 8 : un retour trop rapide sur un
+        # segment court fait echouer no_punch_thrust).
+        _kf(1.40, root_pos=(0, -0.02, 0), HumanoidRootPart=(0, -348, 0),
+            Torso=(-6, -348, 0),
+            **{"Right Leg": (-3, 0, 3), "Left Leg": (-3, 0, -3),
+               "Right Arm": (36, 0, 0), "Left Arm": (32, 0, 0)}),
+
+        # Pivot correctif d'atterrissage -- retour face -Z (360 - 348 = 12,
+        # le tour se termine ici).
+        _kf(1.47, root_pos=(0, -0.16, 0), HumanoidRootPart=(0, -12, 0),
+            Torso=(-7, -12, 0), Head=(5, 0, 0),
+            **{"Right Leg": (-7, 0, 5), "Left Leg": (-7, 0, -5),
+               "Right Arm": (48, 0, -18), "Left Arm": (48, 0, 18)}),
+
+        # Posture d'atterrissage TENUE -- etiree comme le pic du kick 2
+        # (meme logique de contraste), plus longue qu'au cycle 8.
+        _kf(1.70, root_pos=(0, -0.14, 0), HumanoidRootPart=(0, -4, 0),
+            Torso=(-6, -4, 0), Head=(4, 0, 0),
+            **{"Right Leg": (-6, 0, 4), "Left Leg": (-6, 0, -4),
+               "Right Arm": (60, 0, -33), "Left Arm": (60, 0, 33)}),
+
+        # Transition vers la position debout.
+        _kf(1.85, root_pos=(0, -0.02, 0),
+            **{"Right Leg": (-2, 0, 1), "Left Leg": (-2, 0, -1),
+               "Right Arm": (58, 0, -30), "Left Arm": (58, 0, 30)}),
+
+        # Repos, garde tenue, boucle propre.
+        _kf(1.95,
+            **{"Right Arm": (58, 0, -32), "Left Arm": (58, 0, 32)}),
+    ]
+
+    phases = [
+        {"name": "anticipation", "t0": 0.00, "t1": 0.086, "expected_reversals": {}},
+        {"name": "kick1", "t0": 0.086, "t1": 0.32, "expected_reversals": {}},
+        {"name": "kick2_tenu", "t0": 0.32, "t1": 0.98, "expected_reversals": {}},
+        {"name": "ramasse", "t0": 0.98, "t1": 1.22, "expected_reversals": {}},
+        {"name": "spin", "t0": 1.22, "t1": 1.47, "expected_reversals": {}},
+        {"name": "atterrissage", "t0": 1.47, "t1": 1.95, "expected_reversals": {}},
+    ]
+    preview_times = [0.0, 0.086, 0.15, 0.32, 0.58, 1.14, 1.28, 1.70, 1.95]
+    engine_opts = {"handle_type": "VECTOR"}
+    return keyframes, phases, preview_times, engine_opts
+
+
+CYCLES = {1: cycle_1, 2: cycle_2, 3: cycle_3, 4: cycle_4, 5: cycle_5, 6: cycle_6, 7: cycle_7, 8: cycle_8, 9: cycle_9}

@@ -89,8 +89,13 @@ def main(out_root, base_cycle=BASE_CYCLE):
           f"{s['clean_lobes']:>6} {s['ringing_total']:>5} {s['velocity_continuity']:>6} "
           f"{s['structural']:>7} {s['total']:>7}")
 
-    grid_k = [0.0015, 0.003, 0.006]
-    grid_sigma = [0.035, 0.06]
+    # k etendu vers le haut (0.01/0.015/0.02 ajoutes) : la cible
+    # d'exageration de measure.exaggeration_score est passee de 10% a 22%
+    # sur retour direct de l'utilisateur ("pas assez abuse le mouvement
+    # style manga") -- sans elargir la grille, le balayage n'aurait meme
+    # pas la possibilite de proposer un gain assez fort pour l'atteindre.
+    grid_k = [0.0015, 0.003, 0.006, 0.01, 0.015, 0.02]
+    grid_sigma = [0.035, 0.06, 0.09]
     grid_alpha = [0.0, 0.5, 1.0]
 
     best = None

@@ -234,19 +234,20 @@ def filter_response(orig_samples, filt_samples, sample_hz, keyframe_times,
     return report
 
 
-def exaggeration_score(response, structural, continuity, target_pct=10.0, spread_pct=8.0):
+def exaggeration_score(response, structural, continuity, target_pct=22.0, spread_pct=10.0):
     """Critere de selection pour les variantes filtrees. Volontairement
     DIFFERENT de composite_score : ici l'aller-retour est l'objectif, pas
     le defaut, donc "no_twist" n'a plus de sens comme penalite et est
     remplace par (a) proprete du lobe et (b) amplitude d'exageration dans
     une bande utile.
 
-    Bande cible : un depassement moyen d'environ 10 % de l'amplitude du
-    segment (bande large 8 %). Choix de metier assume, pas une constante
-    issue du papier : en dessous de ~5 % l'effet ne se lit pas a l'ecran,
-    au-dela de ~20 % la pose cle cesse d'etre lisible (le personnage
-    "depasse" plus qu'il ne frappe). Le score decroit donc des deux
-    cotes, il ne recompense pas "toujours plus"."""
+    Bande cible relevee a 22 % (etait 10 %) : le premier reglage etait un
+    choix de metier suppose, pas mesure -- et le retour direct de
+    l'utilisateur ("pas assez abuse le mouvement style manga") l'a
+    contredit. Toujours PAS "toujours plus" (le score decroit des deux
+    cotes de la cible, une queue trop longue casse la lisibilite de la
+    pose cle), mais la cible elle-meme est desormais calibree sur un
+    retour reel plutot que sur une preference esthetique non testee."""
     ft_pcts = [v["followthrough_pct"] for v in response.values() if v["followthrough_pct"] > 0]
     mean_ft = float(np.mean(ft_pcts)) if ft_pcts else 0.0
     exagg = 100.0 * math.exp(-((mean_ft - target_pct) / spread_pct) ** 2)

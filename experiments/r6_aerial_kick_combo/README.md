@@ -622,6 +622,84 @@ vers un exact réel serait le fichier source (projet Moon Animator/`.rbxl`),
 pas davantage de mesure sur la vidéo — ce plafond a été vérifié
 concrètement, pas supposé.
 
+## Cycle 9 — exagération manga (retour : « pas assez abusé »)
+
+Retour direct de l'utilisateur après le cycle 8 : « Non mais tu abuse pas
+assez le mouvement style manga ». Deux leviers, pas un seul — augmenter le
+gain du filtre n'aurait pas suffi seul.
+
+### Levier 1 — la cible du filtre était une hypothèse, pas une mesure
+
+`exaggeration_score` visait un dépassement de 10 % de l'amplitude par
+segment. Ce chiffre n'avait jamais été validé — c'était un choix de métier
+supposé au moment d'écrire la fonction. Le retour de l'utilisateur le
+contredit directement, donc la cible est recalibrée dessus plutôt que sur
+une nouvelle intuition : `target_pct` 10.0 → **22.0**, `spread_pct` 8.0 →
+**10.0** (`scripts/measure.py`). Sans élargir la grille de balayage en
+conséquence (`grid_k` étendu à `[0.0015, 0.003, 0.006, 0.01, 0.015, 0.02]`,
+`grid_sigma` à `[0.035, 0.06, 0.09]` dans `scripts/run_filter.py`), le
+balayage n'aurait même pas eu la possibilité de proposer un gain assez fort
+pour atteindre la nouvelle cible.
+
+### Levier 2 — les poses elles-mêmes, pas seulement le post-traitement
+
+Un filtre plus fort sur des poses inchangées ne fait qu'ajouter du
+dépassement autour de la même amplitude — ça reste petit, juste plus
+tremblant. Le vrai « style manga » demande des poses plus amples et un
+contraste de tenue plus marqué. `cycle_9()` (`scripts/choreography.py`)
+reprend exactement la structure et le calage mesurés au cycle 8 (double
+montée + creux, spin, atterrissage) et amplifie seulement l'amplitude et le
+tempo :
+
+| | cycle 8 | cycle 9 |
+|---|---|---|
+| accroupi (Torso X / racine Y) | -38° / -0,55 | **-48° / -0,75** |
+| pic kick 2 (Right Leg X) | 158-161° | **172-175°** |
+| pic kick 2 (racine Y) | 1,42-1,45 | **1,72-1,75** |
+| rotation totale du spin | ~250° | **~330-340°** |
+| tenue au pic (durée) | 0,24 s | **0,34 s** (frappe plus rapide, pic plus figé) |
+
+Vérifié indépendamment par `taekwondo_signature` (mêmes outils que tous les
+cycles précédents, pas une nouvelle mesure inventée pour l'occasion) :
+`engagement_haut_du_corps` 1,278 (cycle 8 : 1,21), `arm_pull_in` 1,124
+(cycle 8 : 0,91). Le premier confirme l'amplification ; le second est un
+compromis assumé, pas une erreur silencieuse — voir plus bas.
+
+### Balayage et résultat
+
+Structure R6 à 100 dès le premier export (contrairement au cycle 8, aucun
+correctif de type `no_punch_thrust` n'a été nécessaire sur la choré. brute).
+Le balayage élargi (36 variantes) confirme le même mécanisme observé aux
+cycles 6/8 : la structure ne reste à 100 que dans une bande étroite
+k·σ≈constante (0,0015/0,035, 0,003/0,06, 0,006/0,09) et tombe à 83,3
+partout ailleurs, surtout pour k≥0,01. Vérifié explicitement plutôt que
+supposé — les échecs sont bien `no_punch_thrust` (ex. k=0,01/σ=0,035 :
+allonge 1,49 stud contre un seuil de 1,2, vitesse 177,7 stud/s contre un
+seuil de 6,0, sur les deux bras) : au-delà de cette bande le filtre projette
+les bras assez vite et assez loin pour ressembler à un coup de poing, pas à
+un contrepoids.
+
+Gagnant : **k=0,006, σ=0,09, α=0,0** — `exaggeration_in_band` 96,3,
+`mean_followthrough_pct` 23,9 % (contre 10,2 % au cycle 2/5, pile sur la
+nouvelle cible de 22 %), structure 100, total 91,4.
+
+Vérifié par le même round-trip moteur que tous les cycles précédents
+(`resolve_rbxmx.py`) : pose `HumanoidRootPart` toujours correctement
+ignorée (0 stud/deg), amplitude Torso Y résolue **2,961 studs** (contre
+2,07 au cycle 8 — l'amplification est mesurable jusque dans la sortie
+finale, pas seulement dans les courbes intermédiaires).
+
+### Compromis assumé, pas caché
+
+`arm_pull_in` = 1,124 (> 1) : au pic de vrille, les mains s'écartent
+légèrement de l'axe de rotation au lieu de se refermer comme un patineur
+qui accélère sa rotation (cycle 8 : 0,91, cohérent avec la conservation du
+moment cinétique). Plus spectaculaire à l'écran, moins fidèle à la
+mécanique réelle. Signalé ici et dans la note du lecteur HTML plutôt que
+laissé dans les chiffres seuls.
+
+Livrable : `output/cartoon_c9/best/combo_cartoon.rbxmx`.
+
 ## Piste 1 — exagération algorithmique post-hoc (Cartoon Animation Filter)
 
 Ajoutée après coup, sur la base d'un brief de recherche qui la classait
