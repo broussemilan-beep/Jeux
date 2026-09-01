@@ -902,9 +902,9 @@
       "ok": true,
       "detail": "max_angles={Torso:179deg, Head:25deg, Left Arm:59deg, Left Leg:118deg, Right Arm:73deg, Right Leg:124deg}"
     },
-    "no_punch_like_arm_pose": {
+    "no_punch_thrust": {
       "ok": true,
-      "detail": "ok"
+      "detail": "allonge max 0.27 stud (seuil 1.2), detente max 3.6 stud/s (seuil 6.0)"
     },
     "neutral_forward_rest_at_start_and_end": {
       "ok": true,
@@ -912,7 +912,7 @@
     },
     "kicks_only_no_punches_by_construction": {
       "ok": true,
-      "detail": "verifie manuellement via choregraphie (voir cycle report) + no_punch_like_arm_pose ci-dessus"
+      "detail": "les seuls segments qui frappent sont les jambes (choregraphie) ; les bras sont garde/armement/contrepoids, verifie par no_punch_thrust ci-dessus"
     }
   },
   "composite_score": {

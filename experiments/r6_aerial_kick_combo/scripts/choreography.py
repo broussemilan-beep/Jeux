@@ -301,4 +301,122 @@ def cycle_5():
     return new_keyframes, phases, preview_times, engine_opts
 
 
-CYCLES = {1: cycle_1, 2: cycle_2, 3: cycle_3, 4: cycle_4, 5: cycle_5}
+def cycle_6():
+    """Cycle 6 -- HAUT DU CORPS ACTIF : le combo est rejoue avec la
+    mecanique reelle du taekwondo, ou le haut du corps ne suit pas le
+    mouvement mais le PRODUIT. Jambes et timing inchanges par rapport au
+    cycle 2 ; tout ce qui change est tete, bras et l'accompagnement du
+    torse.
+
+    Trois mecaniques reelles encodees, chacune mesuree par
+    measure.taekwondo_signature() :
+
+    1. SPOTTING (la signature la plus reconnaissable). Sur un coup
+       retourne, on tourne la TETE en premier, on fixe la cible par-dessus
+       l'epaule, puis le corps suit, la jambe arrive en dernier. Ici la
+       tete part a -55 deg des 0.88 s alors que le torse n'a tourne que de
+       40 deg, puis se "devisse" (revient vers 0 relatif) a mesure que le
+       torse la rattrape a 1.16.
+
+    2. FERMETURE DES BRAS pendant la vrille. Un patineur accelere sa
+       rotation en ramenant les bras : conservation du moment cinetique.
+       Les deux bras se replient sur la poitrine au pic de vitesse
+       (Z = -75 / +75, mains a l'axe), puis s'ouvrent en grand pour
+       freiner a la sortie du coup.
+
+    3. COUPLAGE CONTRALATERAL. Le bras OPPOSE a la jambe qui frappe part
+       en avant, celui du meme cote tire en arriere -- c'est le schema
+       croise naturel de tout geste athletique. Kick 1 = jambe droite,
+       donc bras gauche devant, bras droit qui tire.
+
+    Garde : mains devant la poitrine au depart, entre les coups et a
+    l'arrivee, jamais bras ballants. Cela reste conforme a la contrainte
+    "aucun coup de poing" : aucune DETENTE de bras (allonge + vitesse
+    d'extension) -- voir measure.no_punch_thrust, qui distingue une garde
+    d'un direct par la vitesse et non par la pose."""
+    keyframes = [
+        _kf(0.00,
+            **{"Right Arm": (55, 0, -28), "Left Arm": (55, 0, 28)}),
+
+        # Anticipation : garde qui se resserre, tete qui cherche deja la cible.
+        _kf(0.18, root_pos=(0, -0.35, 0), Torso=(-10, 0, 0), Head=(4, -12, 0),
+            **{"Right Leg": (-8, 0, 0), "Left Leg": (-8, 0, 0),
+               "Right Arm": (62, 0, -34), "Left Arm": (62, 0, 34)}),
+
+        # Impulsion : les bras fouettent vers le haut (ils tirent le corps
+        # en l'air, mecanique reelle d'un saut), tete verrouillee sur la cible.
+        _kf(0.36, root_pos=(0, 0.9, 0), Torso=(6, 0, 0), Head=(2, -22, 0),
+            **{"Right Leg": (-25, 0, 0), "Left Leg": (5, 0, 0),
+               "Right Arm": (-55, 0, -20), "Left Arm": (-40, 0, 30)}),
+
+        # KICK 1 -- croissant jambe DROITE. Couplage contralateral : le bras
+        # GAUCHE part devant/en travers, le bras DROIT tire en arriere.
+        _kf(0.62, root_pos=(0.3, 1.35, 0.1), HumanoidRootPart=(0, -18, 6),
+            Torso=(10, -22, 10), Head=(6, -16, -4),
+            **{"Right Leg": (55, 35, 95), "Left Leg": (-15, 0, -10),
+               "Right Arm": (-42, 0, 38), "Left Arm": (68, 0, 46)}),
+
+        # Liaison : les bras commencent a se refermer, et surtout la TETE
+        # part en avance sur la vrille (-55 alors que le torse n'est qu'a 40).
+        _kf(0.88, root_pos=(0.1, 1.25, -0.1), HumanoidRootPart=(0, 55, -4),
+            Torso=(2, 40, -6), Head=(0, 55, 0),
+            **{"Right Leg": (0, 20, 15), "Left Leg": (-20, 10, -20),
+               "Right Arm": (25, 0, -58), "Left Arm": (30, 0, 52)}),
+
+        # KICK 2 -- retourne. Bras replies au maximum (pic de vitesse de
+        # vrille), tete presque devissee : le corps l'a rattrapee.
+        _kf(1.16, root_pos=(-0.2, 1.55, -0.15), HumanoidRootPart=(0, 150, -10),
+            Torso=(-8, 170, -14), Head=(0, 12, 0),
+            **{"Right Leg": (-10, 0, -25), "Left Leg": (30, -40, -100),
+               "Right Arm": (40, 0, -78), "Left Arm": (38, 0, 74)}),
+
+        # Sortie de vrille : les bras s'OUVRENT en grand pour freiner la
+        # rotation (l'inverse exact de la fermeture).
+        _kf(1.42, root_pos=(0, 1.4, 0), HumanoidRootPart=(0, 195, 0),
+            Torso=(15, 195, 0), Head=(-8, -18, 0),
+            **{"Right Leg": (10, 0, 0), "Left Leg": (-5, 0, 0),
+               "Right Arm": (5, 0, 68), "Left Arm": (0, 0, -62)}),
+
+        # KICK 3 -- ciseaux. Corps a l'horizontale : un bras cherche le sol
+        # (appui visuel facon capoeira), l'autre contrebalance haut.
+        _kf(1.66, root_pos=(0, 1.2, 0.25), HumanoidRootPart=(35, 200, 0),
+            Torso=(65, 200, 0), Head=(-34, 0, 0),
+            **{"Right Leg": (55, 0, 0), "Left Leg": (-50, 0, 0),
+               "Right Arm": (-25, 0, 72), "Left Arm": (40, 0, -30)}),
+
+        # Snap des ciseaux : les bras inversent avec les jambes.
+        _kf(1.86, root_pos=(0, 1.0, 0.1), HumanoidRootPart=(20, 200, 0),
+            Torso=(45, 200, 0), Head=(-24, 0, 0),
+            **{"Right Leg": (-45, 0, 0), "Left Leg": (50, 0, 0),
+               "Right Arm": (35, 0, 40), "Left Arm": (-20, 0, -55)}),
+
+        # Rassemblement, retour face -Z, la garde se reforme.
+        _kf(2.05, root_pos=(0, 0.5, 0), HumanoidRootPart=(0, 20, 0),
+            Torso=(5, 20, 0), Head=(0, -10, 0),
+            **{"Right Leg": (0, 0, 0), "Left Leg": (0, 0, 0),
+               "Right Arm": (48, 0, -30), "Left Arm": (48, 0, 30)}),
+
+        # Atterrissage absorbe, garde tenue.
+        _kf(2.20, root_pos=(0, -0.15, 0), Torso=(-12, 0, 0), Head=(5, 0, 0),
+            **{"Right Leg": (-5, 0, 0), "Left Leg": (-5, 0, 0),
+               "Right Arm": (58, 0, -32), "Left Arm": (58, 0, 32)}),
+
+        # Repos : garde d'ouverture, identique a t=0 (boucle propre).
+        _kf(2.36,
+            **{"Right Arm": (55, 0, -28), "Left Arm": (55, 0, 28)}),
+    ]
+
+    phases = [
+        {"name": "anticipation", "t0": 0.00, "t1": 0.36, "expected_reversals": {}},
+        {"name": "kick1_croissant", "t0": 0.36, "t1": 0.88, "expected_reversals": {}},
+        {"name": "kick2_retourne", "t0": 0.88, "t1": 1.42, "expected_reversals": {}},
+        {"name": "kick3_ciseaux", "t0": 1.42, "t1": 2.05,
+         "expected_reversals": {"Right Leg": 1, "Left Leg": 1}},
+        {"name": "atterrissage", "t0": 2.05, "t1": 2.36, "expected_reversals": {}},
+    ]
+    preview_times = [0.0, 0.36, 0.62, 0.88, 1.16, 1.66, 2.36]
+    engine_opts = {"handle_type": "VECTOR"}
+    return keyframes, phases, preview_times, engine_opts
+
+
+CYCLES = {1: cycle_1, 2: cycle_2, 3: cycle_3, 4: cycle_4, 5: cycle_5, 6: cycle_6}

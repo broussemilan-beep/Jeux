@@ -19,7 +19,8 @@ mesurables sans ambiguite.
 import math
 import numpy as np
 
-from r6_rig import PART_ORDER, ARM_PARTS, LEG_PARTS
+from r6_rig import (PART_ORDER, ARM_PARTS, LEG_PARTS, JOINTS, PART_SIZES,
+                    joint_for_part)
 from anim_engine import euler_xyz_matrix
 
 
@@ -270,6 +271,120 @@ def exaggeration_score(response, structural, continuity, target_pct=10.0, spread
     }
 
 
+def taekwondo_signature(samples, sample_hz, phases, spin_phase="kick2_retourne"):
+    """Mesure trois signatures MECANIQUES du taekwondo reel, pour que
+    "est-ce que ca fait vraiment taekwondo" soit autre chose qu'une
+    impression.
+
+    1. engagement_haut_du_corps : excursion angulaire totale de la tete et
+       des deux bras, rapportee a celle des jambes. Un combo ou les bras
+       ne servent que de balancier reste tres bas ; un combo ou le haut du
+       corps porte le mouvement monte.
+
+    2. head_lead_s : de combien la TETE precede le TORSE dans la rotation
+       du coup retourne. C'est la signature la plus reconnaissable du
+       taekwondo : on tourne la tete en premier, on fixe la cible
+       ("spotting"), le corps suit, la jambe arrive en dernier. Mesure par
+       correlation croisee entre la vitesse de lacet de la tete (absolue,
+       tete + torse) et celle du torse. Valeur POSITIVE = la tete precede.
+
+    3. arm_pull_in : rapport entre l'ecart moyen des mains a l'axe de
+       rotation AU PIC de vitesse angulaire et ce meme ecart au repos. Un
+       patineur qui accelere sa rotation ramene les bras : < 1 signifie
+       que les bras se referment pendant la vrille, ce qui est la
+       mecanique reelle (conservation du moment cinetique) et non une
+       decoration."""
+    dt = 1.0 / sample_hz
+    joints = [p for p in PART_ORDER if p != "HumanoidRootPart"]
+
+    def excursion(part):
+        rot = np.array([s[1] for s in samples[part]])
+        return float(np.sum(rot.max(axis=0) - rot.min(axis=0)))
+
+    upper = sum(excursion(p) for p in ("Head",) + ARM_PARTS)
+    lower = sum(excursion(p) for p in LEG_PARTS) or 1e-6
+    engagement = upper / lower
+
+    # --- head lead pendant la phase de vrille ---
+    ph = next((p for p in phases if p["name"] == spin_phase), None)
+    head_lead = 0.0
+    if ph is not None:
+        i0 = math.ceil(ph["t0"] * sample_hz)
+        i1 = math.floor(ph["t1"] * sample_hz)
+        torso_yaw = np.array([s[1][1] for s in samples["Torso"][i0:i1 + 1]])
+        root_yaw = np.array([s[1][1] for s in samples["HumanoidRootPart"][i0:i1 + 1]])
+        head_rel = np.array([s[1][1] for s in samples["Head"][i0:i1 + 1]])
+        body_yaw = torso_yaw + root_yaw
+        head_abs = body_yaw + head_rel          # la tete est relative au torse
+        if len(body_yaw) > 8:
+            # Avance mesuree par TRAVERSEE DE SEUIL : a quel instant chacun
+            # atteint la mi-course de la rotation du corps.
+            #
+            # La premiere version correlait les VITESSES de lacet et
+            # renvoyait 0.000 s pour toutes les variantes, y compris une ou
+            # la tete part avec 54 deg d'avance explicitement ecrits. Motif :
+            # sur la fenetre de vrille les deux courbes sont des rampes
+            # quasi monotones de meme duree ; correler leurs vitesses donne
+            # un pic a lag 0 quel que soit le decalage constant entre elles.
+            # La correlation croisee mesure "meme forme", pas "en avance".
+            mid = (body_yaw[0] + body_yaw[-1]) / 2.0
+            times = np.arange(len(body_yaw)) * dt
+
+            def crossing(series):
+                for k in range(1, len(series)):
+                    if (series[k - 1] - mid) * (series[k] - mid) <= 0:
+                        span = series[k] - series[k - 1]
+                        f = (mid - series[k - 1]) / (span if abs(span) > 1e-9 else 1e-9)
+                        return times[k - 1] + f * dt
+                return None
+
+            t_body, t_head = crossing(body_yaw), crossing(head_abs)
+            if t_body is not None and t_head is not None:
+                head_lead = t_body - t_head     # >0 : la tete y est avant
+
+    # --- fermeture des bras au pic de vrille ---
+    pull_in = 1.0
+    if ph is not None:
+        i0 = math.ceil(ph["t0"] * sample_hz)
+        i1 = math.floor(ph["t1"] * sample_hz)
+
+        def hand_radius(idx):
+            r = []
+            for arm in ARM_PARTS:
+                jname = joint_for_part(arm)
+                c0 = np.array(JOINTS[jname]["C0"]["pos"])
+                c1 = np.array(JOINTS[jname]["C1"]["pos"])
+                half = PART_SIZES[arm][1] / 2.0
+                m = euler_xyz_matrix(*samples[arm][idx][1])
+                tip = (c0 - m @ c1) + m @ np.array([0.0, -half, 0.0])
+                r.append(math.hypot(tip[0], tip[2]))   # distance a l'axe vertical
+            return float(np.mean(r))
+
+        body_yaw = np.array([samples["Torso"][i][1][1] + samples["HumanoidRootPart"][i][1][1]
+                             for i in range(i0, i1 + 1)])
+        if len(body_yaw) > 4:
+            spin_speed = np.abs(np.gradient(body_yaw, dt))
+            peak = i0 + int(np.argmax(spin_speed))
+            pull_in = hand_radius(peak) / (hand_radius(0) + 1e-9)
+
+    # Avance de tete aussi rendue en degres (lecture directe : de combien
+    # la tete est tournee AU-DELA du corps pendant la vrille).
+    head_ahead_deg = 0.0
+    if ph is not None:
+        i0 = math.ceil(ph["t0"] * sample_hz)
+        i1 = math.floor(ph["t1"] * sample_hz)
+        rel = np.array([s[1][1] for s in samples["Head"][i0:i1 + 1]])
+        if len(rel):
+            head_ahead_deg = float(rel[np.argmax(np.abs(rel))])
+
+    return {
+        "engagement_haut_du_corps": round(engagement, 3),
+        "head_lead_s": round(head_lead, 3),
+        "head_ahead_deg": round(head_ahead_deg, 1),
+        "arm_pull_in": round(pull_in, 3),
+    }
+
+
 def r6_structural_compliance(objs, keyframes, samples):
     """Verifications structurelles automatiques de la contrainte R6 non
     negociable. Retourne dict de checks -> (ok: bool, detail: str)."""
@@ -318,21 +433,53 @@ def r6_structural_compliance(objs, keyframes, samples):
         + (f" OVER 250deg: {over_limit}" if over_limit else ""),
     )
 
+    # Detection d'un COUP DE POING = une DETENTE (allonge + vitesse
+    # d'extension), pas une pose bras-en-avant.
+    #
+    # La premiere version flaggeait toute pose dont le bras pointait vers
+    # l'avant. Sur R6 le bras est UN SEUL segment epaule->main : "mains
+    # devant la poitrine" implique donc forcement un segment vers l'avant,
+    # et une garde de taekwondo etait flaggee exactement comme un direct
+    # (garde 0.78 d'avant contre 1.00 pour un bras tendu). Autrement dit
+    # ce controle rendait toute garde impossible -- donc tout vrai
+    # taekwondo -- alors que la contrainte demandee est "aucun coup de
+    # poing", pas "aucun bras leve".
+    #
+    # L'allonge seule ne separe pas non plus : main a 1.40 stud devant en
+    # garde haute contre 1.50 bras tendu. Ce qui separe reellement un coup
+    # d'une garde, c'est la VITESSE d'extension : un direct part d'un bras
+    # arme (~0.5) et atteint ~1.5 en ~0.1 s, soit ~10 studs/s ; une garde
+    # tient son allonge sans bouger. On mesure donc la main dans le repere
+    # du TORSE (un coup est defini par rapport au corps, pas au monde) et
+    # on ne flagge que si allonge ET vitesse d'extension depassent le seuil
+    # en meme temps.
+    REACH_LIMIT = 1.2      # studs devant l'attache d'epaule
+    THRUST_LIMIT = 6.0     # studs/s d'extension vers l'avant
+    dt_s = samples[ARM_PARTS[0]][1][0] - samples[ARM_PARTS[0]][0][0]
     punch_flags = []
-    max_forward = 0.0
+    max_reach = 0.0
+    max_thrust = 0.0
     for arm in ARM_PARTS:
+        jname = joint_for_part(arm)
+        c0 = np.array(JOINTS[jname]["C0"]["pos"])
+        c1 = np.array(JOINTS[jname]["C1"]["pos"])
+        half = PART_SIZES[arm][1] / 2.0
+        reach = []
         for (_, rot, _, _) in samples[arm]:
             m = euler_xyz_matrix(*rot)
-            rest_down = np.array([0.0, -1.0, 0.0])
-            world_dir = m @ rest_down
-            forward = -world_dir[2]  # -Z = avant
-            vertical = abs(world_dir[1])
-            if forward > 0.7 and vertical < 0.5:
-                max_forward = max(max_forward, forward)
-                punch_flags.append(arm)
-    checks["no_punch_like_arm_pose"] = (
+            tip = (c0 - m @ c1) + m @ np.array([0.0, -half, 0.0])
+            reach.append(-tip[2])          # -Z = avant, repere torse
+        reach = np.array(reach)
+        thrust = np.gradient(reach, dt_s)
+        max_reach = max(max_reach, float(reach.max()))
+        max_thrust = max(max_thrust, float(thrust.max()))
+        if np.any((reach > REACH_LIMIT) & (thrust > THRUST_LIMIT)):
+            punch_flags.append(arm)
+    checks["no_punch_thrust"] = (
         len(punch_flags) == 0,
-        "ok" if not punch_flags else f"forward-reach detecte sur {sorted(set(punch_flags))}, max_forward={max_forward:.2f}",
+        f"allonge max {max_reach:.2f} stud (seuil {REACH_LIMIT}), "
+        f"detente max {max_thrust:.1f} stud/s (seuil {THRUST_LIMIT})"
+        + ("" if not punch_flags else f" -- DETENTE detectee sur {sorted(set(punch_flags))}"),
     )
 
     rest_eps = 3.0
@@ -354,7 +501,8 @@ def r6_structural_compliance(objs, keyframes, samples):
 
     checks["kicks_only_no_punches_by_construction"] = (
         True,
-        "verifie manuellement via choregraphie (voir cycle report) + no_punch_like_arm_pose ci-dessus",
+        "les seuls segments qui frappent sont les jambes (choregraphie) ; "
+        "les bras sont garde/armement/contrepoids, verifie par no_punch_thrust ci-dessus",
     )
 
     return checks

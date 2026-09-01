@@ -389,6 +389,77 @@ modèle qui l'a produite ne prouve rien. Il a fallu deux choses
 extérieures : un vrai rig, et rejouer le fichier livré par l'équation du
 moteur plutôt que par mon code.
 
+## Cycle 6 — haut du corps actif (vrai taekwondo)
+
+Jusqu'ici les bras ne servaient que de balancier. En taekwondo le haut du
+corps ne *suit* pas le mouvement, il le **produit**. Le cycle 6 garde
+jambes et timing du cycle 2 et réécrit entièrement tête, bras et
+accompagnement du torse, autour de trois mécaniques réelles :
+
+1. **Spotting** — sur le coup retourné, la tête tourne en premier, fixe la
+   cible par-dessus l'épaule, le corps suit, la jambe arrive en dernier.
+2. **Fermeture des bras** pendant la vrille — conservation du moment
+   cinétique, comme un patineur. Les bras s'ouvrent ensuite pour freiner.
+3. **Couplage contralatéral** — bras opposé à la jambe qui frappe en
+   avant, bras du même côté qui tire.
+
+Plus une **garde** tenue au départ, entre les coups et à l'arrivée.
+
+### Mesuré, pas ressenti
+
+`measure.taekwondo_signature()` chiffre les trois mécaniques :
+
+| | jambes seules (cy. 2) | haut du corps actif (cy. 6) |
+|---|---|---|
+| engagement du haut du corps | 0.606 | **1.256** |
+| avance de tête sur le corps | 0.018 s | **0.041 s** |
+| tête tournée au-delà du corps | 24.9° | **54.5°** |
+| fermeture des bras à la vrille | 0.361 | 0.422 |
+
+### Le contrôle « aucun coup de poing » était structurellement faux
+
+Il flaggeait **toute pose bras vers l'avant**. Or sur R6 le bras est *un
+seul segment épaule→main* : « mains devant la poitrine » implique
+forcément un segment vers l'avant. Une garde de taekwondo était donc
+détectée exactement comme un direct (allonge 1.40 contre 1.50 stud pour un
+bras tendu — l'allonge ne sépare rien). Ce contrôle rendait toute garde
+impossible, donc tout vrai taekwondo, alors que la contrainte demandée est
+« aucun coup de poing », pas « aucun bras levé ».
+
+Remplacé par une détection de **détente** : allonge **et** vitesse
+d'extension simultanément au-dessus du seuil (1.2 stud / 6 stud/s), la
+main étant mesurée dans le repère du **torse** — un coup se définit par
+rapport au corps, pas au monde. Vérifié à la main sur le cycle 6 : la
+détente maximale (11 stud/s) a lieu main à −0.16 d'allonge et −1.01 de
+hauteur, c'est-à-dire le bras qui fouette vers le haut à l'impulsion, et
+l'allonge maximale (garde) coïncide avec une détente **négative** (le bras
+se rétracte). Les deux ne se rencontrent jamais.
+
+### Tension trouvée entre les deux demandes
+
+Avec des bras actifs, l'animation vit près de la limite : sur le balayage
+du filtre cartoon appliqué au cycle 6, **12 des 18 variantes violent la
+contrainte** (jusqu'à 1.50 stud d'allonge à 27.6 stud/s — un vrai direct
+fabriqué par le dépassement du filtre). Le réglage retenu
+(`k=0.0015`, `σ=0.035`, `α=1.0`, score 95.6) est le plus fort qui passe
+encore, et il passe pour de bonnes raisons, pas par technicité : zéro
+instant où allonge et détente sont simultanément au-dessus des seuils.
+
+Autrement dit, exagération et « pieds uniquement » tirent en sens
+contraire dès que les bras jouent : le gain du filtre est désormais borné
+par la contrainte, pas seulement par le ringing.
+
+### Une métrique aveugle de plus
+
+`head_lead_s` renvoyait 0.000 s pour toutes les variantes, y compris celle
+où 54° d'avance de tête sont écrits noir sur blanc. La première version
+corrélait les **vitesses** de lacet tête/corps : sur la fenêtre de vrille
+ce sont deux rampes quasi monotones de même durée, dont la corrélation
+pique à lag 0 quel que soit le décalage constant. La corrélation croisée
+mesure « même forme », pas « en avance ». Remplacée par une **traversée de
+seuil** — à quel instant chacun atteint la mi-course de la rotation du
+corps.
+
 ## Piste 1 — exagération algorithmique post-hoc (Cartoon Animation Filter)
 
 Ajoutée après coup, sur la base d'un brief de recherche qui la classait

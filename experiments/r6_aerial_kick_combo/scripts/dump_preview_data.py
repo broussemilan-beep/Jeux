@@ -59,9 +59,13 @@ if __name__ == "__main__":
         "part_sizes": {p: list(PART_SIZES[p]) for p in PART_ORDER},
         "part_order": PART_ORDER,
         "variants": {
-            "cycle2": build_variant(2),
-            "cycle5": build_variant(5),
-            "cartoon": build_variant(2, k_gain=0.0015, sigma_s=0.06, alpha=1.0),
+            # jambes seules (bras en simple contrepoids)
+            "legs": build_variant(2),
+            # haut du corps actif : garde, spotting, fermeture des bras
+            "fullbody": build_variant(6),
+            # idem + exageration cartoon, au gain le plus fort qui respecte
+            # encore la contrainte "aucun coup de poing"
+            "cartoon": build_variant(6, k_gain=0.0015, sigma_s=0.035, alpha=1.0),
         },
     }
     path = os.environ.get("PREVIEW_OUT", "/tmp/combo_ab_data.json")
