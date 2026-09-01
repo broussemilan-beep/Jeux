@@ -33,14 +33,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 0.0
         },
-        "Right Arm": {
-          "axis": "z",
-          "anticipation_deg": 0.0,
-          "followthrough_deg": 0.0,
-          "followthrough_pct": 0.0,
-          "ringing_lobes": 0,
-          "max_delta_deg": 0.0
-        },
         "Left Arm": {
           "axis": "z",
           "anticipation_deg": 0.0,
@@ -49,7 +41,7 @@
           "ringing_lobes": 0,
           "max_delta_deg": 0.0
         },
-        "Right Leg": {
+        "Left Leg": {
           "axis": "z",
           "anticipation_deg": 0.0,
           "followthrough_deg": 0.0,
@@ -57,7 +49,15 @@
           "ringing_lobes": 0,
           "max_delta_deg": 0.0
         },
-        "Left Leg": {
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 0.0,
+          "followthrough_deg": 0.0,
+          "followthrough_pct": 0.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 0.0
+        },
+        "Right Leg": {
           "axis": "z",
           "anticipation_deg": 0.0,
           "followthrough_deg": 0.0,
@@ -98,14 +98,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 2.62
         },
-        "Right Arm": {
-          "axis": "z",
-          "anticipation_deg": 2.97,
-          "followthrough_deg": 2.53,
-          "followthrough_pct": 13.6,
-          "ringing_lobes": 0,
-          "max_delta_deg": 6.09
-        },
         "Left Arm": {
           "axis": "z",
           "anticipation_deg": 2.48,
@@ -114,14 +106,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 5.7
         },
-        "Right Leg": {
-          "axis": "z",
-          "anticipation_deg": 3.79,
-          "followthrough_deg": 3.85,
-          "followthrough_pct": 8.1,
-          "ringing_lobes": 0,
-          "max_delta_deg": 9.68
-        },
         "Left Leg": {
           "axis": "z",
           "anticipation_deg": 2.77,
@@ -129,6 +113,22 @@
           "followthrough_pct": 5.2,
           "ringing_lobes": 0,
           "max_delta_deg": 9.5
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 2.97,
+          "followthrough_deg": 2.53,
+          "followthrough_pct": 13.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 6.09
+        },
+        "Right Leg": {
+          "axis": "z",
+          "anticipation_deg": 3.79,
+          "followthrough_deg": 3.85,
+          "followthrough_pct": 8.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 9.68
         }
       }
     },
@@ -163,14 +163,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 2.98
         },
-        "Right Arm": {
-          "axis": "z",
-          "anticipation_deg": 3.67,
-          "followthrough_deg": 3.06,
-          "followthrough_pct": 16.4,
-          "ringing_lobes": 0,
-          "max_delta_deg": 7.05
-        },
         "Left Arm": {
           "axis": "z",
           "anticipation_deg": 3.04,
@@ -179,14 +171,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 7.1
         },
-        "Right Leg": {
-          "axis": "z",
-          "anticipation_deg": 5.1,
-          "followthrough_deg": 4.55,
-          "followthrough_pct": 9.8,
-          "ringing_lobes": 0,
-          "max_delta_deg": 11.21
-        },
         "Left Leg": {
           "axis": "z",
           "anticipation_deg": 3.74,
@@ -194,6 +178,22 @@
           "followthrough_pct": 6.8,
           "ringing_lobes": 0,
           "max_delta_deg": 10.94
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 3.67,
+          "followthrough_deg": 3.06,
+          "followthrough_pct": 16.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 7.05
+        },
+        "Right Leg": {
+          "axis": "z",
+          "anticipation_deg": 5.1,
+          "followthrough_deg": 4.55,
+          "followthrough_pct": 9.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 11.21
         }
       }
     },
@@ -228,14 +228,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 3.79
         },
-        "Right Arm": {
-          "axis": "z",
-          "anticipation_deg": 4.54,
-          "followthrough_deg": 3.69,
-          "followthrough_pct": 19.6,
-          "ringing_lobes": 0,
-          "max_delta_deg": 8.68
-        },
         "Left Arm": {
           "axis": "z",
           "anticipation_deg": 3.73,
@@ -244,14 +236,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 9.41
         },
-        "Right Leg": {
-          "axis": "z",
-          "anticipation_deg": 6.53,
-          "followthrough_deg": 5.34,
-          "followthrough_pct": 11.5,
-          "ringing_lobes": 0,
-          "max_delta_deg": 14.38
-        },
         "Left Leg": {
           "axis": "z",
           "anticipation_deg": 4.81,
@@ -259,6 +243,22 @@
           "followthrough_pct": 9.0,
           "ringing_lobes": 0,
           "max_delta_deg": 15.17
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 4.54,
+          "followthrough_deg": 3.69,
+          "followthrough_pct": 19.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 8.68
+        },
+        "Right Leg": {
+          "axis": "z",
+          "anticipation_deg": 6.53,
+          "followthrough_deg": 5.34,
+          "followthrough_pct": 11.5,
+          "ringing_lobes": 0,
+          "max_delta_deg": 14.38
         }
       }
     },
@@ -293,14 +293,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 1.66
         },
-        "Right Arm": {
-          "axis": "z",
-          "anticipation_deg": 1.98,
-          "followthrough_deg": 1.68,
-          "followthrough_pct": 9.0,
-          "ringing_lobes": 0,
-          "max_delta_deg": 3.84
-        },
         "Left Arm": {
           "axis": "z",
           "anticipation_deg": 1.64,
@@ -309,14 +301,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 3.35
         },
-        "Right Leg": {
-          "axis": "z",
-          "anticipation_deg": 2.52,
-          "followthrough_deg": 2.52,
-          "followthrough_pct": 5.4,
-          "ringing_lobes": 0,
-          "max_delta_deg": 6.11
-        },
         "Left Leg": {
           "axis": "z",
           "anticipation_deg": 1.82,
@@ -324,6 +308,22 @@
           "followthrough_pct": 3.4,
           "ringing_lobes": 0,
           "max_delta_deg": 6.01
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 1.98,
+          "followthrough_deg": 1.68,
+          "followthrough_pct": 9.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 3.84
+        },
+        "Right Leg": {
+          "axis": "z",
+          "anticipation_deg": 2.52,
+          "followthrough_deg": 2.52,
+          "followthrough_pct": 5.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 6.11
         }
       }
     },
@@ -358,14 +358,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 1.97
         },
-        "Right Arm": {
-          "axis": "z",
-          "anticipation_deg": 2.56,
-          "followthrough_deg": 2.09,
-          "followthrough_pct": 11.1,
-          "ringing_lobes": 0,
-          "max_delta_deg": 4.61
-        },
         "Left Arm": {
           "axis": "z",
           "anticipation_deg": 2.1,
@@ -374,14 +366,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 5.03
         },
-        "Right Leg": {
-          "axis": "z",
-          "anticipation_deg": 3.39,
-          "followthrough_deg": 3.03,
-          "followthrough_pct": 6.6,
-          "ringing_lobes": 0,
-          "max_delta_deg": 7.33
-        },
         "Left Leg": {
           "axis": "z",
           "anticipation_deg": 2.48,
@@ -389,6 +373,22 @@
           "followthrough_pct": 4.5,
           "ringing_lobes": 0,
           "max_delta_deg": 7.31
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 2.56,
+          "followthrough_deg": 2.09,
+          "followthrough_pct": 11.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 4.61
+        },
+        "Right Leg": {
+          "axis": "z",
+          "anticipation_deg": 3.39,
+          "followthrough_deg": 3.03,
+          "followthrough_pct": 6.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 7.33
         }
       }
     },
@@ -423,14 +423,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 2.74
         },
-        "Right Arm": {
-          "axis": "z",
-          "anticipation_deg": 3.22,
-          "followthrough_deg": 2.57,
-          "followthrough_pct": 13.4,
-          "ringing_lobes": 0,
-          "max_delta_deg": 6.1
-        },
         "Left Arm": {
           "axis": "z",
           "anticipation_deg": 2.65,
@@ -439,14 +431,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 7.06
         },
-        "Right Leg": {
-          "axis": "z",
-          "anticipation_deg": 4.36,
-          "followthrough_deg": 3.59,
-          "followthrough_pct": 7.9,
-          "ringing_lobes": 0,
-          "max_delta_deg": 10.42
-        },
         "Left Leg": {
           "axis": "z",
           "anticipation_deg": 3.2,
@@ -454,6 +438,22 @@
           "followthrough_pct": 5.9,
           "ringing_lobes": 0,
           "max_delta_deg": 10.96
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 3.22,
+          "followthrough_deg": 2.57,
+          "followthrough_pct": 13.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 6.1
+        },
+        "Right Leg": {
+          "axis": "z",
+          "anticipation_deg": 4.36,
+          "followthrough_deg": 3.59,
+          "followthrough_pct": 7.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 10.42
         }
       }
     },
@@ -488,14 +488,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 5.24
         },
-        "Right Arm": {
-          "axis": "z",
-          "anticipation_deg": 5.93,
-          "followthrough_deg": 5.07,
-          "followthrough_pct": 27.3,
-          "ringing_lobes": 0,
-          "max_delta_deg": 12.18
-        },
         "Left Arm": {
           "axis": "z",
           "anticipation_deg": 4.97,
@@ -504,14 +496,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 11.4
         },
-        "Right Leg": {
-          "axis": "z",
-          "anticipation_deg": 7.57,
-          "followthrough_deg": 7.71,
-          "followthrough_pct": 16.3,
-          "ringing_lobes": 0,
-          "max_delta_deg": 19.37
-        },
         "Left Leg": {
           "axis": "z",
           "anticipation_deg": 5.53,
@@ -519,6 +503,22 @@
           "followthrough_pct": 10.3,
           "ringing_lobes": 0,
           "max_delta_deg": 19.0
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 5.93,
+          "followthrough_deg": 5.07,
+          "followthrough_pct": 27.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 12.18
+        },
+        "Right Leg": {
+          "axis": "z",
+          "anticipation_deg": 7.57,
+          "followthrough_deg": 7.71,
+          "followthrough_pct": 16.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 19.37
         }
       }
     },
@@ -553,14 +553,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 5.71
         },
-        "Right Arm": {
-          "axis": "z",
-          "anticipation_deg": 6.84,
-          "followthrough_deg": 5.79,
-          "followthrough_pct": 31.1,
-          "ringing_lobes": 0,
-          "max_delta_deg": 13.32
-        },
         "Left Arm": {
           "axis": "z",
           "anticipation_deg": 5.68,
@@ -569,14 +561,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 12.87
         },
-        "Right Leg": {
-          "axis": "z",
-          "anticipation_deg": 9.42,
-          "followthrough_deg": 8.71,
-          "followthrough_pct": 18.6,
-          "ringing_lobes": 0,
-          "max_delta_deg": 21.18
-        },
         "Left Leg": {
           "axis": "z",
           "anticipation_deg": 6.9,
@@ -584,6 +568,22 @@
           "followthrough_pct": 12.4,
           "ringing_lobes": 0,
           "max_delta_deg": 20.85
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 6.84,
+          "followthrough_deg": 5.79,
+          "followthrough_pct": 31.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 13.32
+        },
+        "Right Leg": {
+          "axis": "z",
+          "anticipation_deg": 9.42,
+          "followthrough_deg": 8.71,
+          "followthrough_pct": 18.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 21.18
         }
       }
     },
@@ -618,14 +618,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 6.33
         },
-        "Right Arm": {
-          "axis": "z",
-          "anticipation_deg": 7.94,
-          "followthrough_deg": 6.58,
-          "followthrough_pct": 35.2,
-          "ringing_lobes": 0,
-          "max_delta_deg": 15.01
-        },
         "Left Arm": {
           "axis": "z",
           "anticipation_deg": 6.53,
@@ -634,14 +626,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 15.55
         },
-        "Right Leg": {
-          "axis": "z",
-          "anticipation_deg": 11.39,
-          "followthrough_deg": 9.78,
-          "followthrough_pct": 21.1,
-          "ringing_lobes": 0,
-          "max_delta_deg": 23.86
-        },
         "Left Leg": {
           "axis": "z",
           "anticipation_deg": 8.38,
@@ -649,6 +633,22 @@
           "followthrough_pct": 15.3,
           "ringing_lobes": 0,
           "max_delta_deg": 24.03
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 7.94,
+          "followthrough_deg": 6.58,
+          "followthrough_pct": 35.2,
+          "ringing_lobes": 0,
+          "max_delta_deg": 15.01
+        },
+        "Right Leg": {
+          "axis": "z",
+          "anticipation_deg": 11.39,
+          "followthrough_deg": 9.78,
+          "followthrough_pct": 21.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 23.86
         }
       }
     },
@@ -683,14 +683,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 3.32
         },
-        "Right Arm": {
-          "axis": "z",
-          "anticipation_deg": 3.96,
-          "followthrough_deg": 3.36,
-          "followthrough_pct": 18.0,
-          "ringing_lobes": 0,
-          "max_delta_deg": 7.68
-        },
         "Left Arm": {
           "axis": "z",
           "anticipation_deg": 3.28,
@@ -699,14 +691,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 6.7
         },
-        "Right Leg": {
-          "axis": "z",
-          "anticipation_deg": 5.03,
-          "followthrough_deg": 5.05,
-          "followthrough_pct": 10.9,
-          "ringing_lobes": 0,
-          "max_delta_deg": 12.21
-        },
         "Left Leg": {
           "axis": "z",
           "anticipation_deg": 3.64,
@@ -714,6 +698,22 @@
           "followthrough_pct": 6.9,
           "ringing_lobes": 0,
           "max_delta_deg": 12.02
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 3.96,
+          "followthrough_deg": 3.36,
+          "followthrough_pct": 18.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 7.68
+        },
+        "Right Leg": {
+          "axis": "z",
+          "anticipation_deg": 5.03,
+          "followthrough_deg": 5.05,
+          "followthrough_pct": 10.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 12.21
         }
       }
     },
@@ -748,14 +748,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 3.58
         },
-        "Right Arm": {
-          "axis": "z",
-          "anticipation_deg": 4.54,
-          "followthrough_deg": 3.76,
-          "followthrough_pct": 20.0,
-          "ringing_lobes": 0,
-          "max_delta_deg": 8.34
-        },
         "Left Arm": {
           "axis": "z",
           "anticipation_deg": 3.73,
@@ -764,14 +756,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 8.48
         },
-        "Right Leg": {
-          "axis": "z",
-          "anticipation_deg": 5.95,
-          "followthrough_deg": 5.55,
-          "followthrough_pct": 12.1,
-          "ringing_lobes": 0,
-          "max_delta_deg": 13.26
-        },
         "Left Leg": {
           "axis": "z",
           "anticipation_deg": 4.31,
@@ -779,6 +763,22 @@
           "followthrough_pct": 7.9,
           "ringing_lobes": 0,
           "max_delta_deg": 13.14
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 4.54,
+          "followthrough_deg": 3.76,
+          "followthrough_pct": 20.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 8.34
+        },
+        "Right Leg": {
+          "axis": "z",
+          "anticipation_deg": 5.95,
+          "followthrough_deg": 5.55,
+          "followthrough_pct": 12.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 13.26
         }
       }
     },
@@ -813,14 +813,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 3.91
         },
-        "Right Arm": {
-          "axis": "z",
-          "anticipation_deg": 5.22,
-          "followthrough_deg": 4.24,
-          "followthrough_pct": 22.4,
-          "ringing_lobes": 0,
-          "max_delta_deg": 9.18
-        },
         "Left Arm": {
           "axis": "z",
           "anticipation_deg": 4.29,
@@ -829,14 +821,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 10.66
         },
-        "Right Leg": {
-          "axis": "z",
-          "anticipation_deg": 6.92,
-          "followthrough_deg": 6.13,
-          "followthrough_pct": 13.4,
-          "ringing_lobes": 0,
-          "max_delta_deg": 14.74
-        },
         "Left Leg": {
           "axis": "z",
           "anticipation_deg": 5.09,
@@ -844,6 +828,22 @@
           "followthrough_pct": 9.1,
           "ringing_lobes": 0,
           "max_delta_deg": 15.61
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 5.22,
+          "followthrough_deg": 4.24,
+          "followthrough_pct": 22.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 9.18
+        },
+        "Right Leg": {
+          "axis": "z",
+          "anticipation_deg": 6.92,
+          "followthrough_deg": 6.13,
+          "followthrough_pct": 13.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 14.74
         }
       }
     },
@@ -878,14 +878,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 10.49
         },
-        "Right Arm": {
-          "axis": "z",
-          "anticipation_deg": 11.86,
-          "followthrough_deg": 10.13,
-          "followthrough_pct": 54.6,
-          "ringing_lobes": 0,
-          "max_delta_deg": 24.35
-        },
         "Left Arm": {
           "axis": "z",
           "anticipation_deg": 9.93,
@@ -894,14 +886,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 22.79
         },
-        "Right Leg": {
-          "axis": "z",
-          "anticipation_deg": 15.14,
-          "followthrough_deg": 15.41,
-          "followthrough_pct": 32.6,
-          "ringing_lobes": 0,
-          "max_delta_deg": 38.74
-        },
         "Left Leg": {
           "axis": "z",
           "anticipation_deg": 11.07,
@@ -909,6 +893,22 @@
           "followthrough_pct": 20.7,
           "ringing_lobes": 0,
           "max_delta_deg": 38.0
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 11.86,
+          "followthrough_deg": 10.13,
+          "followthrough_pct": 54.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 24.35
+        },
+        "Right Leg": {
+          "axis": "z",
+          "anticipation_deg": 15.14,
+          "followthrough_deg": 15.41,
+          "followthrough_pct": 32.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 38.74
         }
       }
     },
@@ -943,14 +943,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 11.29
         },
-        "Right Arm": {
-          "axis": "z",
-          "anticipation_deg": 13.27,
-          "followthrough_deg": 11.33,
-          "followthrough_pct": 60.7,
-          "ringing_lobes": 0,
-          "max_delta_deg": 26.24
-        },
         "Left Arm": {
           "axis": "z",
           "anticipation_deg": 11.05,
@@ -959,14 +951,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 24.68
         },
-        "Right Leg": {
-          "axis": "z",
-          "anticipation_deg": 18.16,
-          "followthrough_deg": 17.14,
-          "followthrough_pct": 36.6,
-          "ringing_lobes": 0,
-          "max_delta_deg": 41.74
-        },
         "Left Leg": {
           "axis": "z",
           "anticipation_deg": 13.28,
@@ -974,6 +958,22 @@
           "followthrough_pct": 23.9,
           "ringing_lobes": 0,
           "max_delta_deg": 41.11
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 13.27,
+          "followthrough_deg": 11.33,
+          "followthrough_pct": 60.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 26.24
+        },
+        "Right Leg": {
+          "axis": "z",
+          "anticipation_deg": 18.16,
+          "followthrough_deg": 17.14,
+          "followthrough_pct": 36.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 41.74
         }
       }
     },
@@ -1008,14 +1008,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 12.25
         },
-        "Right Arm": {
-          "axis": "z",
-          "anticipation_deg": 14.87,
-          "followthrough_deg": 12.56,
-          "followthrough_pct": 67.1,
-          "ringing_lobes": 0,
-          "max_delta_deg": 28.46
-        },
         "Left Arm": {
           "axis": "z",
           "anticipation_deg": 12.28,
@@ -1024,14 +1016,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 28.07
         },
-        "Right Leg": {
-          "axis": "z",
-          "anticipation_deg": 21.29,
-          "followthrough_deg": 18.86,
-          "followthrough_pct": 40.6,
-          "ringing_lobes": 0,
-          "max_delta_deg": 45.24
-        },
         "Left Leg": {
           "axis": "z",
           "anticipation_deg": 15.65,
@@ -1039,6 +1023,22 @@
           "followthrough_pct": 28.2,
           "ringing_lobes": 0,
           "max_delta_deg": 44.79
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 14.87,
+          "followthrough_deg": 12.56,
+          "followthrough_pct": 67.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 28.46
+        },
+        "Right Leg": {
+          "axis": "z",
+          "anticipation_deg": 21.29,
+          "followthrough_deg": 18.86,
+          "followthrough_pct": 40.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 45.24
         }
       }
     },
@@ -1073,14 +1073,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 6.64
         },
-        "Right Arm": {
-          "axis": "z",
-          "anticipation_deg": 7.93,
-          "followthrough_deg": 6.71,
-          "followthrough_pct": 35.9,
-          "ringing_lobes": 0,
-          "max_delta_deg": 15.35
-        },
         "Left Arm": {
           "axis": "z",
           "anticipation_deg": 6.56,
@@ -1089,14 +1081,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 13.41
         },
-        "Right Leg": {
-          "axis": "z",
-          "anticipation_deg": 10.07,
-          "followthrough_deg": 10.09,
-          "followthrough_pct": 21.7,
-          "ringing_lobes": 0,
-          "max_delta_deg": 24.42
-        },
         "Left Leg": {
           "axis": "z",
           "anticipation_deg": 7.28,
@@ -1104,6 +1088,22 @@
           "followthrough_pct": 13.8,
           "ringing_lobes": 0,
           "max_delta_deg": 24.03
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 7.93,
+          "followthrough_deg": 6.71,
+          "followthrough_pct": 35.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 15.35
+        },
+        "Right Leg": {
+          "axis": "z",
+          "anticipation_deg": 10.07,
+          "followthrough_deg": 10.09,
+          "followthrough_pct": 21.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 24.42
         }
       }
     },
@@ -1138,14 +1138,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 6.8
         },
-        "Right Arm": {
-          "axis": "z",
-          "anticipation_deg": 8.57,
-          "followthrough_deg": 7.13,
-          "followthrough_pct": 38.1,
-          "ringing_lobes": 0,
-          "max_delta_deg": 15.9
-        },
         "Left Arm": {
           "axis": "z",
           "anticipation_deg": 7.06,
@@ -1154,14 +1146,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 15.47
         },
-        "Right Leg": {
-          "axis": "z",
-          "anticipation_deg": 11.09,
-          "followthrough_deg": 10.63,
-          "followthrough_pct": 23.1,
-          "ringing_lobes": 0,
-          "max_delta_deg": 25.29
-        },
         "Left Leg": {
           "axis": "z",
           "anticipation_deg": 8.02,
@@ -1169,6 +1153,22 @@
           "followthrough_pct": 15.0,
           "ringing_lobes": 0,
           "max_delta_deg": 24.8
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 8.57,
+          "followthrough_deg": 7.13,
+          "followthrough_pct": 38.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 15.9
+        },
+        "Right Leg": {
+          "axis": "z",
+          "anticipation_deg": 11.09,
+          "followthrough_deg": 10.63,
+          "followthrough_pct": 23.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 25.29
         }
       }
     },
@@ -1203,14 +1203,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 7.1
         },
-        "Right Arm": {
-          "axis": "z",
-          "anticipation_deg": 9.32,
-          "followthrough_deg": 7.64,
-          "followthrough_pct": 40.6,
-          "ringing_lobes": 0,
-          "max_delta_deg": 16.65
-        },
         "Left Arm": {
           "axis": "z",
           "anticipation_deg": 7.66,
@@ -1219,14 +1211,6 @@
           "ringing_lobes": 0,
           "max_delta_deg": 18.2
         },
-        "Right Leg": {
-          "axis": "z",
-          "anticipation_deg": 12.21,
-          "followthrough_deg": 11.26,
-          "followthrough_pct": 24.6,
-          "ringing_lobes": 0,
-          "max_delta_deg": 26.47
-        },
         "Left Leg": {
           "axis": "z",
           "anticipation_deg": 8.91,
@@ -1234,6 +1218,22 @@
           "followthrough_pct": 16.4,
           "ringing_lobes": 0,
           "max_delta_deg": 26.06
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 9.32,
+          "followthrough_deg": 7.64,
+          "followthrough_pct": 40.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 16.65
+        },
+        "Right Leg": {
+          "axis": "z",
+          "anticipation_deg": 12.21,
+          "followthrough_deg": 11.26,
+          "followthrough_pct": 24.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 26.47
         }
       }
     }
@@ -1269,14 +1269,6 @@
         "ringing_lobes": 0,
         "max_delta_deg": 2.74
       },
-      "Right Arm": {
-        "axis": "z",
-        "anticipation_deg": 3.22,
-        "followthrough_deg": 2.57,
-        "followthrough_pct": 13.4,
-        "ringing_lobes": 0,
-        "max_delta_deg": 6.1
-      },
       "Left Arm": {
         "axis": "z",
         "anticipation_deg": 2.65,
@@ -1285,14 +1277,6 @@
         "ringing_lobes": 0,
         "max_delta_deg": 7.06
       },
-      "Right Leg": {
-        "axis": "z",
-        "anticipation_deg": 4.36,
-        "followthrough_deg": 3.59,
-        "followthrough_pct": 7.9,
-        "ringing_lobes": 0,
-        "max_delta_deg": 10.42
-      },
       "Left Leg": {
         "axis": "z",
         "anticipation_deg": 3.2,
@@ -1300,6 +1284,22 @@
         "followthrough_pct": 5.9,
         "ringing_lobes": 0,
         "max_delta_deg": 10.96
+      },
+      "Right Arm": {
+        "axis": "z",
+        "anticipation_deg": 3.22,
+        "followthrough_deg": 2.57,
+        "followthrough_pct": 13.4,
+        "ringing_lobes": 0,
+        "max_delta_deg": 6.1
+      },
+      "Right Leg": {
+        "axis": "z",
+        "anticipation_deg": 4.36,
+        "followthrough_deg": 3.59,
+        "followthrough_pct": 7.9,
+        "ringing_lobes": 0,
+        "max_delta_deg": 10.42
       }
     }
   }

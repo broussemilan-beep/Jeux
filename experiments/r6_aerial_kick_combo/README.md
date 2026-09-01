@@ -327,6 +327,68 @@ signe — le mouvement écrit n'a pas changé, seule son écriture dans le
 fichier est corrigée. Les fichiers `.rbxmx` de tous les cycles et du
 livrable filtré ont été régénérés.
 
+## Rejouer le fichier PAR LE MOTEUR — deux bugs de plus
+
+`scripts/resolve_rbxmx.py` relit le `.rbxmx` livré et le résout avec
+l'équation réelle `Part1 = Part0 · C0 · Transform · C1⁻¹`, en ignorant —
+comme le fait l'Animator — toute Pose dont le nom ne correspond au `Part1`
+d'aucun Motor6D. Le lecteur HTML est désormais alimenté par cette
+résolution, plus par ma cinématique maison : il montre ce que Roblox
+calculerait, pas ce que j'ai écrit.
+
+Ce simple changement a fait tomber deux erreurs de plus.
+
+### 4. La pose racine était ignorée — tout le saut disparaissait
+
+`HumanoidRootPart` n'est le `Part1` d'aucun Motor6D du rig (vérifié sur
+`rig/r6_rig.json` : il n'est que le `Part0` du RootJoint). Une Pose portant
+ce nom ne pilote donc **rien**. Or c'est exactement là que j'écrivais tout
+l'arc du saut et la rotation du corps :
+
+```
+AVANT : HumanoidRootPart porte 1.587 stud de translation, 175.6 deg de rotation
+        -> Torso Y resolu par le moteur : amplitude 0.000 stud
+APRES : HumanoidRootPart identite
+        -> Torso Y resolu par le moteur : amplitude 1.998 stud
+```
+
+Le personnage aurait enchaîné les trois coups **sans jamais décoller**, et
+sans tourner. Corrigé en repliant rotation racine et translation sur la
+pose du **Torse**, qui pilote le RootJoint — c'est ainsi que sont faites
+les animations de saut de Roblox. Le repli est sûr quelle que soit
+l'interprétation : on écrit l'identité dans la pose racine, donc aucun
+double-emploi si elle était honorée.
+
+### 5. Ma cinématique d'aperçu faisait pivoter les membres autour de leur centre
+
+En confrontant la résolution moteur à ma cinématique directe, le torse
+coïncidait (5e-05) mais les membres divergeaient jusqu'à **1.74 stud**.
+La partie translation de l'équation vaut `c0 − R·c1`, or
+`_world_positions()` utilisait l'écart de repos `c0 − c1`, **constant**.
+Un membre y tournait donc autour de son propre centre au lieu de pivoter
+autour de son point d'attache : une jambe qui frappe voyait son pied
+bouger, mais le haut de sa cuisse se détacher de la hanche.
+
+Cela n'affectait ni les angles écrits, ni les mesures, ni le fichier
+exporté — **uniquement les aperçus**, c'est-à-dire précisément l'outil
+avec lequel je « vérifiais » le résultat.
+
+Après correction, la vérification bout-en-bout passe : écart entre le
+`.rbxmx` résolu par le moteur et la cinématique corrigée =
+**5e-05 stud** sur les six parties du corps (résidu = l'arrondi à 4
+décimales de l'export).
+
+### Ce que ces trois erreurs ont en commun
+
+Les bugs 3, 4 et 5 sont tous des **désaccords entre mon modèle et le
+moteur**, et aucun n'était détectable par les moyens que j'utilisais :
+les scores mesuraient les angles écrits (justes), les captures montraient
+ma propre cinématique (fausse de la même manière que l'export), et la pose
+de repos restait correcte dans tous les cas. Vérifier une sortie contre le
+modèle qui l'a produite ne prouve rien. Il a fallu deux choses
+extérieures : un vrai rig, et rejouer le fichier livré par l'équation du
+moteur plutôt que par mon code.
+
 ## Piste 1 — exagération algorithmique post-hoc (Cartoon Animation Filter)
 
 Ajoutée après coup, sur la base d'un brief de recherche qui la classait

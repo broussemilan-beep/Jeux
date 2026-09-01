@@ -95,8 +95,46 @@ def to_joint_frame(part, rot_parent_frame, translation_parent_frame):
     return t_rot, tuple(t_pos.tolist())
 
 
-def build_pose_tree(keyframe_item, part, samples, sample_index, parent_xml=None):
-    t, rot, pos, _wpos = samples[part][sample_index]
+def effective_pose_inputs(samples, sample_index):
+    """Rotation (repere parent) et translation a encoder pour CHAQUE part,
+    avant conversion vers le repere du joint.
+
+    Le mouvement d'ensemble du corps (rotation du "bassin" + arc du saut)
+    est REPLIE SUR LA POSE DU TORSE, et la pose HumanoidRootPart devient
+    l'identite.
+
+    Pourquoi : l'Animator de Roblox applique une Pose au Motor6D dont le
+    Part1 porte le meme nom. Or dans un rig R6, HumanoidRootPart n'est
+    Part1 d'AUCUN Motor6D (il n'est que le Part0 du RootJoint, verifie sur
+    rig/r6_rig.json). Une Pose nommee "HumanoidRootPart" ne pilote donc
+    rien et est ignoree a la lecture : tout l'arc du saut, qui etait ecrit
+    la, disparaissait -- le personnage enchainait les coups sans jamais
+    decoller. Le joint qui porte reellement le mouvement du corps entier
+    est le RootJoint (HumanoidRootPart -> Torso), c'est-a-dire la pose du
+    TORSE. C'est ainsi que sont faites les animations de saut de Roblox.
+
+    Ce repli est sur quelle que soit l'interpretation : meme si une pose
+    racine etait honoree, on y ecrit l'identite, donc aucun double-emploi."""
+    root_rot = euler_xyz_matrix(*samples["HumanoidRootPart"][sample_index][1])
+    root_trans = samples["HumanoidRootPart"][sample_index][2]
+
+    out = {}
+    for part in PART_ORDER:
+        rot = euler_xyz_matrix(*samples[part][sample_index][1])
+        if part == "HumanoidRootPart":
+            out[part] = (np.eye(3), (0.0, 0.0, 0.0))
+        elif part == "Torso":
+            out[part] = (root_rot @ rot, tuple(root_trans))
+        else:
+            out[part] = (rot, (0.0, 0.0, 0.0))
+    return out
+
+
+def build_pose_tree(keyframe_item, part, samples, sample_index, parent_xml=None,
+                    effective=None):
+    if effective is None:
+        effective = effective_pose_inputs(samples, sample_index)
+    rot_parent_frame, trans_parent_frame = effective[part]
     item = ET.SubElement(parent_xml if parent_xml is not None else keyframe_item,
                           "Item", {"class": "Pose", "referent": _next_ref()})
     props = ET.SubElement(item, "Properties")
@@ -104,14 +142,13 @@ def build_pose_tree(keyframe_item, part, samples, sample_index, parent_xml=None)
     ET.SubElement(props, "token", {"name": "EasingDirection"}).text = "0"
     ET.SubElement(props, "token", {"name": "EasingStyle"}).text = "1"  # Linear
     ET.SubElement(props, "float", {"name": "Weight"}).text = "1"
-    matrix_parent_frame = euler_xyz_matrix(*rot)
-    trans_parent_frame = pos if part == "HumanoidRootPart" else (0.0, 0.0, 0.0)
-    matrix, world_pos = to_joint_frame(part, matrix_parent_frame, trans_parent_frame)
+    matrix, world_pos = to_joint_frame(part, rot_parent_frame, trans_parent_frame)
     _cframe_element(props, "CFrame", world_pos, matrix)
 
     child_parts = [p for p, parent in PARENT.items() if parent == part]
     for cp in child_parts:
-        build_pose_tree(keyframe_item, cp, samples, sample_index, parent_xml=item)
+        build_pose_tree(keyframe_item, cp, samples, sample_index, parent_xml=item,
+                        effective=effective)
     return item
 
 

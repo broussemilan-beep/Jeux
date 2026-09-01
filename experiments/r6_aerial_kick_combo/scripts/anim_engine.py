@@ -35,7 +35,7 @@ import math
 import numpy as np
 import bpy
 
-from r6_rig import PART_ORDER, PARENT, local_offset, joint_for_part
+from r6_rig import PART_ORDER, PARENT, JOINTS, local_offset, joint_for_part
 
 
 def euler_xyz_matrix(rx_deg, ry_deg, rz_deg):
@@ -188,9 +188,19 @@ def sample(objs, duration_s, fps=30, sample_hz=60):
 
 
 def _world_positions(local_samples, n):
-    """Cinematique directe a la main (coherente avec euler_xyz_matrix,
-    donc avec la convention Roblox) : world_pos(part) = world_pos(parent)
-    + R_world(parent) @ local_pos(part)."""
+    """Cinematique directe a la main, alignee sur l'equation du moteur
+    Roblox : Part1 = Part0 * C0 * Transform * C1^-1, dont la partie
+    translation vaut `c0 - R.c1` et NON `c0 - c1`.
+
+    Corrige apres confrontation avec la resolution reelle du .rbxmx
+    (`resolve_rbxmx.py`) : cette fonction utilisait `local_offset()`,
+    c'est-a-dire l'ecart de repos `c0 - c1`, CONSTANT quelle que soit la
+    rotation. Un membre y tournait donc autour de son propre centre au
+    lieu de pivoter autour de son point d'attache -- une jambe qui frappe
+    voyait son pied bouger mais le haut de sa cuisse se detacher de la
+    hanche. Ecart mesure contre le moteur : jusqu'a 1.74 stud sur la
+    jambe droite. Les angles ecrits (donc toutes les mesures et le
+    fichier exporte) n'etaient pas touches -- seuls les apercus l'etaient."""
     out = {part: [None] * n for part in local_samples}
     r_world = {part: [None] * n for part in local_samples}
     for i in range(n):
@@ -202,6 +212,10 @@ def _world_positions(local_samples, n):
                 out[part][i] = pos
                 r_world[part][i] = m_local
             else:
+                jname = joint_for_part(part)
+                c0 = np.array(JOINTS[jname]["C0"]["pos"])
+                c1 = np.array(JOINTS[jname]["C1"]["pos"])
+                pos = tuple((c0 - m_local @ c1).tolist())
                 pw = np.array(out[parent][i])
                 rw = r_world[parent][i]
                 world = pw + rw @ np.array(pos)
