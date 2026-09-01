@@ -250,6 +250,83 @@ cd scripts
 python3 run_cycle.py --cycle 5     # régénère output/cycle5/{combo.rbxmx,metrics.json,poses.png,curves.png}
 ```
 
+## Rig réel importé depuis GitHub — et le bug qu'il a révélé
+
+Jusqu'ici la géométrie R6 était **écrite à la main de mémoire** dans
+`r6_rig.py`. Elle est maintenant **chargée depuis un vrai fichier de rig**
+(`rig/RigR6.rbxmx`, dépôt [Adonis](https://github.com/Epix-Incorporated/Adonis),
+licence MIT — voir `rig/PROVENANCE.md`), parsé par `scripts/import_rig.py`
+vers `rig/r6_rig.json`.
+
+Choix de la source : la recherche GitHub renvoyait surtout des
+`RCCService*/content/models/Thumbnails/Mannequins/R6.rbxmx`, c'est-à-dire
+des dumps de contenu client Roblox redistribués par des dépôts de private
+servers — contenu propriétaire, écarté au profit d'une source clairement
+licenciée MIT.
+
+### Ce que la comparaison a donné
+
+| | codé à la main | rig réel |
+|---|---|---|
+| tailles des 7 parts | | **identiques** |
+| translations C0/C1 des 6 Motor6D | | **identiques** |
+| **rotations C0/C1 des 6 Motor6D** | « identité (standard R6) » | **aucune n'est l'identité** |
+
+Le commentaire de `r6_rig.py` affirmait noir sur blanc « Rotation de C0/C1
+= identite (standard R6) ». C'est faux : hanches et épaules portent un
+±90° autour de Y, le Neck et le RootJoint une permutation Y/Z.
+
+### Pourquoi ça cassait l'export (et pas le reste)
+
+Le moteur résout `Part1 = Part0 * C0 * Transform * C1⁻¹`. La rotation vue
+dans le repère du parent vaut donc `J0 · T · J1ᵀ`. Écrire directement
+`T = R` (la pose telle que je l'ai écrite, en repère parent) ne donne `R`
+que si `J0` et `J1` valent l'identité. Avec les vraies valeurs, on obtient
+**le bon angle autour du mauvais axe** — la rotation d'axe `a` devient une
+rotation d'axe `J0·a`. Mesuré par `scripts/verify_joint_frames.py` :
+
+```
+Right Leg (60,0,0) — coup de pied vers l'AVANT (axe X)
+   voulu :  60.0 deg autour de (+1.00,+0.00,+0.00)
+   obtenu:  60.0 deg autour de (+0.00,+0.00,-1.00)   -> axe dévié de 90 deg
+Torso (0,90,0) — spin du torse (lacet, axe Y)
+   voulu :  90.0 deg autour de (+0.00,+1.00,+0.00)
+   obtenu:  90.0 deg autour de (+0.00,+0.00,+1.00)   -> axe dévié de 90 deg
+```
+
+Soit, sur un vrai rig : des coups de pied qui partent **de côté** au lieu
+de vers l'avant (et en miroir entre jambe gauche et droite, les deux
+hanches ayant des `J0` opposés), et un torse qui fait un **tonneau** au
+lieu d'un tour sur lui-même.
+
+**Pourquoi ni les captures ni les scores ne l'avaient vu** : au repos
+`R = identité`, donc `T = identité` quels que soient `J0`/`J1` — la pose
+de repos restait exacte. Et mes stick-figures faisaient leur cinématique
+directe avec *la même hypothèse fausse* : ils montraient fidèlement ce que
+j'avais écrit, pas ce que Roblox en aurait fait. Une vérification visuelle
+contre son propre modèle erroné ne peut pas attraper ce type d'erreur —
+seul un vrai rig le pouvait.
+
+### Correction
+
+`export_kfseq.to_joint_frame()` convertit désormais chaque pose du repère
+du parent vers le repère du joint avant écriture :
+
+- rotation : `T = J0ᵀ · R · J1`
+- translation (racine seulement, `c1` nul) : `T_t = J0ᵀ · d`
+- membres : `T_t = 0` reste correct (le terme `−R·c1` fait déjà pivoter
+  le membre autour de son point d'attache)
+
+`scripts/verify_joint_frames.py` vérifie les trois choses : aller-retour
+exact (écart max 0.00e+00 sur 200 tirages × 6 joints), pose de repos
+correcte, et chiffre l'écart qu'introduisait l'ancien export.
+
+Invariant obtenu après correction : **les scores des 5 cycles sont
+inchangés au bit près** (65.0 / 87.6 / 65.4 / 62.9 / 90.7). C'est le bon
+signe — le mouvement écrit n'a pas changé, seule son écriture dans le
+fichier est corrigée. Les fichiers `.rbxmx` de tous les cycles et du
+livrable filtré ont été régénérés.
+
 ## Piste 1 — exagération algorithmique post-hoc (Cartoon Animation Filter)
 
 Ajoutée après coup, sur la base d'un brief de recherche qui la classait

@@ -5,10 +5,10 @@
   "smoothness_per_joint": {
     "Torso": 105.70722041803586,
     "Head": 42.69232368439365,
-    "Right Arm": 89.92042514788764,
     "Left Arm": 84.77047698342503,
-    "Right Leg": 137.5807919093355,
     "Left Leg": 139.13925917861573,
+    "Right Arm": 89.92042514788764,
+    "Right Leg": 137.5807919093355,
     "_aggregate_max": 139.13925917861573
   },
   "velocity_continuity_at_keyframes": {
@@ -126,63 +126,6 @@
       ],
       "mean": 0.10701119906627964
     },
-    "Right Arm": {
-      "per_keyframe": [
-        [
-          0.18,
-          0.13032922628681246
-        ],
-        [
-          0.36,
-          0.2423977069514351
-        ],
-        [
-          0.49,
-          0.11178726461986506
-        ],
-        [
-          0.62,
-          0.4910049295893258
-        ],
-        [
-          0.88,
-          0.29327377009845407
-        ],
-        [
-          1.02,
-          0.038426608959290884
-        ],
-        [
-          1.16,
-          0.2678917037845637
-        ],
-        [
-          1.42,
-          0.3018087179583624
-        ],
-        [
-          1.54,
-          0.04715990120975217
-        ],
-        [
-          1.66,
-          0.31020287394097723
-        ],
-        [
-          1.86,
-          0.1931312427741516
-        ],
-        [
-          2.05,
-          0.0
-        ],
-        [
-          2.2,
-          0.0
-        ]
-      ],
-      "mean": 0.18672414970561466
-    },
     "Left Arm": {
       "per_keyframe": [
         [
@@ -240,63 +183,6 @@
       ],
       "mean": 0.1457196500934385
     },
-    "Right Leg": {
-      "per_keyframe": [
-        [
-          0.18,
-          0.03304302557258211
-        ],
-        [
-          0.36,
-          0.2782164343363251
-        ],
-        [
-          0.49,
-          0.11531585701415509
-        ],
-        [
-          0.62,
-          0.3774881135083371
-        ],
-        [
-          0.88,
-          0.16349319937635656
-        ],
-        [
-          1.02,
-          0.060573470105959114
-        ],
-        [
-          1.16,
-          0.13457121535639124
-        ],
-        [
-          1.42,
-          0.06496651822574616
-        ],
-        [
-          1.54,
-          0.0751762868716513
-        ],
-        [
-          1.66,
-          0.3986185395130828
-        ],
-        [
-          1.86,
-          0.4451824124530456
-        ],
-        [
-          2.05,
-          0.2055262541406832
-        ],
-        [
-          2.2,
-          0.04616208001062504
-        ]
-      ],
-      "mean": 0.18448718511422615
-    },
     "Left Leg": {
       "per_keyframe": [
         [
@@ -353,6 +239,120 @@
         ]
       ],
       "mean": 0.170688789503578
+    },
+    "Right Arm": {
+      "per_keyframe": [
+        [
+          0.18,
+          0.13032922628681246
+        ],
+        [
+          0.36,
+          0.2423977069514351
+        ],
+        [
+          0.49,
+          0.11178726461986506
+        ],
+        [
+          0.62,
+          0.4910049295893258
+        ],
+        [
+          0.88,
+          0.29327377009845407
+        ],
+        [
+          1.02,
+          0.038426608959290884
+        ],
+        [
+          1.16,
+          0.2678917037845637
+        ],
+        [
+          1.42,
+          0.3018087179583624
+        ],
+        [
+          1.54,
+          0.04715990120975217
+        ],
+        [
+          1.66,
+          0.31020287394097723
+        ],
+        [
+          1.86,
+          0.1931312427741516
+        ],
+        [
+          2.05,
+          0.0
+        ],
+        [
+          2.2,
+          0.0
+        ]
+      ],
+      "mean": 0.18672414970561466
+    },
+    "Right Leg": {
+      "per_keyframe": [
+        [
+          0.18,
+          0.03304302557258211
+        ],
+        [
+          0.36,
+          0.2782164343363251
+        ],
+        [
+          0.49,
+          0.11531585701415509
+        ],
+        [
+          0.62,
+          0.3774881135083371
+        ],
+        [
+          0.88,
+          0.16349319937635656
+        ],
+        [
+          1.02,
+          0.060573470105959114
+        ],
+        [
+          1.16,
+          0.13457121535639124
+        ],
+        [
+          1.42,
+          0.06496651822574616
+        ],
+        [
+          1.54,
+          0.0751762868716513
+        ],
+        [
+          1.66,
+          0.3986185395130828
+        ],
+        [
+          1.86,
+          0.4451824124530456
+        ],
+        [
+          2.05,
+          0.2055262541406832
+        ],
+        [
+          2.2,
+          0.04616208001062504
+        ]
+      ],
+      "mean": 0.18448718511422615
     }
   },
   "twist_reversals": {
@@ -369,25 +369,25 @@
         "extra": 0,
         "axis": "none (excursion<noise_floor)"
       },
-      "Right Arm": {
-        "found": 0,
-        "expected": 0,
-        "extra": 0,
-        "axis": "none (excursion<noise_floor)"
-      },
       "Left Arm": {
         "found": 0,
         "expected": 0,
         "extra": 0,
         "axis": "none (excursion<noise_floor)"
       },
-      "Right Leg": {
+      "Left Leg": {
         "found": 0,
         "expected": 0,
         "extra": 0,
         "axis": "x"
       },
-      "Left Leg": {
+      "Right Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "none (excursion<noise_floor)"
+      },
+      "Right Leg": {
         "found": 0,
         "expected": 0,
         "extra": 0,
@@ -407,25 +407,25 @@
         "extra": 0,
         "axis": "none (excursion<noise_floor)"
       },
-      "Right Arm": {
-        "found": 0,
-        "expected": 0,
-        "extra": 0,
-        "axis": "x"
-      },
       "Left Arm": {
         "found": 0,
         "expected": 0,
         "extra": 0,
         "axis": "x"
       },
-      "Right Leg": {
+      "Left Leg": {
         "found": 0,
         "expected": 0,
         "extra": 0,
         "axis": "x"
       },
-      "Left Leg": {
+      "Right Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "x"
+      },
+      "Right Leg": {
         "found": 0,
         "expected": 0,
         "extra": 0,
@@ -445,25 +445,25 @@
         "extra": 0,
         "axis": "y"
       },
-      "Right Arm": {
-        "found": 0,
-        "expected": 0,
-        "extra": 0,
-        "axis": "z"
-      },
       "Left Arm": {
         "found": 0,
         "expected": 0,
         "extra": 0,
         "axis": "z"
       },
-      "Right Leg": {
+      "Left Leg": {
         "found": 0,
         "expected": 0,
         "extra": 0,
         "axis": "x"
       },
-      "Left Leg": {
+      "Right Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "z"
+      },
+      "Right Leg": {
         "found": 0,
         "expected": 0,
         "extra": 0,
@@ -483,19 +483,7 @@
         "extra": 0,
         "axis": "y"
       },
-      "Right Arm": {
-        "found": 0,
-        "expected": 0,
-        "extra": 0,
-        "axis": "z"
-      },
       "Left Arm": {
-        "found": 0,
-        "expected": 0,
-        "extra": 0,
-        "axis": "z"
-      },
-      "Right Leg": {
         "found": 0,
         "expected": 0,
         "extra": 0,
@@ -506,6 +494,18 @@
         "expected": 0,
         "extra": 0,
         "axis": "x"
+      },
+      "Right Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "z"
+      },
+      "Right Leg": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "z"
       }
     },
     "seg_4_0.62-0.88": {
@@ -521,19 +521,7 @@
         "extra": 0,
         "axis": "y"
       },
-      "Right Arm": {
-        "found": 0,
-        "expected": 0,
-        "extra": 0,
-        "axis": "z"
-      },
       "Left Arm": {
-        "found": 0,
-        "expected": 0,
-        "extra": 0,
-        "axis": "z"
-      },
-      "Right Leg": {
         "found": 0,
         "expected": 0,
         "extra": 0,
@@ -544,6 +532,18 @@
         "expected": 0,
         "extra": 0,
         "axis": "y"
+      },
+      "Right Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "z"
+      },
+      "Right Leg": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "z"
       }
     },
     "seg_5_0.88-1.02": {
@@ -559,25 +559,25 @@
         "extra": 0,
         "axis": "y"
       },
-      "Right Arm": {
-        "found": 0,
-        "expected": 0,
-        "extra": 0,
-        "axis": "y"
-      },
       "Left Arm": {
         "found": 0,
         "expected": 0,
         "extra": 0,
         "axis": "z"
       },
-      "Right Leg": {
+      "Left Leg": {
         "found": 0,
         "expected": 0,
         "extra": 0,
         "axis": "z"
       },
-      "Left Leg": {
+      "Right Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "y"
+      },
+      "Right Leg": {
         "found": 0,
         "expected": 0,
         "extra": 0,
@@ -597,25 +597,25 @@
         "extra": 0,
         "axis": "y"
       },
-      "Right Arm": {
-        "found": 0,
-        "expected": 0,
-        "extra": 0,
-        "axis": "y"
-      },
       "Left Arm": {
         "found": 0,
         "expected": 0,
         "extra": 0,
         "axis": "y"
       },
-      "Right Leg": {
+      "Left Leg": {
         "found": 0,
         "expected": 0,
         "extra": 0,
         "axis": "z"
       },
-      "Left Leg": {
+      "Right Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "y"
+      },
+      "Right Leg": {
         "found": 0,
         "expected": 0,
         "extra": 0,
@@ -635,25 +635,25 @@
         "extra": 0,
         "axis": "y"
       },
-      "Right Arm": {
-        "found": 0,
-        "expected": 0,
-        "extra": 0,
-        "axis": "z"
-      },
       "Left Arm": {
         "found": 0,
         "expected": 0,
         "extra": 0,
         "axis": "z"
       },
-      "Right Leg": {
+      "Left Leg": {
         "found": 0,
         "expected": 0,
         "extra": 0,
         "axis": "z"
       },
-      "Left Leg": {
+      "Right Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "z"
+      },
+      "Right Leg": {
         "found": 0,
         "expected": 0,
         "extra": 0,
@@ -673,25 +673,25 @@
         "extra": 0,
         "axis": "none (excursion<noise_floor)"
       },
-      "Right Arm": {
-        "found": 0,
-        "expected": 0,
-        "extra": 0,
-        "axis": "z"
-      },
       "Left Arm": {
         "found": 0,
         "expected": 0,
         "extra": 0,
         "axis": "z"
       },
-      "Right Leg": {
+      "Left Leg": {
         "found": 0,
         "expected": 0,
         "extra": 0,
         "axis": "x"
       },
-      "Left Leg": {
+      "Right Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "z"
+      },
+      "Right Leg": {
         "found": 0,
         "expected": 0,
         "extra": 0,
@@ -711,25 +711,25 @@
         "extra": 0,
         "axis": "none (excursion<noise_floor)"
       },
-      "Right Arm": {
-        "found": 0,
-        "expected": 0,
-        "extra": 0,
-        "axis": "z"
-      },
       "Left Arm": {
         "found": 0,
         "expected": 0,
         "extra": 0,
         "axis": "z"
       },
-      "Right Leg": {
+      "Left Leg": {
         "found": 0,
         "expected": 0,
         "extra": 0,
         "axis": "x"
       },
-      "Left Leg": {
+      "Right Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "z"
+      },
+      "Right Leg": {
         "found": 0,
         "expected": 0,
         "extra": 0,
@@ -749,25 +749,25 @@
         "extra": 0,
         "axis": "none (excursion<noise_floor)"
       },
-      "Right Arm": {
-        "found": 0,
-        "expected": 0,
-        "extra": 0,
-        "axis": "z"
-      },
       "Left Arm": {
         "found": 0,
         "expected": 0,
         "extra": 0,
         "axis": "z"
       },
-      "Right Leg": {
+      "Left Leg": {
         "found": 0,
         "expected": 0,
         "extra": 0,
         "axis": "x"
       },
-      "Left Leg": {
+      "Right Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "z"
+      },
+      "Right Leg": {
         "found": 0,
         "expected": 0,
         "extra": 0,
@@ -787,25 +787,25 @@
         "extra": 0,
         "axis": "none (excursion<noise_floor)"
       },
-      "Right Arm": {
-        "found": 0,
-        "expected": 0,
-        "extra": 0,
-        "axis": "none (excursion<noise_floor)"
-      },
       "Left Arm": {
         "found": 0,
         "expected": 0,
         "extra": 0,
         "axis": "none (excursion<noise_floor)"
       },
-      "Right Leg": {
+      "Left Leg": {
         "found": 0,
         "expected": 0,
         "extra": 0,
         "axis": "x"
       },
-      "Left Leg": {
+      "Right Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "none (excursion<noise_floor)"
+      },
+      "Right Leg": {
         "found": 0,
         "expected": 0,
         "extra": 0,
@@ -825,25 +825,25 @@
         "extra": 0,
         "axis": "none (excursion<noise_floor)"
       },
-      "Right Arm": {
-        "found": 0,
-        "expected": 0,
-        "extra": 0,
-        "axis": "none (excursion<noise_floor)"
-      },
       "Left Arm": {
         "found": 0,
         "expected": 0,
         "extra": 0,
         "axis": "none (excursion<noise_floor)"
       },
-      "Right Leg": {
+      "Left Leg": {
         "found": 0,
         "expected": 0,
         "extra": 0,
         "axis": "x"
       },
-      "Left Leg": {
+      "Right Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "none (excursion<noise_floor)"
+      },
+      "Right Leg": {
         "found": 0,
         "expected": 0,
         "extra": 0,
@@ -863,25 +863,25 @@
         "extra": 0,
         "axis": "none (excursion<noise_floor)"
       },
-      "Right Arm": {
-        "found": 0,
-        "expected": 0,
-        "extra": 0,
-        "axis": "none (excursion<noise_floor)"
-      },
       "Left Arm": {
         "found": 0,
         "expected": 0,
         "extra": 0,
         "axis": "none (excursion<noise_floor)"
       },
-      "Right Leg": {
+      "Left Leg": {
         "found": 0,
         "expected": 0,
         "extra": 0,
         "axis": "x"
       },
-      "Left Leg": {
+      "Right Arm": {
+        "found": 0,
+        "expected": 0,
+        "extra": 0,
+        "axis": "none (excursion<noise_floor)"
+      },
+      "Right Leg": {
         "found": 0,
         "expected": 0,
         "extra": 0,
@@ -900,7 +900,7 @@
     },
     "rotation_within_sane_range": {
       "ok": true,
-      "detail": "max_angles={Torso:179deg, Head:25deg, Right Arm:73deg, Left Arm:59deg, Right Leg:124deg, Left Leg:118deg}"
+      "detail": "max_angles={Torso:179deg, Head:25deg, Left Arm:59deg, Left Leg:118deg, Right Arm:73deg, Right Leg:124deg}"
     },
     "no_punch_like_arm_pose": {
       "ok": true,

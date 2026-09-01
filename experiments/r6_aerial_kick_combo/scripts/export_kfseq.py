@@ -19,7 +19,10 @@ que "Bake to keyframes" dans l'editeur d'animation Roblox et dans la
 plupart des pipelines d'export d'animation par courbes.
 """
 import xml.etree.ElementTree as ET
-from r6_rig import PART_ORDER, PARENT
+
+import numpy as np
+
+from r6_rig import PART_ORDER, PARENT, joint_for_part, joint_rotations
 from anim_engine import euler_xyz_matrix
 
 _ref_counter = [0]
@@ -49,6 +52,49 @@ def _properties(item, entries):
     return props
 
 
+def to_joint_frame(part, rot_parent_frame, translation_parent_frame):
+    """Convertit une rotation exprimee dans le repere du PARENT (la
+    convention d'ecriture de toute la choregraphie : "X positif = la jambe
+    part vers l'avant") vers le repere du JOINT, seul repere que Roblox
+    utilise pour Pose.CFrame.
+
+    Le moteur resout Part1 = Part0 * C0 * Transform * C1^-1. En notant
+    (J0, c0) et (J1, c1) les C0/C1, la rotation vue dans le repere du
+    parent vaut donc J0 . T_R . J1^T. Pour qu'elle soit egale a la
+    rotation R que j'ai ecrite, il faut poser :
+
+        T_R = J0^T . R . J1
+
+    Tant que J0 et J1 sont l'identite, T_R = R et la question ne se pose
+    pas -- c'est ce que le code supposait. Or AUCUN des 6 Motor6D du rig
+    reel n'a de C0/C1 identite (verifie par `import_rig.py` sur
+    rig/RigR6.rbxmx) : hanches et epaules portent +/-90 deg autour de Y,
+    Neck et RootJoint une permutation Y/Z. Sans cette conversion, un
+    KeyframeSequence ecrit "en repere parent" joue les BONS ANGLES AUTOUR
+    DES MAUVAIS AXES sur un vrai rig : la rotation d'axe a devient une
+    rotation d'axe J0.a. Concretement, mes coups de pied vers l'avant
+    (axe X) sortaient lateralement, et le spin du torse (axe Y) sortait
+    en roulis.
+
+    La pose de repos, elle, restait juste (R = identite => T_R = identite
+    quels que soient J0/J1), ce qui explique que le rig au repos ait
+    toujours eu l'air correct.
+
+    Translation : les membres gardent T_t = 0 -- c'est deja exactement le
+    pivot autour du point d'attache (le terme -R.c1 s'en charge). Seul le
+    HumanoidRootPart porte une translation voulue d (le saut) ; comme son
+    c1 est nul, il faut poser T_t = J0^T . d."""
+    jname = joint_for_part(part)
+    if jname is None:
+        return rot_parent_frame, translation_parent_frame
+    j0, j1 = joint_rotations(jname)
+    j0 = np.array(j0)
+    j1 = np.array(j1)
+    t_rot = j0.T @ np.array(rot_parent_frame) @ j1
+    t_pos = j0.T @ np.array(translation_parent_frame)
+    return t_rot, tuple(t_pos.tolist())
+
+
 def build_pose_tree(keyframe_item, part, samples, sample_index, parent_xml=None):
     t, rot, pos, _wpos = samples[part][sample_index]
     item = ET.SubElement(parent_xml if parent_xml is not None else keyframe_item,
@@ -58,8 +104,9 @@ def build_pose_tree(keyframe_item, part, samples, sample_index, parent_xml=None)
     ET.SubElement(props, "token", {"name": "EasingDirection"}).text = "0"
     ET.SubElement(props, "token", {"name": "EasingStyle"}).text = "1"  # Linear
     ET.SubElement(props, "float", {"name": "Weight"}).text = "1"
-    matrix = euler_xyz_matrix(*rot)
-    world_pos = pos if part == "HumanoidRootPart" else (0.0, 0.0, 0.0)
+    matrix_parent_frame = euler_xyz_matrix(*rot)
+    trans_parent_frame = pos if part == "HumanoidRootPart" else (0.0, 0.0, 0.0)
+    matrix, world_pos = to_joint_frame(part, matrix_parent_frame, trans_parent_frame)
     _cframe_element(props, "CFrame", world_pos, matrix)
 
     child_parts = [p for p, parent in PARENT.items() if parent == part]
