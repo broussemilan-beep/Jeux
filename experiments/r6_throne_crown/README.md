@@ -183,6 +183,144 @@ métal, 0.08 pour le marbre, 0.02 pour la pierre mate, 0 pour le tissu et
 le néon. Contrairement à `Texture`/`SurfaceAppearance`, ça ne demande
 aucun upload — c'est actif dès l'import du `.rbxmx`.
 
+## Texturing niveau expert, 4e tour — MeshPart réel + bake PBR
+
+Retour utilisateur : toujours pas satisfaisant, recherche personnelle en
+cours côté utilisateur ; deux tableaux d'outils/dépôts GitHub partagés
+(Blender+bpy, Material Maker, Krita, ArmorPaint, Substance 3D Painter…),
+avec la consigne « explore et informe-toi dessus ». Chaque piste testée
+**dans ce sandbox**, pas jugée sur description :
+
+- **ArmorPaint** et **Material Maker** sont des applications GUI (X11) —
+  aucune API de script/CLI headless trouvée pour l'un ou l'autre. Non
+  utilisables ici (pas de serveur X interactif dans ce sandbox, et même
+  `capture_headless.sh`/`xvfb-run` ne suffit pas : il faudrait piloter
+  une UI, pas juste rendre une frame).
+- **bpy (Blender 5.0.1 Python)** : testé en conditions réelles avant
+  d'écrire quoi que ce soit — création de mesh, UV unwrap, matériaux à
+  nœuds, **bake Cycles réel** (`bpy.ops.object.bake`), export `.fbx` —
+  tout fonctionne en ligne de commande, sans affichage. C'est la seule
+  piste des deux tableaux réellement scriptable ici.
+
+Constat clé qui en découle : le texturing appliqué jusqu'ici
+(`Texture`/`Decal` + `StudsPerTileU/V`, section précédente) est plafonné
+— ce sont des `Part` primitives, et `SurfaceAppearance` (le vrai système
+PBR de Roblox, avec relief/rugosité/métalness réels, pas juste une image
+plate) **ne fonctionne que sur `MeshPart`**. Pour un texturing vraiment
+« niveau expert », il faut donc de vrais maillages, pas des primitives.
+
+### Ce qui est livré : un pipeline mesh + bake + export complet
+
+Nouveau script `scripts/build_mesh_export.py`, qui **reconstruit** (ne
+réutilise pas) le trône/l'escalier/la couronne comme de vrais objets
+maillés bpy à partir des mêmes specs géométriques que `props.py` :
+
+1. **Cartes PBR dérivées** (`scripts/gen_pbr_maps.py`), à partir des
+   *color maps* déjà générées et vérifiées seamless (section
+   précédente) — jamais du bruit natif Blender (Noise/Voronoi), qui
+   n'est **pas** périodique par construction (vérifié par test) et
+   aurait réintroduit un risque de raccord visible :
+   - `RoughnessMap` : remap direct de la luminance de la color map vers
+     une plage de rugosité par matériau (Pillow/numpy) — métal
+     0.12–0.32 (brillant), tissu 0.65–0.88 (mat).
+   - `MetalnessMap` : uniquement pour le métal, ~0.8–1.0.
+   - `NormalMap` : un vrai **bake height→normal** en bpy/Cycles
+     (`ShaderNodeBump` piloté par la luminance de la color map, sur un
+     plan UV 1:1, bake `type='NORMAL', normal_space='TANGENT'`, CPU, 8
+     échantillons) — hérite du caractère seamless de la color map source
+     plutôt que d'être réinventé. **Bug trouvé par test, pas supposé** :
+     `ShaderNodeBump.Distance` vaut par défaut `0.001` (quasi nul), pas
+     `1.0` — la première passe produisait des normal maps totalement
+     plates (écart-type des pixels ≈ 0.001) malgré un `Strength` non
+     nul ; diagnostiqué en inspectant directement
+     `bump.inputs['Distance'].default_value`, corrigé en le fixant
+     explicitement à `1.0` et recalibrant les forces de relief pour
+     cette distance. Revérifié visuellement (les normal maps montrent un
+     vrai relief qui suit le motif de chaque color map) et
+     numériquement (écart-type non nul).
+   - 11 fichiers PNG dans `textures_pbr/` (5 normal maps, 5 roughness
+     maps, 1 metalness map pour le métal seul — le tissu/la pierre/le
+     marbre ne sont jamais métalliques).
+2. **Reconstruction en vrais maillages** (`build_mesh_export.py`) :
+   chaque pièce (`Block`→cube, `Cylinder`→cylindre avec la même
+   convention d'axe que Roblox — longueur le long de l'axe local X, pas
+   Z comme le natif Blender —, `Ball`→sphère UV) est créée à la bonne
+   taille/position/rotation, **UV-dépliée** (`cube_project`, taille de
+   tuile identique à `studsPerTile` du lecteur pour un aspect cohérent),
+   puis reçoit un matériau à nœuds Principled BSDF câblé ColorMap→Base
+   Color, NormalMap→Normal (via `ShaderNodeNormalMap`, espace couleur
+   `Non-Color`), RoughnessMap→Roughness, MetalnessMap→Metallic (métal
+   seulement). La couronne (gemmes) reçoit un matériau `Emission` plat
+   (pas de PBR classique, cohérent avec `Neon`/`selfLit` du lecteur).
+   **Bug trouvé par test, pas supposé** : la première version appelait
+   `bpy.ops.wm.read_factory_settings(use_empty=True)` séparément avant
+   chaque export (trône puis couronne) — ce reset efface **tous** les
+   datablocks bpy, pas seulement les objets de la scène, donc le
+   dictionnaire de matériaux partagé construit avant le premier export
+   était détruit avant le second (`ReferenceError: StructRNA of type
+   Material has been removed`). Corrigé en ne resettant qu'une seule
+   fois, avant toute construction, et en construisant trône et couronne
+   dans la **même** session bpy, chacun exporté par une simple sélection
+   différente plutôt que par un reset intermédiaire.
+3. **Export FBX** (`bpy.ops.export_scene.fbx`) : `output/throne_mesh.fbx`
+   (18 objets : dais, 4 pieds, siège, dossier, 2 accoudoirs, coussin,
+   moulure, 3 fleurons, 4 marches) et `output/crown_mesh.fbx` (11
+   objets : bandeau + 5 pointes + 5 gemmes).
+
+**Vérifié par ré-import**, pas juste par l'absence d'erreur à l'export :
+les deux fichiers ont été rechargés dans une session bpy neuve et
+inspectés objet par objet — 29 objets au total, tous avec des UV
+(`uv_layers` non vide), le bon matériau assigné (ex. `Seat`→`mat_Marble`,
+`Armrest`→`mat_Metal`, les gemmes→`mat_Neon`), aucun maillage dégénéré
+(0 sommet/face), et des positions monde cohérentes avec les specs de
+`props.py` (ex. `Backrest` à `y=7.00, z=3.00`).
+
+### Importer dans Roblox Studio et brancher SurfaceAppearance (étape qui demande ton compte)
+
+Contrairement à `Texture`/`Decal` (section précédente), un `MeshPart`
+importé se câble avec un objet `SurfaceAppearance`, pas un `Texture` :
+
+1. Dans Roblox Studio : `File → Import 3D` (ou glisser-déposer dans
+   l'Explorer), sélectionne `throne_mesh.fbx` puis `crown_mesh.fbx`. Chaque
+   import crée un `Model` contenant un `MeshPart` par pièce, nommé comme
+   dans la liste ci-dessus (`Seat`, `Armrest_2.6`, `Point_0_Gem`, etc.).
+2. Sur chaque `MeshPart`, insère un objet `SurfaceAppearance` (`+` dans
+   l'Explorer, ou clic droit → Insert Object → SurfaceAppearance).
+3. Dans les propriétés du `SurfaceAppearance` : `ColorMap` → upload
+   `textures/<matériau>_color.png` ; `NormalMap` → upload
+   `textures_pbr/<matériau>_normal.png` ; `RoughnessMap` → upload
+   `textures_pbr/<matériau>_roughness.png` ; pour le métal uniquement,
+   `MetalnessMap` → upload `textures_pbr/metal_metalness.png`. Table de
+   correspondance pièce → `<matériau>` : identique à celle de la section
+   `Texture` plus haut (Slate pour la pierre structurelle, Marble pour
+   le siège, Metal pour accoudoirs/moulure/fleurons/bandeau/pointes,
+   Fabric pour le coussin, Cobblestone pour une marche sur deux).
+4. `SurfaceAppearance.AlphaMode` doit rester `Overlay` (comportement par
+   défaut) pour que `ColorMap` module la couleur du `MeshPart` plutôt que
+   de la remplacer à plat.
+5. Pour les gemmes (`Point_*_Gem`, matériau `Neon` côté bpy) : pas de
+   `SurfaceAppearance` à poser — règle directement `MeshPart.Material =
+   Neon` et une `Color3` assortie dans Roblox Studio ; l'effet de brillance
+   pulsante reste une mise en scène du lecteur HTML (`drawCrownGlow()`),
+   pas une propriété qui se transporte dans le fichier.
+
+**Comme pour `Texture`/`SurfaceAppearance` en général**, uploader une
+image demande un compte Roblox (Studio ou l'Open Cloud API) — non
+disponible dans ce sandbox. Les fichiers sont livrés en `.png`/`.fbx`
+séparés, jamais comme un `rbxassetid` inventé.
+
+### Ce que ce pipeline change par rapport à la route `Part`+`Texture`
+
+Les deux routes restent livrées, elles ne s'excluent pas :
+
+| | `Part` + `Texture` (3e tour) | `MeshPart` + `SurfaceAppearance` (4e tour) |
+|---|---|---|
+| Géométrie | primitives Roblox natives (`export_model.py` → `.rbxmx`) | vrais maillages bpy, UV-dépliés (`build_mesh_export.py` → `.fbx`) |
+| Relief/rugosité/métal réels | non (image plate tuilée) | oui (normal/roughness/metalness bakés) |
+| Réaction à l'éclairage dynamique de la scène | couleur plate + `Reflectance` global | vrai relief qui réagit à l'angle de lumière |
+| Effort d'installation Studio | Insert `Texture`, upload 1 image | Import 3D, Insert `SurfaceAppearance`, upload jusqu'à 4 images par matériau |
+| Rig personnage compatible | oui (Part = joints Motor6D natifs) | n/a (le personnage reste en `Part`, seuls trône/couronne changent de route) |
+
 ## Calibration — vérifiée par le calcul, pas à l'oeil
 
 Les valeurs numériques du rig R6 permettent de calculer, sans deviner,
