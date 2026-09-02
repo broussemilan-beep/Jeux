@@ -1,3 +1,11 @@
 .venv/
 __pycache__/
 *.pyc
+
+# Lecteur HTML final (scripts/build_viewer.py) : contenu reconstructible
+# (template scripts/throne_crown_viewer.html + textures deja versionnees,
+# tous deux commit) -- gros (textures embarquees en base64), jamais
+# committe depuis le debut de ce prototype (voir README, "Le lecteur est
+# maintenant reconstructible depuis le depot seul"). Le deliverable reel
+# est l'artifact publie, pas ce fichier local.
+/output/throne_crown_viewer_final.html
