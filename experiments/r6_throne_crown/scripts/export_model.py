@@ -63,6 +63,19 @@ MATERIAL_BY_NAME = {
 }
 
 
+# Reflectance par defaut PAR MATERIAU (pas par piece) : evite d'avoir a
+# repeter la meme valeur sur chaque spec individuel dans props.py.
+# Valeurs choisies (pas mesurees -- Reflectance est une preference
+# esthetique, contrairement a Material dont les codes numeriques sont
+# verifies) : haute pour le metal (surface polie), tres faible/nulle
+# pour la pierre mate et le tissu, nulle pour Neon (qui EMET une lueur,
+# une reflectance de ciel n'y ajouterait rien de coherent).
+MATERIAL_DEFAULT_REFLECTANCE = {
+    "Metal": 0.2, "Marble": 0.08, "Slate": 0.02, "Cobblestone": 0.02,
+    "Fabric": 0.0, "Neon": 0.0,
+}
+
+
 def part_item(parent_xml, spec):
     """spec: dict avec name, size(x,y,z), pos(x,y,z), rot(3x3, def. identite),
     shape(SHAPE_*, def. Block), color_rgb((r,g,b) 0-255, def. gris pierre),
@@ -83,6 +96,14 @@ def part_item(parent_xml, spec):
     ET.SubElement(props, "float", {"name": "Transparency"}).text = repr(float(spec.get("transparency", 0.0)))
     material_name = spec.get("material", "Plastic")
     ET.SubElement(props, "token", {"name": "Material"}).text = str(MATERIAL_BY_NAME[material_name])
+    # Reflectance : propriete BasePart reelle et verifiee (0=mat/beton,
+    # 1=chrome/completement reflechissant du ciel -- verifie via
+    # recherche, voir README "Texturing niveau expert"), independante de
+    # Material et n'exigeant AUCUNE image uploadee -- contrairement a
+    # Texture/Decal ou SurfaceAppearance.
+    default_reflectance = MATERIAL_DEFAULT_REFLECTANCE.get(material_name, 0.0)
+    ET.SubElement(props, "float", {"name": "Reflectance"}).text = repr(
+        float(spec.get("reflectance", default_reflectance)))
     r, g, b = spec.get("color_rgb", (120, 120, 130))
     color_int = (int(r) << 16) | (int(g) << 8) | int(b)
     ET.SubElement(props, "Color3uint8", {"name": "Color3uint8"}).text = str(color_int)

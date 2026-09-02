@@ -96,6 +96,93 @@ besoin d'un `PointLight` séparé, donc l'effet de brillance existe
 maintenant **aussi dans le fichier livré**, pas seulement dans le
 lecteur HTML.
 
+## Texturing niveau expert (3e tour) — recherché, pas improvisé
+
+Retour utilisateur : « va chercher des outils, des articles, informe-toi
+sur avec quoi et comment tu peux donner du texturing niveau expert ».
+Recherche faite avant de coder quoi que ce soit (sources : documentation
+officielle Roblox Creator Hub, DevForum, et un test isolé pour vérifier
+le tuilage — pas des suppositions) :
+
+### Ce que « niveau expert » veut vraiment dire sur Roblox
+
+- **`SurfaceAppearance`** (la voie PBR moderne : `ColorMap`, `NormalMap`,
+  `RoughnessMap`, `MetalnessMap`, `EmissiveMap`) **ne fonctionne QUE sur
+  `MeshPart`** — vérifié explicitement (DevForum : *"SurfaceAppearance
+  is currently not possible to use on Parts"*). Le trône et la couronne
+  sont construits en `Part` primitives (Block/Cylinder/Ball), pas en
+  `MeshPart` — les convertir demanderait un pipeline de modélisation
+  complet (Blender, export `.fbx`/`.obj`, UV unwrap), hors de portée
+  d'une génération procédurale par primitives.
+- La voie qui **fonctionne sur un `Part`** est l'objet `Texture` (ou
+  `Decal` pour une image posée une fois) : une image qui tuile sur une
+  face, réglée par `StudsPerTileU`/`StudsPerTileV`. C'est la voie
+  pertinente ici.
+- **Dans les deux cas**, une vraie image doit d'abord être **uploadée
+  sur le CDN de Roblox** (compte Roblox + Roblox Studio, ou l'Open Cloud
+  API) pour obtenir un `rbxassetid://` — aucune des deux n'est
+  accessible depuis ce sandbox. Ce n'est pas contourné en silence : les
+  images sont livrées en fichiers séparés (voir plus bas), pas comme un
+  `rbxassetid` inventé qui pointerait vers rien.
+
+### Ce qui EST livré : de vraies images, générées et vérifiées
+
+`scripts/gen_textures.py` génère 5 *color maps* PNG (256×256,
+`textures/*.png`) — pierre (`slate_color`), marbre veiné
+(`marble_color`), métal brossé (`metal_color`), tissu tissé
+(`fabric_color`), pierre plus rugueuse (`cobblestone_color`). Seamless
+**par construction**, pas par un flou de bord approximatif : chaque
+motif est une somme d'ondes `sin`/`cos` à fréquences **entières** sur la
+largeur/hauteur de l'image — une onde à fréquence entière est
+exactement périodique sur l'image, donc la mosaïque ne peut pas avoir de
+raccord visible. Vérifié en mosaïquant chaque image 2×2 et en inspectant
+le résultat (pas juste supposé correct après écriture du code).
+
+Ces mêmes images sont **utilisées réellement par le lecteur HTML** — pas
+en aplat de couleur avec le nom du matériau en commentaire, mais
+dessinées sur chaque face via une vraie transformation affine
+(`fillTexturedFace()` dans le lecteur : les 3 premiers coins écran d'une
+face déterminent la transformation qui envoie le rectangle
+(0,0)-(uLong,vLong), en studs, exactement dessus — un parallélogramme,
+comme le garantit la projection orthographique du lecteur — puis un
+`CanvasPattern` mis à l'échelle pour qu'une tuile couvre un nombre fixe
+de studs, l'équivalent visuel de `StudsPerTileU/V`).
+
+**Bug de contraste trouvé par capture d'écran, pas supposé** : la
+première version du métal brossé (40 bandes quasi aléatoires,
+`gen_textures.py`) se moyennait en un aplat flou une fois tuilée à
+petite échelle — invisible sur l'accoudoir en capture réelle. Corrigé en
+réduisant à 6 bandes amples plutôt que 40 fines qui s'annulent ; le
+marbre a eu le même traitement (contraste des veines doublé). Revérifié
+par une nouvelle capture, zoomée sur l'accoudoir : le grain brossé et le
+veinage sont maintenant visibles.
+
+### Pour vraiment les poser dans Roblox Studio (étape qui demande ton compte)
+
+1. Dans Roblox Studio, sélectionne une pièce du trône ou de la couronne
+   (ex. `Seat`).
+2. Insère un objet `Texture` dessus (bouton `+` dans l'Explorer, ou
+   clic droit → Insert Object → Texture).
+3. Dans les propriétés du `Texture`, clique sur `Texture` → `Upload...`
+   et choisis le fichier PNG correspondant (`marble_color.png` pour le
+   siège, `slate_color.png` pour la pierre structurelle, etc. — voir le
+   tableau plus haut pour la correspondance pièce → matériau).
+4. Règle `StudsPerTileU`/`StudsPerTileV` à environ 2,6–3,0 pour la
+   pierre/le marbre, 1,3 pour le métal, 0,7 pour le tissu (mêmes valeurs
+   que `studsPerTile` dans le lecteur — `throne_crown_final.html`,
+   objet `MATERIALS`).
+5. Répète par face si besoin (`Texture.Face`), ou pose un `Texture` par
+   pièce si une seule face suffit visuellement.
+
+### Reflectance — le seul levier PBR-adjacent qui ne demande aucune image
+
+`BasePart.Reflectance` (0 = mat, 1 = chrome/miroir du ciel — vérifié via
+documentation, indépendant de `Material`) est maintenant écrit sur
+chaque pièce (`export_model.MATERIAL_DEFAULT_REFLECTANCE`) : 0.2 pour le
+métal, 0.08 pour le marbre, 0.02 pour la pierre mate, 0 pour le tissu et
+le néon. Contrairement à `Texture`/`SurfaceAppearance`, ça ne demande
+aucun upload — c'est actif dès l'import du `.rbxmx`.
+
 ## Calibration — vérifiée par le calcul, pas à l'oeil
 
 Les valeurs numériques du rig R6 permettent de calculer, sans deviner,
