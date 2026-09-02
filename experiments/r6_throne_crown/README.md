@@ -33,7 +33,7 @@ véritables objets 3D (pas un décor de fond).
   personnage (rig R6 réel, 6 segments rigides, mêmes contraintes que le
   combo de coups de pied : pas de coude/genou, Motor6D 3 DOF). Couvre
   maintenant montée d'escalier + assise + couronnement, 175 keyframes.
-- `output/throne.rbxmx` — `Model` du trône + escalier (18 `Part`,
+- `output/throne.rbxmx` — `Model` du trône + escalier (21 `Part`,
   statique, ancré).
 - `output/crown.rbxmx` — `Model` de la couronne (11 `Part` : bande +
   5 pointes + 5 gemmes), dans son repère local (centre = milieu de la
@@ -54,9 +54,11 @@ n'est pas quelque chose que je peux garantir exact de mémoire, alors
 qu'un triplet RGB est sans ambiguïté — ce choix n'a pas changé.
 
 Trône : dais, 4 pieds, siège, dossier (monte au-dessus de la tête du
-personnage debout), 2 accoudoirs, bande dorée + 3 fleurons. Couronne :
-bande (Cylinder) + 5 pointes (hauteur variable, la plus haute à l'avant)
-+ 5 gemmes (Ball).
+personnage debout), 2 accoudoirs, bande dorée + crête en forme de
+couronne (bande + 5 pointes, voir "Passage aux références visuelles
+utilisateur" plus bas — remplace les 3 fleurons-boules d'origine).
+Couronne : bande (Cylinder) + 5 pointes (hauteur variable, la plus haute
+à l'avant) + 5 gemmes (Ball).
 
 ### Texturing réel (`Material`) — corrigé après retour utilisateur
 
@@ -83,12 +85,18 @@ uniquement l'éclairage stylisé du lecteur HTML) :
 
 | Pièces | Material Roblox |
 |---|---|
-| Dais, pieds, dossier | `Slate` (800) |
-| Siège | `Marble` (784) — surface touchée en s'asseyant, plus premium que le reste |
-| Accoudoirs, bande dorée, fleurons, bande/pointes de la couronne | `Metal` (1088) |
+| Dais, pieds | `Wood` (512) — voir "Passage aux références visuelles utilisateur", révisé depuis `Slate` |
+| Siège, dossier | `Fabric` (1312) — velours, révisé depuis `Marble`/`Slate` |
+| Accoudoirs, bande dorée, crête-couronne, bande/pointes de la couronne | `Metal` (1088) |
 | Coussin de la couronne | `Fabric` (1312) |
 | Marches (alternées) | `Slate` (800) / `Cobblestone` (880) |
-| **Gemmes de la couronne** | **`Neon` (288)** |
+| **Gemmes de la couronne** | **`Neon` (288)**, teinte rose (`GEM_PINK`) |
+
+(Table tenue à jour au fil des tours — les couleurs/matériaux du 2e tour
+ci-dessous, dans le reste de cette section, décrivent le raisonnement
+d'origine sur `Material`/`Reflectance` en général, toujours valable ; la
+répartition pièce par pièce a été révisée au 6e tour pour coller aux
+photos de référence de l'utilisateur.)
 
 Le choix `Neon` sur les gemmes n'est pas arbitraire : ça relie le
 texturing réel à la demande « la couronne brille » (voir plus bas) —
@@ -264,17 +272,19 @@ maillés bpy à partir des mêmes specs géométriques que `props.py` :
    dans la **même** session bpy, chacun exporté par une simple sélection
    différente plutôt que par un reset intermédiaire.
 3. **Export FBX** (`bpy.ops.export_scene.fbx`) : `output/throne_mesh.fbx`
-   (18 objets : dais, 4 pieds, siège, dossier, 2 accoudoirs, coussin,
-   moulure, 3 fleurons, 4 marches) et `output/crown_mesh.fbx` (11
-   objets : bandeau + 5 pointes + 5 gemmes).
+   (21 objets : dais, 4 pieds, siège, dossier, 2 accoudoirs, coussin,
+   bande dorée, crête-couronne [bande + 5 pointes], 4 marches) et
+   `output/crown_mesh.fbx` (11 objets : bandeau + 5 pointes + 5 gemmes).
+   Régénéré au 6e tour (références visuelles) avec la nouvelle géométrie/
+   les nouveaux matériaux (`Wood` sur dais/pieds, `Fabric` sur siège/
+   dossier).
 
 **Vérifié par ré-import**, pas juste par l'absence d'erreur à l'export :
 les deux fichiers ont été rechargés dans une session bpy neuve et
-inspectés objet par objet — 29 objets au total, tous avec des UV
-(`uv_layers` non vide), le bon matériau assigné (ex. `Seat`→`mat_Marble`,
-`Armrest`→`mat_Metal`, les gemmes→`mat_Neon`), aucun maillage dégénéré
-(0 sommet/face), et des positions monde cohérentes avec les specs de
-`props.py` (ex. `Backrest` à `y=7.00, z=3.00`).
+inspectés objet par objet — 32 objets au total, tous avec des UV
+(`uv_layers` non vide), le bon matériau assigné (ex. `Backrest`→
+`mat_Fabric`, `Armrest`→`mat_Metal`, les gemmes→`mat_Neon`), aucun
+maillage dégénéré (0 sommet/face).
 
 ### Importer dans Roblox Studio et brancher SurfaceAppearance (étape qui demande ton compte)
 
@@ -292,10 +302,11 @@ importé se câble avec un objet `SurfaceAppearance`, pas un `Texture` :
    `textures_pbr/<matériau>_normal.png` ; `RoughnessMap` → upload
    `textures_pbr/<matériau>_roughness.png` ; pour le métal uniquement,
    `MetalnessMap` → upload `textures_pbr/metal_metalness.png`. Table de
-   correspondance pièce → `<matériau>` : identique à celle de la section
-   `Texture` plus haut (Slate pour la pierre structurelle, Marble pour
-   le siège, Metal pour accoudoirs/moulure/fleurons/bandeau/pointes,
-   Fabric pour le coussin, Cobblestone pour une marche sur deux).
+   correspondance pièce → `<matériau>` (voir aussi le tableau à jour dans
+   "Passage aux références visuelles utilisateur" plus bas) : Wood pour
+   dais/pieds, Fabric pour siège/dossier/coussin, Metal pour accoudoirs/
+   bande dorée/crête-couronne/bandeau-pointes de la couronne, Cobblestone
+   pour une marche sur deux (l'autre en Slate).
 4. `SurfaceAppearance.AlphaMode` doit rester `Overlay` (comportement par
    défaut) pour que `ColorMap` module la couleur du `MeshPart` plutôt que
    de la remplacer à plat.
@@ -705,6 +716,74 @@ standard), la même que toute installation de Roblox Studio, puisque R6
 n'a qu'une seule géométrie standard sur toute la plateforme. Dit
 honnêtement dans le lecteur HTML et ici plutôt que de prétendre à une
 source changée qui ne l'a pas été.
+
+## Passage aux références visuelles utilisateur (6e tour)
+
+L'utilisateur a envoyé deux photos de référence (pas de texte) : une
+couronne dorée à gemmes **roses**, et un trône baroque — dossier/siège en
+velours rouge capitonné, pieds/socle en bois laqué sombre, filets et
+ornements dorés, **couronné d'une vraie couronne dorée** posée sur le
+sommet du dossier. Traduit en changements concrets, matériau par
+matériau (jamais une teinte inventée à l'œil sans le vrai `Material`
+derrière — même discipline que les tours précédents) :
+
+| Pièce | Avant | Après | Pourquoi |
+|---|---|---|---|
+| Dais, 4 pieds | `Slate` gris pierre | **`Wood`** (nouveau, voir plus bas) | référence : socle/pieds en bois, jamais de pierre |
+| Siège | `Marble` | **`Fabric`** rouge (déjà la palette velours de `fabric_color.png`, aucune nouvelle texture) | référence : coussin capitonné, pas de pierre polie |
+| Dossier | `Slate` | **`Fabric`** rouge | idem |
+| Accoudoirs, bande du dossier | `Metal` doré | inchangé | déjà cohérent avec les filets dorés de la référence |
+| 3 fleurons-boules au sommet | boules dorées abstraites | **crête en forme de couronne** (`throne_crest_parts()`) | la référence montre une VRAIE couronne posée sur le trône, pas des boules |
+| Gemmes de la couronne PORTÉE | rouge (`GEM_RED`) | **rose** (`GEM_PINK`) | référence `crown.jpg` : gemmes roses, pas rouges |
+
+### `Wood` — nouveau matériau, bout en bout comme les autres
+
+Même traitement complet que `Slate`/`Marble`/`Metal`/`Fabric`/
+`Cobblestone` avant lui, pas un raccourci pour cette seule pièce :
+`Enum.Material.Wood` était déjà dans `MATERIAL_BY_NAME`
+(`export_model.py`, valeur `512`, vérifiée dès le tour "texturing niveau
+expert" même si inutilisée jusqu'ici) ; `gen_textures.wood()` génère une
+5e *color map* seamless ; `gen_pbr_maps.py` lui bake NormalMap +
+RoughnessMap (pas de MetalnessMap, le bois n'est pas un métal) ;
+`build_mesh_export.MATERIAL_TO_PBR` et le `MATERIALS`/`MATERIAL_TEXTURE`
+du lecteur HTML gagnent chacun une entrée `Wood`.
+
+**Premier essai illisible, trouvé par capture d'écran, pas supposé** :
+la première version de `wood()` (7 bandes de fréquences proches +
+15 % de bruit isotrope) ressemblait à un tissage/vannerie une fois
+rendue sur les pieds du trône, pas à du bois — les bandes proches
+s'annulaient partiellement entre elles ET contre le bruit isotrope (qui
+varie en X ET en Y, alors que le veinage du bois ne doit varier qu'en Y,
+le long du grain). Corrigé avec 4 bandes larges et nettes (pas de
+quasi-annulation) + des veines fines (`|sin|` à une puissance, même
+technique que `marble()`) toutes deux fonction de Y seul, et le bruit
+isotrope réduit à un flou très léger plutôt qu'une composante dominante
+— même catégorie de bug que le métal à 40 bandes ou l'escalier
+monochrome : une texture "correcte en théorie" (seamless, bien
+distribuée) peut quand même ne pas se lire comme le matériau visé une
+fois posée sur la géométrie réelle.
+
+### La crête-couronne réutilise la géométrie de la couronne portée
+
+`throne_crest_parts()` appelle directement `crown_points()` (même
+fonction que `crown_parts()`, la couronne que le personnage porte) à une
+échelle différente plutôt que de redessiner une silhouette à la main :
+même motif "pointe avant la plus haute" recopié sans risque de diverger
+visuellement des deux couronnes. Différence assumée : la crête est un
+ornement fixe du meuble (`Metal` doré statique, pas de gemmes/`Neon`) —
+la couronne que le rituel de couronnement met en scène reste la seule à
+porter des gemmes et à briller.
+
+### Vérifié par capture d'écran contre la référence elle-même
+
+Zoomé sur le sommet du dossier après reconstruction (`assise`/`pose
+finale`, caméra face) : la crête se lit sans ambiguïté comme une
+couronne à 5 pointes de hauteurs variées, posée sur un dossier de
+velours rouge strié (relief du NormalMap toujours actif, voir tour
+précédent) bordé d'or — silhouette directement comparable à la photo de
+référence. `.rbxmx`/`.fbx` regénérés avec la nouvelle géométrie/
+matériaux (`run_scene.py`, `build_mesh_export.py`), lecteur reconstruit
+et republié à la même URL.
 
 ## Limites assumées
 

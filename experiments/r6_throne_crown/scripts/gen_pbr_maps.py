@@ -50,6 +50,7 @@ MATERIAL_PARAMS = {
     "metal":       {"bump": 0.9,  "rough": (0.12, 0.32), "metal": True},
     "fabric":      {"bump": 0.6,  "rough": (0.65, 0.88), "metal": False},
     "cobblestone": {"bump": 1.6,  "rough": (0.55, 0.85), "metal": False},
+    "wood":        {"bump": 1.1,  "rough": (0.35, 0.60), "metal": False},
 }
 
 

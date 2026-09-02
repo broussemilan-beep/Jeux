@@ -35,6 +35,9 @@ STONE_DARK = (70, 68, 74)
 GOLD = (196, 160, 60)
 GOLD_LIGHT = (224, 190, 90)
 GEM_RED = (150, 25, 30)
+WOOD_DARK = (26, 18, 14)     # bois laque sombre -- dais/pieds (voir gen_textures.wood())
+VELVET_RED = (120, 30, 36)   # velours -- siege/dossier (meme famille que fabric_color.png)
+GEM_PINK = (232, 150, 178)   # gemmes de la couronne PORTEE -- references utilisateur (crown.jpg)
 
 _ROT_Z90 = [[0.0, -1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]]  # local X -> monde Y
 
@@ -87,27 +90,32 @@ def throne_parts():
 
     # Estrade -- dessus a Y=0 AVANT decalage (devient PLATFORM_H apres
     # `_lift`), exactement au niveau du sommet de la derniere marche.
+    # Bois laque sombre (pas pierre) depuis la reference utilisateur
+    # (photo du trone baroque : socle/pieds en bois noir sculpte, siege/
+    # dossier en velours, jamais de pierre) -- voir "Passage aux
+    # references visuelles utilisateur" dans le README.
     parts.append({"name": "Dais", "size": (7.0, 0.6, 5.5), "pos": (0.0, -0.3, 1.4),
-                  "color_rgb": STONE_DARK, "mat": "stone", "material": "Slate"})
+                  "color_rgb": WOOD_DARK, "mat": "wood", "material": "Wood"})
 
     # 4 pieds sous le siege, du dais (Y=0) jusqu'au dessous du siege (Y=1.7).
     for x in (-1.9, 1.9):
         for z in (-0.4, 2.1):
             parts.append({"name": f"Leg_{x}_{z}", "size": (0.5, 1.7, 0.5),
-                          "pos": (x, 0.85, z), "color_rgb": STONE_DARK, "mat": "stone",
-                          "material": "Slate"})
+                          "pos": (x, 0.85, z), "color_rgb": WOOD_DARK, "mat": "wood",
+                          "material": "Wood"})
 
     # Siege -- dessus a Y=2.0 (hanche assise moins demi-hauteur du torse).
-    # Marbre poli plutot qu'ardoise brute : c'est la surface que le
-    # personnage touche en s'asseyant, plus "premium" que le reste de la
-    # pierre structurelle.
+    # Velours (Fabric) plutot que marbre : la reference utilisateur montre
+    # un coussin de siege capitonne, pas de la pierre polie.
     parts.append({"name": "Seat", "size": (4.4, 0.6, 3.6), "pos": (0.0, 1.7, 0.9),
-                  "color_rgb": STONE, "mat": "stone", "material": "Marble"})
+                  "color_rgb": VELVET_RED, "mat": "fabric", "material": "Fabric"})
 
     # Dossier -- derriere le siege (+Z), monte bien au-dessus de la tete
-    # (tete du personnage debout : sommet a Y=5, voir README).
+    # (tete du personnage debout : sommet a Y=5, voir README). Meme
+    # velours que le siege -- la reference montre un dossier entierement
+    # capitonne, pas de pierre.
     parts.append({"name": "Backrest", "size": (4.4, 6.4, 0.6), "pos": (0.0, 5.0, 3.0),
-                  "color_rgb": STONE, "mat": "stone", "material": "Slate"})
+                  "color_rgb": VELVET_RED, "mat": "fabric", "material": "Fabric"})
 
     # Accoudoirs -- entre siege et dossier, hauteur confortable au-dessus
     # du siege (Y=3.0 au sommet).
@@ -128,16 +136,40 @@ def throne_parts():
                   "pos": (2.5, 2.93, 0.0), "color_rgb": GEM_RED, "mat": "gem",
                   "material": "Fabric"})
 
-    # Bande doree au sommet du dossier + fleurons.
+    # Bande doree au sommet du dossier.
     parts.append({"name": "BackrestTrim", "size": (4.6, 0.5, 0.8), "pos": (0.0, 8.0, 3.0),
                   "color_rgb": GOLD, "mat": "gold", "material": "Metal"})
-    for x in (-2.1, 0.0, 2.1):
-        h = 0.9 if x == 0.0 else 0.6
-        parts.append({"name": f"Finial_{x}", "size": (0.6, h, 0.6), "shape": SHAPE_BALL,
-                      "pos": (x, 8.25 + h / 2.0, 3.0), "color_rgb": GOLD_LIGHT, "mat": "gold",
-                      "material": "Metal"})
+
+    # Crete en forme de couronne (remplace les 3 simples fleurons-boules
+    # d'avant) : la reference utilisateur montre le trone couronne d'une
+    # VRAIE couronne, pas de fleurons abstraits. Reutilise directement
+    # `crown_points()` -- meme silhouette (pointe avant la plus haute)
+    # que la couronne portee, juste posee statique et a plus grande
+    # echelle plutot que recree a la main.
+    parts.extend(throne_crest_parts())
 
     return _lift(parts)
+
+
+def throne_crest_parts(anchor=(0.0, 8.55, 3.0)):
+    """Petite couronne DECORATIVE soudee au sommet du dossier -- pas la
+    couronne portee par le personnage (crown_parts(), qui change de
+    parent en cours de scene). Meme fonction crown_points() que la vraie
+    couronne pour la silhouette (bande + pointes, celle de face la plus
+    haute), a une echelle differente, en Metal dore statique (pas de
+    gemmes/Neon ici : c'est un ornement fixe du meuble, pas l'objet que
+    le rituel de couronnement met en scene)."""
+    ax, ay, az = anchor
+    parts = []
+    band_h = 0.4
+    parts.append({"name": "CrestBand", "size": (band_h, 1.1, 1.1), "shape": SHAPE_CYLINDER,
+                  "pos": (ax, ay, az), "rot": _ROT_Z90, "color_rgb": GOLD, "mat": "gold",
+                  "material": "Metal"})
+    for name, x, z, h in crown_points(n=5, radius=1.0, base_h=0.55, front_h=1.05):
+        parts.append({"name": f"Crest{name}", "size": (0.24, h, 0.24),
+                      "pos": (ax + x, ay + band_h / 2.0 + h / 2.0, az + z),
+                      "color_rgb": GOLD_LIGHT, "mat": "gold", "material": "Metal"})
+    return parts
 
 
 def cushion_top_pos():
@@ -192,9 +224,12 @@ def crown_parts():
         # une fois importe dans Roblox, pas seulement dans le lecteur
         # HTML -- Neon EMET une lueur (pas besoin de PointLight separe),
         # c'est le materiau le plus proche d'un "ca brille vraiment" que
-        # le moteur Roblox propose nativement.
+        # le moteur Roblox propose nativement. Rose (GEM_PINK), pas rouge
+        # -- la reference utilisateur (crown.jpg) montre des gemmes
+        # roses, pas rouges (le rouge reste sur le coussin/CrownCushion,
+        # un choix independant).
         parts.append({"name": f"{name}_Gem", "size": (0.22, 0.22, 0.22), "shape": SHAPE_BALL,
-                      "pos": (x, band_h / 2.0 + h + 0.05, z), "color_rgb": GEM_RED, "mat": "gem",
+                      "pos": (x, band_h / 2.0 + h + 0.05, z), "color_rgb": GEM_PINK, "mat": "gem",
                       "material": "Neon"})
 
     return parts

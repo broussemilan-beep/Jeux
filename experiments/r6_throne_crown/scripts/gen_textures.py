@@ -128,6 +128,40 @@ def fabric():
     return to_u8(rgb / 255.0)
 
 
+def wood():
+    # Bois laque sombre (dais/pieds du trone, voir props.py apres passage
+    # aux references visuelles utilisateur). Premier essai (7 bandes
+    # proches en frequence + 15% de bruit isotrope) illisible une fois
+    # rendu -- les bandes proches battaient entre elles ET contre le bruit
+    # isotrope (qui varie en X ET en Y, contrairement au veinage qui ne
+    # doit varier qu'en Y) au point de ressembler a un tissage/vannerie,
+    # pas a du bois (trouve par capture d'ecran reelle, pas suppose --
+    # meme categorie de bug que le metal a 40 bandes). Corrige : PEU de
+    # bandes larges (contraste net, pas de quasi-annulation), des VEINES
+    # fines et nettes (`|sin|` eleve a une puissance, meme technique que
+    # marble()) toutes deux fonction de Y SEUL (paralleles au grain, donc
+    # constantes selon X), et le bruit isotrope reduit a un flou tres
+    # leger plutot qu'une composante dominante.
+    y = np.mgrid[0:SIZE, 0:SIZE][0].astype(np.float64)
+    rng = np.random.default_rng(8)
+    stripes = np.zeros((SIZE, SIZE))
+    amp, amp_sum, n_bands = 1.0, 0.0, 4
+    for _ in range(n_bands):
+        fy = rng.integers(3, 9)
+        phase = rng.uniform(0, 2 * np.pi)
+        stripes += amp * np.sin(2 * np.pi * fy * y / SIZE + phase)
+        amp_sum += amp
+        amp *= 0.7
+    stripes /= amp_sum
+    fine_veins = np.abs(np.sin(2 * np.pi * 23 * y / SIZE)) ** 6
+    n = periodic_noise(SIZE, 2, seed=9, freq_range=(2, 5))
+    t = np.clip(0.5 + 0.42 * stripes - 0.22 * fine_veins + 0.06 * n, 0, 1)
+    dark = np.array([14, 9, 7], dtype=np.float64)
+    light = np.array([70, 44, 28], dtype=np.float64)
+    rgb = dark[None, None, :] + t[:, :, None] * (light - dark)[None, None, :]
+    return to_u8(rgb / 255.0)
+
+
 def cobblestone():
     n = periodic_noise(SIZE, 5, seed=7, freq_range=(4, 16))
     base = np.array([70, 66, 72], dtype=np.float64)
@@ -150,6 +184,7 @@ def main():
     save("metal_color", metal_gold())
     save("fabric_color", fabric())
     save("cobblestone_color", cobblestone())
+    save("wood_color", wood())
 
 
 if __name__ == "__main__":

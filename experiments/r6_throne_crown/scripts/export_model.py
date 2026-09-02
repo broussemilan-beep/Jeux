@@ -72,7 +72,7 @@ MATERIAL_BY_NAME = {
 # une reflectance de ciel n'y ajouterait rien de coherent).
 MATERIAL_DEFAULT_REFLECTANCE = {
     "Metal": 0.2, "Marble": 0.08, "Slate": 0.02, "Cobblestone": 0.02,
-    "Fabric": 0.0, "Neon": 0.0,
+    "Fabric": 0.0, "Neon": 0.0, "Wood": 0.05,
 }
 
 

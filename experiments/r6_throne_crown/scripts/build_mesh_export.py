@@ -35,7 +35,7 @@ _ROT_Y_NEG90 = np.array([[0.0, 0.0, -1.0], [0.0, 1.0, 0.0], [1.0, 0.0, 0.0]])
 MATERIAL_TO_PBR = {
     "Slate": ("slate", 2.6), "Marble": ("marble", 3.0),
     "Metal": ("metal", 1.3), "Fabric": ("fabric", 0.7),
-    "Cobblestone": ("cobblestone", 2.6),
+    "Cobblestone": ("cobblestone", 2.6), "Wood": ("wood", 1.8),
 }
 
 
@@ -168,7 +168,7 @@ def main():
     nt.nodes.clear()
     out_node = nt.nodes.new("ShaderNodeOutputMaterial")
     emit = nt.nodes.new("ShaderNodeEmission")
-    emit.inputs["Color"].default_value = (0.85, 0.25, 0.22, 1.0)
+    emit.inputs["Color"].default_value = (0.91, 0.59, 0.70, 1.0)  # rose -- voir props.GEM_PINK
     emit.inputs["Strength"].default_value = 2.0
     nt.links.new(emit.outputs["Emission"], out_node.inputs["Surface"])
     materials["Neon"] = neon_mat

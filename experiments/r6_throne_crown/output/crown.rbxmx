@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
 <roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
-  <Item class="Model" referent="RBXPROP_000020">
+  <Item class="Model" referent="RBXPROP_000023">
     <Properties>
       <string name="Name">Crown</string>
-      <Ref name="PrimaryPart">RBXPROP_000021</Ref>
+      <Ref name="PrimaryPart">RBXPROP_000024</Ref>
     </Properties>
-    <Item class="Part" referent="RBXPROP_000021">
+    <Item class="Part" referent="RBXPROP_000024">
       <Properties>
         <string name="Name">Band</string>
         <token name="Shape">2</token>
@@ -36,7 +36,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBXPROP_000022">
+    <Item class="Part" referent="RBXPROP_000025">
       <Properties>
         <string name="Name">Point_0</string>
         <token name="Shape">1</token>
@@ -67,7 +67,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBXPROP_000023">
+    <Item class="Part" referent="RBXPROP_000026">
       <Properties>
         <string name="Name">Point_0_Gem</string>
         <token name="Shape">0</token>
@@ -76,7 +76,7 @@
         <float name="Transparency">0.0</float>
         <token name="Material">288</token>
         <float name="Reflectance">0.0</float>
-        <Color3uint8 name="Color3uint8">9836830</Color3uint8>
+        <Color3uint8 name="Color3uint8">15242930</Color3uint8>
         <Vector3 name="size">
           <X>0.22</X>
           <Y>0.22</Y>
@@ -98,7 +98,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBXPROP_000024">
+    <Item class="Part" referent="RBXPROP_000027">
       <Properties>
         <string name="Name">Point_1</string>
         <token name="Shape">1</token>
@@ -129,7 +129,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBXPROP_000025">
+    <Item class="Part" referent="RBXPROP_000028">
       <Properties>
         <string name="Name">Point_1_Gem</string>
         <token name="Shape">0</token>
@@ -138,7 +138,7 @@
         <float name="Transparency">0.0</float>
         <token name="Material">288</token>
         <float name="Reflectance">0.0</float>
-        <Color3uint8 name="Color3uint8">9836830</Color3uint8>
+        <Color3uint8 name="Color3uint8">15242930</Color3uint8>
         <Vector3 name="size">
           <X>0.22</X>
           <Y>0.22</Y>
@@ -160,7 +160,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBXPROP_000026">
+    <Item class="Part" referent="RBXPROP_000029">
       <Properties>
         <string name="Name">Point_2</string>
         <token name="Shape">1</token>
@@ -191,7 +191,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBXPROP_000027">
+    <Item class="Part" referent="RBXPROP_000030">
       <Properties>
         <string name="Name">Point_2_Gem</string>
         <token name="Shape">0</token>
@@ -200,7 +200,7 @@
         <float name="Transparency">0.0</float>
         <token name="Material">288</token>
         <float name="Reflectance">0.0</float>
-        <Color3uint8 name="Color3uint8">9836830</Color3uint8>
+        <Color3uint8 name="Color3uint8">15242930</Color3uint8>
         <Vector3 name="size">
           <X>0.22</X>
           <Y>0.22</Y>
@@ -222,7 +222,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBXPROP_000028">
+    <Item class="Part" referent="RBXPROP_000031">
       <Properties>
         <string name="Name">Point_3</string>
         <token name="Shape">1</token>
@@ -253,7 +253,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBXPROP_000029">
+    <Item class="Part" referent="RBXPROP_000032">
       <Properties>
         <string name="Name">Point_3_Gem</string>
         <token name="Shape">0</token>
@@ -262,7 +262,7 @@
         <float name="Transparency">0.0</float>
         <token name="Material">288</token>
         <float name="Reflectance">0.0</float>
-        <Color3uint8 name="Color3uint8">9836830</Color3uint8>
+        <Color3uint8 name="Color3uint8">15242930</Color3uint8>
         <Vector3 name="size">
           <X>0.22</X>
           <Y>0.22</Y>
@@ -284,7 +284,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBXPROP_000030">
+    <Item class="Part" referent="RBXPROP_000033">
       <Properties>
         <string name="Name">Point_4</string>
         <token name="Shape">1</token>
@@ -315,7 +315,7 @@
         </CoordinateFrame>
       </Properties>
     </Item>
-    <Item class="Part" referent="RBXPROP_000031">
+    <Item class="Part" referent="RBXPROP_000034">
       <Properties>
         <string name="Name">Point_4_Gem</string>
         <token name="Shape">0</token>
@@ -324,7 +324,7 @@
         <float name="Transparency">0.0</float>
         <token name="Material">288</token>
         <float name="Reflectance">0.0</float>
-        <Color3uint8 name="Color3uint8">9836830</Color3uint8>
+        <Color3uint8 name="Color3uint8">15242930</Color3uint8>
         <Vector3 name="size">
           <X>0.22</X>
           <Y>0.22</Y>
