@@ -123,6 +123,46 @@ Flash plein-écran bref, onde de choc annulaire qui s'étend et s'estompe,
 résolu (`impact_t` dans le JSON du lecteur), pas une valeur codée en dur
 séparément.
 
+## « Plus divin, comme s'il abattait sa colère sur le sol » (retour utilisateur)
+
+Premier retour après la livraison initiale : la scène ne se lisait pas
+assez comme un dieu qui s'abat sur le sol. Ajouté, toujours dans le
+lecteur (rien de nouveau dans le `KeyframeSequence` — la pose ne change
+pas, seule la mise en scène autour d'elle) :
+
+- **Colonne de lumière divine** (`drawGodRay()`) qui descend AVEC le
+  personnage pendant toute la chute, pas seulement à l'impact — la
+  "descente d'un dieu" doit se lire dès le début, pas seulement au
+  moment où il touche le sol.
+- **Auréole dorée** (`drawDivineAura()`) autour du personnage, marquée
+  pendant la chute et juste après l'impact, qui s'atténue une fois
+  debout — cohérente avec le halo de couronne du sacre (même famille de
+  mise en scène additive), mais ici pour lire "l'énergie qui vient de
+  s'abattre", pas un bijou qui brille.
+- **Impact nettement plus violent** :
+  - flash plein-écran plus large et plus chaud (doré, pas blanc neutre) ;
+  - **deux** anneaux d'onde de choc décalés de 0,10 s (une réverbération,
+    pas un simple cercle qui s'étend une fois) ;
+  - **fissures au sol** qui irradient du point d'impact en dents de scie
+    (angles fixes mais déterministes par frame, pas `Math.random()` —
+    important pour que deux captures à la même frame donnent la même
+    image, voir plus bas) et persistent bien après que la poussière soit
+    retombée ;
+  - **débris** : petits carrés sombres qui volent, tournent et
+    retombent, pas seulement de la poussière plate ;
+  - **secousse de caméra** (`shakeOffset()`) pendant ~0,4 s après
+    l'impact, amplitude qui décroît en carré du temps écoulé — un dieu
+    qui frappe le sol doit se *sentir*, pas seulement se voir.
+
+**Déterminisme du bruit, pas un détail cosmétique** : la secousse de
+caméra et les fissures utilisent des fonctions de `sin()`/angles fixes
+plutôt que `Math.random()`, pour une raison précise — la vérification de
+ce projet se fait par capture d'écran Playwright à des instants `t`
+précis (voir "Bugs trouvés par capture d'écran" plus haut) ; un bruit
+non-déterministe rendrait deux captures de la même frame différentes
+d'une exécution à l'autre, cassant la comparaison avant/après qui a déjà
+servi à trouver deux bugs réels dans ce même prototype.
+
 ## Rig du personnage
 
 Même rig R6 vérifié (dépôt Adonis, licence MIT) que les deux autres

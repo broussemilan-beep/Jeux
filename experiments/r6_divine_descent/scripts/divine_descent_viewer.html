@@ -309,6 +309,65 @@ function drawGrid() {
   }
 }
 
+// Colonne de lumiere divine qui descend AVEC le personnage : un faisceau
+// du haut de l'ecran jusqu'a sa position, elargi en haut (source au
+// ciel) et resserre pres du personnage, pulsant. S'eteint des l'impact
+// (le flash prend le relais).
+function drawGodRay(t, charPose) {
+  if (t >= IMPACT_T) return;
+  const root = charPose["Torso"].p;
+  const top = proj(root[0], root[1] + 40, root[2]);
+  const bot = proj(root[0], root[1] - 1.0, root[2]);
+  const tx = CX + top.x * SCALE, ty = 0;
+  const bx = CX + bot.x * SCALE, by = CY - bot.y * SCALE;
+  const pulse = 0.85 + 0.15 * Math.sin(t * 6.0);
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+  const grad = ctx.createLinearGradient(tx, ty, bx, by);
+  grad.addColorStop(0, "rgba(255,240,200,0)");
+  grad.addColorStop(0.55, `rgba(255,225,170,${0.10 * pulse})`);
+  grad.addColorStop(1, `rgba(255,235,190,${0.22 * pulse})`);
+  ctx.fillStyle = grad;
+  const wTop = 210, wBot = 46;
+  ctx.beginPath();
+  ctx.moveTo(tx - wTop / 2, ty);
+  ctx.lineTo(tx + wTop / 2, ty);
+  ctx.lineTo(bx + wBot / 2, by);
+  ctx.lineTo(bx - wBot / 2, by);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+// Aureole doree autour du personnage -- plus marquee pendant la chute et
+// juste apres l'impact (l'energie qui vient de s'abattre), s'attenue une
+// fois debout. Un simple halo additif derriere la silhouette, pas un
+// vrai eclairage volumetrique -- mise en scene du lecteur, coherente
+// avec le halo de couronne du sacre.
+function drawDivineAura(t, charPose) {
+  const root = charPose["Torso"].p;
+  const p = proj(root[0], root[1], root[2]);
+  const sx = CX + p.x * SCALE, sy = CY - p.y * SCALE;
+  let intensity;
+  if (t < IMPACT_T) {
+    intensity = 0.55;
+  } else {
+    const age = t - IMPACT_T;
+    intensity = Math.max(0.18, 0.9 - age * 1.1);
+  }
+  const pulse = 0.85 + 0.15 * Math.sin(t * 5.0);
+  const R = 130 * pulse;
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+  const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, R);
+  g.addColorStop(0, `rgba(255,230,180,${0.30 * intensity})`);
+  g.addColorStop(0.5, `rgba(255,210,150,${0.14 * intensity})`);
+  g.addColorStop(1, "rgba(255,210,150,0)");
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(sx, sy, R, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
+
 // -- trainee lumineuse derriere le personnage pendant la chute : quelques
 // silhouettes fantomes a des Y legerement superieurs, alpha decroissant --
 // vieille technique de "motion streak" plutot qu'un vrai flou de mouvement.
@@ -341,48 +400,93 @@ function drawFallTrail(t, charPose, alphaMul) {
   ctx.restore();
 }
 
+// Fentes/fissures au sol qui irradient du point d'impact, en dents de
+// scie (pas des lignes droites propres) -- generees UNE FOIS par angle
+// avec un decalage pseudo-aleatoire DETERMINISTE (fonction de l'indice,
+// pas Math.random()) pour rester identiques a chaque frame plutot que de
+// scintiller pendant qu'elles se dessinent.
+const CRACK_ANGLES = Array.from({ length: 7 }, (_, i) => i / 7 * Math.PI * 2 + Math.sin(i * 12.9) * 0.35);
+
+function drawGroundCracks(sx, sy, growT, alpha) {
+  ctx.save();
+  ctx.translate(sx, sy);
+  ctx.scale(1, 0.42);
+  ctx.strokeStyle = `rgba(255,225,180,${alpha})`;
+  ctx.lineWidth = 2.5;
+  for (const ang of CRACK_ANGLES) {
+    const len = 60 + growT * 260;
+    const segs = 4;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    let x = 0, y = 0;
+    for (let s = 1; s <= segs; s++) {
+      const frac = s / segs;
+      const jitter = Math.sin(ang * 7.3 + s * 5.1) * 14 * frac;
+      const dx = Math.cos(ang) * len * frac + Math.cos(ang + Math.PI / 2) * jitter;
+      const dy = Math.sin(ang) * len * frac + Math.sin(ang + Math.PI / 2) * jitter;
+      x = dx; y = dy;
+      ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
 function drawImpactVfx(t) {
   if (t < IMPACT_T) return;
   const age = t - IMPACT_T;
   const c = proj(0, FLOOR_Y, 0);
   const sx = CX + c.x * SCALE, sy = CY - c.y * SCALE;
 
-  // flash bref plein-ecran a l'impact -- lit le "coup", pas juste vu au
-  // point d'impact.
-  const flash = Math.max(0, 1 - age / 0.12);
+  // flash bref plein-ecran a l'impact -- plus large et plus chaud
+  // (dore, pas blanc neutre) que la premiere version : "abattre sa
+  // colere" doit se sentir dans toute l'image, pas juste au sol.
+  const flash = Math.max(0, 1 - age / 0.18);
   if (flash > 0) {
-    ctx.fillStyle = `rgba(255,250,240,${0.35 * flash})`;
+    ctx.fillStyle = `rgba(255,235,190,${0.55 * flash})`;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
 
-  // onde de choc : anneau qui s'etend et s'estompe.
-  const ringT = Math.min(1, age / 0.55);
-  if (ringT < 1) {
-    const R = 40 + ringT * 420;
-    const alpha = (1 - ringT) * 0.55;
+  // onde de choc : DEUX anneaux decales (le second suit le premier,
+  // comme une reverberation) plutot qu'un seul -- plus violent, plus
+  // "colere qui se propage" qu'un simple cercle qui s'etend une fois.
+  for (const delay of [0, 0.10]) {
+    const ringAge = age - delay;
+    if (ringAge < 0) continue;
+    const ringT = Math.min(1, ringAge / 0.6);
+    if (ringT >= 1) continue;
+    const R = 40 + ringT * 480;
+    const alpha = (1 - ringT) * (delay === 0 ? 0.6 : 0.4);
     ctx.save();
     ctx.translate(sx, sy);
     ctx.scale(1, 0.42);
-    ctx.strokeStyle = `rgba(230,200,255,${alpha})`;
-    ctx.lineWidth = 10 * (1 - ringT) + 2;
+    ctx.strokeStyle = `rgba(235,205,255,${alpha})`;
+    ctx.lineWidth = 12 * (1 - ringT) + 2;
     ctx.beginPath(); ctx.arc(0, 0, R, 0, Math.PI * 2); ctx.stroke();
     ctx.restore();
   }
+
+  // fissures au sol -- apparaissent vite, s'estompent lentement (elles
+  // persistent bien plus longtemps que la poussiere : la marque d'un
+  // coup qui a vraiment frappe le sol, pas un simple atterrissage).
+  const crackGrow = Math.min(1, age / 0.25);
+  const crackAlpha = Math.max(0, 0.7 - age * 0.5);
+  if (crackAlpha > 0.01) drawGroundCracks(sx, sy, crackGrow, crackAlpha);
 
   // eclats de poussiere : traits radiaux qui s'envolent puis s'estompent.
   const dustT = Math.min(1, age / 0.5);
   if (dustT < 1) {
     ctx.save();
     ctx.globalCompositeOperation = "lighter";
-    const n = 10;
+    const n = 14;
     for (let i = 0; i < n; i++) {
       const ang = (i / n) * Math.PI * 2 + 0.3;
-      const len = 26 + dustT * 130;
-      const dx = Math.cos(ang) * len, dy = Math.sin(ang) * len * 0.35 - dustT * 30;
-      const a = (1 - dustT) * 0.45;
+      const len = 30 + dustT * 170;
+      const dx = Math.cos(ang) * len, dy = Math.sin(ang) * len * 0.35 - dustT * 34;
+      const a = (1 - dustT) * 0.5;
       const grad = ctx.createLinearGradient(sx, sy, sx + dx, sy + dy);
-      grad.addColorStop(0, `rgba(215,195,150,${a})`);
-      grad.addColorStop(1, `rgba(215,195,150,0)`);
+      grad.addColorStop(0, `rgba(225,200,150,${a})`);
+      grad.addColorStop(1, `rgba(225,200,150,0)`);
       ctx.strokeStyle = grad;
       ctx.lineWidth = 3;
       ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx + dx, sy + dy); ctx.stroke();
@@ -390,17 +494,43 @@ function drawImpactVfx(t) {
     ctx.restore();
   }
 
-  // marque au sol, persiste (cratere stylise) -- une simple flaque sombre
-  // radiale, coherente avec drawContactShadow ailleurs dans ce projet.
-  const markAlpha = Math.min(0.5, age * 1.5) * 0.5;
+  // debris : petits carres qui volent et tournent, retombent -- lit
+  // comme du sol arrache par le choc, pas juste de la poussiere plate.
+  const debrisT = Math.min(1, age / 0.7);
+  if (debrisT < 1) {
+    ctx.save();
+    const n = 8;
+    for (let i = 0; i < n; i++) {
+      const ang = (i / n) * Math.PI * 2 + 0.7;
+      const speed = 90 + (i % 3) * 40;
+      const dx = Math.cos(ang) * speed * debrisT;
+      const dy = Math.sin(ang) * speed * 0.3 * debrisT - 120 * debrisT * (1 - debrisT * 0.6);
+      const a = (1 - debrisT) * 0.8;
+      const rot = debrisT * (4 + i);
+      ctx.save();
+      ctx.translate(sx + dx, sy + dy);
+      ctx.rotate(rot);
+      ctx.fillStyle = `rgba(60,45,70,${a})`;
+      const s = 6 - debrisT * 2;
+      ctx.fillRect(-s / 2, -s / 2, s, s);
+      ctx.restore();
+    }
+    ctx.restore();
+  }
+
+  // marque au sol, persiste (cratere stylise) -- plus large et plus
+  // sombre que la premiere version, coherent avec des fissures qui vont
+  // beaucoup plus loin maintenant.
+  const markAlpha = Math.min(0.62, age * 1.5) * 0.55;
   ctx.save();
   ctx.translate(sx, sy);
   ctx.scale(1, 0.42);
-  const mg = ctx.createRadialGradient(0, 0, 0, 0, 0, 150);
-  mg.addColorStop(0, `rgba(20,10,30,${markAlpha})`);
-  mg.addColorStop(1, "rgba(20,10,30,0)");
+  const mg = ctx.createRadialGradient(0, 0, 0, 0, 0, 210);
+  mg.addColorStop(0, `rgba(18,8,26,${markAlpha})`);
+  mg.addColorStop(0.6, `rgba(18,8,26,${markAlpha * 0.5})`);
+  mg.addColorStop(1, "rgba(18,8,26,0)");
   ctx.fillStyle = mg;
-  ctx.beginPath(); ctx.arc(0, 0, 150, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(0, 0, 210, 0, Math.PI * 2); ctx.fill();
   ctx.restore();
 }
 
@@ -418,6 +548,24 @@ function drawContactShadow(cx, cz, rx, rz, alpha) {
   ctx.restore();
 }
 
+// Secousse de camera -- un dieu qui abat sa colere sur le sol doit se
+// SENTIR a l'impact, pas seulement se voir. Bruit pseudo-aleatoire mais
+// DETERMINISTE (fonction de sin() a plusieurs frequences, pas
+// Math.random()) : deux captures d'ecran a la meme frame doivent montrer
+// exactement la meme secousse, sinon la verification par capture d'ecran
+// (voir README) ne compare plus la meme image d'une execution a l'autre.
+function shakeOffset(t) {
+  if (t < IMPACT_T) return [0, 0];
+  const age = t - IMPACT_T;
+  const dur = 0.4;
+  if (age > dur) return [0, 0];
+  const decay = 1 - age / dur;
+  const mag = 14 * decay * decay;
+  const sx = Math.sin(age * 71.0) * 0.6 + Math.sin(age * 133.0) * 0.4;
+  const sy = Math.sin(age * 89.0 + 1.7) * 0.6 + Math.sin(age * 151.0 + 0.4) * 0.4;
+  return [sx * mag, sy * mag];
+}
+
 function render(t) {
   const charPose = sampleChar(t);
   // Torso.p, pas HumanoidRootPart.p -- voir la note dans drawFallTrail().
@@ -425,7 +573,17 @@ function render(t) {
   CAM_OFFSET_Y = camAnchorY(t, charY);
 
   drawBackdrop(charY);
+
+  const [shakeX, shakeY] = shakeOffset(t);
+  ctx.save();
+  ctx.translate(shakeX, shakeY);
+
   drawGrid();
+
+  // Colonne de lumiere divine qui descend AVEC le personnage pendant la
+  // chute -- "la descente d'un dieu" doit se lire des le debut de la
+  // chute, pas seulement a l'impact.
+  drawGodRay(t, charPose);
 
   // Uniquement pendant la chute -- l'alpha par altitude seul ne suffit
   // pas a l'eteindre apres l'impact (la hanche remonte vers la hauteur
@@ -438,6 +596,8 @@ function render(t) {
   if (t >= IMPACT_T - 0.02) {
     drawContactShadow(charPose["Torso"].p[0], charPose["Torso"].p[2] + 0.2, 1.0, 0.8, 0.32);
   }
+
+  drawDivineAura(t, charPose);
 
   const rigRgb = hexToRgb(cssVar("--rig")), legRgb = hexToRgb(cssVar("--leg"));
   const all = [];
@@ -467,6 +627,8 @@ function render(t) {
   }
 
   drawImpactVfx(t);
+
+  ctx.restore();
 
   const phase = currentPhase(t);
   phaseNameEl.textContent = PHASE_LABELS[phase.name] || phase.name;
