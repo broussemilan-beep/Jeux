@@ -1,14 +1,17 @@
 """
 Verifie par le calcul (pas a l'oeil) la choregraphie de divine_descent() :
 descente Y strictement monotone (pas de rebond/remontee parasite avant
-l'impact), poing droit pres du sol ET devant le corps a l'instant
-d'impact, pieds pas grossierement enfonces sous le sol pendant la fente
-d'atterrissage, raideur structurelle (rotations finies, plausibles).
+l'impact), poing droit pres du sol a l'instant du coup, pieds pas
+grossierement enfonces sous le sol pendant la fente d'atterrissage,
+raideur structurelle (rotations finies, plausibles) -- et, depuis la
+restructuration en 2 temps (atterrissage/pause puis coup, voir
+choreography.py), que la pause est REELLEMENT immobile (pas juste lente)
+et que le coup est REELLEMENT bref.
 """
 import numpy as np
 
 import anim_engine as ae
-from choreography import divine_descent, IMPACT_T
+from choreography import divine_descent, IMPACT_T, LAND_T, PAUSE_T
 from r6_rig import PART_ORDER, PART_SIZES
 
 
@@ -66,11 +69,25 @@ def main():
         foot = tip_world(samples, leg, i, "bottom")
         print(f"  {leg} monde : {foot.round(3).tolist()}  ({'OK' if foot[1] > -0.35 else 'ENFONCE -- A CORRIGER'})")
 
-    print("\n=== pose finale (t=2.80s) : pieds au sol, tete/buste ===")
-    i = idx_at(2.80)
+    print(f"\n=== pose finale (t={duration:.2f}s) : pieds au sol, tete/buste ===")
+    i = idx_at(duration)
     for leg in ("Right Leg", "Left Leg"):
         foot = tip_world(samples, leg, i, "bottom")
         print(f"  {leg} monde : {foot.round(3).tolist()}  (attendu Y proche de 0)")
+
+    print(f"\n=== pause (t={LAND_T:.2f}s -> t={PAUSE_T:.2f}s) : vraiment immobile, pas juste ralentie ===")
+    root_land = np.array(samples["HumanoidRootPart"][idx_at(LAND_T)][3])
+    root_mid_pause = np.array(samples["HumanoidRootPart"][idx_at((LAND_T + PAUSE_T) / 2)][3])
+    root_pause_end = np.array(samples["HumanoidRootPart"][idx_at(PAUSE_T)][3])
+    drift = max(np.linalg.norm(root_mid_pause - root_land), np.linalg.norm(root_pause_end - root_land))
+    print(f"  derive max de la racine pendant la pause : {drift:.5f} stud (attendu ~0)")
+
+    print(f"\n=== coup (t={PAUSE_T:.2f}s -> t={IMPACT_T:.2f}s) : bref -- {IMPACT_T - PAUSE_T:.2f}s ===")
+    r_hand_pause = tip_world(samples, "Right Arm", idx_at(PAUSE_T), "bottom")
+    r_hand_strike = tip_world(samples, "Right Arm", idx_at(IMPACT_T), "bottom")
+    print(f"  poing avant le coup : {r_hand_pause.round(3).tolist()}")
+    print(f"  poing apres le coup : {r_hand_strike.round(3).tolist()}")
+    print(f"  chute du poing pendant le coup : {r_hand_pause[1] - r_hand_strike[1]:.3f} stud en {IMPACT_T - PAUSE_T:.2f}s")
 
     print("\n=== structure : rotations finies et plausibles (pas de coude/genou a simuler) ===")
     problems = []

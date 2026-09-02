@@ -18,14 +18,18 @@ libre depuis une haute altitude, atterrissage, relevé.
 
 - `output/character_divine_descent.rbxmx` — `KeyframeSequence` du
   personnage (rig R6 réel, 6 segments rigides, mêmes contraintes que les
-  deux autres prototypes : pas de coude/genou, Motor6D 3 DOF). 85
-  keyframes, 2,80 s à 30 Hz.
-- Lecteur HTML (chute + impact + relevé, résolu par le moteur) :
-  https://claude.ai/code/artifact/c21563ef-4b1b-4a7f-abe6-f68347dcc53c
+  deux autres prototypes : pas de coude/genou, Motor6D 3 DOF). 94
+  keyframes, 3,10 s à 30 Hz.
+- Lecteur HTML (chute + pause + coup + explosion + relevé, résolu par le
+  moteur) : https://claude.ai/code/artifact/c21563ef-4b1b-4a7f-abe6-f68347dcc53c
 
 ## Chorégraphie
 
-Trois phases (`scripts/choreography.py`, fonction `divine_descent()`) :
+Cinq phases (`scripts/choreography.py`, fonction `divine_descent()`) —
+restructurée en 2 beats distincts après un retour utilisateur explicite
+(« il tombe du ciel... marque une pause et abat sa colère de son poing » :
+la première version faisait atterrissage et coup de poing en un seul
+mouvement continu) :
 
 1. **Chute** (0,00 s → 1,32 s) — silhouette d'aile : bras écartés
    (`Right/Left Arm` Z≈±85, presque à l'horizontale), jambes tendues
@@ -35,10 +39,21 @@ Trois phases (`scripts/choreography.py`, fonction `divine_descent()`) :
    pesanteur (vitesse = distance/temps) sans coder de vraie physique, la
    même technique qu'un *ease-in* d'animateur. Altitude de départ :
    Y=34 studs (~17× la hauteur du personnage).
-2. **Impact** (1,32 s → 1,68 s) — anticipation puis écrasement au sol :
-   fente large, poing droit planté, tête baissée. Voir "Calibré par le
-   calcul" ci-dessous pour les angles exacts et leurs limites.
-3. **Relevé** (1,68 s → 2,80 s) — le personnage se redresse en une pose
+2. **Atterrissage + pause** (1,32 s → 1,75 s) — touche le sol à
+   `LAND_T`=1,42 s, bras droit déjà remonté en amorce (*wind-up*, comme
+   un marteau levé), **pas encore de poing au sol**. Tenu **immobile**
+   jusqu'à `PAUSE_T`=1,75 s (même pose exacte aux deux keyframes — voir
+   "Vérifié par capture d'écran" plus bas pour la preuve numérique que
+   c'est un vrai arrêt, pas juste un ralentissement).
+3. **Le coup** (1,75 s → 1,85 s, `STRIKE_T`) — le poing s'abat au sol en
+   à peine 0,10 s : mouvement brusque, pas une transition lente comme le
+   reste de la chorégraphie. Torse/tête plongent plus loin qu'au simple
+   atterrissage. **C'est ce keyframe, pas l'atterrissage, qui déclenche
+   l'explosion du lecteur** (aura dorée, onde de choc, fissures, débris —
+   voir plus bas).
+4. **Impact tenu** (1,85 s → 2,05 s) — le temps que l'explosion se lise
+   avant que le personnage ne commence à se relever.
+5. **Relevé** (2,05 s → 3,10 s) — le personnage se redresse en une pose
    fière et puissante (buste/tête inclinés vers l'arrière, bras
    légèrement écartés du corps, jambes debout).
 
@@ -73,6 +88,16 @@ balayage de la hauteur de hanche et des angles de jambe/bras
 `scripts/calibrate.py` vérifie aussi que la hauteur de hanche décroît
 strictement jusqu'à l'impact (pas de rebond parasite) et que toutes les
 rotations restent finies et dans une plage plausible.
+
+**Vérifié aussi que la pause est un vrai arrêt et que le coup est vraiment
+bref**, pas seulement par construction du code mais par calcul sur les
+échantillons résolus : la dérive de la racine entre `LAND_T` et `PAUSE_T`
+est de 0,004 stud (bruit numérique, pas un mouvement réel), et le poing
+droit tombe de 3,1 studs en seulement 0,10 s pendant le coup — deux
+chiffres qui confirment que la structure en 2 beats demandée par
+l'utilisateur (« marque une pause » puis « abat sa colère ») est
+réellement ce que joue le fichier, pas juste ce que dit le commentaire du
+code.
 
 ## Bugs trouvés par capture d'écran, pas par les nombres
 
@@ -110,18 +135,29 @@ ci-dessus) — aucune caméra. Le lecteur HTML fait suivre l'ancrage
 vertical de la caméra sur `Torso.p[1]` pendant la chute (à 85 % de la
 vitesse de descente, pour que le sol se rapproche visiblement plutôt que
 de rester à distance fixe du personnage), puis le ramène en douceur au
-cadrage au sol standard (même convention que le sacre) une fois
-l'altitude proche de la hauteur d'impact. Entièrement une mise en scène
-du *lecteur* (Canvas 2D, projection orthographique fixe), au même titre
-que l'éclairage à trois sources ou le halo de couronne du sacre.
+cadrage au sol standard (même convention que le sacre) **dès que le
+personnage touche le sol** (`LAND_T`=1,42 s) — pas au coup (`IMPACT_T`,
+plus tardif désormais, voir "Chorégraphie") : la caméra doit déjà être
+stable quand le poing s'abat, pas encore en train de se recadrer.
+Entièrement une mise en scène du *lecteur* (Canvas 2D, projection
+orthographique fixe), au même titre que l'éclairage à trois sources ou
+le halo de couronne du sacre.
 
 ## Effets d'impact (lecteur uniquement)
 
-Flash plein-écran bref, onde de choc annulaire qui s'étend et s'estompe,
-éclats de poussière radiaux, marque au sol persistante — tous déclenchés
-à `t = IMPACT_T` (1,42 s), lus dans les données du `KeyframeSequence
-résolu (`impact_t` dans le JSON du lecteur), pas une valeur codée en dur
-séparément.
+`LAND_T` (le personnage touche le sol) et `IMPACT_T` (le coup) sont deux
+instants **distincts** exportés séparément dans le JSON du lecteur
+(`land_t` et `impact_t`) — pas le même comme dans la première version.
+Les effets de CHUTE (colonne de lumière, traînée, caméra qui se stabilise,
+voir plus haut) s'arrêtent à `LAND_T` ; l'EXPLOSION (flash plein-écran,
+deux ondes de choc décalées, fissures au sol qui irradient et persistent,
+débris qui volent et tournent, secousse de caméra ~0,4 s) attend
+`IMPACT_T`, le moment réel du coup de poing — 0,43 s plus tard. Voir
+« Plus divin » plus bas pour le détail de ces effets et pourquoi leur
+bruit est déterministe (important pour la vérification par capture
+d'écran, pas un détail cosmétique). Rien n'est codé en dur : les deux
+instants sont lus dans les données du `KeyframeSequence` résolu, pas des
+valeurs qui pourraient diverger du fichier.
 
 ## « Plus divin, comme s'il abattait sa colère sur le sol » (retour utilisateur)
 

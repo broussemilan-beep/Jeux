@@ -10,7 +10,7 @@ import json
 import os
 
 import resolve_rbxmx as rr
-from choreography import divine_descent, IMPACT_T, SKY_Y
+from choreography import divine_descent, IMPACT_T, LAND_T, SKY_Y
 from r6_rig import PART_ORDER, PART_SIZES
 
 OUT_HZ = 30
@@ -30,6 +30,7 @@ def main():
         "part_order": PART_ORDER,
         "char_frames": char_frames,
         "impact_t": IMPACT_T,
+        "land_t": LAND_T,
         "sky_y": SKY_Y,
         "phases": [{"name": p["name"], "t0": p["t0"], "t1": min(p["t1"], duration)} for p in phases],
     }
