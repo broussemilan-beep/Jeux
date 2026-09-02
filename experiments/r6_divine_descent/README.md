@@ -18,44 +18,70 @@ libre depuis une haute altitude, atterrissage, relevé.
 
 - `output/character_divine_descent.rbxmx` — `KeyframeSequence` du
   personnage (rig R6 réel, 6 segments rigides, mêmes contraintes que les
-  deux autres prototypes : pas de coude/genou, Motor6D 3 DOF). 94
-  keyframes, 3,10 s à 30 Hz.
-- Lecteur HTML (chute + pause + coup + explosion + relevé, résolu par le
-  moteur) : https://claude.ai/code/artifact/c21563ef-4b1b-4a7f-abe6-f68347dcc53c
+  deux autres prototypes : pas de coude/genou, Motor6D 3 DOF). 114
+  keyframes, 3,75 s à 30 Hz.
+- Lecteur HTML (descente calme + révélation + plongée + pause + coup +
+  explosion + relevé, résolu par le moteur) :
+  https://claude.ai/code/artifact/c21563ef-4b1b-4a7f-abe6-f68347dcc53c
 
 ## Chorégraphie
 
-Cinq phases (`scripts/choreography.py`, fonction `divine_descent()`) —
-restructurée en 2 beats distincts après un retour utilisateur explicite
-(« il tombe du ciel... marque une pause et abat sa colère de son poing » :
-la première version faisait atterrissage et coup de poing en un seul
-mouvement continu) :
+Sept phases (`scripts/choreography.py`, fonction `divine_descent()`) —
+façonnées par deux retours utilisateur successifs, chacun corrigeant une
+structure qui ne rendait pas ce qui était demandé :
 
-1. **Chute** (0,00 s → 1,32 s) — silhouette d'aile : bras écartés
-   (`Right/Left Arm` Z≈±85, presque à l'horizontale), jambes tendues
-   balayées vers l'arrière, tête et buste plongés vers le sol. Espacement
-   des keyframes **décroissant** (0,55 s, puis 0,40 s, puis 0,25 s pour
-   une distance de chute comparable) — imite l'accélération de la
-   pesanteur (vitesse = distance/temps) sans coder de vraie physique, la
-   même technique qu'un *ease-in* d'animateur. Altitude de départ :
-   Y=34 studs (~17× la hauteur du personnage).
-2. **Atterrissage + pause** (1,32 s → 1,75 s) — touche le sol à
-   `LAND_T`=1,42 s, bras droit déjà remonté en amorce (*wind-up*, comme
+1. **Descente calme** (0,00 s → 1,35 s, `REVEAL_T`) — silhouette neutre,
+   presque verticale, bras/jambes à peine écartés : il **descend**, il ne
+   tombe pas encore. Espacement des keyframes **large** (0,50 s puis
+   0,50 s puis 0,35 s pour seulement 7 studs parcourus) — un vol
+   contrôlé, pas une chute libre. Aucune aura, aucun rayon de lumière
+   dans le lecteur pendant cette phase (voir "Deuxième retour" plus bas).
+2. **Révélation** (`REVEAL_T`=1,35 s → 1,97 s) — transition **rapide**
+   (0,15 s) vers la silhouette d'aile agressive (bras écartés
+   `Right/Left Arm` Z≈±85, jambes tendues balayées vers l'arrière, tête
+   et buste plongés vers le sol), puis chute qui **accélère** nettement
+   (10 studs en 0,25 s, puis 8 studs en 0,25 s — contraste net avec la
+   phase précédente). C'est cet instant précis que le lecteur utilise
+   pour allumer l'aura dorée et la colonne de lumière (voir plus bas).
+3. **Atterrissage + pause** (1,97 s → 2,40 s) — touche le sol à
+   `LAND_T`=2,07 s, bras droit déjà remonté en amorce (*wind-up*, comme
    un marteau levé), **pas encore de poing au sol**. Tenu **immobile**
-   jusqu'à `PAUSE_T`=1,75 s (même pose exacte aux deux keyframes — voir
+   jusqu'à `PAUSE_T`=2,40 s (même pose exacte aux deux keyframes — voir
    "Vérifié par capture d'écran" plus bas pour la preuve numérique que
    c'est un vrai arrêt, pas juste un ralentissement).
-3. **Le coup** (1,75 s → 1,85 s, `STRIKE_T`) — le poing s'abat au sol en
+4. **Le coup** (2,40 s → 2,50 s, `STRIKE_T`) — le poing s'abat au sol en
    à peine 0,10 s : mouvement brusque, pas une transition lente comme le
    reste de la chorégraphie. Torse/tête plongent plus loin qu'au simple
    atterrissage. **C'est ce keyframe, pas l'atterrissage, qui déclenche
    l'explosion du lecteur** (aura dorée, onde de choc, fissures, débris —
    voir plus bas).
-4. **Impact tenu** (1,85 s → 2,05 s) — le temps que l'explosion se lise
+5. **Impact tenu** (2,50 s → 2,70 s) — le temps que l'explosion se lise
    avant que le personnage ne commence à se relever.
-5. **Relevé** (2,05 s → 3,10 s) — le personnage se redresse en une pose
+6. **Relevé** (2,70 s → 3,75 s) — le personnage se redresse en une pose
    fière et puissante (buste/tête inclinés vers l'arrière, bras
-   légèrement écartés du corps, jambes debout).
+   légèrement écartés du corps, jambes debout). Altitude de départ de
+   toute la scène : Y=34 studs (~17× la hauteur du personnage).
+
+### Premier retour utilisateur : « il tombe... marque une pause et abat sa colère »
+
+Toute première version : atterrissage et coup de poing en un seul
+mouvement continu, aucun temps d'arrêt entre les deux. Corrigé en 2 beats
+distincts (phases 3 et 4 ci-dessus, `LAND_T`/`PAUSE_T`/`STRIKE_T`) — voir
+"Vérifié par capture d'écran" plus bas pour la preuve numérique que la
+pause est un vrai arrêt et que le coup est vraiment bref.
+
+### Deuxième retour utilisateur : « il ne tombe pas du ciel, il en descend »
+
+Après la structure en 2 beats ci-dessus, l'utilisateur a précisé : « il
+ne tombe pas du ciel il en descend donc au début c'est ralenti puis une
+fois arrivé à mi-chemin on montre son côté divin et boum ». La chute
+était rapide et accélérante **dès `t=0`** — la silhouette d'aile
+agressive et la sensation d'accélération apparaissaient dès le premier
+instant, sans aucune retenue initiale. Corrigé en scindant la descente en
+2 temps au lieu d'un seul mouvement continu : calme jusqu'à `REVEAL_T`,
+puis révélation + accélération. Cette distinction se lit aussi dans le
+lecteur, pas seulement dans le fichier — voir "Aura et rayon de lumière :
+seulement après la révélation" plus bas.
 
 ## Calibré par le calcul, pas à l'oeil
 
@@ -92,7 +118,7 @@ rotations restent finies et dans une plage plausible.
 **Vérifié aussi que la pause est un vrai arrêt et que le coup est vraiment
 bref**, pas seulement par construction du code mais par calcul sur les
 échantillons résolus : la dérive de la racine entre `LAND_T` et `PAUSE_T`
-est de 0,004 stud (bruit numérique, pas un mouvement réel), et le poing
+est de 0,0025 stud (bruit numérique, pas un mouvement réel), et le poing
 droit tombe de 3,1 studs en seulement 0,10 s pendant le coup — deux
 chiffres qui confirment que la structure en 2 beats demandée par
 l'utilisateur (« marque une pause » puis « abat sa colère ») est
@@ -132,16 +158,21 @@ bugs réels, trouvés uniquement en regardant le rendu :
 Le `KeyframeSequence` livré ne contient que les rotations des 6
 `Motor6D` et la translation de la racine (repliée dans `Torso`, voir
 ci-dessus) — aucune caméra. Le lecteur HTML fait suivre l'ancrage
-vertical de la caméra sur `Torso.p[1]` pendant la chute (à 85 % de la
-vitesse de descente, pour que le sol se rapproche visiblement plutôt que
-de rester à distance fixe du personnage), puis le ramène en douceur au
+vertical de la caméra sur `Torso.p[1]`, puis le ramène en douceur au
 cadrage au sol standard (même convention que le sacre) **dès que le
-personnage touche le sol** (`LAND_T`=1,42 s) — pas au coup (`IMPACT_T`,
+personnage touche le sol** (`LAND_T`=2,07 s) — pas au coup (`IMPACT_T`,
 plus tardif désormais, voir "Chorégraphie") : la caméra doit déjà être
 stable quand le poing s'abat, pas encore en train de se recadrer.
-Entièrement une mise en scène du *lecteur* (Canvas 2D, projection
-orthographique fixe), au même titre que l'éclairage à trois sources ou
-le halo de couronne du sacre.
+
+**Le facteur de poursuite change à `REVEAL_T`** (retour utilisateur sur
+la descente calme, voir plus haut) : 0,55 avant, 0,85 après. Avant la
+révélation, la caméra suit lâchement — le personnage reste petit et
+lointain contre le ciel, une silhouette calme et distante qui descend.
+Après `REVEAL_T`, poursuite bien plus serrée pour la plongée rapide et
+l'impact : la caméra "s'engage" au moment où le personnage montre son
+côté divin, pas avant. Entièrement une mise en scène du *lecteur*
+(Canvas 2D, projection orthographique fixe), au même titre que
+l'éclairage à trois sources ou le halo de couronne du sacre.
 
 ## Effets d'impact (lecteur uniquement)
 
@@ -167,14 +198,17 @@ lecteur (rien de nouveau dans le `KeyframeSequence` — la pose ne change
 pas, seule la mise en scène autour d'elle) :
 
 - **Colonne de lumière divine** (`drawGodRay()`) qui descend AVEC le
-  personnage pendant toute la chute, pas seulement à l'impact — la
-  "descente d'un dieu" doit se lire dès le début, pas seulement au
-  moment où il touche le sol.
+  personnage — la "descente d'un dieu" doit se lire avant l'impact, pas
+  seulement au moment où il touche le sol. **Révisé** après le second
+  retour utilisateur (voir "Aura et rayon de lumière : seulement après
+  la révélation" plus bas) : n'apparaît plus dès `t=0`, seulement à
+  partir de `REVEAL_T`.
 - **Auréole dorée** (`drawDivineAura()`) autour du personnage, marquée
-  pendant la chute et juste après l'impact, qui s'atténue une fois
-  debout — cohérente avec le halo de couronne du sacre (même famille de
-  mise en scène additive), mais ici pour lire "l'énergie qui vient de
-  s'abattre", pas un bijou qui brille.
+  pendant la plongée rapide et juste après l'impact, qui s'atténue une
+  fois debout — cohérente avec le halo de couronne du sacre (même
+  famille de mise en scène additive), mais ici pour lire "l'énergie qui
+  vient de s'abattre", pas un bijou qui brille. **Révisée** de la même
+  façon : éteinte pendant la descente calme.
 - **Impact nettement plus violent** :
   - flash plein-écran plus large et plus chaud (doré, pas blanc neutre) ;
   - **deux** anneaux d'onde de choc décalés de 0,10 s (une réverbération,
@@ -198,6 +232,22 @@ précis (voir "Bugs trouvés par capture d'écran" plus haut) ; un bruit
 non-déterministe rendrait deux captures de la même frame différentes
 d'une exécution à l'autre, cassant la comparaison avant/après qui a déjà
 servi à trouver deux bugs réels dans ce même prototype.
+
+## Aura et rayon de lumière : seulement après la révélation
+
+Troisième instant-clé exporté séparément dans le JSON du lecteur
+(`reveal_t`, en plus de `land_t`/`impact_t`) : avant `REVEAL_T`, ni
+`drawGodRay()` ni `drawDivineAura()` ne dessinent quoi que ce soit — le
+personnage descend en silhouette neutre, sans aucun signe visuel de
+pouvoir. À `REVEAL_T`, les deux s'allument avec une montée en douceur
+sur 0,2 s (`ignite`, pas un "pop" instantané), et un troisième effet
+apparaît une seule fois : `drawRevealPulse()`, un bref sursaut de
+lumière dorée centré sur le personnage (0,4 s, plus marqué et plus court
+que l'auréole continue) qui marque cet instant précis comme un
+événement, pas seulement le début progressif de l'auréole. La traînée de
+chute (`drawFallTrail()`) est gérée de la même façon — aucun "flou de
+mouvement" avant `REVEAL_T`, il n'y a pas encore de vraie vitesse à
+suggérer.
 
 ## Rig du personnage
 

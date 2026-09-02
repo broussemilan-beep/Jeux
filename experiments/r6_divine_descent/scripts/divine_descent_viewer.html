@@ -119,8 +119,8 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
 <script>
 const DATA = __SCENE_DATA__;
 
-const PHASE_LABELS = { chute: "chute", atterrissage: "atterrissage · pause", frappe: "le coup", impact: "explosion", releve: "relevé" };
-const PHASE_KIND = { chute: "fall", atterrissage: "fall", frappe: "impact", impact: "impact", releve: "rise" };
+const PHASE_LABELS = { descente: "descente calme", reveal: "révélation", chute: "plongée", atterrissage: "atterrissage · pause", frappe: "le coup", impact: "explosion", releve: "relevé" };
+const PHASE_KIND = { descente: "fall", reveal: "fall", chute: "fall", atterrissage: "fall", frappe: "impact", impact: "impact", releve: "rise" };
 const LEGS = new Set(["Right Leg", "Left Leg"]);
 
 const canvas = document.getElementById("stage");
@@ -137,15 +137,18 @@ const phaseTrack = document.getElementById("phaseTrack");
 let AZ = -50 * Math.PI / 180;
 const EL = 14 * Math.PI / 180;
 const DURATION = DATA.duration;
-// IMPACT_T = le COUP (le poing s'abat, declenche l'explosion) ; LAND_T =
-// le simple TOUCHE-AU-SOL, plus tot -- entre les deux, le personnage
-// marque une pause (retour utilisateur : "il tombe... marque une pause
-// et abat sa colere"). Les effets de CHUTE (rayon de lumiere, trainee,
-// camera qui se cale au sol) doivent s'arreter a LAND_T ; l'EXPLOSION
-// (flash, ondes de choc, fissures, secousse) doit attendre IMPACT_T --
-// deux instants distincts, pas le meme comme dans la premiere version.
+// Trois instants distincts, exportes separement par dump_scene_data.py :
+// REVEAL_T = fin de la descente calme, debut de la silhouette d'aile --
+// avant cet instant, AUCUNE aura/rayon de lumiere ("montrer son cote
+// divin" doit etre un evenement a mi-chemin, retour utilisateur, pas un
+// etat de toute la scene). LAND_T = simple TOUCHE-AU-SOL -- les effets
+// de CHUTE (rayon de lumiere, trainee, camera qui se cale au sol)
+// s'arretent ici. IMPACT_T = le COUP (le poing s'abat, apres une pause
+// tenue entre LAND_T et IMPACT_T) -- l'EXPLOSION (flash, ondes de choc,
+// fissures, secousse) attend cet instant, pas LAND_T.
 const IMPACT_T = DATA.impact_t;
 const LAND_T = DATA.land_t;
+const REVEAL_T = DATA.reveal_t;
 const SKY_Y = DATA.sky_y;
 
 function rebuildPhaseTrack() {
@@ -197,18 +200,26 @@ function sampleChar(t) {
 }
 
 // Ancrage vertical de la camera -- PAS une propriete du fichier, voir la
-// note sous le lecteur. Pendant la chute, suit la hanche mais moins vite
-// qu'elle ne descend (facteur 0.85) pour laisser le sol se rapprocher
-// visiblement a l'ecran plutot que de rester fixe par rapport au
-// personnage ; ramene a 0 (cadrage au sol standard, meme convention que
-// le sacre) des que le personnage TOUCHE le sol (LAND_T) -- pas au coup
-// (IMPACT_T), qui arrive plus tard apres la pause : la camera doit
-// deja etre cadree au sol quand le poing s'abat, pas encore en train de
-// se stabiliser.
+// note sous le lecteur. Suit la hanche mais moins vite qu'elle ne
+// descend, pour laisser le sol se rapprocher visiblement a l'ecran
+// plutot que de rester a distance fixe du personnage ; ramene a 0
+// (cadrage au sol standard, meme convention que le sacre) des que le
+// personnage TOUCHE le sol (LAND_T) -- pas au coup (IMPACT_T), qui
+// arrive plus tard apres la pause : la camera doit deja etre cadree au
+// sol quand le poing s'abat, pas encore en train de se stabiliser.
+//
+// Le facteur de poursuite change a REVEAL_T (0.55 avant, 0.85 apres) :
+// avant la revelation, la camera suit LACHEMENT -- le personnage reste
+// petit et lointain contre le ciel, une silhouette distante et calme qui
+// descend (retour utilisateur : "il en descend", pas une chute des le
+// debut). Apres REVEAL_T, poursuite plus serree pour la plongee rapide
+// et l'impact -- la camera "s'engage" au moment ou le personnage montre
+// son cote divin, pas avant.
 function camAnchorY(t, charY) {
   if (t >= LAND_T) return 0;
+  const follow = t < REVEAL_T ? 0.55 : 0.85;
   const frac = Math.max(0, Math.min(1, (SKY_Y - charY) / (SKY_Y - 1.85)));
-  return charY * (1 - frac) * 0.85;
+  return charY * (1 - frac) * follow;
 }
 
 let CAM_OFFSET_Y = 0;
@@ -322,17 +333,22 @@ function drawGrid() {
 
 // Colonne de lumiere divine qui descend AVEC le personnage : un faisceau
 // du haut de l'ecran jusqu'a sa position, elargi en haut (source au
-// ciel) et resserre pres du personnage, pulsant. S'eteint des que le
-// personnage touche le sol (LAND_T) -- il ne descend plus pendant la
-// pause qui suit, la colonne n'a plus de raison de le suivre.
+// ciel) et resserre pres du personnage, pulsant. UNIQUEMENT entre
+// REVEAL_T et LAND_T -- avant REVEAL_T le personnage descend calmement,
+// silhouette neutre, aucune aura (retour utilisateur : "montrer son
+// cote divin" doit etre un evenement a mi-chemin, pas un etat permanent
+// de la scene) ; apres LAND_T il ne descend plus, la colonne n'a plus de
+// raison de le suivre. Ramene en douceur sur 0,2s a REVEAL_T (pas un
+// "pop" instantane) via `ignite`.
 function drawGodRay(t, charPose) {
-  if (t >= LAND_T) return;
+  if (t < REVEAL_T || t >= LAND_T) return;
+  const ignite = Math.min(1, (t - REVEAL_T) / 0.2);
   const root = charPose["Torso"].p;
   const top = proj(root[0], root[1] + 40, root[2]);
   const bot = proj(root[0], root[1] - 1.0, root[2]);
   const tx = CX + top.x * SCALE, ty = 0;
   const bx = CX + bot.x * SCALE, by = CY - bot.y * SCALE;
-  const pulse = 0.85 + 0.15 * Math.sin(t * 6.0);
+  const pulse = (0.85 + 0.15 * Math.sin(t * 6.0)) * ignite;
   ctx.save();
   ctx.globalCompositeOperation = "lighter";
   const grad = ctx.createLinearGradient(tx, ty, bx, by);
@@ -351,18 +367,21 @@ function drawGodRay(t, charPose) {
   ctx.restore();
 }
 
-// Aureole doree autour du personnage -- plus marquee pendant la chute et
-// juste apres l'impact (l'energie qui vient de s'abattre), s'attenue une
-// fois debout. Un simple halo additif derriere la silhouette, pas un
-// vrai eclairage volumetrique -- mise en scene du lecteur, coherente
-// avec le halo de couronne du sacre.
+// Aureole doree autour du personnage -- ETEINTE avant REVEAL_T (silhouette
+// neutre pendant la descente calme), s'allume a la revelation, reste
+// marquee pendant la plongee rapide et juste apres l'impact (l'energie
+// qui vient de s'abattre), s'attenue une fois debout. Un simple halo
+// additif derriere la silhouette, pas un vrai eclairage volumetrique --
+// mise en scene du lecteur, coherente avec le halo de couronne du sacre.
 function drawDivineAura(t, charPose) {
+  if (t < REVEAL_T) return;
   const root = charPose["Torso"].p;
   const p = proj(root[0], root[1], root[2]);
   const sx = CX + p.x * SCALE, sy = CY - p.y * SCALE;
+  const ignite = Math.min(1, (t - REVEAL_T) / 0.2);
   let intensity;
   if (t < IMPACT_T) {
-    intensity = 0.55;
+    intensity = 0.55 * ignite;
   } else {
     const age = t - IMPACT_T;
     intensity = Math.max(0.18, 0.9 - age * 1.1);
@@ -375,6 +394,30 @@ function drawDivineAura(t, charPose) {
   g.addColorStop(0, `rgba(255,230,180,${0.30 * intensity})`);
   g.addColorStop(0.5, `rgba(255,210,150,${0.14 * intensity})`);
   g.addColorStop(1, "rgba(255,210,150,0)");
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(sx, sy, R, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
+
+// Pulsation de la revelation : un bref sursaut de lumiere doree centre
+// sur le personnage, plus marque et plus court que l'aureole continue --
+// marque l'INSTANT ou "on montre son cote divin" comme un evenement net,
+// pas juste le debut progressif de l'aureole.
+function drawRevealPulse(t, charPose) {
+  const age = t - REVEAL_T;
+  if (age < 0 || age > 0.4) return;
+  const root = charPose["Torso"].p;
+  const p = proj(root[0], root[1], root[2]);
+  const sx = CX + p.x * SCALE, sy = CY - p.y * SCALE;
+  const grow = age / 0.4;
+  const alpha = (1 - grow) * 0.6;
+  const R = 30 + grow * 260;
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+  const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, R);
+  g.addColorStop(0, `rgba(255,240,205,${alpha})`);
+  g.addColorStop(0.5, `rgba(255,220,170,${alpha * 0.5})`);
+  g.addColorStop(1, "rgba(255,220,170,0)");
   ctx.fillStyle = g;
   ctx.beginPath(); ctx.arc(sx, sy, R, 0, Math.PI * 2); ctx.fill();
   ctx.restore();
@@ -597,14 +640,15 @@ function render(t) {
   // chute, pas seulement a l'impact.
   drawGodRay(t, charPose);
 
-  // Uniquement pendant la chute (jusqu'a LAND_T, pas IMPACT_T -- le
-  // personnage ne tombe plus pendant la pause) -- l'alpha par altitude
+  // Uniquement pendant la plongee RAPIDE (entre REVEAL_T et LAND_T) --
+  // pas pendant la descente calme (pas de "flou de mouvement" avant
+  // qu'il n'y ait de vraie vitesse a suggerer), et l'alpha par altitude
   // seul ne suffit pas a l'eteindre apres coup (la hanche remonte vers
   // la hauteur debout ensuite, donc "loin du sol" redeviendrait vrai) :
   // bug trouve par capture d'ecran reelle, premiere version -- la
   // trainee restait visible en pleine opacite sur la pose finale, bien
   // apres l'atterrissage.
-  const trailAlpha = t < LAND_T ? Math.min(1, (SKY_Y - charY) / 6) : 0;
+  const trailAlpha = (t >= REVEAL_T && t < LAND_T) ? Math.min(1, (SKY_Y - charY) / 6) : 0;
   drawFallTrail(t, charPose, trailAlpha);
 
   // L'ombre de contact apparait des le touche-au-sol (LAND_T), pas
@@ -615,6 +659,7 @@ function render(t) {
   }
 
   drawDivineAura(t, charPose);
+  drawRevealPulse(t, charPose);
 
   const rigRgb = hexToRgb(cssVar("--rig")), legRgb = hexToRgb(cssVar("--leg"));
   const all = [];

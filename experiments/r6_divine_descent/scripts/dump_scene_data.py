@@ -2,15 +2,16 @@
 Assemble le JSON du lecteur HTML : uniquement le personnage (resolu par
 le moteur, jamais la FK brute -- meme discipline que
 r6_aerial_kick_combo/dump_preview_data.py et
-r6_throne_crown/dump_scene_data.py), plus les instants de phase et
-l'instant d'impact (pour declencher l'onde de choc/la poussiere du
-lecteur au bon moment).
+r6_throne_crown/dump_scene_data.py), plus les instants de phase et trois
+instants-cles exportes separement pour le lecteur : reveal_t (debut de
+l'aura/rayon de lumiere), land_t (fin des effets de chute), impact_t (le
+coup, declenche l'explosion).
 """
 import json
 import os
 
 import resolve_rbxmx as rr
-from choreography import divine_descent, IMPACT_T, LAND_T, SKY_Y
+from choreography import divine_descent, IMPACT_T, LAND_T, REVEAL_T, SKY_Y
 from r6_rig import PART_ORDER, PART_SIZES
 
 OUT_HZ = 30
@@ -31,6 +32,7 @@ def main():
         "char_frames": char_frames,
         "impact_t": IMPACT_T,
         "land_t": LAND_T,
+        "reveal_t": REVEAL_T,
         "sky_y": SKY_Y,
         "phases": [{"name": p["name"], "t0": p["t0"], "t1": min(p["t1"], duration)} for p in phases],
     }

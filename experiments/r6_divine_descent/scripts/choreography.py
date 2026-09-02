@@ -1,15 +1,26 @@
 """
-Choregraphie : le personnage tombe du ciel en chute libre controlee
-("silhouette d'aile" -- bras ecartes, jambes tendues balayees vers
-l'arriere), ATTERRIT sur ses appuis (pas encore de coup), MARQUE UNE
-PAUSE (tenue immobile, tension avant le coup), puis ABAT RAPIDEMENT son
-poing au sol -- c'est ce coup, pas l'atterrissage, qui declenche
-l'explosion d'aura doree/poussiere/sol brise du lecteur -- avant de se
-relever dans une pose fiere et puissante. Retour utilisateur explicite
-sur la structure en 2 temps ("il tombe... marque une pause et abat sa
-colere de son poing") : la premiere version faisait atterrissage et coup
-de poing en un seul mouvement continu, corrige ici en deux beats
-distincts avec un arret net entre les deux.
+Choregraphie : le personnage DESCEND du ciel (pas une chute libre depuis
+le premier instant) -- lent et calme au debut, puis a mi-chemin il
+REVELE son cote divin (transition rapide vers la silhouette d'aile
+agressive, aura/rayon de lumiere qui s'allument dans le lecteur) et
+plonge vite vers le sol. Il ATTERRIT sur ses appuis (pas encore de
+coup), MARQUE UNE PAUSE (tenue immobile, tension avant le coup), puis
+ABAT RAPIDEMENT son poing au sol -- c'est ce coup, pas l'atterrissage,
+qui declenche l'explosion d'aura doree/poussiere/sol brise du lecteur --
+avant de se relever dans une pose fiere et puissante.
+
+Deux retours utilisateur successifs ont faconne cette structure :
+  1. "il tombe... marque une pause et abat sa colere de son poing" -- la
+     toute premiere version faisait atterrissage et coup de poing en un
+     seul mouvement continu, corrige en 2 beats distincts (voir LAND_T/
+     PAUSE_T/STRIKE_T).
+  2. "il ne tombe pas du ciel il en descend donc au debut c'est ralenti
+     puis une fois arrive a mi-chemin on montre son cote divin et boum"
+     -- la chute etait rapide/accelerante DES LE DEBUT (silhouette
+     d'aile agressive a t=0). Corrige en scindant la descente en 2
+     temps : lent/calme jusqu'a REVEAL_T (silhouette neutre, aucune
+     aura/rayon dans le lecteur), puis reveal + acceleration rapide
+     jusqu'au sol.
 
 Meme convention d'ecriture que r6_throne_crown/r6_aerial_kick_combo
 (rotations en degres, `_kf` identique, repere/joint conversion
@@ -61,10 +72,21 @@ IMPACT_Y = 1.85          # hanche en fente d'atterrissage -- calibree (voir cali
                           # numerique (calibrate.py) a trouve 1.85 comme hauteur ou le
                           # poing peut vraiment approcher le sol (Y=0.66, cf. IMPACT_RIGHT_ARM).
 
-# Pose de chute : ailes ecartees, jambes tendues balayees en arriere,
-# tete/buste plonges vers le sol -- silhouette lisible de loin (le
-# lecteur zoome/suit rarement d'assez pres pour lire un detail fin
-# pendant la chute).
+# -- Beat 0a : DESCENTE CALME -- silhouette neutre, presque verticale,
+# bras/jambes a peine ecartes : il DESCEND, il ne tombe pas encore. Le
+# lecteur n'allume ni aura ni rayon de lumiere avant REVEAL_T (voir
+# README) -- "montrer son cote divin" doit rester un evenement, pas un
+# etat permanent des le premier instant.
+_CALM_ARMS = {"Right Arm": (5, 0, 20), "Left Arm": (5, 0, -20)}
+_CALM_LEGS = {"Right Leg": (3, 0, 3), "Left Leg": (3, 0, -3)}
+_CALM_TORSO = (8, 0, 0)
+_CALM_HEAD = (6, 0, 0)
+
+# -- Beat 0b : REVEAL -- silhouette d'aile agressive, ailes ecartees,
+# jambes tendues balayees en arriere, tete/buste plonges vers le sol :
+# la posture "divine" que la descente calme cachait jusque-la. Lisible
+# de loin (le lecteur zoome/suit rarement d'assez pres pour lire un
+# detail fin pendant la chute rapide qui suit).
 _FALL_ARMS = {"Right Arm": (-15, 0, 85), "Left Arm": (-15, 0, -85)}
 _FALL_LEGS = {"Right Leg": (-8, 0, 6), "Left Leg": (-8, 0, -6)}
 _FALL_TORSO = (18, 0, 0)
@@ -120,25 +142,36 @@ _STAND_ARMS = {"Right Arm": (2, 0, 12), "Left Arm": (2, 0, -12)}
 
 def divine_descent():
     keyframes = [
-        # -- chute, tres haut : espacement de temps DECROISSANT pour une
-        # chute equivalente en distance -- imite l'acceleration de la
-        # pesanteur (vitesse = distance/temps, donc plus le pas de temps
-        # se resserre pour une meme distance parcourue, plus la vitesse
-        # affichee augmente) sans avoir a coder une vraie physique.
-        _kf(0.00, root_pos=(0, SKY_Y, 0), Torso=_FALL_TORSO, Head=_FALL_HEAD,
+        # -- descente calme, tres haut : espacement de temps LARGE, peu
+        # de distance parcourue par intervalle -- il DESCEND, un vol
+        # controle, pas une chute (retour utilisateur explicite, voir
+        # docstring de module). Silhouette neutre (_CALM_*).
+        _kf(0.00, root_pos=(0, SKY_Y, 0), Torso=_CALM_TORSO, Head=_CALM_HEAD,
+            **_CALM_LEGS, **_CALM_ARMS),
+        _kf(0.50, root_pos=(0, SKY_Y - 2.5, 0), Torso=_CALM_TORSO, Head=_CALM_HEAD,
+            **_CALM_LEGS, **_CALM_ARMS),
+        _kf(1.00, root_pos=(0, SKY_Y - 5.0, 0), Torso=_CALM_TORSO, Head=_CALM_HEAD,
+            **_CALM_LEGS, **_CALM_ARMS),
+        _kf(REVEAL_T - 0.15, root_pos=(0, SKY_Y - 7.0, 0), Torso=_CALM_TORSO, Head=_CALM_HEAD,
+            **_CALM_LEGS, **_CALM_ARMS),
+
+        # -- REVEAL : transition RAPIDE (0,15s) vers la silhouette
+        # d'aile agressive -- "on montre son cote divin" doit se lire
+        # comme un evenement net, pas une derive progressive. La chute
+        # accelere aussi a partir d'ici (voir les increments de Y
+        # ci-dessous, bien plus grands qu'avant REVEAL_T).
+        _kf(REVEAL_T, root_pos=(0, SKY_Y - 10.0, 0), Torso=_FALL_TORSO, Head=_FALL_HEAD,
             **_FALL_LEGS, **_FALL_ARMS),
-        _kf(0.55, root_pos=(0, SKY_Y - 7.0, 0), Torso=_FALL_TORSO, Head=_FALL_HEAD,
+        _kf(REVEAL_T + 0.25, root_pos=(0, SKY_Y - 20.0, 0), Torso=_FALL_TORSO, Head=_FALL_HEAD,
             **_FALL_LEGS, **_FALL_ARMS),
-        _kf(0.95, root_pos=(0, SKY_Y - 17.0, 0), Torso=_FALL_TORSO, Head=_FALL_HEAD,
-            **_FALL_LEGS, **_FALL_ARMS),
-        _kf(1.20, root_pos=(0, SKY_Y - 26.0, 0), Torso=_FALL_TORSO, Head=_FALL_HEAD,
+        _kf(REVEAL_T + 0.50, root_pos=(0, SKY_Y - 28.0, 0), Torso=_FALL_TORSO, Head=_FALL_HEAD,
             **_FALL_LEGS, **_FALL_ARMS),
 
         # -- anticipation : tout dernier instant avant le sol, le corps
         # commence deja a se replier vers la posture d'impact (bras qui
         # se ramenent, jambes qui plient l'angle) -- lu comme un
         # freinage/une preparation, pas juste une chute qui s'arrete net.
-        _kf(1.32, root_pos=(0, SKY_Y - 29.7, 0), Torso=(30, 0, 0), Head=(30, 0, 0),
+        _kf(REVEAL_T + 0.62, root_pos=(0, SKY_Y - 30.65, 0), Torso=(30, 0, 0), Head=(30, 0, 0),
             **{"Right Leg": (16, 0, 12), "Left Leg": (6, 0, -7),
                "Right Arm": (-15, 0, 10), "Left Arm": (8, 0, -45)}),
 
@@ -186,29 +219,38 @@ def divine_descent():
     ]
 
     phases = [
-        {"name": "chute", "t0": 0.00, "t1": 1.32, "expected_reversals": {}},
-        {"name": "atterrissage", "t0": 1.32, "t1": PAUSE_T, "expected_reversals": {}},
+        {"name": "descente", "t0": 0.00, "t1": REVEAL_T, "expected_reversals": {}},
+        {"name": "reveal", "t0": REVEAL_T, "t1": REVEAL_T + 0.62, "expected_reversals": {}},
+        {"name": "chute", "t0": REVEAL_T + 0.62, "t1": LAND_T, "expected_reversals": {}},
+        {"name": "atterrissage", "t0": LAND_T, "t1": PAUSE_T, "expected_reversals": {}},
         {"name": "frappe", "t0": PAUSE_T, "t1": STRIKE_T, "expected_reversals": {}},
         {"name": "impact", "t0": STRIKE_T, "t1": STRIKE_T + 0.20, "expected_reversals": {}},
         {"name": "releve", "t0": STRIKE_T + 0.20, "t1": STRIKE_T + 1.25, "expected_reversals": {}},
     ]
-    preview_times = [0.0, 0.55, 0.95, 1.20, 1.32, LAND_T, PAUSE_T, STRIKE_T,
+    preview_times = [0.0, 0.50, 1.00, REVEAL_T - 0.15, REVEAL_T, REVEAL_T + 0.25,
+                      REVEAL_T + 0.50, REVEAL_T + 0.62, LAND_T, PAUSE_T, STRIKE_T,
                       STRIKE_T + 0.20, STRIKE_T + 0.55, STRIKE_T + 0.90, STRIKE_T + 1.25]
     engine_opts = {"handle_type": "AUTO_CLAMPED"}
     return keyframes, phases, preview_times, engine_opts
 
 
+# REVEAL_T : fin de la descente calme, debut de la silhouette d'aile +
+# acceleration -- exporte separement (voir dump_scene_data.py) pour que
+# le lecteur n'allume l'aura/le rayon de lumiere qu'A PARTIR de cet
+# instant, jamais avant (retour utilisateur : "montrer son cote divin"
+# doit etre un evenement a mi-chemin, pas un etat de la scene entiere).
 # LAND_T : touche le sol, pas encore de coup. PAUSE_T : meme pose tenue
 # (0,33s de battement -- assez long pour se LIRE comme une pause
 # deliberee, pas une hesitation). STRIKE_T : PAUSE_T + 0,10s seulement --
 # le coup lui-meme doit etre brusque. IMPACT_T reste le nom exporte lu
 # par dump_scene_data.py/le lecteur pour declencher l'explosion : il
-# pointe maintenant sur le coup (STRIKE_T), plus sur le simple
-# atterrissage (LAND_T) -- distinction explicite, voir aussi
-# dump_scene_data.py qui exporte LAND_T separement pour la mise en scene
-# de chute (rayon de lumiere, camera, trainee) qui doit s'arreter a
-# l'atterrissage, pas attendre le coup.
-LAND_T = 1.42
-PAUSE_T = 1.75
-STRIKE_T = 1.85
+# pointe sur le coup (STRIKE_T), jamais sur le simple atterrissage
+# (LAND_T) -- distinction explicite, voir aussi dump_scene_data.py qui
+# exporte LAND_T et REVEAL_T separement pour la mise en scene de chute
+# (rayon de lumiere, camera, trainee) qui doit demarrer a REVEAL_T et
+# s'arreter a l'atterrissage, pas attendre le coup.
+REVEAL_T = 1.35
+LAND_T = REVEAL_T + 0.72
+PAUSE_T = LAND_T + 0.33
+STRIKE_T = PAUSE_T + 0.10
 IMPACT_T = STRIKE_T
