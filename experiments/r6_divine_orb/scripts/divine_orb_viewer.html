@@ -1,0 +1,557 @@
+<title>Le jugement</title>
+<style>
+:root {
+  --bg: #f4f1ea; --panel: #ffffff; --panel-2: #eee9de; --ink: #241f18;
+  --sub: #6b6255; --grid: #d9d2c2; --rig: #342d52; --leg: #241f3c;
+  --edge: #241f18; --ghost: #b8ae98; --accent: #8a6fd8; --gold: #eadfa0;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #100e18; --panel: #1a1728; --panel-2: #1e1b2e; --ink: #ece5d6;
+    --sub: #a89d87; --grid: #322c48; --rig: #6858b0; --leg: #443a80;
+    --edge: #0a0812; --ghost: #4a4468; --accent: #b09ff0; --gold: #f0e6b0;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #100e18; --panel: #1a1728; --panel-2: #1e1b2e; --ink: #ece5d6;
+  --sub: #a89d87; --grid: #322c48; --rig: #6858b0; --leg: #443a80;
+  --edge: #0a0812; --ghost: #4a4468; --accent: #b09ff0; --gold: #f0e6b0;
+}
+body { background: var(--bg); color: var(--ink); font-family: "Iowan Old Style", "Georgia", serif; }
+.stage { max-width: 980px; margin: 0 auto; padding: 28px 20px 48px; }
+.eyebrow { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin: 0 0 6px; font-family: Oswald, sans-serif; }
+h1 { font-size: 30px; margin: 0 0 10px; }
+.sub { color: var(--sub); font-size: 14.5px; line-height: 1.55; max-width: 760px; margin: 0 0 20px; }
+.card { background: var(--panel); border: 1px solid var(--grid); border-radius: 14px; padding: 14px; }
+.viewport-wrap { position: relative; border-radius: 10px; overflow: hidden; background: var(--panel-2); }
+canvas { display: block; width: 100%; height: auto; }
+.chip { position: absolute; top: 10px; font-family: Oswald, sans-serif; font-size: 12px; padding: 5px 10px; border-radius: 999px; background: rgba(0,0,0,0.35); color: #fff; }
+.chip.left { left: 10px; } .chip.right { right: 10px; }
+.controls { padding-top: 12px; display: flex; flex-direction: column; gap: 10px; }
+.transport { display: flex; align-items: center; gap: 12px; }
+.play-btn { width: 40px; height: 40px; border-radius: 50%; border: none; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+.play-btn svg { width: 18px; height: 18px; }
+.scrub-col { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.phase-track { display: flex; height: 6px; border-radius: 4px; overflow: hidden; }
+.phase-seg { height: 100%; }
+.phase-seg[data-kind="calm"] { background: var(--ghost); }
+.phase-seg[data-kind="charge"] { background: var(--accent); }
+.phase-seg[data-kind="impact"] { background: var(--gold); }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+.row-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+.phase-label { font-family: Oswald, sans-serif; font-size: 13px; color: var(--sub); text-transform: uppercase; letter-spacing: 0.05em; }
+.phase-label b { color: var(--ink); }
+.btn-row { display: flex; gap: 4px; background: var(--panel-2); border-radius: 8px; padding: 3px; }
+.btn-row button { border: none; background: transparent; color: var(--sub); font-family: Oswald, sans-serif; font-size: 12px; padding: 5px 10px; border-radius: 6px; cursor: pointer; }
+.btn-row button.active { background: var(--accent); color: #fff; }
+.note { color: var(--sub); font-size: 13px; line-height: 1.6; max-width: 780px; margin-top: 16px; }
+.note strong { color: var(--ink); }
+</style>
+
+<div class="stage">
+  <p class="eyebrow">Prototype isolé · Roblox R6 · Model + KeyframeSequence</p>
+  <h1>Le jugement</h1>
+  <p class="sub">Debout au bord d'un à-pic, dans une posture hautaine (buste et tête inclinés en arrière), le
+    personnage (rig R6 réel, 6 segments rigides) lève la main pour invoquer une énorme boule d'énergie divine, la
+    laisse grossir en la tenant, puis l'abat d'un geste brusque pour la jeter sur le monde en contrebas — avant de
+    reprendre sa pose, satisfait, à regarder l'impact au loin. Ce qui joue ici est le résultat
+    <strong>résolu par l'équation du moteur</strong> (<code>Part1 = Part0 · C0 · Transform · C1⁻¹</code>) à partir du
+    <code>KeyframeSequence</code> livré — la boule elle-même suit une trajectoire calculée séparément
+    (<code>orb_track.json</code>) une fois relâchée, voir la note sous le lecteur.</p>
+
+  <div class="card">
+    <div class="viewport-wrap">
+      <canvas id="stage" width="1200" height="900"></canvas>
+      <div class="chip left">phase · <b id="phaseName">posture hautaine</b></div>
+      <div class="chip right" id="timecode">0.00s / 3.45s</div>
+    </div>
+
+    <div class="controls">
+      <div class="transport">
+        <button class="play-btn" id="playBtn" aria-label="Lecture / pause">
+          <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M8 5v14l11-7z"/></svg>
+          <svg id="pauseIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+        </button>
+        <div class="scrub-col">
+          <div class="phase-track" id="phaseTrack"></div>
+          <input type="range" id="scrub" min="0" max="1000" value="0" step="1" aria-label="Position dans la scène">
+        </div>
+      </div>
+      <div class="row-bottom">
+        <div class="phase-label">segment <b id="phaseName2">posture hautaine</b></div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap">
+          <div class="btn-row" id="camRow">
+            <button data-az="-50" class="active">3/4</button>
+            <button data-az="0">face</button>
+            <button data-az="-90">profil</button>
+          </div>
+          <div class="btn-row" id="speedRow">
+            <button data-speed="0.25">0.25×</button>
+            <button data-speed="0.5">0.5×</button>
+            <button data-speed="1" class="active">1×</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="note"><strong>La boule ne sort pas exactement de la main</strong> : ce bras (segment rigide, longueur
+    fixe, pas de coude) ne peut physiquement pas lever la main au-dessus de la tête — vérifié par balayage numérique
+    (<code>scripts/calibrate.py</code>), l'écart mesuré tourne autour de 1,0-1,05 stud sous le sommet de la tête, quel
+    que soit l'angle du bras essayé. La boule est donc positionnée avec un décalage vertical fixe au-dessus de la main
+    suivie (voir <code>orb_track.py</code>), pas collée dessus — comme le petit saut assumé de la couronne dans le
+    sacre, une limite réelle du rig, dite honnêtement plutôt que masquée.</p>
+  <p class="note"><strong>La trajectoire de vol n'est pas une extrapolation physique</strong> : la vitesse
+    instantanée du bras au keyframe de lancer a été mesurée (~5,3 studs/s) puis délibérément <em>pas</em> utilisée —
+    elle ne dit rien sur où se trouve « le monde » ni sur combien de temps le vol doit durer pour rester dramatique.
+    <code>orb_track.py</code> scripte donc une trajectoire indépendante (point de départ réel + point d'arrivée choisi
+    + un léger arc), exactement le même principe que la trajectoire de la couronne dans le sacre.</p>
+  <p class="note"><strong>Mise en scène du lecteur, pas le fichier</strong> : le monde lointain (le halo qui grossit
+    en bas de l'écran) est affiché à une position d'écran fixe, pas à la position 3D réelle de <code>orb_track.json</code>
+    (à des dizaines de studs de distance, hors-champ dans une projection orthographique à cette échelle) — une
+    compression visuelle nécessaire pour rester lisible dans un cadrage fixe, documentée ici plutôt que cachée. La
+    donnée livrée (<code>output/orb_track.json</code>) reste la vraie position 3D, à l'échelle réelle.</p>
+  <p class="note"><strong>Rig du personnage</strong> : même rig R6 vérifié (dépôt Adonis, licence MIT) que les
+    prototypes précédents de ce dossier — voir <code>rig/PROVENANCE.md</code>.</p>
+</div>
+
+<script>
+const DATA = __SCENE_DATA__;
+
+const PHASE_LABELS = { invocation: "invocation", charge: "charge", lancer: "lancer", vol: "vol", aftermath: "posture hautaine" };
+const PHASE_KIND = { invocation: "calm", charge: "charge", lancer: "impact", vol: "impact", aftermath: "calm" };
+const LEGS = new Set(["Right Leg", "Left Leg"]);
+
+const canvas = document.getElementById("stage");
+const ctx = canvas.getContext("2d");
+const scrub = document.getElementById("scrub");
+const playBtn = document.getElementById("playBtn");
+const playIcon = document.getElementById("playIcon");
+const pauseIcon = document.getElementById("pauseIcon");
+const phaseNameEl = document.getElementById("phaseName");
+const phaseNameEl2 = document.getElementById("phaseName2");
+const timecodeEl = document.getElementById("timecode");
+const phaseTrack = document.getElementById("phaseTrack");
+
+let AZ = -50 * Math.PI / 180;
+const EL = 14 * Math.PI / 180;
+const DURATION = DATA.duration;
+const RAISE_T = DATA.raise_t;
+const RELEASE_T = DATA.release_t;
+const IMPACT_T = DATA.impact_t;
+
+const PHASES = [
+  { name: "invocation", t0: 0.00, t1: RAISE_T },
+  { name: "charge", t0: RAISE_T, t1: RELEASE_T - 0.15 },
+  { name: "lancer", t0: RELEASE_T - 0.15, t1: RELEASE_T },
+  { name: "vol", t0: RELEASE_T, t1: IMPACT_T },
+  { name: "aftermath", t0: IMPACT_T, t1: DURATION },
+];
+
+function rebuildPhaseTrack() {
+  phaseTrack.innerHTML = "";
+  PHASES.forEach(p => {
+    const seg = document.createElement("div");
+    seg.className = "phase-seg";
+    seg.dataset.kind = PHASE_KIND[p.name] || "calm";
+    seg.style.width = (Math.max(0, p.t1 - p.t0) / DURATION * 100) + "%";
+    phaseTrack.appendChild(seg);
+  });
+}
+rebuildPhaseTrack();
+
+function currentPhase(t) {
+  for (const p of PHASES) if (t >= p.t0 - 1e-6 && t <= p.t1 + 1e-6) return p;
+  return PHASES[PHASES.length - 1];
+}
+
+function slerpish(a, b, f) {
+  const m = a.map((v, i) => v + (b[i] - v) * f);
+  const c0 = [m[0], m[3], m[6]], c1 = [m[1], m[4], m[7]];
+  const n0 = Math.hypot(c0[0], c0[1], c0[2]) || 1;
+  const e0 = c0.map(v => v / n0);
+  const d = e0[0] * c1[0] + e0[1] * c1[1] + e0[2] * c1[2];
+  let e1 = c1.map((v, i) => v - d * e0[i]);
+  const n1 = Math.hypot(e1[0], e1[1], e1[2]) || 1;
+  e1 = e1.map(v => v / n1);
+  const e2 = [e0[1] * e1[2] - e0[2] * e1[1], e0[2] * e1[0] - e0[0] * e1[2], e0[0] * e1[1] - e0[1] * e1[0]];
+  return [e0[0], e1[0], e2[0], e0[1], e1[1], e2[1], e0[2], e1[2], e2[2]];
+}
+
+function frameAt(frames, t) {
+  const dt = 1 / DATA.fps;
+  const idx = Math.max(0, Math.min(frames.length - 2, Math.floor(t / dt)));
+  const f0 = frames[idx], f1 = frames[idx + 1];
+  const frac = Math.max(0, Math.min(1, (t - f0.t) / (f1.t - f0.t || 1)));
+  return { f0, f1, frac };
+}
+
+function sampleChar(t) {
+  const { f0, f1, frac } = frameAt(DATA.char_frames, t);
+  const out = {};
+  for (const part of DATA.part_order) {
+    const a = f0[part], b = f1[part];
+    out[part] = { p: a.p.map((v, i) => v + (b.p[i] - v) * frac), r: slerpish(a.r, b.r, frac) };
+  }
+  return out;
+}
+
+function sampleOrb(t) {
+  const { f0, f1, frac } = frameAt(DATA.orb_track, t);
+  if (f0.pos === null && f1.pos === null) return null;
+  const a = f0.pos || f1.pos, b = f1.pos || f0.pos;
+  return {
+    pos: a.map((v, i) => v + (b[i] - v) * frac),
+    radius: f0.radius + (f1.radius - f0.radius) * frac,
+  };
+}
+
+function proj(x, y, z) {
+  const x1 = x * Math.cos(AZ) - z * Math.sin(AZ);
+  const z1 = x * Math.sin(AZ) + z * Math.cos(AZ);
+  const y2 = y * Math.cos(EL) - z1 * Math.sin(EL);
+  const depth = y * Math.sin(EL) + z1 * Math.cos(EL);
+  return { x: x1, y: y2, d: depth };
+}
+
+const SCALE = 48, CX = 600, CY = 560, FLOOR_Y = 0.0;
+
+// Ancrage ECRAN (pas monde) du "monde" lointain -- voir note sous le
+// lecteur : sa vraie position 3D (orb_track.json) est a des dizaines de
+// studs, hors-champ a cette echelle. Mise en scene du lecteur : un point
+// fixe en bas-avant du cadre, coherent avec "au bord d'un a-pic, le
+// monde tres bas et loin devant".
+const WORLD_SCREEN = { x: 760, y: 830 };
+
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function shadeRgb(rgb, k) {
+  return "rgb(" + rgb.map(v => Math.max(0, Math.min(255, Math.round(v * k)))).join(",") + ")";
+}
+function norm3(v) { const n = Math.hypot(v[0], v[1], v[2]) || 1; return [v[0]/n, v[1]/n, v[2]/n]; }
+function dot3(a, b) { return a[0]*b[0] + a[1]*b[1] + a[2]*b[2]; }
+function add3(a, b) { return [a[0]+b[0], a[1]+b[1], a[2]+b[2]]; }
+
+const LIGHT = norm3([-0.45, 0.80, -0.38]);
+const FILL_LIGHT = norm3([0.55, 0.25, 0.65]);
+const VIEW = norm3([0.35, 0.45, 0.82]);
+const HALF_VEC = norm3(add3(LIGHT, VIEW));
+const MAT = { spec: 0.22, shin: 14, rim: 0.20, tint: 1.0 };
+
+const CORNERS = [[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]];
+const FACES = [
+  { idx: [0,1,2,3], n: [0,0,-1] }, { idx: [5,4,7,6], n: [0,0,1] },
+  { idx: [4,0,3,7], n: [-1,0,0] }, { idx: [1,5,6,2], n: [1,0,0] },
+  { idx: [3,2,6,7], n: [0,1,0] },  { idx: [4,5,1,0], n: [0,-1,0] },
+];
+
+function mulVec(r, v) {
+  return [r[0]*v[0] + r[1]*v[1] + r[2]*v[2],
+          r[3]*v[0] + r[4]*v[1] + r[5]*v[2],
+          r[6]*v[0] + r[7]*v[1] + r[8]*v[2]];
+}
+
+function boxQuads(pos, rot, size, rgbColor) {
+  const half = [size[0] / 2, size[1] / 2, size[2] / 2];
+  const screen = CORNERS.map(c => {
+    const rotated = mulVec(rot, [c[0] * half[0], c[1] * half[1], c[2] * half[2]]);
+    return proj(pos[0] + rotated[0], pos[1] + rotated[1], pos[2] + rotated[2]);
+  });
+  const quads = [];
+  for (const f of FACES) {
+    const nWorld = mulVec(rot, f.n);
+    const nProj = proj(nWorld[0], nWorld[1], nWorld[2]);
+    if (nProj.d >= 0) continue;
+    const specAngle = Math.max(0, dot3(nWorld, HALF_VEC));
+    const spec = Math.pow(specAngle, MAT.shin) * MAT.spec;
+    const facing = Math.max(0, dot3(nWorld, VIEW));
+    const rim = Math.pow(1 - facing, 3) * MAT.rim;
+    const lambert = Math.max(0, dot3(nWorld, LIGHT));
+    const fill = Math.max(0, dot3(nWorld, FILL_LIGHT)) * 0.30;
+    const k = (0.30 + 0.62 * lambert + fill) * MAT.tint;
+    quads.push({
+      pts: f.idx.map(i => screen[i]),
+      depth: f.idx.reduce((s, i) => s + screen[i].d, 0) / 4,
+      k, spec, rim, rgb: rgbColor,
+    });
+  }
+  return quads;
+}
+
+function drawBackdrop() {
+  const g = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  g.addColorStop(0, "#06050c");
+  g.addColorStop(0.5, "#0c0a18");
+  g.addColorStop(1, "#141024");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // etoiles fixes -- vantage point cosmique, coherent avec "toiser le
+  // monde depuis les hauteurs". Generees par une formule deterministe
+  // (pas Math.random() a chaque frame -- sinon elles scintilleraient de
+  // facon incoherente au lieu d'etre fixes).
+  ctx.save();
+  for (let i = 0; i < 90; i++) {
+    const sx = (i * 137.5) % canvas.width;
+    const sy = (i * 71.3) % (canvas.height * 0.65);
+    const r = 0.6 + (i % 5) * 0.25;
+    ctx.globalAlpha = 0.25 + (i % 7) / 10;
+    ctx.fillStyle = "#e8e2ff";
+    ctx.beginPath(); ctx.arc(sx, sy, r, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.restore();
+}
+
+// Rebord rocheux sous les pieds du personnage -- silhouette sombre, pas
+// un vrai Part Roblox (mise en scene du lecteur uniquement, voir note).
+function drawLedge() {
+  const c = proj(0, FLOOR_Y, 0);
+  const sx = CX + c.x * SCALE, sy = CY - c.y * SCALE;
+  ctx.fillStyle = "#050308";
+  ctx.beginPath();
+  ctx.moveTo(sx - 340, sy + 40);
+  ctx.lineTo(sx + 260, sy + 30);
+  ctx.lineTo(sx + 420, sy + 260);
+  ctx.lineTo(sx - 420, sy + 260);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle = "rgba(150,130,220,0.12)";
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+}
+
+function drawContactShadow(cx, cz, rx, rz, alpha) {
+  const c = proj(cx, FLOOR_Y, cz);
+  const sx = CX + c.x * SCALE, sy = CY - c.y * SCALE;
+  ctx.save();
+  ctx.translate(sx, sy);
+  ctx.scale(1, 0.42);
+  const g = ctx.createRadialGradient(0, 0, 0, 0, 0, rx * SCALE);
+  g.addColorStop(0, `rgba(0,0,0,${alpha})`);
+  g.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.ellipse(0, 0, rx * SCALE, rz * SCALE, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
+
+// Le monde lointain -- halo qui grandit legerement a l'approche de
+// l'impact, flash a IMPACT_T. Position ecran fixe (WORLD_SCREEN), voir
+// note sous le lecteur.
+function drawWorld(t) {
+  const nearImpact = t >= RELEASE_T;
+  const grow = nearImpact ? Math.min(1, (t - RELEASE_T) / (IMPACT_T - RELEASE_T)) : 0;
+  const baseR = 34 + grow * 10;
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+  const g = ctx.createRadialGradient(WORLD_SCREEN.x, WORLD_SCREEN.y, 0, WORLD_SCREEN.x, WORLD_SCREEN.y, baseR * 2.4);
+  g.addColorStop(0, "rgba(120,150,230,0.55)");
+  g.addColorStop(0.4, "rgba(90,110,190,0.28)");
+  g.addColorStop(1, "rgba(90,110,190,0)");
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(WORLD_SCREEN.x, WORLD_SCREEN.y, baseR * 2.4, 0, Math.PI * 2); ctx.fill();
+
+  ctx.globalCompositeOperation = "source-over";
+  const disc = ctx.createRadialGradient(WORLD_SCREEN.x - baseR * 0.3, WORLD_SCREEN.y - baseR * 0.3, 0, WORLD_SCREEN.x, WORLD_SCREEN.y, baseR);
+  disc.addColorStop(0, "#5a6fc0");
+  disc.addColorStop(0.7, "#2c3468");
+  disc.addColorStop(1, "#141838");
+  ctx.fillStyle = disc;
+  ctx.beginPath(); ctx.arc(WORLD_SCREEN.x, WORLD_SCREEN.y, baseR, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+
+  if (t >= IMPACT_T) {
+    const age = t - IMPACT_T;
+    const flash = Math.max(0, 1 - age / 0.5);
+    if (flash > 0) {
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      const fg = ctx.createRadialGradient(WORLD_SCREEN.x, WORLD_SCREEN.y, 0, WORLD_SCREEN.x, WORLD_SCREEN.y, 90 + (1 - flash) * 60);
+      fg.addColorStop(0, `rgba(255,240,210,${0.85 * flash})`);
+      fg.addColorStop(0.5, `rgba(255,210,150,${0.4 * flash})`);
+      fg.addColorStop(1, "rgba(255,210,150,0)");
+      ctx.fillStyle = fg;
+      ctx.beginPath(); ctx.arc(WORLD_SCREEN.x, WORLD_SCREEN.y, 90 + (1 - flash) * 60, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    }
+    const ringT = Math.min(1, age / 0.7);
+    if (ringT < 1) {
+      ctx.save();
+      ctx.strokeStyle = `rgba(220,225,255,${(1 - ringT) * 0.5})`;
+      ctx.lineWidth = 5 * (1 - ringT) + 1;
+      ctx.beginPath(); ctx.arc(WORLD_SCREEN.x, WORLD_SCREEN.y, 20 + ringT * 130, 0, Math.PI * 2); ctx.stroke();
+      ctx.restore();
+    }
+  }
+}
+
+// Halo autour du personnage pendant la charge -- froid/violet (pas
+// dore/chaud comme le prototype precedent) : puissance hautaine et
+// distante, pas une colere qui s'abat.
+function drawCharAura(t, charPose) {
+  if (t < RAISE_T) return;
+  const intensity = t < RELEASE_T ? Math.min(1, (t - RAISE_T) / 0.3) : Math.max(0, 1 - (t - RELEASE_T) / 0.4);
+  if (intensity <= 0) return;
+  const root = charPose["Torso"].p;
+  const p = proj(root[0], root[1], root[2]);
+  const sx = CX + p.x * SCALE, sy = CY - p.y * SCALE;
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+  const R = 110;
+  const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, R);
+  g.addColorStop(0, `rgba(160,140,240,${0.20 * intensity})`);
+  g.addColorStop(1, "rgba(160,140,240,0)");
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(sx, sy, R, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
+
+// La boule elle-meme -- suit orb.pos (proj reel) pendant la charge (elle
+// reste pres du personnage, la projection reste lisible), puis un lerp
+// ECRAN vers WORLD_SCREEN pendant le vol (voir note sous le lecteur).
+function drawOrb(t, orb, charPose) {
+  if (!orb || orb.radius <= 0.01) return;
+  let sx, sy;
+  if (t < RELEASE_T) {
+    const p = proj(orb.pos[0], orb.pos[1], orb.pos[2]);
+    sx = CX + p.x * SCALE; sy = CY - p.y * SCALE;
+  } else {
+    const p0 = proj(orb.pos[0], orb.pos[1], orb.pos[2]);
+    const startX = CX + p0.x * SCALE, startY = CY - p0.y * SCALE;
+    // recalcule le point de depart REEL au relachement (fige), pas la
+    // position 3D scriptee de orb_track (qui vise WORLD_TARGET_POS en
+    // coordonnees monde, hors-champ) -- seul le point de depart vient
+    // de la projection 3D, l'arrivee est l'ancrage ecran.
+    const frac = Math.min(1, (t - RELEASE_T) / (IMPACT_T - RELEASE_T));
+    const arc = Math.sin(Math.PI * frac) * -70;
+    sx = RELEASE_SCREEN.x + (WORLD_SCREEN.x - RELEASE_SCREEN.x) * frac;
+    sy = RELEASE_SCREEN.y + (WORLD_SCREEN.y - RELEASE_SCREEN.y) * frac + arc;
+  }
+  const r = Math.max(2, orb.radius * SCALE * 0.6);
+
+  // trainee pendant le vol
+  if (t >= RELEASE_T && t < IMPACT_T) {
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    ctx.strokeStyle = "rgba(210,200,255,0.35)";
+    ctx.lineWidth = r * 0.7;
+    ctx.beginPath(); ctx.moveTo(RELEASE_SCREEN.x, RELEASE_SCREEN.y); ctx.lineTo(sx, sy); ctx.stroke();
+    ctx.restore();
+  }
+
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+  const halo = ctx.createRadialGradient(sx, sy, 0, sx, sy, r * 3.2);
+  halo.addColorStop(0, "rgba(225,215,255,0.55)");
+  halo.addColorStop(1, "rgba(225,215,255,0)");
+  ctx.fillStyle = halo;
+  ctx.beginPath(); ctx.arc(sx, sy, r * 3.2, 0, Math.PI * 2); ctx.fill();
+
+  const core = ctx.createRadialGradient(sx - r * 0.3, sy - r * 0.3, 0, sx, sy, r);
+  core.addColorStop(0, "#ffffff");
+  core.addColorStop(0.5, "#cdbdff");
+  core.addColorStop(1, "#7a5fd8");
+  ctx.globalCompositeOperation = "source-over";
+  ctx.fillStyle = core;
+  ctx.beginPath(); ctx.arc(sx, sy, r, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
+
+// Position ecran du point de relachement -- calculee UNE SEULE FOIS
+// depuis les donnees (orb_track a RELEASE_T), jamais accumulee au fil
+// du rendu. Bug trouve par capture d'ecran reelle, pas suppose :
+// l'accumuler pendant render() (mise a jour seulement quand t <
+// RELEASE_T) suppose que les frames precedentes ont deja ete rendues --
+// faux pour une capture isolee ou un scrub direct vers une frame >=
+// RELEASE_T, la boule se retrouvait dessinee au point (0,0), hors-champ,
+// avec une trainee partant du mauvais endroit.
+function computeReleaseScreen() {
+  for (const e of DATA.orb_track) {
+    if (e.pos && e.t >= RELEASE_T - 1e-6) {
+      const p = proj(e.pos[0], e.pos[1], e.pos[2]);
+      return { x: CX + p.x * SCALE, y: CY - p.y * SCALE };
+    }
+  }
+  return { x: CX, y: CY };
+}
+const RELEASE_SCREEN = computeReleaseScreen();
+
+function render(t) {
+  drawBackdrop();
+  drawLedge();
+
+  const charPose = sampleChar(t);
+  drawContactShadow(charPose["Torso"].p[0], charPose["Torso"].p[2] + 0.3, 0.9, 0.7, 0.30);
+  drawWorld(t);
+  drawCharAura(t, charPose);
+
+  const rigRgb = hexToRgb(cssVar("--rig")), legRgb = hexToRgb(cssVar("--leg"));
+  const all = [];
+  for (const part of DATA.part_order) {
+    if (part === "HumanoidRootPart") continue;
+    const rgb = LEGS.has(part) ? legRgb : rigRgb;
+    all.push(...boxQuads(charPose[part].p, charPose[part].r, DATA.part_sizes[part], rgb));
+  }
+  all.sort((a, b) => b.depth - a.depth);
+  for (const q of all) {
+    ctx.beginPath();
+    ctx.moveTo(CX + q.pts[0].x * SCALE, CY - q.pts[0].y * SCALE);
+    for (let i = 1; i < q.pts.length; i++) ctx.lineTo(CX + q.pts[i].x * SCALE, CY - q.pts[i].y * SCALE);
+    ctx.closePath();
+    ctx.fillStyle = shadeRgb(q.rgb, q.k);
+    ctx.fill();
+    if (q.rim > 0.01) { ctx.fillStyle = `rgba(210,200,255,${q.rim})`; ctx.fill(); }
+    if (q.spec > 0.02) { ctx.fillStyle = `rgba(255,255,255,${Math.min(0.9, q.spec)})`; ctx.fill(); }
+    ctx.strokeStyle = "rgba(0,0,0,0.45)"; ctx.lineWidth = 0.7; ctx.globalAlpha = 0.35; ctx.stroke(); ctx.globalAlpha = 1;
+  }
+
+  const orb = sampleOrb(t);
+  drawOrb(t, orb, charPose);
+
+  const phase = currentPhase(t);
+  phaseNameEl.textContent = PHASE_LABELS[phase.name] || phase.name;
+  phaseNameEl2.textContent = PHASE_LABELS[phase.name] || phase.name;
+  timecodeEl.textContent = t.toFixed(2) + "s / " + DURATION.toFixed(2) + "s";
+}
+
+function hexToRgb(hex) {
+  hex = hex.replace("#", "").trim();
+  if (hex.length === 3) hex = hex.split("").map(c => c + c).join("");
+  return [parseInt(hex.slice(0, 2), 16), parseInt(hex.slice(2, 4), 16), parseInt(hex.slice(4, 6), 16)];
+}
+
+let playing = true, speed = 1, simTime = 0, lastWall = null, scrubbing = false;
+function setPlaying(p) {
+  playing = p;
+  playIcon.style.display = p ? "none" : "block";
+  pauseIcon.style.display = p ? "block" : "none";
+  lastWall = null;
+}
+playBtn.addEventListener("click", () => setPlaying(!playing));
+
+document.querySelectorAll("#speedRow button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll("#speedRow button").forEach(x => x.classList.remove("active"));
+  b.classList.add("active"); speed = parseFloat(b.dataset.speed);
+}));
+document.querySelectorAll("#camRow button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll("#camRow button").forEach(x => x.classList.remove("active"));
+  b.classList.add("active"); AZ = parseFloat(b.dataset.az) * Math.PI / 180;
+  render(simTime);
+}));
+
+scrub.addEventListener("pointerdown", () => { scrubbing = true; setPlaying(false); });
+scrub.addEventListener("pointerup", () => { scrubbing = false; });
+scrub.addEventListener("input", () => { simTime = (scrub.value / 1000) * DURATION; render(simTime); });
+
+function tick(now) {
+  if (lastWall === null) lastWall = now;
+  const dt = (now - lastWall) / 1000;
+  lastWall = now;
+  if (playing && !scrubbing) {
+    simTime += dt * speed;
+    if (simTime > DURATION) simTime -= DURATION;
+    scrub.value = Math.round((simTime / DURATION) * 1000);
+  }
+  render(simTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+</script>
