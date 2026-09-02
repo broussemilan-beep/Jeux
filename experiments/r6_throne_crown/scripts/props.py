@@ -14,6 +14,17 @@ SA PROPRE estrade -- hanche a Y=3 moins la moitie de la hauteur du
 torse) puis DECALEES de +PLATFORM_H par `_lift()` avant d'etre
 retournees : un seul nombre a changer si la hauteur de l'estrade change,
 jamais besoin de retoucher chaque Part a la main.
+
+Chaque Part porte deux champs de rendu DISTINCTS et INDEPENDANTS :
+  - "mat" : categorie utilisee par le LECTEUR HTML pour choisir son
+    modele d'eclairage stylise (stone/gold/gem/royal, voir
+    dump_scene_data.py -> throne_crown_viewer.html).
+  - "material" : le vrai `Enum.Material` de Roblox (voir
+    export_model.MATERIAL_BY_NAME), ecrit dans le .rbxmx livre. Les deux
+    ne coincident pas toujours (ex. CrownCushion : "mat"="gem" pour la
+    teinte chaude du lecteur, "material"="Fabric" cote Roblox, un coussin
+    n'est pas une gemme) -- ne pas les confondre en modifiant l'un en
+    pensant changer l'autre.
 """
 import math
 
@@ -60,8 +71,14 @@ def staircase_parts():
         # se detachaient pas assez dans un rendu sombre) -- trouve par
         # capture d'ecran reelle, pas suppose.
         tone = STONE if k % 2 == 0 else STONE_DARK
+        # Meme alternance sur le vrai Material Roblox que sur la teinte :
+        # Slate/Cobblestone plutot que deux fois le meme materiau, pour
+        # que l'alternance se voie aussi hors du lecteur HTML (import
+        # reel dans Roblox Studio).
+        material = "Slate" if k % 2 == 0 else "Cobblestone"
         parts.append({"name": f"Step_{k}", "size": (STAIR_WIDTH, h, STAIR_TREAD),
-                      "pos": (0.0, h / 2.0, z_center), "color_rgb": tone, "mat": "stone"})
+                      "pos": (0.0, h / 2.0, z_center), "color_rgb": tone, "mat": "stone",
+                      "material": material})
     return parts
 
 
@@ -71,44 +88,54 @@ def throne_parts():
     # Estrade -- dessus a Y=0 AVANT decalage (devient PLATFORM_H apres
     # `_lift`), exactement au niveau du sommet de la derniere marche.
     parts.append({"name": "Dais", "size": (7.0, 0.6, 5.5), "pos": (0.0, -0.3, 1.4),
-                  "color_rgb": STONE_DARK, "mat": "stone"})
+                  "color_rgb": STONE_DARK, "mat": "stone", "material": "Slate"})
 
     # 4 pieds sous le siege, du dais (Y=0) jusqu'au dessous du siege (Y=1.7).
     for x in (-1.9, 1.9):
         for z in (-0.4, 2.1):
             parts.append({"name": f"Leg_{x}_{z}", "size": (0.5, 1.7, 0.5),
-                          "pos": (x, 0.85, z), "color_rgb": STONE_DARK, "mat": "stone"})
+                          "pos": (x, 0.85, z), "color_rgb": STONE_DARK, "mat": "stone",
+                          "material": "Slate"})
 
     # Siege -- dessus a Y=2.0 (hanche assise moins demi-hauteur du torse).
+    # Marbre poli plutot qu'ardoise brute : c'est la surface que le
+    # personnage touche en s'asseyant, plus "premium" que le reste de la
+    # pierre structurelle.
     parts.append({"name": "Seat", "size": (4.4, 0.6, 3.6), "pos": (0.0, 1.7, 0.9),
-                  "color_rgb": STONE, "mat": "stone"})
+                  "color_rgb": STONE, "mat": "stone", "material": "Marble"})
 
     # Dossier -- derriere le siege (+Z), monte bien au-dessus de la tete
     # (tete du personnage debout : sommet a Y=5, voir README).
     parts.append({"name": "Backrest", "size": (4.4, 6.4, 0.6), "pos": (0.0, 5.0, 3.0),
-                  "color_rgb": STONE, "mat": "stone"})
+                  "color_rgb": STONE, "mat": "stone", "material": "Slate"})
 
     # Accoudoirs -- entre siege et dossier, hauteur confortable au-dessus
     # du siege (Y=3.0 au sommet).
     for x in (-2.6, 2.6):
         parts.append({"name": f"Armrest_{x}", "size": (0.8, 1.0, 3.2),
-                      "pos": (x, 2.5, 0.9), "color_rgb": GOLD, "mat": "gold"})
+                      "pos": (x, 2.5, 0.9), "color_rgb": GOLD, "mat": "gold",
+                      "material": "Metal"})
 
     # Coussin ou repose la couronne avant que le personnage ne la saisisse
     # -- position CALIBREE (voir calibrate.py) pour coincider avec le
     # point exact ou la main droite se pose au repos assis (Right Arm =
     # (0,0,55), torso -14) : main a (2.516, 3.048, -0.012), AVANT
     # decalage d'estrade (voir cushion_top_pos() pour la version monde).
+    # "mat"="gem" pour la teinte chaude du lecteur, mais "material"=
+    # "Fabric" cote Roblox -- c'est un coussin, pas une gemme (voir note
+    # de module sur la distinction mat/material).
     parts.append({"name": "CrownCushion", "size": (0.9, 0.3, 0.9),
-                  "pos": (2.5, 2.93, 0.0), "color_rgb": GEM_RED, "mat": "gem"})
+                  "pos": (2.5, 2.93, 0.0), "color_rgb": GEM_RED, "mat": "gem",
+                  "material": "Fabric"})
 
     # Bande doree au sommet du dossier + fleurons.
     parts.append({"name": "BackrestTrim", "size": (4.6, 0.5, 0.8), "pos": (0.0, 8.0, 3.0),
-                  "color_rgb": GOLD, "mat": "gold"})
+                  "color_rgb": GOLD, "mat": "gold", "material": "Metal"})
     for x in (-2.1, 0.0, 2.1):
         h = 0.9 if x == 0.0 else 0.6
         parts.append({"name": f"Finial_{x}", "size": (0.6, h, 0.6), "shape": SHAPE_BALL,
-                      "pos": (x, 8.25 + h / 2.0, 3.0), "color_rgb": GOLD_LIGHT, "mat": "gold"})
+                      "pos": (x, 8.25 + h / 2.0, 3.0), "color_rgb": GOLD_LIGHT, "mat": "gold",
+                      "material": "Metal"})
 
     return _lift(parts)
 
@@ -154,12 +181,20 @@ def crown_parts():
     parts = []
     band_h = 0.4
     parts.append({"name": "Band", "size": (band_h, 1.5, 1.5), "shape": SHAPE_CYLINDER,
-                  "pos": (0.0, 0.0, 0.0), "rot": _ROT_Z90, "color_rgb": GOLD, "mat": "gold"})
+                  "pos": (0.0, 0.0, 0.0), "rot": _ROT_Z90, "color_rgb": GOLD, "mat": "gold",
+                  "material": "Metal"})
 
     for name, x, z, h in crown_points():
         parts.append({"name": name, "size": (0.32, h, 0.32),
-                      "pos": (x, band_h / 2.0 + h / 2.0, z), "color_rgb": GOLD_LIGHT, "mat": "gold"})
+                      "pos": (x, band_h / 2.0 + h / 2.0, z), "color_rgb": GOLD_LIGHT, "mat": "gold",
+                      "material": "Metal"})
+        # Neon plutot que Glass : "la couronne brille" doit rester vrai
+        # une fois importe dans Roblox, pas seulement dans le lecteur
+        # HTML -- Neon EMET une lueur (pas besoin de PointLight separe),
+        # c'est le materiau le plus proche d'un "ca brille vraiment" que
+        # le moteur Roblox propose nativement.
         parts.append({"name": f"{name}_Gem", "size": (0.22, 0.22, 0.22), "shape": SHAPE_BALL,
-                      "pos": (x, band_h / 2.0 + h + 0.05, z), "color_rgb": GEM_RED, "mat": "gem"})
+                      "pos": (x, band_h / 2.0 + h + 0.05, z), "color_rgb": GEM_RED, "mat": "gem",
+                      "material": "Neon"})
 
     return parts

@@ -47,19 +47,54 @@ véritables objets 3D (pas un décor de fond).
 ## Géométrie du trône et de la couronne
 
 Tout en `Part` Roblox (`scripts/export_model.py`), dans le **même
-repère** que le personnage (studs, -Z = avant, sol = Y 0). Choix
-délibéré : ni `BrickColor` (l'index de palette exact n'est pas
-vérifiable de mémoire hors-ligne, pas de client Roblox dans ce
-sandbox) ni `Material` (même raison pour les valeurs numériques de
-`Enum.Material`) — seulement `Color3uint8` (RGB direct, sans
-ambiguïté) et `Shape` (Block/Cylinder/Ball, dont je suis sûr). Mieux
-vaut un fichier qui n'affirme que ce qui est vérifié qu'un fichier qui a
-l'air complet mais invente des valeurs.
+repère** que le personnage (studs, -Z = avant, sol = Y 0). `Color3uint8`
+(RGB direct) plutôt que `BrickColor` : l'index de palette `BrickColor`
+n'est pas quelque chose que je peux garantir exact de mémoire, alors
+qu'un triplet RGB est sans ambiguïté — ce choix n'a pas changé.
 
 Trône : dais, 4 pieds, siège, dossier (monte au-dessus de la tête du
 personnage debout), 2 accoudoirs, bande dorée + 3 fleurons. Couronne :
 bande (Cylinder) + 5 pointes (hauteur variable, la plus haute à l'avant)
 + 5 gemmes (Ball).
+
+### Texturing réel (`Material`) — corrigé après retour utilisateur
+
+Version précédente : volontairement **pas** de propriété `Material`,
+au motif que les valeurs numériques de `Enum.Material` n'étaient pas
+vérifiables hors-ligne dans ce sandbox (pas de client Roblox). Retour
+utilisateur, à raison : le texturing Roblox *est* précisément
+`Material`/`Decal`/`Texture` sur les `Part`, pas un choix d'éclairage
+dans un lecteur maison — ce que la version précédente avait fait à la
+place.
+
+Corrigé en sourçant les vraies valeurs plutôt qu'en les devinant : le
+dump d'API officiel de Roblox (`Api-Dump.json`, généré par Roblox
+lui-même à chaque version pour l'outillage tiers — Rojo, rbxts, etc.)
+est suivi publiquement sur GitHub par
+[MaximumADHD/Roblox-Client-Tracker](https://github.com/MaximumADHD/Roblox-Client-Tracker).
+Ce n'est **pas** la même catégorie que les dumps de contenu client/
+serveur écartés dans `rig/PROVENANCE.md` (des assets de jeu redistribués
+sans licence) : c'est de la métadonnée d'API que Roblox publie
+lui-même pour que les outils tiers fonctionnent. Valeurs extraites et
+vérifiées (`export_model.MATERIAL_BY_NAME`), matériau assigné par pièce
+(`props.py`, champ `material`, indépendant du champ `mat` qui pilote
+uniquement l'éclairage stylisé du lecteur HTML) :
+
+| Pièces | Material Roblox |
+|---|---|
+| Dais, pieds, dossier | `Slate` (800) |
+| Siège | `Marble` (784) — surface touchée en s'asseyant, plus premium que le reste |
+| Accoudoirs, bande dorée, fleurons, bande/pointes de la couronne | `Metal` (1088) |
+| Coussin de la couronne | `Fabric` (1312) |
+| Marches (alternées) | `Slate` (800) / `Cobblestone` (880) |
+| **Gemmes de la couronne** | **`Neon` (288)** |
+
+Le choix `Neon` sur les gemmes n'est pas arbitraire : ça relie le
+texturing réel à la demande « la couronne brille » (voir plus bas) —
+`Neon` émet une lueur nativement dans le moteur Roblox, sans avoir
+besoin d'un `PointLight` séparé, donc l'effet de brillance existe
+maintenant **aussi dans le fichier livré**, pas seulement dans le
+lecteur HTML.
 
 ## Calibration — vérifiée par le calcul, pas à l'oeil
 
@@ -244,10 +279,13 @@ personnage), fond en dégradé sombre avec flaque de lumière dramatique
 plutôt qu'un plateau uniformément éclairé.
 
 Tout cela est un choix de mise en scène du **lecteur** (Canvas 2D, pas
-un moteur 3D Roblox) : le fichier `.rbxmx` livré porte les couleurs de
-base (`Color3uint8`), pas cet éclairage — cohérent avec le choix déjà
-documenté de ne pas écrire de propriété `Material` inventée (voir
-"Géométrie du trône et de la couronne").
+un moteur 3D Roblox) : cet éclairage (ombres, halo, speculaire stylisé)
+n'existe que dans le lecteur, pas dans le fichier. **Correction depuis
+le retour utilisateur sur le texturing** : le `.rbxmx` livré porte
+maintenant un vrai `Material` par pièce en plus des couleurs
+(`Color3uint8`) — voir "Texturing réel" sous "Géométrie du trône et de
+la couronne" — ce n'est donc plus seulement un choix du lecteur pour la
+matière des pièces, seulement pour leur éclairage dramatique.
 
 ## « La couronne brille »
 
@@ -260,10 +298,14 @@ px, alpha 0.16-0.34) : imperceptible à l'échelle du lecteur, corrigé en
 l'agrandissant et en ajoutant les traits scintillants, revérifié par
 capture d'écran.
 
-Effet du **lecteur**, pas une vraie source de lumière Roblox — un
-`PointLight` ou un matériau `Neon` sur le fichier `.rbxmx` livré est
-possible sur demande, non ajouté ici par défaut (portée confirmée avec
-l'utilisateur : le rendu premium visait le lecteur, pas le fichier).
+Effet du **lecteur** pour le halo animé — mais la brillance existe
+maintenant **aussi dans le fichier livré** : les 5 gemmes de la couronne
+portent `Material = Neon` (voir "Texturing réel" plus haut), qui émet
+une lueur nativement dans le moteur Roblox, sans `PointLight` séparé.
+Pas encore de version animée/pulsée côté fichier (un `PointLight` avec
+script de variation d'intensité serait la suite naturelle, non fait ici
+— pas demandé explicitement pour le fichier, seulement observé comme
+prolongement possible).
 
 ## Rig du personnage — pas de source alternative légitime trouvée
 

@@ -12,6 +12,7 @@
         <bool name="Anchored">true</bool>
         <bool name="CanCollide">true</bool>
         <float name="Transparency">0.0</float>
+        <token name="Material">800</token>
         <Color3uint8 name="Color3uint8">4605002</Color3uint8>
         <Vector3 name="size">
           <X>7.0</X>
@@ -41,6 +42,7 @@
         <bool name="Anchored">true</bool>
         <bool name="CanCollide">true</bool>
         <float name="Transparency">0.0</float>
+        <token name="Material">800</token>
         <Color3uint8 name="Color3uint8">4605002</Color3uint8>
         <Vector3 name="size">
           <X>0.5</X>
@@ -70,6 +72,7 @@
         <bool name="Anchored">true</bool>
         <bool name="CanCollide">true</bool>
         <float name="Transparency">0.0</float>
+        <token name="Material">800</token>
         <Color3uint8 name="Color3uint8">4605002</Color3uint8>
         <Vector3 name="size">
           <X>0.5</X>
@@ -99,6 +102,7 @@
         <bool name="Anchored">true</bool>
         <bool name="CanCollide">true</bool>
         <float name="Transparency">0.0</float>
+        <token name="Material">800</token>
         <Color3uint8 name="Color3uint8">4605002</Color3uint8>
         <Vector3 name="size">
           <X>0.5</X>
@@ -128,6 +132,7 @@
         <bool name="Anchored">true</bool>
         <bool name="CanCollide">true</bool>
         <float name="Transparency">0.0</float>
+        <token name="Material">800</token>
         <Color3uint8 name="Color3uint8">4605002</Color3uint8>
         <Vector3 name="size">
           <X>0.5</X>
@@ -157,6 +162,7 @@
         <bool name="Anchored">true</bool>
         <bool name="CanCollide">true</bool>
         <float name="Transparency">0.0</float>
+        <token name="Material">784</token>
         <Color3uint8 name="Color3uint8">7236724</Color3uint8>
         <Vector3 name="size">
           <X>4.4</X>
@@ -186,6 +192,7 @@
         <bool name="Anchored">true</bool>
         <bool name="CanCollide">true</bool>
         <float name="Transparency">0.0</float>
+        <token name="Material">800</token>
         <Color3uint8 name="Color3uint8">7236724</Color3uint8>
         <Vector3 name="size">
           <X>4.4</X>
@@ -215,6 +222,7 @@
         <bool name="Anchored">true</bool>
         <bool name="CanCollide">true</bool>
         <float name="Transparency">0.0</float>
+        <token name="Material">1088</token>
         <Color3uint8 name="Color3uint8">12886076</Color3uint8>
         <Vector3 name="size">
           <X>0.8</X>
@@ -244,6 +252,7 @@
         <bool name="Anchored">true</bool>
         <bool name="CanCollide">true</bool>
         <float name="Transparency">0.0</float>
+        <token name="Material">1088</token>
         <Color3uint8 name="Color3uint8">12886076</Color3uint8>
         <Vector3 name="size">
           <X>0.8</X>
@@ -273,6 +282,7 @@
         <bool name="Anchored">true</bool>
         <bool name="CanCollide">true</bool>
         <float name="Transparency">0.0</float>
+        <token name="Material">1312</token>
         <Color3uint8 name="Color3uint8">9836830</Color3uint8>
         <Vector3 name="size">
           <X>0.9</X>
@@ -302,6 +312,7 @@
         <bool name="Anchored">true</bool>
         <bool name="CanCollide">true</bool>
         <float name="Transparency">0.0</float>
+        <token name="Material">1088</token>
         <Color3uint8 name="Color3uint8">12886076</Color3uint8>
         <Vector3 name="size">
           <X>4.6</X>
@@ -331,6 +342,7 @@
         <bool name="Anchored">true</bool>
         <bool name="CanCollide">true</bool>
         <float name="Transparency">0.0</float>
+        <token name="Material">1088</token>
         <Color3uint8 name="Color3uint8">14728794</Color3uint8>
         <Vector3 name="size">
           <X>0.6</X>
@@ -360,6 +372,7 @@
         <bool name="Anchored">true</bool>
         <bool name="CanCollide">true</bool>
         <float name="Transparency">0.0</float>
+        <token name="Material">1088</token>
         <Color3uint8 name="Color3uint8">14728794</Color3uint8>
         <Vector3 name="size">
           <X>0.6</X>
@@ -389,6 +402,7 @@
         <bool name="Anchored">true</bool>
         <bool name="CanCollide">true</bool>
         <float name="Transparency">0.0</float>
+        <token name="Material">1088</token>
         <Color3uint8 name="Color3uint8">14728794</Color3uint8>
         <Vector3 name="size">
           <X>0.6</X>
@@ -418,6 +432,7 @@
         <bool name="Anchored">true</bool>
         <bool name="CanCollide">true</bool>
         <float name="Transparency">0.0</float>
+        <token name="Material">880</token>
         <Color3uint8 name="Color3uint8">4605002</Color3uint8>
         <Vector3 name="size">
           <X>6.0</X>
@@ -447,6 +462,7 @@
         <bool name="Anchored">true</bool>
         <bool name="CanCollide">true</bool>
         <float name="Transparency">0.0</float>
+        <token name="Material">800</token>
         <Color3uint8 name="Color3uint8">7236724</Color3uint8>
         <Vector3 name="size">
           <X>6.0</X>
@@ -476,6 +492,7 @@
         <bool name="Anchored">true</bool>
         <bool name="CanCollide">true</bool>
         <float name="Transparency">0.0</float>
+        <token name="Material">880</token>
         <Color3uint8 name="Color3uint8">4605002</Color3uint8>
         <Vector3 name="size">
           <X>6.0</X>
@@ -505,6 +522,7 @@
         <bool name="Anchored">true</bool>
         <bool name="CanCollide">true</bool>
         <float name="Transparency">0.0</float>
+        <token name="Material">800</token>
         <Color3uint8 name="Color3uint8">7236724</Color3uint8>
         <Vector3 name="size">
           <X>6.0</X>

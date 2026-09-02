@@ -36,20 +36,44 @@ SHAPE_BLOCK = "1"
 SHAPE_CYLINDER = "2"
 SHAPE_BALL = "0"
 
+# Enum.Material -- valeurs VERIFIEES (pas devinees) le 2026-09-02 depuis
+# le dump d'API officiel de Roblox lui-meme, tel que suivi publiquement
+# par MaximumADHD/Roblox-Client-Tracker sur GitHub (ce depot ne fait que
+# republier le Api-Dump.json que Roblox genere et publie a chaque version
+# pour l'outillage tiers -- Rojo, rbxts, etc. l'utilisent tous. Ce n'est
+# PAS la meme categorie que les dumps de contenu client/serveur ecartes
+# dans rig/PROVENANCE.md : ceci est de la metadonnee d'API que Roblox
+# publie lui-meme, pas un asset de jeu redistribue sans licence).
+# Sous-ensemble utilise ici ; liste complete dans MATERIAL_BY_NAME.
+MATERIAL_BY_NAME = {
+    "Plastic": 256, "SmoothPlastic": 272, "Neon": 288,
+    "Wood": 512, "WoodPlanks": 528,
+    "Marble": 784, "Basalt": 788, "Slate": 800, "CrackedLava": 804,
+    "Concrete": 816, "Limestone": 820, "Granite": 832, "Pavement": 836,
+    "Brick": 848, "Pebble": 864, "Cobblestone": 880, "Rock": 896,
+    "Sandstone": 912,
+    "CorrodedMetal": 1040, "DiamondPlate": 1056, "Foil": 1072, "Metal": 1088,
+    "Grass": 1280, "LeafyGrass": 1284, "Sand": 1296, "Fabric": 1312,
+    "Snow": 1328, "Mud": 1344, "Ground": 1360, "Asphalt": 1376, "Salt": 1392,
+    "Ice": 1536, "Glacier": 1552, "Glass": 1568, "ForceField": 1584,
+    "Air": 1792, "Water": 2048,
+    "Cardboard": 2304, "Carpet": 2305, "CeramicTiles": 2306,
+    "ClayRoofTiles": 2307, "RoofShingles": 2308, "Leather": 2309,
+    "Plaster": 2310, "Rubber": 2311,
+}
+
 
 def part_item(parent_xml, spec):
     """spec: dict avec name, size(x,y,z), pos(x,y,z), rot(3x3, def. identite),
     shape(SHAPE_*, def. Block), color_rgb((r,g,b) 0-255, def. gris pierre),
-    transparency(def 0), anchored(def True).
+    material(nom dans MATERIAL_BY_NAME, def. Plastic), transparency(def 0),
+    anchored(def True).
 
-    Volontairement PAS de propriete Material : les valeurs numeriques
-    exactes de l'enum Enum.Material ne sont pas verifiables hors-ligne
-    dans ce sandbox (pas de client Roblox), donc plutot que d'ecrire un
-    token invente qui aurait l'air correct sans l'etre, on laisse Roblox
-    appliquer son defaut (Plastic) -- a ajuster a l'import si besoin.
-    Color3uint8 (RGB direct) plutot que BrickColor : meme raison, l'index
-    de palette BrickColor n'est pas quelque chose que je peux garantir
-    exact de memoire, alors qu'un triplet RGB est sans ambiguite."""
+    Color3uint8 (RGB direct) plutot que BrickColor : l'index de palette
+    BrickColor n'est pas quelque chose que je peux garantir exact de
+    memoire, alors qu'un triplet RGB est sans ambiguite -- ce choix reste
+    valable meme maintenant que Material est verifie (les deux proprietes
+    sont independantes dans le moteur)."""
     item = ET.SubElement(parent_xml, "Item", {"class": "Part", "referent": _next_ref()})
     props = ET.SubElement(item, "Properties")
     ET.SubElement(props, "string", {"name": "Name"}).text = spec["name"]
@@ -57,6 +81,8 @@ def part_item(parent_xml, spec):
     ET.SubElement(props, "bool", {"name": "Anchored"}).text = "true" if spec.get("anchored", True) else "false"
     ET.SubElement(props, "bool", {"name": "CanCollide"}).text = "true" if spec.get("collide", True) else "false"
     ET.SubElement(props, "float", {"name": "Transparency"}).text = repr(float(spec.get("transparency", 0.0)))
+    material_name = spec.get("material", "Plastic")
+    ET.SubElement(props, "token", {"name": "Material"}).text = str(MATERIAL_BY_NAME[material_name])
     r, g, b = spec.get("color_rgb", (120, 120, 130))
     color_int = (int(r) << 16) | (int(g) << 8) | int(b)
     ET.SubElement(props, "Color3uint8", {"name": "Color3uint8"}).text = str(color_int)
