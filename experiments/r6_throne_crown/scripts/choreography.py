@@ -161,7 +161,7 @@ PLACED_T = 2.00
 # la montee et l'assise.
 STEP_T = 0.75
 STAIRS_T = props.STAIR_N * STEP_T
-TURN_T = 0.6
+TURN_T = 0.85
 CLIMB_T = STAIRS_T + TURN_T
 
 _CLIMB_Z0 = -7.2   # au pied de l'escalier, avec une marge avant la 1ere marche
@@ -200,16 +200,61 @@ def climb_stairs():
             **{lead: (2, 0, 0), trail: (-4, 0, 0),
                "Right Arm": (2, 0, -5), "Left Arm": (2, 0, 5)}))
 
-    # -- demi-tour sur place, en haut des marches : la racine ne bouge
-    # plus (deja a _CLIMB_Z1), seul HumanoidRootPart Y tourne de 180 a 0.
-    # Jambes ramenees a plat (neutre) avant de tourner -- tourner avec
-    # une jambe encore en l'air aurait l'air casse.
+    # -- demi-tour sur place, en haut des marches -- PAS une rotation
+    # rigide d'un seul bloc (1re version, retour utilisateur : "on dirait
+    # il tourne comme une toupie"). Un vrai demi-tour humain (le "about
+    # face" militaire est le modele le plus proche du personnage "sombre
+    # mais fiere") decompose le mouvement au lieu de tourner tout le
+    # corps a vitesse constante autour d'un axe fixe :
+    #   1. la TETE part en premier ("spotting", meme principe que le
+    #      head_lead mesure dans le combo de coups de pied -- on regarde
+    #      ou on va avant que le corps suive), le poids se transfere sur
+    #      la jambe d'appui (leger creux vertical) et la jambe libre se
+    #      souleve legerement, amorcant un pas de pivot ;
+    #   2. le CORPS (HumanoidRootPart) tourne pendant que la jambe libre
+    #      est encore en l'air -- pas apres qu'elle soit reposee, sinon
+    #      le tourne-sur-deux-pieds-plantes est exactement ce qui lit
+    #      comme une toupie ;
+    #   3. la jambe se repose au sol, deja tournee avec le corps ("step
+    #      turn"), le torse epaules-en-avant se rattrape en dernier.
+    # Chaque partie a donc SA PROPRE cadence plutot que de bouger toutes
+    # ensemble a la meme vitesse -- c'est cette desynchronisation qui
+    # lit comme un geste humain plutot qu'une rotation mecanique unique.
     top_y = 3.0 + props.STAIR_N * props.STAIR_RISER
+    HALF_TURN = (0, 90, 0)
+
+    # t0 : appui pris franchement sur la jambe gauche, jambe droite se
+    # souleve pour amorcer le pivot, la tete a deja commence a tourner
+    # (repere LOCAL au torse -- son cap effectif dans le monde est donc
+    # torse+tete, en avance sur le corps qui n'a pas encore tourne).
     keyframes.append(_kf(
-        STAIRS_T + TURN_T * 0.5, root_pos=(0, top_y, _CLIMB_Z1),
-        HumanoidRootPart=(0, 90, 0), Torso=(_PROUD_TORSO_X, 0, 0), Head=_PROUD_HEAD,
+        STAIRS_T + TURN_T * 0.28, root_pos=(0, top_y - 0.10, _CLIMB_Z1),
+        HumanoidRootPart=_FACE_STAIRS, Torso=(_PROUD_TORSO_X, -18, 0), Head=(-6, -75, 0),
+        **{"Right Arm": (2, 0, -5), "Left Arm": (2, 0, 5),
+           "Right Leg": (14, 0, 4), "Left Leg": (-3, 0, -2)}))
+
+    # t1 : le corps tourne PENDANT que la jambe droite est encore en
+    # l'air (c'est ce qui distingue un pas-pivot d'une toupie) --
+    # le poids remonte, la jambe commence a se replanter dans le nouveau
+    # cap.
+    keyframes.append(_kf(
+        STAIRS_T + TURN_T * 0.62, root_pos=(0, top_y - 0.03, _CLIMB_Z1),
+        HumanoidRootPart=HALF_TURN, Torso=(_PROUD_TORSO_X, -8, 0), Head=(-6, -25, 0),
+        **{"Right Arm": (2, 0, -5), "Left Arm": (2, 0, 5),
+           "Right Leg": (6, 0, 0), "Left Leg": (-2, 0, 0)}))
+
+    # t2 : jambe replantee, le torse/la tete finissent de se rattraper
+    # en dernier -- le corps a fini de tourner legerement avant eux, pas
+    # tout en meme temps.
+    keyframes.append(_kf(
+        STAIRS_T + TURN_T * 0.85, root_pos=(0, top_y, _CLIMB_Z1),
+        HumanoidRootPart=(0, 20, 0), Torso=(_PROUD_TORSO_X, -3, 0), Head=(-6, -8, 0),
         **{"Right Arm": (2, 0, -5), "Left Arm": (2, 0, 5),
            "Right Leg": (0, 0, 0), "Left Leg": (0, 0, 0)}))
+
+    # t3 : pose finale du demi-tour, tout est rattrape et immobile --
+    # doit coincider EXACTEMENT avec le premier keyframe de
+    # sit_and_crown() decale (voir docstring de full_scene()).
     keyframes.append(_kf(
         STAIRS_T + TURN_T, root_pos=(0, top_y, _CLIMB_Z1),
         HumanoidRootPart=_FACE_ROOM, Torso=(_PROUD_TORSO_X, 0, 0), Head=_PROUD_HEAD,
@@ -220,7 +265,8 @@ def climb_stairs():
         {"name": "montee", "t0": 0.00, "t1": STAIRS_T, "expected_reversals": {}},
         {"name": "demi_tour", "t0": STAIRS_T, "t1": CLIMB_T, "expected_reversals": {}},
     ]
-    preview_times = [0.0, STEP_T * 0.45, STEP_T, STAIRS_T, STAIRS_T + TURN_T]
+    preview_times = [0.0, STEP_T * 0.45, STEP_T, STAIRS_T,
+                      STAIRS_T + TURN_T * 0.28, STAIRS_T + TURN_T * 0.62, STAIRS_T + TURN_T]
     engine_opts = {"handle_type": "AUTO_CLAMPED"}
     return keyframes, phases, preview_times, engine_opts
 

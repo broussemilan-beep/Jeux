@@ -357,8 +357,8 @@ Corrigé en deux temps (`choreography.py`, `_FACE_STAIRS`/`_FACE_ROOM`,
    locale au torse, donc bascule automatiquement de sens en même temps
    que tout le corps quand le cap change — aucune retouche des angles de
    jambe n'a été nécessaire, seul le cap racine change.
-2. **En haut des marches**, un demi-tour sur place (`TURN_T = 0.6 s`,
-   racine immobile à `_CLIMB_Z1`) ramène `HumanoidRootPart` de 180 à 0 —
+2. **En haut des marches**, un demi-tour sur place (`TURN_T`, racine
+   immobile à `_CLIMB_Z1`) ramène `HumanoidRootPart` de 180 à 0 —
    l'orientation qu'attend `sit_and_crown()` (dos au dossier, face à la
    salle). Sans ce demi-tour le personnage se serait assis dos au vide.
 
@@ -373,6 +373,41 @@ Vérifié par deux méthodes independantes, pas juste relu :
   à +0,67 stud du sens de marche, jambe arrière à -0,55 — confirme une
   marche avant, pas une marche arrière compensée par le sens de la
   caméra.
+
+### Retour utilisateur suivant : « on dirait il tourne comme une toupie »
+
+Juste après le correctif ci-dessus. Cause : la 1re version du demi-tour
+faisait tourner `HumanoidRootPart` seul, à vitesse constante, de 180 à 0
+— torse, tête, bras, jambes tous rigidement solidaires, comme un seul
+bloc pivotant autour d'un axe fixe. Mécaniquement correct (le raccord
+tombait déjà à 0,0000 stud), mais **aucun humain ne tourne comme ça** :
+rien ne bouge à un rythme différent du reste, donc rien ne lit comme un
+geste — d'où la toupie.
+
+Corrigé en décomposant le demi-tour en 4 temps qui **ne bougent pas à la
+même vitesse ni au même moment**, sur le modèle d'un « about-face »
+militaire (cohérent avec le personnage « sombre mais fier ») :
+
+1. la **tête part en premier** (« spotting » — le même principe que le
+   `head_lead` mesuré dans le combo de coups de pied : on regarde où on
+   va avant que le corps suive), le poids se transfère sur la jambe
+   d'appui (léger creux vertical, -0,10 stud) et la jambe libre se
+   soulève pour amorcer un pas de pivot ;
+2. le **corps tourne pendant que la jambe libre est encore en l'air** —
+   pas après qu'elle soit reposée, sinon on revient à tourner sur deux
+   pieds plantés, exactement ce qui lit comme une toupie ;
+3. la jambe se **replante déjà dans le nouveau cap** (« step turn »), le
+   torse épaules-en-avant achève de se rattraper ;
+4. tout est rattrapé et immobile — coïncide exactement avec la pose
+   figée qu'attend l'assise.
+
+Vérifié par le calcul, pas juste reécrit à l'oeil : au premier temps
+(28 % du demi-tour), le corps (`HumanoidRootPart`) n'a **pas encore
+bougé** (180°) alors que le cap effectif de la tête (racine + torse +
+tête composés) est déjà à 87° — plus de la moitié du chemin parcouru
+avant que le corps n'ait commencé à tourner. C'est précisément ce
+décalage temporel entre les parties qui distingue un geste humain d'une
+rotation mécanique unique.
 
 ### Bug trouvé par capture d'écran, encore une fois
 
