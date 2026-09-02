@@ -261,7 +261,7 @@ confirmait que la géométrie elle-même était correcte (marches bien
 recentrant/élargissant la flaque de lumière pour couvrir l'escalier —
 revérifié par une nouvelle capture, les marches se détachent nettement.
 
-## Rendu « premium » du lecteur (pas du fichier livré)
+## Rendu « premium » du lecteur
 
 Éclairage à trois sources : une clé chaude (façon torche), un
 remplissage froid faible (évite les noirs bouchés), et une direction de
@@ -269,23 +269,28 @@ vue fixe pour un speculaire/liseré de bord approximés (le rendu n'est
 pas en perspective réelle — `proj()` est une rotation + projection
 orthographique — donc la vue est une direction constante plutôt que
 recalculée par pixel : suffisant pour un reflet stylisé, pas physique).
-Quatre matériaux (`scripts/props.py`, champ `mat`, porté jusqu'au JSON
-du lecteur) : pierre quasi mate (trône/escalier), or et gemmes avec
-reflet net et liseré marqué, teinte sombre et riche pour le personnage
-(remplace le ton bois/chair plat des cycles précédents — plus de
-contraste avec l'or du trône, et plus cohérent avec « sombre »). Plus :
-ombres de contact au sol (ellipses dégradées sous le trône et le
+Ombres de contact au sol (ellipses dégradées sous le trône et le
 personnage), fond en dégradé sombre avec flaque de lumière dramatique
-plutôt qu'un plateau uniformément éclairé.
+plutôt qu'un plateau uniformément éclairé, teinte sombre et riche pour
+le personnage (dont le `Material` réel reste celui de l'avatar du
+joueur — hors de portée de ce pipeline, seul le rendu du lecteur est
+stylisé pour lui). Tout ça reste propre au **lecteur** (Canvas 2D, pas
+un moteur 3D Roblox).
 
-Tout cela est un choix de mise en scène du **lecteur** (Canvas 2D, pas
-un moteur 3D Roblox) : cet éclairage (ombres, halo, speculaire stylisé)
-n'existe que dans le lecteur, pas dans le fichier. **Correction depuis
-le retour utilisateur sur le texturing** : le `.rbxmx` livré porte
-maintenant un vrai `Material` par pièce en plus des couleurs
-(`Color3uint8`) — voir "Texturing réel" sous "Géométrie du trône et de
-la couronne" — ce n'est donc plus seulement un choix du lecteur pour la
-matière des pièces, seulement pour leur éclairage dramatique.
+**Correction depuis le retour utilisateur sur le texturing (2e
+correction)** : la 1re version de ce rendu premium utilisait une
+catégorie d'éclairage inventée pour le lecteur (`mat` :
+stone/gold/gem/royal), déconnectée du fichier. Depuis l'ajout du vrai
+`Material` Roblox par pièce (voir "Texturing réel" sous "Géométrie du
+trône et de la couronne"), **le lecteur lit ce même champ** — `scripts/
+dump_scene_data.py` porte `material` (pas une catégorie séparée) jusqu'au
+JSON, et le lecteur associe un rendu à chaque vrai nom de matériau :
+`Metal` (reflet net, liseré marqué), `Marble` (légèrement plus glacé et
+clair que le reste de la pierre), `Slate`/`Cobblestone`/`Fabric` (quasi
+mats), `Neon` (auto-éclairé, quasi indépendant de la direction de la
+lumière — voir plus bas). Un changement de `Material` dans `props.py` se
+répercute donc maintenant automatiquement dans le rendu du lecteur, sans
+mapping séparé à tenir à jour à la main.
 
 ## « La couronne brille »
 

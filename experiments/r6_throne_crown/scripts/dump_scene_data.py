@@ -59,7 +59,7 @@ def crown_frames_at(char_frames):
                 "size": list(spec["size"]),
                 "color": spec["color_rgb"],
                 "shape": spec.get("shape", "1"),
-                "mat": spec.get("mat", "gold"),
+                "material": spec.get("material", "Plastic"),
             }
         out.append(frame)
     return out
@@ -77,7 +77,7 @@ def main():
             "name": spec["name"], "size": list(spec["size"]),
             "pos": list(spec["pos"]), "rot": spec.get("rot", [[1, 0, 0], [0, 1, 0], [0, 0, 1]]),
             "color": spec["color_rgb"], "shape": spec.get("shape", "1"),
-            "mat": spec.get("mat", "stone"),
+            "material": spec.get("material", "Plastic"),
         })
 
     crown_f = crown_frames_at(char_frames)
