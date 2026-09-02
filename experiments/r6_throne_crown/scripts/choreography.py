@@ -135,6 +135,24 @@ PLACED_T = 2.00
 # marche = une seule jambe qui se leve puis se pose, alternee, avec une
 # legere contre-rotation du torse (contrapposto) au moment du levers.
 #
+# Orientation -- bug trouve sur retour utilisateur direct ("ça voudrait
+# dire que il les monte en arriere") : root_pos avance en Z croissant
+# (vers le trone) mais HumanoidRootPart restait a l'identite partout,
+# donc le personnage gardait le cap -Z (avant du rig) du debut a la fin
+# -- il montait donc bien les marches en marchant a reculons, exactement
+# le defaut signale. Corrige en deux temps :
+#   1. Pendant la montee elle-meme (marches), HumanoidRootPart Y=180 :
+#      le personnage fait face au trone (+Z), donc avance en marchant
+#      VRAIMENT vers l'avant (la jambe qui se leve en "avant" dans son
+#      propre repere -- convention X positif inchangee, elle est locale
+#      au torse, voir docstring de module -- pousse alors bien le
+#      personnage vers +Z, plus vers -Z).
+#   2. Une fois en haut, un demi-tour (TURN_T) ramene HumanoidRootPart
+#      de 180 a 0 SUR PLACE (racine immobile) avant l'assise -- assise
+#      qui suppose une orientation a 0 (dos au dossier, face a -Z,
+#      convention deja verifiee dans sit_and_crown). Sans ce demi-tour
+#      le personnage se serait assis dos au vide, face au dossier.
+#
 # Ecrit directement dans le repere MONDE final (pas de decalage a
 # appliquer ensuite) : commence au pied de l'escalier (sol reel, Y=3
 # hanche = pieds a 0) et finit exactement au premier keyframe de
@@ -142,17 +160,22 @@ PLACED_T = 2.00
 # c'est ce raccord qui garantit qu'il n'y a pas de saut visible entre
 # la montee et l'assise.
 STEP_T = 0.75
-CLIMB_T = props.STAIR_N * STEP_T
+STAIRS_T = props.STAIR_N * STEP_T
+TURN_T = 0.6
+CLIMB_T = STAIRS_T + TURN_T
 
 _CLIMB_Z0 = -7.2   # au pied de l'escalier, avec une marge avant la 1ere marche
 _CLIMB_Z1 = -1.6   # doit correspondre au premier keyframe de sit_and_crown()
 _PROUD_HEAD = (-6, 0, 0)
 _PROUD_TORSO_X = -6
+_FACE_STAIRS = (0, 180, 0)   # HumanoidRootPart : face au trone (+Z), pendant la montee
+_FACE_ROOM = (0, 0, 0)       # HumanoidRootPart : face a la salle (-Z), convention assise
 
 
 def climb_stairs():
     keyframes = [
-        _kf(0.00, root_pos=(0, 3.0, _CLIMB_Z0), Torso=(_PROUD_TORSO_X, 0, 0), Head=_PROUD_HEAD,
+        _kf(0.00, root_pos=(0, 3.0, _CLIMB_Z0), HumanoidRootPart=_FACE_STAIRS,
+            Torso=(_PROUD_TORSO_X, 0, 0), Head=_PROUD_HEAD,
             **{"Right Arm": (2, 0, -5), "Left Arm": (2, 0, 5),
                "Right Leg": (0, 0, 0), "Left Leg": (0, 0, 0)}),
     ]
@@ -168,17 +191,36 @@ def climb_stairs():
 
         keyframes.append(_kf(
             t_lift, root_pos=(0, y_prev + props.STAIR_RISER * 0.3, (z_prev + z_new) / 2.0),
-            Torso=(_PROUD_TORSO_X, twist, 0), Head=_PROUD_HEAD,
+            HumanoidRootPart=_FACE_STAIRS, Torso=(_PROUD_TORSO_X, twist, 0), Head=_PROUD_HEAD,
             **{lead: (30, 0, 0), trail: (-8, 0, 0),
                "Right Arm": (2, 0, -5), "Left Arm": (2, 0, 5)}))
         keyframes.append(_kf(
             t_plant, root_pos=(0, y_new, z_new),
-            Torso=(_PROUD_TORSO_X, 0, 0), Head=_PROUD_HEAD,
+            HumanoidRootPart=_FACE_STAIRS, Torso=(_PROUD_TORSO_X, 0, 0), Head=_PROUD_HEAD,
             **{lead: (2, 0, 0), trail: (-4, 0, 0),
                "Right Arm": (2, 0, -5), "Left Arm": (2, 0, 5)}))
 
-    phases = [{"name": "montee", "t0": 0.00, "t1": CLIMB_T, "expected_reversals": {}}]
-    preview_times = [0.0, STEP_T * 0.45, STEP_T, CLIMB_T]
+    # -- demi-tour sur place, en haut des marches : la racine ne bouge
+    # plus (deja a _CLIMB_Z1), seul HumanoidRootPart Y tourne de 180 a 0.
+    # Jambes ramenees a plat (neutre) avant de tourner -- tourner avec
+    # une jambe encore en l'air aurait l'air casse.
+    top_y = 3.0 + props.STAIR_N * props.STAIR_RISER
+    keyframes.append(_kf(
+        STAIRS_T + TURN_T * 0.5, root_pos=(0, top_y, _CLIMB_Z1),
+        HumanoidRootPart=(0, 90, 0), Torso=(_PROUD_TORSO_X, 0, 0), Head=_PROUD_HEAD,
+        **{"Right Arm": (2, 0, -5), "Left Arm": (2, 0, 5),
+           "Right Leg": (0, 0, 0), "Left Leg": (0, 0, 0)}))
+    keyframes.append(_kf(
+        STAIRS_T + TURN_T, root_pos=(0, top_y, _CLIMB_Z1),
+        HumanoidRootPart=_FACE_ROOM, Torso=(_PROUD_TORSO_X, 0, 0), Head=_PROUD_HEAD,
+        **{"Right Arm": (2, 0, -5), "Left Arm": (2, 0, 5),
+           "Right Leg": (0, 0, 0), "Left Leg": (0, 0, 0)}))
+
+    phases = [
+        {"name": "montee", "t0": 0.00, "t1": STAIRS_T, "expected_reversals": {}},
+        {"name": "demi_tour", "t0": STAIRS_T, "t1": CLIMB_T, "expected_reversals": {}},
+    ]
+    preview_times = [0.0, STEP_T * 0.45, STEP_T, STAIRS_T, STAIRS_T + TURN_T]
     engine_opts = {"handle_type": "AUTO_CLAMPED"}
     return keyframes, phases, preview_times, engine_opts
 

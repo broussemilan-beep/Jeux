@@ -336,6 +336,44 @@ Raccord montée → assise vérifié par le calcul (`scripts/calibrate.py`) :
 de la montée et au tout début de l'assise (décalée) — quasi invisible,
 pas juste supposé continu.
 
+### Bug réel trouvé par l'utilisateur : il montait les marches à reculons
+
+Retour direct : « je veux que tu rajoute la logique que quand il monte
+les escalier y'a une rotation [...] la il monte et s'assoit mais ça
+voudrait dire que il les monte en arrière ». Exact, et pas détecté avant
+ce retour : `root_pos` avançait bien en Z croissant (vers le trône) marche
+après marche, mais `HumanoidRootPart` restait à l'identité — le
+personnage gardait le cap -Z (l'avant du rig) du début à la fin, donc
+avançait vers le trône **en marchant à reculons**, sans jamais s'être
+tourné vers lui.
+
+Corrigé en deux temps (`choreography.py`, `_FACE_STAIRS`/`_FACE_ROOM`,
+`TURN_T`) :
+
+1. **Pendant la montée**, `HumanoidRootPart = (0, 180, 0)` : le
+   personnage fait face au trône (+Z) et avance donc en marchant
+   réellement vers l'avant. La convention de la jambe qui se lève
+   (X positif = vers l'avant, voir plus haut) reste inchangée : elle est
+   locale au torse, donc bascule automatiquement de sens en même temps
+   que tout le corps quand le cap change — aucune retouche des angles de
+   jambe n'a été nécessaire, seul le cap racine change.
+2. **En haut des marches**, un demi-tour sur place (`TURN_T = 0.6 s`,
+   racine immobile à `_CLIMB_Z1`) ramène `HumanoidRootPart` de 180 à 0 —
+   l'orientation qu'attend `sit_and_crown()` (dos au dossier, face à la
+   salle). Sans ce demi-tour le personnage se serait assis dos au vide.
+
+Vérifié par deux méthodes independantes, pas juste relu :
+- **Raccord montée → assise** : l'écart tombe à **0,0000 stud** (contre
+  0,021 avant, voir ci-dessus) — le point d'arrivée du demi-tour a été
+  calé pour coïncider exactement avec le premier point de l'assise.
+- **Sens de la marche** : au moment où une jambe se lève, sa position
+  monde est comparée à celle de la racine — la jambe porteuse du pas
+  (`lead`) doit être **devant** (plus loin dans le sens de déplacement)
+  que la jambe d'appui (`trail`). Mesuré à la 1ère marche : jambe avant
+  à +0,67 stud du sens de marche, jambe arrière à -0,55 — confirme une
+  marche avant, pas une marche arrière compensée par le sens de la
+  caméra.
+
 ### Bug trouvé par capture d'écran, encore une fois
 
 Première version : les 4 marches étaient toutes de la même teinte pierre
