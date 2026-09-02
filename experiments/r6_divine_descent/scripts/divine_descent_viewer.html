@@ -1,0 +1,519 @@
+<title>La descente</title>
+<style>
+:root {
+  --bg: #f4f1ea; --panel: #ffffff; --panel-2: #eee9de; --ink: #241f18;
+  --sub: #6b6255; --grid: #d9d2c2; --rig: #3a3550; --leg: #2a2640;
+  --edge: #241f18; --ghost: #b8ae98; --accent: #7a5fd0; --gold: #f0c96a;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14120e; --panel: #1d1a14; --panel-2: #211e17; --ink: #ece5d6;
+    --sub: #a89d87; --grid: #332e23; --rig: #6a5fb0; --leg: #4a3f80;
+    --edge: #0c0a07; --ghost: #4a442f; --accent: #a58ff0; --gold: #f5d580;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14120e; --panel: #1d1a14; --panel-2: #211e17; --ink: #ece5d6;
+  --sub: #a89d87; --grid: #332e23; --rig: #6a5fb0; --leg: #4a3f80;
+  --edge: #0c0a07; --ghost: #4a442f; --accent: #a58ff0; --gold: #f5d580;
+}
+body { background: var(--bg); color: var(--ink); font-family: "Iowan Old Style", "Georgia", serif; }
+.stage { max-width: 980px; margin: 0 auto; padding: 28px 20px 48px; }
+.eyebrow { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin: 0 0 6px; font-family: Oswald, sans-serif; }
+h1 { font-size: 30px; margin: 0 0 10px; }
+.sub { color: var(--sub); font-size: 14.5px; line-height: 1.55; max-width: 760px; margin: 0 0 20px; }
+.card { background: var(--panel); border: 1px solid var(--grid); border-radius: 14px; padding: 14px; }
+.viewport-wrap { position: relative; border-radius: 10px; overflow: hidden; background: var(--panel-2); }
+canvas { display: block; width: 100%; height: auto; }
+.chip { position: absolute; top: 10px; font-family: Oswald, sans-serif; font-size: 12px; padding: 5px 10px; border-radius: 999px; background: rgba(0,0,0,0.35); color: #fff; }
+.chip.left { left: 10px; } .chip.right { right: 10px; }
+.controls { padding-top: 12px; display: flex; flex-direction: column; gap: 10px; }
+.transport { display: flex; align-items: center; gap: 12px; }
+.play-btn { width: 40px; height: 40px; border-radius: 50%; border: none; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+.play-btn svg { width: 18px; height: 18px; }
+.scrub-col { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.phase-track { display: flex; height: 6px; border-radius: 4px; overflow: hidden; }
+.phase-seg { height: 100%; }
+.phase-seg[data-kind="fall"] { background: var(--accent); }
+.phase-seg[data-kind="impact"] { background: var(--gold); }
+.phase-seg[data-kind="rise"] { background: var(--ghost); }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+.row-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+.phase-label { font-family: Oswald, sans-serif; font-size: 13px; color: var(--sub); text-transform: uppercase; letter-spacing: 0.05em; }
+.phase-label b { color: var(--ink); }
+.btn-row { display: flex; gap: 4px; background: var(--panel-2); border-radius: 8px; padding: 3px; }
+.btn-row button { border: none; background: transparent; color: var(--sub); font-family: Oswald, sans-serif; font-size: 12px; padding: 5px 10px; border-radius: 6px; cursor: pointer; }
+.btn-row button.active { background: var(--accent); color: #fff; }
+.note { color: var(--sub); font-size: 13px; line-height: 1.6; max-width: 780px; margin-top: 16px; }
+.note strong { color: var(--ink); }
+</style>
+
+<div class="stage">
+  <p class="eyebrow">Prototype isolé · Roblox R6 · Model + KeyframeSequence</p>
+  <h1>La descente</h1>
+  <p class="sub">Le personnage (rig R6 réel, 6 segments rigides) tombe du ciel en silhouette d'aile — bras écartés,
+    jambes tendues balayées vers l'arrière, tête plongée vers le sol — s'écrase au sol en un atterrissage à trois
+    points (poing planté, fente large), puis se relève dans une pose fière et puissante. Ce qui joue ici est le
+    résultat <strong>résolu par l'équation du moteur</strong> (<code>Part1 = Part0 · C0 · Transform · C1⁻¹</code>) à
+    partir du <code>KeyframeSequence</code> livré — la même vérification que pour le combo aérien et le sacre.
+    Caméra en poursuite verticale pendant la chute (voir la note sous le lecteur) : mise en scène du <em>lecteur</em>,
+    pas une propriété du fichier.</p>
+
+  <div class="card">
+    <div class="viewport-wrap">
+      <canvas id="stage" width="1200" height="900"></canvas>
+      <div class="chip left">phase · <b id="phaseName">chute</b></div>
+      <div class="chip right" id="timecode">0.00s / 2.80s</div>
+    </div>
+
+    <div class="controls">
+      <div class="transport">
+        <button class="play-btn" id="playBtn" aria-label="Lecture / pause">
+          <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M8 5v14l11-7z"/></svg>
+          <svg id="pauseIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+        </button>
+        <div class="scrub-col">
+          <div class="phase-track" id="phaseTrack"></div>
+          <input type="range" id="scrub" min="0" max="1000" value="0" step="1" aria-label="Position dans la scène">
+        </div>
+      </div>
+      <div class="row-bottom">
+        <div class="phase-label">segment <b id="phaseName2">chute</b></div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap">
+          <div class="btn-row" id="camRow">
+            <button data-az="-50" class="active">3/4</button>
+            <button data-az="0">face</button>
+            <button data-az="-90">profil</button>
+          </div>
+          <div class="btn-row" id="speedRow">
+            <button data-speed="0.25">0.25×</button>
+            <button data-speed="0.5">0.5×</button>
+            <button data-speed="1" class="active">1×</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="note"><strong>Caméra en poursuite verticale, pas le fichier</strong> : la chute part de Y=34 studs (environ
+    17× la hauteur du personnage) — bien au-dessus du cadrage fixe utilisé pour une scène au sol (comme le sacre). Le
+    lecteur fait donc suivre l'ancrage vertical de la caméra sur la hanche du personnage pendant la chute, puis le
+    ramène en douceur au cadrage au sol standard à l'approche de l'impact (voir <code>camAnchorY()</code>) — une mise
+    en scène du <em>lecteur</em>, exactement comme l'éclairage à trois sources ou le halo de couronne du sacre ; le
+    <code>KeyframeSequence</code> livré ne contient que les rotations des 6 <code>Motor6D</code> et la translation du
+    <code>HumanoidRootPart</code>, aucune caméra.</p>
+  <p class="note"><strong>Poing de l'impact calibré par le calcul, pas à l'oeil</strong> (voir <code>scripts/calibrate.py</code>) :
+    un premier essai (hanche plus haute, jambes moins pliées) laissait le poing à 2,67 studs du sol — plus haut que la
+    hanche elle-même. Un balayage numérique de l'angle du bras a établi que <strong>0,66 stud est la distance minimale
+    réellement atteignable</strong> à la hauteur de hanche choisie, la longueur du bras et l'inclinaison du torse étant
+    fixes — limite réelle du rig (aucun coude pour plier davantage vers le sol), pas une valeur mal réglée. Assumé
+    plutôt que masqué, comme le petit saut de la couronne dans le sacre.</p>
+  <p class="note"><strong>Pas de genou, donc pas d'appui asymétrique parfait</strong> : la fente d'atterrissage a une
+    jambe plus en avant que l'autre, mais un segment de jambe rigide qui pivote uniquement à la hanche ne peut pas
+    reproduire un genou plié au sol — les deux pieds touchent le sol à quelques centièmes de stud près (vérifié par
+    calcul), pas exactement à zéro pour les deux simultanément. Même limite déjà documentée pour l'assise du trône.</p>
+  <p class="note"><strong>Rig du personnage</strong> : même rig R6 vérifié (dépôt Adonis, licence MIT) que les deux
+    autres prototypes de ce dossier — voir <code>rig/PROVENANCE.md</code>.</p>
+</div>
+
+<script>
+const DATA = __SCENE_DATA__;
+
+const PHASE_LABELS = { chute: "chute", impact: "impact", releve: "relevé" };
+const PHASE_KIND = { chute: "fall", impact: "impact", releve: "rise" };
+const LEGS = new Set(["Right Leg", "Left Leg"]);
+
+const canvas = document.getElementById("stage");
+const ctx = canvas.getContext("2d");
+const scrub = document.getElementById("scrub");
+const playBtn = document.getElementById("playBtn");
+const playIcon = document.getElementById("playIcon");
+const pauseIcon = document.getElementById("pauseIcon");
+const phaseNameEl = document.getElementById("phaseName");
+const phaseNameEl2 = document.getElementById("phaseName2");
+const timecodeEl = document.getElementById("timecode");
+const phaseTrack = document.getElementById("phaseTrack");
+
+let AZ = -50 * Math.PI / 180;
+const EL = 14 * Math.PI / 180;
+const DURATION = DATA.duration;
+const IMPACT_T = DATA.impact_t;
+const SKY_Y = DATA.sky_y;
+
+function rebuildPhaseTrack() {
+  phaseTrack.innerHTML = "";
+  DATA.phases.forEach(p => {
+    const seg = document.createElement("div");
+    seg.className = "phase-seg";
+    seg.dataset.kind = PHASE_KIND[p.name] || "fall";
+    seg.style.width = ((p.t1 - p.t0) / DURATION * 100) + "%";
+    phaseTrack.appendChild(seg);
+  });
+}
+rebuildPhaseTrack();
+
+function currentPhase(t) {
+  for (const p of DATA.phases) if (t >= p.t0 - 1e-6 && t <= p.t1 + 1e-6) return p;
+  return DATA.phases.slice(-1)[0];
+}
+
+function slerpish(a, b, f) {
+  const m = a.map((v, i) => v + (b[i] - v) * f);
+  const c0 = [m[0], m[3], m[6]], c1 = [m[1], m[4], m[7]];
+  const n0 = Math.hypot(c0[0], c0[1], c0[2]) || 1;
+  const e0 = c0.map(v => v / n0);
+  const d = e0[0] * c1[0] + e0[1] * c1[1] + e0[2] * c1[2];
+  let e1 = c1.map((v, i) => v - d * e0[i]);
+  const n1 = Math.hypot(e1[0], e1[1], e1[2]) || 1;
+  e1 = e1.map(v => v / n1);
+  const e2 = [e0[1] * e1[2] - e0[2] * e1[1], e0[2] * e1[0] - e0[0] * e1[2], e0[0] * e1[1] - e0[1] * e1[0]];
+  return [e0[0], e1[0], e2[0], e0[1], e1[1], e2[1], e0[2], e1[2], e2[2]];
+}
+
+function frameAt(frames, t) {
+  const dt = 1 / DATA.fps;
+  const idx = Math.max(0, Math.min(frames.length - 2, Math.floor(t / dt)));
+  const f0 = frames[idx], f1 = frames[idx + 1];
+  const frac = Math.max(0, Math.min(1, (t - f0.t) / (f1.t - f0.t || 1)));
+  return { f0, f1, frac };
+}
+
+function sampleChar(t) {
+  const { f0, f1, frac } = frameAt(DATA.char_frames, t);
+  const out = {};
+  for (const part of DATA.part_order) {
+    const a = f0[part], b = f1[part];
+    out[part] = { p: a.p.map((v, i) => v + (b.p[i] - v) * frac), r: slerpish(a.r, b.r, frac) };
+  }
+  return out;
+}
+
+// Ancrage vertical de la camera -- PAS une propriete du fichier, voir la
+// note sous le lecteur. Pendant la chute, suit la hanche mais moins vite
+// qu'elle ne descend (facteur 0.85) pour laisser le sol se rapprocher
+// visiblement a l'ecran plutot que de rester fixe par rapport au
+// personnage ; ramene a 0 (cadrage au sol standard, meme convention que
+// le sacre) des l'impact.
+function camAnchorY(t, charY) {
+  if (t >= IMPACT_T) return 0;
+  const frac = Math.max(0, Math.min(1, (SKY_Y - charY) / (SKY_Y - 1.85)));
+  return charY * (1 - frac) * 0.85;
+}
+
+let CAM_OFFSET_Y = 0;
+
+function proj(x, y, z) {
+  y -= CAM_OFFSET_Y;
+  const x1 = x * Math.cos(AZ) - z * Math.sin(AZ);
+  const z1 = x * Math.sin(AZ) + z * Math.cos(AZ);
+  const y2 = y * Math.cos(EL) - z1 * Math.sin(EL);
+  const depth = y * Math.sin(EL) + z1 * Math.cos(EL);
+  return { x: x1, y: y2, d: depth };
+}
+
+const SCALE = 48, CX = 600, CY = 660, FLOOR_Y = 0.0;
+
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+
+function shadeRgb(rgb, k) {
+  return "rgb(" + rgb.map(v => Math.max(0, Math.min(255, Math.round(v * k)))).join(",") + ")";
+}
+
+function norm3(v) { const n = Math.hypot(v[0], v[1], v[2]) || 1; return [v[0]/n, v[1]/n, v[2]/n]; }
+function dot3(a, b) { return a[0]*b[0] + a[1]*b[1] + a[2]*b[2]; }
+function add3(a, b) { return [a[0]+b[0], a[1]+b[1], a[2]+b[2]]; }
+
+const LIGHT = norm3([-0.45, 0.80, -0.38]);
+const FILL_LIGHT = norm3([0.55, 0.25, 0.65]);
+const VIEW = norm3([0.35, 0.45, 0.82]);
+const HALF_VEC = norm3(add3(LIGHT, VIEW));
+
+const MAT = { spec: 0.22, shin: 14, rim: 0.20, tint: 1.0 };
+
+const CORNERS = [[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]];
+const FACES = [
+  { idx: [0,1,2,3], n: [0,0,-1] }, { idx: [5,4,7,6], n: [0,0,1] },
+  { idx: [4,0,3,7], n: [-1,0,0] }, { idx: [1,5,6,2], n: [1,0,0] },
+  { idx: [3,2,6,7], n: [0,1,0] },  { idx: [4,5,1,0], n: [0,-1,0] },
+];
+
+function mulVec(r, v) {
+  return [r[0]*v[0] + r[1]*v[1] + r[2]*v[2],
+          r[3]*v[0] + r[4]*v[1] + r[5]*v[2],
+          r[6]*v[0] + r[7]*v[1] + r[8]*v[2]];
+}
+
+function boxQuads(pos, rot, size, rgbColor) {
+  const half = [size[0] / 2, size[1] / 2, size[2] / 2];
+  const screen = CORNERS.map(c => {
+    const rotated = mulVec(rot, [c[0] * half[0], c[1] * half[1], c[2] * half[2]]);
+    return proj(pos[0] + rotated[0], pos[1] + rotated[1], pos[2] + rotated[2]);
+  });
+  const quads = [];
+  for (const f of FACES) {
+    const nWorld = mulVec(rot, f.n);
+    const nProj = proj(nWorld[0], nWorld[1], nWorld[2]);
+    if (nProj.d >= 0) continue;
+    const specAngle = Math.max(0, dot3(nWorld, HALF_VEC));
+    const spec = Math.pow(specAngle, MAT.shin) * MAT.spec;
+    const facing = Math.max(0, dot3(nWorld, VIEW));
+    const rim = Math.pow(1 - facing, 3) * MAT.rim;
+    const lambert = Math.max(0, dot3(nWorld, LIGHT));
+    const fill = Math.max(0, dot3(nWorld, FILL_LIGHT)) * 0.30;
+    const k = (0.32 + 0.60 * lambert + fill) * MAT.tint;
+    quads.push({
+      pts: f.idx.map(i => screen[i]),
+      depth: f.idx.reduce((s, i) => s + screen[i].d, 0) / 4,
+      k, spec, rim, rgb: rgbColor,
+    });
+  }
+  return quads;
+}
+
+// -- fond : degrade "ciel de dieu" en altitude -> penombre au sol,
+// interpole sur l'altitude du personnage (pas sur le temps directement,
+// pour rester coherent si l'utilisateur change la vitesse de lecture).
+function skyFrac(charY) {
+  return Math.max(0, Math.min(1, (charY - 3.0) / (SKY_Y - 3.0)));
+}
+
+function drawBackdrop(charY) {
+  const f = skyFrac(charY);
+  const g = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  // haut du degrade : violet-nuit profond en altitude -> presque noir au sol
+  const topTo = [10 + 8*f, 8 + 4*f, 22 + 30*f];
+  g.addColorStop(0, `rgb(${topTo[0]},${topTo[1]},${topTo[2]})`);
+  g.addColorStop(0.55, "#141018");
+  g.addColorStop(1, "#1c140f");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // flaque de lumiere chaude au sol -- meme technique que le sacre.
+  const c = proj(0, FLOOR_Y, 0);
+  const rg = ctx.createRadialGradient(CX + c.x*SCALE, CY - c.y*SCALE, 20, CX + c.x*SCALE, CY - c.y*SCALE, 560);
+  rg.addColorStop(0, "rgba(160,110,220,0.16)");
+  rg.addColorStop(1, "rgba(160,110,220,0)");
+  ctx.fillStyle = rg;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+function drawGrid() {
+  ctx.strokeStyle = "rgba(200,190,230,0.09)";
+  ctx.lineWidth = 1;
+  const n = 12, step = 1.0;
+  for (let i = -n; i <= n; i++) {
+    let a = proj(i * step, FLOOR_Y, -n * step), b = proj(i * step, FLOOR_Y, n * step);
+    ctx.beginPath(); ctx.moveTo(CX + a.x * SCALE, CY - a.y * SCALE); ctx.lineTo(CX + b.x * SCALE, CY - b.y * SCALE); ctx.stroke();
+    a = proj(-n * step, FLOOR_Y, i * step); b = proj(n * step, FLOOR_Y, i * step);
+    ctx.beginPath(); ctx.moveTo(CX + a.x * SCALE, CY - a.y * SCALE); ctx.lineTo(CX + b.x * SCALE, CY - b.y * SCALE); ctx.stroke();
+  }
+}
+
+// -- trainee lumineuse derriere le personnage pendant la chute : quelques
+// silhouettes fantomes a des Y legerement superieurs, alpha decroissant --
+// vieille technique de "motion streak" plutot qu'un vrai flou de mouvement.
+function drawFallTrail(t, charPose, alphaMul) {
+  if (alphaMul <= 0) return;
+  // HumanoidRootPart.p reste TOUJOURS a [0,0,0] dans les frames resolues
+  // (le moteur ne l'anime jamais lui-meme -- le mouvement de racine est
+  // replie dans la pose de Torso par effective_pose_inputs(), voir
+  // export_kfseq.py) : Torso.p est la seule reference de position monde
+  // fiable ici, pas HumanoidRootPart.p (bug trouve par capture d'ecran
+  // reelle -- premiere version : personnage invisible pendant toute la
+  // chute, camera ancree sur une position gelee a l'origine).
+  const root = charPose["Torso"].p;
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+  for (let s = 1; s <= 5; s++) {
+    const dy = s * 0.9;
+    const a = 0.10 * alphaMul * (1 - s / 6);
+    const top = proj(root[0], root[1] + dy, root[2]);
+    const bot = proj(root[0], root[1] + dy - 0.6, root[2]);
+    const tx = CX + top.x * SCALE, ty = CY - top.y * SCALE;
+    const bx = CX + bot.x * SCALE, by = CY - bot.y * SCALE;
+    const grad = ctx.createLinearGradient(tx, ty, bx, by);
+    grad.addColorStop(0, `rgba(190,160,255,0)`);
+    grad.addColorStop(1, `rgba(190,160,255,${a})`);
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = 22 - s * 2;
+    ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(bx, by); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawImpactVfx(t) {
+  if (t < IMPACT_T) return;
+  const age = t - IMPACT_T;
+  const c = proj(0, FLOOR_Y, 0);
+  const sx = CX + c.x * SCALE, sy = CY - c.y * SCALE;
+
+  // flash bref plein-ecran a l'impact -- lit le "coup", pas juste vu au
+  // point d'impact.
+  const flash = Math.max(0, 1 - age / 0.12);
+  if (flash > 0) {
+    ctx.fillStyle = `rgba(255,250,240,${0.35 * flash})`;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+
+  // onde de choc : anneau qui s'etend et s'estompe.
+  const ringT = Math.min(1, age / 0.55);
+  if (ringT < 1) {
+    const R = 40 + ringT * 420;
+    const alpha = (1 - ringT) * 0.55;
+    ctx.save();
+    ctx.translate(sx, sy);
+    ctx.scale(1, 0.42);
+    ctx.strokeStyle = `rgba(230,200,255,${alpha})`;
+    ctx.lineWidth = 10 * (1 - ringT) + 2;
+    ctx.beginPath(); ctx.arc(0, 0, R, 0, Math.PI * 2); ctx.stroke();
+    ctx.restore();
+  }
+
+  // eclats de poussiere : traits radiaux qui s'envolent puis s'estompent.
+  const dustT = Math.min(1, age / 0.5);
+  if (dustT < 1) {
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    const n = 10;
+    for (let i = 0; i < n; i++) {
+      const ang = (i / n) * Math.PI * 2 + 0.3;
+      const len = 26 + dustT * 130;
+      const dx = Math.cos(ang) * len, dy = Math.sin(ang) * len * 0.35 - dustT * 30;
+      const a = (1 - dustT) * 0.45;
+      const grad = ctx.createLinearGradient(sx, sy, sx + dx, sy + dy);
+      grad.addColorStop(0, `rgba(215,195,150,${a})`);
+      grad.addColorStop(1, `rgba(215,195,150,0)`);
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx + dx, sy + dy); ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  // marque au sol, persiste (cratere stylise) -- une simple flaque sombre
+  // radiale, coherente avec drawContactShadow ailleurs dans ce projet.
+  const markAlpha = Math.min(0.5, age * 1.5) * 0.5;
+  ctx.save();
+  ctx.translate(sx, sy);
+  ctx.scale(1, 0.42);
+  const mg = ctx.createRadialGradient(0, 0, 0, 0, 0, 150);
+  mg.addColorStop(0, `rgba(20,10,30,${markAlpha})`);
+  mg.addColorStop(1, "rgba(20,10,30,0)");
+  ctx.fillStyle = mg;
+  ctx.beginPath(); ctx.arc(0, 0, 150, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
+
+function drawContactShadow(cx, cz, rx, rz, alpha) {
+  const c = proj(cx, FLOOR_Y, cz);
+  const sx = CX + c.x * SCALE, sy = CY - c.y * SCALE;
+  ctx.save();
+  ctx.translate(sx, sy);
+  ctx.scale(1, 0.42);
+  const g = ctx.createRadialGradient(0, 0, 0, 0, 0, rx * SCALE);
+  g.addColorStop(0, `rgba(0,0,0,${alpha})`);
+  g.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.ellipse(0, 0, rx * SCALE, rz * SCALE, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
+
+function render(t) {
+  const charPose = sampleChar(t);
+  // Torso.p, pas HumanoidRootPart.p -- voir la note dans drawFallTrail().
+  const charY = charPose["Torso"].p[1];
+  CAM_OFFSET_Y = camAnchorY(t, charY);
+
+  drawBackdrop(charY);
+  drawGrid();
+
+  // Uniquement pendant la chute -- l'alpha par altitude seul ne suffit
+  // pas a l'eteindre apres l'impact (la hanche remonte vers la hauteur
+  // debout ensuite, donc "loin du sol" redeviendrait vrai) : bug trouve
+  // par capture d'ecran reelle, premiere version -- la trainee restait
+  // visible en pleine opacite sur la pose finale, bien apres l'atterrissage.
+  const trailAlpha = t < IMPACT_T ? Math.min(1, (SKY_Y - charY) / 6) : 0;
+  drawFallTrail(t, charPose, trailAlpha);
+
+  if (t >= IMPACT_T - 0.02) {
+    drawContactShadow(charPose["Torso"].p[0], charPose["Torso"].p[2] + 0.2, 1.0, 0.8, 0.32);
+  }
+
+  const rigRgb = hexToRgb(cssVar("--rig")), legRgb = hexToRgb(cssVar("--leg"));
+  const all = [];
+  for (const part of DATA.part_order) {
+    if (part === "HumanoidRootPart") continue;
+    const rgb = LEGS.has(part) ? legRgb : rigRgb;
+    all.push(...boxQuads(charPose[part].p, charPose[part].r, DATA.part_sizes[part], rgb));
+  }
+
+  all.sort((a, b) => b.depth - a.depth);
+  for (const q of all) {
+    ctx.beginPath();
+    ctx.moveTo(CX + q.pts[0].x * SCALE, CY - q.pts[0].y * SCALE);
+    for (let i = 1; i < q.pts.length; i++) ctx.lineTo(CX + q.pts[i].x * SCALE, CY - q.pts[i].y * SCALE);
+    ctx.closePath();
+    ctx.fillStyle = shadeRgb(q.rgb, q.k);
+    ctx.fill();
+    if (q.rim > 0.01) {
+      ctx.fillStyle = `rgba(220,210,255,${q.rim})`;
+      ctx.fill();
+    }
+    if (q.spec > 0.02) {
+      ctx.fillStyle = `rgba(255,255,255,${Math.min(0.9, q.spec)})`;
+      ctx.fill();
+    }
+    ctx.strokeStyle = "rgba(0,0,0,0.45)"; ctx.lineWidth = 0.7; ctx.globalAlpha = 0.35; ctx.stroke(); ctx.globalAlpha = 1;
+  }
+
+  drawImpactVfx(t);
+
+  const phase = currentPhase(t);
+  phaseNameEl.textContent = PHASE_LABELS[phase.name] || phase.name;
+  phaseNameEl2.textContent = PHASE_LABELS[phase.name] || phase.name;
+  timecodeEl.textContent = t.toFixed(2) + "s / " + DURATION.toFixed(2) + "s";
+}
+
+function hexToRgb(hex) {
+  hex = hex.replace("#", "").trim();
+  if (hex.length === 3) hex = hex.split("").map(c => c + c).join("");
+  return [parseInt(hex.slice(0, 2), 16), parseInt(hex.slice(2, 4), 16), parseInt(hex.slice(4, 6), 16)];
+}
+
+let playing = true, speed = 1, simTime = 0, lastWall = null, scrubbing = false;
+function setPlaying(p) {
+  playing = p;
+  playIcon.style.display = p ? "none" : "block";
+  pauseIcon.style.display = p ? "block" : "none";
+  lastWall = null;
+}
+playBtn.addEventListener("click", () => setPlaying(!playing));
+
+document.querySelectorAll("#speedRow button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll("#speedRow button").forEach(x => x.classList.remove("active"));
+  b.classList.add("active"); speed = parseFloat(b.dataset.speed);
+}));
+document.querySelectorAll("#camRow button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll("#camRow button").forEach(x => x.classList.remove("active"));
+  b.classList.add("active"); AZ = parseFloat(b.dataset.az) * Math.PI / 180;
+  render(simTime);
+}));
+
+scrub.addEventListener("pointerdown", () => { scrubbing = true; setPlaying(false); });
+scrub.addEventListener("pointerup", () => { scrubbing = false; });
+scrub.addEventListener("input", () => { simTime = (scrub.value / 1000) * DURATION; render(simTime); });
+
+function tick(now) {
+  if (lastWall === null) lastWall = now;
+  const dt = (now - lastWall) / 1000;
+  lastWall = now;
+  if (playing && !scrubbing) {
+    simTime += dt * speed;
+    if (simTime > DURATION) simTime -= DURATION;
+    scrub.value = Math.round((simTime / DURATION) * 1000);
+  }
+  render(simTime);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+</script>
