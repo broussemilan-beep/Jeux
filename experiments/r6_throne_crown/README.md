@@ -42,7 +42,8 @@ véritables objets 3D (pas un décor de fond).
   (position + rotation par échantillon), pour le script de re-weld
   qu'un vrai projet Roblox doit fournir (voir plus bas).
 - Lecteur HTML (scène complète, personnage + trône + couronne, résolus
-  par le moteur) : https://claude.ai/code/artifact/ab0c53e4-2909-48a0-bc7d-fc6b296b6b15
+  par le moteur, texturing PBR réel appliqué en direct — voir "Relief et
+  micro-reflet réels dans l'animation") : https://claude.ai/code/artifact/f5c8501a-1aa3-42c7-919b-c0745532914c
 
 ## Géométrie du trône et de la couronne
 
@@ -320,6 +321,75 @@ Les deux routes restent livrées, elles ne s'excluent pas :
 | Réaction à l'éclairage dynamique de la scène | couleur plate + `Reflectance` global | vrai relief qui réagit à l'angle de lumière |
 | Effort d'installation Studio | Insert `Texture`, upload 1 image | Import 3D, Insert `SurfaceAppearance`, upload jusqu'à 4 images par matériau |
 | Rig personnage compatible | oui (Part = joints Motor6D natifs) | n/a (le personnage reste en `Part`, seuls trône/couronne changent de route) |
+
+## Relief et micro-reflet réels dans l'animation elle-même (5e tour)
+
+Retour utilisateur après la livraison du pipeline `MeshPart`+bake : « Non,
+crée l'animation avec le nouveau texturing » — les fichiers PBR
+(`textures_pbr/*.png`, prêts pour `SurfaceAppearance` dans Studio) ne
+suffisaient pas seuls ; il fallait que **l'animation qui joue dans le
+lecteur** montre elle-même ce niveau de texturing, pas seulement le
+livrer en pièces jointes séparées.
+
+### Ce qui a changé
+
+Le lecteur (`scripts/throne_crown_viewer.html`, maintenant **versionné**
+dans le dépôt — il ne vivait jusque-là que dans le scratchpad de session,
+jamais commit, contrairement à la règle « aucune décision/recette
+n'existe ailleurs que dans un fichier versionné ») décode maintenant
+**pixel par pixel**, au chargement, les mêmes `NormalMap`/`RoughnessMap`
+bakées que celles livrées pour `SurfaceAppearance` (pas une texture à
+part inventée pour le lecteur) :
+
+- **Relief** (`buildBumpCanvas()`) : chaque pixel du `NormalMap` est
+  décodé en vecteur normal tangent-espace (`R,G,B` → `x,y,z` ∈
+  `[-1,1]`), projeté sur une direction de lumière rasante fixe en espace
+  texture, et le résultat (assombri/éclairci) est appliqué sur chaque
+  face via `globalCompositeOperation = "overlay"` — **avec la même
+  transformation affine** que le calque couleur (`fillTexturedFace()`),
+  donc aligné pixel pour pixel avec la tuile de couleur.
+- **Micro-reflet** (`buildShineCanvas()`) : dérivé directement de la
+  `RoughnessMap` (`(1-roughness)^1.6`), appliqué en `"screen"` — s'éteint
+  de lui-même sur les zones à roughness élevée (tissu) sans liste de
+  matériaux codée en dur, puisque c'est la carte bakée elle-même qui
+  pilote l'intensité, matériau par matériau et pixel par pixel.
+
+**Limite assumée, pas cachée** : la direction de lumière du relief est
+fixe en espace texture (rasante identique sur chaque face), pas
+recalculée en espace monde par face — ce lecteur reste un projecteur
+orthographique Canvas 2D (voir plus haut), pas un moteur relighté par
+pixel. Le relief affiché est en revanche une vraie donnée bakée (le même
+fichier que celui livré pour Studio), pas un bruit décoratif ajouté pour
+faire joli.
+
+### Vérifié par capture d'écran A/B sur la même frame, pas supposé
+
+Écart-type maintes fois trouvé dans ce projet entre "numériquement
+correct" et "visuellement lisible" (le bug de signe Z, l'escalier
+monochrome, la couronne trop discrète, le métal à 40 bandes) : même
+prudence ici. Un script Playwright charge le lecteur construit, désactive
+les deux nouveaux calques (`BUMP_READY`/`SHINE_READY` forcés à `false`),
+capture ; les réactive, recapture **la même frame, même caméra** — le
+dossier du trône (dossier ardoise + accoudoirs/fleurons métal) montre un
+chevron de relief net et des reflets métalliques marqués côté "après",
+absent côté "avant" (calque couleur seul). Forces calibrées à l'oeil
+après un premier essai trop discret (`overlay` à 0.6/gain 190 → 0.85/gain
+260 ; `screen` à 0.22 → 0.38) — même schéma que le halo de couronne ou le
+métal 40→6 bandes : la première passe "correcte en théorie" ne se voyait
+pas assez, corrigée après capture réelle, pas avant. Revérifié ensuite
+sur toutes les phases (montée, assise, couronnement, pose finale) et les
+3 angles de caméra : aucune régression, le halo de couronne fonctionne
+toujours par-dessus.
+
+### Le lecteur est maintenant reconstructible depuis le dépôt seul
+
+Nouveau `scripts/build_viewer.py` : relance `dump_scene_data.py`, lit
+**toutes** les images de `textures/` et `textures_pbr/` (indexées par nom
+de fichier sans extension — `slate_color`, `slate_normal`,
+`slate_roughness`, `metal_metalness`…), les embarque en base64 dans le
+template versionné. Avant ce script, cet assemblage se faisait par des
+commandes ad hoc non versionnées — un vrai trou par rapport à la règle
+"le dépôt est le cerveau du projet" que ce tour corrige.
 
 ## Calibration — vérifiée par le calcul, pas à l'oeil
 
