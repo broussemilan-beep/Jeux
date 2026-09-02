@@ -20,7 +20,7 @@
         </Vector3>
         <CoordinateFrame name="CFrame">
           <X>0.0</X>
-          <Y>-0.3</Y>
+          <Y>1.7</Y>
           <Z>1.4</Z>
           <R00>1.0</R00>
           <R01>0.0</R01>
@@ -49,7 +49,7 @@
         </Vector3>
         <CoordinateFrame name="CFrame">
           <X>-1.9</X>
-          <Y>0.85</Y>
+          <Y>2.85</Y>
           <Z>-0.4</Z>
           <R00>1.0</R00>
           <R01>0.0</R01>
@@ -78,7 +78,7 @@
         </Vector3>
         <CoordinateFrame name="CFrame">
           <X>-1.9</X>
-          <Y>0.85</Y>
+          <Y>2.85</Y>
           <Z>2.1</Z>
           <R00>1.0</R00>
           <R01>0.0</R01>
@@ -107,7 +107,7 @@
         </Vector3>
         <CoordinateFrame name="CFrame">
           <X>1.9</X>
-          <Y>0.85</Y>
+          <Y>2.85</Y>
           <Z>-0.4</Z>
           <R00>1.0</R00>
           <R01>0.0</R01>
@@ -136,7 +136,7 @@
         </Vector3>
         <CoordinateFrame name="CFrame">
           <X>1.9</X>
-          <Y>0.85</Y>
+          <Y>2.85</Y>
           <Z>2.1</Z>
           <R00>1.0</R00>
           <R01>0.0</R01>
@@ -165,7 +165,7 @@
         </Vector3>
         <CoordinateFrame name="CFrame">
           <X>0.0</X>
-          <Y>1.7</Y>
+          <Y>3.7</Y>
           <Z>0.9</Z>
           <R00>1.0</R00>
           <R01>0.0</R01>
@@ -194,7 +194,7 @@
         </Vector3>
         <CoordinateFrame name="CFrame">
           <X>0.0</X>
-          <Y>5.0</Y>
+          <Y>7.0</Y>
           <Z>3.0</Z>
           <R00>1.0</R00>
           <R01>0.0</R01>
@@ -223,7 +223,7 @@
         </Vector3>
         <CoordinateFrame name="CFrame">
           <X>-2.6</X>
-          <Y>2.5</Y>
+          <Y>4.5</Y>
           <Z>0.9</Z>
           <R00>1.0</R00>
           <R01>0.0</R01>
@@ -252,7 +252,7 @@
         </Vector3>
         <CoordinateFrame name="CFrame">
           <X>2.6</X>
-          <Y>2.5</Y>
+          <Y>4.5</Y>
           <Z>0.9</Z>
           <R00>1.0</R00>
           <R01>0.0</R01>
@@ -281,7 +281,7 @@
         </Vector3>
         <CoordinateFrame name="CFrame">
           <X>2.5</X>
-          <Y>2.93</Y>
+          <Y>4.93</Y>
           <Z>0.0</Z>
           <R00>1.0</R00>
           <R01>0.0</R01>
@@ -310,7 +310,7 @@
         </Vector3>
         <CoordinateFrame name="CFrame">
           <X>0.0</X>
-          <Y>8.0</Y>
+          <Y>10.0</Y>
           <Z>3.0</Z>
           <R00>1.0</R00>
           <R01>0.0</R01>
@@ -339,7 +339,7 @@
         </Vector3>
         <CoordinateFrame name="CFrame">
           <X>-2.1</X>
-          <Y>8.55</Y>
+          <Y>10.55</Y>
           <Z>3.0</Z>
           <R00>1.0</R00>
           <R01>0.0</R01>
@@ -368,7 +368,7 @@
         </Vector3>
         <CoordinateFrame name="CFrame">
           <X>0.0</X>
-          <Y>8.7</Y>
+          <Y>10.7</Y>
           <Z>3.0</Z>
           <R00>1.0</R00>
           <R01>0.0</R01>
@@ -397,8 +397,124 @@
         </Vector3>
         <CoordinateFrame name="CFrame">
           <X>2.1</X>
-          <Y>8.55</Y>
+          <Y>10.55</Y>
           <Z>3.0</Z>
+          <R00>1.0</R00>
+          <R01>0.0</R01>
+          <R02>0.0</R02>
+          <R10>0.0</R10>
+          <R11>1.0</R11>
+          <R12>0.0</R12>
+          <R20>0.0</R20>
+          <R21>0.0</R21>
+          <R22>1.0</R22>
+        </CoordinateFrame>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBXPROP_000016">
+      <Properties>
+        <string name="Name">Step_1</string>
+        <token name="Shape">1</token>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <float name="Transparency">0.0</float>
+        <Color3uint8 name="Color3uint8">4605002</Color3uint8>
+        <Vector3 name="size">
+          <X>6.0</X>
+          <Y>0.5</Y>
+          <Z>1.2</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>0.0</X>
+          <Y>0.25</Y>
+          <Z>-5.549999999999999</Z>
+          <R00>1.0</R00>
+          <R01>0.0</R01>
+          <R02>0.0</R02>
+          <R10>0.0</R10>
+          <R11>1.0</R11>
+          <R12>0.0</R12>
+          <R20>0.0</R20>
+          <R21>0.0</R21>
+          <R22>1.0</R22>
+        </CoordinateFrame>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBXPROP_000017">
+      <Properties>
+        <string name="Name">Step_2</string>
+        <token name="Shape">1</token>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <float name="Transparency">0.0</float>
+        <Color3uint8 name="Color3uint8">7236724</Color3uint8>
+        <Vector3 name="size">
+          <X>6.0</X>
+          <Y>1.0</Y>
+          <Z>1.2</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>0.0</X>
+          <Y>0.5</Y>
+          <Z>-4.35</Z>
+          <R00>1.0</R00>
+          <R01>0.0</R01>
+          <R02>0.0</R02>
+          <R10>0.0</R10>
+          <R11>1.0</R11>
+          <R12>0.0</R12>
+          <R20>0.0</R20>
+          <R21>0.0</R21>
+          <R22>1.0</R22>
+        </CoordinateFrame>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBXPROP_000018">
+      <Properties>
+        <string name="Name">Step_3</string>
+        <token name="Shape">1</token>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <float name="Transparency">0.0</float>
+        <Color3uint8 name="Color3uint8">4605002</Color3uint8>
+        <Vector3 name="size">
+          <X>6.0</X>
+          <Y>1.5</Y>
+          <Z>1.2</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>0.0</X>
+          <Y>0.75</Y>
+          <Z>-3.15</Z>
+          <R00>1.0</R00>
+          <R01>0.0</R01>
+          <R02>0.0</R02>
+          <R10>0.0</R10>
+          <R11>1.0</R11>
+          <R12>0.0</R12>
+          <R20>0.0</R20>
+          <R21>0.0</R21>
+          <R22>1.0</R22>
+        </CoordinateFrame>
+      </Properties>
+    </Item>
+    <Item class="Part" referent="RBXPROP_000019">
+      <Properties>
+        <string name="Name">Step_4</string>
+        <token name="Shape">1</token>
+        <bool name="Anchored">true</bool>
+        <bool name="CanCollide">true</bool>
+        <float name="Transparency">0.0</float>
+        <Color3uint8 name="Color3uint8">7236724</Color3uint8>
+        <Vector3 name="size">
+          <X>6.0</X>
+          <Y>2.0</Y>
+          <Z>1.2</Z>
+        </Vector3>
+        <CoordinateFrame name="CFrame">
+          <X>0.0</X>
+          <Y>1.0</Y>
+          <Z>-1.95</Z>
           <R00>1.0</R00>
           <R01>0.0</R01>
           <R02>0.0</R02>

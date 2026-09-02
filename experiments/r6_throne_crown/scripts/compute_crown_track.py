@@ -13,13 +13,14 @@ dont un tel script a besoin : la trajectoire MONDE cible, calculee par
 la meme cinematique directe que tout le reste du pipeline (pas une
 approximation).
 
-Trois phases (voir choreography.PICKUP_T / PLACED_T) :
-  1. t < PICKUP_T   : statique, posee sur le coussin (props.CrownCushion).
-  2. PICKUP_T..PLACED_T : suit le bout de la main droite, orientation
+Trois phases (voir choreography.FULL_PICKUP_T / FULL_PLACED_T -- decalees
+de la duree de la montee de l'escalier par rapport a sit_and_crown() seule) :
+  1. t < FULL_PICKUP_T   : statique, posee sur le coussin (props.cushion_top_pos()).
+  2. FULL_PICKUP_T..FULL_PLACED_T : suit le bout de la main droite, orientation
      gardee verticale (identite) -- la couronne est tenue a plat, pas
      vrillee avec la rotation complete du bras (~170 deg sur cette
      fenetre, la vriller pareillement aurait l'air faux).
-  3. t >= PLACED_T  : suit le sommet de la tete, ROTATION DE LA TETE
+  3. t >= FULL_PLACED_T  : suit le sommet de la tete, ROTATION DE LA TETE
      COMPRISE -- une fois posee, elle est "portee" et tourne avec la tete.
 """
 import json
@@ -27,15 +28,17 @@ import json
 import numpy as np
 
 import anim_engine as ae
+import props
 from calibrate import tip_world, world_rotations
-from choreography import sit_and_crown, PICKUP_T, PLACED_T
+from choreography import full_scene, FULL_PICKUP_T, FULL_PLACED_T
 
-CUSHION_POS = (2.5, 3.08, 0.0)  # sommet de props.CrownCushion
+CUSHION_POS = props.cushion_top_pos()
 SAMPLE_HZ = 30
+PICKUP_T, PLACED_T = FULL_PICKUP_T, FULL_PLACED_T
 
 
 def main():
-    keyframes, phases, preview_times, engine_opts = sit_and_crown()
+    keyframes, phases, preview_times, engine_opts = full_scene()
     duration = max(k["time"] for k in keyframes)
     objs = ae.build_rig()
     ae.apply_choreography(objs, keyframes, **engine_opts)

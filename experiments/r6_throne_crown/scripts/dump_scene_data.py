@@ -1,8 +1,8 @@
 """
 Assemble le JSON du lecteur HTML : personnage (resolu par le moteur,
 comme dump_preview_data.py dans r6_aerial_kick_combo -- jamais la FK
-brute), trone (statique), couronne (trajectoire calculee, composee avec
-sa geometrie locale a chaque frame).
+brute), trone + escalier (statique), couronne (trajectoire calculee,
+composee avec sa geometrie locale a chaque frame).
 """
 import json
 import os
@@ -11,13 +11,12 @@ import numpy as np
 
 import props
 import resolve_rbxmx as rr
-from choreography import PICKUP_T, PLACED_T
+from choreography import full_scene, FULL_PICKUP_T, FULL_PLACED_T
 from r6_rig import PART_ORDER, PART_SIZES
 from calibrate import tip_world, world_rotations
 import anim_engine as ae
-from choreography import sit_and_crown
 
-CUSHION_POS = (2.5, 3.08, 0.0)
+CUSHION_POS = props.cushion_top_pos()
 OUT_HZ = 30
 
 
@@ -29,7 +28,7 @@ def crown_frames_at(char_frames):
     coussin / suit la main / suit la tete, voir compute_crown_track.py -
     meme logique, recalculee ici sur la grille decimee plutot que relue
     depuis le fichier)."""
-    keyframes, phases, _pt, engine_opts = sit_and_crown()
+    keyframes, phases, _pt, engine_opts = full_scene()
     duration = max(k["time"] for k in keyframes)
     objs = ae.build_rig()
     ae.apply_choreography(objs, keyframes, **engine_opts)
@@ -40,9 +39,9 @@ def crown_frames_at(char_frames):
     for cf in char_frames:
         t = cf["t"]
         i = min(int(round(t * 120)), len(samples["Torso"]) - 1)
-        if t < PICKUP_T:
+        if t < FULL_PICKUP_T:
             c_pos, c_rot = np.array(CUSHION_POS), np.eye(3)
-        elif t < PLACED_T:
+        elif t < FULL_PLACED_T:
             c_pos, c_rot = tip_world(samples, "Right Arm", i, "bottom"), np.eye(3)
         else:
             c_pos = tip_world(samples, "Head", i, "top")
@@ -60,6 +59,7 @@ def crown_frames_at(char_frames):
                 "size": list(spec["size"]),
                 "color": spec["color_rgb"],
                 "shape": spec.get("shape", "1"),
+                "mat": spec.get("mat", "gold"),
             }
         out.append(frame)
     return out
@@ -70,16 +70,20 @@ def main():
     char_frames = rr.resolve_to_frames(char_path, out_hz=OUT_HZ)
     duration = char_frames[-1]["t"]
 
+    static_parts = props.throne_parts() + props.staircase_parts()
     throne = []
-    for spec in props.throne_parts():
+    for spec in static_parts:
         throne.append({
             "name": spec["name"], "size": list(spec["size"]),
             "pos": list(spec["pos"]), "rot": spec.get("rot", [[1, 0, 0], [0, 1, 0], [0, 0, 1]]),
             "color": spec["color_rgb"], "shape": spec.get("shape", "1"),
+            "mat": spec.get("mat", "stone"),
         })
 
     crown_f = crown_frames_at(char_frames)
     crown_part_names = [s["name"] for s in props.crown_parts()]
+
+    _kf, phases, _pt, _opts = full_scene()
 
     out = {
         "fps": OUT_HZ,
@@ -90,12 +94,8 @@ def main():
         "throne": throne,
         "crown_part_names": crown_part_names,
         "crown_frames": crown_f,
-        "phases": [
-            {"name": "approche", "t0": 0.00, "t1": 0.35},
-            {"name": "assise", "t0": 0.35, "t1": 1.00},
-            {"name": "couronnement", "t0": 1.00, "t1": 2.30},
-            {"name": "pose_finale", "t0": 2.30, "t1": duration},
-        ],
+        "crowned_t": FULL_PLACED_T,
+        "phases": [{"name": p["name"], "t0": p["t0"], "t1": min(p["t1"], duration)} for p in phases],
     }
     path = os.environ.get("SCENE_OUT", "/tmp/throne_scene_data.json")
     with open(path, "w") as f:

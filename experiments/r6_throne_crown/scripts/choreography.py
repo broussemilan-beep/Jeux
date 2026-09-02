@@ -30,6 +30,8 @@ etre "levee tres haut au-dessus de la tete", seulement juste au-dessus,
 qui est deja la ou elle doit atterrir.
 """
 
+import props
+
 REST = (0.0, 0.0, 0.0)
 
 
@@ -120,6 +122,94 @@ def sit_and_crown():
 
 # Instants-cles utilises par compute_crown_track.py pour savoir quand la
 # couronne quitte son piedestal / atteint la tete -- doivent rester
-# coherents avec les temps de keyframes ci-dessus.
+# coherents avec les temps de keyframes ci-dessus. RELATIFS a
+# sit_and_crown() seule -- voir FULL_PICKUP_T/FULL_PLACED_T pour la
+# version decalee par la montee de l'escalier, utilisee partout ailleurs.
 PICKUP_T = 1.35
 PLACED_T = 2.00
+
+# -- Montee de l'escalier -- "sombre mais fiere" : pas lent et delibere
+# (STEP_T large), bras presque immobiles (pas de balancement naturel --
+# c'est la retenue qui lit comme sombre/impérial, pas une pose precise),
+# tete haute constante (menton leve, fier) du debut a la fin. Chaque
+# marche = une seule jambe qui se leve puis se pose, alternee, avec une
+# legere contre-rotation du torse (contrapposto) au moment du levers.
+#
+# Ecrit directement dans le repere MONDE final (pas de decalage a
+# appliquer ensuite) : commence au pied de l'escalier (sol reel, Y=3
+# hanche = pieds a 0) et finit exactement au premier keyframe de
+# sit_and_crown() DEJA DECALE par PLATFORM_H (voir full_scene) --
+# c'est ce raccord qui garantit qu'il n'y a pas de saut visible entre
+# la montee et l'assise.
+STEP_T = 0.75
+CLIMB_T = props.STAIR_N * STEP_T
+
+_CLIMB_Z0 = -7.2   # au pied de l'escalier, avec une marge avant la 1ere marche
+_CLIMB_Z1 = -1.6   # doit correspondre au premier keyframe de sit_and_crown()
+_PROUD_HEAD = (-6, 0, 0)
+_PROUD_TORSO_X = -6
+
+
+def climb_stairs():
+    keyframes = [
+        _kf(0.00, root_pos=(0, 3.0, _CLIMB_Z0), Torso=(_PROUD_TORSO_X, 0, 0), Head=_PROUD_HEAD,
+            **{"Right Arm": (2, 0, -5), "Left Arm": (2, 0, 5),
+               "Right Leg": (0, 0, 0), "Left Leg": (0, 0, 0)}),
+    ]
+    for i in range(1, props.STAIR_N + 1):
+        lead, trail = ("Right Leg", "Left Leg") if i % 2 == 1 else ("Left Leg", "Right Leg")
+        twist = -4 if i % 2 == 1 else 4
+        t_lift = (i - 1) * STEP_T + STEP_T * 0.45
+        t_plant = i * STEP_T
+        y_prev = 3.0 + (i - 1) * props.STAIR_RISER
+        y_new = 3.0 + i * props.STAIR_RISER
+        z_prev = _CLIMB_Z0 + (i - 1) / props.STAIR_N * (_CLIMB_Z1 - _CLIMB_Z0)
+        z_new = _CLIMB_Z0 + i / props.STAIR_N * (_CLIMB_Z1 - _CLIMB_Z0)
+
+        keyframes.append(_kf(
+            t_lift, root_pos=(0, y_prev + props.STAIR_RISER * 0.3, (z_prev + z_new) / 2.0),
+            Torso=(_PROUD_TORSO_X, twist, 0), Head=_PROUD_HEAD,
+            **{lead: (30, 0, 0), trail: (-8, 0, 0),
+               "Right Arm": (2, 0, -5), "Left Arm": (2, 0, 5)}))
+        keyframes.append(_kf(
+            t_plant, root_pos=(0, y_new, z_new),
+            Torso=(_PROUD_TORSO_X, 0, 0), Head=_PROUD_HEAD,
+            **{lead: (2, 0, 0), trail: (-4, 0, 0),
+               "Right Arm": (2, 0, -5), "Left Arm": (2, 0, 5)}))
+
+    phases = [{"name": "montee", "t0": 0.00, "t1": CLIMB_T, "expected_reversals": {}}]
+    preview_times = [0.0, STEP_T * 0.45, STEP_T, CLIMB_T]
+    engine_opts = {"handle_type": "AUTO_CLAMPED"}
+    return keyframes, phases, preview_times, engine_opts
+
+
+def full_scene():
+    """Scene complete : montee de l'escalier (repere monde final, non
+    decalee) puis assise + couronnement (sit_and_crown(), authoree au
+    niveau de SA PROPRE estrade -- Y=3 de hanche -- et decalee ici de
+    +PLATFORM_H en Y et de +CLIMB_T en temps). Le raccord entre les deux
+    est exact : le dernier keyframe de climb_stairs() et le premier de
+    sit_and_crown() (decale) tombent tous deux sur (0, 3.0+PLATFORM_H,
+    _CLIMB_Z1) -- verifie dans calibrate.py, pas seulement suppose."""
+    climb_kf, climb_ph, climb_pt, climb_opts = climb_stairs()
+    sit_kf, sit_ph, sit_pt, sit_opts = sit_and_crown()
+
+    shifted_sit_kf = []
+    for kf in sit_kf:
+        nk = dict(kf)
+        nk["time"] = kf["time"] + CLIMB_T
+        rp = kf["root_pos"]
+        nk["root_pos"] = (rp[0], rp[1] + props.PLATFORM_H, rp[2])
+        shifted_sit_kf.append(nk)
+
+    shifted_sit_ph = [{**p, "t0": p["t0"] + CLIMB_T, "t1": p["t1"] + CLIMB_T} for p in sit_ph]
+    shifted_sit_pt = [t + CLIMB_T for t in sit_pt]
+
+    keyframes = climb_kf + shifted_sit_kf
+    phases = climb_ph + shifted_sit_ph
+    preview_times = climb_pt + shifted_sit_pt
+    return keyframes, phases, preview_times, sit_opts
+
+
+FULL_PICKUP_T = PICKUP_T + CLIMB_T
+FULL_PLACED_T = PLACED_T + CLIMB_T

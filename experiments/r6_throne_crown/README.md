@@ -6,9 +6,18 @@ telle quelle** l'infrastructure de rig déjà vérifiée (`r6_rig.py`,
 `anim_engine.py`, `export_kfseq.py`, `resolve_rbxmx.py`, le rig
 `RigR6.rbxmx` importé depuis GitHub — voir `rig/PROVENANCE.md` du
 prototype source, provenance identique ici). Ce qui est nouveau : la
-géométrie du trône/couronne (`scripts/props.py`), la chorégraphie
-d'assise et de couronnement (`scripts/choreography.py`), et le calcul de
-la trajectoire de la couronne (`scripts/compute_crown_track.py`).
+géométrie du trône/couronne/escalier (`scripts/props.py`), la
+chorégraphie de montée + assise + couronnement (`scripts/choreography.py`),
+le calcul de la trajectoire de la couronne (`scripts/compute_crown_track.py`),
+et le rendu « premium » du lecteur HTML (matériaux, éclairage, halo).
+
+**Retour utilisateur (2e tour)** : « Améliore le texturing fais du
+premium pareil pour le rig utilise le rig r6 Roblox que je t'ai envoyé
+il est mieux, et rajoute à la scène en début le perso qui monte les
+marches de manière dark mais fière puis s'assoie et met la couronne et
+la couronne brille. » Trois demandes distinctes traitées séparément
+ci-dessous : rendu premium, escalier + montée fière, éclat de la
+couronne — plus une clarification sur le rig (voir "Rig du personnage").
 
 ## Demande
 
@@ -22,8 +31,10 @@ véritables objets 3D (pas un décor de fond).
 
 - `output/character_sit_and_crown.rbxmx` — `KeyframeSequence` du
   personnage (rig R6 réel, 6 segments rigides, mêmes contraintes que le
-  combo de coups de pied : pas de coude/genou, Motor6D 3 DOF).
-- `output/throne.rbxmx` — `Model` du trône (14 `Part`, statique, ancré).
+  combo de coups de pied : pas de coude/genou, Motor6D 3 DOF). Couvre
+  maintenant montée d'escalier + assise + couronnement, 175 keyframes.
+- `output/throne.rbxmx` — `Model` du trône + escalier (18 `Part`,
+  statique, ancré).
 - `output/crown.rbxmx` — `Model` de la couronne (11 `Part` : bande +
   5 pointes + 5 gemmes), dans son repère local (centre = milieu de la
   bande — voir "La couronne change de parent" plus bas).
@@ -63,14 +74,23 @@ où le personnage debout a les pieds et où sont ses hanches assis :
 
 Conséquence : `HumanoidRootPart.Y = 3` donne un personnage debout pieds
 à 0, tête à 5 studs — le standard R6. Le siège du trône est donc posé
-avec le dessus à **Y = 2.0** (hanche assise à Y=3, moins 1) pour que le
-personnage s'y encastre sans avoir à changer sa hauteur de hanche en
-s'asseyant — **exactement le mécanisme de l'assise R6 par défaut de
-Roblox** : le bassin ne descend pas, seules les jambes tournent à la
-hanche. Comme ce rig n'a pas de genou, la jambe entière (cuisse ET
-tibia, un seul segment rigide) pointe vers l'avant à l'horizontale une
-fois assis — ce qui EST le look d'une assise R6 vanilla, pas une
-simplification à cacher.
+avec le dessus à **Y = 2.0 au-dessus de sa propre estrade** (hanche
+assise à Y=3, moins 1) pour que le personnage s'y encastre sans avoir à
+changer sa hauteur de hanche en s'asseyant — **exactement le mécanisme
+de l'assise R6 par défaut de Roblox** : le bassin ne descend pas, seules
+les jambes tournent à la hanche. Comme ce rig n'a pas de genou, la jambe
+entière (cuisse ET tibia, un seul segment rigide) pointe vers l'avant à
+l'horizontale une fois assis — ce qui EST le look d'une assise R6
+vanilla, pas une simplification à cacher.
+
+Depuis l'ajout de l'escalier (voir plus bas), tout le trône repose sur
+une estrade réelle à **PLATFORM_H = 2.0 studs** au-dessus du sol : les
+valeurs ci-dessus restent écrites comme si le trône était au sol
+(`props.throne_parts()`), puis **décalées une seule fois** de
++PLATFORM_H (`props._lift()`) avant export — un seul nombre à changer
+si la hauteur de l'estrade change, jamais besoin de retoucher chaque
+`Part` à la main. Le tableau ci-dessous montre les valeurs finales
+(après décalage).
 
 ### Sémantique des axes du bras — établie par diagnostic, pas supposée
 
@@ -97,12 +117,15 @@ assumée plutôt que contournée par une pose qui aurait l'air fausse.
 Valeurs retenues, toutes vérifiées par calcul de position monde contre
 la géométrie du trône :
 
-| Pose | Bras droit | Main droite (monde) | Cible |
+| Pose | Bras droit | Main droite (monde, après +PLATFORM_H) | Cible |
 |---|---|---|---|
-| assis, repos | (0,0,55) | (2.516, 3.048, -0.012) | accoudoir (X~2.6 Y~3.0) |
-| prise (pickup) | (5,0,58) | (2.537, 3.121, -0.059) | coussin de la couronne |
-| levée | (180,0,-35) | (0.549, 4.985, -0.350) | au-dessus de la tête (Y max ~5.0) |
-| posée | (180,0,-45) | (0.293, 4.865, -0.431) | sommet de tête (0, 4.94, -0.48), écart 0.31 stud |
+| assis, repos | (0,0,55) | (2.516, 5.048, -0.012) | accoudoir (X~2.6 Y~5.0) |
+| prise (pickup) | (5,0,58) | (2.537, 5.121, -0.059) | coussin de la couronne (5.08 studs) |
+| levée | (180,0,-35) | (0.549, 6.985, -0.350) | au-dessus de la tête (Y max ~7.0) |
+| posée | (180,0,-45) | (0.293, 6.865, -0.431) | sommet de tête (0, 6.94, -0.48), écart 0.31 stud |
+
+(Les mêmes écarts relatifs qu'avant l'escalier — seule l'origine Y a
+changé, la géométrie du geste de couronnement, elle, est identique.)
 
 ## La couronne change de parent en cours de scène
 
@@ -139,9 +162,10 @@ assumé).
 - **Round-trip moteur** (`scripts/resolve_rbxmx.py`, même outil que le
   combo de coups de pied) : `HumanoidRootPart` toujours correctement
   ignorée par l'Animator (0 stud/deg), Torso Y résolu par l'équation du
-  moteur cohérent avec la chorégraphie (min 2.95 = creux de l'assise,
-  max 3.00 = reste du temps, cohérent avec un personnage qui ne saute
-  pas dans cette scène).
+  moteur : min **3.000** (personnage debout au sol, début de la montée)
+  à max **5.000** (assis sur l'estrade), amplitude 2.000 stud —
+  exactement `PLATFORM_H`, cohérence vérifiée jusque dans le fichier
+  final, pas seulement dans les courbes intermédiaires.
 - **Vérification VISUELLE réelle**, pas juste des chiffres : capture
   d'écran automatisée du lecteur HTML via Playwright (Chromium
   pré-installé dans ce sandbox), à plusieurs instants de la scène. C'est
@@ -166,11 +190,109 @@ seulement le trône. Corrigé en inversant le signe (Z=-1.6, cohérent avec
 seconde capture : le personnage est visible, debout devant le trône,
 dès `t=0`.
 
+## Escalier + montée « sombre mais fière »
+
+Ajouté au 2e tour. Le trône repose désormais sur une estrade
+(`props.PLATFORM_H = 2.0` studs) reliée au sol par un escalier de
+`props.STAIR_N = 4` marches pleines (chaque marche est une boîte du sol
+jusqu'à SON propre sommet, pas une marche flottante — silhouette
+d'escalier plein). `choreography.climb_stairs()` fait grimper le
+personnage marche par marche (jambe qui se lève ~30° puis se pose,
+alternée, avec une légère contre-rotation du torse), avant
+`choreography.full_scene()` qui l'enchaîne avec `sit_and_crown()`
+(décalée de +PLATFORM_H en Y et de la durée de la montée en temps —
+voir "Calibration" plus haut).
+
+« Sombre mais fière » traduit en deux choix de mise en scène plutôt
+qu'en pose précise : un pas **lent et délibéré** (0,75 s/marche) et des
+**bras presque immobiles** (pas de balancement naturel de marche — c'est
+la retenue qui lit comme sombre/impériale), avec le **menton constamment
+levé** (`Head = (-6,0,0)`) du premier au dernier pas.
+
+Raccord montée → assise vérifié par le calcul (`scripts/calibrate.py`) :
+écart de **0,021 stud** entre la position du personnage à la toute fin
+de la montée et au tout début de l'assise (décalée) — quasi invisible,
+pas juste supposé continu.
+
+### Bug trouvé par capture d'écran, encore une fois
+
+Première version : les 4 marches étaient toutes de la même teinte pierre
+(`STONE_DARK`) et la flaque de lumière du lecteur n'éclairait que le
+trône, pas l'escalier. Résultat vérifié par capture (pas supposé) : en
+vue 3/4, l'escalier se lisait comme un bloc sombre indistinct, aucune
+marche individuelle visible — alors qu'une capture en vue de profil
+confirmait que la géométrie elle-même était correcte (marches bien
+étagées). Corrigé en alternant deux teintes de pierre par marche et en
+recentrant/élargissant la flaque de lumière pour couvrir l'escalier —
+revérifié par une nouvelle capture, les marches se détachent nettement.
+
+## Rendu « premium » du lecteur (pas du fichier livré)
+
+Éclairage à trois sources : une clé chaude (façon torche), un
+remplissage froid faible (évite les noirs bouchés), et une direction de
+vue fixe pour un speculaire/liseré de bord approximés (le rendu n'est
+pas en perspective réelle — `proj()` est une rotation + projection
+orthographique — donc la vue est une direction constante plutôt que
+recalculée par pixel : suffisant pour un reflet stylisé, pas physique).
+Quatre matériaux (`scripts/props.py`, champ `mat`, porté jusqu'au JSON
+du lecteur) : pierre quasi mate (trône/escalier), or et gemmes avec
+reflet net et liseré marqué, teinte sombre et riche pour le personnage
+(remplace le ton bois/chair plat des cycles précédents — plus de
+contraste avec l'or du trône, et plus cohérent avec « sombre »). Plus :
+ombres de contact au sol (ellipses dégradées sous le trône et le
+personnage), fond en dégradé sombre avec flaque de lumière dramatique
+plutôt qu'un plateau uniformément éclairé.
+
+Tout cela est un choix de mise en scène du **lecteur** (Canvas 2D, pas
+un moteur 3D Roblox) : le fichier `.rbxmx` livré porte les couleurs de
+base (`Color3uint8`), pas cet éclairage — cohérent avec le choix déjà
+documenté de ne pas écrire de propriété `Material` inventée (voir
+"Géométrie du trône et de la couronne").
+
+## « La couronne brille »
+
+Une fois posée sur la tête (`t >= DATA.crowned_t`), un halo pulsé
+(composition additive, `globalCompositeOperation = "lighter"`) s'anime
+en boucle autour de la bande et de chaque gemme, plus 4 traits
+scintillants tournants façon « sparkle » — lisible même en vignette,
+pas juste un flou diffus. Première version trop discrète (halo de 16-30
+px, alpha 0.16-0.34) : imperceptible à l'échelle du lecteur, corrigé en
+l'agrandissant et en ajoutant les traits scintillants, revérifié par
+capture d'écran.
+
+Effet du **lecteur**, pas une vraie source de lumière Roblox — un
+`PointLight` ou un matériau `Neon` sur le fichier `.rbxmx` livré est
+possible sur demande, non ajouté ici par défaut (portée confirmée avec
+l'utilisateur : le rendu premium visait le lecteur, pas le fichier).
+
+## Rig du personnage — pas de source alternative légitime trouvée
+
+Retour utilisateur : « utilise le rig r6 Roblox que je t'ai envoyé il
+est mieux ». Le fichier reçu était une **image** (capture d'écran de
+Roblox Studio montrant les gizmos d'orientation d'un rig), pas un
+fichier `.rbxmx`/`.rbxm` exploitable — clarifié avec l'utilisateur, qui
+a confirmé vouloir « le rig par défaut de Roblox Studio » comme source.
+
+Recherche faite avant de conclure, pas supposé : une recherche GitHub
+pour un rig R6 par défaut alternatif ne remonte que des redistributions
+de contenu client Roblox non licenciées (`RCCService*/content/models/
+Thumbnails/Mannequins/R6.rbxmx`, `morpherEditorR6.rbxmx`) — exactement
+la catégorie de dépôts déjà écartée à l'origine du projet (voir
+`rig/PROVENANCE.md` : dumps de private servers, sans licence de
+redistribution). Le DevForum Roblox, où la communauté documente parfois
+ces valeurs par écrit (pas un dump de fichier), est bloqué par le proxy
+réseau de ce sandbox.
+
+Décision : garder le rig d'origine (dépôt Adonis, licence MIT). Ce
+n'est pas un pis-aller silencieux — ce rig implémente déjà la géométrie
+standard R6 (Torse 2×2×1, Tête 2×1×1, membres 1×2×1, six Motor6D nommés
+standard), la même que toute installation de Roblox Studio, puisque R6
+n'a qu'une seule géométrie standard sur toute la plateforme. Dit
+honnêtement dans le lecteur HTML et ici plutôt que de prétendre à une
+source changée qui ne l'a pas été.
+
 ## Limites assumées
 
-- Pas de marche (le personnage démarre déjà debout devant le trône,
-  scope volontairement resserré — l'utilisateur a validé "trône +
-  couronne comme objets 3D", pas une cinématique d'approche complète).
 - Couronne tenue "à plat" (rotation identité) pendant tout le portage à
   la main plutôt que vrillée avec le bras — choix esthétique assumé,
   pas un oubli (voir section "change de parent").

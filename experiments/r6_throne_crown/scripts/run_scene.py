@@ -12,7 +12,7 @@ import anim_engine as ae
 import export_kfseq as ex
 import export_model as em
 import props
-from choreography import sit_and_crown
+from choreography import full_scene
 from r6_rig import PART_ORDER
 
 OUT = "../output"
@@ -44,7 +44,7 @@ def structural_sanity(samples):
 
 def main():
     os.makedirs(OUT, exist_ok=True)
-    keyframes, phases, preview_times, engine_opts = sit_and_crown()
+    keyframes, phases, preview_times, engine_opts = full_scene()
     duration = max(k["time"] for k in keyframes)
 
     objs = ae.build_rig()
@@ -64,10 +64,11 @@ def main():
         anim_name="R6_SitAndCrown", decimate_to_hz=30)
     print(f"KeyframeSequence exporte : {char_path} ({n_kf} keyframes)")
 
-    throne_path, n_throne = em.export_model(props.throne_parts(), "Throne",
+    throne_and_stairs = props.throne_parts() + props.staircase_parts()
+    throne_path, n_throne = em.export_model(throne_and_stairs, "Throne",
                                              os.path.join(OUT, "throne.rbxmx"),
                                              primary_part="Seat")
-    print(f"Throne exporte : {throne_path} ({n_throne} parts)")
+    print(f"Throne (+ escalier, {len(props.staircase_parts())} marches) exporte : {throne_path} ({n_throne} parts)")
 
     crown_path, n_crown = em.export_model(props.crown_parts(), "Crown",
                                            os.path.join(OUT, "crown.rbxmx"),
