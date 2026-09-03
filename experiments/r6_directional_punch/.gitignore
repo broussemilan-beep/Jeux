@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+
+# Lecteur HTML final (scripts/build_viewer.py) : contenu reconstructible
+# (template scripts/directional_punch_viewer.html + JSON de scene, tous
+# deux commit) -- jamais committe, meme convention que les autres
+# prototypes. Le deliverable reel est l'artifact publie, pas ce fichier
+# local.
+/output/directional_punch_viewer_final.html

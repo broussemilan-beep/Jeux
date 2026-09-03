@@ -1,0 +1,555 @@
+<title>Direct du droit</title>
+<style>
+:root {
+  --bg: #100d0a; --panel: #1a1611; --panel-2: #201b15; --ink: #ece5d6;
+  --sub: #a89d87; --grid: #332c22; --rig-attacker: #7a2020; --rig-dummy: #6b5a3a;
+  --edge: #0a0806; --ghost: #4a4030; --accent: #d9701f; --gold: #e0a955;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f1ea; --panel: #ffffff; --panel-2: #eee9de; --ink: #241f18;
+    --sub: #6b6255; --grid: #d9d2c2; --rig-attacker: #a13a2c; --rig-dummy: #9c8a63;
+    --edge: #241f18; --ghost: #b8ae98; --accent: #c15a12; --gold: #b3872c;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f4f1ea; --panel: #ffffff; --panel-2: #eee9de; --ink: #241f18;
+  --sub: #6b6255; --grid: #d9d2c2; --rig-attacker: #a13a2c; --rig-dummy: #9c8a63;
+  --edge: #241f18; --ghost: #b8ae98; --accent: #c15a12; --gold: #b3872c;
+}
+body { background: var(--bg); color: var(--ink); font-family: "Iowan Old Style", "Georgia", serif; }
+.stage { max-width: 980px; margin: 0 auto; padding: 28px 20px 48px; }
+.eyebrow { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin: 0 0 6px; font-family: Oswald, sans-serif; }
+h1 { font-size: 30px; margin: 0 0 10px; }
+.sub { color: var(--sub); font-size: 14.5px; line-height: 1.55; max-width: 760px; margin: 0 0 20px; }
+.card { background: var(--panel); border: 1px solid var(--grid); border-radius: 14px; padding: 14px; }
+.viewport-wrap { position: relative; border-radius: 10px; overflow: hidden; background: #000; }
+canvas { display: block; width: 100%; height: auto; }
+.chip { position: absolute; top: 10px; font-family: Oswald, sans-serif; font-size: 12px; padding: 5px 10px; border-radius: 999px; background: rgba(0,0,0,0.45); color: #fff; letter-spacing: 0.03em; }
+.chip.left { left: 10px; } .chip.right { right: 10px; }
+.controls { padding-top: 12px; display: flex; flex-direction: column; gap: 10px; }
+.transport { display: flex; align-items: center; gap: 12px; }
+.play-btn { width: 40px; height: 40px; border-radius: 50%; border: none; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+.play-btn svg { width: 18px; height: 18px; }
+.scrub-col { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.phase-track { display: flex; height: 6px; border-radius: 4px; overflow: hidden; }
+.phase-seg { height: 100%; }
+.phase-seg[data-kind="calm"] { background: var(--ghost); }
+.phase-seg[data-kind="charge"] { background: var(--gold); }
+.phase-seg[data-kind="impact"] { background: var(--rig-attacker); }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+.row-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+.phase-label { font-family: Oswald, sans-serif; font-size: 13px; color: var(--sub); text-transform: uppercase; letter-spacing: 0.05em; }
+.phase-label b { color: var(--ink); }
+.btn-row { display: flex; gap: 4px; background: var(--panel-2); border-radius: 8px; padding: 3px; }
+.btn-row button { border: none; background: transparent; color: var(--sub); font-family: Oswald, sans-serif; font-size: 12px; padding: 5px 10px; border-radius: 6px; cursor: pointer; }
+.btn-row button.active { background: var(--accent); color: #fff; }
+.note { color: var(--sub); font-size: 13px; line-height: 1.6; max-width: 780px; margin-top: 16px; }
+.note strong { color: var(--ink); }
+</style>
+
+<div class="stage">
+  <p class="eyebrow">Prototype isolé · Roblox R6 · deux KeyframeSequence + mise en scène caméra</p>
+  <h1>Direct du droit</h1>
+  <p class="sub">Deux rigs R6 réels (6 segments rigides chacun, aucun coude/genou) sur une place d'entraînement en
+    ruine : l'attaquant charge un direct du droit, lance sa garde en avant, et cueille le mannequin qui recule sous
+    le choc. La caméra n'est pas laissée libre ici — elle est <strong>chorégraphiée</strong> (plan large → cadrage
+    resserré à l'approche → coupe sur la réaction → plan large final), avec un flash façon <em>impact-frame</em> de
+    manga au contact. Les poses des deux personnages sont <strong>résolues par l'équation du moteur</strong>
+    (<code>Part1 = Part0 · C0 · Transform · C1⁻¹</code>) à partir des deux <code>KeyframeSequence</code> livrés — la
+    place (sol, mur en ruine) est une mise en scène du lecteur, voir la note plus bas.</p>
+
+  <div class="card">
+    <div class="viewport-wrap">
+      <canvas id="stage" width="1200" height="900"></canvas>
+      <div class="chip left" id="shotChip">plan · <b id="shotName">large</b></div>
+      <div class="chip right" id="timecode">0.00s / 1.25s</div>
+    </div>
+
+    <div class="controls">
+      <div class="transport">
+        <button class="play-btn" id="playBtn" aria-label="Lecture / pause">
+          <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M8 5v14l11-7z"/></svg>
+          <svg id="pauseIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+        </button>
+        <div class="scrub-col">
+          <div class="phase-track" id="phaseTrack"></div>
+          <input type="range" id="scrub" min="0" max="1000" value="0" step="1" aria-label="Position dans la scène">
+        </div>
+      </div>
+      <div class="row-bottom">
+        <div class="phase-label">phase <b id="phaseName2">garde</b></div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap">
+          <div class="btn-row" id="speedRow">
+            <button data-speed="0.25">0.25×</button>
+            <button data-speed="0.5">0.5×</button>
+            <button data-speed="1" class="active">1×</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="note"><strong>La caméra est mise en scène, pas libre</strong> : cinq plans authored (voir
+    <code>SHOTS</code> dans le script), coupes franches entre eux (pas de fondu), chacun avec son propre mouvement
+    interne (recadrage lent pendant le plan). C'est un choix de réalisation pour ce lecteur, pas une donnée du
+    fichier livré — les deux <code>KeyframeSequence</code> n'ont aucune notion de caméra, celle-ci reste à faire côté
+    Roblox (script client sur un <code>Camera</code>, ou une <code>CameraShake</code>/cinématique existante).</p>
+  <p class="note"><strong>Le contact n'est pas pixel-parfait — mesuré, pas maquillé</strong> : le poing de l'attaquant
+    termine à 0,62 stud du torse du mannequin au moment de l'impact (<code>scripts/calibrate.py</code>, balayage
+    numérique de l'angle du bras/inclinaison du buste/avancée du pas — pas posé à l'oeil). Le reste de la lecture du
+    coup (recul et vacillement du mannequin, flash impact-frame, coupe caméra) fait le travail de vendre le contact,
+    même famille de choix que les petits écarts assumés des prototypes précédents.</p>
+  <p class="note"><strong>Mise en scène du lecteur, pas le fichier</strong> : la place d'entraînement (dallage,
+    mur en ruine) est dessinée par ce lecteur à partir de vraies textures générées (<code>scripts/gen_textures.py</code>,
+    seamless par construction — sommes d'ondes sin à fréquences entières, pas des dégradés plats), mais n'existe dans
+    aucun des deux fichiers livrés : ce sont deux <code>KeyframeSequence</code> de personnage, pas une <code>Model</code>
+    de décor — même distinction que les prototypes précédents.</p>
+  <p class="note"><strong>Rig des deux personnages</strong> : même rig R6 vérifié (dépôt Adonis, licence MIT) que les
+    autres prototypes de ce dossier — voir <code>rig/PROVENANCE.md</code>.</p>
+</div>
+
+<script>
+const DATA = __SCENE_DATA__;
+const TEXTURES_B64 = __TEXTURES_B64__;
+
+const PHASE_KIND = { garde: "calm", charge: "charge", impact: "impact", suite: "impact", posture_finale: "calm" };
+const LEGS = new Set(["Right Leg", "Left Leg"]);
+
+const canvas = document.getElementById("stage");
+const ctx = canvas.getContext("2d");
+const scrub = document.getElementById("scrub");
+const playBtn = document.getElementById("playBtn");
+const playIcon = document.getElementById("playIcon");
+const pauseIcon = document.getElementById("pauseIcon");
+const shotNameEl = document.getElementById("shotName");
+const phaseNameEl2 = document.getElementById("phaseName2");
+const timecodeEl = document.getElementById("timecode");
+const phaseTrack = document.getElementById("phaseTrack");
+
+const DURATION = DATA.duration;
+const IMPACT_T = DATA.impact_t;
+
+const PHASES = [
+  { name: "garde", t0: 0.00, t1: 0.30 },
+  { name: "charge", t0: 0.30, t1: IMPACT_T },
+  { name: "impact", t0: IMPACT_T, t1: IMPACT_T + 0.12 },
+  { name: "suite", t0: IMPACT_T + 0.12, t1: IMPACT_T + 0.35 },
+  { name: "posture_finale", t0: IMPACT_T + 0.35, t1: DURATION },
+];
+
+function rebuildPhaseTrack() {
+  phaseTrack.innerHTML = "";
+  PHASES.forEach(p => {
+    const seg = document.createElement("div");
+    seg.className = "phase-seg";
+    seg.dataset.kind = PHASE_KIND[p.name] || "calm";
+    seg.style.width = (Math.max(0, p.t1 - p.t0) / DURATION * 100) + "%";
+    phaseTrack.appendChild(seg);
+  });
+}
+rebuildPhaseTrack();
+
+function currentPhase(t) {
+  for (const p of PHASES) if (t >= p.t0 - 1e-6 && t <= p.t1 + 1e-6) return p;
+  return PHASES[PHASES.length - 1];
+}
+
+// ---------------------------------------------------------------------
+// Camera CHOREOGRAPHIEE -- cinq plans authored (coupes franches entre
+// eux, pas de fondu -- un vrai montage, pas un slider libre comme les
+// prototypes precedents). Chaque plan interpole SES PROPRES bornes
+// (az/el/echelle/cible) en douceur PENDANT le plan (un leger recadrage
+// vivant), mais SAUTE net a la coupe suivante.
+const SHOTS = [
+  { name: "large",    t0: 0.00, t1: 0.28,          az0: -40, az1: -34, el0: 18, el1: 17, sc0: 0.72, sc1: 0.80, tz0: -4.5, tz1: -4.3, ty0: 3.2, ty1: 3.2 },
+  { name: "approche",  t0: 0.28, t1: IMPACT_T,       az0: -18, az1: -8,  el0: 12, el1: 10, sc0: 1.55, sc1: 1.80, tz0: -3.2, tz1: -5.4, ty0: 3.4, ty1: 3.6 },
+  { name: "impact",   t0: IMPACT_T, t1: IMPACT_T + 0.12, az0: -6, az1: -6, el0: 9, el1: 9, sc0: 2.05, sc1: 2.10, tz0: -6.2, tz1: -6.2, ty0: 3.6, ty1: 3.6 },
+  { name: "réaction",  t0: IMPACT_T + 0.12, t1: IMPACT_T + 0.55, az0: 55, az1: 46, el0: 7, el1: 9, sc0: 1.35, sc1: 1.28, tz0: -8.2, tz1: -8.6, ty0: 3.3, ty1: 3.4 },
+  { name: "plan final", t0: IMPACT_T + 0.55, t1: DURATION + 0.001, az0: -42, az1: -38, el0: 18, el1: 20, sc0: 1.05, sc1: 0.98, tz0: -3.4, tz1: -2.2, ty0: 3.2, ty1: 3.2 },
+];
+
+function shotAt(t) {
+  for (const s of SHOTS) if (t >= s.t0 - 1e-6 && t < s.t1 + 1e-6) return s;
+  return SHOTS[SHOTS.length - 1];
+}
+
+function cameraAt(t) {
+  const s = shotAt(t);
+  const f = Math.max(0, Math.min(1, (t - s.t0) / Math.max(1e-6, s.t1 - s.t0)));
+  // ease-out : mouvement de recadrage plus marque au debut du plan,
+  // se stabilise avant la coupe suivante -- lecture "cadrage qui se
+  // pose", pas une translation lineaire mecanique.
+  const e = 1 - Math.pow(1 - f, 2);
+  const lerp = (a, b) => a + (b - a) * e;
+  return {
+    shot: s, az: lerp(s.az0, s.az1) * Math.PI / 180, el: lerp(s.el0, s.el1) * Math.PI / 180,
+    scale: lerp(s.sc0, s.sc1), tz: lerp(s.tz0, s.tz1), ty: lerp(s.ty0, s.ty1),
+  };
+}
+
+// ---------------------------------------------------------------------
+let CAM = cameraAt(0);
+
+function proj(x, y, z) {
+  const dx = x - 0, dy = y - CAM.ty, dz = z - CAM.tz;
+  const x1 = dx * Math.cos(CAM.az) - dz * Math.sin(CAM.az);
+  const z1 = dx * Math.sin(CAM.az) + dz * Math.cos(CAM.az);
+  const y2 = dy * Math.cos(CAM.el) - z1 * Math.sin(CAM.el);
+  const depth = dy * Math.sin(CAM.el) + z1 * Math.cos(CAM.el);
+  return { x: x1, y: y2, d: depth };
+}
+// Rotation SEULE (pas de soustraction de l'ancre camera) -- pour les
+// vecteurs DIRECTION (normales de face), jamais pour des positions.
+// Bug trouve par capture d'ecran (personnages invisibles) : la premiere
+// version appelait proj() sur les normales, qui leur soustrayait l'ancre
+// camera comme si c'etait une position -- corrompait completement le
+// test de culling des faces (toutes les faces disparaissaient ou
+// s'affichaient au hasard selon l'ancre courante).
+function projDirDepth(x, y, z) {
+  const z1 = x * Math.sin(CAM.az) + z * Math.cos(CAM.az);
+  return y * Math.sin(CAM.el) + z1 * Math.cos(CAM.el);
+}
+
+const BASE_SCALE = 46, CX = 600, CY = 460, FLOOR_Y = 0.0;
+function SCALE() { return BASE_SCALE * CAM.scale; }
+function sx(p) { return CX + p.x * SCALE(); }
+function sy(p) { return CY - p.y * SCALE(); }
+
+function shadeRgb(rgb, k) {
+  return "rgb(" + rgb.map(v => Math.max(0, Math.min(255, Math.round(v * k)))).join(",") + ")";
+}
+function norm3(v) { const n = Math.hypot(v[0], v[1], v[2]) || 1; return [v[0]/n, v[1]/n, v[2]/n]; }
+function dot3(a, b) { return a[0]*b[0] + a[1]*b[1] + a[2]*b[2]; }
+function add3(a, b) { return [a[0]+b[0], a[1]+b[1], a[2]+b[2]]; }
+const LIGHT = norm3([-0.4, 0.85, -0.32]);
+const VIEW = norm3([0.3, 0.4, 0.86]);
+const HALF_VEC = norm3(add3(LIGHT, VIEW));
+
+const CORNERS = [[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]];
+const FACES = [
+  { idx: [0,1,2,3], n: [0,0,-1] }, { idx: [5,4,7,6], n: [0,0,1] },
+  { idx: [4,0,3,7], n: [-1,0,0] }, { idx: [1,5,6,2], n: [1,0,0] },
+  { idx: [3,2,6,7], n: [0,1,0] },  { idx: [4,5,1,0], n: [0,-1,0] },
+];
+function mulVec(r, v) {
+  return [r[0]*v[0] + r[1]*v[1] + r[2]*v[2], r[3]*v[0] + r[4]*v[1] + r[5]*v[2], r[6]*v[0] + r[7]*v[1] + r[8]*v[2]];
+}
+
+function boxQuads(pos, rot, size, rgb) {
+  const half = [size[0] / 2, size[1] / 2, size[2] / 2];
+  const screen = CORNERS.map(c => {
+    const rotated = mulVec(rot, [c[0] * half[0], c[1] * half[1], c[2] * half[2]]);
+    return proj(pos[0] + rotated[0], pos[1] + rotated[1], pos[2] + rotated[2]);
+  });
+  const quads = [];
+  for (const f of FACES) {
+    const nWorld = mulVec(rot, f.n);
+    if (projDirDepth(nWorld[0], nWorld[1], nWorld[2]) >= 0) continue;
+    const specAngle = Math.max(0, dot3(nWorld, HALF_VEC));
+    const spec = Math.pow(specAngle, 8) * 0.10;
+    const diffuse = Math.max(0.18, dot3(nWorld, LIGHT));
+    const pts = f.idx.map(i => ({ x: sx(screen[i]), y: sy(screen[i]) }));
+    const depth = f.idx.reduce((a, i) => a + screen[i].d, 0) / 4;
+    quads.push({ pts, k: diffuse, spec, rgb, depth });
+  }
+  return quads;
+}
+
+// ---------------------------------------------------------------------
+// Textures : chargees une fois au demarrage (Image depuis data URI),
+// motifs crees une fois qu'elles sont pretes (createPattern a besoin
+// d'une image decodee).
+const TEX_IMGS = {};
+const TEX_READY = Promise.all(Object.entries(TEXTURES_B64).map(([name, b64]) => new Promise(res => {
+  const img = new Image();
+  img.onload = () => { TEX_IMGS[name] = img; res(); };
+  img.src = "data:image/png;base64," + b64;
+})));
+let groundPattern = null, wallPattern = null;
+
+function drawSky() {
+  const g = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  g.addColorStop(0, "#241b12");
+  g.addColorStop(0.45, "#3a2818");
+  g.addColorStop(1, "#171009");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  // fumee/poussiere de fond -- deterministe (sin), pas Math.random(), pour
+  // que deux captures a la meme frame soient identiques.
+  ctx.save();
+  ctx.globalAlpha = 0.10;
+  for (let i = 0; i < 5; i++) {
+    const cx = (i * 231 + 90) % canvas.width, cy = 120 + 40 * Math.sin(i * 2.1);
+    const r = 160 + 60 * Math.sin(i * 1.3 + 1);
+    const rg = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+    rg.addColorStop(0, "#cfc4b0"); rg.addColorStop(1, "rgba(207,196,176,0)");
+    ctx.fillStyle = rg; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawBackdropWall() {
+  const img = TEX_IMGS["ruin_wall"];
+  if (!img) return;
+  if (!wallPattern) wallPattern = ctx.createPattern(img, "repeat");
+  // bande d'horizon a hauteur fixe a l'ecran (le mur est loin, une vraie
+  // projection 3D le mettrait a une echelle ecrasee illisible -- meme
+  // compression assumee que le "monde" ecran-fixe des prototypes
+  // precedents), mais SA POSITION HORIZONTALE suit l'azimut de la camera
+  // (parallax simple) pour rester coherente avec les coupes de plan.
+  const wallY = CY - 210 * CAM.scale;
+  const wallH = 210 * CAM.scale;
+  const parallax = (CAM.az * 220) % 256;
+  ctx.save();
+  ctx.translate(-parallax, 0);
+  ctx.fillStyle = wallPattern;
+  ctx.save();
+  ctx.translate(0, wallY);
+  ctx.scale(1.6, 1.6 * CAM.scale);
+  ctx.fillRect(-260, 0, canvas.width * 1.6 + 520, wallH / (1.6 * CAM.scale));
+  ctx.restore();
+  ctx.restore();
+  // assombri + fondu vers le sol pour rester un arriere-plan, pas un
+  // element au premier plan.
+  const fade = ctx.createLinearGradient(0, wallY, 0, wallY + wallH);
+  fade.addColorStop(0, "rgba(15,10,6,0.35)");
+  fade.addColorStop(0.7, "rgba(15,10,6,0.55)");
+  fade.addColorStop(1, "rgba(15,10,6,0.95)");
+  ctx.fillStyle = fade;
+  ctx.fillRect(0, wallY, canvas.width, wallH);
+
+  // ligne d'horizon (jonction mur/sol) -- separation nette entre les
+  // deux textures, sinon elles se fondent en une seule masse confuse
+  // (trouve par capture d'ecran).
+  const horizonG = ctx.createLinearGradient(0, wallY + wallH - 3, 0, wallY + wallH + 3);
+  horizonG.addColorStop(0, "rgba(0,0,0,0)");
+  horizonG.addColorStop(0.5, "rgba(0,0,0,0.55)");
+  horizonG.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = horizonG;
+  ctx.fillRect(0, wallY + wallH - 4, canvas.width, 8);
+}
+
+function drawGroundPlane() {
+  const img = TEX_IMGS["stone_ground"];
+  if (!img) return;
+  if (!groundPattern) groundPattern = ctx.createPattern(img, "repeat");
+  // Trapeze en espace ecran (pseudo-perspective) borne par la projection
+  // reelle de 4 coins au sol tres eloignes -- pas une vraie texture-
+  // mappee 3D (le renderer de ce lecteur est une projection
+  // orthographique tournee, pas une camera perspective), mais ancree sur
+  // les memes coordonnees monde que les deux rigs, donc coherente avec
+  // leurs ombres de contact.
+  const near = 3.0, far = 22.0, halfW = 9.0;
+  const p1 = proj(-halfW, FLOOR_Y, CAM.tz + near), p2 = proj(halfW, FLOOR_Y, CAM.tz + near);
+  const p3 = proj(halfW, FLOOR_Y, CAM.tz - far), p4 = proj(-halfW, FLOOR_Y, CAM.tz - far);
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(sx(p1), sy(p1)); ctx.lineTo(sx(p2), sy(p2)); ctx.lineTo(sx(p3), sy(p3)); ctx.lineTo(sx(p4), sy(p4));
+  ctx.closePath();
+  ctx.clip();
+  ctx.fillStyle = groundPattern;
+  ctx.save();
+  ctx.translate(sx(p1) - 400, sy(p1) - 200);
+  ctx.scale(1.05 * CAM.scale, 1.05 * CAM.scale);
+  ctx.fillRect(0, 0, 1400, 1400);
+  ctx.restore();
+  ctx.fillStyle = "rgba(10,7,4,0.30)";
+  ctx.fillRect(sx(p4), Math.min(sy(p1),sy(p2)) - 900, canvas.width, 900);
+  ctx.restore();
+}
+
+function drawContactShadow(cx, cz, r, alpha) {
+  const c = proj(cx, FLOOR_Y, cz);
+  ctx.save();
+  ctx.translate(sx(c), sy(c));
+  ctx.scale(1, 0.4);
+  const g = ctx.createRadialGradient(0, 0, 0, 0, 0, r * SCALE());
+  g.addColorStop(0, `rgba(0,0,0,${alpha})`); g.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.ellipse(0, 0, r * SCALE(), r * SCALE(), 0, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
+
+// ---------------------------------------------------------------------
+// Personnages : deux jeux de frames independants (attaquant/mannequin),
+// meme grille de temps (voir dump_scene_data.py). Interpolation lineaire
+// entre les deux frames decimees encadrantes -- meme principe que les
+// autres lecteurs de ce dossier.
+function frameAt(frames, t) {
+  const dt = 1 / DATA.fps;
+  const idx = Math.max(0, Math.min(frames.length - 2, Math.floor(t / dt)));
+  const f0 = frames[idx], f1 = frames[idx + 1];
+  const frac = Math.max(0, Math.min(1, (t - f0.t) / (f1.t - f0.t || 1)));
+  return { f0, f1, frac };
+}
+function slerpish(a, b, f) {
+  const m = a.map((v, i) => v + (b[i] - v) * f);
+  const c0 = [m[0], m[3], m[6]], c1 = [m[1], m[4], m[7]];
+  const n0 = Math.hypot(c0[0], c0[1], c0[2]) || 1;
+  const e0 = c0.map(v => v / n0);
+  const d = e0[0]*c1[0] + e0[1]*c1[1] + e0[2]*c1[2];
+  let e1 = c1.map((v, i) => v - d * e0[i]);
+  const n1 = Math.hypot(e1[0], e1[1], e1[2]) || 1;
+  e1 = e1.map(v => v / n1);
+  const e2 = [e0[1]*e1[2]-e0[2]*e1[1], e0[2]*e1[0]-e0[0]*e1[2], e0[0]*e1[1]-e0[1]*e1[0]];
+  return [e0[0], e1[0], e2[0], e0[1], e1[1], e2[1], e0[2], e1[2], e2[2]];
+}
+function sampleChar(frames, t) {
+  const { f0, f1, frac } = frameAt(frames, t);
+  const out = {};
+  for (const part of DATA.part_order) {
+    const a = f0[part], b = f1[part];
+    out[part] = { p: a.p.map((v, i) => v + (b.p[i] - v) * frac), r: slerpish(a.r, b.r, frac) };
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------------
+// Flash impact-frame façon manga : deux temps, comme la reference (un
+// coup de theatre en noir/blanc, pas une jauge de degats) --
+//   1. t in [IMPACT_T, IMPACT_T+0.035) : flash blanc plein cadre (le choc
+//      "aveugle" l'image une frame, meme langage que la ref).
+//   2. t in [IMPACT_T+0.035, IMPACT_T+0.12) : traits de vitesse noirs qui
+//      rayonnent depuis le point de contact, densite decroissante --
+//      deterministe (angle = i/N*2pi + leger jitter sin(i), jamais
+//      Math.random()) pour qu'une capture repetee au meme instant soit
+//      identique.
+function drawImpactFrame(t, contactScreen) {
+  if (t < IMPACT_T || t >= IMPACT_T + 0.12) return;
+  const age = t - IMPACT_T;
+  if (age < 0.035) {
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, 1 - age / 0.035 * 0.15);
+    ctx.fillStyle = "#f5f0e6";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.restore();
+    return;
+  }
+  const f = (age - 0.035) / (0.12 - 0.035); // 0..1
+  ctx.save();
+  ctx.fillStyle = "#f5f0e6";
+  ctx.globalAlpha = Math.max(0, 0.9 - f * 0.9);
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.globalAlpha = 1;
+  const cxp = contactScreen.x, cyp = contactScreen.y;
+  const N = 26;
+  ctx.strokeStyle = "#0c0a08";
+  for (let i = 0; i < N; i++) {
+    const ang = (i / N) * Math.PI * 2 + Math.sin(i * 12.9) * 0.12;
+    const jitter = Math.sin(i * 7.3) * 0.5 + 0.5;
+    const len = (180 + jitter * 340) * (1 - f * 0.25);
+    const inner = 22 + jitter * 30;
+    const w = 2.5 + jitter * 7.5 * (1 - f);
+    const x0 = cxp + Math.cos(ang) * inner, y0 = cyp + Math.sin(ang) * inner * 0.85;
+    const x1 = cxp + Math.cos(ang) * (inner + len), y1 = cyp + Math.sin(ang) * (inner + len) * 0.85;
+    ctx.lineWidth = w;
+    ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke();
+  }
+  // eclat central
+  const rg = ctx.createRadialGradient(cxp, cyp, 0, cxp, cyp, 90);
+  rg.addColorStop(0, "rgba(255,250,235,0.9)"); rg.addColorStop(1, "rgba(255,250,235,0)");
+  ctx.fillStyle = rg;
+  ctx.beginPath(); ctx.arc(cxp, cyp, 90, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
+
+// Camera shake bref post-impact -- deterministe (sin a plusieurs
+// frequences), ~0.18s, meme technique que r6_divine_descent.
+function shakeOffset(t) {
+  const age = t - IMPACT_T;
+  if (age < 0 || age > 0.18) return { x: 0, y: 0 };
+  const decay = 1 - age / 0.18;
+  return {
+    x: Math.sin(age * 140) * 6 * decay,
+    y: Math.sin(age * 97 + 1.4) * 4 * decay,
+  };
+}
+
+function render(t) {
+  CAM = cameraAt(t);
+  drawSky();
+  drawBackdropWall();
+  drawGroundPlane();
+
+  const shake = shakeOffset(t);
+  ctx.save();
+  ctx.translate(shake.x, shake.y);
+
+  const attPose = sampleChar(DATA.attacker_frames, t);
+  const dumPose = sampleChar(DATA.dummy_frames, t);
+  drawContactShadow(attPose["Torso"].p[0], attPose["Torso"].p[2] + 0.3, 0.85, 0.35);
+  drawContactShadow(dumPose["Torso"].p[0], dumPose["Torso"].p[2] + 0.3, 0.85, 0.30);
+
+  const attRgb = hexToRgb(cssVar("--rig-attacker"));
+  const dumRgb = hexToRgb(cssVar("--rig-dummy"));
+  const all = [];
+  for (const [pose, rgb] of [[attPose, attRgb], [dumPose, dumRgb]]) {
+    for (const part of DATA.part_order) {
+      if (part === "HumanoidRootPart") continue;
+      const c = LEGS.has(part) ? rgb.map(v => v * 0.72) : rgb;
+      all.push(...boxQuads(pose[part].p, pose[part].r, DATA.part_sizes[part], c));
+    }
+  }
+  all.sort((a, b) => b.depth - a.depth);
+  for (const q of all) {
+    ctx.beginPath();
+    ctx.moveTo(q.pts[0].x, q.pts[0].y);
+    for (let i = 1; i < q.pts.length; i++) ctx.lineTo(q.pts[i].x, q.pts[i].y);
+    ctx.closePath();
+    ctx.fillStyle = shadeRgb(q.rgb, q.k);
+    ctx.fill();
+    if (q.spec > 0.02) { ctx.fillStyle = `rgba(255,245,225,${Math.min(0.8, q.spec)})`; ctx.fill(); }
+    ctx.strokeStyle = "rgba(0,0,0,0.5)"; ctx.lineWidth = 0.7; ctx.globalAlpha = 0.35; ctx.stroke(); ctx.globalAlpha = 1;
+  }
+
+  // point de contact a l'ecran pour le flash impact-frame : la main
+  // droite de l'attaquant a l'instant present (suit la vraie pose, pas
+  // un point fixe -- reste coherent si on scrobble hors de IMPACT_T).
+  const fistWorld = attPose["Right Arm"].p;
+  const fistScreen = { x: sx(proj(fistWorld[0], fistWorld[1], fistWorld[2])), y: sy(proj(fistWorld[0], fistWorld[1], fistWorld[2])) };
+  drawImpactFrame(t, fistScreen);
+  ctx.restore();
+
+  const phase = currentPhase(t);
+  const shot = CAM.shot;
+  shotNameEl.textContent = shot.name;
+  phaseNameEl2.textContent = phase.name.replace("_", " ");
+  timecodeEl.textContent = t.toFixed(2) + "s / " + DURATION.toFixed(2) + "s";
+}
+
+function hexToRgb(hex) {
+  hex = hex.replace("#", "").trim();
+  const n = parseInt(hex, 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+let playing = true, speed = 1, simTime = 0, lastWall = null;
+function setPlaying(p) {
+  playing = p;
+  playIcon.style.display = p ? "none" : "block";
+  pauseIcon.style.display = p ? "block" : "none";
+}
+playBtn.addEventListener("click", () => setPlaying(!playing));
+scrub.addEventListener("input", () => { simTime = (scrub.value / 1000) * DURATION; render(simTime); });
+document.querySelectorAll("#speedRow button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll("#speedRow button").forEach(x => x.classList.remove("active"));
+  b.classList.add("active"); speed = parseFloat(b.dataset.speed);
+}));
+
+function loop(ts) {
+  if (lastWall === null) lastWall = ts;
+  const dt = Math.min(0.05, (ts - lastWall) / 1000);
+  lastWall = ts;
+  if (playing) {
+    simTime += dt * speed;
+    if (simTime > DURATION) simTime = 0;
+    scrub.value = Math.round((simTime / DURATION) * 1000);
+  }
+  render(simTime);
+  requestAnimationFrame(loop);
+}
+
+TEX_READY.then(() => requestAnimationFrame(loop));
+</script>
