@@ -100,10 +100,17 @@ CHARGE_A_ROOT_Y = 2.80
 CHARGE_B_ROOT_Y = 2.86      # "respiration" -- remonte legerement avant le coil final
 COIL_ROOT_Y = 2.70          # le plus bas, juste avant le lacher (qui revient a GROUND_Y)
 
+# Retour utilisateur sur l'image 1 : "le perso charge son poing à son
+# arrière droit" -- pas croise devant la poitrine (erreur de premiere
+# lecture de la reference). Corrige : le Right Arm part desormais en
+# ARRIERE du corps (X negatif -- meme convention que partout ailleurs :
+# X positif = avant-puis-au-dessus, X negatif = arriere), comme un poing
+# arme au niveau de la hanche/du bas du dos, pas ramene devant le torse.
+# Le Left Arm reste devant, en garde, pres du buste.
 WINDUP_TORSO = (18, -8, 2)
 WINDUP_HEAD = (13, -6, 0)
-WINDUP_RIGHT_ARM = (40, 0, -30)
-WINDUP_LEFT_ARM = (40, 0, 30)
+WINDUP_RIGHT_ARM = (-35, 0, -10)
+WINDUP_LEFT_ARM = (35, 0, 25)
 WINDUP_LEGS = {"Right Leg": (-30, 0, 10), "Left Leg": (-15, 0, -6)}
 
 # -- Battements de "respiration" pendant la charge -- la pose ne reste
@@ -114,24 +121,25 @@ WINDUP_LEGS = {"Right Leg": (-30, 0, 10), "Left Leg": (-15, 0, -6)}
 # r6_divine_orb, applique ici au poing plutot qu'a une boule.
 CHARGE_A_TORSO = (28, -13, 3)
 CHARGE_A_HEAD = (20, -10, 0)
-CHARGE_A_RIGHT_ARM = (50, 0, -48)
-CHARGE_A_LEFT_ARM = (50, 0, 48)
+CHARGE_A_RIGHT_ARM = (-65, 0, -14)
+CHARGE_A_LEFT_ARM = (48, 0, 38)
 CHARGE_A_LEGS = {"Right Leg": (-48, 0, 12), "Left Leg": (-26, 0, -9)}
 
 CHARGE_B_TORSO = (24, -11, 2)
 CHARGE_B_HEAD = (17, -9, 0)
-CHARGE_B_RIGHT_ARM = (44, 0, -40)
-CHARGE_B_LEFT_ARM = (44, 0, 40)
+CHARGE_B_RIGHT_ARM = (-55, 0, -12)
+CHARGE_B_LEFT_ARM = (44, 0, 34)
 CHARGE_B_LEGS = {"Right Leg": (-42, 0, 11), "Left Leg": (-22, 0, -8)}
 
 # Accroupissement maximal, juste avant le lacher -- pose "image 1" de la
-# reference : buste casse a 42 deg vers l'avant, tete baissee, bras
-# croises serres, jambes largement ecartees en appui (segments rigides
-# compenses, voir plus haut).
+# reference : buste casse a 42 deg vers l'avant, tete baissee, poing
+# droit charge en ARRIERE pres de la hanche (pas croise devant), main
+# gauche en garde devant le buste, jambes largement ecartees en appui
+# (segments rigides compenses, voir plus haut).
 COIL_TORSO = (42, -20, 5)
 COIL_HEAD = (30, -16, 0)
-COIL_RIGHT_ARM = (65, 0, -70)
-COIL_LEFT_ARM = (65, 0, 70)
+COIL_RIGHT_ARM = (-115, 0, -18)
+COIL_LEFT_ARM = (60, 0, 55)
 COIL_LEGS = {"Right Leg": (-70, 0, 15), "Left Leg": (-40, 0, -12)}
 
 # Calibre par balayage numerique (pas a l'oeil, voir calibrate.py) :

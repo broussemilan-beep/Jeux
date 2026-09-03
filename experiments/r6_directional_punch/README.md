@@ -457,6 +457,25 @@ au recul (débris qui continuent de voler) et au follow-through —
 `captures/verification/2026-09-03-directional-punch-crouch-charge.png`,
 `-impact-debris.png`, `-recover-debris.png`, `-overshoot.png`.
 
+### Correction : le poing chargé va à l'arrière, pas croisé devant le torse
+
+Retour direct sur l'image 1 de la référence ci-dessus : *"le perso charge
+son poing à son arrière droit"* — première lecture fausse de ma part, le
+`COIL_RIGHT_ARM` précédent (`(65, 0, -70)`) ramenait le poing vers l'avant/
+en travers du torse, pas derrière la hanche comme sur l'image. Corrigé :
+le `Right Arm` part maintenant en ARRIÈRE du corps sur toute la charge
+(X négatif — même convention qu'ailleurs : X positif = avant-puis-au-dessus,
+X négatif = arrière), `COIL_RIGHT_ARM = (-115, 0, -18)` au plus profond ;
+le `Left Arm` reste devant, en garde. Vérifié par calcul (pas à l'oeil) :
+à `COIL_T`, le poing se retrouve à `(0.36, -0.18, +2.07)` studs relatifs à
+la racine — proche de la hauteur de la hanche (`Y≈-0.18`), et derrière le
+corps (`Z` positif = arrière, convention établie dès le début de ce
+prototype). `STRIKE_RIGHT_ARM`/`IMPACT_T` — le lâcher lui-même —
+inchangés, contact calibré toujours à 0,62 stud. Capture (vue de côté
+manuelle, la caméra chorégraphiée par défaut cadre trop serré à cet
+instant pour bien lire le bras) :
+`captures/verification/2026-09-03-directional-punch-poing-arriere-droit.png`.
+
 ## Rig des deux personnages
 
 Même rig R6 vérifié (dépôt Adonis, licence MIT) que les autres
