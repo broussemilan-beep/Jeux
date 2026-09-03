@@ -25,6 +25,7 @@ h1 { font-size: 30px; margin: 0 0 10px; }
 .card { background: var(--panel); border: 1px solid var(--grid); border-radius: 14px; padding: 14px; }
 .viewport-wrap { position: relative; border-radius: 10px; overflow: hidden; background: #000; }
 canvas { display: block; width: 100%; height: auto; }
+#overlay { position: absolute; inset: 0; pointer-events: none; }
 .chip { position: absolute; top: 10px; font-family: Oswald, sans-serif; font-size: 12px; padding: 5px 10px; border-radius: 999px; background: rgba(0,0,0,0.45); color: #fff; letter-spacing: 0.03em; }
 .chip.left { left: 10px; } .chip.right { right: 10px; }
 .controls { padding-top: 12px; display: flex; flex-direction: column; gap: 10px; }
@@ -49,7 +50,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
 </style>
 
 <div class="stage">
-  <p class="eyebrow">Prototype isolé · Roblox R6 · deux KeyframeSequence + mise en scène caméra</p>
+  <p class="eyebrow">Prototype isolé · Roblox R6 · deux KeyframeSequence + mise en scène caméra · rendu WebGL</p>
   <h1>Direct du droit</h1>
   <p class="sub">Deux rigs R6 réels (6 segments rigides chacun, aucun coude/genou) sur une place d'entraînement en
     ruine : l'attaquant charge un direct du droit, lance sa garde en avant, et cueille le mannequin qui recule sous
@@ -62,6 +63,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
   <div class="card">
     <div class="viewport-wrap">
       <canvas id="stage" width="1200" height="900"></canvas>
+      <canvas id="overlay" width="1200" height="900"></canvas>
       <div class="chip left" id="shotChip">plan · <b id="shotName">large</b></div>
       <div class="chip right" id="timecode">0.00s / 1.25s</div>
     </div>
@@ -90,11 +92,22 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
     </div>
   </div>
 
+  <p class="note"><strong>Rendu WebGL réel (Three.js), plus du Canvas2D à plat</strong> : premier retour "ton rendu
+    est nul comparé à des animateurs experts" pris au sérieux — la scène est maintenant de vraies géométries 3D
+    éclairées (une lumière directionnelle avec ombres portées + un remplissage hémisphérique), un vrai brouillard de
+    profondeur (<code>THREE.Fog</code>) qui noie le mur en ruine au loin, et des matériaux physiquement plausibles
+    (<code>MeshStandardMaterial</code>) au lieu d'un flat-shading peint à la main. La bibliothèque Three.js
+    (r134, MIT) est <strong>embarquée dans le fichier</strong> — ce bac à sable bloque <code>cdnjs.cloudflare.com</code>,
+    donc pas de <code>&lt;script src&gt;</code> externe possible ; elle est allée chercher le paquet sur
+    <code>registry.npmjs.org</code> (accessible directement, contrairement au CDN) et l'a vendorisée localement,
+    voir <code>scripts/vendor/three.min.js</code>.</p>
   <p class="note"><strong>La caméra est mise en scène, pas libre</strong> : cinq plans authored (voir
-    <code>SHOTS</code> dans le script), coupes franches entre eux (pas de fondu), chacun avec son propre mouvement
-    interne (recadrage lent pendant le plan). C'est un choix de réalisation pour ce lecteur, pas une donnée du
-    fichier livré — les deux <code>KeyframeSequence</code> n'ont aucune notion de caméra, celle-ci reste à faire côté
-    Roblox (script client sur un <code>Camera</code>, ou une <code>CameraShake</code>/cinématique existante).</p>
+    <code>SHOTS</code> dans le script) — mêmes cadrages, mêmes coupes franches, même minutage que la version
+    Canvas2D précédente, mais désormais interprétés comme une vraie <code>PerspectiveCamera</code> positionnée en
+    coordonnées sphériques autour d'une cible (azimut/élévation/distance), pas une projection orthographique
+    tournée à la main. C'est un choix de réalisation pour ce lecteur, pas une donnée du fichier livré — les deux
+    <code>KeyframeSequence</code> n'ont aucune notion de caméra, celle-ci reste à faire côté Roblox (script client
+    sur un <code>Camera</code>, ou une <code>CameraShake</code>/cinématique existante).</p>
   <p class="note"><strong>Le contact n'est pas pixel-parfait — mesuré, pas maquillé</strong> : le poing de l'attaquant
     termine à 0,62 stud du torse du mannequin au moment de l'impact (<code>scripts/calibrate.py</code>, balayage
     numérique de l'angle du bras/inclinaison du buste/avancée du pas — pas posé à l'oeil). Le reste de la lecture du
@@ -109,6 +122,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
     autres prototypes de ce dossier — voir <code>rig/PROVENANCE.md</code>.</p>
 </div>
 
+<script>__THREE_JS__</script>
 <script>
 const DATA = __SCENE_DATA__;
 const TEXTURES_B64 = __TEXTURES_B64__;
@@ -116,8 +130,9 @@ const TEXTURES_B64 = __TEXTURES_B64__;
 const PHASE_KIND = { garde: "calm", charge: "charge", lacher: "charge", impact: "impact", suite: "impact", posture_finale: "calm" };
 const LEGS = new Set(["Right Leg", "Left Leg"]);
 
-const canvas = document.getElementById("stage");
-const ctx = canvas.getContext("2d");
+const glCanvas = document.getElementById("stage");
+const overlay = document.getElementById("overlay");
+const octx = overlay.getContext("2d");
 const scrub = document.getElementById("scrub");
 const playBtn = document.getElementById("playBtn");
 const playIcon = document.getElementById("playIcon");
@@ -159,19 +174,15 @@ function currentPhase(t) {
 
 // ---------------------------------------------------------------------
 // Camera CHOREOGRAPHIEE -- cinq plans authored (coupes franches entre
-// eux, pas de fondu -- un vrai montage, pas un slider libre comme les
-// prototypes precedents). Chaque plan interpole SES PROPRES bornes
-// (az/el/echelle/cible) en douceur PENDANT le plan (un leger recadrage
-// vivant), mais SAUTE net a la coupe suivante.
-// Retimee apres retour utilisateur ("c bcp trop rapide on ne lit pas
-// assez les mouvement") : la charge dure maintenant l'essentiel de la
-// scene (WINDUP_T -> IMPACT_T, ~1,45s) dans UN SEUL plan qui pousse
-// lentement -- pas de coupe pendant que le poing charge, pour laisser le
-// temps de lire le mouvement ET le halo de charge (voir drawFistCharge).
+// eux, pas de fondu). Meme table SHOTS que la version Canvas2D
+// precedente (meme minutage, meme intention de mise en scene), mais
+// desormais interpretee comme une position SPHERIQUE reelle
+// (azimut/elevation/distance) d'une THREE.PerspectiveCamera autour d'une
+// cible, pas une projection orthographique tournee a la main.
 const SHOTS = [
   { name: "large",    t0: 0.00, t1: WINDUP_T,       az0: -40, az1: -36, el0: 18, el1: 17, sc0: 0.72, sc1: 0.78, tz0: -4.5, tz1: -4.4, ty0: 3.2, ty1: 3.2 },
-  { name: "approche",  t0: WINDUP_T, t1: IMPACT_T,   az0: -30, az1: -8,  el0: 15, el1: 10, sc0: 0.85, sc1: 1.80, tz0: -4.2, tz1: -5.4, ty0: 3.3, ty1: 3.6 },
-  { name: "impact",   t0: IMPACT_T, t1: IMPACT_T + 0.12, az0: -6, az1: -6, el0: 9, el1: 9, sc0: 2.05, sc1: 2.10, tz0: -6.2, tz1: -6.2, ty0: 3.6, ty1: 3.6 },
+  { name: "approche",  t0: WINDUP_T, t1: IMPACT_T,   az0: -32, az1: -22,  el0: 15, el1: 10, sc0: 0.85, sc1: 1.80, tz0: -4.2, tz1: -5.4, ty0: 3.3, ty1: 3.6 },
+  { name: "impact",   t0: IMPACT_T, t1: IMPACT_T + 0.12, az0: -20, az1: -20, el0: 9, el1: 9, sc0: 2.05, sc1: 2.10, tz0: -6.2, tz1: -6.2, ty0: 3.6, ty1: 3.6 },
   { name: "réaction",  t0: IMPACT_T + 0.12, t1: IMPACT_T + 0.65, az0: 55, az1: 46, el0: 7, el1: 9, sc0: 1.35, sc1: 1.28, tz0: -8.2, tz1: -8.6, ty0: 3.3, ty1: 3.4 },
   { name: "plan final", t0: IMPACT_T + 0.65, t1: DURATION + 0.001, az0: -42, az1: -38, el0: 18, el1: 20, sc0: 1.05, sc1: 0.98, tz0: -3.4, tz1: -2.2, ty0: 3.2, ty1: 3.2 },
 ];
@@ -195,187 +206,191 @@ function cameraAt(t) {
   };
 }
 
-// ---------------------------------------------------------------------
-let CAM = cameraAt(0);
+// Distance camera-cible = BASE_DIST / scale (le champ "scale" du plan
+// jouait deja ce role de zoom dans la version Canvas2D -- reinterprete
+// ici comme une distance spherique reelle plutot qu'un facteur d'echelle
+// applique apres projection orthographique). BASE_DIST=15 (pas 11, valeur
+// testee et corrigee par capture d'ecran) : a 11, le plan "approche" en
+// fin de charge (scale~1.78) plaçait la camera a ~2 studs du torse --
+// une perspective reelle, contrairement a l'ancienne projection
+// orthographique, se retrouve alors quasi collee dans la geometrie (un
+// pan de torse plat, illisible). Distance plancher (MIN_DIST) en filet
+// de securite contre le pire cas (plan "impact", scale~2.10).
+const BASE_DIST = 15.0;
+const MIN_DIST = 4.0;
+// Garde-fou supplementaire, trouve par capture d'ecran (pas par le calcul
+// seul) : le plan "approche" vise un point tz plus loin que le torse de
+// l'attaquant (l'anchor suit la trajectoire du coup, pas le personnage) --
+// en projection orthographique (version Canvas2D precedente) ce decalage
+// n'avait aucune consequence, mais en perspective reelle, zoomer vers un
+// point AU-DELA du sujet rapproche le sujet lui-meme bien plus que ne le
+// suggere la distance camera-cible nominale : a scale~1.78 le torse se
+// retrouvait a ~4,5 studs de la camera alors que la cible etait a 8,4 --
+// un mur plat de torse/tete illisible. On mesure la distance reelle
+// camera->torse le plus proche (attaquant OU mannequin) et on repousse la
+// camera le long du meme rayon si necessaire, plutot que de retoucher au
+// hasard les scale/tz authored plan par plan.
+const MIN_SUBJECT_DIST = 6.5;
 
-function proj(x, y, z) {
-  const dx = x - 0, dy = y - CAM.ty, dz = z - CAM.tz;
-  const x1 = dx * Math.cos(CAM.az) - dz * Math.sin(CAM.az);
-  const z1 = dx * Math.sin(CAM.az) + dz * Math.cos(CAM.az);
-  const y2 = dy * Math.cos(CAM.el) - z1 * Math.sin(CAM.el);
-  const depth = dy * Math.sin(CAM.el) + z1 * Math.cos(CAM.el);
-  return { x: x1, y: y2, d: depth };
-}
-// Rotation SEULE (pas de soustraction de l'ancre camera) -- pour les
-// vecteurs DIRECTION (normales de face), jamais pour des positions.
-// Bug trouve par capture d'ecran (personnages invisibles) : la premiere
-// version appelait proj() sur les normales, qui leur soustrayait l'ancre
-// camera comme si c'etait une position -- corrompait completement le
-// test de culling des faces (toutes les faces disparaissaient ou
-// s'affichaient au hasard selon l'ancre courante).
-function projDirDepth(x, y, z) {
-  const z1 = x * Math.sin(CAM.az) + z * Math.cos(CAM.az);
-  return y * Math.sin(CAM.el) + z1 * Math.cos(CAM.el);
-}
-
-const BASE_SCALE = 46, CX = 600, CY = 460, FLOOR_Y = 0.0;
-function SCALE() { return BASE_SCALE * CAM.scale; }
-function sx(p) { return CX + p.x * SCALE(); }
-function sy(p) { return CY - p.y * SCALE(); }
-
-function shadeRgb(rgb, k) {
-  return "rgb(" + rgb.map(v => Math.max(0, Math.min(255, Math.round(v * k)))).join(",") + ")";
-}
-function norm3(v) { const n = Math.hypot(v[0], v[1], v[2]) || 1; return [v[0]/n, v[1]/n, v[2]/n]; }
-function dot3(a, b) { return a[0]*b[0] + a[1]*b[1] + a[2]*b[2]; }
-function add3(a, b) { return [a[0]+b[0], a[1]+b[1], a[2]+b[2]]; }
-const LIGHT = norm3([-0.4, 0.85, -0.32]);
-const VIEW = norm3([0.3, 0.4, 0.86]);
-const HALF_VEC = norm3(add3(LIGHT, VIEW));
-
-const CORNERS = [[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]];
-const FACES = [
-  { idx: [0,1,2,3], n: [0,0,-1] }, { idx: [5,4,7,6], n: [0,0,1] },
-  { idx: [4,0,3,7], n: [-1,0,0] }, { idx: [1,5,6,2], n: [1,0,0] },
-  { idx: [3,2,6,7], n: [0,1,0] },  { idx: [4,5,1,0], n: [0,-1,0] },
-];
-function mulVec(r, v) {
-  return [r[0]*v[0] + r[1]*v[1] + r[2]*v[2], r[3]*v[0] + r[4]*v[1] + r[5]*v[2], r[6]*v[0] + r[7]*v[1] + r[8]*v[2]];
+function cameraDir(cam) {
+  return new THREE.Vector3(
+    Math.sin(cam.az) * Math.cos(cam.el),
+    Math.sin(cam.el),
+    Math.cos(cam.az) * Math.cos(cam.el),
+  );
 }
 
-function boxQuads(pos, rot, size, rgb) {
-  const half = [size[0] / 2, size[1] / 2, size[2] / 2];
-  const screen = CORNERS.map(c => {
-    const rotated = mulVec(rot, [c[0] * half[0], c[1] * half[1], c[2] * half[2]]);
-    return proj(pos[0] + rotated[0], pos[1] + rotated[1], pos[2] + rotated[2]);
-  });
-  const quads = [];
-  for (const f of FACES) {
-    const nWorld = mulVec(rot, f.n);
-    if (projDirDepth(nWorld[0], nWorld[1], nWorld[2]) >= 0) continue;
-    const specAngle = Math.max(0, dot3(nWorld, HALF_VEC));
-    const spec = Math.pow(specAngle, 8) * 0.10;
-    const diffuse = Math.max(0.18, dot3(nWorld, LIGHT));
-    const pts = f.idx.map(i => ({ x: sx(screen[i]), y: sy(screen[i]) }));
-    const depth = f.idx.reduce((a, i) => a + screen[i].d, 0) / 4;
-    quads.push({ pts, k: diffuse, spec, rgb, depth });
-  }
-  return quads;
+// Camera shake bref post-impact -- deterministe (sin a plusieurs
+// frequences), ~0.18s, meme technique que r6_divine_descent. Applique
+// desormais a la POSITION MONDE reelle de la camera (un vrai jitter 3D),
+// pas a une translation 2D du canvas.
+function shakeOffset(t) {
+  const age = t - IMPACT_T;
+  if (age < 0 || age > 0.18) return { x: 0, y: 0, z: 0 };
+  const decay = 1 - age / 0.18;
+  return {
+    x: Math.sin(age * 140) * 0.10 * decay,
+    y: Math.sin(age * 97 + 1.4) * 0.07 * decay,
+    z: Math.sin(age * 121 + 0.6) * 0.06 * decay,
+  };
 }
 
 // ---------------------------------------------------------------------
-// Textures : chargees une fois au demarrage (Image depuis data URI),
-// motifs crees une fois qu'elles sont pretes (createPattern a besoin
-// d'une image decodee).
-const TEX_IMGS = {};
-const TEX_READY = Promise.all(Object.entries(TEXTURES_B64).map(([name, b64]) => new Promise(res => {
-  const img = new Image();
-  img.onload = () => { TEX_IMGS[name] = img; res(); };
-  img.src = "data:image/png;base64," + b64;
-})));
-let groundPattern = null, wallPattern = null;
+// Scene Three.js
+const renderer = new THREE.WebGLRenderer({ canvas: glCanvas, antialias: true });
+renderer.setSize(1200, 900, false);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+if (renderer.outputColorSpace !== undefined) renderer.outputColorSpace = THREE.SRGBColorSpace;
+if (renderer.physicallyCorrectLights !== undefined) renderer.physicallyCorrectLights = true;
+if (renderer.toneMapping !== undefined) { renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05; }
 
-function drawSky() {
-  const g = ctx.createLinearGradient(0, 0, 0, canvas.height);
-  g.addColorStop(0, "#241b12");
-  g.addColorStop(0.45, "#3a2818");
-  g.addColorStop(1, "#171009");
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  // fumee/poussiere de fond -- deterministe (sin), pas Math.random(), pour
-  // que deux captures a la meme frame soient identiques.
-  ctx.save();
-  ctx.globalAlpha = 0.10;
-  for (let i = 0; i < 5; i++) {
-    const cx = (i * 231 + 90) % canvas.width, cy = 120 + 40 * Math.sin(i * 2.1);
-    const r = 160 + 60 * Math.sin(i * 1.3 + 1);
-    const rg = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-    rg.addColorStop(0, "#cfc4b0"); rg.addColorStop(1, "rgba(207,196,176,0)");
-    ctx.fillStyle = rg; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+const scene = new THREE.Scene();
+const HORIZON_COLOR = 0x3a2818, ZENITH_COLOR = 0x171009;
+scene.background = new THREE.Color(ZENITH_COLOR);
+scene.fog = new THREE.Fog(HORIZON_COLOR, 9, 34);
+
+const camera = new THREE.PerspectiveCamera(42, 1200 / 900, 0.1, 200);
+
+// Dome de ciel : sphere degradee par couleurs de sommet (horizon chaud ->
+// zenith sombre), deterministe et sans texture externe -- meme esprit que
+// le degrade drawSky() de la version Canvas2D, mais un vrai volume 3D
+// dans lequel le brouillard et le mur en ruine se noient au loin.
+function buildSkyDome() {
+  const geo = new THREE.SphereGeometry(150, 24, 16);
+  const pos = geo.attributes.position;
+  const colors = new Float32Array(pos.count * 3);
+  const horizon = new THREE.Color(HORIZON_COLOR), zenith = new THREE.Color(ZENITH_COLOR);
+  const tmp = new THREE.Color();
+  for (let i = 0; i < pos.count; i++) {
+    const y = pos.getY(i) / 150;
+    const f = Math.max(0, Math.min(1, (y + 0.05) * 1.15));
+    tmp.copy(horizon).lerp(zenith, f);
+    colors[i * 3] = tmp.r; colors[i * 3 + 1] = tmp.g; colors[i * 3 + 2] = tmp.b;
   }
-  ctx.restore();
+  geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+  const mat = new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide, fog: false, depthWrite: false });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.renderOrder = -10;
+  return mesh;
+}
+scene.add(buildSkyDome());
+
+// Lumieres : une directionnelle (cle, ombres portees) + un remplissage
+// hemispherique doux -- le flat-shading a une seule lumiere + terme
+// speculaire grossier de la version Canvas2D est remplace par un vrai
+// eclairage/ombrage physique.
+const keyLight = new THREE.DirectionalLight(0xffd9a8, 2.6);
+keyLight.position.set(-4, 9, 6);
+keyLight.castShadow = true;
+keyLight.shadow.mapSize.set(2048, 2048);
+keyLight.shadow.camera.left = -9; keyLight.shadow.camera.right = 9;
+keyLight.shadow.camera.top = 9; keyLight.shadow.camera.bottom = -9;
+keyLight.shadow.camera.near = 1; keyLight.shadow.camera.far = 26;
+keyLight.shadow.bias = -0.0015;
+scene.add(keyLight);
+scene.add(keyLight.target);
+keyLight.target.position.set(0, 2, -4);
+
+const fillLight = new THREE.HemisphereLight(0x6a5a46, 0x1a1410, 0.65);
+scene.add(fillLight);
+
+const rimLight = new THREE.DirectionalLight(0xff8a3c, 0.55);
+rimLight.position.set(4, 4, -10);
+scene.add(rimLight);
+
+// ---------------------------------------------------------------------
+// Textures (chargees une fois, depuis les data URI embarquees).
+const texLoader = new THREE.TextureLoader();
+function loadTex(name, repeatX, repeatY) {
+  const tex = texLoader.load("data:image/png;base64," + TEXTURES_B64[name]);
+  tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(repeatX, repeatY);
+  if (tex.colorSpace !== undefined) tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
 }
 
-function drawBackdropWall() {
-  const img = TEX_IMGS["ruin_wall"];
-  if (!img) return;
-  if (!wallPattern) wallPattern = ctx.createPattern(img, "repeat");
-  // bande d'horizon a hauteur fixe a l'ecran (le mur est loin, une vraie
-  // projection 3D le mettrait a une echelle ecrasee illisible -- meme
-  // compression assumee que le "monde" ecran-fixe des prototypes
-  // precedents), mais SA POSITION HORIZONTALE suit l'azimut de la camera
-  // (parallax simple) pour rester coherente avec les coupes de plan.
-  const wallY = CY - 210 * CAM.scale;
-  const wallH = 210 * CAM.scale;
-  const parallax = (CAM.az * 220) % 256;
-  ctx.save();
-  ctx.translate(-parallax, 0);
-  ctx.fillStyle = wallPattern;
-  ctx.save();
-  ctx.translate(0, wallY);
-  ctx.scale(1.6, 1.6 * CAM.scale);
-  ctx.fillRect(-260, 0, canvas.width * 1.6 + 520, wallH / (1.6 * CAM.scale));
-  ctx.restore();
-  ctx.restore();
-  // assombri + fondu vers le sol pour rester un arriere-plan, pas un
-  // element au premier plan.
-  const fade = ctx.createLinearGradient(0, wallY, 0, wallY + wallH);
-  fade.addColorStop(0, "rgba(15,10,6,0.35)");
-  fade.addColorStop(0.7, "rgba(15,10,6,0.55)");
-  fade.addColorStop(1, "rgba(15,10,6,0.95)");
-  ctx.fillStyle = fade;
-  ctx.fillRect(0, wallY, canvas.width, wallH);
+const groundTex = loadTex("stone_ground", 16, 16);
+const groundMat = new THREE.MeshStandardMaterial({ map: groundTex, roughness: 0.92, metalness: 0.02 });
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), groundMat);
+ground.rotation.x = -Math.PI / 2;
+ground.position.set(0, 0, -6);
+ground.receiveShadow = true;
+scene.add(ground);
 
-  // ligne d'horizon (jonction mur/sol) -- separation nette entre les
-  // deux textures, sinon elles se fondent en une seule masse confuse
-  // (trouve par capture d'ecran).
-  const horizonG = ctx.createLinearGradient(0, wallY + wallH - 3, 0, wallY + wallH + 3);
-  horizonG.addColorStop(0, "rgba(0,0,0,0)");
-  horizonG.addColorStop(0.5, "rgba(0,0,0,0.55)");
-  horizonG.addColorStop(1, "rgba(0,0,0,0)");
-  ctx.fillStyle = horizonG;
-  ctx.fillRect(0, wallY + wallH - 4, canvas.width, 8);
+const wallTex = loadTex("ruin_wall", 10, 2.2);
+const wallMat = new THREE.MeshStandardMaterial({ map: wallTex, roughness: 0.97, metalness: 0.0 });
+const wall = new THREE.Mesh(new THREE.PlaneGeometry(40, 9), wallMat);
+wall.position.set(0, 4.4, -13.5);
+wall.receiveShadow = true;
+scene.add(wall);
+
+// ---------------------------------------------------------------------
+// Personnages : 6 segments rigides par rig (le HumanoidRootPart n'est
+// qu'un repere, jamais dessine -- meme convention que la version
+// Canvas2D), un THREE.Mesh (BoxGeometry taille reelle du rig) par part,
+// pose (position + rotation MONDE deja resolue par le moteur) appliquee
+// directement chaque frame, sans hierarchie -- meme principe que
+// boxQuads() avant, juste un vrai mesh eclaire au lieu de quads peints.
+function rgbToThreeColor(rgbArr) {
+  return new THREE.Color(rgbArr[0] / 255, rgbArr[1] / 255, rgbArr[2] / 255);
+}
+function hexToRgb(hex) {
+  hex = hex.replace("#", "").trim();
+  const n = parseInt(hex, 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+function buildRigMeshes(rgb, roughness) {
+  const meshes = {};
+  for (const part of DATA.part_order) {
+    if (part === "HumanoidRootPart") continue;
+    const size = DATA.part_sizes[part];
+    const color = LEGS.has(part) ? rgb.clone().multiplyScalar(0.72) : rgb;
+    const mat = new THREE.MeshStandardMaterial({ color, roughness, metalness: 0.06 });
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(size[0], size[1], size[2]), mat);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    scene.add(mesh);
+    meshes[part] = mesh;
+  }
+  return meshes;
 }
 
-function drawGroundPlane() {
-  const img = TEX_IMGS["stone_ground"];
-  if (!img) return;
-  if (!groundPattern) groundPattern = ctx.createPattern(img, "repeat");
-  // Trapeze en espace ecran (pseudo-perspective) borne par la projection
-  // reelle de 4 coins au sol tres eloignes -- pas une vraie texture-
-  // mappee 3D (le renderer de ce lecteur est une projection
-  // orthographique tournee, pas une camera perspective), mais ancree sur
-  // les memes coordonnees monde que les deux rigs, donc coherente avec
-  // leurs ombres de contact.
-  const near = 3.0, far = 22.0, halfW = 9.0;
-  const p1 = proj(-halfW, FLOOR_Y, CAM.tz + near), p2 = proj(halfW, FLOOR_Y, CAM.tz + near);
-  const p3 = proj(halfW, FLOOR_Y, CAM.tz - far), p4 = proj(-halfW, FLOOR_Y, CAM.tz - far);
-  ctx.save();
-  ctx.beginPath();
-  ctx.moveTo(sx(p1), sy(p1)); ctx.lineTo(sx(p2), sy(p2)); ctx.lineTo(sx(p3), sy(p3)); ctx.lineTo(sx(p4), sy(p4));
-  ctx.closePath();
-  ctx.clip();
-  ctx.fillStyle = groundPattern;
-  ctx.save();
-  ctx.translate(sx(p1) - 400, sy(p1) - 200);
-  ctx.scale(1.05 * CAM.scale, 1.05 * CAM.scale);
-  ctx.fillRect(0, 0, 1400, 1400);
-  ctx.restore();
-  ctx.fillStyle = "rgba(10,7,4,0.30)";
-  ctx.fillRect(sx(p4), Math.min(sy(p1),sy(p2)) - 900, canvas.width, 900);
-  ctx.restore();
-}
+const attackerMeshes = buildRigMeshes(rgbToThreeColor(hexToRgb(cssVar("--rig-attacker"))), 0.55);
+const dummyMeshes = buildRigMeshes(rgbToThreeColor(hexToRgb(cssVar("--rig-dummy"))), 0.72);
 
-function drawContactShadow(cx, cz, r, alpha) {
-  const c = proj(cx, FLOOR_Y, cz);
-  ctx.save();
-  ctx.translate(sx(c), sy(c));
-  ctx.scale(1, 0.4);
-  const g = ctx.createRadialGradient(0, 0, 0, 0, 0, r * SCALE());
-  g.addColorStop(0, `rgba(0,0,0,${alpha})`); g.addColorStop(1, "rgba(0,0,0,0)");
-  ctx.fillStyle = g;
-  ctx.beginPath(); ctx.ellipse(0, 0, r * SCALE(), r * SCALE(), 0, 0, Math.PI * 2); ctx.fill();
-  ctx.restore();
+const _m4 = new THREE.Matrix4();
+function applyPoseToMesh(mesh, p, r) {
+  mesh.position.set(p[0], p[1], p[2]);
+  _m4.set(
+    r[0], r[1], r[2], 0,
+    r[3], r[4], r[5], 0,
+    r[6], r[7], r[8], 0,
+    0, 0, 0, 1,
+  );
+  mesh.quaternion.setFromRotationMatrix(_m4);
 }
 
 // ---------------------------------------------------------------------
@@ -413,6 +428,22 @@ function sampleChar(frames, t) {
 }
 
 // ---------------------------------------------------------------------
+// VFX en surimpression -- dessinees sur un canvas 2D transparent EMPILE
+// par-dessus le canvas WebGL (voir #overlay en CSS), le rendu 3D des
+// personnages/du decor reste WebGL, seuls ces effets "ecran" restent en
+// Canvas2D (comme dans la reference manga d'origine). Meme logique que
+// la version Canvas2D precedente, seule la source du point de contact a
+// l'ecran change : desormais projetee par la vraie THREE.PerspectiveCamera
+// (camera.project()), plus une projection orthographique maison.
+const _projV = new THREE.Vector3();
+function worldToScreen(x, y, z) {
+  _projV.set(x, y, z).project(camera);
+  return {
+    x: (_projV.x * 0.5 + 0.5) * overlay.width,
+    y: (1 - (_projV.y * 0.5 + 0.5)) * overlay.height,
+  };
+}
+
 // Halo de charge sur le poing -- retour utilisateur explicite ("le
 // perso est cense charge son poing") : sans ce signal visuel, la longue
 // pose de charge (WINDUP_T -> COIL_T, ~1,25s) ne se lisait que comme une
@@ -429,20 +460,20 @@ function drawFistCharge(t, fistScreen) {
   const intensity = f * pulse;
   const r = (14 + f * 20) * pulse;
 
-  ctx.save();
-  ctx.globalCompositeOperation = "lighter";
-  const halo = ctx.createRadialGradient(fistScreen.x, fistScreen.y, 0, fistScreen.x, fistScreen.y, r * 2.4);
+  octx.save();
+  octx.globalCompositeOperation = "lighter";
+  const halo = octx.createRadialGradient(fistScreen.x, fistScreen.y, 0, fistScreen.x, fistScreen.y, r * 2.4);
   halo.addColorStop(0, `rgba(255,150,60,${0.55 * intensity})`);
   halo.addColorStop(0.6, `rgba(255,90,30,${0.30 * intensity})`);
   halo.addColorStop(1, "rgba(255,90,30,0)");
-  ctx.fillStyle = halo;
-  ctx.beginPath(); ctx.arc(fistScreen.x, fistScreen.y, r * 2.4, 0, Math.PI * 2); ctx.fill();
+  octx.fillStyle = halo;
+  octx.beginPath(); octx.arc(fistScreen.x, fistScreen.y, r * 2.4, 0, Math.PI * 2); octx.fill();
 
-  const core = ctx.createRadialGradient(fistScreen.x, fistScreen.y, 0, fistScreen.x, fistScreen.y, r * 0.7);
+  const core = octx.createRadialGradient(fistScreen.x, fistScreen.y, 0, fistScreen.x, fistScreen.y, r * 0.7);
   core.addColorStop(0, `rgba(255,235,200,${0.85 * intensity})`);
   core.addColorStop(1, `rgba(255,120,40,${0.5 * intensity})`);
-  ctx.fillStyle = core;
-  ctx.beginPath(); ctx.arc(fistScreen.x, fistScreen.y, r * 0.7, 0, Math.PI * 2); ctx.fill();
+  octx.fillStyle = core;
+  octx.beginPath(); octx.arc(fistScreen.x, fistScreen.y, r * 0.7, 0, Math.PI * 2); octx.fill();
 
   // filaments d'energie qui convergent vers le poing -- deterministe
   // (sin a des frequences fixes, jamais Math.random()), densite
@@ -454,14 +485,13 @@ function drawFistCharge(t, fistScreen) {
     const inFrac = Math.sin(t * 7.0 + i * 3.3) * 0.5 + 0.5;
     const ex = fistScreen.x + Math.cos(ang) * reach, ey = fistScreen.y + Math.sin(ang) * reach * 0.85;
     const px = ex + (fistScreen.x - ex) * inFrac, py = ey + (fistScreen.y - ey) * inFrac;
-    ctx.strokeStyle = `rgba(255,180,90,${0.5 * intensity})`;
-    ctx.lineWidth = 1.6;
-    ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(px, py); ctx.stroke();
+    octx.strokeStyle = `rgba(255,180,90,${0.5 * intensity})`;
+    octx.lineWidth = 1.6;
+    octx.beginPath(); octx.moveTo(ex, ey); octx.lineTo(px, py); octx.stroke();
   }
-  ctx.restore();
+  octx.restore();
 }
 
-// ---------------------------------------------------------------------
 // Flash impact-frame façon manga : deux temps, comme la reference (un
 // coup de theatre en noir/blanc, pas une jauge de degats) --
 //   1. t in [IMPACT_T, IMPACT_T+0.035) : flash blanc plein cadre (le choc
@@ -475,22 +505,22 @@ function drawImpactFrame(t, contactScreen) {
   if (t < IMPACT_T || t >= IMPACT_T + 0.12) return;
   const age = t - IMPACT_T;
   if (age < 0.035) {
-    ctx.save();
-    ctx.globalAlpha = Math.max(0, 1 - age / 0.035 * 0.15);
-    ctx.fillStyle = "#f5f0e6";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.restore();
+    octx.save();
+    octx.globalAlpha = Math.max(0, 1 - age / 0.035 * 0.15);
+    octx.fillStyle = "#f5f0e6";
+    octx.fillRect(0, 0, overlay.width, overlay.height);
+    octx.restore();
     return;
   }
   const f = (age - 0.035) / (0.12 - 0.035); // 0..1
-  ctx.save();
-  ctx.fillStyle = "#f5f0e6";
-  ctx.globalAlpha = Math.max(0, 0.9 - f * 0.9);
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.globalAlpha = 1;
+  octx.save();
+  octx.fillStyle = "#f5f0e6";
+  octx.globalAlpha = Math.max(0, 0.9 - f * 0.9);
+  octx.fillRect(0, 0, overlay.width, overlay.height);
+  octx.globalAlpha = 1;
   const cxp = contactScreen.x, cyp = contactScreen.y;
   const N = 26;
-  ctx.strokeStyle = "#0c0a08";
+  octx.strokeStyle = "#0c0a08";
   for (let i = 0; i < N; i++) {
     const ang = (i / N) * Math.PI * 2 + Math.sin(i * 12.9) * 0.12;
     const jitter = Math.sin(i * 7.3) * 0.5 + 0.5;
@@ -499,88 +529,61 @@ function drawImpactFrame(t, contactScreen) {
     const w = 2.5 + jitter * 7.5 * (1 - f);
     const x0 = cxp + Math.cos(ang) * inner, y0 = cyp + Math.sin(ang) * inner * 0.85;
     const x1 = cxp + Math.cos(ang) * (inner + len), y1 = cyp + Math.sin(ang) * (inner + len) * 0.85;
-    ctx.lineWidth = w;
-    ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke();
+    octx.lineWidth = w;
+    octx.beginPath(); octx.moveTo(x0, y0); octx.lineTo(x1, y1); octx.stroke();
   }
   // eclat central
-  const rg = ctx.createRadialGradient(cxp, cyp, 0, cxp, cyp, 90);
+  const rg = octx.createRadialGradient(cxp, cyp, 0, cxp, cyp, 90);
   rg.addColorStop(0, "rgba(255,250,235,0.9)"); rg.addColorStop(1, "rgba(255,250,235,0)");
-  ctx.fillStyle = rg;
-  ctx.beginPath(); ctx.arc(cxp, cyp, 90, 0, Math.PI * 2); ctx.fill();
-  ctx.restore();
+  octx.fillStyle = rg;
+  octx.beginPath(); octx.arc(cxp, cyp, 90, 0, Math.PI * 2); octx.fill();
+  octx.restore();
 }
 
-// Camera shake bref post-impact -- deterministe (sin a plusieurs
-// frequences), ~0.18s, meme technique que r6_divine_descent.
-function shakeOffset(t) {
-  const age = t - IMPACT_T;
-  if (age < 0 || age > 0.18) return { x: 0, y: 0 };
-  const decay = 1 - age / 0.18;
-  return {
-    x: Math.sin(age * 140) * 6 * decay,
-    y: Math.sin(age * 97 + 1.4) * 4 * decay,
-  };
-}
-
+// ---------------------------------------------------------------------
 function render(t) {
-  CAM = cameraAt(t);
-  drawSky();
-  drawBackdropWall();
-  drawGroundPlane();
-
-  const shake = shakeOffset(t);
-  ctx.save();
-  ctx.translate(shake.x, shake.y);
+  const cam = cameraAt(t);
+  const target = new THREE.Vector3(0, cam.ty, cam.tz);
+  const dir = cameraDir(cam);
 
   const attPose = sampleChar(DATA.attacker_frames, t);
   const dumPose = sampleChar(DATA.dummy_frames, t);
-  drawContactShadow(attPose["Torso"].p[0], attPose["Torso"].p[2] + 0.3, 0.85, 0.35);
-  drawContactShadow(dumPose["Torso"].p[0], dumPose["Torso"].p[2] + 0.3, 0.85, 0.30);
 
-  const attRgb = hexToRgb(cssVar("--rig-attacker"));
-  const dumRgb = hexToRgb(cssVar("--rig-dummy"));
-  const all = [];
-  for (const [pose, rgb] of [[attPose, attRgb], [dumPose, dumRgb]]) {
-    for (const part of DATA.part_order) {
-      if (part === "HumanoidRootPart") continue;
-      const c = LEGS.has(part) ? rgb.map(v => v * 0.72) : rgb;
-      all.push(...boxQuads(pose[part].p, pose[part].r, DATA.part_sizes[part], c));
-    }
-  }
-  all.sort((a, b) => b.depth - a.depth);
-  for (const q of all) {
-    ctx.beginPath();
-    ctx.moveTo(q.pts[0].x, q.pts[0].y);
-    for (let i = 1; i < q.pts.length; i++) ctx.lineTo(q.pts[i].x, q.pts[i].y);
-    ctx.closePath();
-    ctx.fillStyle = shadeRgb(q.rgb, q.k);
-    ctx.fill();
-    if (q.spec > 0.02) { ctx.fillStyle = `rgba(255,245,225,${Math.min(0.8, q.spec)})`; ctx.fill(); }
-    ctx.strokeStyle = "rgba(0,0,0,0.5)"; ctx.lineWidth = 0.7; ctx.globalAlpha = 0.35; ctx.stroke(); ctx.globalAlpha = 1;
+  let dist = Math.max(MIN_DIST, BASE_DIST / cam.scale);
+  const candidate = target.clone().addScaledVector(dir, dist);
+  const attTorso = new THREE.Vector3(...attPose["Torso"].p);
+  const dumTorso = new THREE.Vector3(...dumPose["Torso"].p);
+  const nearestSubjectDist = Math.min(candidate.distanceTo(attTorso), candidate.distanceTo(dumTorso));
+  if (nearestSubjectDist < MIN_SUBJECT_DIST) dist += (MIN_SUBJECT_DIST - nearestSubjectDist);
+
+  const wp = target.clone().addScaledVector(dir, dist);
+  const shake = shakeOffset(t);
+  camera.position.set(wp.x + shake.x, wp.y + shake.y, wp.z + shake.z);
+  camera.lookAt(target);
+
+  for (const part of DATA.part_order) {
+    if (part === "HumanoidRootPart") continue;
+    applyPoseToMesh(attackerMeshes[part], attPose[part].p, attPose[part].r);
+    applyPoseToMesh(dummyMeshes[part], dumPose[part].p, dumPose[part].r);
   }
 
-  // point de contact a l'ecran pour le flash impact-frame : la main
-  // droite de l'attaquant a l'instant present (suit la vraie pose, pas
-  // un point fixe -- reste coherent si on scrobble hors de IMPACT_T).
+  renderer.render(scene, camera);
+
+  octx.clearRect(0, 0, overlay.width, overlay.height);
+  // point de contact a l'ecran pour les VFX : la main droite de
+  // l'attaquant a l'instant present (suit la vraie pose, pas un point
+  // fixe -- reste coherent si on scrobble hors de IMPACT_T).
   const fistWorld = attPose["Right Arm"].p;
-  const fistScreen = { x: sx(proj(fistWorld[0], fistWorld[1], fistWorld[2])), y: sy(proj(fistWorld[0], fistWorld[1], fistWorld[2])) };
+  const fistScreen = worldToScreen(fistWorld[0], fistWorld[1], fistWorld[2]);
   drawFistCharge(t, fistScreen);
   drawImpactFrame(t, fistScreen);
-  ctx.restore();
 
   const phase = currentPhase(t);
-  const shot = CAM.shot;
+  const shot = cam.shot;
   shotNameEl.textContent = shot.name;
   phaseNameEl2.textContent = phase.name.replace("_", " ");
   timecodeEl.textContent = t.toFixed(2) + "s / " + DURATION.toFixed(2) + "s";
 }
-
-function hexToRgb(hex) {
-  hex = hex.replace("#", "").trim();
-  const n = parseInt(hex, 16);
-  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-}
-function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
 
 let playing = true, speed = 1, simTime = 0, lastWall = null;
 function setPlaying(p) {
@@ -607,6 +610,5 @@ function loop(ts) {
   render(simTime);
   requestAnimationFrame(loop);
 }
-
-TEX_READY.then(() => requestAnimationFrame(loop));
+requestAnimationFrame(loop);
 </script>

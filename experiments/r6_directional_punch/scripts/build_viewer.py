@@ -1,7 +1,10 @@
 """
-Assemble le lecteur HTML final : substitue DATA (dump_scene_data.py) et
+Assemble le lecteur HTML final : substitue DATA (dump_scene_data.py),
 TEXTURES_B64 (toutes les images de ../textures/, indexees par nom de
-fichier sans extension) dans le template directional_punch_viewer.html.
+fichier sans extension) et THREE_JS (bibliotheque Three.js vendorisee,
+voir vendor/three.min.js -- cdnjs.cloudflare.com est bloque dans ce bac a
+sable, donc pas de <script src> externe possible, la lib est embarquee
+telle quelle) dans le template directional_punch_viewer.html.
 Meme pattern que r6_throne_crown/scripts/build_viewer.py.
 """
 import base64
@@ -13,6 +16,7 @@ import sys
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE = os.path.join(SCRIPT_DIR, "directional_punch_viewer.html")
+THREE_JS = os.path.join(SCRIPT_DIR, "vendor", "three.min.js")
 SCENE_JSON = "/tmp/directional_punch_scene_data.json"
 
 
@@ -31,15 +35,20 @@ def main():
         with open(path, "rb") as fh:
             textures[name] = base64.b64encode(fh.read()).decode("ascii")
 
+    with open(THREE_JS) as f:
+        three_js = f.read()
+
     with open(TEMPLATE) as f:
         html = f.read()
+    html = html.replace("__THREE_JS__", three_js)
     html = html.replace("__SCENE_DATA__", scene_data)
     html = html.replace("__TEXTURES_B64__", json.dumps(textures))
 
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     with open(out_path, "w") as f:
         f.write(html)
-    print(f"ecrit {out_path}, {os.path.getsize(out_path)} octets, {len(textures)} textures embarquees")
+    print(f"ecrit {out_path}, {os.path.getsize(out_path)} octets, "
+          f"{len(textures)} textures embarquees, three.min.js {os.path.getsize(THREE_JS)} octets")
 
 
 if __name__ == "__main__":

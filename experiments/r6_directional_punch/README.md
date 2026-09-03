@@ -256,6 +256,98 @@ Déterministe (angles/longueurs dérivés de `sin(i * constante)`, jamais
 tremblement de caméra bref (`shakeOffset`, même technique que
 `r6_divine_descent`) accompagne le flash.
 
+## Rendu WebGL réel (Three.js) — remplace le Canvas2D à plat
+
+Retour direct de l'utilisateur, sans détour : *« Ton rendu est nul comparé
+à des animateurs experts et qui font de la vrai animation pk »*. Question
+posée en retour (`AskUserQuestion`) pour savoir quel levier pesait le
+plus — rendu à plat ou animation mécanique — réponse : **les deux**, avec
+la séquence explicitement choisie par l'utilisateur : *rendu 3D d'abord
+(impact immédiat sur tout), puis reprise du mouvement scène par scène*.
+Ce prototype est celui sur lequel le premier étage (rendu) est fait.
+
+**Avant** (toutes les captures de ce README jusqu'ici) : projection
+orthographique maison (`proj()`/`boxQuads()`), flat-shading un seul terme
+diffus + un terme spéculaire grossier, pas d'ombres portées, pas de
+brouillard de profondeur — un rendu peint à la main, honnête sur ce qu'il
+est mais visuellement plat comparé à un vrai moteur 3D.
+
+**Après** : une vraie scène [Three.js](https://threejs.org/) (r134, MIT) —
+
+- `THREE.WebGLRenderer` avec `shadowMap` activé (`PCFSoftShadowMap`),
+  tone mapping ACES Filmic ;
+- une lumière directionnelle clé avec ombres portées réelles (remplace
+  le terme diffus/spéculaire peint à la main) + un remplissage
+  hémisphérique doux + une lumière de contre-jour chaude ;
+- un dôme de ciel dégradé (sphère à couleurs de sommet, horizon chaud →
+  zénith sombre — déterministe, aucune texture externe) dans lequel se
+  noie un vrai `THREE.Fog` (profondeur de champ atmosphérique, chose
+  qu'une projection orthographique ne peut pas rendre) ;
+- sol et mur en `MeshStandardMaterial` texturés (mêmes PNG générés par
+  `gen_textures.py`, désormais tuilés via `RepeatWrapping` plutôt que
+  peints quad par quad) avec ombres reçues ;
+- les deux rigs sont 12 vrais `THREE.Mesh` (`BoxGeometry` aux tailles
+  réelles du rig + `MeshStandardMaterial`), position et rotation MONDE
+  appliquées telles quelles depuis les données déjà résolues par le
+  moteur (`resolve_rbxmx.py`) — aucun changement côté pipeline Python,
+  seul le rendu client change.
+
+Les VFX plein-écran (halo de charge, flash impact-frame) restent en
+Canvas2D, sur un second `<canvas>` transparent empilé par-dessus le canvas
+WebGL (`pointer-events:none`) — c'est le bon outil pour un effet façon
+manga en surimpression d'écran, un remplacement en particules 3D n'aurait
+rien apporté. Le point de contact à l'écran utilisé par ces VFX est
+désormais projeté par la vraie caméra (`camera.project()`), plus une
+projection orthographique maison.
+
+### `cdnjs.cloudflare.com` est bloqué dans ce bac à sable — bibliothèque vendorisée
+
+Pas de `<script src="https://cdnjs...">` possible ici : le proxy sortant
+du bac à sable renvoie `403` sur ce host (`CONNECT tunnel failed`).
+`registry.npmjs.org`, lui, est directement joignable (liste `noProxy` du
+proxy) — la bibliothèque a donc été récupérée via
+`https://registry.npmjs.org/three/-/three-0.134.0.tgz`, extraite du
+tarball npm (`package/build/three.min.js`) et vendorisée telle quelle
+dans `scripts/vendor/three.min.js` (615 Ko, MIT). `build_viewer.py`
+l'injecte désormais dans le HTML final via un troisième point de
+substitution `__THREE_JS__`, au même titre que `__SCENE_DATA__` et
+`__TEXTURES_B64__` — le fichier livré reste 100% autonome (pas de
+dépendance réseau au chargement), et le rend testable en local via
+Playwright sans dépendre d'un CDN externe.
+
+### Caméra chorégraphiée : réinterprétée en position sphérique réelle
+
+La table `SHOTS` (mêmes 5 plans, mêmes coupes franches, même minutage
+qu'avant) est maintenant interprétée comme une vraie `PerspectiveCamera`
+positionnée en coordonnées sphériques (`az`/`el`/distance) autour d'une
+cible, plutôt qu'une rotation appliquée après-coup à une projection
+orthographique. Deux problèmes de perspective réelle, absents en
+orthographique, ont été trouvés **par capture d'écran** (encore une fois
+— la discipline numérique seule ne les aurait jamais révélés) :
+
+1. **Le zoom orthographique (`scale`) ne se traduit pas en distance de
+   caméra sans risque.** À `scale≈1.78` (fin du plan « approche »), une
+   distance caméra-cible naïve (`BASE_DIST / scale`) plaçait la caméra à
+   moins de 2 studs du torse — en perspective réelle ça donne un pan de
+   torse plat et illisible plein cadre, pas un zoom serré lisible. Fixé
+   par un garde-fou mesuré, pas un réglage à l'oeil : à chaque frame, la
+   distance caméra-cible authored est comparée à la distance réelle
+   caméra→torse le plus proche (attaquant OU mannequin) et la caméra est
+   repoussée le long du même rayon si elle est plus proche que
+   `MIN_SUBJECT_DIST` (6,5 studs — calé sur la distance du plan « impact »
+   qui, lui, se lisait bien).
+2. **L'azimut de fin du plan « approche » plaçait la caméra quasi pile
+   dans le dos de l'attaquant.** Rien à voir avec la distance : même
+   correctement reculée, une caméra alignée dans l'axe Z du personnage ne
+   montre qu'une masse plate de dos, aucune lecture du bras qui charge.
+   Fixé en resserrant l'arc d'azimut du plan (`-32° → -22°` au lieu de
+   `-30° → -8°`) pour rester sur un angle 3/4 lisible tout au long du
+   zoom, au lieu de converger vers l'axe pur.
+
+Captures de vérification (5 plans, après les deux correctifs ci-dessus) :
+`captures/verification/2026-09-03-directional-punch-webgl-plan-large.png`,
+`-plan-approche.png`, `-impact.png`, `-reaction.png`, `-plan-final.png`.
+
 ## Rig des deux personnages
 
 Même rig R6 vérifié (dépôt Adonis, licence MIT) que les autres
