@@ -9,7 +9,7 @@ plausible.
 import numpy as np
 
 import anim_engine as ae
-from choreography import (attacker_punch, dummy_reaction, IMPACT_T,
+from choreography import (attacker_punch, dummy_reaction, IMPACT_T, COIL_T,
                            ATTACKER_SECONDARY_MOTION, DUMMY_SECONDARY_MOTION,
                            DUMMY_Z, GROUND_Y)
 from r6_rig import PART_ORDER, PART_SIZES
@@ -61,11 +61,11 @@ def main():
     print(f"  torse mannequin : {dummy_torso.round(3).tolist()}  (racine mannequin Z={DUMMY_Z})")
     print(f"  ecart : {gap:.3f} stud -- doit rester petit (contact credible), pas suppose")
 
-    print(f"\n=== charge : le poing recule bien pendant le windup (t=0.00 vs t=0.30s) ===")
+    print(f"\n=== charge : le poing recule bien pendant le windup (t=0.00 vs t={COIL_T:.2f}s, coil final) ===")
     fist0 = tip_world(att_samples, "Right Arm", idx_at(0.0), "bottom")
-    fist_wind = tip_world(att_samples, "Right Arm", idx_at(0.30), "bottom")
+    fist_wind = tip_world(att_samples, "Right Arm", idx_at(COIL_T), "bottom")
     print(f"  poing t=0.00 : {fist0.round(3).tolist()}")
-    print(f"  poing t=0.30 : {fist_wind.round(3).tolist()}")
+    print(f"  poing t={COIL_T:.2f}s : {fist_wind.round(3).tolist()}")
 
     print(f"\n=== synchronisation : le mannequin ne bouge pas avant IMPACT_T ===")
     for t in (0.0, IMPACT_T - 0.05, IMPACT_T - 0.01):

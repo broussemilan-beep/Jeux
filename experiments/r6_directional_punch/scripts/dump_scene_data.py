@@ -7,7 +7,7 @@ import json
 import os
 
 import resolve_rbxmx as rr
-from choreography import IMPACT_T, DURATION
+from choreography import IMPACT_T, DURATION, WINDUP_T, COIL_T
 from r6_rig import PART_ORDER, PART_SIZES
 
 OUT_HZ = 30
@@ -21,6 +21,8 @@ def main():
         "fps": OUT_HZ,
         "duration": DURATION,
         "impact_t": IMPACT_T,
+        "windup_t": WINDUP_T,
+        "coil_t": COIL_T,
         "part_sizes": {p: list(PART_SIZES[p]) for p in PART_ORDER},
         "part_order": PART_ORDER,
         "attacker_frames": att_frames,

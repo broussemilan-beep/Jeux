@@ -51,10 +51,22 @@ def _kf(time, root_pos=(0.0, 3.0, 0.0), HumanoidRootPart=REST, Torso=REST,
 
 GROUND_Y = 3.0
 
-# Charge (0.30s) puis frappe brusque (0.15s -- meme discipline "brusque,
-# pas lent" que les autres prototypes) : impact a t=0.45s.
-IMPACT_T = 0.30 + 0.15
-DURATION = IMPACT_T + 0.80
+# Retour utilisateur explicite ("c bcp trop rapide on ne lit pas assez
+# les mouvement y'a pas de logique le perso est censé charge son poing")
+# apres une premiere version ou toute la charge tenait en 0.15s : le
+# COUP lui-meme reste brusque (principe d'animation "lent a l'approche,
+# rapide dans l'action" -- pas remis en cause), mais la charge qui le
+# precede doit se LIRE, avec une vraie duree et un signal visuel de
+# "poing qui charge" (voir CHARGE_GLOW dans le lecteur), pas juste une
+# pose tenue 0.15s.
+GARDE_T = 0.35        # garde tenue, avant de commencer a charger
+WINDUP_T = 0.75        # transition vers la pose de charge (bras arme)
+CHARGE_A_T = 1.20      # charge, 1er battement de "respiration"
+CHARGE_B_T = 1.65      # charge, 2e battement
+COIL_T = 2.00          # dernier resserrement avant le lacher -- le poing
+                       # est "au maximum", tendu, juste avant de partir
+IMPACT_T = COIL_T + 0.20   # lacher brusque (0.20s -- toujours rapide)
+DURATION = IMPACT_T + 0.85
 
 # -- Positions de depart : l'attaquant est pres de la camera (Z peu
 # negatif), le mannequin loin devant lui (Z tres negatif) -- l'attaquant
@@ -71,6 +83,20 @@ WINDUP_TORSO = (-10, -28, 0)
 WINDUP_HEAD = (-8, -10, 0)
 WINDUP_RIGHT_ARM = (2, 0, -8)
 WINDUP_LEGS = {"Right Leg": (-6, 0, 5), "Left Leg": (14, 0, -4)}
+
+# -- Battements de "respiration" pendant la charge -- la pose ne reste
+# PAS parfaitement figee entre WINDUP_T et COIL_T (un gel total lirait
+# comme une pause plutot qu'un effort soutenu) : leger va-et-vient du
+# buste/bras, resserrement progressif jusqu'au coil final juste avant le
+# lacher. Meme principe que le balancement "l'energie qui respire" de
+# r6_divine_orb, applique ici au poing plutot qu'a une boule.
+CHARGE_A_TORSO = (-11, -31, 0)
+CHARGE_A_RIGHT_ARM = (2, 0, -12)
+CHARGE_B_TORSO = (-9, -25, 0)
+CHARGE_B_RIGHT_ARM = (3, 0, -6)
+COIL_TORSO = (-13, -34, 0)
+COIL_HEAD = (-9, -12, 0)
+COIL_RIGHT_ARM = (0, 0, -15)
 
 # Calibre par balayage numerique (pas a l'oeil, voir calibrate.py) :
 # X=100 semblait "plus de puissance" mais releve le poing bien au-dessus
@@ -96,23 +122,35 @@ def attacker_punch():
     keyframes = [
         _kf(0.00, root_pos=(0, GROUND_Y, ATTACKER_Z0), Torso=_READY_TORSO, Head=_READY_HEAD,
             **_READY_LEGS, **_READY_ARMS),
-        _kf(0.30, root_pos=(0, GROUND_Y, ATTACKER_Z0), Torso=WINDUP_TORSO, Head=WINDUP_HEAD,
+        # -- garde tenue (deux keyframes identiques -> vrai plat, pas un
+        # gel numerique accidentel, meme technique que r6_divine_orb).
+        _kf(GARDE_T, root_pos=(0, GROUND_Y, ATTACKER_Z0), Torso=_READY_TORSO, Head=_READY_HEAD,
+            **_READY_LEGS, **_READY_ARMS),
+        _kf(WINDUP_T, root_pos=(0, GROUND_Y, ATTACKER_Z0), Torso=WINDUP_TORSO, Head=WINDUP_HEAD,
             **WINDUP_LEGS, **{"Right Arm": WINDUP_RIGHT_ARM, "Left Arm": _READY_ARMS["Left Arm"]}),
+        _kf(CHARGE_A_T, root_pos=(0, GROUND_Y, ATTACKER_Z0), Torso=CHARGE_A_TORSO, Head=WINDUP_HEAD,
+            **WINDUP_LEGS, **{"Right Arm": CHARGE_A_RIGHT_ARM, "Left Arm": _READY_ARMS["Left Arm"]}),
+        _kf(CHARGE_B_T, root_pos=(0, GROUND_Y, ATTACKER_Z0), Torso=CHARGE_B_TORSO, Head=WINDUP_HEAD,
+            **WINDUP_LEGS, **{"Right Arm": CHARGE_B_RIGHT_ARM, "Left Arm": _READY_ARMS["Left Arm"]}),
+        _kf(COIL_T, root_pos=(0, GROUND_Y, ATTACKER_Z0), Torso=COIL_TORSO, Head=COIL_HEAD,
+            **WINDUP_LEGS, **{"Right Arm": COIL_RIGHT_ARM, "Left Arm": _READY_ARMS["Left Arm"]}),
         _kf(IMPACT_T, root_pos=(0, GROUND_Y, LUNGE_Z), Torso=STRIKE_TORSO, Head=STRIKE_HEAD,
             **STRIKE_LEGS, **{"Right Arm": STRIKE_RIGHT_ARM, "Left Arm": (10, 0, -20)}),
-        _kf(IMPACT_T + 0.35, root_pos=(0, GROUND_Y, LUNGE_Z), Torso=RECOVER_TORSO, Head=RECOVER_HEAD,
+        _kf(IMPACT_T + 0.40, root_pos=(0, GROUND_Y, LUNGE_Z), Torso=RECOVER_TORSO, Head=RECOVER_HEAD,
             **STRIKE_LEGS, **{"Right Arm": RECOVER_RIGHT_ARM, "Left Arm": _READY_ARMS["Left Arm"]}),
-        _kf(IMPACT_T + 0.80, root_pos=(0, GROUND_Y, LUNGE_Z + 0.4), Torso=FINAL_TORSO, Head=FINAL_HEAD,
+        _kf(IMPACT_T + 0.85, root_pos=(0, GROUND_Y, LUNGE_Z + 0.4), Torso=FINAL_TORSO, Head=FINAL_HEAD,
             **_READY_LEGS, **_READY_ARMS),
     ]
     phases = [
-        {"name": "garde", "t0": 0.00, "t1": 0.30, "expected_reversals": {}},
-        {"name": "charge", "t0": 0.30, "t1": IMPACT_T, "expected_reversals": {}},
+        {"name": "garde", "t0": 0.00, "t1": WINDUP_T, "expected_reversals": {}},
+        {"name": "charge", "t0": WINDUP_T, "t1": COIL_T, "expected_reversals": {}},
+        {"name": "lacher", "t0": COIL_T, "t1": IMPACT_T, "expected_reversals": {}},
         {"name": "impact", "t0": IMPACT_T, "t1": IMPACT_T + 0.12, "expected_reversals": {}},
-        {"name": "suite", "t0": IMPACT_T + 0.12, "t1": IMPACT_T + 0.35, "expected_reversals": {}},
-        {"name": "posture_finale", "t0": IMPACT_T + 0.35, "t1": IMPACT_T + 0.80, "expected_reversals": {}},
+        {"name": "suite", "t0": IMPACT_T + 0.12, "t1": IMPACT_T + 0.40, "expected_reversals": {}},
+        {"name": "posture_finale", "t0": IMPACT_T + 0.40, "t1": DURATION, "expected_reversals": {}},
     ]
-    preview_times = [0.0, 0.30, IMPACT_T, IMPACT_T + 0.35, IMPACT_T + 0.80]
+    preview_times = [0.0, GARDE_T, WINDUP_T, CHARGE_A_T, CHARGE_B_T, COIL_T, IMPACT_T,
+                      IMPACT_T + 0.40, IMPACT_T + 0.85]
     engine_opts = {"handle_type": "AUTO_CLAMPED"}
     return keyframes, phases, preview_times, engine_opts
 
@@ -149,9 +187,9 @@ def dummy_reaction():
             Torso=HIT_TORSO, Head=HIT_HEAD, **HIT_LEGS, **HIT_ARMS),
         # -- recul (knockback) : la racine part plus loin de l'attaquant
         # (Z encore plus negatif -- l'attaquant est du cote +Z pour lui).
-        _kf(IMPACT_T + 0.28, root_pos=(0, GROUND_Y, DUMMY_Z - 1.6), HumanoidRootPart=(0, 178, 0),
+        _kf(IMPACT_T + 0.35, root_pos=(0, GROUND_Y, DUMMY_Z - 1.6), HumanoidRootPart=(0, 178, 0),
             Torso=HIT_TORSO, Head=HIT_HEAD, **HIT_LEGS, **HIT_ARMS),
-        _kf(IMPACT_T + 0.65, root_pos=(0, GROUND_Y, DUMMY_Z - 1.9), HumanoidRootPart=(0, 180, 0),
+        _kf(IMPACT_T + 0.75, root_pos=(0, GROUND_Y, DUMMY_Z - 1.9), HumanoidRootPart=(0, 180, 0),
             Torso=DAZED_TORSO, Head=DAZED_HEAD, **DAZED_LEGS, **DAZED_ARMS),
         # -- tenue de la pose hebetee jusqu'a la fin de la scene, alignee
         # EXACTEMENT sur la duree totale de l'attaquant (voir DURATION) :
@@ -162,10 +200,10 @@ def dummy_reaction():
     ]
     phases = [
         {"name": "attente", "t0": 0.00, "t1": IMPACT_T, "expected_reversals": {}},
-        {"name": "choc", "t0": IMPACT_T, "t1": IMPACT_T + 0.28, "expected_reversals": {}},
-        {"name": "recul", "t0": IMPACT_T + 0.28, "t1": DURATION, "expected_reversals": {}},
+        {"name": "choc", "t0": IMPACT_T, "t1": IMPACT_T + 0.35, "expected_reversals": {}},
+        {"name": "recul", "t0": IMPACT_T + 0.35, "t1": DURATION, "expected_reversals": {}},
     ]
-    preview_times = [0.0, IMPACT_T - 0.03, IMPACT_T, IMPACT_T + 0.28, IMPACT_T + 0.65, DURATION]
+    preview_times = [0.0, IMPACT_T - 0.03, IMPACT_T, IMPACT_T + 0.35, IMPACT_T + 0.75, DURATION]
     engine_opts = {"handle_type": "AUTO_CLAMPED"}
     return keyframes, phases, preview_times, engine_opts
 
