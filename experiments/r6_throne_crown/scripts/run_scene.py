@@ -12,7 +12,7 @@ import anim_engine as ae
 import export_kfseq as ex
 import export_model as em
 import props
-from choreography import full_scene
+from choreography import full_scene, SECONDARY_MOTION
 from r6_rig import PART_ORDER
 
 OUT = "../output"
@@ -49,7 +49,7 @@ def main():
 
     objs = ae.build_rig()
     ae.apply_choreography(objs, keyframes, **engine_opts)
-    samples = ae.sample(objs, duration_s=duration, sample_hz=120)
+    samples = ae.sample(objs, duration_s=duration, sample_hz=120, secondary_motion=SECONDARY_MOTION)
 
     problems = structural_sanity(samples)
     if problems:

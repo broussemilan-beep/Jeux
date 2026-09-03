@@ -785,6 +785,70 @@ référence. `.rbxmx`/`.fbx` regénérés avec la nouvelle géométrie/
 matériaux (`run_scene.py`, `build_mesh_export.py`), lecteur reconstruit
 et republié à la même URL.
 
+## 7e tour — animation plus fluide : « secondary motion » recréée localement
+
+Demande : explorer une liste d'outils IA-pour-Blender/animation (Blender
+Agent Bridge, meshgen, LLM-Blender-Agent, Dream Textures, puis Move AI
+API, DeepMotion Animate 3D API, Rokoko Studio Command API, Rokoko
+Vision/Create, Cascadeur, Mixamo, Blender+Python) et, faute de pouvoir
+les utiliser, en recréer l'équivalent localement pour rendre l'animation
+du trône plus fluide.
+
+**Triage réel, pas supposé** (vérifié dans ce sandbox avant d'écrire une
+ligne de code) :
+
+| Outil | Verdict ici |
+|---|---|
+| Blender + Python | **Déjà le cœur du pipeline** (`anim_engine.py`, `build_mesh_export.py`) — rien à ajouter. |
+| Move AI / DeepMotion / Rokoko (API) | Inutilisables : ce sont des services payants à clé API, aucune clé fournie, et une sonde réseau vers un hôte de ce type ne répond pas depuis ce sandbox. |
+| Cascadeur | Application de bureau sous licence, pas de mode API/CLI documenté pour ce genre d'automatisation — inutilisable ici. |
+| Mixamo | Web-only (upload via navigateur, compte Adobe), pas d'API publique ; de toute façon un standard de rig différent de R6/Motor6D — retargeting non trivial même si accessible. |
+| meshgen / LLM-Blender-Agent (Hunyuan3D-2) | Nécessitent des poids de modèle + idéalement un GPU — `nvidia-smi` et `torch.cuda.is_available()` confirment aucun GPU dans ce sandbox. |
+| Dream Textures | Même limite (Stable Diffusion local) — écarté pour la même raison. |
+
+Aucun de ces outils n'était donc réellement actionnable. Ce qui a été
+**recréé** à la place, en pur Python (voir `anim_engine._spring_chase()`
+et `compute_crown_track.py`) : l'idée centrale de Cascadeur (« secondary
+motion »/« auto-physics » — un mouvement qui poursuit sa cible avec un
+léger retard, un dépassement, puis une stabilisation, plutôt qu'un arrêt
+sec sur chaque keyframe) réimplémentée comme un oscillateur amorti qui
+« chasse » la courbe déjà chorégraphiée, intégré à la main (Euler
+semi-implicite), sans dépendance externe.
+
+**Portée volontairement limitée** (voir `choreography.SECONDARY_MOTION`) :
+seul le `Torso` en est équipé, et seulement à partir de `CLIMB_T`
+(assise + couronnement) :
+- Les **bras** en sont exclus : ils tiennent la couronne et s'appuient
+  sur les accoudoirs à des positions calibrées au stud près
+  (`calibrate.py`) — leur ajouter du retard aurait fait « flotter »
+  visiblement la couronne au moment de la saisir/la poser.
+- La **montée d'escalier et le demi-tour** en sont exclus (`t_min`) :
+  ce passage a déjà sa propre chorégraphie de secondary motion écrite à
+  la main image par image (tête qui part en premier, jambe en l'air
+  pendant que le corps tourne, buste qui rattrape en dernier — voir
+  section « toupie » plus haut) ; un lissage automatique par-dessus
+  aurait dilué ce travail plutôt que de l'améliorer.
+
+**Couronne : rebond d'atterrissage.** Une fois posée sur la tête
+(`FULL_PLACED_T`), la couronne suivait jusqu'ici exactement et
+immédiatement le sommet de la tête, sans transition — un arrêt sec.
+Ajouté : une sinusoïde amortie en forme fermée (~0,4 s, deux oscillations
+visibles avant extinction, amplitude de 0,05 stud) qui s'annule
+complètement en régime permanent — la couronne finit exactement à sa
+position calibrée, seul l'instant du contact est dramatisé.
+
+**Vérifié, pas supposé.** Avant de retenir les réglages définitifs
+(`stiffness=220`, `damping_ratio=0.78`), les écarts main-coussin
+(pickup) et main-tête (pose) mesurés par `calibrate.py` ont été comparés
+AVEC et SANS `secondary_motion` : 0,081 stud et 0,307 stud dans les deux
+cas, à la troisième décimale près — ces écarts sont donc **antérieurs à
+ce tour** (probablement hérités du remodelage géométrique du 6e tour),
+pas une régression introduite ici. `run_scene.py` confirme la structure
+(rotations finies, plausibles) après le changement. Vérifié aussi par
+capture d'écran (`throne_t_placed.png` / `throne_t_settle_after.png` en
+scratchpad de session) : la couronne se lit posée puis stabilisée, pas
+figée d'un coup.
+
 ## Limites assumées
 
 - Couronne tenue "à plat" (rotation identité) pendant tout le portage à

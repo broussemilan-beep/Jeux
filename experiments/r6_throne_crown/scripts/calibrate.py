@@ -12,7 +12,7 @@ import math
 import anim_engine as ae
 import numpy as np
 import props
-from choreography import full_scene, CLIMB_T, FULL_PICKUP_T, FULL_PLACED_T, STEP_T
+from choreography import full_scene, CLIMB_T, FULL_PICKUP_T, FULL_PLACED_T, STEP_T, SECONDARY_MOTION
 from r6_rig import PART_ORDER, PARENT, JOINTS, joint_for_part, PART_SIZES
 
 
@@ -47,7 +47,7 @@ def main():
     duration = max(k["time"] for k in keyframes)
     objs = ae.build_rig()
     ae.apply_choreography(objs, keyframes, **engine_opts)
-    samples = ae.sample(objs, duration_s=duration, sample_hz=60)
+    samples = ae.sample(objs, duration_s=duration, sample_hz=60, secondary_motion=SECONDARY_MOTION)
 
     def idx_at(t):
         return round(t * 60)

@@ -301,3 +301,26 @@ def full_scene():
 
 FULL_PICKUP_T = PICKUP_T + CLIMB_T
 FULL_PLACED_T = PLACED_T + CLIMB_T
+
+# "Secondary motion" -- retard/depassement/stabilisation du buste pendant
+# l'assise et le couronnement, recree localement (voir anim_engine.
+# _spring_chase()) faute d'acces a un outil comme Cascadeur dans ce
+# sandbox (pas de GPU, pas de cle d'API -- voir le worklog de session).
+# PORTEE VOLONTAIREMENT LIMITEE :
+#   - Seul le Torso est concerne. Les bras portent la couronne et
+#     s'appuient sur les accoudoirs a des positions CALIBREES au stud
+#     pres (voir calibrate.py) -- leur ajouter du retard desynchroniserait
+#     la couronne suivie (compute_crown_track.py lit tip_world("Right
+#     Arm") sur les MEMES echantillons, donc resterait cinematiquement
+#     coherent, mais la couronne "flotterait" visiblement en retard de
+#     la main au moment prevu pour l'attraper/la poser).
+#   - t_min=CLIMB_T : aucun effet pendant la montee de l'escalier et le
+#     demi-tour, deja choregraphies a la main image par image (tete qui
+#     part en premier, jambe en l'air pendant la rotation du corps, buste
+#     qui rattrape en dernier -- voir climb_stairs()) -- un lissage
+#     automatique par-dessus risquerait de diluer ce travail plutot que
+#     de l'ameliorer.
+SECONDARY_MOTION = {
+    "Torso": {"channels": (0, 1, 2), "stiffness": 220.0,
+              "damping_ratio": 0.78, "t_min": CLIMB_T},
+}

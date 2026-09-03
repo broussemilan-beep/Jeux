@@ -22,19 +22,40 @@ de la duree de la montee de l'escalier par rapport a sit_and_crown() seule) :
      fenetre, la vriller pareillement aurait l'air faux).
   3. t >= FULL_PLACED_T  : suit le sommet de la tete, ROTATION DE LA TETE
      COMPRISE -- une fois posee, elle est "portee" et tourne avec la tete.
+     Un leger REBOND D'ATTERRISSAGE (voir LANDING_*) s'ajoute sur les
+     ~0,4s qui suivent FULL_PLACED_T -- une sinusoide amortie en fermeture
+     close (pas une simulation iterative comme _spring_chase()) puisqu'il
+     n'y a pas de courbe cible a poursuivre ici, juste une impulsion a
+     l'atterrissage -- puis s'annule : la position en regime stationnaire
+     (bien apres l'atterrissage) reste EXACTEMENT celle calibree (couronne
+     posee au sommet de la tete), le rebond ne fait que dramatiser
+     l'instant du contact. Meme idee que le "secondary motion" recree
+     dans anim_engine.py, mais en forme fermee ici (objet libre, pas de
+     courbe de reference a suivre).
 """
 import json
+import math
 
 import numpy as np
 
 import anim_engine as ae
 import props
 from calibrate import tip_world, world_rotations
-from choreography import full_scene, FULL_PICKUP_T, FULL_PLACED_T
+from choreography import full_scene, FULL_PICKUP_T, FULL_PLACED_T, SECONDARY_MOTION
 
 CUSHION_POS = props.cushion_top_pos()
 SAMPLE_HZ = 30
 PICKUP_T, PLACED_T = FULL_PICKUP_T, FULL_PLACED_T
+
+# Rebond d'atterrissage -- voir docstring de module. Amplitude modeste
+# (0,05 stud, un tressaillement, pas un vrai rebond physique de couronne
+# qui quitterait la tete) et decroissance rapide (deux oscillations
+# visibles avant de s'eteindre) pour rester credible : une couronne posee
+# soigneusement, pas lachee de haut.
+LANDING_DUR = 0.40
+LANDING_AMPLITUDE = 0.05
+LANDING_FREQ_HZ = 5.0
+LANDING_TAU = 0.11
 
 
 def main():
@@ -42,7 +63,7 @@ def main():
     duration = max(k["time"] for k in keyframes)
     objs = ae.build_rig()
     ae.apply_choreography(objs, keyframes, **engine_opts)
-    samples = ae.sample(objs, duration_s=duration, sample_hz=SAMPLE_HZ)
+    samples = ae.sample(objs, duration_s=duration, sample_hz=SAMPLE_HZ, secondary_motion=SECONDARY_MOTION)
 
     n = len(samples["Torso"])
     track = []
@@ -60,6 +81,11 @@ def main():
             pos = tip_world(samples, "Head", i, "top")
             rot = world_rotations(samples, i)["Head"]
             phase = "sur_tete"
+            age = t - PLACED_T
+            if age < LANDING_DUR:
+                bounce = (LANDING_AMPLITUDE * math.exp(-age / LANDING_TAU)
+                          * math.cos(2 * math.pi * LANDING_FREQ_HZ * age))
+                pos = pos + np.array([0.0, bounce, 0.0])
         track.append({
             "t": round(t, 4), "phase": phase,
             "pos": [round(float(v), 4) for v in pos],

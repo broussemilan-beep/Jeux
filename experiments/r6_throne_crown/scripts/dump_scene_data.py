@@ -5,16 +5,18 @@ brute), trone + escalier (statique), couronne (trajectoire calculee,
 composee avec sa geometrie locale a chaque frame).
 """
 import json
+import math
 import os
 
 import numpy as np
 
 import props
 import resolve_rbxmx as rr
-from choreography import full_scene, FULL_PICKUP_T, FULL_PLACED_T
+from choreography import full_scene, FULL_PICKUP_T, FULL_PLACED_T, SECONDARY_MOTION
 from r6_rig import PART_ORDER, PART_SIZES
 from calibrate import tip_world, world_rotations
 import anim_engine as ae
+from compute_crown_track import LANDING_DUR, LANDING_AMPLITUDE, LANDING_FREQ_HZ, LANDING_TAU
 
 CUSHION_POS = props.cushion_top_pos()
 OUT_HZ = 30
@@ -32,7 +34,7 @@ def crown_frames_at(char_frames):
     duration = max(k["time"] for k in keyframes)
     objs = ae.build_rig()
     ae.apply_choreography(objs, keyframes, **engine_opts)
-    samples = ae.sample(objs, duration_s=duration, sample_hz=120)
+    samples = ae.sample(objs, duration_s=duration, sample_hz=120, secondary_motion=SECONDARY_MOTION)
 
     local_parts = props.crown_parts()
     out = []
@@ -46,6 +48,15 @@ def crown_frames_at(char_frames):
         else:
             c_pos = tip_world(samples, "Head", i, "top")
             c_rot = world_rotations(samples, i)["Head"]
+            # Rebond d'atterrissage -- meme calcul que compute_crown_track.py
+            # (constantes importees de la, pas redefinies), pour que le
+            # lecteur HTML montre EXACTEMENT le meme rebond que la
+            # trajectoire livree dans crown_track.json.
+            age = t - FULL_PLACED_T
+            if age < LANDING_DUR:
+                bounce = (LANDING_AMPLITUDE * math.exp(-age / LANDING_TAU)
+                          * math.cos(2 * math.pi * LANDING_FREQ_HZ * age))
+                c_pos = c_pos + np.array([0.0, bounce, 0.0])
 
         frame = {"t": t}
         for spec in local_parts:

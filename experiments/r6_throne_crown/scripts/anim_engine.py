@@ -155,7 +155,43 @@ def apply_choreography(objs, keyframes, fps=30, handle_type="AUTO_CLAMPED", hand
     return last_frame
 
 
-def sample(objs, duration_s, fps=30, sample_hz=60):
+def _spring_chase(times, target, stiffness, damping_ratio, t_min=None):
+    """Oscillateur amorti qui "poursuit" une courbe cible -- retard +
+    depassement + stabilisation naturels, au lieu de suivre la courbe
+    Bezier bruteforce. Integration semi-implicite (Euler), pas de
+    dependance externe -- c'est la meme idee que le "secondary motion" /
+    "auto-physics" d'outils comme Cascadeur, recree ici en local (pas
+    d'API, pas de GPU necessaire dans ce sandbox -- voir README).
+
+    t_min : si fourni, la sortie vaut exactement `target` avant t_min
+    (aucun effet, la courbe d'origine -- deja travaillee a la main --
+    reste intacte, ex. la montee d'escalier/demi-tour de ce prototype),
+    et la simulation demarre PILE sur la valeur cible a t_min (vitesse
+    nulle) -- aucun saut visible au point de depart de l'effet."""
+    n = len(times)
+    out = list(target)
+    if n == 0:
+        return out
+    start_i = 0
+    if t_min is not None:
+        start_i = next((i for i, t in enumerate(times) if t >= t_min), n)
+    if start_i >= n:
+        return out
+    omega = stiffness ** 0.5
+    damp = 2.0 * damping_ratio * omega
+    pos = target[start_i]
+    vel = 0.0
+    out[start_i] = pos
+    for i in range(start_i + 1, n):
+        dt = times[i] - times[i - 1]
+        accel = stiffness * (target[i] - pos) - damp * vel
+        vel += accel * dt
+        pos += vel * dt
+        out[i] = pos
+    return out
+
+
+def sample(objs, duration_s, fps=30, sample_hz=60, secondary_motion=None):
     """Echantillonne (rx,ry,rz) [deg, 3 canaux INDEPENDANTS -- voir note de
     module] + location a sample_hz, en avancant la frame de la scene
     (evaluation reelle des F-curves Bezier de Blender). Retourne dict
@@ -163,7 +199,14 @@ def sample(objs, duration_s, fps=30, sample_hz=60):
     world_pos vient de matrix_world, mais recompose a la main (voir
     _world_positions ci-dessous) a partir de euler_xyz_matrix -- PAS de
     matrix_world.translation de Blender, pour rester coherent avec la
-    seule definition de rotation utilisee partout (Roblox CFrame.Angles)."""
+    seule definition de rotation utilisee partout (Roblox CFrame.Angles).
+
+    secondary_motion : dict optionnel part_name -> {"channels": (0,1,2),
+    "stiffness", "damping_ratio", "t_min"} -- applique _spring_chase() au
+    canal de rotation LOCAL de cette part avant de recalculer les
+    positions monde (donc tout ce qui en depend -- y compris un objet
+    porte, suivi via tip_world() dans un script appelant -- reste
+    coherent avec la courbe lissee, pas avec la courbe brute)."""
     scene = bpy.context.scene
     n = int(round(duration_s * sample_hz)) + 1
     out = {part: [] for part in objs}
@@ -178,6 +221,23 @@ def sample(objs, duration_s, fps=30, sample_hz=60):
             rx, ry, rz = math.degrees(e.x), math.degrees(e.y), math.degrees(e.z)
             pos = obj.location
             local_samples[part].append((t, (rx, ry, rz), (pos.x, pos.y, pos.z)))
+
+    if secondary_motion:
+        times = [s[0] for s in local_samples[next(iter(local_samples))]]
+        for part, cfg in secondary_motion.items():
+            channels = cfg.get("channels", (0, 1, 2))
+            chased = {}
+            for ch in channels:
+                target = [s[1][ch] for s in local_samples[part]]
+                chased[ch] = _spring_chase(
+                    times, target, cfg.get("stiffness", 140.0),
+                    cfg.get("damping_ratio", 0.8), cfg.get("t_min"))
+            for i in range(n):
+                t, rot, pos = local_samples[part][i]
+                rot = list(rot)
+                for ch in channels:
+                    rot[ch] = chased[ch][i]
+                local_samples[part][i] = (t, tuple(rot), pos)
 
     world_positions = _world_positions(local_samples, n)
     for part in objs:
