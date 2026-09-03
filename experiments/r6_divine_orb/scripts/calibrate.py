@@ -1,13 +1,14 @@
 """
 Verifie par le calcul (pas a l'oeil) la choregraphie de
-haughty_orb_throw() : la position des DEUX mains levees (pour caler le
-decalage vertical du soleil dans le lecteur, voir choreography.py, ET
-pour verifier que Left Arm en miroir de Right Arm atteint bien la meme
-hauteur -- jamais suppose), que la vitesse instantanee du bras au
-keyframe de lancer est bien quasi nulle (donc que la trajectoire de vol
-de la boule DOIT etre scriptee independamment, pas derivee de cette
-vitesse -- trouve par ce calcul meme, pas suppose), et que la structure
-reste plausible (rotations finies, pas de coude/genou a simuler).
+haughty_orb_throw() : la position de la main droite levee (pour caler le
+decalage vertical du soleil dans le lecteur, voir choreography.py --
+Left Arm reste au repos pendant toute la scene, geste a UNE main, voir
+sa docstring pour l'historique des retours utilisateur), que la vitesse
+instantanee du bras au keyframe de lancer est bien quasi nulle (donc que
+la trajectoire de vol de la boule DOIT etre scriptee independamment, pas
+derivee de cette vitesse -- trouve par ce calcul meme, pas suppose), et
+que la structure reste plausible (rotations finies, pas de coude/genou a
+simuler).
 
 Bug trouve et corrige pendant cette meme iteration : `tip_world(...,
 "top")` donne le bout du bras PRES DE L'EPAULE (quasi immobile quel que
@@ -56,20 +57,15 @@ def main():
     def idx_at(t):
         return round(t * 60)
 
-    print("=== mains levees (charge, geste a deux mains) : position + symetrie + ecart a la tete ===")
+    print("=== main droite levee (charge, geste a une main) : position + ecart a la tete ===")
     for t in (RAISE_T, 0.95, 1.60):
         i = idx_at(t)
         hand_r = tip_world(samples, "Right Arm", i, "bottom")
-        hand_l = tip_world(samples, "Left Arm", i, "bottom")
         head = tip_world(samples, "Head", i, "top")
         gap_r = head[1] - hand_r[1]
-        gap_l = head[1] - hand_l[1]
-        mirror_err = abs(hand_r[1] - hand_l[1])  # meme hauteur attendue (miroir X/Z)
-        print(f"  t={t:.2f}s  main D={hand_r.round(3).tolist()}  main G={hand_l.round(3).tolist()}"
-              f"  sommet tete={head.round(3).tolist()}"
-              f"  (ecart Y tete-main D:{gap_r:.3f} G:{gap_l:.3f} -- negatif = main AU-DESSUS de la"
-              f" tete, voir choreography.RAISE_RIGHT_ARM/RAISE_LEFT_ARM ; ecart de hauteur D/G :"
-              f" {mirror_err:.4f} -- doit rester quasi nul, confirme la symetrie du geste a deux mains)")
+        print(f"  t={t:.2f}s  main D={hand_r.round(3).tolist()}  sommet tete={head.round(3).tolist()}"
+              f"  (ecart Y tete-main : {gap_r:.3f} -- negatif = main AU-DESSUS de la tete, voir"
+              f" choreography.RAISE_RIGHT_ARM)")
 
     print(f"\n=== lancer (RELEASE_T={RELEASE_T:.2f}s) : vitesse instantanee du bras ===")
     i0 = idx_at(RELEASE_T - 1.0 / 60)

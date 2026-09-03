@@ -52,8 +52,8 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
   <p class="eyebrow">Prototype isolé · Roblox R6 · Model + KeyframeSequence</p>
   <h1>Genkidama</h1>
   <p class="sub">Debout au bord d'un à-pic, dans une posture hautaine (buste et tête inclinés en arrière), le
-    personnage (rig R6 réel, 6 segments rigides) lève les deux mains dès la première frame pour invoquer le soleil —
-    un genkidama, énergie rassemblée à deux mains au-dessus de la tête — le laisse grossir en le tenant, puis l'abat
+    personnage (rig R6 réel, 6 segments rigides) lève la main droite dès la première frame pour invoquer le soleil —
+    un genkidama, énergie rassemblée à une main au-dessus de la tête — le laisse grossir en le tenant, puis l'abat
     d'un geste brusque pour le jeter sur le monde en contrebas — avant de reprendre sa pose, satisfait, à regarder
     l'impact au loin. Ce qui joue ici est le résultat
     <strong>résolu par l'équation du moteur</strong> (<code>Part1 = Part0 · C0 · Transform · C1⁻¹</code>) à partir du
@@ -82,8 +82,8 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
         <div class="phase-label">segment <b id="phaseName2">posture hautaine</b></div>
         <div style="display:flex; gap:8px; flex-wrap:wrap">
           <div class="btn-row" id="camRow">
-            <button data-az="-50">3/4</button>
-            <button data-az="0" class="active">face</button>
+            <button data-az="-50" class="active">3/4</button>
+            <button data-az="0">face</button>
             <button data-az="-90">profil</button>
           </div>
           <div class="btn-row" id="speedRow">
@@ -96,13 +96,12 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
     </div>
   </div>
 
-  <p class="note"><strong>Le soleil ne sort pas exactement des mains</strong> : ces bras (segments rigides, longueur
-    fixe, pas de coude) ne peuvent physiquement pas lever les mains au-dessus de la tête — vérifié par balayage
-    numérique (<code>scripts/calibrate.py</code>), l'écart mesuré tourne autour de 1,0-1,05 stud sous le sommet de la
-    tête, symétrique à droite et à gauche, quel que soit l'angle du bras essayé. Le soleil est donc positionné avec un
-    décalage vertical fixe au-dessus du point médian des deux mains suivies (voir <code>orb_track.py</code>), pas
-    collé dessus — comme le petit saut assumé de la couronne dans le sacre, une limite réelle du rig, dite
-    honnêtement plutôt que masquée.</p>
+  <p class="note"><strong>Le soleil ne sort pas exactement de la main</strong> : le bras (segment rigide, longueur
+    fixe, pas de coude) monte jusqu'à X=180° (au-dessus de la tête, voir <code>choreography.RAISE_RIGHT_ARM</code>),
+    vérifié par balayage numérique (<code>scripts/calibrate.py</code>) — pas de « limite du rig » ici, la main est
+    même légèrement au-dessus du sommet de la tête à ce keyframe. Le soleil est positionné avec un décalage vertical
+    fixe au-dessus de la main suivie (voir <code>orb_track.py</code>), pas collé dessus, pour une marge visuelle
+    nette entre les deux.</p>
   <p class="note"><strong>La trajectoire de vol n'est pas une extrapolation physique</strong> : la vitesse
     instantanée du bras au keyframe de lancer a été mesurée (~5,3 studs/s) puis délibérément <em>pas</em> utilisée —
     elle ne dit rien sur où se trouve « le monde » ni sur combien de temps le vol doit durer pour rester dramatique.
@@ -135,12 +134,11 @@ const phaseNameEl2 = document.getElementById("phaseName2");
 const timecodeEl = document.getElementById("timecode");
 const phaseTrack = document.getElementById("phaseTrack");
 
-// Face (az=0) par defaut, pas 3/4 (-50) comme les prototypes precedents :
-// le geste a deux mains (genkidama) se lit nettement mieux de face --
-// les deux bras symetriques dessinent un "V" clairement visible vers le
-// soleil, alors qu'en 3/4 ils se chevauchent partiellement et brouillent
-// la silhouette (verifie par capture d'ecran comparee des deux angles).
-let AZ = 0 * Math.PI / 180;
+// 3/4 (-50) par defaut, meme convention que les autres prototypes de ce
+// dossier -- geste a une seule main (asymetrique), donc pas de probleme
+// de bras qui se chevauchent comme la version a deux mains testee puis
+// abandonnee (voir README) ; le 3/4 reste lisible.
+let AZ = -50 * Math.PI / 180;
 const EL = 14 * Math.PI / 180;
 const DURATION = DATA.duration;
 const RAISE_T = DATA.raise_t;
@@ -412,7 +410,7 @@ function drawCharAura(t, charPose) {
 }
 
 // Filaments d'energie qui convergent vers le soleil pendant la charge --
-// detail signature du genkidama (l'energie "aspiree" vers les mains).
+// detail signature du genkidama (l'energie "aspiree" vers la main).
 // Deterministe (sin() a des frequences/offsets fixes, jamais
 // Math.random()) pour que deux captures a la meme frame soient
 // identiques -- meme discipline que les fissures au sol des prototypes

@@ -9,16 +9,15 @@ d'utile sur la duree/portee du vol -- voir sa docstring).
 
 Trois phases :
   1. t < RAISE_T        : n'existe pas encore (rayon 0).
-  2. RAISE_T..RELEASE_T : "en charge", suit le POINT MEDIAN DES DEUX
-     MAINS levees (geste a deux mains, genkidama -- pas juste Right Arm
-     comme dans la premiere version de cette scene) avec un decalage
-     vertical FIXE (HAND_OFFSET_Y) au-dessus de ce point, pour que le
-     soleil flotte visiblement AU-DESSUS des mains jointes plutot que de
-     leur etre colle dessus (les mains sont deja au-dessus de la tete a
-     ce keyframe -- voir calibrate.py et choreography.RAISE_RIGHT_ARM ;
-     PAS une compensation de limite du rig, contrairement a la premiere
-     version de ce fichier, qui mesurait le mauvais bout du bras -- voir
-     le commentaire de HAND_OFFSET_Y). Rayon : croit de 0 a
+  2. RAISE_T..RELEASE_T : "en charge", suit LA MAIN DROITE levee (geste a
+     UNE main -- retour utilisateur explicite, voir choreography.py) avec
+     un decalage vertical FIXE (HAND_OFFSET_Y) au-dessus d'elle, pour que
+     le soleil flotte visiblement AU-DESSUS de la main plutot que de lui
+     etre colle dessus (la main est deja au-dessus de la tete a ce
+     keyframe -- voir calibrate.py et choreography.RAISE_RIGHT_ARM ; PAS
+     une compensation de limite du rig, contrairement a la toute
+     premiere version de ce fichier, qui mesurait le mauvais bout du
+     bras -- voir le commentaire de HAND_OFFSET_Y). Rayon : croit de 0 a
      ORB_MAX_RADIUS (interpolation lissee, pas lineaire -- une invocation
      qui accelere en grossissant se lit mieux qu'une croissance a vitesse
      constante).
@@ -40,16 +39,16 @@ from choreography import haughty_orb_throw, RAISE_T, RELEASE_T, IMPACT_T
 
 SAMPLE_HZ = 30
 
-# Decalage vertical au-dessus du POINT MEDIAN des deux mains levees --
-# purement une marge visuelle (le soleil flotte au-dessus des mains
-# jointes plutot que de les toucher), PAS une compensation de limite du
-# rig. La premiere version de ce fichier utilisait 1,4 stud pour
-# compenser un ecart mesure de ~1,0-1,05 stud "sous la tete" -- un
-# artefact du bug de mesure corrige dans calibrate.py (mauvais bout du
-# bras, voir sa docstring) : les mains sont en realite deja LEGEREMENT
-# AU-DESSUS de la tete a ce keyframe. 1,0 stud choisi pour une marge
-# nette au-dessus des mains sans coller le soleil sur la tete (verifie
-# par capture d'ecran).
+# Decalage vertical au-dessus de la main droite levee -- purement une
+# marge visuelle (le soleil flotte au-dessus de la main plutot que de la
+# toucher), PAS une compensation de limite du rig. La toute premiere
+# version de ce fichier utilisait 1,4 stud pour compenser un ecart
+# mesure de ~1,0-1,05 stud "sous la tete" -- un artefact du bug de
+# mesure corrige dans calibrate.py (mauvais bout du bras, voir sa
+# docstring) : la main est en realite deja LEGEREMENT AU-DESSUS de la
+# tete a ce keyframe. 1,0 stud choisi pour une marge nette au-dessus de
+# la main sans coller le soleil sur la tete (verifie par capture
+# d'ecran).
 HAND_OFFSET_Y = 1.0
 
 ORB_MAX_RADIUS = 1.1
@@ -84,9 +83,7 @@ def main():
             pos, radius, phase = None, 0.0, "absente"
         elif t < RELEASE_T:
             hand_r = tip_world(samples, "Right Arm", i, "bottom")
-            hand_l = tip_world(samples, "Left Arm", i, "bottom")
-            hand_mid = (hand_r + hand_l) / 2.0
-            pos = hand_mid + np.array([0.0, HAND_OFFSET_Y, 0.0])
+            pos = hand_r + np.array([0.0, HAND_OFFSET_Y, 0.0])
             frac = (t - RAISE_T) / (RELEASE_T - RAISE_T)
             radius = ORB_MAX_RADIUS * _ease_in(min(1.0, frac))
             phase = "charge"
