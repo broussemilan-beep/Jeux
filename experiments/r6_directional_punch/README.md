@@ -31,7 +31,7 @@ authored, coupes franches), pas un azimut choisi par l'utilisateur.
   mannequin (même rig, même durée) : attente → choc → recul → hébété.
 - Lecteur HTML (place d'entraînement texturée, deux rigs synchronisés,
   caméra à cinq plans, flash impact-frame) :
-  [artifact à publier]
+  https://claude.ai/code/artifact/75d33237-0619-46d5-a7f5-cc39768a1406
 
 Pas de `Model` de décor livré : la place d'entraînement (sol, mur en
 ruine) est une **mise en scène du lecteur uniquement** — voir sa note
