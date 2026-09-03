@@ -64,7 +64,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
     <div class="viewport-wrap">
       <canvas id="stage" width="1200" height="900"></canvas>
       <div class="chip left">phase · <b id="phaseName">posture hautaine</b></div>
-      <div class="chip right" id="timecode">0.00s / 3.05s</div>
+      <div class="chip right" id="timecode">0.00s / 3.60s</div>
     </div>
 
     <div class="controls">
@@ -385,7 +385,40 @@ function drawWorld(t) {
       ctx.beginPath(); ctx.arc(WORLD_SCREEN.x, WORLD_SCREEN.y, 20 + ringT * 130, 0, Math.PI * 2); ctx.stroke();
       ctx.restore();
     }
+    drawImpactBurst(WORLD_SCREEN.x, WORLD_SCREEN.y, age, 0.55);
   }
+}
+
+// Eclat texture -- etoile dentelee (pointes longues/courtes alternees,
+// legerement irregulieres) plutot qu'un simple cercle : reference
+// utilisateur (captures d'un burst d'energie noir et blanc, pointes
+// nettes façon eclat de verre/glitch). Deterministe (sin() sur l'angle,
+// jamais Math.random()) pour rester reproductible a une frame donnee.
+function drawImpactBurst(cx, cy, age, maxAge) {
+  const p = Math.min(1, age / maxAge);
+  const alpha = Math.max(0, 1 - p);
+  if (alpha <= 0) return;
+  const grow = 1 - Math.pow(1 - p, 3);
+  const spikes = 10;
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+  ctx.beginPath();
+  for (let i = 0; i <= spikes * 2; i++) {
+    const ang = (i / (spikes * 2)) * Math.PI * 2;
+    const isLong = i % 2 === 0;
+    const jitter = Math.sin(ang * 5.0 + i * 1.7) * 0.16;
+    const rad = (isLong ? 1.0 + jitter * 0.3 : 0.38 + jitter) * (16 + grow * 165);
+    const x = cx + Math.cos(ang) * rad;
+    const y = cy + Math.sin(ang) * rad;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+  ctx.fillStyle = `rgba(255,238,205,${0.55 * alpha})`;
+  ctx.fill();
+  ctx.strokeStyle = `rgba(255,255,255,${0.8 * alpha})`;
+  ctx.lineWidth = 1.2;
+  ctx.stroke();
+  ctx.restore();
 }
 
 // Halo autour du personnage pendant la charge -- chaud/dore (soleil),
@@ -439,10 +472,41 @@ function drawEnergyWisps(t, sx, sy, r) {
   ctx.restore();
 }
 
-// Le soleil lui-meme -- suit orb.pos (proj reel, point median des deux
-// mains) pendant la charge (il reste pres du personnage, la projection
-// reste lisible), puis un lerp ECRAN vers WORLD_SCREEN pendant le vol
-// (voir note sous le lecteur).
+// Corona texturee du soleil -- silhouette dentelee (langues de flamme)
+// autour du disque plein, PAS un simple halo circulaire flou -- retour
+// utilisateur ("fais des textures") + reference (image du marketplace
+// Roblox "The Creator VFX" : boule de feu avec des langues de flamme
+// nettes, pas une boule lisse). Bruit deterministe (sin() a plusieurs
+// frequences/phases fixes) pour une silhouette organique reproductible,
+// jamais Math.random().
+function drawFlameCorona(sx, sy, r, t) {
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+  const N = 20;
+  ctx.beginPath();
+  for (let i = 0; i <= N; i++) {
+    const ang = (i / N) * Math.PI * 2;
+    const wobble = Math.sin(ang * 3 + t * 2.2) * 0.5
+                 + Math.sin(ang * 7 - t * 3.1) * 0.22
+                 + Math.sin(ang * 2 + t * 1.1) * 0.28;
+    const rad = r * (1.4 + wobble * 0.5);
+    const x = sx + Math.cos(ang) * rad, y = sy + Math.sin(ang) * rad;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+  const g = ctx.createRadialGradient(sx, sy, r * 0.5, sx, sy, r * 2.3);
+  g.addColorStop(0, "rgba(255,196,80,0.75)");
+  g.addColorStop(0.55, "rgba(255,120,35,0.35)");
+  g.addColorStop(1, "rgba(255,90,20,0)");
+  ctx.fillStyle = g;
+  ctx.fill();
+  ctx.restore();
+}
+
+// Le soleil lui-meme -- suit orb.pos (proj reel de la main droite)
+// pendant la charge (il reste pres du personnage, la projection reste
+// lisible), puis un lerp ECRAN vers WORLD_SCREEN pendant le vol (voir
+// note sous le lecteur).
 function drawOrb(t, orb, charPose) {
   if (!orb || orb.radius <= 0.01) return;
   let sx, sy;
@@ -475,6 +539,8 @@ function drawOrb(t, orb, charPose) {
     ctx.restore();
   }
 
+  drawFlameCorona(sx, sy, r, t);
+
   ctx.save();
   ctx.globalCompositeOperation = "lighter";
   const halo = ctx.createRadialGradient(sx, sy, 0, sx, sy, r * 3.2);
@@ -491,6 +557,24 @@ function drawOrb(t, orb, charPose) {
   ctx.globalCompositeOperation = "source-over";
   ctx.fillStyle = core;
   ctx.beginPath(); ctx.arc(sx, sy, r, 0, Math.PI * 2); ctx.fill();
+
+  // Taches solaires -- surface texturee (pas un disque plat uniforme),
+  // "source-atop" les confine au disque deja dessine. Positions/rayons
+  // fixes, seule leur rotation depend de t (surface qui tourne
+  // lentement) -- deterministe, pas de bruit aleatoire par frame.
+  ctx.globalCompositeOperation = "source-atop";
+  const spots = [[0.35, 0.25, 0.30], [-0.45, -0.15, 0.22], [0.05, -0.5, 0.18], [-0.2, 0.5, 0.16]];
+  for (const [ox, oy, rr] of spots) {
+    const ang = t * 0.3;
+    const rx = ox * Math.cos(ang) - oy * Math.sin(ang);
+    const ry = ox * Math.sin(ang) + oy * Math.cos(ang);
+    const px = sx + rx * r, py = sy + ry * r;
+    const sg = ctx.createRadialGradient(px, py, 0, px, py, rr * r);
+    sg.addColorStop(0, "rgba(180,55,10,0.55)");
+    sg.addColorStop(1, "rgba(180,55,10,0)");
+    ctx.fillStyle = sg;
+    ctx.beginPath(); ctx.arc(px, py, rr * r, 0, Math.PI * 2); ctx.fill();
+  }
   ctx.restore();
 }
 

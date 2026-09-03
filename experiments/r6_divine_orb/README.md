@@ -47,8 +47,8 @@ qui garde la calibration corrigée (voir plus bas) et la couleur soleil.
 
 - `output/character_haughty_orb_throw.rbxmx` — `KeyframeSequence` du
   personnage (rig R6 réel, 6 segments rigides, mêmes contraintes que les
-  autres prototypes : pas de coude/genou, Motor6D 3 DOF). 93 keyframes,
-  3,05 s à 30 Hz.
+  autres prototypes : pas de coude/genou, Motor6D 3 DOF). 109 keyframes,
+  3,60 s à 30 Hz.
 - `output/divine_orb.rbxmx` — `Model` statique du soleil (un `Ball`,
   `Material = Neon` — brille nativement dans le moteur Roblox, même
   choix que les gemmes de `r6_throne_crown`). Sa position/taille réelles
@@ -64,7 +64,7 @@ qui garde la calibration corrigée (voir plus bas) et la couleur soleil.
 
 ## Chorégraphie
 
-Cinq phases (`scripts/choreography.py`, fonction `haughty_orb_throw()`) :
+Sept temps (`scripts/choreography.py`, fonction `haughty_orb_throw()`) :
 
 1. **Invocation** (0,00 s → `RAISE_T`=0,30 s) — la **main droite** se
    lève **dès la toute première frame** (retour utilisateur : « au début
@@ -83,17 +83,73 @@ Cinq phases (`scripts/choreography.py`, fonction `haughty_orb_throw()`) :
 3. **Anticipation** (`ANTICIP_T` → `THROW_T`=1,90 s) — la main se
    resserre légèrement vers le corps (compression avant le lancer), le
    buste et la tête se penchent encore plus en arrière (-22°/-15°).
-4. **Lancer** (`THROW_T`, 0,15 s) — le bras balaie depuis au-dessus de
-   la tête jusqu'à un peu au-delà de l'horizontale, le buste suit
-   (transfert de poids réel) — un vrai « abattre », pas un geste qui
-   reste haut. **C'est ce keyframe (`RELEASE_T` = `THROW_T`) qui détache
-   le soleil de la main** dans le lecteur, plus un prolongement du geste
-   (*follow-through*) juste après, bras continuant sa descente.
-5. **Récupération et posture finale** (`THROW_T` + 0,55 s → 3,05 s) — le
-   personnage revient à sa posture hautaine, satisfait, à regarder
-   l'impact au loin.
+4. **Lancer** (`THROW_T`) — le bras balaie depuis au-dessus de la tête
+   jusqu'à un peu au-delà de l'horizontale, le buste suit (transfert de
+   poids réel) — un vrai « abattre », pas un geste qui reste haut.
+   **C'est ce keyframe (`RELEASE_T` = `THROW_T`) qui détache le soleil
+   de la main** dans le lecteur.
+5. **Plongeon** (`THROW_T` → `DEEP_T`=2,05 s) — le geste **continue vers
+   le sol** au lieu de s'arrêter : le buste plonge à X=42° (bien au-delà
+   du lancer, X=20°), la tête suit, les jambes prennent une fente
+   (`DEEP_LEGS`), et le bras achève sa descente jusqu'à X quasi nul
+   (voir « Fin de mouvement vers le sol » plus bas — c'est le maximum
+   géométrique que le bras seul puisse atteindre, le reste vient du
+   buste). Vrai *follow-through*, pas un simple retour à l'équilibre.
+6. **Tenue** (`DEEP_T` → `IMPACT_T`=2,75 s) — pose figée (deux keyframes
+   identiques → *hold* plat, même technique que les tenues de
+   `r6_divine_descent`) : le personnage reste plongé vers le sol
+   jusqu'à l'impact du soleil sur le monde, il ne se redresse pas avant.
+7. **Redressement et posture finale** (`IMPACT_T` + 0,50 s → 3,60 s) —
+   remontée **lente** (pas un retour brusque) vers la posture hautaine,
+   satisfait, à regarder l'impact au loin.
 
-## Bug de calibration trouvé et corrigé pendant cette itération
+## Fin de mouvement vers le sol — quatrième itération
+
+Retour utilisateur (direct, sans détour) : « fais plus d'effort la fin
+de mouvement doit allez vers le sol fais du textures tu es censé être un
+animateur roblox expert ». Deux demandes distinctes.
+
+**Le follow-through ne descendait pas assez, et se redressait trop tôt.**
+La version précédente relevait déjà le bras (`(10, 0, 5)`) et redressait
+le buste dès `THROW_T` + 0,55 s — un instant qui tombait **avant**
+`IMPACT_T` (le soleil n'avait pas fini sa chute que le personnage se
+redressait déjà). Corrigé par les temps 5-6-7 ci-dessus : un vrai
+plongeon (buste à X=42°, jambes en fente) qui va **plus loin** que la
+pose de lancer, **tenu jusqu'à l'impact** (pas avant), puis une remontée
+qui prend son temps (0,5 s) plutôt que de rebondir immédiatement.
+
+Point technique important, vérifié numériquement (pas supposé) : le bras
+seul ne peut pas descendre plus bas que X=0 dans son propre repère (le
+point où il pend simplement) — tourner davantage dans un sens ou l'autre
+le RELÈVE (même mécanique que la limite de portée haute documentée plus
+bas, dans l'autre sens). « Aller vers le sol » ne pouvait donc pas venir
+d'une rotation d'épaule supplémentaire, mais du **buste qui penche** :
+un bras à X≈0 dans le repère du buste, porté par un buste penché à 42°,
+pointe bel et bien vers le sol en repère MONDE. Vérifié par
+`calibrate.py` (position de la main sous la hanche : 0,31 stud au
+lancer → 0,69 stud au plongeon, tenue jusqu'à l'impact) et confirmé par
+capture d'écran (voir les mains/torse dans la vidéo/les images
+envoyées).
+
+**Textures.** Le lecteur dessinait le soleil et le flash d'impact avec
+de simples dégradés radiaux circulaires — plat, pas de matière. Ajouté,
+avec la même discipline « déterministe, pas de bruit aléatoire par
+frame » que les fissures au sol des prototypes précédents :
+
+- `drawFlameCorona()` — silhouette dentelée (langues de flamme) autour
+  du disque plein du soleil, superposition de plusieurs `sin()` à
+  fréquences/phases différentes le long de l'angle — plus proche de
+  l'image de référence (asset Roblox *The Creator VFX*, boule de feu à
+  bords irréguliers) qu'un halo circulaire lisse.
+- Taches solaires sur le disque du soleil — 4 taches sombres à position
+  fixe, tournant lentement avec `t`, confinées au disque via
+  `globalCompositeOperation = "source-atop"` (une surface qui roule,
+  pas un aplat uniforme).
+- `drawImpactBurst()` — éclat en étoile dentelée (10 pointes longues et
+  courtes alternées, légèrement irrégulières) au moment de l'impact,
+  à la place d'un simple anneau — référence directe : les captures de
+  burst noir et blanc (pointes nettes façon éclat/glitch) envoyées par
+  l'utilisateur.
 
 La première version de cette scène affirmait (calibrée par balayage
 numérique, donc a priori fiable) que « la main levée ne peut
