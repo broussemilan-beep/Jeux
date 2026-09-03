@@ -79,10 +79,22 @@ _READY_HEAD = (-5, 0, 0)
 _READY_LEGS = {"Right Leg": (0, 0, 5), "Left Leg": (4, 0, -4)}
 _READY_ARMS = {"Right Arm": (22, 0, 16), "Left Arm": (22, 0, -16)}
 
-WINDUP_TORSO = (-10, -28, 0)
-WINDUP_HEAD = (-8, -10, 0)
-WINDUP_RIGHT_ARM = (2, 0, -8)
-WINDUP_LEGS = {"Right Leg": (-6, 0, 5), "Left Leg": (14, 0, -4)}
+# -- Amplitudes de charge/lacher reprises apres analyse d'un pack
+# d'animation de combat premium fourni par l'utilisateur ("ça manque
+# d'exagération") : mesure reelle (rotation vs repos, matrices Pose.CFrame
+# decodees numeriquement -- voir experiments/_shared/rbxm_reader.py et
+# le rapport correspondant) sur une sequence "M1_1" comparable -- bras
+# ~178 deg, buste ~99 deg, tete ~88 deg, contre ~65/38/15 deg ici avant
+# ce passage. La CHARGE (anticipation, en l'air, aucune contrainte de
+# contact) est le levier le plus sur a exagerer fortement ; le LACHER
+# (STRIKE_*, plus bas) reste lui volontairement INCHANGE -- calibre au
+# stud pres par balayage numerique (0,62 stud d'ecart, voir
+# calibrate.py), un gain d'exageration qui casserait ce contact ne
+# vaudrait pas le coup.
+WINDUP_TORSO = (-14, -38, 2)
+WINDUP_HEAD = (-11, -15, 0)
+WINDUP_RIGHT_ARM = (-8, 0, -22)
+WINDUP_LEGS = {"Right Leg": (-9, 0, 6), "Left Leg": (18, 0, -5)}
 
 # -- Battements de "respiration" pendant la charge -- la pose ne reste
 # PAS parfaitement figee entre WINDUP_T et COIL_T (un gel total lirait
@@ -90,13 +102,13 @@ WINDUP_LEGS = {"Right Leg": (-6, 0, 5), "Left Leg": (14, 0, -4)}
 # buste/bras, resserrement progressif jusqu'au coil final juste avant le
 # lacher. Meme principe que le balancement "l'energie qui respire" de
 # r6_divine_orb, applique ici au poing plutot qu'a une boule.
-CHARGE_A_TORSO = (-11, -31, 0)
-CHARGE_A_RIGHT_ARM = (2, 0, -12)
-CHARGE_B_TORSO = (-9, -25, 0)
-CHARGE_B_RIGHT_ARM = (3, 0, -6)
-COIL_TORSO = (-13, -34, 0)
-COIL_HEAD = (-9, -12, 0)
-COIL_RIGHT_ARM = (0, 0, -15)
+CHARGE_A_TORSO = (-16, -42, 3)
+CHARGE_A_RIGHT_ARM = (-10, 0, -30)
+CHARGE_B_TORSO = (-13, -34, 1)
+CHARGE_B_RIGHT_ARM = (-6, 0, -18)
+COIL_TORSO = (-20, -56, 4)
+COIL_HEAD = (-17, -22, 0)
+COIL_RIGHT_ARM = (-22, 0, -52)
 
 # Calibre par balayage numerique (pas a l'oeil, voir calibrate.py) :
 # X=100 semblait "plus de puissance" mais releve le poing bien au-dessus
@@ -110,9 +122,19 @@ STRIKE_RIGHT_ARM = (65, 0, -4)
 STRIKE_LEGS = {"Right Leg": (-14, 0, 5), "Left Leg": (26, 0, -4)}
 LUNGE_Z = -5.40   # racine avancee (pas dans le coup) au moment de l'impact -- calibre par calcul (voir calibrate.py) pour amener le poing pres du torse du mannequin
 
-RECOVER_TORSO = (-8, 8, 0)
-RECOVER_HEAD = (-6, 3, 0)
-RECOVER_RIGHT_ARM = (28, 0, 10)
+# -- Follow-through : le coup ne s'arrete pas net a IMPACT_T -- le poids
+# du corps continue legerement au-dela du point de contact calibre avant
+# de repartir en arriere (principe d'animation "overshoot"/"follow
+# through"). Garde IMPACT_T (le seul instant mesure par calibrate.py)
+# strictement inchange ; cette pose n'existe que 0,06s APRES, donc ne
+# touche pas le contact calibre lui-meme.
+OVERSHOOT_TORSO = (20, 40, 0)
+OVERSHOOT_HEAD = (13, 16, 0)
+OVERSHOOT_RIGHT_ARM = (72, 0, 2)
+
+RECOVER_TORSO = (-14, 4, 0)
+RECOVER_HEAD = (-9, 2, 0)
+RECOVER_RIGHT_ARM = (22, 0, 14)
 
 FINAL_TORSO = (-12, 0, 0)
 FINAL_HEAD = (-8, 0, 0)
@@ -136,6 +158,11 @@ def attacker_punch():
             **WINDUP_LEGS, **{"Right Arm": COIL_RIGHT_ARM, "Left Arm": _READY_ARMS["Left Arm"]}),
         _kf(IMPACT_T, root_pos=(0, GROUND_Y, LUNGE_Z), Torso=STRIKE_TORSO, Head=STRIKE_HEAD,
             **STRIKE_LEGS, **{"Right Arm": STRIKE_RIGHT_ARM, "Left Arm": (10, 0, -20)}),
+        # -- follow-through : le poing/buste continuent legerement au-dela
+        # du point de contact calibre (voir OVERSHOOT_* plus haut) avant
+        # de repartir en arriere -- IMPACT_T lui-meme reste inchange.
+        _kf(IMPACT_T + 0.06, root_pos=(0, GROUND_Y, LUNGE_Z - 0.15), Torso=OVERSHOOT_TORSO, Head=OVERSHOOT_HEAD,
+            **STRIKE_LEGS, **{"Right Arm": OVERSHOOT_RIGHT_ARM, "Left Arm": (10, 0, -20)}),
         _kf(IMPACT_T + 0.40, root_pos=(0, GROUND_Y, LUNGE_Z), Torso=RECOVER_TORSO, Head=RECOVER_HEAD,
             **STRIKE_LEGS, **{"Right Arm": RECOVER_RIGHT_ARM, "Left Arm": _READY_ARMS["Left Arm"]}),
         _kf(IMPACT_T + 0.85, root_pos=(0, GROUND_Y, LUNGE_Z + 0.4), Torso=FINAL_TORSO, Head=FINAL_HEAD,
@@ -215,11 +242,17 @@ def dummy_reaction():
 # que de s'arreter net. t_min = IMPACT_T : aucun effet pendant la charge
 # elle-meme (deja un mouvement rapide et delibere, pas besoin d'y
 # ajouter du flou).
+# damping_ratio abaisse (0.55->0.40, 0.6->0.45) apres le passage
+# "exageration" : le follow-through explicite (OVERSHOOT_*) donne deja un
+# grand mouvement delibere, le spring-chase qui suit doit maintenant se
+# lire comme un vrai rebond/vibration APRES ce mouvement plutot qu'un
+# simple amortissement plat -- plus underdamped, une ou deux oscillations
+# visibles avant stabilisation.
 ATTACKER_SECONDARY_MOTION = {
     "Torso": {"channels": (0, 1, 2), "stiffness": 260.0,
-              "damping_ratio": 0.55, "t_min": IMPACT_T},
+              "damping_ratio": 0.40, "t_min": IMPACT_T},
     "Right Arm": {"channels": (0, 2), "stiffness": 320.0,
-                  "damping_ratio": 0.6, "t_min": IMPACT_T},
+                  "damping_ratio": 0.45, "t_min": IMPACT_T},
 }
 DUMMY_SECONDARY_MOTION = {
     "Torso": {"channels": (0, 1, 2), "stiffness": 90.0,

@@ -348,6 +348,54 @@ Captures de vérification (5 plans, après les deux correctifs ci-dessus) :
 `captures/verification/2026-09-03-directional-punch-webgl-plan-large.png`,
 `-plan-approche.png`, `-impact.png`, `-reaction.png`, `-plan-final.png`.
 
+## Exagération de la charge/lacher — mesurée contre un pack premium, pas à l'oeil
+
+Suite au retour rendu (rendu 3D d'abord, ci-dessus), deuxième retour sur
+l'animation elle-même : *"ça manque d'exagération"*, avec un pack
+d'animation de combat premium fourni en référence
+(`battleground_animation_pack_v1.0.1.rbxm`). Plutôt que d'ajuster les
+poses à l'oeil, la démarche a été la même que partout ailleurs dans ce
+projet : **mesurer** — écrire un lecteur du format binaire `.rbxm`
+(`experiments/_shared/rbxm_reader.py`, voir son README pour la méthode de
+validation) et en extraire les amplitudes de rotation réelles d'une
+séquence de combo comparable ("M1_1", un direct de base) :
+
+| segment | pack premium (mesuré) | ici, avant ce passage |
+|---|---|---|
+| Bras droit | ~178° | ~65° |
+| Torse (torsion) | ~99° | ~38° |
+| Tête | ~88° | ~15° |
+
+Un facteur ~2,5-3× d'écart, confirmé par le calcul plutôt que supposé.
+
+**Ce qui a été poussé** — uniquement la CHARGE (`WINDUP_*`/`CHARGE_A_*`/
+`CHARGE_B_*`/`COIL_*`), qui n'a aucune contrainte de contact (le poing est
+en l'air) : torsion du buste au coil `-34°→-56°`, bras armé jusqu'à
+`(-22,0,-52)` (contre `(0,0,-15)` avant — le bras part maintenant
+franchement en arrière plutôt que de rester devant le corps), tête qui
+part en arrière plus loin. **Ce qui n'a volontairement PAS bougé** :
+`STRIKE_TORSO`/`STRIKE_HEAD`/`STRIKE_RIGHT_ARM`/`LUNGE_Z` à `IMPACT_T` —
+le seul instant mesuré et calibré au stud près (`calibrate.py`, 0,62 stud
+d'écart, vérifié identique avant/après ce passage) ; un gain d'amplitude
+qui aurait cassé ce contact ne valait pas le coup.
+
+**Follow-through ajouté** : le coup ne s'arrête plus net à `IMPACT_T` — une
+nouvelle pose `OVERSHOOT_*` à `IMPACT_T + 0.06s` pousse légèrement
+au-delà du point de contact (buste/bras continuent leur élan) avant que
+`RECOVER_*` (lui aussi creusé plus loin en arrière) ne ramène le
+personnage. Principe d'animation classique ("le mouvement dépasse sa
+cible avant de revenir"), jusqu'ici absent de cette scène. Le
+spring-chase de secondary motion qui suit (`ATTACKER_SECONDARY_MOTION`)
+a aussi été redosé (`damping_ratio` 0.55→0.40 sur le buste, 0.6→0.45 sur
+le bras) pour qu'il se lise comme un vrai rebond après ce grand geste,
+pas un simple amortissement plat.
+
+Vérifié : `calibrate.py` (écart de contact inchangé, synchronisation,
+structure), captures d'écran à la charge maximale, juste après le flash
+d'impact (le follow-through est visible), et à la réaction —
+`captures/verification/2026-09-03-directional-punch-exaggeration-coil.png`,
+`-overshoot.png`, `-reaction.png`.
+
 ## Rig des deux personnages
 
 Même rig R6 vérifié (dépôt Adonis, licence MIT) que les autres
