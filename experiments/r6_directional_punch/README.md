@@ -561,6 +561,32 @@ le plan chorégraphié par défaut ne cadre pas assez large à cet instant) :
 `captures/verification/2026-09-03-directional-punch-jambes-pliees-windup.png`,
 `-coil.png`, `-hipdrive.png`, `-impact.png`.
 
+## Le coup part en ligne droite, pas en diagonale depuis le bas
+
+Retour : *"il manque les épaules on dirait que le coup part du bas alors
+que il doit aller droit"*.
+
+**Diagnostic** : le `STRIKE_RIGHT_ARM` calibré à l'origine (`X=65`) avait
+été trouvé par balayage numérique en minimisant uniquement l'écart de
+contact — mais `X=90` est l'horizontale pure (bras droit devant, hauteur
+d'épaule ; `X=65` est SOUS l'horizontale, comme partout ailleurs dans ce
+fichier, vérifié). Résultat : le poing arrivait en diagonale montante
+depuis le bas plutôt qu'en ligne droite depuis l'épaule — exactement ce
+que la remarque décrit.
+
+**Corrigé, pas juste ajusté** : nouveau balayage numérique en FIXANT
+`X=90` pile (bras parfaitement horizontal) et en ne laissant varier que
+l'inclinaison du buste et l'avancée. Résultat inattendu mais net : buste
+légèrement penché en ARRIÈRE (`STRIKE_TORSO` X : `+16°` → `-8°`, au lieu
+d'un buste penché en avant) donne un écart de contact de **0,366 stud —
+meilleur que l'ancien 0,62**, pas un compromis. Un coup plus droit ET
+mieux calibré, les deux à la fois. `HIP_DRIVE_*` (chaîne cinétique) et
+`OVERSHOOT_*` (follow-through) recalculés contre ce nouveau réglage.
+
+Captures (vue de côté à hauteur d'épaule) :
+`captures/verification/2026-09-03-directional-punch-bras-droit-hipdrive.png`,
+`-impact.png`, `-overshoot.png`.
+
 ## Rig des deux personnages
 
 Même rig R6 vérifié (dépôt Adonis, licence MIT) que les autres

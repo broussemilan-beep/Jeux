@@ -156,17 +156,24 @@ COIL_RIGHT_ARM = (-95, 0, -18)
 COIL_LEFT_ARM = (48, 0, 42)
 COIL_LEGS = {"Right Leg": (20, 0, 15), "Left Leg": (24, 0, -12)}
 
-# Calibre par balayage numerique (pas a l'oeil, voir calibrate.py) :
-# X=100 semblait "plus de puissance" mais releve le poing bien au-dessus
-# du torse vise (X=90..180 monte vers l'aisselle/au-dessus de la tete,
-# meme convention que r6_divine_orb) -- X=65, buste penche 16 (au lieu de
-# 22) et une avancee (LUNGE_Z) plus profonde rapprochent le poing du
-# torse du mannequin a 0,49 stud (ecart mesure, pas suppose).
-STRIKE_TORSO = (16, 34, 0)
+# Recalibre (retour utilisateur : "il manque les epaules on dirait que le
+# coup part du bas alors que il doit aller droit") -- l'ancien reglage
+# (X=65, buste penche +16 en avant) minimisait bien l'ecart de contact,
+# mais X=65 est SOUS l'horizontale (X=90 = bras a l'horizontale, droit
+# devant, hauteur d'epaule -- meme convention verifiee ailleurs dans ce
+# fichier), donc le poing arrivait en diagonale montante depuis le bas,
+# pas en ligne droite depuis l'epaule. Nouveau balayage numerique (pas a
+# l'oeil) en FIXANT X=90 pile (bras parfaitement horizontal) et en ne
+# laissant varier QUE le buste et l'avancee : buste LEGEREMENT penche EN
+# ARRIERE (X=-8, au lieu de +16 en avant -- garde l'epaule a hauteur du
+# torse vise plutot que de la faire plonger) donne un ecart de 0,37 stud,
+# MEILLEUR que l'ancien 0,62 -- un coup plus droit ET mieux calibre, pas
+# un compromis entre les deux.
+STRIKE_TORSO = (-8, 34, 0)
 STRIKE_HEAD = (10, 12, 0)
-STRIKE_RIGHT_ARM = (65, 0, -4)
+STRIKE_RIGHT_ARM = (90, 0, -4)
 STRIKE_LEGS = {"Right Leg": (-14, 0, 5), "Left Leg": (26, 0, -4)}
-LUNGE_Z = -5.40   # racine avancee (pas dans le coup) au moment de l'impact -- calibre par calcul (voir calibrate.py) pour amener le poing pres du torse du mannequin
+LUNGE_Z = -4.90   # racine avancee (pas dans le coup) au moment de l'impact -- calibre par calcul (voir calibrate.py) pour amener le poing pres du torse du mannequin
 
 # -- Chaine cinetique du lacher (retour utilisateur "tu n'utilises pas le
 # corps" -> recherche sur l'animation d'un coup de poing avant de refaire :
@@ -189,17 +196,17 @@ LUNGE_Z = -5.40   # racine avancee (pas dans le coup) au moment de l'impact -- c
 # IDENTIQUE (verifie par calibrate.py) : cette keyframe s'insere ENTRE
 # COIL_T et IMPACT_T, elle ne change pas le point d'arrivee calibre.
 # Recalcule (memes fractions -- torse/jambes/racine a ~80-85% du trajet,
-# bras a ~15%) apres le passage "plier les jambes légèrement" qui a change
-# les poses COIL_* sources -- ces valeurs sont interpolees depuis les NOUVELLES
-# COIL_*, pas les anciennes.
+# bras a ~15%) apres le repositionnement de STRIKE_* (bras droit a
+# l'horizontale) ci-dessus -- ces valeurs sont interpolees depuis les
+# NOUVELLES COIL_*/STRIKE_*, pas les anciennes.
 HIP_DRIVE_T = COIL_T + 0.08
-HIP_DRIVE_TORSO = (16, 24, 1)
+HIP_DRIVE_TORSO = (-5, 24, 1)
 HIP_DRIVE_HEAD = (10, 6, 0)
-HIP_DRIVE_RIGHT_ARM = (-71, 0, -16)
+HIP_DRIVE_RIGHT_ARM = (-67, 0, -16)
 HIP_DRIVE_LEFT_ARM = (29, 0, 11)
 HIP_DRIVE_LEGS = {"Right Leg": (-7, 0, 7), "Left Leg": (26, 0, -6)}
 HIP_DRIVE_ROOT_Y = 2.96
-HIP_DRIVE_ROOT_Z = -4.52
+HIP_DRIVE_ROOT_Z = -4.12
 
 # -- Follow-through : le coup ne s'arrete pas net a IMPACT_T -- le poids
 # du corps continue au-dela du point de contact calibre avant de repartir
@@ -209,9 +216,14 @@ HIP_DRIVE_ROOT_Z = -4.52
 # calibre lui-meme. Amplitude poussee (pose "image 3" de la reference,
 # poing en pleine extension façon One Punch Man) puisqu'aucune contrainte
 # de contact ne s'applique ici.
-OVERSHOOT_TORSO = (26, 55, 0)
+# Recalcule contre le nouveau STRIKE_TORSO/STRIKE_RIGHT_ARM (bras a
+# l'horizontale) : le buste continue legerement au-dela de son leger
+# penche arriere (X -8 -> 4), le bras pousse un peu au-dela de
+# l'horizontale (X 90 -> 100) plutot que de "reculer" par rapport au
+# lacher.
+OVERSHOOT_TORSO = (4, 55, 0)
 OVERSHOOT_HEAD = (16, 20, 0)
-OVERSHOOT_RIGHT_ARM = (85, 0, 8)
+OVERSHOOT_RIGHT_ARM = (100, 0, 8)
 
 RECOVER_TORSO = (-14, 4, 0)
 RECOVER_HEAD = (-9, 2, 0)
