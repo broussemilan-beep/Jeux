@@ -79,22 +79,32 @@ _READY_HEAD = (-5, 0, 0)
 _READY_LEGS = {"Right Leg": (0, 0, 5), "Left Leg": (4, 0, -4)}
 _READY_ARMS = {"Right Arm": (22, 0, 16), "Left Arm": (22, 0, -16)}
 
-# -- Amplitudes de charge/lacher reprises apres analyse d'un pack
-# d'animation de combat premium fourni par l'utilisateur ("ça manque
-# d'exagération") : mesure reelle (rotation vs repos, matrices Pose.CFrame
-# decodees numeriquement -- voir experiments/_shared/rbxm_reader.py et
-# le rapport correspondant) sur une sequence "M1_1" comparable -- bras
-# ~178 deg, buste ~99 deg, tete ~88 deg, contre ~65/38/15 deg ici avant
-# ce passage. La CHARGE (anticipation, en l'air, aucune contrainte de
-# contact) est le levier le plus sur a exagerer fortement ; le LACHER
-# (STRIKE_*, plus bas) reste lui volontairement INCHANGE -- calibre au
-# stud pres par balayage numerique (0,62 stud d'ecart, voir
-# calibrate.py), un gain d'exageration qui casserait ce contact ne
-# vaudrait pas le coup.
-WINDUP_TORSO = (-14, -38, 2)
-WINDUP_HEAD = (-11, -15, 0)
-WINDUP_RIGHT_ARM = (-8, 0, -22)
-WINDUP_LEGS = {"Right Leg": (-9, 0, 6), "Left Leg": (18, 0, -5)}
+# -- Charge repensee en accroupissement coile (reference utilisateur :
+# 3 images -- 1) un combattant accroupi tres bas, buste casse en avant,
+# bras croises serres devant la poitrine, lumiere au sol ; 2) un
+# impact-frame plein cadre ; 3) le poing lance en pleine extension façon
+# One Punch Man, avec des debris qui explosent). Contrainte de rig
+# incontournable (aucun genou -- Right Leg/Left Leg sont des segments
+# RIGIDES) : dans ce rig, les jambes sont enfants du Torso (meme
+# Motor6D-parent que les bras), donc leur rotation MONDE est la
+# COMPOSITION torse*jambe -- pencher le torse de 42 deg VERS L'AVANT fait
+# suivre les jambes du meme angle si on ne compense pas. Verifie par
+# balayage numerique (pas a l'oeil) : WINDUP/CHARGE/COIL_LEGS ci-dessous
+# sont les rotations LOCALES qui, composees avec l'inclinaison du torse a
+# chaque etape, ramenent les DEUX pieds a une hauteur quasi identique
+# (ecart < 0.05 stud) a une racine abaissee -- une vraie assise basse
+# approchee du mieux que permet un rig sans genou, pas une pose flottante
+# ou les pieds passeraient sous le sol.
+WINDUP_ROOT_Y = 2.92
+CHARGE_A_ROOT_Y = 2.80
+CHARGE_B_ROOT_Y = 2.86      # "respiration" -- remonte legerement avant le coil final
+COIL_ROOT_Y = 2.70          # le plus bas, juste avant le lacher (qui revient a GROUND_Y)
+
+WINDUP_TORSO = (18, -8, 2)
+WINDUP_HEAD = (13, -6, 0)
+WINDUP_RIGHT_ARM = (40, 0, -30)
+WINDUP_LEFT_ARM = (40, 0, 30)
+WINDUP_LEGS = {"Right Leg": (-30, 0, 10), "Left Leg": (-15, 0, -6)}
 
 # -- Battements de "respiration" pendant la charge -- la pose ne reste
 # PAS parfaitement figee entre WINDUP_T et COIL_T (un gel total lirait
@@ -102,13 +112,27 @@ WINDUP_LEGS = {"Right Leg": (-9, 0, 6), "Left Leg": (18, 0, -5)}
 # buste/bras, resserrement progressif jusqu'au coil final juste avant le
 # lacher. Meme principe que le balancement "l'energie qui respire" de
 # r6_divine_orb, applique ici au poing plutot qu'a une boule.
-CHARGE_A_TORSO = (-16, -42, 3)
-CHARGE_A_RIGHT_ARM = (-10, 0, -30)
-CHARGE_B_TORSO = (-13, -34, 1)
-CHARGE_B_RIGHT_ARM = (-6, 0, -18)
-COIL_TORSO = (-20, -56, 4)
-COIL_HEAD = (-17, -22, 0)
-COIL_RIGHT_ARM = (-22, 0, -52)
+CHARGE_A_TORSO = (28, -13, 3)
+CHARGE_A_HEAD = (20, -10, 0)
+CHARGE_A_RIGHT_ARM = (50, 0, -48)
+CHARGE_A_LEFT_ARM = (50, 0, 48)
+CHARGE_A_LEGS = {"Right Leg": (-48, 0, 12), "Left Leg": (-26, 0, -9)}
+
+CHARGE_B_TORSO = (24, -11, 2)
+CHARGE_B_HEAD = (17, -9, 0)
+CHARGE_B_RIGHT_ARM = (44, 0, -40)
+CHARGE_B_LEFT_ARM = (44, 0, 40)
+CHARGE_B_LEGS = {"Right Leg": (-42, 0, 11), "Left Leg": (-22, 0, -8)}
+
+# Accroupissement maximal, juste avant le lacher -- pose "image 1" de la
+# reference : buste casse a 42 deg vers l'avant, tete baissee, bras
+# croises serres, jambes largement ecartees en appui (segments rigides
+# compenses, voir plus haut).
+COIL_TORSO = (42, -20, 5)
+COIL_HEAD = (30, -16, 0)
+COIL_RIGHT_ARM = (65, 0, -70)
+COIL_LEFT_ARM = (65, 0, 70)
+COIL_LEGS = {"Right Leg": (-70, 0, 15), "Left Leg": (-40, 0, -12)}
 
 # Calibre par balayage numerique (pas a l'oeil, voir calibrate.py) :
 # X=100 semblait "plus de puissance" mais releve le poing bien au-dessus
@@ -123,14 +147,16 @@ STRIKE_LEGS = {"Right Leg": (-14, 0, 5), "Left Leg": (26, 0, -4)}
 LUNGE_Z = -5.40   # racine avancee (pas dans le coup) au moment de l'impact -- calibre par calcul (voir calibrate.py) pour amener le poing pres du torse du mannequin
 
 # -- Follow-through : le coup ne s'arrete pas net a IMPACT_T -- le poids
-# du corps continue legerement au-dela du point de contact calibre avant
-# de repartir en arriere (principe d'animation "overshoot"/"follow
-# through"). Garde IMPACT_T (le seul instant mesure par calibrate.py)
-# strictement inchange ; cette pose n'existe que 0,06s APRES, donc ne
-# touche pas le contact calibre lui-meme.
-OVERSHOOT_TORSO = (20, 40, 0)
-OVERSHOOT_HEAD = (13, 16, 0)
-OVERSHOOT_RIGHT_ARM = (72, 0, 2)
+# du corps continue au-dela du point de contact calibre avant de repartir
+# en arriere (principe d'animation "overshoot"/"follow through"). Garde
+# IMPACT_T (le seul instant mesure par calibrate.py) strictement inchange ;
+# cette pose n'existe que 0,06s APRES, donc ne touche pas le contact
+# calibre lui-meme. Amplitude poussee (pose "image 3" de la reference,
+# poing en pleine extension façon One Punch Man) puisqu'aucune contrainte
+# de contact ne s'applique ici.
+OVERSHOOT_TORSO = (26, 55, 0)
+OVERSHOOT_HEAD = (16, 20, 0)
+OVERSHOOT_RIGHT_ARM = (85, 0, 8)
 
 RECOVER_TORSO = (-14, 4, 0)
 RECOVER_HEAD = (-9, 2, 0)
@@ -148,14 +174,14 @@ def attacker_punch():
         # gel numerique accidentel, meme technique que r6_divine_orb).
         _kf(GARDE_T, root_pos=(0, GROUND_Y, ATTACKER_Z0), Torso=_READY_TORSO, Head=_READY_HEAD,
             **_READY_LEGS, **_READY_ARMS),
-        _kf(WINDUP_T, root_pos=(0, GROUND_Y, ATTACKER_Z0), Torso=WINDUP_TORSO, Head=WINDUP_HEAD,
-            **WINDUP_LEGS, **{"Right Arm": WINDUP_RIGHT_ARM, "Left Arm": _READY_ARMS["Left Arm"]}),
-        _kf(CHARGE_A_T, root_pos=(0, GROUND_Y, ATTACKER_Z0), Torso=CHARGE_A_TORSO, Head=WINDUP_HEAD,
-            **WINDUP_LEGS, **{"Right Arm": CHARGE_A_RIGHT_ARM, "Left Arm": _READY_ARMS["Left Arm"]}),
-        _kf(CHARGE_B_T, root_pos=(0, GROUND_Y, ATTACKER_Z0), Torso=CHARGE_B_TORSO, Head=WINDUP_HEAD,
-            **WINDUP_LEGS, **{"Right Arm": CHARGE_B_RIGHT_ARM, "Left Arm": _READY_ARMS["Left Arm"]}),
-        _kf(COIL_T, root_pos=(0, GROUND_Y, ATTACKER_Z0), Torso=COIL_TORSO, Head=COIL_HEAD,
-            **WINDUP_LEGS, **{"Right Arm": COIL_RIGHT_ARM, "Left Arm": _READY_ARMS["Left Arm"]}),
+        _kf(WINDUP_T, root_pos=(0, WINDUP_ROOT_Y, ATTACKER_Z0), Torso=WINDUP_TORSO, Head=WINDUP_HEAD,
+            **WINDUP_LEGS, **{"Right Arm": WINDUP_RIGHT_ARM, "Left Arm": WINDUP_LEFT_ARM}),
+        _kf(CHARGE_A_T, root_pos=(0, CHARGE_A_ROOT_Y, ATTACKER_Z0), Torso=CHARGE_A_TORSO, Head=CHARGE_A_HEAD,
+            **CHARGE_A_LEGS, **{"Right Arm": CHARGE_A_RIGHT_ARM, "Left Arm": CHARGE_A_LEFT_ARM}),
+        _kf(CHARGE_B_T, root_pos=(0, CHARGE_B_ROOT_Y, ATTACKER_Z0), Torso=CHARGE_B_TORSO, Head=CHARGE_B_HEAD,
+            **CHARGE_B_LEGS, **{"Right Arm": CHARGE_B_RIGHT_ARM, "Left Arm": CHARGE_B_LEFT_ARM}),
+        _kf(COIL_T, root_pos=(0, COIL_ROOT_Y, ATTACKER_Z0), Torso=COIL_TORSO, Head=COIL_HEAD,
+            **COIL_LEGS, **{"Right Arm": COIL_RIGHT_ARM, "Left Arm": COIL_LEFT_ARM}),
         _kf(IMPACT_T, root_pos=(0, GROUND_Y, LUNGE_Z), Torso=STRIKE_TORSO, Head=STRIKE_HEAD,
             **STRIKE_LEGS, **{"Right Arm": STRIKE_RIGHT_ARM, "Left Arm": (10, 0, -20)}),
         # -- follow-through : le poing/buste continuent legerement au-dela

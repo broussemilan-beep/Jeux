@@ -396,6 +396,67 @@ d'impact (le follow-through est visible), et à la réaction —
 `captures/verification/2026-09-03-directional-punch-exaggeration-coil.png`,
 `-overshoot.png`, `-reaction.png`.
 
+## Charge repensée en accroupissement coilé — 3 images de référence
+
+Troisième retour sur cette scène, avec trois images cette fois (pas de
+texte) : *"L'animation en gros elle doit plus exagérer, le perso doit
+commencer comme sur l'image 1, puis impact frame image 2, et finir comme
+sur l'image 3"*. Image 1 : un combattant accroupi très bas, buste cassé
+loin vers l'avant, bras croisés serrés devant la poitrine, lumière au sol.
+Image 2 : un impact-frame façon manga, traits de vitesse noirs plein
+cadre. Image 3 : un poing en pleine extension façon One Punch Man, avec
+des éclats de pierre qui explosent autour.
+
+**Contrainte de rig incontournable, vérifiée par le calcul avant tout
+choix de pose** : dans ce rig R6 (comme dans le vrai rig Roblox), les
+jambes sont enfants du `Torso` via Motor6D (mêmes `Right Hip`/`Left Hip`
+que `Right Shoulder`/`Left Shoulder`) — leur rotation MONDE est donc la
+composition torse × jambe, pas une rotation indépendante à la hanche.
+Pencher le torse de 42° vers l'avant sans y penser fait suivre les jambes
+du même angle, ce qui aurait envoyé les pieds dans les airs. Un balayage
+numérique (pas à l'oeil, voir la sortie de `calibrate.py` et le script de
+vérification dans le commit) a cherché les rotations LOCALES de jambe qui,
+composées avec chaque étape de l'inclinaison du torse, ramènent les DEUX
+pieds à une hauteur quasi identique (< 0,1 stud d'écart) — une racine
+abaissée de ~0,3 stud (`COIL_ROOT_Y = 2.70` contre `GROUND_Y = 3.0`)
+associée à cette inclinaison est la meilleure approximation d'un
+accroupissement bas qu'un rig SANS GENOU (contrainte non négociable du
+projet) puisse offrir sans que les pieds flottent ou traversent le sol.
+
+**Ce qui a changé** : toute la charge (`WINDUP_*` → `CHARGE_A_*` →
+`CHARGE_B_*` → `COIL_*`) — auparavant un buste qui se penche en ARRIÈRE
+(un "arc qu'on bande"), désormais un buste qui se CASSE EN AVANT avec les
+DEUX bras qui se croisent devant la poitrine (`Left Arm` était figé sur la
+garde pendant toute la charge avant ce passage — il anime maintenant lui
+aussi) et une racine qui descend progressivement. Au lâcher (`IMPACT_T`),
+le buste/bras/racine remontent et repartent en avant d'un coup — une
+vraie détente de ressort, pas juste une rotation qui se déroule. Le
+contact calibré à `IMPACT_T` (0,62 stud) reste, comme toujours,
+strictement inchangé.
+
+**Follow-through poussé plus loin** (pose "image 3") : `OVERSHOOT_TORSO`
+55° (était 40°), `OVERSHOOT_RIGHT_ARM` X=85° (était 72°) — puisqu'aucune
+contrainte de contact ne s'applique à cette pose (elle existe 0,06s après
+`IMPACT_T`), rien n'empêche de la pousser vers l'engagement total façon
+One Punch Man.
+
+**VFX rendues plus exagérées** : le flash impact-frame (image 2) est
+étendu — 26→38 traits de vitesse, portée et durée accrues (0,12s→0,16s).
+Nouveauté, `drawDebrisBurst()` : des éclats de pierre anguleux (polygones
+irréguliers à 5 sommets, pas des étincelles rondes) partent du point de
+contact en trajectoire balistique (vitesse initiale + gravité simple) et
+tournent en volant, ~0,55s de vie, chevauchant le follow-through et le
+début du recul — référence directe à l'image 3. Déterministe comme
+toujours (angle/vitesse/taille dérivés de `sin(i * constante)`, jamais
+`Math.random()`).
+
+Vérifié : grounding numérique des pieds à chaque étape de la charge
+(écart < 0,1 stud), `calibrate.py` (contact/synchronisation/structure
+inchangés), captures à la charge, juste après le flash (débris visibles),
+au recul (débris qui continuent de voler) et au follow-through —
+`captures/verification/2026-09-03-directional-punch-crouch-charge.png`,
+`-impact-debris.png`, `-recover-debris.png`, `-overshoot.png`.
+
 ## Rig des deux personnages
 
 Même rig R6 vérifié (dépôt Adonis, licence MIT) que les autres
