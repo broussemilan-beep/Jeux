@@ -1,17 +1,27 @@
 """
 Verifie par le calcul (pas a l'oeil) la choregraphie de
-haughty_orb_throw() : la position de la main levee (pour caler le
-decalage vertical de la boule dans le lecteur, voir choreography.py),
-que la vitesse instantanee du bras au keyframe de lancer est bien quasi
-nulle (donc que la trajectoire de vol de la boule DOIT etre scriptee
-independamment, pas derivee de cette vitesse -- trouve par ce calcul
-meme, pas suppose), et que la structure reste plausible (rotations
-finies, pas de coude/genou a simuler).
+haughty_orb_throw() : la position des DEUX mains levees (pour caler le
+decalage vertical du soleil dans le lecteur, voir choreography.py, ET
+pour verifier que Left Arm en miroir de Right Arm atteint bien la meme
+hauteur -- jamais suppose), que la vitesse instantanee du bras au
+keyframe de lancer est bien quasi nulle (donc que la trajectoire de vol
+de la boule DOIT etre scriptee independamment, pas derivee de cette
+vitesse -- trouve par ce calcul meme, pas suppose), et que la structure
+reste plausible (rotations finies, pas de coude/genou a simuler).
+
+Bug trouve et corrige pendant cette meme iteration : `tip_world(...,
+"top")` donne le bout du bras PRES DE L'EPAULE (quasi immobile quel que
+soit l'angle du bras -- c'est le bout attache au Motor6D), PAS la main.
+La main -- le bout qui balaie vraiment quand le bras tourne -- est
+`tip_world(..., "bottom")`, verifie par un sweep isole (X=0 -> main basse
+Y~2, X=180 -> main haute Y~5, "top" ne bouge presque pas entre les deux).
+Toute mesure de main dans ce fichier utilise donc "bottom" ; "top" reste
+correct pour la Tete (son sommet est bien le bout eloigne du cou).
 """
 import numpy as np
 
 import anim_engine as ae
-from choreography import haughty_orb_throw, RELEASE_T
+from choreography import haughty_orb_throw, RAISE_T, RELEASE_T
 from r6_rig import PART_ORDER, PART_SIZES
 
 
@@ -46,20 +56,26 @@ def main():
     def idx_at(t):
         return round(t * 60)
 
-    print("=== main levee (t=0.70s, 1.35s, 2.00s) : position + ecart a la tete ===")
-    for t in (0.70, 1.35, 2.00):
+    print("=== mains levees (charge, geste a deux mains) : position + symetrie + ecart a la tete ===")
+    for t in (RAISE_T, 0.95, 1.60):
         i = idx_at(t)
-        hand = tip_world(samples, "Right Arm", i, "top")
+        hand_r = tip_world(samples, "Right Arm", i, "bottom")
+        hand_l = tip_world(samples, "Left Arm", i, "bottom")
         head = tip_world(samples, "Head", i, "top")
-        gap = head[1] - hand[1]
-        print(f"  t={t:.2f}s  main haute={hand.round(3).tolist()}  sommet tete={head.round(3).tolist()}"
-              f"  (ecart Y tete-main : {gap:.3f}, limite reelle du rig -- voir choreography.RAISE_RIGHT_ARM)")
+        gap_r = head[1] - hand_r[1]
+        gap_l = head[1] - hand_l[1]
+        mirror_err = abs(hand_r[1] - hand_l[1])  # meme hauteur attendue (miroir X/Z)
+        print(f"  t={t:.2f}s  main D={hand_r.round(3).tolist()}  main G={hand_l.round(3).tolist()}"
+              f"  sommet tete={head.round(3).tolist()}"
+              f"  (ecart Y tete-main D:{gap_r:.3f} G:{gap_l:.3f} -- negatif = main AU-DESSUS de la"
+              f" tete, voir choreography.RAISE_RIGHT_ARM/RAISE_LEFT_ARM ; ecart de hauteur D/G :"
+              f" {mirror_err:.4f} -- doit rester quasi nul, confirme la symetrie du geste a deux mains)")
 
     print(f"\n=== lancer (RELEASE_T={RELEASE_T:.2f}s) : vitesse instantanee du bras ===")
     i0 = idx_at(RELEASE_T - 1.0 / 60)
     i1 = idx_at(RELEASE_T + 1.0 / 60)
-    hand0 = tip_world(samples, "Right Arm", i0, "top")
-    hand1 = tip_world(samples, "Right Arm", i1, "top")
+    hand0 = tip_world(samples, "Right Arm", i0, "bottom")
+    hand1 = tip_world(samples, "Right Arm", i1, "bottom")
     vel = (hand1 - hand0) * 30.0
     print(f"  position main au relachement : {hand0.round(3).tolist()}")
     print(f"  vitesse instantanee (studs/s) : {vel.round(2).tolist()} (norme : {np.linalg.norm(vel):.2f})")

@@ -1,5 +1,5 @@
 """
-Calcule la trajectoire MONDE de la boule divine (position + rayon, par
+Calcule la trajectoire MONDE du soleil invoque (position + rayon, par
 echantillon) pendant toute la scene, et l'exporte en JSON -- meme
 principe que compute_crown_track.py dans r6_throne_crown : ce n'est PAS
 un second KeyframeSequence (un KeyframeSequence anime les Motor6D d'UN
@@ -9,16 +9,19 @@ d'utile sur la duree/portee du vol -- voir sa docstring).
 
 Trois phases :
   1. t < RAISE_T        : n'existe pas encore (rayon 0).
-  2. RAISE_T..RELEASE_T : "en charge", suit la main levee avec un
-     decalage vertical FIXE (HAND_OFFSET_Y) au-dessus d'elle -- ce bras
-     ne peut PHYSIQUEMENT PAS lever la main au-dessus de la tete (limite
-     reelle du rig, verifiee par balayage numerique dans calibrate.py,
-     l'ecart mesure tourne autour de 1,0-1,05 stud), donc la boule est
-     positionnee par rapport a la main plutot que collee dessus, pour
-     qu'elle se lise bien au-dessus de la tete malgre cette limite.
-     Rayon : croit de 0 a ORB_MAX_RADIUS (interpolation lissee, pas
-     lineaire -- une invocation qui accelere en grossissant se lit
-     mieux qu'une croissance a vitesse constante).
+  2. RAISE_T..RELEASE_T : "en charge", suit le POINT MEDIAN DES DEUX
+     MAINS levees (geste a deux mains, genkidama -- pas juste Right Arm
+     comme dans la premiere version de cette scene) avec un decalage
+     vertical FIXE (HAND_OFFSET_Y) au-dessus de ce point, pour que le
+     soleil flotte visiblement AU-DESSUS des mains jointes plutot que de
+     leur etre colle dessus (les mains sont deja au-dessus de la tete a
+     ce keyframe -- voir calibrate.py et choreography.RAISE_RIGHT_ARM ;
+     PAS une compensation de limite du rig, contrairement a la premiere
+     version de ce fichier, qui mesurait le mauvais bout du bras -- voir
+     le commentaire de HAND_OFFSET_Y). Rayon : croit de 0 a
+     ORB_MAX_RADIUS (interpolation lissee, pas lineaire -- une invocation
+     qui accelere en grossissant se lit mieux qu'une croissance a vitesse
+     constante).
   3. RELEASE_T..IMPACT_T : vol libre SCRIPTE vers WORLD_TARGET_POS (un
      point choisi, pas mesure sur le personnage) -- interpolation avec
      une legere composante d'arc (pas une ligne droite parfaite, un jet
@@ -37,12 +40,17 @@ from choreography import haughty_orb_throw, RAISE_T, RELEASE_T, IMPACT_T
 
 SAMPLE_HZ = 30
 
-# Decalage vertical au-dessus de la main levee -- voir docstring de
-# module : place la boule visiblement au-dessus de la tete malgre la
-# limite de portee reelle du bras (~1,0-1,05 stud sous la tete d'apres
-# calibrate.py). 1,4 stud choisi pour depasser cet ecart avec de la
-# marge (verifie par capture d'ecran, pas juste calcule).
-HAND_OFFSET_Y = 1.4
+# Decalage vertical au-dessus du POINT MEDIAN des deux mains levees --
+# purement une marge visuelle (le soleil flotte au-dessus des mains
+# jointes plutot que de les toucher), PAS une compensation de limite du
+# rig. La premiere version de ce fichier utilisait 1,4 stud pour
+# compenser un ecart mesure de ~1,0-1,05 stud "sous la tete" -- un
+# artefact du bug de mesure corrige dans calibrate.py (mauvais bout du
+# bras, voir sa docstring) : les mains sont en realite deja LEGEREMENT
+# AU-DESSUS de la tete a ce keyframe. 1,0 stud choisi pour une marge
+# nette au-dessus des mains sans coller le soleil sur la tete (verifie
+# par capture d'ecran).
+HAND_OFFSET_Y = 1.0
 
 ORB_MAX_RADIUS = 1.1
 
@@ -75,8 +83,10 @@ def main():
         if t < RAISE_T:
             pos, radius, phase = None, 0.0, "absente"
         elif t < RELEASE_T:
-            hand = tip_world(samples, "Right Arm", i, "top")
-            pos = hand + np.array([0.0, HAND_OFFSET_Y, 0.0])
+            hand_r = tip_world(samples, "Right Arm", i, "bottom")
+            hand_l = tip_world(samples, "Left Arm", i, "bottom")
+            hand_mid = (hand_r + hand_l) / 2.0
+            pos = hand_mid + np.array([0.0, HAND_OFFSET_Y, 0.0])
             frac = (t - RAISE_T) / (RELEASE_T - RAISE_T)
             radius = ORB_MAX_RADIUS * _ease_in(min(1.0, frac))
             phase = "charge"

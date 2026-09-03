@@ -1,21 +1,21 @@
-<title>Le jugement</title>
+<title>Genkidama</title>
 <style>
 :root {
   --bg: #f4f1ea; --panel: #ffffff; --panel-2: #eee9de; --ink: #241f18;
   --sub: #6b6255; --grid: #d9d2c2; --rig: #342d52; --leg: #241f3c;
-  --edge: #241f18; --ghost: #b8ae98; --accent: #8a6fd8; --gold: #eadfa0;
+  --edge: #241f18; --ghost: #b8ae98; --accent: #d98a1f; --gold: #eadfa0;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #100e18; --panel: #1a1728; --panel-2: #1e1b2e; --ink: #ece5d6;
     --sub: #a89d87; --grid: #322c48; --rig: #6858b0; --leg: #443a80;
-    --edge: #0a0812; --ghost: #4a4468; --accent: #b09ff0; --gold: #f0e6b0;
+    --edge: #0a0812; --ghost: #4a4468; --accent: #f0ab3a; --gold: #f0e6b0;
   }
 }
 :root[data-theme="dark"] {
   --bg: #100e18; --panel: #1a1728; --panel-2: #1e1b2e; --ink: #ece5d6;
   --sub: #a89d87; --grid: #322c48; --rig: #6858b0; --leg: #443a80;
-  --edge: #0a0812; --ghost: #4a4468; --accent: #b09ff0; --gold: #f0e6b0;
+  --edge: #0a0812; --ghost: #4a4468; --accent: #f0ab3a; --gold: #f0e6b0;
 }
 body { background: var(--bg); color: var(--ink); font-family: "Iowan Old Style", "Georgia", serif; }
 .stage { max-width: 980px; margin: 0 auto; padding: 28px 20px 48px; }
@@ -50,20 +50,21 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
 
 <div class="stage">
   <p class="eyebrow">Prototype isolé · Roblox R6 · Model + KeyframeSequence</p>
-  <h1>Le jugement</h1>
+  <h1>Genkidama</h1>
   <p class="sub">Debout au bord d'un à-pic, dans une posture hautaine (buste et tête inclinés en arrière), le
-    personnage (rig R6 réel, 6 segments rigides) lève la main pour invoquer une énorme boule d'énergie divine, la
-    laisse grossir en la tenant, puis l'abat d'un geste brusque pour la jeter sur le monde en contrebas — avant de
-    reprendre sa pose, satisfait, à regarder l'impact au loin. Ce qui joue ici est le résultat
+    personnage (rig R6 réel, 6 segments rigides) lève les deux mains dès la première frame pour invoquer le soleil —
+    un genkidama, énergie rassemblée à deux mains au-dessus de la tête — le laisse grossir en le tenant, puis l'abat
+    d'un geste brusque pour le jeter sur le monde en contrebas — avant de reprendre sa pose, satisfait, à regarder
+    l'impact au loin. Ce qui joue ici est le résultat
     <strong>résolu par l'équation du moteur</strong> (<code>Part1 = Part0 · C0 · Transform · C1⁻¹</code>) à partir du
-    <code>KeyframeSequence</code> livré — la boule elle-même suit une trajectoire calculée séparément
+    <code>KeyframeSequence</code> livré — le soleil lui-même suit une trajectoire calculée séparément
     (<code>orb_track.json</code>) une fois relâchée, voir la note sous le lecteur.</p>
 
   <div class="card">
     <div class="viewport-wrap">
       <canvas id="stage" width="1200" height="900"></canvas>
       <div class="chip left">phase · <b id="phaseName">posture hautaine</b></div>
-      <div class="chip right" id="timecode">0.00s / 3.45s</div>
+      <div class="chip right" id="timecode">0.00s / 3.05s</div>
     </div>
 
     <div class="controls">
@@ -81,8 +82,8 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
         <div class="phase-label">segment <b id="phaseName2">posture hautaine</b></div>
         <div style="display:flex; gap:8px; flex-wrap:wrap">
           <div class="btn-row" id="camRow">
-            <button data-az="-50" class="active">3/4</button>
-            <button data-az="0">face</button>
+            <button data-az="-50">3/4</button>
+            <button data-az="0" class="active">face</button>
             <button data-az="-90">profil</button>
           </div>
           <div class="btn-row" id="speedRow">
@@ -95,12 +96,13 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
     </div>
   </div>
 
-  <p class="note"><strong>La boule ne sort pas exactement de la main</strong> : ce bras (segment rigide, longueur
-    fixe, pas de coude) ne peut physiquement pas lever la main au-dessus de la tête — vérifié par balayage numérique
-    (<code>scripts/calibrate.py</code>), l'écart mesuré tourne autour de 1,0-1,05 stud sous le sommet de la tête, quel
-    que soit l'angle du bras essayé. La boule est donc positionnée avec un décalage vertical fixe au-dessus de la main
-    suivie (voir <code>orb_track.py</code>), pas collée dessus — comme le petit saut assumé de la couronne dans le
-    sacre, une limite réelle du rig, dite honnêtement plutôt que masquée.</p>
+  <p class="note"><strong>Le soleil ne sort pas exactement des mains</strong> : ces bras (segments rigides, longueur
+    fixe, pas de coude) ne peuvent physiquement pas lever les mains au-dessus de la tête — vérifié par balayage
+    numérique (<code>scripts/calibrate.py</code>), l'écart mesuré tourne autour de 1,0-1,05 stud sous le sommet de la
+    tête, symétrique à droite et à gauche, quel que soit l'angle du bras essayé. Le soleil est donc positionné avec un
+    décalage vertical fixe au-dessus du point médian des deux mains suivies (voir <code>orb_track.py</code>), pas
+    collé dessus — comme le petit saut assumé de la couronne dans le sacre, une limite réelle du rig, dite
+    honnêtement plutôt que masquée.</p>
   <p class="note"><strong>La trajectoire de vol n'est pas une extrapolation physique</strong> : la vitesse
     instantanée du bras au keyframe de lancer a été mesurée (~5,3 studs/s) puis délibérément <em>pas</em> utilisée —
     elle ne dit rien sur où se trouve « le monde » ni sur combien de temps le vol doit durer pour rester dramatique.
@@ -133,7 +135,12 @@ const phaseNameEl2 = document.getElementById("phaseName2");
 const timecodeEl = document.getElementById("timecode");
 const phaseTrack = document.getElementById("phaseTrack");
 
-let AZ = -50 * Math.PI / 180;
+// Face (az=0) par defaut, pas 3/4 (-50) comme les prototypes precedents :
+// le geste a deux mains (genkidama) se lit nettement mieux de face --
+// les deux bras symetriques dessinent un "V" clairement visible vers le
+// soleil, alors qu'en 3/4 ils se chevauchent partiellement et brouillent
+// la silhouette (verifie par capture d'ecran comparee des deux angles).
+let AZ = 0 * Math.PI / 180;
 const EL = 14 * Math.PI / 180;
 const DURATION = DATA.duration;
 const RAISE_T = DATA.raise_t;
@@ -383,9 +390,9 @@ function drawWorld(t) {
   }
 }
 
-// Halo autour du personnage pendant la charge -- froid/violet (pas
-// dore/chaud comme le prototype precedent) : puissance hautaine et
-// distante, pas une colere qui s'abat.
+// Halo autour du personnage pendant la charge -- chaud/dore (soleil),
+// pas froid/violet comme la premiere version de cette scene (retour
+// utilisateur : "le soleil", pas une boule d'energie generique).
 function drawCharAura(t, charPose) {
   if (t < RAISE_T) return;
   const intensity = t < RELEASE_T ? Math.min(1, (t - RAISE_T) / 0.3) : Math.max(0, 1 - (t - RELEASE_T) / 0.4);
@@ -397,16 +404,47 @@ function drawCharAura(t, charPose) {
   ctx.globalCompositeOperation = "lighter";
   const R = 110;
   const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, R);
-  g.addColorStop(0, `rgba(160,140,240,${0.20 * intensity})`);
-  g.addColorStop(1, "rgba(160,140,240,0)");
+  g.addColorStop(0, `rgba(255,196,70,${0.22 * intensity})`);
+  g.addColorStop(1, "rgba(255,196,70,0)");
   ctx.fillStyle = g;
   ctx.beginPath(); ctx.arc(sx, sy, R, 0, Math.PI * 2); ctx.fill();
   ctx.restore();
 }
 
-// La boule elle-meme -- suit orb.pos (proj reel) pendant la charge (elle
-// reste pres du personnage, la projection reste lisible), puis un lerp
-// ECRAN vers WORLD_SCREEN pendant le vol (voir note sous le lecteur).
+// Filaments d'energie qui convergent vers le soleil pendant la charge --
+// detail signature du genkidama (l'energie "aspiree" vers les mains).
+// Deterministe (sin() a des frequences/offsets fixes, jamais
+// Math.random()) pour que deux captures a la meme frame soient
+// identiques -- meme discipline que les fissures au sol des prototypes
+// precedents.
+function drawEnergyWisps(t, sx, sy, r) {
+  if (t < RAISE_T || t >= RELEASE_T) return;
+  const frac = Math.min(1, (t - RAISE_T) / (RELEASE_T - RAISE_T));
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+  const N = 6;
+  for (let i = 0; i < N; i++) {
+    const ang = (i / N) * Math.PI * 2 + t * 1.6;
+    const reach = 90 + 30 * Math.sin(t * 4.0 + i * 1.7);
+    const ex = sx + Math.cos(ang) * reach;
+    const ey = sy + Math.sin(ang) * reach * 0.6 - 20;
+    const inFrac = (Math.sin(t * 5.0 + i * 2.3) * 0.5 + 0.5);
+    const px = ex + (sx - ex) * inFrac;
+    const py = ey + (sy - ey) * inFrac;
+    const alpha = 0.35 * frac * (0.4 + 0.6 * inFrac);
+    ctx.strokeStyle = `rgba(255,214,120,${alpha})`;
+    ctx.lineWidth = 1.6;
+    ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(px, py); ctx.stroke();
+    ctx.fillStyle = `rgba(255,236,180,${alpha})`;
+    ctx.beginPath(); ctx.arc(px, py, 1.8, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.restore();
+}
+
+// Le soleil lui-meme -- suit orb.pos (proj reel, point median des deux
+// mains) pendant la charge (il reste pres du personnage, la projection
+// reste lisible), puis un lerp ECRAN vers WORLD_SCREEN pendant le vol
+// (voir note sous le lecteur).
 function drawOrb(t, orb, charPose) {
   if (!orb || orb.radius <= 0.01) return;
   let sx, sy;
@@ -427,11 +465,13 @@ function drawOrb(t, orb, charPose) {
   }
   const r = Math.max(2, orb.radius * SCALE * 0.6);
 
+  if (t < RELEASE_T) drawEnergyWisps(t, sx, sy, r);
+
   // trainee pendant le vol
   if (t >= RELEASE_T && t < IMPACT_T) {
     ctx.save();
     ctx.globalCompositeOperation = "lighter";
-    ctx.strokeStyle = "rgba(210,200,255,0.35)";
+    ctx.strokeStyle = "rgba(255,200,90,0.40)";
     ctx.lineWidth = r * 0.7;
     ctx.beginPath(); ctx.moveTo(RELEASE_SCREEN.x, RELEASE_SCREEN.y); ctx.lineTo(sx, sy); ctx.stroke();
     ctx.restore();
@@ -440,15 +480,16 @@ function drawOrb(t, orb, charPose) {
   ctx.save();
   ctx.globalCompositeOperation = "lighter";
   const halo = ctx.createRadialGradient(sx, sy, 0, sx, sy, r * 3.2);
-  halo.addColorStop(0, "rgba(225,215,255,0.55)");
-  halo.addColorStop(1, "rgba(225,215,255,0)");
+  halo.addColorStop(0, "rgba(255,214,120,0.55)");
+  halo.addColorStop(1, "rgba(255,214,120,0)");
   ctx.fillStyle = halo;
   ctx.beginPath(); ctx.arc(sx, sy, r * 3.2, 0, Math.PI * 2); ctx.fill();
 
   const core = ctx.createRadialGradient(sx - r * 0.3, sy - r * 0.3, 0, sx, sy, r);
   core.addColorStop(0, "#ffffff");
-  core.addColorStop(0.5, "#cdbdff");
-  core.addColorStop(1, "#7a5fd8");
+  core.addColorStop(0.45, "#ffe58a");
+  core.addColorStop(0.8, "#ffb837");
+  core.addColorStop(1, "#e2650f");
   ctx.globalCompositeOperation = "source-over";
   ctx.fillStyle = core;
   ctx.beginPath(); ctx.arc(sx, sy, r, 0, Math.PI * 2); ctx.fill();

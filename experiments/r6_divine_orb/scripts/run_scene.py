@@ -18,10 +18,12 @@ from r6_rig import PART_ORDER
 
 OUT = "../output"
 
-# Couleur divine -- or/blanc chaud, coherente avec l'aura du lecteur
-# (voir README) plutot qu'une couleur inventee sans lien avec la mise
-# en scene.
-ORB_COLOR = (255, 224, 150)
+# Couleur du SOLEIL invoque -- jaune-or sature et lumineux, pas le
+# blanc-or doux de la premiere version (boule "divine" generique) :
+# retour utilisateur explicite ("le soleil"), coherente avec le
+# gradient blanc->jaune->orange de l'aura/coeur dans le lecteur (voir
+# README) plutot qu'une couleur inventee sans lien avec la mise en scene.
+ORB_COLOR = (255, 196, 40)
 
 
 def structural_sanity(samples):

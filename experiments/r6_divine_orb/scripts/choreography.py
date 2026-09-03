@@ -1,18 +1,38 @@
 """
-Choregraphie : le personnage, debout dans une posture hautaine (buste et
-tete penches en arriere -- fier, dedaigneux), leve la main pour invoquer
-une enorme boule d'energie divine, la laisse grossir en la tenant (leger
-balancement, "l'energie qui respire", pas un gel total comme la pause
-d'attente d'un coup au sol), PUIS l'abat rapidement vers l'avant --
-lancer brusque, pas une transition lente -- pour la jeter sur le monde
-en contrebas, avant de reprendre sa posture hautaine, satisfait, a
-regarder l'impact au loin.
+Choregraphie : le personnage leve LES DEUX MAINS des le tout debut de
+l'animation pour invoquer une boule d'energie colossale -- LE SOLEIL --
+a la maniere d'un genkidama (energie rassemblee a deux mains au-dessus
+de la tete), la laisse grossir en la tenant (leger balancement,
+"l'energie qui respire", pas un gel total), PUIS l'abat rapidement vers
+l'avant a deux mains -- lancer brusque, pas une transition lente -- pour
+la jeter sur le monde en contrebas, avant de reprendre sa posture
+hautaine, satisfait, a regarder l'impact au loin.
 
-Retour utilisateur explicite (apres rejet de la scene de chute divine,
-"Nul, on tente un autre") : "le perso leve la main pour invoquer une
-enorme boule divine et d'un ton hautain [la jette] la-bas sur le monde."
-Nouvelle scene ISOLEE (nouveau dossier, meme infra de rig reutilisee
-telle quelle -- voir README) -- pas une variation de r6_divine_descent.
+Retour utilisateur explicite (correction de la premiere version de cette
+scene, elle-meme nee du rejet de la chute divine "Nul, on tente un
+autre") : "Non le personnage leve la main droit au debut de l'animation
+et abas le soleil comme un genkidama sur le monde." Trois changements
+par rapport a la premiere version :
+  1. Le lever de main(s) commence AU DEBUT de l'animation (RAISE_T tres
+     court), plus apres 0,70 s d'attente hautaine immobile.
+  2. Geste a DEUX mains (genkidama), pas une seule -- Left Arm calibree
+     par balayage numerique en miroir de Right Arm, jamais supposee
+     (voir calibrate.py) -- et la boule devient "le soleil" (couleur,
+     voir run_scene.py/viewer), pas une boule violette generique.
+  3. BUG DE MESURE TROUVE ET CORRIGE en re-calibrant pour ce changement :
+     la premiere version croyait a une "limite reelle du rig" (main ne
+     depassant jamais ~1 stud sous la tete, quel que soit l'angle) --
+     faux. `calibrate.py`/`orb_track.py` lisaient le bout "top" du bras
+     (`tip_world(..., "bottom")` vs `"top")`), qui est le point PRES DE
+     L'EPAULE (quasi immobile quel que soit l'angle du bras), pas la
+     main. Verifie numeriquement (voir le sweep isole dans le worklog de
+     session) : avec le bon bout ("bottom"), X=180 (bras droit au-dessus
+     de la tete, exactement la valeur documentee ci-dessous) met la main
+     LEGEREMENT AU-DESSUS du sommet de la tete, pas 1 stud en dessous.
+     Les angles ci-dessous (RAISE/ANTICIP/THROW/FOLLOW) sont donc
+     redefinis en consequence -- X=0 ne veut plus dire "main levee" (X=0
+     = bras qui pend, c'etait le vrai sens depuis le debut, la premiere
+     version se trompait de bout de bras).
 
 Meme convention d'ecriture/semantique des axes que les prototypes
 precedents (rotations en degres, `_kf` identique, verifiee -- pas
@@ -22,7 +42,9 @@ resupposee -- par calcul dans calibrate.py) :
     porte "hautain" ici (buste et tete inclines en arriere, menton haut).
   - Right Arm/Left Arm : X positif = part vers l'AVANT (-Z) puis monte
     par-dessus jusqu'a X=180 (au-dessus de la tete). Z (bras droit)
-    positif = ecarte VERS L'EXTERIEUR ; bras gauche, signe oppose.
+    positif = ecarte VERS L'EXTERIEUR ; bras gauche, signe oppose (donc
+    un geste symetrique a deux mains a le MEME X et un Z de signe
+    OPPOSE sur les deux bras).
   - Aucun coude/genou (contrainte du rig, voir r6_rig.py).
 """
 
@@ -44,124 +66,93 @@ def _kf(time, root_pos=(0.0, 3.0, 0.0), HumanoidRootPart=REST, Torso=REST,
 
 GROUND_Y = 3.0  # hanche debout, cf. les prototypes precedents
 
-# -- Posture hautaine de base -- buste/tete en arriere (X negatif),
-# hanche stable, jambes en appui asymetrique decontracte (pas une garde
-# de combat : un dieu qui toise le monde n'a pas besoin de se preparer
-# a l'impact).
 _HAUGHTY_TORSO = (-10, 0, 0)
 _HAUGHTY_HEAD = (-10, 0, 0)
 _HAUGHTY_LEGS = {"Right Leg": (0, 0, 4), "Left Leg": (0, 0, -2)}
 _IDLE_ARMS = {"Right Arm": (2, 0, 10), "Left Arm": (2, 0, -15)}
 
-# -- Bras leve pour invoquer -- X=0 est en fait le point de portee
-# MAXIMALE de ce bras (verifie par balayage numerique, voir
-# calibrate.py, pas suppose) : la main haute plafonne a ~1,1 stud SOUS
-# le sommet de la tete quel que soit l'angle essaye (X de -90 a 180,
-# inclinaison du torse de -15 a 0) -- longueur de bras fixe, limite
-# REELLE du rig, meme categorie que les limites deja documentees dans
-# r6_divine_descent (portee du poing, hauteur de hanche). La boule
-# n'est donc PAS ancree exactement a la pointe du bras : le lecteur
-# l'affiche avec un decalage vertical fixe au-dessus de cette main
-# (voir README, "La boule ne sort pas exactement de la main") pour
-# qu'elle se lise bien au-dessus de la tete malgre cette limite.
-RAISE_RIGHT_ARM = (0, 0, -15)
+# Geste a deux mains -- Right Arm calibree (voir README/calibrate.py :
+# balayage fin 160..190 x -40..0 avec le bout "bottom" -- le vrai bout
+# main -- torse -15, tete -12 : X=180 Z=-20 met la main ~0,15 stud
+# AU-DESSUS du sommet de la tete). Left Arm en miroir EXACT (meme X, Z de
+# signe oppose) puis VERIFIEE (pas supposee) par calibrate.py -- symetrie
+# du rig confirmee numeriquement (ecart D/G nul a ce keyframe).
+RAISE_RIGHT_ARM = (180, 0, -20)
+RAISE_LEFT_ARM = (180, 0, 20)
 
-# -- Anticipation avant le lancer : le bras se replie legerement en
-# arriere/vers le haut -- principe d'anticipation classique (le
-# mouvement inverse avant l'action donne plus de poids au lancer).
-# Aucune contrainte de portee ici (pas de sol/tete a atteindre), reglee
-# a l'oeil puis verifiee par capture d'ecran (voir README).
 ANTICIP_TORSO = (-22, 0, 0)
 ANTICIP_HEAD = (-15, 0, 0)
-ANTICIP_RIGHT_ARM = (-15, 0, -25)
+# Anticipation : les mains se resserrent legerement (Z reduit en
+# magnitude) juste avant le lancer -- "l'energie qui se comprime" avant
+# de s'abattre -- plutot qu'un vrai changement d'angle X (deja au max
+# utile a 180).
+ANTICIP_RIGHT_ARM = (185, 0, -10)
+ANTICIP_LEFT_ARM = (185, 0, 10)
 
-# -- Lancer : le bras s'abat vers l'avant-bas, le buste suit (transfert
-# de poids reel, pas juste le bras qui bouge seul). La trajectoire de
-# VOL de la boule apres relachement n'est PAS derivee de la vitesse du
-# bras a ce keyframe (mesuree par calibrate.py : ~5,3 studs/s vers le
-# bas, une valeur bien reelle mais qui ne dit rien sur ou se trouve
-# "le monde" ni combien de temps le vol doit durer pour rester
-# dramatique) : elle est scriptee independamment dans le lecteur, comme
-# la trajectoire de la couronne dans r6_throne_crown -- un point de
-# depart (la main a RELEASE_T) et un point d'arrivee choisis, pas une
-# extrapolation physique.
 THROW_TORSO = (20, 0, 0)
 THROW_HEAD = (15, 0, 0)
-THROW_RIGHT_ARM = (100, 0, -10)
+# Lancer : les deux bras balaient vers le bas-avant depuis le dessus de
+# la tete (180) jusqu'a un peu au-dela de l'horizontale (40) -- un vrai
+# "abattre", pas un geste qui reste haut comme dans la premiere version
+# (consequence du bug de mesure corrige ci-dessus : sans lui, X=100
+# semblait deja "vers le bas" alors qu'il ne l'etait pas tant que ca).
+THROW_RIGHT_ARM = (40, 0, -8)
+THROW_LEFT_ARM = (40, 0, 8)
 THROW_LEGS = {"Right Leg": (10, 0, 6), "Left Leg": (0, 0, -2)}
 
 FOLLOW_TORSO = (26, 0, 0)
 FOLLOW_HEAD = (18, 0, 0)
-FOLLOW_RIGHT_ARM = (130, 0, -15)
+# Suite du geste : les bras continuent leur descente (10, presque le long
+# du corps) -- le soleil est deja parti, les mains achevent le mouvement.
+FOLLOW_RIGHT_ARM = (10, 0, -5)
+FOLLOW_LEFT_ARM = (10, 0, 5)
 
 
 def haughty_orb_throw():
     keyframes = [
-        _kf(0.00, root_pos=(0, GROUND_Y, 0), Torso=_HAUGHTY_TORSO, Head=_HAUGHTY_HEAD,
+        # t=0 : le lever des DEUX mains commence des la premiere frame --
+        # pas de pose hautaine immobile avant (retour utilisateur : "au
+        # debut de l'animation"). Le buste/tete hautains restent presents
+        # des le depart : le personnage ne se met pas en garde, il invoque.
+        _kf(0.00, root_pos=(0, GROUND_Y, 0), Torso=(-8, 0, 0), Head=(-8, 0, 0),
             **_HAUGHTY_LEGS, **_IDLE_ARMS),
-
-        # -- leve la main : invocation --
         _kf(RAISE_T, root_pos=(0, GROUND_Y, 0), Torso=(-15, 0, 0), Head=(-12, 0, 0),
-            **_HAUGHTY_LEGS, **{"Right Arm": RAISE_RIGHT_ARM, "Left Arm": _IDLE_ARMS["Left Arm"]}),
-
-        # -- charge/tenue : la boule grossit dans le lecteur (voir
-        # dump_scene_data.py -- taille lue depuis les instants de
-        # phase), leger balancement du buste (Torso Y +-3) pour que
-        # "l'energie qui respire" se lise dans le corps, pas seulement
-        # dans le halo -- different de la pause figee du prototype
-        # precedent (celle-la etait une tension avant un coup, celle-ci
-        # est une accumulation de puissance, pas un arret).
-        _kf(1.35, root_pos=(0, GROUND_Y, 0), Torso=(-15, 3, 0), Head=(-12, 0, 0),
-            **_HAUGHTY_LEGS, **{"Right Arm": RAISE_RIGHT_ARM, "Left Arm": _IDLE_ARMS["Left Arm"]}),
-        _kf(2.00, root_pos=(0, GROUND_Y, 0), Torso=(-15, -3, 0), Head=(-12, 0, 0),
-            **_HAUGHTY_LEGS, **{"Right Arm": RAISE_RIGHT_ARM, "Left Arm": _IDLE_ARMS["Left Arm"]}),
-
-        # -- anticipation : encore plus en arriere juste avant le lancer --
+            **_HAUGHTY_LEGS, **{"Right Arm": RAISE_RIGHT_ARM, "Left Arm": RAISE_LEFT_ARM}),
+        _kf(0.95, root_pos=(0, GROUND_Y, 0), Torso=(-15, 3, 0), Head=(-12, 0, 0),
+            **_HAUGHTY_LEGS, **{"Right Arm": RAISE_RIGHT_ARM, "Left Arm": RAISE_LEFT_ARM}),
+        _kf(1.60, root_pos=(0, GROUND_Y, 0), Torso=(-15, -3, 0), Head=(-12, 0, 0),
+            **_HAUGHTY_LEGS, **{"Right Arm": RAISE_RIGHT_ARM, "Left Arm": RAISE_LEFT_ARM}),
         _kf(ANTICIP_T, root_pos=(0, GROUND_Y, 0), Torso=ANTICIP_TORSO, Head=ANTICIP_HEAD,
-            **_HAUGHTY_LEGS, **{"Right Arm": ANTICIP_RIGHT_ARM, "Left Arm": _IDLE_ARMS["Left Arm"]}),
-
-        # -- LANCER : rapide (voir THROW_T - ANTICIP_T), la boule quitte
-        # la main a cet instant precis (RELEASE_T, exporte separement --
-        # voir dump_scene_data.py).
+            **_HAUGHTY_LEGS, **{"Right Arm": ANTICIP_RIGHT_ARM, "Left Arm": ANTICIP_LEFT_ARM}),
         _kf(THROW_T, root_pos=(0, GROUND_Y, 0), Torso=THROW_TORSO, Head=THROW_HEAD,
-            **THROW_LEGS, **{"Right Arm": THROW_RIGHT_ARM, "Left Arm": _IDLE_ARMS["Left Arm"]}),
-
-        # -- prolongement du geste (follow-through) --
+            **THROW_LEGS, **{"Right Arm": THROW_RIGHT_ARM, "Left Arm": THROW_LEFT_ARM}),
         _kf(THROW_T + 0.15, root_pos=(0, GROUND_Y, 0), Torso=FOLLOW_TORSO, Head=FOLLOW_HEAD,
-            **THROW_LEGS, **{"Right Arm": FOLLOW_RIGHT_ARM, "Left Arm": _IDLE_ARMS["Left Arm"]}),
-
-        # -- recupere, revient vers la posture hautaine --
+            **THROW_LEGS, **{"Right Arm": FOLLOW_RIGHT_ARM, "Left Arm": FOLLOW_LEFT_ARM}),
         _kf(THROW_T + 0.55, root_pos=(0, GROUND_Y, 0), Torso=(-5, 0, 0), Head=(-5, 0, 0),
-            **_HAUGHTY_LEGS, **{"Right Arm": (10, 0, 5), "Left Arm": _IDLE_ARMS["Left Arm"]}),
-
-        # -- pose finale hautaine, satisfait, regarde l'impact au loin --
+            **_HAUGHTY_LEGS, **{"Right Arm": (10, 0, 5), "Left Arm": (10, 0, -5)}),
         _kf(THROW_T + 1.15, root_pos=(0, GROUND_Y, 0), Torso=_HAUGHTY_TORSO, Head=_HAUGHTY_HEAD,
             **_HAUGHTY_LEGS, **_IDLE_ARMS),
     ]
 
     phases = [
-        {"name": "invocation", "t0": 0.00, "t1": 0.70, "expected_reversals": {}},
-        {"name": "charge", "t0": 0.70, "t1": ANTICIP_T, "expected_reversals": {}},
+        {"name": "invocation", "t0": 0.00, "t1": 0.35, "expected_reversals": {}},
+        {"name": "charge", "t0": 0.35, "t1": ANTICIP_T, "expected_reversals": {}},
         {"name": "lancer", "t0": ANTICIP_T, "t1": THROW_T + 0.15, "expected_reversals": {}},
         {"name": "vol", "t0": THROW_T + 0.15, "t1": IMPACT_T, "expected_reversals": {}},
         {"name": "aftermath", "t0": IMPACT_T, "t1": THROW_T + 1.15, "expected_reversals": {}},
     ]
-    preview_times = [0.0, 0.70, 1.35, 2.00, ANTICIP_T, THROW_T, THROW_T + 0.15,
+    preview_times = [0.0, RAISE_T, 0.95, 1.60, ANTICIP_T, THROW_T, THROW_T + 0.15,
                       THROW_T + 0.55, THROW_T + 1.15]
     engine_opts = {"handle_type": "AUTO_CLAMPED"}
     return keyframes, phases, preview_times, engine_opts
 
 
-# ANTICIP_T -> THROW_T : 0,15s seulement -- le lancer doit etre brusque,
-# pas une transition lente comme le reste de la choregraphie (meme
-# principe que le coup de poing de r6_divine_descent). RELEASE_T = THROW_T :
-# la boule quitte la main exactement au keyframe du lancer, pas avant/
-# apres -- exporte separement pour que le lecteur sache exactement quand
-# basculer du suivi "en main" au vol libre scripte. IMPACT_T : instant
-# scripte (pas mesure sur le personnage, qui ne bouge plus a ce moment)
-# ou la boule atteint le monde en contrebas -- voir orb_track.py.
-RAISE_T = 0.70
-ANTICIP_T = 2.15
+# Lever immediat -- 0,30 s, contre 0,70 s d'attente hautaine puis lever
+# dans la premiere version : c'est ce raccourci qui traduit "des le debut
+# de l'animation" sans pour autant faire un pop instantane (une vraie
+# interpolation reste visible et lisible sur 0,30 s).
+RAISE_T = 0.30
+ANTICIP_T = 1.75
 THROW_T = ANTICIP_T + 0.15
 RELEASE_T = THROW_T
 IMPACT_T = THROW_T + 0.85
