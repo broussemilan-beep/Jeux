@@ -154,6 +154,35 @@ STRIKE_RIGHT_ARM = (65, 0, -4)
 STRIKE_LEGS = {"Right Leg": (-14, 0, 5), "Left Leg": (26, 0, -4)}
 LUNGE_Z = -5.40   # racine avancee (pas dans le coup) au moment de l'impact -- calibre par calcul (voir calibrate.py) pour amener le poing pres du torse du mannequin
 
+# -- Chaine cinetique du lacher (retour utilisateur "tu n'utilises pas le
+# corps" -> recherche sur l'animation d'un coup de poing avant de refaire :
+# un vrai direct N'EST PAS un bloc rigide qui pivote d'un coup -- hanches/
+# buste tournent EN PREMIER (vitesse de rotation maximale des hanches
+# avant celle des epaules, avant celle du bras -- la "chaine cinetique"),
+# le bras suit avec un leger retard puis "fouette" pour rattraper et
+# depasser a l'impact. Le corps (jambes+tronc) fournit ~76% de la
+# puissance d'un coup contre ~24% pour le bras seul (masse/puissance
+# musculaire), donc les jambes doivent aussi transferer le poids --
+# jambe arriere qui pivote, jambe avant qui se charge -- pas juste tenir
+# une garde statique du COIL jusqu'au RECOVER.
+#
+# Implemente ici comme une keyframe intermediaire a 40% du lacher
+# (COIL_T -> IMPACT_T, 0,20s) : buste/jambes/avancee de la racine deja a
+# ~80-85% de la pose STRIKE (les hanches ont deja tourne), le bras droit
+# lui n'est qu'a ~15% de son trajet (encore quasiment arme) -- il rattrape
+# et "fouette" dans les 0,12s restantes pour arriver pile sur
+# STRIKE_RIGHT_ARM a IMPACT_T. IMPACT_T lui-meme reste NUMERIQUEMENT
+# IDENTIQUE (verifie par calibrate.py) : cette keyframe s'insere ENTRE
+# COIL_T et IMPACT_T, elle ne change pas le point d'arrivee calibre.
+HIP_DRIVE_T = COIL_T + 0.08
+HIP_DRIVE_TORSO = (20, 26, 1)
+HIP_DRIVE_HEAD = (14, 6, 0)
+HIP_DRIVE_RIGHT_ARM = (-88, 0, -16)
+HIP_DRIVE_LEFT_ARM = (35, 0, 18)
+HIP_DRIVE_LEGS = {"Right Leg": (-25, 0, 7), "Left Leg": (13, 0, -6)}
+HIP_DRIVE_ROOT_Y = 2.94
+HIP_DRIVE_ROOT_Z = -4.52
+
 # -- Follow-through : le coup ne s'arrete pas net a IMPACT_T -- le poids
 # du corps continue au-dela du point de contact calibre avant de repartir
 # en arriere (principe d'animation "overshoot"/"follow through"). Garde
@@ -190,6 +219,11 @@ def attacker_punch():
             **CHARGE_B_LEGS, **{"Right Arm": CHARGE_B_RIGHT_ARM, "Left Arm": CHARGE_B_LEFT_ARM}),
         _kf(COIL_T, root_pos=(0, COIL_ROOT_Y, ATTACKER_Z0), Torso=COIL_TORSO, Head=COIL_HEAD,
             **COIL_LEGS, **{"Right Arm": COIL_RIGHT_ARM, "Left Arm": COIL_LEFT_ARM}),
+        # -- chaine cinetique : les hanches/le buste/les jambes partent
+        # EN PREMIER, le bras droit suit avec du retard (voir HIP_DRIVE_*
+        # plus haut) -- pas un bloc rigide qui pivote d'un coup.
+        _kf(HIP_DRIVE_T, root_pos=(0, HIP_DRIVE_ROOT_Y, HIP_DRIVE_ROOT_Z), Torso=HIP_DRIVE_TORSO, Head=HIP_DRIVE_HEAD,
+            **HIP_DRIVE_LEGS, **{"Right Arm": HIP_DRIVE_RIGHT_ARM, "Left Arm": HIP_DRIVE_LEFT_ARM}),
         _kf(IMPACT_T, root_pos=(0, GROUND_Y, LUNGE_Z), Torso=STRIKE_TORSO, Head=STRIKE_HEAD,
             **STRIKE_LEGS, **{"Right Arm": STRIKE_RIGHT_ARM, "Left Arm": (10, 0, -20)}),
         # -- follow-through : le poing/buste continuent legerement au-dela
@@ -210,7 +244,7 @@ def attacker_punch():
         {"name": "suite", "t0": IMPACT_T + 0.12, "t1": IMPACT_T + 0.40, "expected_reversals": {}},
         {"name": "posture_finale", "t0": IMPACT_T + 0.40, "t1": DURATION, "expected_reversals": {}},
     ]
-    preview_times = [0.0, GARDE_T, WINDUP_T, CHARGE_A_T, CHARGE_B_T, COIL_T, IMPACT_T,
+    preview_times = [0.0, GARDE_T, WINDUP_T, CHARGE_A_T, CHARGE_B_T, COIL_T, HIP_DRIVE_T, IMPACT_T,
                       IMPACT_T + 0.40, IMPACT_T + 0.85]
     engine_opts = {"handle_type": "AUTO_CLAMPED"}
     return keyframes, phases, preview_times, engine_opts

@@ -476,6 +476,57 @@ manuelle, la caméra chorégraphiée par défaut cadre trop serré à cet
 instant pour bien lire le bras) :
 `captures/verification/2026-09-03-directional-punch-poing-arriere-droit.png`.
 
+## Chaîne cinétique du lâcher — recherché avant de refaire, pas réajusté à l'oeil
+
+Retour direct : *"tu utilise pas le corps dj peros, va te renseigner sur
+l'animation et l'animation Roblox comment bine faire etc etc et refais ce
+que je te dmd"*. Pris au mot : recherche (biomécanique du coup de poing +
+principes d'animation + pratiques Roblox) avant toute nouvelle valeur de
+pose, plutôt que retoucher les chiffres à l'instinct comme les passages
+précédents.
+
+**Ce que la recherche établit** (sources en bas de section) :
+- Un coup de poing est une **chaîne cinétique séquentielle**, pas un bloc
+  rigide qui pivote d'un coup : la vitesse de rotation des hanches
+  atteint son maximum AVANT celle des épaules, qui atteint son maximum
+  AVANT celle du bras. Le bras est en retard, puis "fouette" pour
+  rattraper.
+- Les jambes et le tronc fournissent ~76% de la puissance d'un coup
+  (39% jambes + 37% tronc) contre ~24% pour le bras seul — le
+  transfert de poids (pied arrière qui pivote, ~60% du poids qui bascule
+  sur le pied avant) est donc au moins aussi important visuellement que
+  le geste du bras.
+- Contrapposto (hanche qui monte / épaule qui descend côté porteur) est
+  ce qui vend le transfert de poids dans une pose fixe.
+
+**Le défaut réel de la choré précédente** : `Torso`, `Right Arm` et les
+jambes partageaient TOUS les mêmes keyframes `COIL_T`→`IMPACT_T` — tout
+bougeait en même temps, au même rythme, comme un seul bloc. Exactement le
+contraire de la chaîne cinétique ci-dessus, et exactement ce que "tu
+n'utilises pas le corps" décrit.
+
+**Correction** : une keyframe intermédiaire `HIP_DRIVE_T` (`COIL_T +
+0,08s`, 40% du lâcher) où le buste/les jambes/l'avancée de la racine ont
+DÉJÀ parcouru l'essentiel du trajet vers la pose `STRIKE_*`, mais le bras
+droit est encore presque entièrement armé. Vérifié par le calcul, pas à
+l'oeil (le buste peut sembler "déjà arrivé" sur une capture sans mesure) :
+à `HIP_DRIVE_T`, le buste a parcouru **86%** de sa rotation totale
+(`COIL_T`→`IMPACT_T`) contre **17%** pour le bras droit — l'écart net
+entre les deux confirme que la séquence hanches-avant-bras existe
+vraiment dans les données, pas seulement dans l'intention. `IMPACT_T`
+lui-même reste numériquement identique (0,62 stud, revérifié).
+
+Captures à `COIL_T`/`HIP_DRIVE_T`/`IMPACT_T` (vue de côté manuelle, même
+raison que ci-dessus) :
+`captures/verification/2026-09-03-directional-punch-kinetic-chain-coil.png`,
+`-hipdrive.png`, `-impact.png`.
+
+Sources : [The Science Behind Powerful Punches](https://www.getphysical.com/blog/science-behind-powerful-punches),
+[The Kinetic Chain — Built Not Born](https://www.builtnotborn.co.uk/blog/the-kinetic-chain),
+[Principles of Animation Physics (Animator Island)](https://www.animatorisland.com/principles-of-animation-physics-part-4/),
+[The Right Cross – Boxing Heavy Artillery](https://www.myboxingcoach.com/how-to-throw-a-right-cross/),
+[Master the Boxing Pivot](https://www.myboxingcoach.com/master-the-boxing-pivot-boxing-techniques-for-versatility/).
+
 ## Rig des deux personnages
 
 Même rig R6 vérifié (dépôt Adonis, licence MIT) que les autres
