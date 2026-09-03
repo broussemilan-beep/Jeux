@@ -95,23 +95,38 @@ _READY_ARMS = {"Right Arm": (22, 0, 16), "Left Arm": (22, 0, -16)}
 # (ecart < 0.05 stud) a une racine abaissee -- une vraie assise basse
 # approchee du mieux que permet un rig sans genou, pas une pose flottante
 # ou les pieds passeraient sous le sol.
-WINDUP_ROOT_Y = 2.92
-CHARGE_A_ROOT_Y = 2.80
-CHARGE_B_ROOT_Y = 2.86      # "respiration" -- remonte legerement avant le coil final
-COIL_ROOT_Y = 2.70          # le plus bas, juste avant le lacher (qui revient a GROUND_Y)
+# Retour utilisateur (message suivant, apres capture) : "tu oublies
+# d'utiliser les jambes, le perso est censé tourner son buste vers la
+# droite [pour] charger son poing droit, plier les jambes légèrement, le
+# 2e bras placé, et boum il envoie". Deux corrections concretes par
+# rapport a la version precedente (accroupissement profond façon anime,
+# buste casse a 42 deg) :
+#   1) le buste plie vers l'avant beaucoup MOINS (16 deg au lieu de 42) --
+#      la TORSION (Y, "tourner vers la droite" = charger le cote droit,
+#      meme convention verifiee plus haut) redevient le mouvement
+#      dominant et lisible, pas noye sous un penche-en-avant extreme.
+#   2) les jambes plient VRAIMENT visible a l'oeil -- avant, la
+#      compensation numerique (jambes enfants du Torso, voir plus bas)
+#      les ramenait quasiment a la verticale pour garder les pieds au sol
+#      sous 42 deg de buste, ce qui les faisait lire comme "droites" a
+#      l'ecran malgre la rotation locale. Avec un buste moins penche, une
+#      simple rotation locale des deux jambes VERS L'AVANT (X positif,
+#      meme convention que le buste) suffit a lire comme un plie de
+#      genou, sans avoir besoin d'une compensation lourde.
+WINDUP_ROOT_Y = 2.95
+CHARGE_A_ROOT_Y = 2.88
+CHARGE_B_ROOT_Y = 2.92      # "respiration" -- remonte legerement avant le coil final
+COIL_ROOT_Y = 2.82          # plie "légèrement", pas un accroupissement profond
 
-# Retour utilisateur sur l'image 1 : "le perso charge son poing à son
-# arrière droit" -- pas croise devant la poitrine (erreur de premiere
-# lecture de la reference). Corrige : le Right Arm part desormais en
-# ARRIERE du corps (X negatif -- meme convention que partout ailleurs :
-# X positif = avant-puis-au-dessus, X negatif = arriere), comme un poing
-# arme au niveau de la hanche/du bas du dos, pas ramene devant le torse.
-# Le Left Arm reste devant, en garde, pres du buste.
-WINDUP_TORSO = (18, -8, 2)
-WINDUP_HEAD = (13, -6, 0)
-WINDUP_RIGHT_ARM = (-35, 0, -10)
+# Poing droit charge en ARRIERE (retour utilisateur sur l'image 1, deja
+# corrige avant ce passage-ci -- X negatif = arriere, meme convention que
+# partout ailleurs). Le 2e bras (Left Arm) se PLACE en garde devant le
+# buste pendant la charge.
+WINDUP_TORSO = (6, -10, 2)
+WINDUP_HEAD = (5, -8, 0)
+WINDUP_RIGHT_ARM = (-30, 0, -10)
 WINDUP_LEFT_ARM = (35, 0, 25)
-WINDUP_LEGS = {"Right Leg": (-30, 0, 10), "Left Leg": (-15, 0, -6)}
+WINDUP_LEGS = {"Right Leg": (10, 0, 10), "Left Leg": (12, 0, -8)}
 
 # -- Battements de "respiration" pendant la charge -- la pose ne reste
 # PAS parfaitement figee entre WINDUP_T et COIL_T (un gel total lirait
@@ -119,28 +134,27 @@ WINDUP_LEGS = {"Right Leg": (-30, 0, 10), "Left Leg": (-15, 0, -6)}
 # buste/bras, resserrement progressif jusqu'au coil final juste avant le
 # lacher. Meme principe que le balancement "l'energie qui respire" de
 # r6_divine_orb, applique ici au poing plutot qu'a une boule.
-CHARGE_A_TORSO = (28, -13, 3)
-CHARGE_A_HEAD = (20, -10, 0)
-CHARGE_A_RIGHT_ARM = (-65, 0, -14)
+CHARGE_A_TORSO = (10, -22, 3)
+CHARGE_A_HEAD = (8, -14, 0)
+CHARGE_A_RIGHT_ARM = (-58, 0, -14)
 CHARGE_A_LEFT_ARM = (48, 0, 38)
-CHARGE_A_LEGS = {"Right Leg": (-48, 0, 12), "Left Leg": (-26, 0, -9)}
+CHARGE_A_LEGS = {"Right Leg": (16, 0, 13), "Left Leg": (18, 0, -10)}
 
-CHARGE_B_TORSO = (24, -11, 2)
-CHARGE_B_HEAD = (17, -9, 0)
-CHARGE_B_RIGHT_ARM = (-55, 0, -12)
+CHARGE_B_TORSO = (8, -18, 2)
+CHARGE_B_HEAD = (7, -12, 0)
+CHARGE_B_RIGHT_ARM = (-50, 0, -12)
 CHARGE_B_LEFT_ARM = (44, 0, 34)
-CHARGE_B_LEGS = {"Right Leg": (-42, 0, 11), "Left Leg": (-22, 0, -8)}
+CHARGE_B_LEGS = {"Right Leg": (13, 0, 12), "Left Leg": (15, 0, -9)}
 
-# Accroupissement maximal, juste avant le lacher -- pose "image 1" de la
-# reference : buste casse a 42 deg vers l'avant, tete baissee, poing
-# droit charge en ARRIERE pres de la hanche (pas croise devant), main
-# gauche en garde devant le buste, jambes largement ecartees en appui
-# (segments rigides compenses, voir plus haut).
-COIL_TORSO = (42, -20, 5)
-COIL_HEAD = (30, -16, 0)
-COIL_RIGHT_ARM = (-115, 0, -18)
-COIL_LEFT_ARM = (60, 0, 55)
-COIL_LEGS = {"Right Leg": (-70, 0, 15), "Left Leg": (-40, 0, -12)}
+# Charge maximale, juste avant le lacher : buste tourne fort vers la
+# droite (Y=-32, torsion dominante -- charge le cote droit), penche vers
+# l'avant seulement legerement (X=13), poing droit charge en arriere,
+# main gauche en garde, jambes plus visiblement pliees qu'en WINDUP.
+COIL_TORSO = (13, -32, 4)
+COIL_HEAD = (10, -20, 0)
+COIL_RIGHT_ARM = (-95, 0, -18)
+COIL_LEFT_ARM = (48, 0, 42)
+COIL_LEGS = {"Right Leg": (20, 0, 15), "Left Leg": (24, 0, -12)}
 
 # Calibre par balayage numerique (pas a l'oeil, voir calibrate.py) :
 # X=100 semblait "plus de puissance" mais releve le poing bien au-dessus
@@ -174,13 +188,17 @@ LUNGE_Z = -5.40   # racine avancee (pas dans le coup) au moment de l'impact -- c
 # STRIKE_RIGHT_ARM a IMPACT_T. IMPACT_T lui-meme reste NUMERIQUEMENT
 # IDENTIQUE (verifie par calibrate.py) : cette keyframe s'insere ENTRE
 # COIL_T et IMPACT_T, elle ne change pas le point d'arrivee calibre.
+# Recalcule (memes fractions -- torse/jambes/racine a ~80-85% du trajet,
+# bras a ~15%) apres le passage "plier les jambes légèrement" qui a change
+# les poses COIL_* sources -- ces valeurs sont interpolees depuis les NOUVELLES
+# COIL_*, pas les anciennes.
 HIP_DRIVE_T = COIL_T + 0.08
-HIP_DRIVE_TORSO = (20, 26, 1)
-HIP_DRIVE_HEAD = (14, 6, 0)
-HIP_DRIVE_RIGHT_ARM = (-88, 0, -16)
-HIP_DRIVE_LEFT_ARM = (35, 0, 18)
-HIP_DRIVE_LEGS = {"Right Leg": (-25, 0, 7), "Left Leg": (13, 0, -6)}
-HIP_DRIVE_ROOT_Y = 2.94
+HIP_DRIVE_TORSO = (16, 24, 1)
+HIP_DRIVE_HEAD = (10, 6, 0)
+HIP_DRIVE_RIGHT_ARM = (-71, 0, -16)
+HIP_DRIVE_LEFT_ARM = (29, 0, 11)
+HIP_DRIVE_LEGS = {"Right Leg": (-7, 0, 7), "Left Leg": (26, 0, -6)}
+HIP_DRIVE_ROOT_Y = 2.96
 HIP_DRIVE_ROOT_Z = -4.52
 
 # -- Follow-through : le coup ne s'arrete pas net a IMPACT_T -- le poids

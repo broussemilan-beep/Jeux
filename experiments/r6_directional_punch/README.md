@@ -527,6 +527,40 @@ Sources : [The Science Behind Powerful Punches](https://www.getphysical.com/blog
 [The Right Cross – Boxing Heavy Artillery](https://www.myboxingcoach.com/how-to-throw-a-right-cross/),
 [Master the Boxing Pivot](https://www.myboxingcoach.com/master-the-boxing-pivot-boxing-techniques-for-versatility/).
 
+## Accroupissement anime remplacé par un plié de jambes lisible
+
+Retour direct, après la chaîne cinétique ci-dessus : *"tu oublies
+d'utiliser les jambes, le perso est censé tourner son buste vers la
+droite [pour] charger son poing droit, plier les jambes légèrement, le
+2e bras placé, et boum il envoie"*.
+
+**Le vrai problème n'était pas qu'il manquait du mouvement de jambes**
+(il y en avait, voir la section accroupissement plus haut) **— c'est que
+ce mouvement ne se LISAIT pas.** Le buste penché à 42° vers l'avant
+(pose façon anime, cf. les 3 images de référence plus haut) exigeait une
+compensation numérique lourde sur les jambes pour garder les pieds au
+sol (jambes = enfants du Torso, voir plus haut) — cette compensation les
+ramenait quasiment à la verticale à l'écran, donc elles se lisaient comme
+"droites" malgré une vraie rotation locale non nulle dans les données.
+
+**Corrigé en simplifiant, pas en ajoutant** : le buste penche désormais
+beaucoup moins vers l'avant (`COIL_TORSO` X : 42°→13°) — la TORSION
+(Y : -32°, "tourner vers la droite" pour charger le poing droit) redevient
+le mouvement dominant et lisible, plutôt que noyée sous un penché extrême.
+Avec moins d'inclinaison à compenser, une simple rotation locale des deux
+jambes vers l'avant (`COIL_LEGS` : `Right Leg (20°,·,15°)`,
+`Left Leg (24°,·,-12°)`) suffit à se lire comme un plié de genou visible
+à l'écran, sans compensation lourde — vérifié à nouveau par le calcul
+(pieds à 0,02–0,20 stud du sol sur toute la charge, pas de pied qui
+traverse le sol) et confirmé par capture. `HIP_DRIVE_*` (chaîne
+cinétique) recalculé contre ces nouvelles poses de charge. `IMPACT_T`
+toujours strictement inchangé (contact calibré 0,62 stud).
+
+Captures (vue de côté basse, même raison que les sections précédentes —
+le plan chorégraphié par défaut ne cadre pas assez large à cet instant) :
+`captures/verification/2026-09-03-directional-punch-jambes-pliees-windup.png`,
+`-coil.png`, `-hipdrive.png`, `-impact.png`.
+
 ## Rig des deux personnages
 
 Même rig R6 vérifié (dépôt Adonis, licence MIT) que les autres
