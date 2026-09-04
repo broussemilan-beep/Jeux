@@ -787,6 +787,34 @@ l'écart de contact inchangé (0,366 stud) : seules les poses AVANT
 `COIL_T` ont changé. Capture :
 `2026-09-04-directional-punch-charge-height-fix.png`.
 
+## Étirement de charge — abandon de la biomécanique humaine
+
+Retour utilisateur, après deux passes sur la seule pose/timing sans que
+ça suffise : « le coup ne doit pas partir de derrière, mais le bras se
+déboîte vers l'arrière et avance vers l'avant — ne te fie pas à une
+animation humaine ». Message clair : arrêter de chercher une
+biomécanique crédible (chaîne cinétique hanches→buste→bras, amplitudes
+anatomiques réalistes) et assumer un vrai excès de cartoon/anime — le
+bras s'allonge visiblement au-delà de sa longueur normale en chargeant,
+comme un élastique tendu, plutôt que de rester une Part rigide de
+longueur fixe qui tourne poliment sur son épaule.
+
+Ajouté `chargeStretchFactor()` (viewer-only, même mécanisme que
+l'étirement d'impact déjà en place — `scale` + repositionnement pour
+ancrer une extrémité — voir note README ci-dessous sur la limite
+`KeyframeSequence`/`Size`) : le bras droit s'étire jusqu'à ×1,55 sa
+longueur pendant `WINDUP_T -> COIL_T`, ancré cette fois à **l'épaule**
+(pas à la main comme l'étirement d'impact) — c'est la main qui doit
+sembler s'éloigner du corps, pas l'inverse. L'étirement retombe à 1.0
+juste avant `IMPACT_T`, exactement au moment où le snap 1-frame et
+l'étirement d'impact prennent le relais — le "lance-pierre" se détend
+dans le même geste que le lâcher, pas dans un aller-retour séparé.
+Vérifié par capture caméra dédiée, angle dégagé :
+`2026-09-04-directional-punch-charge-stretch-deboite.png` — le bras
+chambré est visiblement plus long que sa taille normale, un vrai
+déboîtement de cartoon. `calibrate.py` reconfirme l'écart de contact
+inchangé (0,366 stud) : effet purement visuel, aucune pose touchée.
+
 ## Commandes
 
 ```bash
