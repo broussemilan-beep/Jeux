@@ -787,36 +787,39 @@ function armStretchFactor(t) {
   return 1.0 + ARM_STRETCH_PEAK * attack * release;
 }
 
-// Etirement de charge -- retour utilisateur, apres deux passes sur la
-// SEULE pose/timing sans que ca suffise ("le bras se deboite vers
-// l'arriere et avance vers l'avant, ne te fie pas a une animation
-// humaine") : la demande n'est plus une biomecanique humaine credible
-// (chaine cinetique, angles anatomiques) mais un vrai etirement/
-// deboitement de cartoon -- le bras s'allonge visiblement au-dela de sa
-// longueur normale pendant qu'il charge en arriere (tension d'un
-// elastique/lance-pierre), puis se retracte a sa longueur normale
-// PENDANT le lacher (l'energie stockee "se relache" dans le mouvement,
-// pas dans un simple retour elastique post-impact). Meme mecanisme
-// viewer-only que l'etirement d'impact (scale + repositionnement pour
-// ancrer une extremite), mais ANCRE A L'EPAULE cette fois (c'est la main
-// qui doit sembler s'eloigner du corps, pas l'inverse) -- direction de
-// decalage opposee (local -Y, pas +Y).
-const CHARGE_STRETCH_PEAK = 0.55;
-function chargeStretchFactor(t) {
-  if (t < WINDUP_T) return 1.0;
-  if (t < COIL_T) {
-    const f = (t - WINDUP_T) / Math.max(1e-6, COIL_T - WINDUP_T);
-    const attack = Math.min(1, f / 0.12);   // le bras "part" en arriere des l'entree en charge
-    const pulse = 0.92 + 0.08 * Math.sin(t * 2.4);   // meme respiration que le reste de la charge
-    return 1.0 + CHARGE_STRETCH_PEAK * attack * pulse;
-  }
-  // COIL_T -> IMPACT_T : le "lance-pierre" se detend en meme temps que
-  // le snap 1-frame du lacher (voir HIP_DRIVE_T dans choreography.py) --
-  // l'etirement retombe a 1.0 pile a IMPACT_T, ou armStretchFactor prend
-  // le relais (les deux fenetres ne se chevauchent jamais).
-  const f2 = Math.min(1, (t - COIL_T) / Math.max(1e-6, IMPACT_T - COIL_T));
-  const release = 1 - Math.pow(f2, 0.6);
-  return 1.0 + CHARGE_STRETCH_PEAK * release;
+// Etirement de LACHER -- troisieme correction sur ce point precis.
+// Premiere tentative (etirer pendant le RECUL, WINDUP_T->COIL_T) rejetee
+// par l'utilisateur : "toujours pas compris, inverse... le bras se
+// deboite vers l'arriere [c'etait le sens vise depuis le debut] MAIS
+// [ce que je veux dire c'est qu'il] ne part [pas] de l'arriere, la est
+// la difference, et avance vers l'avant" -- confirme par 3 videos de
+// reference envoyees (jeu de combat Roblox, moves "Black Flash"/"Rewind
+// Clock"/"Stagnant Rage", analysees frame par frame) : dans les trois,
+// AUCUNE charge n'etire un membre vers l'arriere -- l'anticipation est
+// soit instantanee soit signalee par un VFX statique (lueur sur le
+// poing, anneau au sol, rune qui tourne), jamais une deformation de
+// geometrie. Le seul etirement observe est une forme en coin qui
+// grandit en fonçant VERS LA CAMERA/CIBLE pendant l'APPROCHE (~10
+// frames), jamais pendant le recul -- exactement "l'etirement doit etre
+// sur l'avance, pas le recul" (confirmation directe de l'utilisateur
+// apres la 2e video).
+//
+// Retire donc entierement l'etirement pendant WINDUP_T->COIL_T (charge
+// normale, sans deformation -- la lueur de drawFistCharge() reste le
+// seul tell visuel de charge, comme dans les 3 references). Ajoute a la
+// place un etirement qui grandit PENDANT COIL_T->IMPACT_T (le lacher,
+// le bras fonce vers la cible) -- ancre a l'EPAULE (le poing s'eloigne
+// du corps en fonçant vers l'avant), retombe a 1.0 pile a IMPACT_T ou
+// l'etirement d'impact existant (armStretchFactor, ancre a la MAIN)
+// prend le relais -- les deux fenetres ne se chevauchent jamais.
+const RELEASE_STRETCH_PEAK = 0.6;
+function releaseStretchFactor(t) {
+  if (t < COIL_T || t >= IMPACT_T) return 1.0;
+  const f = (t - COIL_T) / Math.max(1e-6, IMPACT_T - COIL_T);
+  // accelere en s'approchant de la cible (ease-in), comme le coin qui
+  // grandit en fonçant vers la camera dans la reference -- pas un
+  // aller-retour, une seule montee jusqu'a IMPACT_T.
+  return 1.0 + RELEASE_STRETCH_PEAK * Math.pow(f, 1.6);
 }
 
 // ---------------------------------------------------------------------
@@ -853,18 +856,20 @@ function render(t) {
     applyPoseToMesh(dummyMeshes[part], dumPose[part].p, dumPose[part].r);
   }
   // Etirement du bras droit -- deux fenetres MUTUELLEMENT EXCLUSIVES (par
-  // le temps, jamais superposees) : pendant la charge (chargeStretchFactor,
-  // ancre a l'EPAULE -- la main s'eloigne du corps, effet "lance-pierre
-  // qui se tend") puis, a partir d'IMPACT_T, l'etirement d'impact existant
-  // (armStretchFactor, ancre a la MAIN -- voir sa propre note).
+  // le temps, jamais superposees) : pendant le LACHER, COIL_T->IMPACT_T
+  // (releaseStretchFactor, ancre a l'EPAULE -- le poing s'eloigne du
+  // corps en fonçant vers l'avant) puis, a partir d'IMPACT_T, l'etirement
+  // d'impact existant (armStretchFactor, ancre a la MAIN -- voir sa
+  // propre note). Rien pendant la charge elle-meme (WINDUP_T->COIL_T) --
+  // voir la note de releaseStretchFactor sur pourquoi.
   const rightArmMesh = attackerMeshes["Right Arm"];
-  const isCharging = t < IMPACT_T;
-  const stretch = isCharging ? chargeStretchFactor(t) : armStretchFactor(t);
+  const isReleasing = t < IMPACT_T;
+  const stretch = isReleasing ? releaseStretchFactor(t) : armStretchFactor(t);
   rightArmMesh.scale.set(1, stretch, 1);
   if (stretch > 1.0) {
     const armLen = DATA.part_sizes["Right Arm"][1];
     const extra = (stretch - 1) * armLen * 0.5;
-    const localDir = isCharging ? new THREE.Vector3(0, -1, 0) : new THREE.Vector3(0, 1, 0);
+    const localDir = isReleasing ? new THREE.Vector3(0, -1, 0) : new THREE.Vector3(0, 1, 0);
     const shift = localDir.applyQuaternion(rightArmMesh.quaternion).multiplyScalar(extra);
     rightArmMesh.position.add(shift);
   }

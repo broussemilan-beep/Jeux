@@ -815,6 +815,36 @@ chambré est visiblement plus long que sa taille normale, un vrai
 déboîtement de cartoon. `calibrate.py` reconfirme l'écart de contact
 inchangé (0,366 stud) : effet purement visuel, aucune pose touchée.
 
+**Correction immédiate : l'étirement était sur le mauvais demi-temps.**
+Retour utilisateur sur la section précédente : « toujours pas compris,
+inverse... le bras se déboîte vers l'arrière [mais] ne part [pas] de
+l'arrière, la est la différence, et avance vers l'avant ». Trois vidéos
+de référence fournies (jeu de combat Roblox, moves « Black Flash »,
+« Rewind Clock », « Stagnant Rage ») et analysées frame par frame :
+**aucune des trois n'étire un membre pendant le recul** — la charge y
+est soit instantanée, soit signalée par un VFX statique (lueur sur le
+poing, anneau au sol, rune qui tourne), jamais une déformation de
+géométrie. Le seul étirement observé (« Black Flash », un coin/triangle
+jaune qui grandit sur ~10 frames) apparaît PENDANT L'APPROCHE — le
+membre/effet fonce vers la caméra/cible en s'allongeant, jamais pendant
+le retrait.
+
+`chargeStretchFactor()` (étirement pendant `WINDUP_T -> COIL_T`, ci-
+dessus) est donc retiré entièrement — la charge redevient sans
+déformation, avec pour seul tell visuel la lueur de `drawFistCharge()`
+(même famille que le "fist glow" observé dans les références). À la
+place, `releaseStretchFactor()` étire le bras jusqu'à ×1,55 PENDANT
+`COIL_T -> IMPACT_T` (le lâcher, quand le poing fonce réellement vers la
+cible), toujours ancré à l'épaule, en accélération (`f^1.6`, pas
+linéaire) pour lire comme un fouet qui prend de la vitesse en
+approchant. Retombe à 1.0 pile à `IMPACT_T`, où l'étirement d'impact
+existant (`armStretchFactor`, ancré à la main) prend le relais — la
+coupure entre les deux est cachée par le flash d'impact qui couvre cet
+instant précis. Vérifié numériquement (pas à l'oeil) :
+`releaseStretchFactor` vaut exactement 1.000 à `COIL_T`, 1.198 à
+mi-lâcher, 1.553 juste avant `IMPACT_T`. Capture :
+`2026-09-04-directional-punch-release-stretch-advance.png`.
+
 ## Commandes
 
 ```bash
