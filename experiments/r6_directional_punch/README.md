@@ -633,6 +633,96 @@ Captures (gel, étirement, sortie du gel, settle) :
 `captures/verification/2026-09-04-directional-punch-hitstop-stretch.png`,
 `-mid.png`, `-unfreeze.png`, `-settle.png`.
 
+## Le bras rigide (aucun coude) — diagnostic et techniques de compensation
+
+Retour utilisateur, après toutes les passes précédentes : « malgré tout ce
+que tu as tenté tu n'as pas réussi à donner le sentiment d'un coup de
+poing... le perso met juste une espèce d'élancement du bras ». Vérifié
+en zoomant la caméra manuellement sur le bras au moment du lâcher
+(`2026-09-04-directional-punch-rig-no-elbow-diag.png`) : le constat est
+juste. `Right Arm` est **une seule Part rigide** reliée au Torso par un
+unique `Motor6D` à l'épaule — contrainte dure du rig R6 (voir
+`r6_rig.py`), pas un réglage de pose. Sans coude, le bras ne peut
+physiquement que tourner comme une règle autour d'un point fixe : aucun
+raffinage de timing/exagération/chaîne cinétique ne peut lui faire lire
+autrement, quelle que soit la qualité du reste de l'animation.
+
+Deux options posées à l'utilisateur : reconstruire la scène sur le rig
+**R15** (coude articulé réel, `UpperArm`/`LowerArm`) — la vraie solution,
+mais un chantier bien plus lourd (nouveau rig, provenance/licence à
+revérifier, chorégraphie entièrement reprise) — ou rester sur R6 et
+pousser les techniques de trompe-l'œil que des jeux Roblox comme *The
+Strongest Battlegrounds* utilisent pour vendre un coup qui claque malgré
+la même contrainte de rig. Décision utilisateur : rester sur R6.
+L'utilisateur a ensuite fait sa propre recherche et fourni une
+décomposition détaillée des techniques (animation/caméra/VFX) utilisées
+par ces jeux — reproduite ci-dessous, avec pour chaque levier ce qui a
+été appliqué dans cette passe.
+
+**Diagnostic concret trouvé en le comparant à la recherche fournie** :
+la fenêtre entre la keyframe `HIP_DRIVE_T` (chaîne cinétique) et
+`IMPACT_T` durait **0,12 s (~3-4 frames à 30 fps, le `OUT_HZ` de
+`dump_scene_data.py`)** — très exactement la « zone à danger 3 à 5
+frames intermédiaires » que la recherche identifie comme LA cause
+classique de l'effet « pale de moulin » sur un bras rigide : assez de
+frames pour que l'œil suive le bloc traverser l'espace, pas assez pour
+lire comme un geste voulu. Le lâcher n'avait donc jamais été un vrai
+snap, malgré tout le travail sur la pose elle-même.
+
+**1. Suppression du voyage (snap 1-frame).** `HIP_DRIVE_T` recollé
+contre `IMPACT_T` à exactement `1/30 s` (au lieu de 0,12 s) — les deux
+tombent sur des frames Blender entières adjacentes (65 et 66 à 30 fps,
+vérifié par calcul, pas approximé). Le « runway » où le buste/les
+jambes/la racine font l'essentiel du travail (chaîne cinétique) s'étend
+donc maintenant sur `COIL_T -> HIP_DRIVE_T` (0,167 s, ~5 frames,
+largement lisible), et il ne reste plus qu'UNE frame de sortie entre le
+bras encore quasiment armé et le bras en pleine extension — le cerveau
+comble le vide plutôt que de voir le bras voyager. Fractions recalculées
+(script, pas à l'oeil) : buste/tête/jambes/racine à 92% du trajet
+`COIL_*->STRIKE_*`, bras gauche (garde) à 85%, bras droit (le coup) à
+seulement 20% — il reste le payload du snap final. `IMPACT_T` et tous
+les `STRIKE_*` restent NUMÉRIQUEMENT INCHANGÉS : `calibrate.py`
+reconfirme le même écart de contact, 0,366 stud, à la troisième
+décimale près.
+
+**2. FOV-snap et coupe basse au contact (caméra).** Un zoom optique
+quasi instantané (`fovAt()`, 42°→33° en ~1 frame puis retour élastique
+avec léger dépassement, sur toute la fenêtre du hitstop) — écrase la
+perspective au moment du contact, indépendamment du travelling/shake
+déjà en place. Le plan « impact » lui-même passe d'une élévation quasi
+neutre (9°) à une légère contre-plongée (-5°) — l'angle de vue s'aligne
+davantage avec la ligne de fuite du bras au lieu de le montrer de
+profil.
+
+**3. Smear épaule→poing + traînée du poing (VFX, ne touche pas la
+pose).** Deux formes 2D dessinées en surimpression pendant la fenêtre du
+snap (`drawArmSmear()`), qui ne changent RIEN à la pose 3D en dessous :
+un cône translucide effilé (étroit à l'épaule — approximée depuis la
+rotation du Torso, voir `shoulderWorld()` — large au poing) qui masque
+la silhouette rectangulaire du bras, et une traînée plus fine/plus vive
+qui relie la position du poing quelques frames avant le snap à sa
+position actuelle, traçant l'arc que le retimage ci-dessus ne laisse
+plus le temps à l'œil de reconstituer seul. Vérifié isolément par
+capture caméra manuelle (angle 3/4 dégagé, hors chorégraphie caméra du
+lecteur) :
+`2026-09-04-directional-punch-arm-smear-diag.png` — le bloc rigide est
+bien recouvert par la forme dynamique, pas juste dessiné à côté.
+
+**Techniques de la recherche NON appliquées cette passe** (notées pour
+une prochaine itération si le résultat reste insuffisant) : le
+raccourci de perspective (orienter le bras armé pour qu'il pointe vers
+la caméra, le compressant visuellement) demanderait de retravailler
+l'azimut caméra du plan "approche" en fonction de l'angle exact du bras
+3D — pas fait ici, effet plus incertain/dépendant de l'angle exact que
+les trois leviers ci-dessus. Le "broken rig" (léger déboîtement de
+l'épaule/translation du Motor6D à l'impact) recoupe largement
+l'étirement de bras déjà implémenté (`armStretchFactor`) — pas dupliqué.
+
+Captures : `2026-09-04-directional-punch-snap-pre-1frame.png` (une
+frame avant l'impact, bras encore armé + smear visible),
+`2026-09-04-directional-punch-snap-reaction.png` (réaction du mannequin
+après le nouveau snap).
+
 ## Rig des deux personnages
 
 Même rig R6 vérifié (dépôt Adonis, licence MIT) que les autres

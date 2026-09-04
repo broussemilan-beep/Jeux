@@ -209,7 +209,15 @@ function currentPhase(t) {
 const SHOTS = [
   { name: "large",    t0: 0.00, t1: WINDUP_T,       az0: -40, az1: -36, el0: 18, el1: 17, sc0: 0.72, sc1: 0.78, tz0: -4.5, tz1: -4.4, ty0: 3.2, ty1: 3.2 },
   { name: "approche",  t0: WINDUP_T, t1: IMPACT_T,   az0: -32, az1: -22,  el0: 15, el1: 10, sc0: 0.85, sc1: 1.80, tz0: -4.2, tz1: -5.4, ty0: 3.3, ty1: 3.6 },
-  { name: "impact",   t0: IMPACT_T, t1: IMPACT_T + 0.12, az0: -20, az1: -20, el0: 9, el1: 9, sc0: 2.05, sc1: 2.10, tz0: -6.2, tz1: -6.2, ty0: 3.6, ty1: 3.6 },
+  // "impact" -- retour utilisateur (recherche personnelle sur l'animation
+  // R6/sakuga) : une "coupe nette vers une camera basse au moment du
+  // contact" fait partie des techniques qui masquent l'absence de coude
+  // (l'angle de vue s'aligne avec la ligne de fuite du bras plutot que de
+  // le montrer de profil). Elevation abaissee de 9 deg (quasi neutre) a
+  // -5 deg (legere contre-plongee, camera sous la ligne d'epaule) -- pas
+  // au ras du sol (MIN_SUBJECT_DIST/ROOM genre de garde-fou empeche une
+  // contre-plongee extreme de toute facon a cette distance).
+  { name: "impact",   t0: IMPACT_T, t1: IMPACT_T + 0.12, az0: -20, az1: -20, el0: -5, el1: -5, sc0: 2.05, sc1: 2.10, tz0: -6.2, tz1: -6.2, ty0: 3.6, ty1: 3.6 },
   { name: "réaction",  t0: IMPACT_T + 0.12, t1: IMPACT_T + 0.65, az0: 55, az1: 46, el0: 7, el1: 9, sc0: 1.35, sc1: 1.28, tz0: -8.2, tz1: -8.6, ty0: 3.3, ty1: 3.4 },
   { name: "plan final", t0: IMPACT_T + 0.65, t1: DURATION + 0.001, az0: -42, az1: -38, el0: 18, el1: 20, sc0: 1.05, sc1: 0.98, tz0: -3.4, tz1: -2.2, ty0: 3.2, ty1: 3.2 },
 ];
@@ -280,6 +288,29 @@ function shakeOffset(t) {
     y: Math.sin(age * 97 + 1.4) * 0.07 * decay,
     z: Math.sin(age * 121 + 0.6) * 0.06 * decay,
   };
+}
+
+// FOV-snap -- retour utilisateur (recherche personnelle sur l'animation
+// R6/sakuga, technique documentee pour des jeux comme TSB) : un zoom
+// optique quasi instantane au contact (reduction du champ de vision,
+// pas un travelling) ecrase la perspective et donne l'impression que la
+// cible est projetee contre l'objectif -- distinct du shake (qui deplace
+// la camera) et du plan "impact" (qui la repositionne) : celui-ci module
+// SEULEMENT le champ de vision de la meme camera. Chute brutale sur 1-2
+// frames (attack quasi instantane), retour elastique (overshoot leger
+// puis stabilisation) sur le reste de la fenetre de hitstop.
+const FOV_BASE = 42, FOV_SNAP_DUR = 0.22, FOV_ATTACK = 0.035;
+function fovAt(t) {
+  const age = t - IMPACT_T;
+  if (age < 0 || age > FOV_SNAP_DUR) return FOV_BASE;
+  if (age < FOV_ATTACK) {
+    const a = age / FOV_ATTACK;
+    return FOV_BASE - 9 * a;   // chute vers 33 deg, quasi 1 frame
+  }
+  const rel = (age - FOV_ATTACK) / (FOV_SNAP_DUR - FOV_ATTACK);
+  // retour elastique : depasse legerement la base avant de s'y stabiliser.
+  const overshoot = Math.sin(rel * Math.PI) * 2.5 * (1 - rel);
+  return FOV_BASE - 9 * (1 - rel) + overshoot;
 }
 
 // ---------------------------------------------------------------------
@@ -623,6 +654,99 @@ function drawDebrisBurst(t, contactScreen) {
   octx.restore();
 }
 
+// Smear epaule->poing + trainee du poing -- retour utilisateur ("juste
+// une espece d'elancement du bras dans ton rendu"), apres recherche
+// personnelle sur les techniques sakuga/R6 (meme famille que TSB) :
+// un bras R6 est un seul bloc rigide (aucun coude) -- rien dans la pose
+// elle-meme ne peut le faire lire comme un "fouet" plutot qu'une regle
+// qui pivote. La technique qui marche NE TOUCHE PAS a la pose : elle
+// recouvre le trajet du bras d'une forme courbe/effilee (un "smear
+// mesh") au moment du snap, pour que l'oeil retienne cette forme-la
+// plutot que le parallelepipede rigide en dessous.
+//
+// Deux elements dessines en surimpression, tous deux uniquement autour
+// d'IMPACT_T (la fenetre du snap 1-frame, voir HIP_DRIVE_T dans
+// choreography.py) :
+//   1. Un cone effile (etroit a l'epaule, large au poing) le long du
+//      bras ACTUEL -- masque la silhouette rectangulaire du bras rigide
+//      sous une forme dynamique.
+//   2. Une trainee qui relie la position du poing quelques frames avant
+//      (avant le snap, bras encore arme) a sa position actuelle -- trace
+//      l'ARC que l'oeil ne voit pas assez de frames pour reconstituer
+//      lui-meme (voir le retimage du lacher), rendant le trajet lisible
+//      sans jamais montrer de pose intermediaire lissee.
+const SMEAR_LOOKBACK = 0.07, SMEAR_WINDOW = 0.11, SMEAR_TAIL = 0.07;
+
+// Approxime le point d'attache de l'epaule droite dans le repere LOCAL
+// du Torso (demi-largeur du Torso ~1 stud, un peu vers le haut) --
+// suffisant pour une trainee VFX, pas une precision Motor6D.
+const _SHOULDER_LOCAL = [0.9, 0.6, 0.0];
+function shoulderWorld(torsoPose) {
+  const r = torsoPose.r, p = torsoPose.p;
+  const [lx, ly, lz] = _SHOULDER_LOCAL;
+  return [
+    p[0] + r[0] * lx + r[1] * ly + r[2] * lz,
+    p[1] + r[3] * lx + r[4] * ly + r[5] * lz,
+    p[2] + r[6] * lx + r[7] * ly + r[8] * lz,
+  ];
+}
+
+function drawArmSmear(t, attPose) {
+  const age = t - IMPACT_T;
+  if (age < -SMEAR_WINDOW || age > SMEAR_TAIL) return;
+  const envelope = age < 0
+    ? Math.min(1, (age + SMEAR_WINDOW) / (SMEAR_WINDOW - SMEAR_LOOKBACK))
+    : Math.max(0, 1 - age / SMEAR_TAIL);
+  if (envelope <= 0.01) return;
+
+  const prevPt = Math.max(COIL_T, poseTime(t) - SMEAR_LOOKBACK);
+  const prevPose = sampleChar(DATA.attacker_frames, prevPt);
+  const shoulderNow = shoulderWorld(attPose["Torso"]);
+  const fistNow = attPose["Right Arm"].p;
+  const fistPrev = prevPose["Right Arm"].p;
+
+  const s0 = worldToScreen(shoulderNow[0], shoulderNow[1], shoulderNow[2]);
+  const s1 = worldToScreen(fistNow[0], fistNow[1], fistNow[2]);
+  const sPrev = worldToScreen(fistPrev[0], fistPrev[1], fistPrev[2]);
+
+  octx.save();
+  octx.globalCompositeOperation = "lighter";
+
+  // 1) cone effile epaule -> poing, largeur nulle a l'epaule, max au poing.
+  const dx = s1.x - s0.x, dy = s1.y - s0.y;
+  const len = Math.hypot(dx, dy) || 1;
+  const nx = -dy / len, ny = dx / len;   // perpendiculaire unitaire
+  const width = 26 * envelope;
+  octx.fillStyle = `rgba(255,225,190,${0.30 * envelope})`;
+  octx.beginPath();
+  octx.moveTo(s0.x, s0.y);
+  octx.lineTo(s1.x + nx * width, s1.y + ny * width);
+  octx.lineTo(s1.x - nx * width, s1.y - ny * width);
+  octx.closePath();
+  octx.fill();
+
+  // 2) trainee du poing seul (arc entre sa position d'il y a quelques
+  // frames et sa position actuelle) -- plus fine, plus vive, dessinee
+  // par-dessus le cone.
+  const tdx = s1.x - sPrev.x, tdy = s1.y - sPrev.y;
+  const tlen = Math.hypot(tdx, tdy) || 1;
+  const tnx = -tdy / tlen, tny = tdx / tlen;
+  const tw = 10 * envelope;
+  const trailGrad = octx.createLinearGradient(sPrev.x, sPrev.y, s1.x, s1.y);
+  trailGrad.addColorStop(0, `rgba(255,255,255,0)`);
+  trailGrad.addColorStop(1, `rgba(255,255,255,${0.55 * envelope})`);
+  octx.fillStyle = trailGrad;
+  octx.beginPath();
+  octx.moveTo(sPrev.x + tnx * tw * 0.15, sPrev.y + tny * tw * 0.15);
+  octx.lineTo(s1.x + tnx * tw, s1.y + tny * tw);
+  octx.lineTo(s1.x - tnx * tw, s1.y - tny * tw);
+  octx.lineTo(sPrev.x - tnx * tw * 0.15, sPrev.y - tny * tw * 0.15);
+  octx.closePath();
+  octx.fill();
+
+  octx.restore();
+}
+
 // Etirement d'impact -- retour utilisateur ("les animateurs etirent les
 // articulations au-dela de l'anatomie normale sur la frame d'impact pour
 // donner de la force visuelle -- un bras etire vers la camera"). Monte
@@ -666,6 +790,8 @@ function render(t) {
   const shake = shakeOffset(t);
   camera.position.set(wp.x + shake.x, wp.y + shake.y, wp.z + shake.z);
   camera.lookAt(target);
+  camera.fov = fovAt(t);
+  camera.updateProjectionMatrix();
 
   for (const part of DATA.part_order) {
     if (part === "HumanoidRootPart") continue;
@@ -698,6 +824,7 @@ function render(t) {
   const fistWorld = attPose["Right Arm"].p;
   const fistScreen = worldToScreen(fistWorld[0], fistWorld[1], fistWorld[2]);
   drawFistCharge(t, fistScreen);
+  drawArmSmear(t, attPose);
   drawImpactFrame(t, fistScreen);
   drawDebrisBurst(t, fistScreen);
 

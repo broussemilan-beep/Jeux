@@ -187,26 +187,36 @@ LUNGE_Z = -4.90   # racine avancee (pas dans le coup) au moment de l'impact -- c
 # jambe arriere qui pivote, jambe avant qui se charge -- pas juste tenir
 # une garde statique du COIL jusqu'au RECOVER.
 #
-# Implemente ici comme une keyframe intermediaire a 40% du lacher
-# (COIL_T -> IMPACT_T, 0,20s) : buste/jambes/avancee de la racine deja a
-# ~80-85% de la pose STRIKE (les hanches ont deja tourne), le bras droit
-# lui n'est qu'a ~15% de son trajet (encore quasiment arme) -- il rattrape
-# et "fouette" dans les 0,12s restantes pour arriver pile sur
-# STRIKE_RIGHT_ARM a IMPACT_T. IMPACT_T lui-meme reste NUMERIQUEMENT
-# IDENTIQUE (verifie par calibrate.py) : cette keyframe s'insere ENTRE
-# COIL_T et IMPACT_T, elle ne change pas le point d'arrivee calibre.
-# Recalcule (memes fractions -- torse/jambes/racine a ~80-85% du trajet,
-# bras a ~15%) apres le repositionnement de STRIKE_* (bras droit a
-# l'horizontale) ci-dessus -- ces valeurs sont interpolees depuis les
-# NOUVELLES COIL_*/STRIKE_*, pas les anciennes.
-HIP_DRIVE_T = COIL_T + 0.08
-HIP_DRIVE_TORSO = (-5, 24, 1)
-HIP_DRIVE_HEAD = (10, 6, 0)
-HIP_DRIVE_RIGHT_ARM = (-67, 0, -16)
-HIP_DRIVE_LEFT_ARM = (29, 0, 11)
-HIP_DRIVE_LEGS = {"Right Leg": (-7, 0, 7), "Left Leg": (26, 0, -6)}
-HIP_DRIVE_ROOT_Y = 2.96
-HIP_DRIVE_ROOT_Z = -4.12
+# RETIME (retour utilisateur, apres recherche personnelle sur l'animation
+# sakuga/R6 -- meme famille de technique que celle deja documentee pour
+# TSB) : la version precedente placait HIP_DRIVE_T a COIL_T+0.08, soit UNE
+# FENETRE DE 0,12s (~3-4 frames a 30 fps, le OUT_HZ de dump_scene_data.py)
+# entre cette keyframe et IMPACT_T -- exactement la "zone a danger 3-5
+# frames intermediaires" identifiee comme LA cause classique de l'effet
+# "pale de moulin" sur un bras rigide sans coude : assez de frames pour
+# que l'oeil suive le bloc traverser l'espace, pas assez pour lire comme
+# un mouvement volontaire. Corrige en compressant la fenetre a UNE SEULE
+# frame de sortie (1/30 s) : HIP_DRIVE_T est maintenant colle contre
+# IMPACT_T, pas au milieu du lacher. Le "runway" ou le buste/les jambes/
+# la racine font l'essentiel du travail (chaine cinetique) s'etend donc
+# desormais sur COIL_T -> HIP_DRIVE_T (0,167s, ~5 frames, largement assez
+# pour se lire), et ce qui reste entre HIP_DRIVE_T et IMPACT_T (0,033s,
+# UNE frame de sortie) ne montre plus de pose intermediaire lissee : la
+# frame precedente montre le bras encore quasiment arme, la frame
+# suivante le montre en pleine extension -- le cerveau comble le vide
+# plutot que de voir le bras "voyager".
+# Fractions (torse/tete/jambes/racine a 92% du trajet COIL->STRIKE, bras
+# gauche (garde) a 85%, bras droit (le coup) a seulement 20% -- il reste
+# LE payload du snap final) recalculees depuis les COIL_*/STRIKE_*
+# actuels (script de calcul, pas a l'oeil) :
+HIP_DRIVE_T = IMPACT_T - 1 / 30
+HIP_DRIVE_TORSO = (-6.32, 28.72, 0.32)
+HIP_DRIVE_HEAD = (10.0, 9.44, 0.0)
+HIP_DRIVE_RIGHT_ARM = (-58.0, 0.0, -15.2)
+HIP_DRIVE_LEFT_ARM = (15.7, 0.0, -10.7)
+HIP_DRIVE_LEGS = {"Right Leg": (-11.28, 0.0, 5.8), "Left Leg": (25.84, 0.0, -4.64)}
+HIP_DRIVE_ROOT_Y = 2.986
+HIP_DRIVE_ROOT_Z = -4.588
 
 # -- Follow-through : le coup ne s'arrete pas net a IMPACT_T -- le poids
 # du corps continue au-dela du point de contact calibre avant de repartir
