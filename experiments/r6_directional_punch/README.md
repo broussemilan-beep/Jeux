@@ -587,6 +587,52 @@ Captures (vue de côté à hauteur d'épaule) :
 `captures/verification/2026-09-03-directional-punch-bras-droit-hipdrive.png`,
 `-impact.png`, `-overshoot.png`.
 
+## Hitstop, étirement d'impact et "snap" — technique standard d'animation Roblox
+
+Retour utilisateur, cette fois sous forme de spécification technique
+précise plutôt qu'une description d'image ou une critique : la
+gestion de l'impact dans un rig R6/R15 professionnel suit un rythme
+en quatre temps (anticipation lente, lâcher quasi instantané, gel
+complet au contact — le *hitstop* —, puis un settle avec overshoot),
+et les articulations s'étirent au-delà de l'anatomie normale sur la
+frame d'impact pour vendre la force du coup.
+
+**Ce qui est nouveau ici (pas juste retouché)** :
+
+- **Hitstop réel** : à `IMPACT_T`, les DEUX personnages ET la caméra se
+  figent pendant `HITSTOP_DUR = 5/30s` (~0,167s, milieu de la fourchette
+  usuelle 3-6 frames). Implémenté via une fonction `poseTime(t)` qui
+  gèle le temps d'ANIMATION utilisé pour échantillonner les poses/la
+  caméra pendant cette fenêtre, puis reprend sans saut (juste retardé) —
+  les VFX plein-écran (flash, débris) restent sur le temps réel non
+  décalé, donc se déclenchent AU moment du gel, pas après. Vérifié par
+  le calcul (pas à l'oeil, script Playwright ponctuel) : la position du
+  poing est **bit-identique** à trois instants différents à l'intérieur
+  de la fenêtre de hitstop, et change dès la sortie.
+- **Étirement d'impact** : le bras droit de l'attaquant s'étire
+  (`scale.y` jusqu'à ×1,32) sur ~1 frame au contact puis se relâche sur
+  le reste de la fenêtre — ancré à l'épaule (pas un étirement symétrique
+  qui ferait flotter l'articulation), donc l'allongement se voit
+  surtout côté poing, vers la cible.
+- **"Snap" du lâcher** : déjà largement couvert par la chaîne cinétique
+  du passage précédent (le bras ne parcourt que ~17% de sa rotation à
+  `HIP_DRIVE_T`, l'essentiel se joue dans les dernières 0,12s) — pas
+  retouché ici, la mécanique demandée existait déjà.
+
+**Limite honnête, pas cachée** : le hitstop et l'étirement sont des
+techniques de LECTEUR (démonstration), pas des données encodées dans le
+`KeyframeSequence` livré — le format d'animation Roblox n'a ni notion de
+pause temporelle, ni de `Size` animable (seule une `CFrame`/`Pose` l'est).
+Un vrai hitstop en jeu se fait côté script, typiquement en mettant en
+pause l'`AnimationTrack` (`track:AdjustSpeed(0)` puis
+`task.wait(hitstopDur)` puis `track:AdjustSpeed(1)`, ou un `TimeScale`
+partagé si plusieurs systèmes doivent geler ensemble) — pas dans
+l'animation elle-même.
+
+Captures (gel, étirement, sortie du gel, settle) :
+`captures/verification/2026-09-04-directional-punch-hitstop-stretch.png`,
+`-mid.png`, `-unfreeze.png`, `-settle.png`.
+
 ## Rig des deux personnages
 
 Même rig R6 vérifié (dépôt Adonis, licence MIT) que les autres

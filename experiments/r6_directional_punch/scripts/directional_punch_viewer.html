@@ -127,7 +127,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
 const DATA = __SCENE_DATA__;
 const TEXTURES_B64 = __TEXTURES_B64__;
 
-const PHASE_KIND = { garde: "calm", charge: "charge", lacher: "charge", impact: "impact", suite: "impact", posture_finale: "calm" };
+const PHASE_KIND = { garde: "calm", charge: "charge", lacher: "charge", hitstop: "impact", impact: "impact", suite: "impact", posture_finale: "calm" };
 const LEGS = new Set(["Right Leg", "Left Leg"]);
 
 const glCanvas = document.getElementById("stage");
@@ -145,14 +145,41 @@ const phaseTrack = document.getElementById("phaseTrack");
 const DURATION = DATA.duration;
 const IMPACT_T = DATA.impact_t;
 
+// Hitstop -- retour utilisateur (technique Roblox standard : gel complet
+// de l'animation pendant quelques frames au contact exact, avant de
+// repartir -- "Hitstop (Gel d'impact) : pause complete de l'animation
+// pendant 3 a 6 frames au point de contact exact"). 5 frames a 30 fps
+// (milieu de la fourchette). Implemente ici comme lecteur/demo (voir la
+// note README sur la difference avec un vrai hitstop Roblox, qui se fait
+// cote script via AnimationTrack:AdjustSpeed(0), pas dans les donnees du
+// KeyframeSequence lui-meme -- une pose ne peut pas "durer" dans ce
+// format, seul le TEMPS QUI PASSE peut etre mis en pause, ce qui est un
+// comportement de lecture, pas une donnee d'animation).
+const HITSTOP_DUR = 5 / 30;
+const REAL_DURATION = DURATION + HITSTOP_DUR;
+
+// temps REEL (ce que la barre de lecture fait defiler) -> temps
+// d'ANIMATION effectif utilise pour echantillonner les poses des DEUX
+// personnages et positionner la camera : gele pile sur la pose
+// d'IMPACT_T pendant HITSTOP_DUR (tout s'arrete -- personnages ET
+// camera), puis reprend sans saut, juste retarde de HITSTOP_DUR. Les VFX
+// plein-ecran (flash, debris) restent sur le temps REEL non decale --
+// elles doivent se declencher AU MOMENT du gel, pas apres.
+function poseTime(t) {
+  if (t < IMPACT_T) return t;
+  if (t < IMPACT_T + HITSTOP_DUR) return IMPACT_T;
+  return t - HITSTOP_DUR;
+}
+
 const WINDUP_T = DATA.windup_t, COIL_T = DATA.coil_t;
 const PHASES = [
   { name: "garde", t0: 0.00, t1: WINDUP_T },
   { name: "charge", t0: WINDUP_T, t1: COIL_T },
   { name: "lacher", t0: COIL_T, t1: IMPACT_T },
-  { name: "impact", t0: IMPACT_T, t1: IMPACT_T + 0.12 },
-  { name: "suite", t0: IMPACT_T + 0.12, t1: IMPACT_T + 0.40 },
-  { name: "posture_finale", t0: IMPACT_T + 0.40, t1: DURATION },
+  { name: "hitstop", t0: IMPACT_T, t1: IMPACT_T + HITSTOP_DUR },
+  { name: "impact", t0: IMPACT_T + HITSTOP_DUR, t1: IMPACT_T + HITSTOP_DUR + 0.12 },
+  { name: "suite", t0: IMPACT_T + HITSTOP_DUR + 0.12, t1: IMPACT_T + HITSTOP_DUR + 0.40 },
+  { name: "posture_finale", t0: IMPACT_T + HITSTOP_DUR + 0.40, t1: REAL_DURATION },
 ];
 
 function rebuildPhaseTrack() {
@@ -161,7 +188,7 @@ function rebuildPhaseTrack() {
     const seg = document.createElement("div");
     seg.className = "phase-seg";
     seg.dataset.kind = PHASE_KIND[p.name] || "calm";
-    seg.style.width = (Math.max(0, p.t1 - p.t0) / DURATION * 100) + "%";
+    seg.style.width = (Math.max(0, p.t1 - p.t0) / REAL_DURATION * 100) + "%";
     phaseTrack.appendChild(seg);
   });
 }
@@ -596,14 +623,37 @@ function drawDebrisBurst(t, contactScreen) {
   octx.restore();
 }
 
+// Etirement d'impact -- retour utilisateur ("les animateurs etirent les
+// articulations au-dela de l'anatomie normale sur la frame d'impact pour
+// donner de la force visuelle -- un bras etire vers la camera"). Monte
+// tres vite (~1 frame, 0,03s) puis se relache sur le reste de la fenetre
+// (englobe le hitstop + un peu apres) -- un vrai a-coup, pas un aller-
+// retour lineaire. Viewer-only (voir note README : KeyframeSequence ne
+// sait pas animer une Size, seule une CFrame/Pose).
+const ARM_STRETCH_DUR = 0.24, ARM_STRETCH_PEAK = 0.32, ARM_STRETCH_ATTACK = 0.03;
+function armStretchFactor(t) {
+  const age = t - IMPACT_T;
+  if (age < 0 || age > ARM_STRETCH_DUR) return 1.0;
+  const attack = Math.min(1, age / ARM_STRETCH_ATTACK);
+  const relAge = Math.max(0, age - ARM_STRETCH_ATTACK);
+  const relDur = Math.max(1e-6, ARM_STRETCH_DUR - ARM_STRETCH_ATTACK);
+  const release = Math.max(0, 1 - Math.pow(relAge / relDur, 1.4));
+  return 1.0 + ARM_STRETCH_PEAK * attack * release;
+}
+
 // ---------------------------------------------------------------------
 function render(t) {
-  const cam = cameraAt(t);
+  // Hitstop : les DEUX personnages et la camera sont echantillonnes au
+  // temps d'ANIMATION effectif (gele sur IMPACT_T pendant HITSTOP_DUR),
+  // les VFX plein-ecran restent sur le temps reel non decale (voir
+  // poseTime()).
+  const pt = poseTime(t);
+  const cam = cameraAt(pt);
   const target = new THREE.Vector3(0, cam.ty, cam.tz);
   const dir = cameraDir(cam);
 
-  const attPose = sampleChar(DATA.attacker_frames, t);
-  const dumPose = sampleChar(DATA.dummy_frames, t);
+  const attPose = sampleChar(DATA.attacker_frames, pt);
+  const dumPose = sampleChar(DATA.dummy_frames, pt);
 
   let dist = Math.max(MIN_DIST, BASE_DIST / cam.scale);
   const candidate = target.clone().addScaledVector(dir, dist);
@@ -622,13 +672,29 @@ function render(t) {
     applyPoseToMesh(attackerMeshes[part], attPose[part].p, attPose[part].r);
     applyPoseToMesh(dummyMeshes[part], dumPose[part].p, dumPose[part].r);
   }
+  // etirement du bras droit de l'attaquant sur la frame d'impact -- scale
+  // local le long de l'axe du bras (deja aligne par la rotation du mesh),
+  // repousse pour garder l'epaule ancree (pas un etirement symetrique qui
+  // ferait flotter l'epaule).
+  const stretch = armStretchFactor(t);
+  const rightArmMesh = attackerMeshes["Right Arm"];
+  rightArmMesh.scale.set(1, stretch, 1);
+  if (stretch > 1.0) {
+    const armLen = DATA.part_sizes["Right Arm"][1];
+    const extra = (stretch - 1) * armLen * 0.5;
+    const fwd = new THREE.Vector3(0, 1, 0).applyQuaternion(rightArmMesh.quaternion).multiplyScalar(extra);
+    rightArmMesh.position.add(fwd);
+  }
 
   renderer.render(scene, camera);
+  rightArmMesh.scale.set(1, 1, 1); // ne doit affecter que ce rendu, pas s'accumuler
 
   octx.clearRect(0, 0, overlay.width, overlay.height);
   // point de contact a l'ecran pour les VFX : la main droite de
   // l'attaquant a l'instant present (suit la vraie pose, pas un point
-  // fixe -- reste coherent si on scrobble hors de IMPACT_T).
+  // fixe -- reste coherent si on scrobble hors de IMPACT_T). En temps
+  // reel (pas poseTime) : pendant le hitstop, attPose est gelee sur
+  // IMPACT_T de toute façon, donc le poing reste fixe -- coherent.
   const fistWorld = attPose["Right Arm"].p;
   const fistScreen = worldToScreen(fistWorld[0], fistWorld[1], fistWorld[2]);
   drawFistCharge(t, fistScreen);
@@ -639,7 +705,7 @@ function render(t) {
   const shot = cam.shot;
   shotNameEl.textContent = shot.name;
   phaseNameEl2.textContent = phase.name.replace("_", " ");
-  timecodeEl.textContent = t.toFixed(2) + "s / " + DURATION.toFixed(2) + "s";
+  timecodeEl.textContent = t.toFixed(2) + "s / " + REAL_DURATION.toFixed(2) + "s";
 }
 
 let playing = true, speed = 1, simTime = 0, lastWall = null;
@@ -649,7 +715,7 @@ function setPlaying(p) {
   pauseIcon.style.display = p ? "block" : "none";
 }
 playBtn.addEventListener("click", () => setPlaying(!playing));
-scrub.addEventListener("input", () => { simTime = (scrub.value / 1000) * DURATION; render(simTime); });
+scrub.addEventListener("input", () => { simTime = (scrub.value / 1000) * REAL_DURATION; render(simTime); });
 document.querySelectorAll("#speedRow button").forEach(b => b.addEventListener("click", () => {
   document.querySelectorAll("#speedRow button").forEach(x => x.classList.remove("active"));
   b.classList.add("active"); speed = parseFloat(b.dataset.speed);
@@ -661,8 +727,8 @@ function loop(ts) {
   lastWall = ts;
   if (playing) {
     simTime += dt * speed;
-    if (simTime > DURATION) simTime = 0;
-    scrub.value = Math.round((simTime / DURATION) * 1000);
+    if (simTime > REAL_DURATION) simTime = 0;
+    scrub.value = Math.round((simTime / REAL_DURATION) * 1000);
   }
   render(simTime);
   requestAnimationFrame(loop);
