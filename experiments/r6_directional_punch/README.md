@@ -723,6 +723,36 @@ frame avant l'impact, bras encore armé + smear visible),
 `2026-09-04-directional-punch-snap-reaction.png` (réaction du mannequin
 après le nouveau snap).
 
+## Caméra trop proche pendant la charge — la pose ne se lisait plus
+
+Retour utilisateur, immédiatement après la passe snap/smear ci-dessus :
+« Direct du droit a un problème sur le début du coup aussi, il donne pas
+le give d'un coup chargé ». Vérifié par MESURE directe (pas à l'oeil) :
+la distance caméra→torse de l'attaquant, interrogée en direct dans la
+page pour chaque instant de la charge, tombait à **6,4-6,5 studs** dès
+`CHARGE_B_T`/`COIL_T` — collée contre le plancher anti-clipping
+`MIN_SUBJECT_DIST`. En cause : l'ancien plan unique `"approche"`
+couvrait toute la charge ET le lâcher (`WINDUP_T -> IMPACT_T`, 1,45 s)
+avec un zoom continu de `scale=0.85` à `1.80`, et sa cible (`tz`) visait
+un point à mi-chemin vers le mannequin plutôt que l'attaquant lui-même.
+Résultat confirmé par capture d'écran : l'image ne montrait plus que des
+pans de boîtes flous — la pose censée VENDRE la charge (jambes pliées,
+torse tordu, poing armé derrière la hanche) était devenue illisible. Le
+problème n'était donc pas la pose ou le timing de la charge (déjà
+travaillés sur plusieurs passes précédentes), mais un cadrage caméra qui
+la cachait.
+
+Corrigé en scindant l'ancien plan unique en deux plans distincts :
+`"charge"` (`WINDUP_T -> COIL_T`, 1,25 s — toute la durée où le corps
+doit se lire) à distance modérée et stable (`scale` 0,85→1,05, cible
+recentrée sur l'attaquant, `tz` proche de `ATTACKER_Z0`), et `"lacher"`
+(`COIL_T -> IMPACT_T`, seulement 0,20 s) qui garde le zoom serré — c'est
+là qu'il a du sens, pas étalé sur toute la charge. Reconfirmé après
+coup : distance caméra→torse maintenant entre 14 et 19 studs pendant
+toute la charge (mesuré, pas supposé), `calibrate.py` inchangé (aucune
+pose touchée, seulement la caméra). Capture :
+`2026-09-04-directional-punch-charge-camera-fix-after.png`.
+
 ## Rig des deux personnages
 
 Même rig R6 vérifié (dépôt Adonis, licence MIT) que les autres
