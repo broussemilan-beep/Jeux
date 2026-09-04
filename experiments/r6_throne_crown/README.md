@@ -849,14 +849,118 @@ capture d'écran (`throne_t_placed.png` / `throne_t_settle_after.png` en
 scratchpad de session) : la couronne se lit posée puis stabilisée, pas
 figée d'un coup.
 
+## Rendu WebGL réel (Three.js) — même mise à niveau que le combo de frappe
+
+Demande explicite : « avec tes nvl capacité retravaille l'animation de la
+couronne et du trône » — appliquer au trône/couronne tout ce qui a été
+construit pour `r6_directional_punch` cette session (rendu WebGL réel,
+caméra chorégraphiée, hitstop). `scripts/throne_crown_viewer.html` était
+resté en Canvas2D pur depuis sa création ; il est maintenant réécrit
+autour de vraies géométries 3D éclairées, exactement comme l'autre
+prototype. `scripts/vendor/three.min.js` est la MÊME bibliothèque
+(r134, MIT) déjà vendorisée pour le combo de frappe — copiée telle
+quelle, pas retéléchargée. `build_viewer.py` gagne le même troisième
+placeholder `__THREE_JS__` que sa contrepartie.
+
+**Les fleurons et gemmes sont enfin de vraies formes, pas des boîtes.**
+La limite documentée jusqu'ici (« le lecteur ne trace que des boîtes »,
+ancienne section "Limites assumées") est résolue : chaque pièce garde
+son vrai `Shape` Roblox (`props.py`/`export_model.py` : `Ball`→
+`THREE.SphereGeometry`, `Cylinder`→`THREE.CylinderGeometry` réorientée
+sur l'axe LOCAL X — la convention réelle de Roblox pour ce Shape, pas
+l'axe Y par défaut de Three.js — `Block`→`THREE.BoxGeometry`), avec la
+même matrice de rotation monde déjà calculée pour l'ancien rendu en
+boîtes, réutilisée sans changement.
+
+**De vraies cartes PBR pilotent le shader.** Les `NormalMap`/
+`RoughnessMap` bakées (`gen_pbr_maps.py`) et la `MetalnessMap` du métal
+— déjà générées pour le pipeline `MeshPart`/`SurfaceAppearance` livré,
+jamais recréées pour ce lecteur — sont maintenant branchées directement
+comme `normalMap`/`roughnessMap`/`metalnessMap` d'un
+`MeshStandardMaterial`, calculées par le moteur de rendu sous
+l'éclairage réel de la scène à chaque frame. L'ancien mécanisme (décoder
+le NormalMap à la main en calque `overlay` Canvas2D, la RoughnessMap en
+calque `screen`, tous deux éclairés en espace TEXTURE fixe, pas en
+espace monde) est retiré entièrement, pas conservé en parallèle.
+
+**Caméra chorégraphiée** (`SHOTS`, six plans — un par segment de
+`DATA.phases` : montée, demi-tour, approche, assise, couronnement, pose
+finale), interprétée comme une vraie `PerspectiveCamera` en coordonnées
+sphériques autour d'une cible, avec le même garde-fou anti-clipping
+(`MIN_SUBJECT_DIST`) que le combo de frappe — remplace les trois
+préréglages d'azimut fixes (`3/4`/`face`/`profil`) de l'ancien lecteur
+Canvas2D, qui n'avaient de sens que pour une projection orthographique
+tournée à la main.
+
+**Hitstop + éclat du sacre.** Au moment exact où la couronne se pose sur
+la tête (`CROWNED_T = DATA.crowned_t`), personnage/couronne/caméra
+gèlent 4 frames à 30 fps (`HITSTOP_DUR`), avec un flash chaud bref et
+des rais dorés qui partent du sommet de la tête (`drawCoronationFlash`)
+— même technique que le hitstop du combo de frappe (`poseTime()`
+remappe le temps d'animation, les VFX plein-écran restent sur le temps
+réel non décalé), rejouée ici sur un geste cérémoniel plutôt qu'un
+impact : « la couronne se pose avec une vraie finalité », pas un simple
+fondu. Comme pour l'autre prototype, c'est un comportement de LECTURE —
+un `KeyframeSequence` ne sait pas faire durer une pose ; un vrai hitstop
+Roblox se ferait côté script (`AnimationTrack:AdjustSpeed(0)`).
+
+**Aucune valeur choréo/calibrage retouchée.** Cette passe ne change que
+le rendu — `choreography.py`, `props.py`, `calibrate.py`,
+`compute_crown_track.py` sont inchangés. Reconfirmé après coup par
+`calibrate.py` : écart pickup 0,0814 stud, écart pose 0,3070 stud —
+identiques aux valeurs documentées avant cette passe.
+
+**Trois bugs trouvés par capture d'écran, pas supposés corrects à
+l'oeil** (l'écran restait montrer un trône *entièrement noir*, à
+plusieurs reprises, malgré des correctifs successifs — chacun a été
+diagnostiqué avant d'être corrigé, jamais réessayé au hasard) :
+
+1. *Caméra du mauvais côté du dossier.* Les premiers réglages de
+   `SHOTS` plaçaient, pour les plans proches du trône (assise,
+   couronnement...), la caméra du côté `+Z` (côté dossier) plutôt que
+   du côté `-Z` (côté salle) — elle se retrouvait à regarder le dossier
+   depuis l'arrière, un mur plat occupant tout le cadre. Corrigé en
+   choisissant des azimuts dont `cos(az)` est négatif pour ces plans,
+   plus un filet de sécurité (`ROOM_Z_LIMIT`) qui borne la position Z de
+   la caméra à ne jamais dépasser l'avant du siège, quel que soit le
+   plan actif.
+2. *Lumière-clé orientée vers le mauvais côté.* Une fois la caméra du
+   bon côté, le dossier restait noir : la lumière-clé (position
+   `Z` positive, côté dossier) éclairait sa face EXTÉRIEURE, jamais la
+   face côté salle que la caméra voyait désormais. Corrigée en reprenant
+   la direction `LIGHT=[-0.45,0.80,-0.38]` de l'ancien rendu Canvas2D
+   (une torche haute, côté salle), mise à l'échelle en position 3D
+   autour de la même cible.
+3. *Frustum de la shadow camera trop étroit.* Toujours noir : le frustum
+   hérité du combo de frappe (`±12`/`14`/`-12`, une scène bien plus
+   petite) ne couvrait pas le dossier (jusqu'à Y≈10,2 monde). Un objet
+   hors du frustum de la shadow camera n'a aucun texel dans la shadow
+   map ; l'échantillonnage en bord de texture ("clamp to edge") lit
+   alors une profondeur proche du plan de la lumière, le test de
+   profondeur échoue systématiquement, l'objet entier se lit "dans
+   l'ombre" — même sur ses faces qui font directement face à la
+   lumière. Corrigé en élargissant le frustum (`±10`/`18`/`-6`/near
+   1/far 40) pour couvrir toute la scène, pas juste le personnage.
+4. *Textures clonées avant la fin de leur chargement.* Diagnostiqué en
+   direct dans la page (`THREE.WebGLRenderer: Texture marked for update
+   but image is undefined`, répété à chaque frame) : chaque pièce
+   appelait `.clone()` sur la texture de base AVANT que son image ait
+   fini de décoder (`THREE.TextureLoader.load()` rend une `Texture`
+   immédiatement, `.image` reste `undefined` tant que le décodage — même
+   d'un data URI, donc sans réseau — n'est pas terminé) ; `.clone()`
+   copie la référence `.image` telle quelle À CET INSTANT, et ce clone
+   n'est jamais relié à l'image de l'original qui finit par charger plus
+   tard — cassé pour toujours, sans erreur bloquante, juste un
+   avertissement console. Corrigé en préchargeant explicitement (`await
+   img.onload`) les 6 matériaux avant de construire quoi que ce soit qui
+   les clone (`preloadMaterialTextures()`, la construction de la scène
+   attend dans une fonction `async main()`).
+
 ## Limites assumées
 
 - Couronne tenue "à plat" (rotation identité) pendant tout le portage à
   la main plutôt que vrillée avec le bras — choix esthétique assumé,
   pas un oubli (voir section "change de parent").
-- Le lecteur HTML dessine tout en boîtes (y compris les `Ball`/
-  `Cylinder` du trône et de la couronne) — limite du renderer de
-  prévisualisation, pas du fichier livré, qui porte la vraie `Shape`.
 
 ## Commandes
 

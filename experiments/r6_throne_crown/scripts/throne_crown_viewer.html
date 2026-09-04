@@ -1,21 +1,21 @@
 <title>Trône et couronne</title>
 <style>
 :root {
-  --bg: #f4f1ea; --panel: #ffffff; --panel-2: #eee9de; --ink: #241f18;
-  --sub: #6b6255; --grid: #d9d2c2; --rig: #6b2430; --leg: #4a1a22;
-  --edge: #241f18; --ghost: #b8ae98; --accent: #b3722c; --gold: #c4a03c;
+  --bg: #100d0a; --panel: #1a1611; --panel-2: #201b15; --ink: #ece5d6;
+  --sub: #a89d87; --grid: #332c22; --rig: #a5384a; --leg: #7a2a35;
+  --edge: #0a0806; --ghost: #4a4030; --accent: #d9a13f; --gold: #e0a955;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #14120e; --panel: #1d1a14; --panel-2: #211e17; --ink: #ece5d6;
-    --sub: #a89d87; --grid: #332e23; --rig: #a5384a; --leg: #7a2a35;
-    --edge: #0c0a07; --ghost: #4a442f; --accent: #e0a955; --gold: #d8b74a;
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f1ea; --panel: #ffffff; --panel-2: #eee9de; --ink: #241f18;
+    --sub: #6b6255; --grid: #d9d2c2; --rig: #a5384a; --leg: #7a2a35;
+    --edge: #241f18; --ghost: #b8ae98; --accent: #b3722c; --gold: #b3872c;
   }
 }
-:root[data-theme="dark"] {
-  --bg: #14120e; --panel: #1d1a14; --panel-2: #211e17; --ink: #ece5d6;
-  --sub: #a89d87; --grid: #332e23; --rig: #a5384a; --leg: #7a2a35;
-  --edge: #0c0a07; --ghost: #4a442f; --accent: #e0a955; --gold: #d8b74a;
+:root[data-theme="light"] {
+  --bg: #f4f1ea; --panel: #ffffff; --panel-2: #eee9de; --ink: #241f18;
+  --sub: #6b6255; --grid: #d9d2c2; --rig: #a5384a; --leg: #7a2a35;
+  --edge: #241f18; --ghost: #b8ae98; --accent: #b3722c; --gold: #b3872c;
 }
 body { background: var(--bg); color: var(--ink); font-family: "Iowan Old Style", "Georgia", serif; }
 .stage { max-width: 980px; margin: 0 auto; padding: 28px 20px 48px; }
@@ -23,9 +23,10 @@ body { background: var(--bg); color: var(--ink); font-family: "Iowan Old Style",
 h1 { font-size: 30px; margin: 0 0 10px; }
 .sub { color: var(--sub); font-size: 14.5px; line-height: 1.55; max-width: 760px; margin: 0 0 20px; }
 .card { background: var(--panel); border: 1px solid var(--grid); border-radius: 14px; padding: 14px; }
-.viewport-wrap { position: relative; border-radius: 10px; overflow: hidden; background: var(--panel-2); }
+.viewport-wrap { position: relative; border-radius: 10px; overflow: hidden; background: #000; }
 canvas { display: block; width: 100%; height: auto; }
-.chip { position: absolute; top: 10px; font-family: Oswald, sans-serif; font-size: 12px; padding: 5px 10px; border-radius: 999px; background: rgba(0,0,0,0.35); color: #fff; }
+#overlay { position: absolute; inset: 0; pointer-events: none; }
+.chip { position: absolute; top: 10px; font-family: Oswald, sans-serif; font-size: 12px; padding: 5px 10px; border-radius: 999px; background: rgba(0,0,0,0.45); color: #fff; letter-spacing: 0.03em; }
 .chip.left { left: 10px; } .chip.right { right: 10px; }
 .controls { padding-top: 12px; display: flex; flex-direction: column; gap: 10px; }
 .transport { display: flex; align-items: center; gap: 12px; }
@@ -49,14 +50,15 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
 </style>
 
 <div class="stage">
-  <p class="eyebrow">Prototype isolé · Roblox R6 · Model + KeyframeSequence</p>
+  <p class="eyebrow">Prototype isolé · Roblox R6 · Model + KeyframeSequence · rendu WebGL</p>
   <h1>Le sacre — trône et couronne</h1>
-  <p class="sub">Le personnage (rig R6 réel, 6 segments rigides) gravit un escalier d'un pas lent et fier — silhouette sombre, menton haut, bras presque immobiles, <strong>faisant face au trône en montant</strong> (pas à reculons) — jusqu'à une estrade surélevée, fait un demi-tour sur place, s'assoit sur le trône, saisit une couronne posée sur un coussin, la soulève et la pose sur sa tête, qui se met alors à briller. Ce qui joue ici est le résultat <strong>résolu par l'équation du moteur</strong> (<code>Part1 = Part0 · C0 · Transform · C1⁻¹</code>) à partir du <code>KeyframeSequence</code> livré — la même vérification que pour le combo aérien. Trône, escalier et couronne sont des <code>Model</code> Roblox statiques ; la couronne change de parent en cours de scène (coussin → main → tête), ce qu'un seul <code>KeyframeSequence</code> ne peut pas exprimer — voir la note sous le lecteur.</p>
+  <p class="sub">Le personnage (rig R6 réel, 6 segments rigides) gravit un escalier d'un pas lent et fier — silhouette sombre, menton haut, bras presque immobiles, <strong>faisant face au trône en montant</strong> (pas à reculons) — jusqu'à une estrade surélevée, fait un demi-tour sur place, s'assoit sur le trône, saisit une couronne posée sur un coussin, la soulève et la pose sur sa tête, qui se met alors à briller. Ce qui joue ici est le résultat <strong>résolu par l'équation du moteur</strong> (<code>Part1 = Part0 · C0 · Transform · C1⁻¹</code>) à partir du <code>KeyframeSequence</code> livré — la même vérification que pour les autres prototypes. Trône, escalier et couronne sont des <code>Model</code> Roblox statiques ; la couronne change de parent en cours de scène (coussin → main → tête), ce qu'un seul <code>KeyframeSequence</code> ne peut pas exprimer — voir la note sous le lecteur. La caméra n'est plus libre ici : elle est <strong>chorégraphiée</strong>, plan par plan, du pied de l'escalier jusqu'au sacre.</p>
 
   <div class="card">
     <div class="viewport-wrap">
       <canvas id="stage" width="1200" height="900"></canvas>
-      <div class="chip left">phase · <b id="phaseName">montée de l'escalier</b></div>
+      <canvas id="overlay" width="1200" height="900"></canvas>
+      <div class="chip left" id="shotChip">plan · <b id="shotName">montée</b></div>
       <div class="chip right" id="timecode">0.00s / 5.80s</div>
     </div>
 
@@ -74,11 +76,6 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
       <div class="row-bottom">
         <div class="phase-label">segment <b id="phaseName2">montée de l'escalier</b></div>
         <div style="display:flex; gap:8px; flex-wrap:wrap">
-          <div class="btn-row" id="camRow">
-            <button data-az="-50" class="active">3/4</button>
-            <button data-az="0">face</button>
-            <button data-az="-90">profil</button>
-          </div>
           <div class="btn-row" id="speedRow">
             <button data-speed="0.25">0.25×</button>
             <button data-speed="0.5">0.5×</button>
@@ -89,156 +86,516 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
     </div>
   </div>
 
-  <p class="note"><strong>Calibrage vérifié par le calcul, pas à l'oeil</strong> (voir <code>scripts/calibrate.py</code>) : le dessus du siège est posé exactement à la hauteur de hanche du personnage assis (Y=2.0), les mains reposent exactement sur les accoudoirs (position calculée par cinématique directe, pas estimée), la couronne repose sur son coussin exactement où la main droite se pose au repos.</p>
-  <p class="note"><strong>Semantique des axes du bras</strong>, établie par diagnostic empirique plutôt que supposée par analogie avec le combo de coups de pied (l'hypothèse initiale était fausse, corrigée avant livraison — voir <code>choreography.py</code>) : X positif lève le bras vers l'avant puis par-dessus (jusqu'à 180° = au-dessus de la tête) ; Z écarte le bras vers l'extérieur (droit) ou l'intérieur (gauche, signe opposé). Conséquence mesurée : la portée verticale d'un bras sans coude plafonne à Y≈5,0 — la couronne ne peut pas être levée « très haut », seulement juste au-dessus de la tête, ce qui est déjà là où elle doit atterrir.</p>
-  <p class="note"><strong>La couronne change de parent en cours de scène</strong> (coussin → main droite → tête) : un <code>KeyframeSequence</code> anime un seul rig et ne peut pas exprimer ce changement. La trajectoire monde de la couronne est donc calculée séparément par la même cinématique directe (<code>scripts/compute_crown_track.py</code>) et livrée en JSON — dans un vrai projet Roblox, un script re-weld la couronne au bon instant (typiquement sur un <code>Marker</code> de l'<code>AnimationTrack</code>), ce que ce fichier documente précisément. Petit saut mesuré et assumé au moment où elle se pose sur la tête (~0,3 stud) plutôt que masqué.</p>
-  <p class="note"><strong>Simplification du lecteur (pas du livrable)</strong> : les fleurons et gemmes sont des <code>Ball</code>/<code>Cylinder</code> dans le fichier exporté, mais dessinés comme des boîtes ici — le moteur de rendu de ce lecteur ne trace que des boîtes. Le <code>.rbxmx</code> livré porte la vraie forme (<code>Shape</code>).</p>
-  <p class="note"><strong>Texturing niveau expert — de vraies images, pas juste des tokens</strong> : recherché avant de coder (voir README, section "Texturing niveau expert") — la voie PBR moderne de Roblox (<code>SurfaceAppearance</code>, cartes ColorMap/NormalMap/RoughnessMap/MetalnessMap) ne fonctionne QUE sur <code>MeshPart</code>, pas sur les <code>Part</code> primitives dont le trône/la couronne sont faits ; la voie qui marche sur un <code>Part</code> est l'objet <code>Texture</code> (image tileable, <code>StudsPerTileU/V</code>). Cinq images seamless (pierre, marbre, métal brossé, tissu — générées procéduralement, tuilage vérifié par test avant usage) sont fournies en téléchargement : le lecteur les applique réellement sur chaque face (transformation affine + <code>CanvasPattern</code>, pas un aplat), et sont prêtes à être uploadées dans Roblox Studio pour piloter un vrai <code>Texture</code> sur le fichier livré — étape qui demande un compte Roblox, hors de portée de ce sandbox (voir README pour la marche à suivre). Chaque pièce porte aussi <code>Reflectance</code> (propriété <code>Part</code> réelle, aucune image requise) en plus du <code>Material</code> déjà vérifié. Éclairage à trois sources, ombres de contact, flaque de lumière dramatique : ça reste une mise en scène du <em>lecteur</em> (Canvas 2D, pas un moteur 3D) — mais les textures elles-mêmes, comme le <code>Material</code> et maintenant <code>Reflectance</code>, sont un vrai livrable, pas un rendu à part.</p>
-  <p class="note"><strong>Relief et micro-reflet réels dans l'animation elle-même</strong> (4e tour de texturing — voir README, "MeshPart + bake PBR") : le <code>NormalMap</code> et la <code>RoughnessMap</code> bakés en Cycles pour <code>SurfaceAppearance</code> (mêmes fichiers PNG que ceux livrés pour le pipeline <code>MeshPart</code>, pas une texture à part inventée pour le lecteur) sont maintenant décodés pixel par pixel <em>ici</em>, dans le lecteur qui joue la scène — pas seulement fournis comme fichiers à poser plus tard dans Studio. Chaque face texturée reçoit, en plus de la couleur, un calque de relief (assombri/éclairci selon la pente que décrit le NormalMap, mode <code>overlay</code>) et un micro-reflet (dérivé de la RoughnessMap, mode <code>screen</code> — naturellement quasi invisible sur le tissu et marqué sur le métal, sans liste de matériaux codée en dur, puisque c'est la carte elle-même qui pilote l'intensité). Limite assumée : la lumière qui éclaire ce relief est fixe en <em>espace texture</em> (un éclairage "rasant" identique sur chaque face), pas recalculée en espace monde face par face — ce lecteur reste un projecteur orthographique Canvas 2D, pas un moteur relighté par pixel ; le relief affiché est en revanche une vraie donnée bakée, pas un bruit décoratif.</p>
-  <p class="note"><strong>« La couronne brille »</strong> : les 5 gemmes portent <code>Material = Neon</code> dans le fichier livré — Neon émet une lueur nativement dans le moteur Roblox, sans <code>PointLight</code> séparé, donc l'effet existe réellement une fois importé. Le lecteur ajoute par-dessus un halo pulsé animé (superposition additive autour de la bande et de chaque gemme) : ce halo animé-là reste une mise en scène du lecteur, la lueur elle-même ne l'est plus.</p>
-  <p class="note"><strong>Rig du personnage</strong> : recherche faite pour une source alternative « rig par défaut de Roblox Studio » — seules des redistributions non licenciées de contenu client Roblox sont trouvées sur GitHub (même catégorie que celle déjà écartée à l'origine, voir <code>rig/PROVENANCE.md</code>), et le DevForum (où la communauté documente ces valeurs) est bloqué depuis ce sandbox. Le rig reste donc celui d'origine (dépôt Adonis, licence MIT) : il implémente déjà la géométrie standard R6 (Torse 2×2×1, Tête 2×1×1, membres 1×2×1, Motor6D standard) — dit honnêtement plutôt que de prétendre à une source changée.</p>
+  <p class="note"><strong>Rendu WebGL réel (Three.js), plus du Canvas2D à plat</strong> : même mise à niveau que
+    <code>r6_directional_punch</code> (retour utilisateur pris au sérieux là-bas, appliqué ici) — vraies géométries 3D
+    éclairées (une lumière directionnelle chaude avec ombres portées + un remplissage hémisphérique froid + un léger
+    rim doré), un vrai brouillard de profondeur (<code>THREE.Fog</code>), et des matériaux <code>MeshStandardMaterial</code>
+    physiquement plausibles au lieu d'un flat-shading peint à la main. La bibliothèque (r134, MIT) est la même déjà
+    vendorisée pour l'autre prototype (<code>scripts/vendor/three.min.js</code>, copiée telle quelle — pas retéléchargée,
+    <code>cdnjs.cloudflare.com</code> reste bloqué dans ce bac à sable).</p>
+  <p class="note"><strong>La couronne et les fleurons sont enfin de vraies formes, pas des boîtes</strong> : l'ancien
+    lecteur Canvas2D ne savait tracer que des boîtes (limite documentée jusqu'ici : « les fleurons et gemmes sont des
+    <code>Ball</code>/<code>Cylinder</code> dans le fichier exporté, mais dessinés comme des boîtes ici »). Ce n'est
+    plus vrai : chaque pièce garde son vrai <code>Shape</code> Roblox (<code>SphereGeometry</code> pour les
+    <code>Ball</code>, <code>CylinderGeometry</code> réorientée sur l'axe local X pour les <code>Cylinder</code> — la
+    convention réelle de Roblox, pas l'axe Y par défaut de Three.js — <code>BoxGeometry</code> pour le reste), avec la
+    même matrice de rotation monde déjà calculée pour l'ancien rendu en boîtes, réutilisée telle quelle.</p>
+  <p class="note"><strong>De vraies cartes PBR pilotent le shader, pas un calque Canvas2D par-dessus</strong> : les
+    <code>NormalMap</code>/<code>RoughnessMap</code> bakées (<code>scripts/gen_pbr_maps.py</code>) et la
+    <code>MetalnessMap</code> du métal sont maintenant branchées directement comme <code>normalMap</code>/
+    <code>roughnessMap</code>/<code>metalnessMap</code> d'un <code>MeshStandardMaterial</code> — un vrai relief et un
+    vrai reflet par pixel, recalculés par le moteur de rendu à chaque frame sous l'éclairage réel de la scène, plutôt
+    que le décodage manuel figé (mode <code>overlay</code>/<code>screen</code> sur un canvas séparé) de la version
+    précédente, qui n'était éclairé qu'en espace texture. Le tuilage (<code>StudsPerTileU/V</code>) est approximé par
+    le rapport taille-de-pièce/taille-de-tuile de chaque matériau (voir <code>ROBLOX_MATERIAL</code> dans le script).</p>
+  <p class="note"><strong>« La couronne brille »</strong> : les 5 gemmes portent <code>Material = Neon</code> dans le
+    fichier livré — rendu ici en matériau auto-éclairé (<code>emissive</code>), cohérent avec le fait que Neon émet
+    une lueur nativement dans le moteur Roblox, sans <code>PointLight</code> séparé. Le lecteur ajoute par-dessus,
+    en surimpression 2D projetée par la vraie caméra (<code>camera.project()</code>, plus une projection
+    orthographique maison), un halo pulsé et des traits scintillants tournants — cette mise en scène-là reste propre
+    au lecteur, la lueur du matériau ne l'est plus.</p>
+  <p class="note"><strong>Un temps d'arrêt au sacre — technique empruntée au combo de coups directs</strong> :
+    au moment exact où la couronne se pose sur la tête, personnage/couronne/caméra gèlent brièvement
+    (<code>HITSTOP_DUR</code> = 4 frames à 30 fps), avec un éclat chaud et des rais dorés qui partent du point de
+    contact — même idée que le hitstop du combo de frappe (« la couronne se pose avec une vraie finalité », pas un
+    simple fondu), rejouée ici sur un geste cérémoniel plutôt qu'un impact. Comme pour l'autre prototype, c'est un
+    comportement de LECTURE (voir <code>poseTime()</code> dans le script) : un <code>KeyframeSequence</code> ne sait
+    pas faire durer une pose, un vrai hitstop Roblox se ferait côté script via
+    <code>AnimationTrack:AdjustSpeed(0)</code>.</p>
+  <p class="note"><strong>La caméra est mise en scène, pas libre</strong> : six plans authored (voir <code>SHOTS</code>
+    dans le script, un par segment de la scène — montée, demi-tour, approche, assise, couronnement, pose finale),
+    chacun interprété comme une vraie <code>PerspectiveCamera</code> positionnée en coordonnées sphériques
+    (azimut/élévation/distance) autour d'une cible qui suit le personnage, avec le même garde-fou anti-clipping
+    (<code>MIN_SUBJECT_DIST</code>) que le combo de frappe. Aucun des deux <code>KeyframeSequence</code> livrés n'a de
+    notion de caméra — ce plan de coupe reste un choix de réalisation de ce lecteur, à refaire côté Roblox (script
+    client sur une <code>Camera</code>) pour un vrai import.</p>
+  <p class="note"><strong>Calibrage vérifié par le calcul, pas à l'oeil</strong> (voir <code>scripts/calibrate.py</code>,
+    inchangé par cette passe de rendu) : le dessus du siège est posé exactement à la hauteur de hanche du personnage
+    assis, les mains reposent exactement sur les accoudoirs, la couronne repose sur son coussin exactement où la main
+    droite se pose au repos — écarts mesurés en studs, pas estimés à l'oeil, et strictement identiques à la version
+    Canvas2D précédente (seul le rendu a changé dans cette passe, aucune valeur de <code>choreography.py</code> ou de
+    <code>props.py</code> n'a été touchée).</p>
+  <p class="note"><strong>Semantique des axes du bras</strong>, établie par diagnostic empirique plutôt que supposée
+    par analogie avec le combo de coups de pied (l'hypothèse initiale était fausse, corrigée avant livraison — voir
+    <code>choreography.py</code>) : X positif lève le bras vers l'avant puis par-dessus (jusqu'à 180° = au-dessus de
+    la tête) ; Z écarte le bras vers l'extérieur (droit) ou l'intérieur (gauche, signe opposé). Conséquence mesurée :
+    la portée verticale d'un bras sans coude plafonne à Y≈5,0 — la couronne ne peut pas être levée « très haut »,
+    seulement juste au-dessus de la tête, ce qui est déjà là où elle doit atterrir.</p>
+  <p class="note"><strong>La couronne change de parent en cours de scène</strong> (coussin → main droite → tête) : un
+    <code>KeyframeSequence</code> anime un seul rig et ne peut pas exprimer ce changement. La trajectoire monde de la
+    couronne est donc calculée séparément par la même cinématique directe (<code>scripts/compute_crown_track.py</code>)
+    et livrée en JSON — dans un vrai projet Roblox, un script re-weld la couronne au bon instant (typiquement sur un
+    <code>Marker</code> de l'<code>AnimationTrack</code>), ce que ce fichier documente précisément.</p>
+  <p class="note"><strong>Rig du personnage</strong> : recherche faite pour une source alternative « rig par défaut de
+    Roblox Studio » — seules des redistributions non licenciées de contenu client Roblox sont trouvées sur GitHub
+    (même catégorie que celle déjà écartée à l'origine, voir <code>rig/PROVENANCE.md</code>), et le DevForum (où la
+    communauté documente ces valeurs) est bloqué depuis ce sandbox. Le rig reste donc celui d'origine (dépôt Adonis,
+    licence MIT) : il implémente déjà la géométrie standard R6 (Torse 2×2×1, Tête 2×1×1, membres 1×2×1, Motor6D
+    standard) — dit honnêtement plutôt que de prétendre à une source changée.</p>
 </div>
 
+<script>__THREE_JS__</script>
 <script>
 const DATA = __SCENE_DATA__;
 const TEXTURES_B64 = __TEXTURES_B64__;
-
-// Une vraie image (color map) par Material, chargee une fois -- pas un
-// aplat de teinte. Neon et "royal" (le personnage, dont le Material
-// reel est celui de l'avatar du joueur, hors de portee de ce pipeline)
-// restent sans image, rendus par la teinte plate seule (voir MATERIALS).
-//
-// Chaque materiau porte aussi un NormalMap et une RoughnessMap REELS
-// (scripts/gen_pbr_maps.py -- meme bake Cycles que celui livre pour
-// SurfaceAppearance/MeshPart, pas une texture separee inventee pour ce
-// lecteur) : traites une fois au chargement en un calque de relief
-// (BUMP_CANVAS, decode le NormalMap pixel par pixel) et un calque de
-// micro-reflet (SHINE_CANVAS, derive de la RoughnessMap), tous deux
-// appliques par fillTexturedFace() via la meme transformation affine que
-// le calque couleur -- une vraie donnee par pixel pilote le rendu, pas
-// un flou/bruit decoratif.
-const TEXTURE_IMG = {};
-const TEXTURE_READY = {};
-const BUMP_CANVAS = {}, BUMP_READY = {};
-const SHINE_CANVAS = {}, SHINE_READY = {};
-
-// Lumiere canonique en ESPACE TEXTURE (raking depuis le coin haut-gauche
-// de chaque tuile), pas re-projetee en espace monde par face : ce
-// lecteur est un projecteur orthographique Canvas 2D, pas un moteur
-// per-pixel-relit -- limite assumee (voir note sous le lecteur). Le
-// relief lui-meme reste une vraie donnee bakee, seule sa direction
-// d'eclairage est fixe plutot que recalculee par face.
-const BUMP_LIGHT = norm3([-0.62, -0.62, 0.48]);
-
-function buildBumpCanvas(img) {
-  const w = img.naturalWidth, h = img.naturalHeight;
-  const off = document.createElement("canvas");
-  off.width = w; off.height = h;
-  const octx = off.getContext("2d");
-  octx.drawImage(img, 0, 0);
-  const id = octx.getImageData(0, 0, w, h);
-  const d = id.data;
-  const out = octx.createImageData(w, h);
-  const od = out.data;
-  for (let i = 0; i < d.length; i += 4) {
-    const nx = d[i] / 127.5 - 1, ny = d[i + 1] / 127.5 - 1, nz = d[i + 2] / 127.5 - 1;
-    const nlen = Math.hypot(nx, ny, nz) || 1;
-    const dp = (nx / nlen) * BUMP_LIGHT[0] + (ny / nlen) * BUMP_LIGHT[1] + (nz / nlen) * BUMP_LIGHT[2];
-    const v = Math.max(0, Math.min(255, Math.round(128 + dp * 260)));
-    od[i] = v; od[i + 1] = v; od[i + 2] = v; od[i + 3] = 255;
-  }
-  octx.putImageData(out, 0, 0);
-  return off;
-}
-
-function buildShineCanvas(img) {
-  const w = img.naturalWidth, h = img.naturalHeight;
-  const off = document.createElement("canvas");
-  off.width = w; off.height = h;
-  const octx = off.getContext("2d");
-  octx.drawImage(img, 0, 0);
-  const id = octx.getImageData(0, 0, w, h);
-  const d = id.data;
-  const out = octx.createImageData(w, h);
-  const od = out.data;
-  for (let i = 0; i < d.length; i += 4) {
-    const rough = d[i] / 255;
-    const v = Math.round(Math.pow(1 - rough, 1.6) * 255);
-    od[i] = v; od[i + 1] = v; od[i + 2] = v; od[i + 3] = 255;
-  }
-  octx.putImageData(out, 0, 0);
-  return off;
-}
-
-for (const [name, b64] of Object.entries(TEXTURES_B64)) {
-  const img = new Image();
-  if (name.endsWith("_normal")) {
-    BUMP_READY[name] = false;
-    img.onload = () => { BUMP_CANVAS[name] = buildBumpCanvas(img); BUMP_READY[name] = true; };
-  } else if (name.endsWith("_roughness")) {
-    SHINE_READY[name] = false;
-    img.onload = () => { SHINE_CANVAS[name] = buildShineCanvas(img); SHINE_READY[name] = true; };
-  } else {
-    TEXTURE_READY[name] = false;
-    img.onload = () => { TEXTURE_READY[name] = true; };
-  }
-  img.src = "data:image/png;base64," + b64;
-  TEXTURE_IMG[name] = img;
-}
-const MATERIAL_TEXTURE = {
-  Slate: "slate", Marble: "marble", Metal: "metal",
-  Fabric: "fabric", Cobblestone: "cobblestone", Wood: "wood",
-};
-
-const PHASE_LABELS = { montee: "montée de l'escalier", demi_tour: "demi-tour", approche: "approche", assise: "assise", couronnement: "couronnement", pose_finale: "pose finale" };
-const PHASE_KIND = { montee: "climb", demi_tour: "climb", approche: "prep", assise: "prep", couronnement: "crown", pose_finale: "prep" };
 const LEGS = new Set(["Right Leg", "Left Leg"]);
 
-const canvas = document.getElementById("stage");
-const ctx = canvas.getContext("2d");
+const glCanvas = document.getElementById("stage");
+const overlay = document.getElementById("overlay");
+const octx = overlay.getContext("2d");
 const scrub = document.getElementById("scrub");
 const playBtn = document.getElementById("playBtn");
 const playIcon = document.getElementById("playIcon");
 const pauseIcon = document.getElementById("pauseIcon");
-const phaseNameEl = document.getElementById("phaseName");
+const shotNameEl = document.getElementById("shotName");
 const phaseNameEl2 = document.getElementById("phaseName2");
 const timecodeEl = document.getElementById("timecode");
 const phaseTrack = document.getElementById("phaseTrack");
 
-let AZ = -50 * Math.PI / 180;
-const EL = 14 * Math.PI / 180;
 const DURATION = DATA.duration;
+const CROWNED_T = DATA.crowned_t;
+
+// Hitstop au moment ou la couronne se pose -- voir note sous le lecteur.
+// 4 frames a 30 fps (bas de la fourchette 3-6 documentee pour le combo de
+// frappe : un geste ceremoniel n'a pas besoin d'un arret aussi marque
+// qu'un coup de poing).
+const HITSTOP_DUR = 4 / 30;
+const REAL_DURATION = DURATION + HITSTOP_DUR;
+
+function poseTime(t) {
+  if (t < CROWNED_T) return t;
+  if (t < CROWNED_T + HITSTOP_DUR) return CROWNED_T;
+  return t - HITSTOP_DUR;
+}
+
+// PHASE_T : bornes pose-time (non decalees) par nom de segment, utilisees
+// par la camera (SHOTS) -- lue directement depuis DATA.phases, jamais
+// redevinee/recalculee ici.
+const PHASE_T = {};
+DATA.phases.forEach(p => { PHASE_T[p.name] = { t0: p.t0, t1: p.t1 }; });
+
+// PHASES : meme liste, mais en temps REEL (ce que la barre de lecture fait
+// defiler) -- le segment "couronnement", qui contient CROWNED_T, est
+// coupe en trois pour que le hitstop apparaisse comme son propre segment
+// fin sur la piste, et tout ce qui suit CROWNED_T est decale de
+// HITSTOP_DUR, meme principe que la liste PHASES du combo de frappe.
+const PHASES = [];
+for (const p of DATA.phases) {
+  if (p.name === "couronnement" && CROWNED_T > p.t0 && CROWNED_T < p.t1) {
+    PHASES.push({ name: p.name, t0: p.t0, t1: CROWNED_T });
+    PHASES.push({ name: "sacre", t0: CROWNED_T, t1: CROWNED_T + HITSTOP_DUR });
+    PHASES.push({ name: p.name, t0: CROWNED_T + HITSTOP_DUR, t1: p.t1 + HITSTOP_DUR });
+  } else if (p.t0 >= CROWNED_T) {
+    PHASES.push({ name: p.name, t0: p.t0 + HITSTOP_DUR, t1: p.t1 + HITSTOP_DUR });
+  } else {
+    PHASES.push(p);
+  }
+}
+
+const PHASE_LABELS = { montee: "montée de l'escalier", demi_tour: "demi-tour", approche: "approche", assise: "assise", couronnement: "couronnement", sacre: "le sacre", pose_finale: "pose finale" };
+const PHASE_KIND = { montee: "climb", demi_tour: "climb", approche: "prep", assise: "prep", couronnement: "crown", sacre: "crown", pose_finale: "prep" };
 
 function rebuildPhaseTrack() {
   phaseTrack.innerHTML = "";
-  DATA.phases.forEach(p => {
+  PHASES.forEach(p => {
     const seg = document.createElement("div");
     seg.className = "phase-seg";
     seg.dataset.kind = PHASE_KIND[p.name] || "prep";
-    seg.style.width = ((p.t1 - p.t0) / DURATION * 100) + "%";
+    seg.style.width = (Math.max(0, p.t1 - p.t0) / REAL_DURATION * 100) + "%";
     phaseTrack.appendChild(seg);
   });
 }
 rebuildPhaseTrack();
 
 function currentPhase(t) {
-  for (const p of DATA.phases) if (t >= p.t0 - 1e-6 && t <= p.t1 + 1e-6) return p;
-  return DATA.phases.slice(-1)[0];
+  for (const p of PHASES) if (t >= p.t0 - 1e-6 && t <= p.t1 + 1e-6) return p;
+  return PHASES[PHASES.length - 1];
 }
 
-function slerpish(a, b, f) {
-  const m = a.map((v, i) => v + (b[i] - v) * f);
-  const c0 = [m[0], m[3], m[6]], c1 = [m[1], m[4], m[7]];
-  const n0 = Math.hypot(c0[0], c0[1], c0[2]) || 1;
-  const e0 = c0.map(v => v / n0);
-  const d = e0[0] * c1[0] + e0[1] * c1[1] + e0[2] * c1[2];
-  let e1 = c1.map((v, i) => v - d * e0[i]);
-  const n1 = Math.hypot(e1[0], e1[1], e1[2]) || 1;
-  e1 = e1.map(v => v / n1);
-  const e2 = [e0[1] * e1[2] - e0[2] * e1[1], e0[2] * e1[0] - e0[0] * e1[2], e0[0] * e1[1] - e0[1] * e1[0]];
-  return [e0[0], e1[0], e2[0], e0[1], e1[1], e2[1], e0[2], e1[2], e2[2]];
+// ---------------------------------------------------------------------
+// Camera CHOREOGRAPHIEE -- six plans authored, un par segment de la scene
+// (voir PHASE_T, lu depuis DATA.phases). Meme interpretation que le combo
+// de frappe : azimut/elevation/distance spheriques autour d'une cible,
+// interpoles avec un ease-out a l'interieur de chaque plan.
+// az en degres : cos(az)>0 place la camera du cote +Z (utile pendant la
+// montee, ou le personnage est encore loin devant le trone) ; cos(az)<0
+// la place du cote -Z, cote SALLE -- necessaire des que la cible
+// s'approche du trone (siege/dossier), sous peine de finir la camera
+// A L'INTERIEUR OU DERRIERE le dossier (mur plat non eclaire, trouve par
+// capture d'ecran -- voir ROOM_Z_LIMIT plus bas, le filet de securite
+// qui rattrape les cas limites que le choix de signe seul ne couvre pas).
+const SHOTS = [
+  { name: "montée",       ...PHASE_T.montee,     az0: -58, az1: -50, el0: 10, el1: 14, sc0: 0.80, sc1: 0.94, tz0: -6.4, tz1: -2.1, ty0: 3.6, ty1: 4.8 },
+  { name: "demi-tour",    ...PHASE_T.demi_tour,  az0: -140, az1: -115, el0: 13, el1: 15, sc0: 1.00, sc1: 1.10, tz0: -1.6, tz1: -1.4, ty0: 4.8, ty1: 5.2 },
+  { name: "approche",     ...PHASE_T.approche,   az0: -115, az1: -150, el0: 14, el1: 13, sc0: 1.05, sc1: 1.15, tz0: -1.2, tz1: -0.6, ty0: 5.2, ty1: 5.6 },
+  { name: "assise",       ...PHASE_T.assise,     az0: -150, az1: -145, el0: 13, el1: 13, sc0: 0.80, sc1: 0.84, tz0: 0.2,  tz1: 0.3,  ty0: 5.6, ty1: 5.8 },
+  { name: "couronnement", ...PHASE_T.couronnement, az0: -150, az1: -135, el0: 15, el1: 21, sc0: 1.05, sc1: 1.35, tz0: 0.4, tz1: 0.5, ty0: 5.9, ty1: 6.3 },
+  { name: "pose finale",  ...PHASE_T.pose_finale, az0: -160, az1: -150, el0: 11, el1: 12, sc0: 0.68, sc1: 0.72, tz0: -0.6, tz1: -0.3, ty0: 5.5, ty1: 5.6 },
+];
+
+function shotAt(t) {
+  for (const s of SHOTS) if (t >= s.t0 - 1e-6 && t < s.t1 + 1e-6) return s;
+  return SHOTS[SHOTS.length - 1];
 }
 
+function cameraAt(t) {
+  const s = shotAt(t);
+  const f = Math.max(0, Math.min(1, (t - s.t0) / Math.max(1e-6, s.t1 - s.t0)));
+  const e = 1 - Math.pow(1 - f, 2);
+  const lerp = (a, b) => a + (b - a) * e;
+  return {
+    shot: s, az: lerp(s.az0, s.az1) * Math.PI / 180, el: lerp(s.el0, s.el1) * Math.PI / 180,
+    scale: lerp(s.sc0, s.sc1), tz: lerp(s.tz0, s.tz1), ty: lerp(s.ty0, s.ty1),
+  };
+}
+
+const BASE_DIST = 13.0;
+const MIN_DIST = 3.5;
+const MIN_SUBJECT_DIST = 5.2;
+// Filet de securite complementaire au choix de signe des az ci-dessus :
+// meme quand la camera vise correctement du cote salle, la fin de la
+// montee (la cible suit le personnage qui approche du trone) peut encore
+// pousser la camera au-dela du dossier -- borne sa position Z a ne
+// jamais depasser l'avant du siege/des accoudoirs (props.py : Seat/
+// Armrest Z~0.9, Dais front Z~-1.35, Backrest Z~2.7-3.3), quel que soit
+// le plan actif. Trouve par capture d'ecran (mur noir plein cadre), pas
+// suppose.
+const ROOM_Z_LIMIT = 1.6;
+
+function cameraDir(cam) {
+  return new THREE.Vector3(
+    Math.sin(cam.az) * Math.cos(cam.el),
+    Math.sin(cam.el),
+    Math.cos(cam.az) * Math.cos(cam.el),
+  );
+}
+
+// ---------------------------------------------------------------------
+// Scene Three.js
+const renderer = new THREE.WebGLRenderer({ canvas: glCanvas, antialias: true });
+renderer.setSize(1200, 900, false);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+if (renderer.outputColorSpace !== undefined) renderer.outputColorSpace = THREE.SRGBColorSpace;
+if (renderer.physicallyCorrectLights !== undefined) renderer.physicallyCorrectLights = true;
+if (renderer.toneMapping !== undefined) { renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.08; }
+
+const scene = new THREE.Scene();
+const HORIZON_COLOR = 0x4a2e14, ZENITH_COLOR = 0x0e0a10;
+scene.background = new THREE.Color(ZENITH_COLOR);
+scene.fog = new THREE.Fog(HORIZON_COLOR, 10, 40);
+
+const camera = new THREE.PerspectiveCamera(42, 1200 / 900, 0.1, 200);
+
+function buildSkyDome() {
+  const geo = new THREE.SphereGeometry(150, 24, 16);
+  const pos = geo.attributes.position;
+  const colors = new Float32Array(pos.count * 3);
+  const horizon = new THREE.Color(HORIZON_COLOR), zenith = new THREE.Color(ZENITH_COLOR);
+  const tmp = new THREE.Color();
+  for (let i = 0; i < pos.count; i++) {
+    const y = pos.getY(i) / 150;
+    const f = Math.max(0, Math.min(1, (y + 0.05) * 1.15));
+    tmp.copy(horizon).lerp(zenith, f);
+    colors[i * 3] = tmp.r; colors[i * 3 + 1] = tmp.g; colors[i * 3 + 2] = tmp.b;
+  }
+  geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+  const mat = new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide, fog: false, depthWrite: false });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.renderOrder = -10;
+  return mesh;
+}
+scene.add(buildSkyDome());
+
+// Cle chaude (torche), remplissage hemispherique froid, leger rim dore --
+// meme structure a 3 lumieres que le combo de frappe, recoloree pour cette
+// salle du trone (deja la palette du fond degrade Canvas2D precedent :
+// #0a0910 -> #141018 -> #1c140f, une flaque chaude au sol).
+// Position calquee sur la direction LIGHT=[-0.45,0.80,-0.38] de l'ancien
+// rendu Canvas2D (une torche haute, cote SALLE -- Z negatif) : mise a
+// l'echelle (x12) autour de la meme cible (0,3,0). Une premiere version
+// avait Z POSITIF (torche cote dossier) -- le dossier, vu de face depuis
+// la salle (normale -Z), se retrouvait alors totalement hors-lumiere
+// (mur noir plein cadre, trouve par capture d'ecran) puisque sa face
+// visible ne recevait jamais la cle.
+const keyLight = new THREE.DirectionalLight(0xffcf9a, 2.4);
+keyLight.position.set(-5.4, 12.6, -4.56);
+keyLight.castShadow = true;
+keyLight.shadow.mapSize.set(2048, 2048);
+// Frustum de la shadow camera -- doit couvrir TOUTE la scene (escalier +
+// trone, jusqu'au sommet du dossier a Y~10,2), pas juste le personnage :
+// un objet hors de ce frustum n'a aucun texel dans la shadow map, et le
+// bord "clamp to edge" echantillonne alors une profondeur proche du plan
+// pres de la lumiere -- le test de profondeur echoue systematiquement,
+// l'objet entier se lit comme "dans l'ombre" (noir plein, meme sur ses
+// faces qui font directement face a la lumiere). Trouve par capture
+// d'ecran (dossier/estrade/escalier entierement noirs malgre une cle
+// bien orientee), pas suppose -- premiere valeur (heritee du combo de
+// frappe, une scene bien plus petite) etait trop etroite.
+keyLight.shadow.camera.left = -10; keyLight.shadow.camera.right = 10;
+keyLight.shadow.camera.top = 18; keyLight.shadow.camera.bottom = -6;
+keyLight.shadow.camera.near = 1; keyLight.shadow.camera.far = 40;
+keyLight.shadow.bias = -0.0015;
+scene.add(keyLight);
+scene.add(keyLight.target);
+keyLight.target.position.set(0, 3, 0);
+
+const fillLight = new THREE.HemisphereLight(0x5a4a6a, 0x15100c, 0.62);
+scene.add(fillLight);
+
+const rimLight = new THREE.DirectionalLight(0xffa958, 0.5);
+rimLight.position.set(5, 5, -8);
+scene.add(rimLight);
+
+// ---------------------------------------------------------------------
+// Materiaux -- un profil par VRAI Enum.Material Roblox (props.py champ
+// "material"), chacun avec ses vraies cartes ColorMap/NormalMap/
+// RoughnessMap (+ MetalnessMap pour le metal) generees dans
+// ../textures[_pbr]/ -- branchees directement dans un MeshStandardMaterial,
+// pas decodees a la main sur un canvas separe. "Neon" et "royal" (le
+// personnage, dont le vrai Material est celui de l'avatar du joueur, hors
+// de portee de ce pipeline) restent sans image, teinte plate + emissive
+// pour Neon.
+// Chargement PRE-RESOLU (pas THREE.TextureLoader.load(), qui rend une
+// Texture immediatement avec `.image` encore `undefined` -- une image
+// <img> issue d'un data URI decode de facon asynchrone, meme sans reseau).
+// Bug trouve par capture d'ecran (dossier/estrade/marches noirs malgre un
+// eclairage correct) puis diagnostique en direct dans la page
+// (`THREE.WebGLRenderer: Texture marked for update but image is
+// undefined`, en boucle a chaque frame) : chaque piece appelait
+// `.clone()` sur la texture de base AVANT que son image ait fini de
+// decoder -- `.clone()` copie la reference `.image` telle quelle A CET
+// INSTANT (`undefined`), et ce clone n'est JAMAIS relie a l'image de
+// l'original qui finit par charger plus tard -- il reste casse pour
+// toujours, silencieusement (aucune erreur bloquante, juste un
+// avertissement console). Fix : attendre que la VRAIE image ait fini de
+// charger (`img.onload`) avant de construire quoi que ce soit qui la
+// clone.
+function loadImage(b64) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.src = "data:image/png;base64," + b64;
+  });
+}
+const TEX_CACHE = {};
+async function preloadMaterialTextures() {
+  const bases = ["slate", "marble", "cobblestone", "metal", "fabric", "wood"];
+  for (const base of bases) {
+    const entry = {};
+    for (const key of ["color", "normal", "roughness", "metalness"]) {
+      const b64 = TEXTURES_B64[base + "_" + key];
+      if (!b64) { entry[key] = null; continue; }
+      const img = await loadImage(b64);
+      const tex = new THREE.Texture(img);
+      tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.RepeatWrapping;
+      tex.needsUpdate = true;
+      if (key === "color" && tex.colorSpace !== undefined) tex.colorSpace = THREE.SRGBColorSpace;
+      entry[key] = tex;
+    }
+    TEX_CACHE[base] = entry;
+  }
+}
+function loadMaterialTextures(base) { return TEX_CACHE[base]; }
+function cloneTex(t) {
+  if (!t) return null;
+  const c = t.clone();
+  c.needsUpdate = true;
+  return c;
+}
+
+const ROBLOX_MATERIAL = {
+  Slate:       { tex: "slate", studsPerTile: 2.6, roughness: 0.70, metalness: 0.03 },
+  Marble:      { tex: "marble", studsPerTile: 3.0, roughness: 0.35, metalness: 0.03 },
+  Cobblestone: { tex: "cobblestone", studsPerTile: 2.6, roughness: 0.78, metalness: 0.0 },
+  Metal:       { tex: "metal", studsPerTile: 1.3, roughness: 0.28, metalness: 0.85 },
+  Fabric:      { tex: "fabric", studsPerTile: 0.7, roughness: 0.88, metalness: 0.0 },
+  Wood:        { tex: "wood", studsPerTile: 1.8, roughness: 0.50, metalness: 0.03 },
+};
+
+function rgbToThreeColor(rgbArr) {
+  return new THREE.Color(rgbArr[0] / 255, rgbArr[1] / 255, rgbArr[2] / 255);
+}
+
+function buildMaterialForSpec(spec) {
+  const matName = spec.material;
+  const color = rgbToThreeColor(spec.color);
+
+  if (matName === "Neon") {
+    return new THREE.MeshStandardMaterial({
+      color, emissive: color.clone(), emissiveIntensity: 1.7,
+      roughness: 0.35, metalness: 0.1,
+    });
+  }
+
+  const rules = ROBLOX_MATERIAL[matName];
+  if (!rules) {
+    // "royal" (rig du personnage) ou tout materiau non catalogue ici :
+    // teinte plate, meme traitement que les rigs du combo de frappe.
+    return new THREE.MeshStandardMaterial({ color, roughness: 0.55, metalness: 0.06 });
+  }
+
+  const base = loadMaterialTextures(rules.tex);
+  const avgDim = (spec.size[0] + spec.size[1] + spec.size[2]) / 3;
+  const rep = Math.max(0.6, avgDim / rules.studsPerTile);
+  const map = cloneTex(base.color), normalMap = cloneTex(base.normal),
+        roughnessMap = cloneTex(base.roughness), metalnessMap = cloneTex(base.metalness);
+  [map, normalMap, roughnessMap, metalnessMap].forEach(t => { if (t) t.repeat.set(rep, rep); });
+
+  const mat = new THREE.MeshStandardMaterial({
+    map, normalMap, roughnessMap, metalnessMap,
+    roughness: roughnessMap ? 1.0 : rules.roughness,
+    metalness: metalnessMap ? 1.0 : rules.metalness,
+  });
+  if (normalMap) mat.normalScale = new THREE.Vector2(0.9, 0.9);
+  return mat;
+}
+
+// Geometrie -- respecte le vrai Shape Roblox (props.py / export_model.py :
+// "0"=Ball, "1"=Block, "2"=Cylinder), pas juste des boites. Le Cylinder
+// Roblox a son axe le long du X LOCAL de la piece (pas Y comme la
+// CylinderGeometry de Three.js par defaut) -- on reoriente la geometrie
+// une fois a la construction (Y -> X) pour que la matrice de rotation
+// MONDE deja calculee (qui suppose cette convention Roblox, voir
+// props._ROT_Z90) s'applique correctement telle quelle.
+function buildGeometryForSpec(spec) {
+  const shape = spec.shape || "1";
+  const size = spec.size;
+  if (shape === "0") {
+    const r = Math.min(size[0], size[1], size[2]) / 2;
+    return new THREE.SphereGeometry(r, 16, 12);
+  }
+  if (shape === "2") {
+    const radius = size[1] / 2, length = size[0];
+    const geo = new THREE.CylinderGeometry(radius, radius, length, 20);
+    geo.rotateZ(-Math.PI / 2);
+    return geo;
+  }
+  return new THREE.BoxGeometry(size[0], size[1], size[2]);
+}
+
+const _m4 = new THREE.Matrix4();
+function applyPoseToMesh(mesh, p, r) {
+  mesh.position.set(p[0], p[1], p[2]);
+  _m4.set(
+    r[0], r[1], r[2], 0,
+    r[3], r[4], r[5], 0,
+    r[6], r[7], r[8], 0,
+    0, 0, 0, 1,
+  );
+  mesh.quaternion.setFromRotationMatrix(_m4);
+}
+
+// ---------------------------------------------------------------------
+// Tout ce qui suit a besoin des VRAIES images chargees (voir
+// preloadMaterialTextures() plus haut) avant de construire quoi que ce
+// soit qui les clone -- attend explicitement, plutot que de laisser le
+// premier render() tomber sur des textures encore vides.
+async function main() {
+await preloadMaterialTextures();
+
+// ---------------------------------------------------------------------
+// Sol -- grande dalle texturee (ardoise), reçoit les ombres du trone/de
+// l'escalier/du personnage. Purement une mise en scene du lecteur (comme
+// le dallage du combo de frappe), ne fait partie d'aucun des fichiers
+// livres.
+const groundTexBase = loadMaterialTextures("slate");
+const groundTex = cloneTex(groundTexBase.color);
+groundTex.repeat.set(20, 20);
+const groundNormal = cloneTex(groundTexBase.normal);
+if (groundNormal) groundNormal.repeat.set(20, 20);
+const groundMat = new THREE.MeshStandardMaterial({ map: groundTex, normalMap: groundNormal, roughness: 0.85, metalness: 0.02 });
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), groundMat);
+ground.rotation.x = -Math.PI / 2;
+ground.position.set(0, 0, -2);
+ground.receiveShadow = true;
+scene.add(ground);
+
+// ---------------------------------------------------------------------
+// Trone + escalier -- statiques, construits une seule fois depuis
+// DATA.throne (position/rotation/taille/materiau/couleur, tous verifies
+// par calibrate.py, jamais retouches par cette passe de rendu).
+for (const spec of DATA.throne) {
+  const geo = buildGeometryForSpec(spec);
+  const mat = buildMaterialForSpec(spec);
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  const flatRot = spec.rot.flat ? spec.rot.flat() : [].concat(...spec.rot);
+  applyPoseToMesh(mesh, spec.pos, flatRot);
+  scene.add(mesh);
+}
+
+// ---------------------------------------------------------------------
+// Personnage -- 6 segments rigides, poses (position+rotation MONDE deja
+// resolues par le moteur) appliquees chaque frame, meme principe que le
+// combo de frappe.
+function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function hexToRgb(hex) {
+  hex = hex.replace("#", "").trim();
+  const n = parseInt(hex, 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+const rigColor = rgbToThreeColor(hexToRgb(cssVar("--rig")));
+const legColor = rgbToThreeColor(hexToRgb(cssVar("--leg")));
+
+const charMeshes = {};
+for (const part of DATA.part_order) {
+  if (part === "HumanoidRootPart") continue;
+  const size = DATA.part_sizes[part];
+  const color = LEGS.has(part) ? legColor : rigColor;
+  const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.55, metalness: 0.06 });
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(size[0], size[1], size[2]), mat);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  scene.add(mesh);
+  charMeshes[part] = mesh;
+}
+
+// ---------------------------------------------------------------------
+// Couronne -- geometrie/materiau construits une seule fois depuis la
+// premiere frame (taille/couleur/materiau/forme sont constants sur toute
+// la scene, seules position+rotation changent -- voir
+// dump_scene_data.crown_frames_at), pose appliquee chaque frame.
+const crownMeshes = {};
+{
+  const firstFrame = DATA.crown_frames[0];
+  for (const name of DATA.crown_part_names) {
+    const spec = firstFrame[name];
+    const geo = buildGeometryForSpec(spec);
+    const mat = buildMaterialForSpec(spec);
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    scene.add(mesh);
+    crownMeshes[name] = mesh;
+  }
+}
+
+// ---------------------------------------------------------------------
+// Echantillonnage des frames decimees (personnage + couronne), meme
+// principe (interpolation lineaire position + slerp approx rotation) que
+// les autres lecteurs de ce dossier.
 function frameAt(frames, t) {
   const dt = 1 / DATA.fps;
   const idx = Math.max(0, Math.min(frames.length - 2, Math.floor(t / dt)));
@@ -246,7 +603,18 @@ function frameAt(frames, t) {
   const frac = Math.max(0, Math.min(1, (t - f0.t) / (f1.t - f0.t || 1)));
   return { f0, f1, frac };
 }
-
+function slerpish(a, b, f) {
+  const m = a.map((v, i) => v + (b[i] - v) * f);
+  const c0 = [m[0], m[3], m[6]], c1 = [m[1], m[4], m[7]];
+  const n0 = Math.hypot(c0[0], c0[1], c0[2]) || 1;
+  const e0 = c0.map(v => v / n0);
+  const d = e0[0]*c1[0] + e0[1]*c1[1] + e0[2]*c1[2];
+  let e1 = c1.map((v, i) => v - d * e0[i]);
+  const n1 = Math.hypot(e1[0], e1[1], e1[2]) || 1;
+  e1 = e1.map(v => v / n1);
+  const e2 = [e0[1]*e1[2]-e0[2]*e1[1], e0[2]*e1[0]-e0[0]*e1[2], e0[0]*e1[1]-e0[1]*e1[0]];
+  return [e0[0], e1[0], e2[0], e0[1], e1[1], e2[1], e0[2], e1[2], e2[2]];
+}
 function sampleChar(t) {
   const { f0, f1, frac } = frameAt(DATA.char_frames, t);
   const out = {};
@@ -256,417 +624,194 @@ function sampleChar(t) {
   }
   return out;
 }
-
 function sampleCrown(t) {
   const { f0, f1, frac } = frameAt(DATA.crown_frames, t);
   const out = {};
   for (const name of DATA.crown_part_names) {
     const a = f0[name], b = f1[name];
-    out[name] = {
-      p: a.p.map((v, i) => v + (b.p[i] - v) * frac),
-      r: slerpish(a.r, b.r, frac),
-      size: a.size, color: a.color,
-    };
+    out[name] = { p: a.p.map((v, i) => v + (b.p[i] - v) * frac), r: slerpish(a.r, b.r, frac) };
   }
   return out;
 }
 
-function proj(x, y, z) {
-  const x1 = x * Math.cos(AZ) - z * Math.sin(AZ);
-  const z1 = x * Math.sin(AZ) + z * Math.cos(AZ);
-  const y2 = y * Math.cos(EL) - z1 * Math.sin(EL);
-  const depth = y * Math.sin(EL) + z1 * Math.cos(EL);
-  return { x: x1, y: y2, d: depth };
+// ---------------------------------------------------------------------
+// VFX en surimpression -- canvas 2D transparent empile sur le WebGL, point
+// d'ancrage projete par la vraie camera (camera.project()), meme technique
+// que le combo de frappe.
+const _projV = new THREE.Vector3();
+function worldToScreen(x, y, z) {
+  _projV.set(x, y, z).project(camera);
+  return {
+    x: (_projV.x * 0.5 + 0.5) * overlay.width,
+    y: (1 - (_projV.y * 0.5 + 0.5)) * overlay.height,
+  };
 }
 
-const SCALE = 48, CX = 600, CY = 660, FLOOR_Y = 0.0;
-
-function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
-
-function shadeRgb(rgb, k) {
-  return "rgb(" + rgb.map(v => Math.max(0, Math.min(255, Math.round(v * k)))).join(",") + ")";
-}
-
-function norm3(v) { const n = Math.hypot(v[0], v[1], v[2]) || 1; return [v[0]/n, v[1]/n, v[2]/n]; }
-function dot3(a, b) { return a[0]*b[0] + a[1]*b[1] + a[2]*b[2]; }
-function add3(a, b) { return [a[0]+b[0], a[1]+b[1], a[2]+b[2]]; }
-
-// Eclairage a 3 sources, choisi pour une lecture "sombre mais fiere" :
-// une cle chaude (torche) haute a gauche, un remplissage froid faible a
-// droite (evite les noirs bouches), et une direction de vue fixe utilisee
-// pour l'approximation de speculaire/rim (le rendu n'est pas en
-// perspective reelle -- proj() est une rotation+projection orthographique
-// -- donc la vue est approximee par une direction constante plutot que
-// recalculee par pixel ; suffisant pour un reflet stylise, pas physique).
-const LIGHT = norm3([-0.45, 0.80, -0.38]);
-const FILL_LIGHT = norm3([0.55, 0.25, 0.65]);
-const VIEW = norm3([0.35, 0.45, 0.82]);
-const HALF_VEC = norm3(add3(LIGHT, VIEW));
-
-// Un profil par VRAI Enum.Material Roblox (voir scripts/export_model.py
-// MATERIAL_BY_NAME / props.py champ "material") -- pas une categorie
-// inventee pour le lecteur : si demain une piece change de Material cote
-// fichier, elle change aussi de rendu ici automatiquement, sans mapping
-// separe a maintenir a la main. "royal" reste la seule entree hors
-// Roblox : c'est le personnage, dont on ne pilote pas le Material reel
-// (celui de l'avatar du joueur), seulement son rendu dans ce lecteur.
-const MATERIALS = {
-  Slate:       { spec: 0.05, shin: 5,  rim: 0.06, tint: 1.00, studsPerTile: 2.6 },
-  Marble:      { spec: 0.22, shin: 12, rim: 0.16, tint: 1.00, studsPerTile: 3.0 },
-  Cobblestone: { spec: 0.03, shin: 4,  rim: 0.05, tint: 0.92, studsPerTile: 2.6 },
-  Metal:       { spec: 0.85, shin: 34, rim: 0.30, tint: 1.00, studsPerTile: 1.3 },
-  Fabric:      { spec: 0.02, shin: 3,  rim: 0.02, tint: 1.00, studsPerTile: 0.7 },
-  Wood:        { spec: 0.10, shin: 8,  rim: 0.06, tint: 1.00, studsPerTile: 1.8 },
-  Neon:        { spec: 0.30, shin: 10, rim: 0.55, tint: 1.35, selfLit: true },
-  royal:       { spec: 0.20, shin: 16, rim: 0.14, tint: 1.00 },
-};
-const DEFAULT_MATERIAL = { spec: 0.08, shin: 6, rim: 0.06, tint: 1.0 };
-
-const CORNERS = [[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]];
-const FACES = [
-  { idx: [0,1,2,3], n: [0,0,-1], uAxis: 0, vAxis: 1 }, { idx: [5,4,7,6], n: [0,0,1], uAxis: 0, vAxis: 1 },
-  { idx: [4,0,3,7], n: [-1,0,0], uAxis: 2, vAxis: 1 }, { idx: [1,5,6,2], n: [1,0,0], uAxis: 2, vAxis: 1 },
-  { idx: [3,2,6,7], n: [0,1,0], uAxis: 0, vAxis: 2 },  { idx: [4,5,1,0], n: [0,-1,0], uAxis: 0, vAxis: 2 },
-];
-
-function mulVec(r, v) {
-  return [r[0]*v[0] + r[1]*v[1] + r[2]*v[2],
-          r[3]*v[0] + r[4]*v[1] + r[5]*v[2],
-          r[6]*v[0] + r[7]*v[1] + r[8]*v[2]];
-}
-
-function drawBackdrop() {
-  const g = ctx.createLinearGradient(0, 0, 0, canvas.height);
-  g.addColorStop(0, "#0a0910");
-  g.addColorStop(0.55, "#141018");
-  g.addColorStop(1, "#1c140f");
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // flaque de lumiere chaude au sol -- lecture "premium", une seule
-  // source dramatique plutot qu'un plateau uniformement eclaire. Centree
-  // entre le trone et le pied de l'escalier (Z=-3.5) et assez large pour
-  // couvrir les deux : recentree ici apres une premiere version qui
-  // n'eclairait que le trone, laissant l'escalier illisible en vue 3/4
-  // (trouve par capture d'ecran reelle, pas suppose).
-  const c = proj(0, FLOOR_Y, -3.5);
-  const rg = ctx.createRadialGradient(CX + c.x*SCALE, CY - c.y*SCALE, 20, CX + c.x*SCALE, CY - c.y*SCALE, 620);
-  rg.addColorStop(0, "rgba(190,130,55,0.20)");
-  rg.addColorStop(1, "rgba(190,130,55,0)");
-  ctx.fillStyle = rg;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-}
-
-function drawGrid() {
-  ctx.strokeStyle = "rgba(210,195,160,0.10)";
-  ctx.lineWidth = 1;
-  const n = 10, step = 1.0;
-  for (let i = -n; i <= n; i++) {
-    let a = proj(i * step, FLOOR_Y, -n * step), b = proj(i * step, FLOOR_Y, n * step);
-    ctx.beginPath(); ctx.moveTo(CX + a.x * SCALE, CY - a.y * SCALE); ctx.lineTo(CX + b.x * SCALE, CY - b.y * SCALE); ctx.stroke();
-    a = proj(-n * step, FLOOR_Y, i * step); b = proj(n * step, FLOOR_Y, i * step);
-    ctx.beginPath(); ctx.moveTo(CX + a.x * SCALE, CY - a.y * SCALE); ctx.lineTo(CX + b.x * SCALE, CY - b.y * SCALE); ctx.stroke();
-  }
-}
-
-function drawContactShadow(cx, cz, rx, rz, alpha) {
-  const c = proj(cx, FLOOR_Y, cz);
-  const sx = CX + c.x * SCALE, sy = CY - c.y * SCALE;
-  ctx.save();
-  ctx.translate(sx, sy);
-  ctx.scale(1, 0.42);
-  const g = ctx.createRadialGradient(0, 0, 0, 0, 0, rx * SCALE);
-  g.addColorStop(0, `rgba(0,0,0,${alpha})`);
-  g.addColorStop(1, "rgba(0,0,0,0)");
-  ctx.fillStyle = g;
-  ctx.beginPath(); ctx.ellipse(0, 0, rx * SCALE, rz * SCALE, 0, 0, Math.PI * 2); ctx.fill();
-  ctx.restore();
-}
-
-function boxQuads(pos, rot, size, rgbColor, materialName) {
-  const mat = MATERIALS[materialName] || DEFAULT_MATERIAL;
-  const half = [size[0] / 2, size[1] / 2, size[2] / 2];
-  const screen = CORNERS.map(c => {
-    const rotated = mulVec(rot, [c[0] * half[0], c[1] * half[1], c[2] * half[2]]);
-    return proj(pos[0] + rotated[0], pos[1] + rotated[1], pos[2] + rotated[2]);
-  });
-  const quads = [];
-  for (const f of FACES) {
-    const nWorld = mulVec(rot, f.n);
-    const nProj = proj(nWorld[0], nWorld[1], nWorld[2]);
-    if (nProj.d >= 0) continue;
-    const specAngle = Math.max(0, dot3(nWorld, HALF_VEC));
-    const spec = Math.pow(specAngle, mat.shin) * mat.spec;
-    const facing = Math.max(0, dot3(nWorld, VIEW));
-    const rim = Math.pow(1 - facing, 3) * mat.rim;
-    let k;
-    if (mat.selfLit) {
-      // Neon : emet sa propre lumiere dans le vrai moteur Roblox --
-      // quasi independant de la direction d'eclairage plutot que
-      // module par lambert/fill comme les materiaux "passifs".
-      const lambert = Math.max(0, dot3(nWorld, LIGHT));
-      k = (0.88 + 0.12 * lambert) * mat.tint;
-    } else {
-      const lambert = Math.max(0, dot3(nWorld, LIGHT));
-      const fill = Math.max(0, dot3(nWorld, FILL_LIGHT)) * 0.30;
-      k = (0.30 + 0.62 * lambert + fill) * mat.tint;
-    }
-    quads.push({
-      pts: f.idx.map(i => screen[i]),
-      depth: f.idx.reduce((s, i) => s + screen[i].d, 0) / 4,
-      k, spec, rim, rgb: rgbColor,
-      uLen: size[f.uAxis], vLen: size[f.vAxis],
-      material: materialName, studsPerTile: mat.studsPerTile,
-    });
-  }
-  return quads;
-}
-
-// Remplit une face (quad = parallelogramme en espace ecran, garanti par
-// la projection orthographique) avec une VRAIE image qui tuile, plutot
-// qu'un aplat de teinte -- via la transformation affine qui envoie le
-// rectangle (0,0)-(uLen,0)-(0,vLen), en studs, sur les 3 premiers coins
-// ecran de la face (le 4e est implique, un parallelogramme est defini
-// par 3 sommets). Le motif de l'image est ensuite mis a l'echelle pour
-// qu'une tuile couvre exactement `studsPerTile` studs, indépendamment de
-// la resolution de l'image -- l'equivalent visuel de StudsPerTileU/V
-// sur un vrai `Texture` Roblox.
-function fillTexturedFace(q) {
-  const base = MATERIAL_TEXTURE[q.material];
-  const texName = base + "_color";
-  if (!base || !TEXTURE_READY[texName]) return false;
-  const img = TEXTURE_IMG[texName];
-  const [p0, p1, , p3] = q.pts;
-  const uLen = Math.max(0.01, q.uLen), vLen = Math.max(0.01, q.vLen);
-  const a = (CX + p1.x * SCALE - (CX + p0.x * SCALE)) / uLen;
-  const b = (CY - p1.y * SCALE - (CY - p0.y * SCALE)) / uLen;
-  const c = (CX + p3.x * SCALE - (CX + p0.x * SCALE)) / vLen;
-  const d = (CY - p3.y * SCALE - (CY - p0.y * SCALE)) / vLen;
-  const e = CX + p0.x * SCALE, f = CY - p0.y * SCALE;
-
-  ctx.save();
-  ctx.setTransform(a, b, c, d, e, f);
-  const pattern = ctx.createPattern(img, "repeat");
-  const tile = q.studsPerTile || 2.0;
-  pattern.setTransform(new DOMMatrix([tile / img.width, 0, 0, tile / img.height, 0, 0]));
-  ctx.fillStyle = pattern;
-  ctx.beginPath(); ctx.rect(0, 0, uLen, vLen); ctx.fill();
-
-  // Relief REEL (NormalMap bakee, gen_pbr_maps.py -- meme fichier que
-  // celui livre pour SurfaceAppearance) applique en calque "overlay" :
-  // assombrit/eclaircit chaque pixel selon sa pente decodee, pas un aplat.
-  const bumpKey = base + "_normal";
-  if (BUMP_READY[bumpKey]) {
-    const bc = BUMP_CANVAS[bumpKey];
-    const bpat = ctx.createPattern(bc, "repeat");
-    bpat.setTransform(new DOMMatrix([tile / bc.width, 0, 0, tile / bc.height, 0, 0]));
-    ctx.globalCompositeOperation = "overlay";
-    ctx.globalAlpha = 0.85;
-    ctx.fillStyle = bpat;
-    ctx.beginPath(); ctx.rect(0, 0, uLen, vLen); ctx.fill();
-    ctx.globalCompositeOperation = "source-over";
-    ctx.globalAlpha = 1;
-  }
-
-  // Micro-reflet derive de la vraie RoughnessMap : plus une zone est
-  // lisse (roughness basse dans le fichier bake), plus son micro-reflet
-  // est marque -- s'attenue de lui-meme sur le tissu (roughness haute
-  // partout dans la carte) sans liste de materiaux codee en dur ici.
-  const shineKey = base + "_roughness";
-  if (SHINE_READY[shineKey]) {
-    const sc = SHINE_CANVAS[shineKey];
-    const spat = ctx.createPattern(sc, "repeat");
-    spat.setTransform(new DOMMatrix([tile / sc.width, 0, 0, tile / sc.height, 0, 0]));
-    ctx.globalCompositeOperation = "screen";
-    ctx.globalAlpha = 0.38;
-    ctx.fillStyle = spat;
-    ctx.beginPath(); ctx.rect(0, 0, uLen, vLen); ctx.fill();
-    ctx.globalCompositeOperation = "source-over";
-    ctx.globalAlpha = 1;
-  }
-
-  ctx.restore();
-
-  // La texture porte deja son propre relief de couleur ; le k
-  // lambert/fill de la scene vient encore l'assombrir/l'eclaircir par
-  //-dessus (assombrir vers le noir si k<1, eclaircir vers le blanc si
-  // k>1) via un calque semi-transparent, moins cher qu'un vrai shader
-  // par pixel mais coherent avec le reste du rendu de ce lecteur.
-  ctx.beginPath();
-  ctx.moveTo(CX + q.pts[0].x * SCALE, CY - q.pts[0].y * SCALE);
-  for (let i = 1; i < q.pts.length; i++) ctx.lineTo(CX + q.pts[i].x * SCALE, CY - q.pts[i].y * SCALE);
-  ctx.closePath();
-  if (q.k < 1) {
-    ctx.fillStyle = `rgba(0,0,0,${Math.min(0.82, 1 - q.k)})`;
-    ctx.fill();
-  } else if (q.k > 1) {
-    ctx.fillStyle = `rgba(255,255,255,${Math.min(0.5, q.k - 1)})`;
-    ctx.fill();
-  }
-  return true;
-}
-
-const IDENT9 = [1,0,0, 0,1,0, 0,0,1];
-
+// Halo de la couronne + gemmes -- monte des lors qu'elle approche de la
+// tete (juste avant CROWNED_T) et reste stable ensuite, meme structure que
+// l'ancien drawCrownGlow() Canvas2D, reprojetee ici par la vraie camera.
 function drawCrownGlow(t, crownPose) {
-  if (t < DATA.crowned_t - 0.02) return;
-  const grow = Math.min(1, (t - (DATA.crowned_t - 0.02)) / 0.4);
+  if (t < CROWNED_T - 0.5) return;
+  const grow = Math.min(1, (t - (CROWNED_T - 0.5)) / 0.5);
   const pulse = 0.8 + 0.2 * Math.sin(t * 5.2);
-  ctx.save();
-  ctx.globalCompositeOperation = "lighter";
+  octx.save();
+  octx.globalCompositeOperation = "lighter";
 
-  // halo d'ensemble, centre sur la bande -- c'est lui qui fait "la
-  // couronne brille" au premier coup d'oeil, les points/gemmes en dessous
-  // ajoutent le detail rapproche.
   const band = crownPose["Band"];
-  const bs = proj(band.p[0], band.p[1], band.p[2]);
-  const bx = CX + bs.x * SCALE, by = CY - bs.y * SCALE;
+  const bs = worldToScreen(band.p[0], band.p[1], band.p[2]);
   const R = 92 * grow * pulse;
-  const halo = ctx.createRadialGradient(bx, by, 0, bx, by, R);
+  const halo = octx.createRadialGradient(bs.x, bs.y, 0, bs.x, bs.y, R);
   halo.addColorStop(0, `rgba(255,224,150,${0.34 * grow})`);
   halo.addColorStop(0.4, `rgba(255,200,110,${0.16 * grow})`);
   halo.addColorStop(1, "rgba(255,200,110,0)");
-  ctx.fillStyle = halo;
-  ctx.beginPath(); ctx.arc(bx, by, R, 0, Math.PI * 2); ctx.fill();
+  octx.fillStyle = halo;
+  octx.beginPath(); octx.arc(bs.x, bs.y, R, 0, Math.PI * 2); octx.fill();
 
-  // 4 traits scintillants tournants, style "sparkle" -- lisible meme en
-  // vignette, pas juste un flou diffus.
   for (let s = 0; s < 4; s++) {
     const ang = t * 1.3 + s * Math.PI / 2;
     const len = 34 * grow * pulse;
-    const dx = Math.cos(ang) * len, dy = Math.sin(ang) * len * 0.5;
-    const sg = ctx.createLinearGradient(bx - dx, by - dy, bx + dx, by + dy);
+    const dx = Math.cos(ang) * len, dy = Math.sin(ang) * len * 0.6;
+    const sg = octx.createLinearGradient(bs.x - dx, bs.y - dy, bs.x + dx, bs.y + dy);
     sg.addColorStop(0, "rgba(255,240,200,0)");
     sg.addColorStop(0.5, `rgba(255,240,200,${0.55 * grow})`);
     sg.addColorStop(1, "rgba(255,240,200,0)");
-    ctx.strokeStyle = sg;
-    ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(bx - dx, by - dy); ctx.lineTo(bx + dx, by + dy); ctx.stroke();
+    octx.strokeStyle = sg;
+    octx.lineWidth = 2;
+    octx.beginPath(); octx.moveTo(bs.x - dx, bs.y - dy); octx.lineTo(bs.x + dx, bs.y + dy); octx.stroke();
   }
 
   for (const name of DATA.crown_part_names) {
     if (!name.endsWith("_Gem") && name !== "Band") continue;
     const cp = crownPose[name];
-    const s = proj(cp.p[0], cp.p[1], cp.p[2]);
-    const sx = CX + s.x * SCALE, sy = CY - s.y * SCALE;
+    const s = worldToScreen(cp.p[0], cp.p[1], cp.p[2]);
     const r = (name === "Band" ? 26 : 20) * grow * pulse;
     const alpha = (name === "Band" ? 0.22 : 0.48) * grow;
-    // bande = or (inchange), gemmes = rose (GEM_PINK -- reference
-    // utilisateur crown.jpg, remplace l'ancien rouge/saumon).
     const color = name === "Band" ? "255,221,140" : "255,150,190";
-    const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, r);
+    const g = octx.createRadialGradient(s.x, s.y, 0, s.x, s.y, r);
     g.addColorStop(0, `rgba(${color},${alpha})`);
     g.addColorStop(1, `rgba(${color},0)`);
-    ctx.fillStyle = g;
-    ctx.beginPath(); ctx.arc(sx, sy, r, 0, Math.PI * 2); ctx.fill();
+    octx.fillStyle = g;
+    octx.beginPath(); octx.arc(s.x, s.y, r, 0, Math.PI * 2); octx.fill();
   }
-  ctx.restore();
+  octx.restore();
 }
 
-function render(t) {
-  drawBackdrop();
-  drawGrid();
-  drawContactShadow(0, 1.4, 3.6, 2.9, 0.38);   // sous le trone
-  const charPose = sampleChar(t);
-  drawContactShadow(charPose["HumanoidRootPart"].p[0], charPose["HumanoidRootPart"].p[2] + 0.3, 0.9, 0.7, 0.30);
-
-  const crownPose = sampleCrown(t);
-  const rigRgb = hexToRgb(cssVar("--rig")), legRgb = hexToRgb(cssVar("--leg"));
-
-  const all = [];
-  for (const spec of DATA.throne) {
-    const flatRot = spec.rot.flat ? spec.rot.flat() : [].concat(...spec.rot);
-    all.push(...boxQuads(spec.pos, flatRot, spec.size, spec.color, spec.material));
+// Eclat du sacre -- au moment ou la couronne touche la tete (temps REEL,
+// pas gele, pour se declencher exactement au contact comme les VFX du
+// combo de frappe) : un flash chaud bref + des rais dores qui partent du
+// sommet de la tete, plus doux qu'un impact-frame de combat (pas de
+// debris de pierre ici -- un couronnement, pas un coup). Deterministe
+// (angle = i/N*2pi, jamais Math.random()).
+const CORONATION_FLASH_DUR = 0.07, CORONATION_RAYS_DUR = 0.30;
+function drawCoronationFlash(t, screenPos) {
+  const age = t - CROWNED_T;
+  if (age < 0 || age >= CORONATION_RAYS_DUR) return;
+  octx.save();
+  if (age < CORONATION_FLASH_DUR) {
+    octx.globalAlpha = 0.55 * (1 - age / CORONATION_FLASH_DUR);
+    octx.fillStyle = "#fff2d6";
+    octx.fillRect(0, 0, overlay.width, overlay.height);
   }
+  const f = age / CORONATION_RAYS_DUR;
+  const N = 16;
+  octx.globalCompositeOperation = "lighter";
+  for (let i = 0; i < N; i++) {
+    const ang = (i / N) * Math.PI * 2 + Math.sin(i * 5.3) * 0.15;
+    const reach = (60 + 240 * f) * (0.7 + 0.3 * Math.sin(i * 2.7));
+    const x1 = screenPos.x + Math.cos(ang) * reach, y1 = screenPos.y + Math.sin(ang) * reach * 0.75;
+    const rg = octx.createLinearGradient(screenPos.x, screenPos.y, x1, y1);
+    const a = Math.max(0, 0.6 * (1 - f));
+    rg.addColorStop(0, `rgba(255,224,150,${a})`);
+    rg.addColorStop(1, "rgba(255,224,150,0)");
+    octx.strokeStyle = rg;
+    octx.lineWidth = 2.4 * (1 - f * 0.6);
+    octx.beginPath(); octx.moveTo(screenPos.x, screenPos.y); octx.lineTo(x1, y1); octx.stroke();
+  }
+  octx.restore();
+}
+
+// ---------------------------------------------------------------------
+function render(t) {
+  const pt = poseTime(t);
+  const cam = cameraAt(pt);
+  const target = new THREE.Vector3(0, cam.ty, cam.tz);
+  const dir = cameraDir(cam);
+
+  const charPose = sampleChar(pt);
+  const crownPose = sampleCrown(pt);
+
+  let dist = Math.max(MIN_DIST, BASE_DIST / cam.scale);
+  if (dir.z > 1e-4) {
+    const capDist = (ROOM_Z_LIMIT - target.z) / dir.z;
+    if (capDist > 0) dist = Math.min(dist, capDist);
+  }
+  const candidate = target.clone().addScaledVector(dir, dist);
+  const torso = new THREE.Vector3(...charPose["Torso"].p);
+  const nearestSubjectDist = candidate.distanceTo(torso);
+  if (nearestSubjectDist < MIN_SUBJECT_DIST) dist += (MIN_SUBJECT_DIST - nearestSubjectDist);
+
+  const wp = target.clone().addScaledVector(dir, dist);
+  camera.position.set(wp.x, wp.y, wp.z);
+  camera.lookAt(target);
+
   for (const part of DATA.part_order) {
     if (part === "HumanoidRootPart") continue;
-    const rgb = LEGS.has(part) ? legRgb : rigRgb;
-    all.push(...boxQuads(charPose[part].p, charPose[part].r, DATA.part_sizes[part], rgb, "royal"));
+    applyPoseToMesh(charMeshes[part], charPose[part].p, charPose[part].r);
   }
   for (const name of DATA.crown_part_names) {
-    const cp = crownPose[name];
-    all.push(...boxQuads(cp.p, cp.r, cp.size, cp.color, cp.material));
+    applyPoseToMesh(crownMeshes[name], crownPose[name].p, crownPose[name].r);
   }
 
-  all.sort((a, b) => b.depth - a.depth);
-  for (const q of all) {
-    ctx.beginPath();
-    ctx.moveTo(CX + q.pts[0].x * SCALE, CY - q.pts[0].y * SCALE);
-    for (let i = 1; i < q.pts.length; i++) ctx.lineTo(CX + q.pts[i].x * SCALE, CY - q.pts[i].y * SCALE);
-    ctx.closePath();
-    const textured = fillTexturedFace(q);
-    if (!textured) {
-      ctx.fillStyle = shadeRgb(q.rgb, q.k);
-      ctx.fill();
-    }
-    // fillTexturedFace() (quand textured) manipule son propre chemin en
-    // interne (setTransform + pattern) -- on redeclare explicitement
-    // celui de la face ici plutot que de compter sur ce qu'il laisse
-    // derriere lui, pour que le rim/spec/contour ci-dessous visent
-    // toujours la bonne forme quel que soit le chemin interne.
-    ctx.beginPath();
-    ctx.moveTo(CX + q.pts[0].x * SCALE, CY - q.pts[0].y * SCALE);
-    for (let i = 1; i < q.pts.length; i++) ctx.lineTo(CX + q.pts[i].x * SCALE, CY - q.pts[i].y * SCALE);
-    ctx.closePath();
-    if (q.rim > 0.01) {
-      ctx.fillStyle = `rgba(255,238,210,${q.rim})`;
-      ctx.fill();
-    }
-    if (q.spec > 0.02) {
-      ctx.fillStyle = `rgba(255,255,255,${Math.min(0.9, q.spec)})`;
-      ctx.fill();
-    }
-    ctx.strokeStyle = "rgba(0,0,0,0.45)"; ctx.lineWidth = 0.7; ctx.globalAlpha = 0.35; ctx.stroke(); ctx.globalAlpha = 1;
-  }
+  renderer.render(scene, camera);
 
-  drawCrownGlow(t, crownPose);
+  octx.clearRect(0, 0, overlay.width, overlay.height);
+  drawCrownGlow(pt, crownPose);
+  const headTop = crownPose["Band"].p;
+  const headScreen = worldToScreen(headTop[0], headTop[1], headTop[2]);
+  drawCoronationFlash(t, headScreen);
 
   const phase = currentPhase(t);
-  phaseNameEl.textContent = PHASE_LABELS[phase.name] || phase.name;
+  const shot = cam.shot;
+  shotNameEl.textContent = shot.name;
   phaseNameEl2.textContent = PHASE_LABELS[phase.name] || phase.name;
-  timecodeEl.textContent = t.toFixed(2) + "s / " + DURATION.toFixed(2) + "s";
+  timecodeEl.textContent = t.toFixed(2) + "s / " + REAL_DURATION.toFixed(2) + "s";
 }
 
-function hexToRgb(hex) {
-  hex = hex.replace("#", "").trim();
-  if (hex.length === 3) hex = hex.split("").map(c => c + c).join("");
-  return [parseInt(hex.slice(0, 2), 16), parseInt(hex.slice(2, 4), 16), parseInt(hex.slice(4, 6), 16)];
-}
-
-let playing = true, speed = 1, simTime = 0, lastWall = null, scrubbing = false;
+let playing = true, speed = 1, simTime = 0, lastWall = null;
 function setPlaying(p) {
   playing = p;
   playIcon.style.display = p ? "none" : "block";
   pauseIcon.style.display = p ? "block" : "none";
-  lastWall = null;
 }
 playBtn.addEventListener("click", () => setPlaying(!playing));
-
+scrub.addEventListener("input", () => { simTime = (scrub.value / 1000) * REAL_DURATION; render(simTime); });
 document.querySelectorAll("#speedRow button").forEach(b => b.addEventListener("click", () => {
   document.querySelectorAll("#speedRow button").forEach(x => x.classList.remove("active"));
   b.classList.add("active"); speed = parseFloat(b.dataset.speed);
 }));
-document.querySelectorAll("#camRow button").forEach(b => b.addEventListener("click", () => {
-  document.querySelectorAll("#camRow button").forEach(x => x.classList.remove("active"));
-  b.classList.add("active"); AZ = parseFloat(b.dataset.az) * Math.PI / 180;
-  render(simTime);
-}));
 
-scrub.addEventListener("pointerdown", () => { scrubbing = true; setPlaying(false); });
-scrub.addEventListener("pointerup", () => { scrubbing = false; });
-scrub.addEventListener("input", () => { simTime = (scrub.value / 1000) * DURATION; render(simTime); });
-
-function tick(now) {
-  if (lastWall === null) lastWall = now;
-  const dt = (now - lastWall) / 1000;
-  lastWall = now;
-  if (playing && !scrubbing) {
+function loop(ts) {
+  if (lastWall === null) lastWall = ts;
+  const dt = Math.min(0.05, (ts - lastWall) / 1000);
+  lastWall = ts;
+  if (playing) {
     simTime += dt * speed;
-    if (simTime > DURATION) simTime -= DURATION;
-    scrub.value = Math.round((simTime / DURATION) * 1000);
+    if (simTime > REAL_DURATION) simTime = 0;
+    scrub.value = Math.round((simTime / REAL_DURATION) * 1000);
   }
   render(simTime);
-  requestAnimationFrame(tick);
+  requestAnimationFrame(loop);
 }
-requestAnimationFrame(tick);
+requestAnimationFrame(loop);
+
+// render() est desormais scope a main() (voir preloadMaterialTextures())
+// -- expose une reference pour l'inspection/le scrub manuel (captures de
+// verification via Playwright), meme role que l'ancien acces global
+// implicite avant ce scope.
+window.__render = render;
+window.__setPlaying = setPlaying;
+window.__setSimTime = (t) => { simTime = t; };
+
+}
+main();
 </script>
