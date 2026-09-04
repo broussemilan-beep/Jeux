@@ -758,6 +758,35 @@ pose touchée, seulement la caméra). Capture :
 Même rig R6 vérifié (dépôt Adonis, licence MIT) que les autres
 prototypes de ce dossier — voir `rig/PROVENANCE.md`.
 
+## Le poing grimpait du bas vers le haut pendant toute la charge
+
+Retour utilisateur, immédiatement après le recadrage caméra ci-dessus :
+« tu fais partir le coup d'en bas pour le monter en haut... il faut que
+le buste tourne, la jambe se plie, et que le bras — pas que le poignet —
+[reste tenu, ne] parte [pas] du bas ». Vérifié par **trace 3D** de la
+trajectoire réelle du poing (`anim_engine.sample` à haute résolution,
+pas à l'oeil) : juste — le poing montait de Y=2,25 stud (garde, proche
+de la hanche) à Y=3,09 stud (COIL, hauteur d'épaule) de façon CONTINUE
+sur toute la durée de la charge (1,25 s). `WINDUP_RIGHT_ARM` restait
+proche de la garde relâchée (X=-30, contre X=22 pour `_READY_ARMS`) et
+ne rejoignait la hauteur du `COIL` (X=-95) que progressivement via
+`CHARGE_A`/`CHARGE_B` — un vrai bras qui se lève lentement, pas un poing
+déjà armé.
+
+Corrigé en rapprochant `WINDUP_RIGHT_ARM` de `COIL_RIGHT_ARM` dès
+l'entrée en charge (X=-78, au lieu de -30) : le bras "saute" dans sa
+position armée dès `WINDUP_T` (0,4 s après la garde — un armement net,
+pas une dérive), puis `CHARGE_A`/`CHARGE_B` ne font plus qu'osciller
+("respirer") à proximité de cette hauteur déjà haute plutôt que de
+continuer à grimper. Retracé après coup : le poing reste maintenant
+stable entre Y=2,93 et Y=3,09 stud sur toute la durée de la charge
+(contre une ascension continue de 2,25 à 3,09 avant) — c'est désormais
+le buste (torsion) et les jambes qui portent la lecture visible de
+"charge qui monte en tension", pas le bras. `calibrate.py` reconfirme
+l'écart de contact inchangé (0,366 stud) : seules les poses AVANT
+`COIL_T` ont changé. Capture :
+`2026-09-04-directional-punch-charge-height-fix.png`.
+
 ## Commandes
 
 ```bash

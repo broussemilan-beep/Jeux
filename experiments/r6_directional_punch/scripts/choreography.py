@@ -122,9 +122,32 @@ COIL_ROOT_Y = 2.82          # plie "légèrement", pas un accroupissement profon
 # corrige avant ce passage-ci -- X negatif = arriere, meme convention que
 # partout ailleurs). Le 2e bras (Left Arm) se PLACE en garde devant le
 # buste pendant la charge.
+#
+# RETIME (retour utilisateur : "tu fais partir le coup d'en bas pour le
+# monter en haut... il faut que le buste tourne, la jambe se plie, [pas
+# juste le poignet qui] parte du bas") -- trouve par TRACE 3D de la
+# trajectoire reelle du poing (calibrate.py + anim_engine.sample a haute
+# resolution, pas suppose a l'oeil) : l'ancien WINDUP_RIGHT_ARM=(-30,...)
+# etait encore tres proche de la garde basse (_READY_ARMS, X=22, poing
+# pres de la hanche -- une position debout relachee, normale pour la
+# garde neutre). Le poing grimpait alors PROGRESSIVEMENT de cette
+# hauteur basse jusqu'a la hauteur d'epaule sur toute la duree de la
+# charge (WINDUP_T -> COIL_T, 1,25s) -- mesure : Y monde 2,25 stud a
+# t=0.00 -> 3,09 stud a COIL_T, une veritable ascension continue, pas
+# un armement tenu. Corrige en rapprochant WINDUP_RIGHT_ARM de
+# COIL_RIGHT_ARM des l'entree en charge (X=-78 au lieu de -30) : le bras
+# "saute" dans sa position armee, haute et vers l'arriere, DES
+# WINDUP_T (0,35s apres la garde, un armement net plutot qu'une derive
+# lente) -- puis CHARGE_A/CHARGE_B ne font plus qu'osciller ("respirer")
+# AUTOUR de cette hauteur deja haute, au lieu de continuer a grimper.
+# C'est desormais le BUSTE (torsion Y, deja dominante) et les JAMBES qui
+# portent la lecture visible de "charge qui monte en tension" pendant
+# les 1,25s de la charge -- le bras, lui, reste a une hauteur stable des
+# le debut, comme un vrai poing charge et tenu, pas un bras qui se leve
+# lentement.
 WINDUP_TORSO = (6, -10, 2)
 WINDUP_HEAD = (5, -8, 0)
-WINDUP_RIGHT_ARM = (-30, 0, -10)
+WINDUP_RIGHT_ARM = (-78, 0, -16)
 WINDUP_LEFT_ARM = (35, 0, 25)
 WINDUP_LEGS = {"Right Leg": (10, 0, 10), "Left Leg": (12, 0, -8)}
 
@@ -133,16 +156,19 @@ WINDUP_LEGS = {"Right Leg": (10, 0, 10), "Left Leg": (12, 0, -8)}
 # comme une pause plutot qu'un effort soutenu) : leger va-et-vient du
 # buste/bras, resserrement progressif jusqu'au coil final juste avant le
 # lacher. Meme principe que le balancement "l'energie qui respire" de
-# r6_divine_orb, applique ici au poing plutot qu'a une boule.
+# r6_divine_orb, applique ici au poing plutot qu'a une boule. Bras droit
+# desormais un va-et-vient ETROIT (-85/-80, autour de la meme hauteur
+# haute que WINDUP/COIL) plutot qu'un aller-retour large qui reintroduit
+# une montee/descente.
 CHARGE_A_TORSO = (10, -22, 3)
 CHARGE_A_HEAD = (8, -14, 0)
-CHARGE_A_RIGHT_ARM = (-58, 0, -14)
+CHARGE_A_RIGHT_ARM = (-85, 0, -17)
 CHARGE_A_LEFT_ARM = (48, 0, 38)
 CHARGE_A_LEGS = {"Right Leg": (16, 0, 13), "Left Leg": (18, 0, -10)}
 
 CHARGE_B_TORSO = (8, -18, 2)
 CHARGE_B_HEAD = (7, -12, 0)
-CHARGE_B_RIGHT_ARM = (-50, 0, -12)
+CHARGE_B_RIGHT_ARM = (-80, 0, -16)
 CHARGE_B_LEFT_ARM = (44, 0, 34)
 CHARGE_B_LEGS = {"Right Leg": (13, 0, 12), "Left Leg": (15, 0, -9)}
 
