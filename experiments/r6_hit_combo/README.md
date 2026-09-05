@@ -227,19 +227,67 @@ déjà établie :
    déjà voulu entre les trois coups plutôt qu'une simple progression
    linéaire 2/3/6 → 2/3/8.
 
+## Passe « jeu de jambes » (retour utilisateur, troisième itération)
+
+Retour : « Il te manque une corde à ton arc le jeux du coup et des jambe
+c trop statique et non chiadé pour l'instant. » Diagnostic : les jambes
+sont enfants du `Torso` dans la hiérarchie du rig (`Torso <- HumanoidRootPart`,
+`Left Leg`/`Right Leg` <- `Torso` — voir `r6_rig.py`), donc elles héritent
+déjà mécaniquement de la torsion du buste ; le vrai problème n'était pas
+l'absence de rotation du buste, mais deux choses qui rendaient les jambes
+elles-mêmes silencieuses :
+
+1. **La racine (hanches) ne bougeait JAMAIS en hauteur** — `root_pos`
+   utilisait `GROUND_Y` constant du début à la fin du combo, alors qu'un
+   vrai coup de poing part des jambes (charge en fléchissant, détente
+   vers le haut/avant au lâcher). Corrigé (`scripts/choreography.py`) :
+   chaque coup **creuse** sous `GROUND_Y` pendant son windup/coil
+   (`JAB_DIP=0,05`, `CROSS_DIP=0,11`, `HOOK_DIP=0,17` — escalade jab <
+   cross < hook, même principe que le reste du projet), puis **remonte**
+   presque entièrement au hip-drive (`GROUND_Y - dip*(1-fraction_corps)`,
+   même fraction que celle déjà utilisée pour interpoler le reste du
+   corps), et retombe **exactement** sur `GROUND_Y` à l'instant précis de
+   l'impact — condition nécessaire pour ne pas décalibrer le contact déjà
+   mesuré (seules les frames *intermédiaires*, jamais l'instant mesuré,
+   changent de hauteur). Un léger rebond vers le haut (+0,05) est aussi
+   ajouté juste après l'impact du hook (le corps continue sur sa lancée
+   plutôt que de retomber platement).
+2. **Les jambes elles-mêmes changeaient à peine de pose entre le coil et
+   le strike** — ex. la jambe avant (`Left Leg`) du cross ne bougeait que
+   de 6° en X entre charge et lâcher, aucun vrai transfert de poids
+   visible. Amplifié pour cross et hook (jab laissé inchangé, coup rapide
+   et léger qui n'a pas besoin d'un gros jeu de jambes) : la jambe qui
+   pousse/pivote (arrière) fait un swing bien plus large, et la jambe qui
+   plante (avant, celle qui reçoit le poids transféré) montre une vraie
+   compression + un léger pivot vers l'extérieur au lieu de rester quasi
+   fixe. Sur le hook en particulier, `Left Leg` (même côté que le bras
+   qui frappe) pivote maintenant de 32° en Z (`-18° → +14°`, contre 6°
+   avant) — un écho direct au grand balayage du bras (`-78° → 91°`), pour
+   vendre l'idée que la hanche/le pied pivotent avec le coup plutôt que
+   le buste seul.
+
+Vérifié : `calibrate.py` réexécuté après ces deux changements — écarts de
+contact **identiques au frame près** (0,493 / 0,366 / 0,393 stud), parce
+que ni la hauteur ni la pose des jambes aux instants d'impact exacts n'ont
+changé, seulement les frames de charge/détente entre les coups. Structure
+toujours OK. Captures avant/après montrant la charge en fléchissant
+(`captures/verification/2026-09-05-hit-combo-footwork-*.png`) et le
+nouveau pivot des jambes au lâcher.
+
 ## Vérification
 
 Environnement : `pip install numpy bpy` (le conteneur ne les avait pas
 préinstallés cette session — packages présents dans le cache pip local,
 réinstallés sans nouveau téléchargement réseau).
 
-- `python3 calibrate.py` : écarts de contact 0,493 / 0,366 / 0,390 stud
+- `python3 calibrate.py` : écarts de contact 0,493 / 0,366 / 0,393 stud
   (jab/cross/hook), structure OK sur les deux rigs, durées égales
   (2,63 s) — réexécuté et confirmé inchangé après la passe « niveau
-  expert » (voir section dédiée ci-dessus).
+  expert » ET après la passe « jeu de jambes » (voir sections dédiées
+  ci-dessus).
 - `python3 run_scene.py` : export des deux `KeyframeSequence`,
   « Structure OK » pour l'attaquant et le mannequin, 80 keyframes chacun.
-- `python3 build_viewer.py` : lecteur final assemblé (892 312 octets, 2
+- `python3 build_viewer.py` : lecteur final assemblé (892 417 octets, 2
   textures embarquées, three.min.js embarqué).
 - Syntaxe JS : extraction du `<script>` et `node --check` — aucune erreur
   (revérifié après l'ajout de `drawImpactSpark`/`drawShockwaveRing`).
