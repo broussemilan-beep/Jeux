@@ -1,0 +1,755 @@
+<title>Combo de coups</title>
+<style>
+:root {
+  --bg: #100d0a; --panel: #1a1611; --panel-2: #201b15; --ink: #ece5d6;
+  --sub: #a89d87; --grid: #332c22; --rig-attacker: #7a2020; --rig-dummy: #6b5a3a;
+  --edge: #0a0806; --ghost: #4a4030; --accent: #d9701f; --gold: #e0a955;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f1ea; --panel: #ffffff; --panel-2: #eee9de; --ink: #241f18;
+    --sub: #6b6255; --grid: #d9d2c2; --rig-attacker: #a13a2c; --rig-dummy: #9c8a63;
+    --edge: #241f18; --ghost: #b8ae98; --accent: #c15a12; --gold: #b3872c;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f4f1ea; --panel: #ffffff; --panel-2: #eee9de; --ink: #241f18;
+  --sub: #6b6255; --grid: #d9d2c2; --rig-attacker: #a13a2c; --rig-dummy: #9c8a63;
+  --edge: #241f18; --ghost: #b8ae98; --accent: #c15a12; --gold: #b3872c;
+}
+body { background: var(--bg); color: var(--ink); font-family: "Iowan Old Style", "Georgia", serif; }
+.stage { max-width: 980px; margin: 0 auto; padding: 28px 20px 48px; }
+.eyebrow { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin: 0 0 6px; font-family: Oswald, sans-serif; }
+h1 { font-size: 30px; margin: 0 0 10px; }
+.sub { color: var(--sub); font-size: 14.5px; line-height: 1.55; max-width: 760px; margin: 0 0 20px; }
+.card { background: var(--panel); border: 1px solid var(--grid); border-radius: 14px; padding: 14px; }
+.viewport-wrap { position: relative; border-radius: 10px; overflow: hidden; background: #000; }
+canvas { display: block; width: 100%; height: auto; }
+#overlay { position: absolute; inset: 0; pointer-events: none; }
+.chip { position: absolute; top: 10px; font-family: Oswald, sans-serif; font-size: 12px; padding: 5px 10px; border-radius: 999px; background: rgba(0,0,0,0.45); color: #fff; letter-spacing: 0.03em; }
+.chip.left { left: 10px; } .chip.right { right: 10px; }
+.controls { padding-top: 12px; display: flex; flex-direction: column; gap: 10px; }
+.transport { display: flex; align-items: center; gap: 12px; }
+.play-btn { width: 40px; height: 40px; border-radius: 50%; border: none; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+.play-btn svg { width: 18px; height: 18px; }
+.scrub-col { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.phase-track { display: flex; height: 6px; border-radius: 4px; overflow: hidden; }
+.phase-seg { height: 100%; }
+.phase-seg[data-kind="calm"] { background: var(--ghost); }
+.phase-seg[data-kind="charge"] { background: var(--gold); }
+.phase-seg[data-kind="impact"] { background: var(--rig-attacker); }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+.row-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+.phase-label { font-family: Oswald, sans-serif; font-size: 13px; color: var(--sub); text-transform: uppercase; letter-spacing: 0.05em; }
+.phase-label b { color: var(--ink); }
+.btn-row { display: flex; gap: 4px; background: var(--panel-2); border-radius: 8px; padding: 3px; }
+.btn-row button { border: none; background: transparent; color: var(--sub); font-family: Oswald, sans-serif; font-size: 12px; padding: 5px 10px; border-radius: 6px; cursor: pointer; }
+.btn-row button.active { background: var(--accent); color: #fff; }
+.note { color: var(--sub); font-size: 13px; line-height: 1.6; max-width: 780px; margin-top: 16px; }
+.note strong { color: var(--ink); }
+</style>
+
+<div class="stage">
+  <p class="eyebrow">Prototype isolé · Roblox R6 · deux KeyframeSequence + mise en scène caméra · rendu WebGL</p>
+  <h1>Combo — jab, cross, hook</h1>
+  <p class="sub">Deux rigs R6 réels (6 segments rigides chacun, aucun coude/genou) : l'attaquant enchaîne trois coups
+    sans temps mort (jab gauche → cross droit → hook gauche, chacun retenu du retour du précédent) sur un mannequin
+    qui encaisse avec une intensité croissante, jusqu'à la projection finale. Contrairement au prototype précédent
+    (un seul coup, coupes caméra serrées et nombreuses), la caméra ici reste <strong>large et stable</strong> — un
+    seul plan continu qui montre la scène dans son entièreté du début à la fin, pas une succession de gros plans —
+    avec juste un sursaut (zoom optique + secousse) sur chaque impact pour le ponctuer sans jamais couper ailleurs.
+    Les poses des deux personnages sont <strong>résolues par l'équation du moteur</strong>
+    (<code>Part1 = Part0 · C0 · Transform · C1⁻¹</code>) à partir des deux <code>KeyframeSequence</code> livrés.</p>
+
+  <div class="card">
+    <div class="viewport-wrap">
+      <canvas id="stage" width="1200" height="900"></canvas>
+      <canvas id="overlay" width="1200" height="900"></canvas>
+      <div class="chip left" id="shotChip">plan · <b id="shotName">large</b></div>
+      <div class="chip right" id="timecode">0.00s / 2.90s</div>
+    </div>
+
+    <div class="controls">
+      <div class="transport">
+        <button class="play-btn" id="playBtn" aria-label="Lecture / pause">
+          <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M8 5v14l11-7z"/></svg>
+          <svg id="pauseIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+        </button>
+        <div class="scrub-col">
+          <div class="phase-track" id="phaseTrack"></div>
+          <input type="range" id="scrub" min="0" max="1000" value="0" step="1" aria-label="Position dans la scène">
+        </div>
+      </div>
+      <div class="row-bottom">
+        <div class="phase-label">phase <b id="phaseName2">garde</b></div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap">
+          <div class="btn-row" id="speedRow">
+            <button data-speed="0.25">0.25×</button>
+            <button data-speed="0.5">0.5×</button>
+            <button data-speed="1" class="active">1×</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="note"><strong>Un combo, pas trois coups collés bout à bout</strong> : contrairement au direct du droit
+    (une longue charge de ~1,25s avant un seul coup), ici chaque RETOUR de bras sert d'AMORCE au coup suivant — le
+    buste repart directement dans l'autre sens (torsion positive/négative en alternance à chaque coup) sans jamais
+    revenir à une pose neutre entre deux frappes. Retour utilisateur explicite : « encore plus fluide, je veux pas
+    du saccadé du chelou » — chacun des 3 coups reprend quand même la leçon apprise sur le direct du droit (voir son
+    README) : le lâcher (chaîne cinétique buste/jambes → snap du bras) tient en <strong>une seule frame de sortie
+    (1/30s)</strong>, jamais 3-5 frames intermédiaires (l'effet "pale de moulin" identifié comme LA cause d'un coup
+    qui ne "claque" pas sur un bras sans coude). Vérifié par <code>calibrate.py</code> : écart de contact 0,49 stud
+    (jab), 0,37 stud (cross), 0,39 stud (hook) — dans la même fourchette que le direct du droit calibré (0,37 stud),
+    mesuré, pas supposé.</p>
+  <p class="note"><strong>Le hook n'est pas un coup droit</strong> : contrairement au jab/cross (extension X, tout
+    droit), le hook balaye LATÉRALEMENT — le bras charge grand vers l'extérieur (Z très négatif pour le bras gauche)
+    puis balaye vers l'intérieur en frappant (Z positif à l'impact), porté par la plus grande rotation de buste du
+    combo. C'est cet arc, pas une simple extension, qui le distingue visuellement des deux premiers coups.</p>
+  <p class="note"><strong>Caméra large et stable, sur demande explicite</strong> (« fais caméra de loin qui montre
+    la scène en entièreté ») : un seul plan quasi fixe, vu de profil (l'attaquant avance le long de l'axe Z sur
+    toute la durée du combo — le voir de côté, pas de face, évite le raccourci de perspective qui écraserait cette
+    avancée), assez large pour cadrer tout le trajet (garde → 3 coups → mannequin projeté) sans qu'aucun des deux
+    personnages ne sorte du cadre. Seuls des sursauts ponctuels (zoom optique bref + secousse, amplitude croissante
+    jab→cross→hook) marquent chaque impact SANS jamais couper vers un autre cadrage — la caméra ne quitte pas ce
+    plan de toute la scène.</p>
+  <p class="note"><strong>VFX texturés, inspirés des références envoyées</strong> (jeu de combat Roblox, moves
+    "Black Flash"/"Rewind Clock"/"Stagnant Rage", analysés frame par frame) : lueur sur le poing pendant la charge
+    (pas de déformation de membre, confirmé absent des 3 références), smear/traînée + étirement du bras UNIQUEMENT
+    pendant l'avancée de chaque coup (jamais le recul, correction directement issue de cette analyse), flash +
+    traits de vitesse + éclats au contact, intensité et durée du gel d'impact croissantes à chaque coup (2 frames au
+    jab, 3 au cross, 6 au hook — le hook est le finisher).</p>
+  <p class="note"><strong>Rig des deux personnages</strong> : même rig R6 vérifié (dépôt Adonis, licence MIT) que
+    les autres prototypes de ce dossier — voir <code>rig/PROVENANCE.md</code>.</p>
+  <p class="note"><strong>Mise en scène du lecteur, pas le fichier</strong> : le décor (sol, mur en ruine) est
+    dessiné par ce lecteur à partir de vraies textures générées (<code>scripts/gen_textures.py</code>, seamless par
+    construction), mais n'existe dans aucun des deux fichiers livrés — ce sont deux <code>KeyframeSequence</code> de
+    personnage, pas une <code>Model</code> de décor.</p>
+</div>
+
+<script>__THREE_JS__</script>
+<script>
+const DATA = __SCENE_DATA__;
+const TEXTURES_B64 = __TEXTURES_B64__;
+const LEGS = new Set(["Right Leg", "Left Leg"]);
+
+const glCanvas = document.getElementById("stage");
+const overlay = document.getElementById("overlay");
+const octx = overlay.getContext("2d");
+const scrub = document.getElementById("scrub");
+const playBtn = document.getElementById("playBtn");
+const playIcon = document.getElementById("playIcon");
+const pauseIcon = document.getElementById("pauseIcon");
+const shotNameEl = document.getElementById("shotName");
+const phaseNameEl2 = document.getElementById("phaseName2");
+const timecodeEl = document.getElementById("timecode");
+const phaseTrack = document.getElementById("phaseTrack");
+
+const DURATION = DATA.duration;
+
+// ---------------------------------------------------------------------
+// Config par coup -- fusionne les instants de DATA.hits (windup_t/
+// impact_t, issus de choreography.py) avec des reglages VISUELS propres
+// au lecteur (bras concerne, intensite VFX, duree de hitstop) : ESCALADE
+// deliberee jab -> cross -> hook, le hook (finisher) reçoit le plus gros
+// de tout (gel le plus long, VFX les plus denses, couleur distincte).
+const HIT_STYLE = {
+  jab:   { arm: "Left Arm",  hitstopDur: 2 / 30, stretchPeak: 0.22, impactPeak: 0.16,
+           debrisN: 6,  linesN: 16, flashAlpha: 0.50, shakeAmp: 0.045, shakeDur: 0.10, glow: "255,150,60" },
+  cross: { arm: "Right Arm", hitstopDur: 3 / 30, stretchPeak: 0.45, impactPeak: 0.30,
+           debrisN: 12, linesN: 30, flashAlpha: 0.78, shakeAmp: 0.085, shakeDur: 0.15, glow: "255,150,60" },
+  hook:  { arm: "Left Arm",  hitstopDur: 6 / 30, stretchPeak: 0.65, impactPeak: 0.42,
+           debrisN: 20, linesN: 44, flashAlpha: 1.00, shakeAmp: 0.16,  shakeDur: 0.22, glow: "255,90,190" },
+};
+const HITS = DATA.hits.map(h => ({ ...h, ...HIT_STYLE[h.name] }));
+const HIT_BY_NAME = Object.fromEntries(HITS.map(h => [h.name, h]));
+
+// Hitstop CUMULATIF -- generalisation du mecanisme a un seul coup du
+// direct du droit (poseTime()) a une SEQUENCE de coups : chaque coup gele
+// la pose pendant sa propre duree, et tout ce qui suit est decale par la
+// SOMME des gels deja ecoules. Meme principe (temps REEL affiche/scrube
+// vs temps de POSE effectif utilise pour echantillonner les rigs et la
+// camera), juste applique en boucle plutot qu'une seule fois.
+function poseTime(tReal) {
+  let shift = 0;
+  for (const h of HITS) {
+    const realImpact = h.impact_t + shift;
+    if (tReal < realImpact) return tReal - shift;
+    if (tReal < realImpact + h.hitstopDur) return h.impact_t;
+    shift += h.hitstopDur;
+  }
+  return tReal - shift;
+}
+const TOTAL_HITSTOP = HITS.reduce((s, h) => s + h.hitstopDur, 0);
+const REAL_DURATION = DURATION + TOTAL_HITSTOP;
+
+// Instants de CHAQUE impact en temps REEL (apres decalage cumulatif des
+// gels precedents) -- utilise pour synchroniser VFX/camera sur le temps
+// reel affiche, pas le temps de pose.
+let _shiftAcc = 0;
+for (const h of HITS) {
+  h.real_impact_t = h.impact_t + _shiftAcc;
+  _shiftAcc += h.hitstopDur;
+}
+
+const PHASE_KIND = { garde: "calm", jab: "charge", cross: "charge", hook: "charge",
+  jab_impact: "impact", cross_impact: "impact", hook_impact: "impact", posture_finale: "calm" };
+const PHASES = [
+  { name: "garde", t0: 0, t1: HITS[0].windup_t },
+  { name: "jab", t0: HITS[0].windup_t, t1: HITS[0].real_impact_t },
+  { name: "jab_impact", t0: HITS[0].real_impact_t, t1: HITS[0].real_impact_t + HITS[0].hitstopDur + 0.1 },
+  { name: "cross", t0: HITS[0].real_impact_t + HITS[0].hitstopDur + 0.1, t1: HITS[1].real_impact_t },
+  { name: "cross_impact", t0: HITS[1].real_impact_t, t1: HITS[1].real_impact_t + HITS[1].hitstopDur + 0.1 },
+  { name: "hook", t0: HITS[1].real_impact_t + HITS[1].hitstopDur + 0.1, t1: HITS[2].real_impact_t },
+  { name: "hook_impact", t0: HITS[2].real_impact_t, t1: HITS[2].real_impact_t + HITS[2].hitstopDur + 0.45 },
+  { name: "posture_finale", t0: HITS[2].real_impact_t + HITS[2].hitstopDur + 0.45, t1: REAL_DURATION },
+];
+
+function rebuildPhaseTrack() {
+  phaseTrack.innerHTML = "";
+  PHASES.forEach(p => {
+    const seg = document.createElement("div");
+    seg.className = "phase-seg";
+    seg.dataset.kind = PHASE_KIND[p.name] || "calm";
+    seg.style.width = (Math.max(0, p.t1 - p.t0) / REAL_DURATION * 100) + "%";
+    phaseTrack.appendChild(seg);
+  });
+}
+rebuildPhaseTrack();
+
+function currentPhase(t) {
+  for (const p of PHASES) if (t >= p.t0 - 1e-6 && t <= p.t1 + 1e-6) return p;
+  return PHASES[PHASES.length - 1];
+}
+
+// ---------------------------------------------------------------------
+// Camera -- retour utilisateur explicite : "fais camera de loin qui
+// montre la scene en entierete", en reaction directe aux six plans
+// serres/coupes frequentes du direct du droit. UN SEUL plan ici, quasi
+// fixe, vu de PROFIL (az proche de -90 : l'attaquant avance le long de
+// l'axe Z pendant tout le combo -- le voir de face aurait ecrase cette
+// avancee en raccourci de perspective, la voir de profil la lit comme un
+// vrai deplacement lateral a l'ecran). Cible et distance choisies pour
+// couvrir tout le trajet mesure (attaquant de Z=-1.2 a ~-7, mannequin de
+// Z=-6.6 a ~-9.6 -- voir calibrate.py) sans qu'aucun des deux ne sorte du
+// cadre, du debut a la fin.
+const CAM_AZ0 = -78, CAM_AZ1 = -82;   // derive tres legere, vie cinematique sans jamais couper
+const CAM_EL = 13;
+const CAM_TY = 4.3, CAM_TZ = -5.4;    // cible = milieu approximatif du trajet complet
+const CAM_SCALE = 0.92;               // voir BASE_DIST plus bas -- couvre ~15 studs de champ
+const BASE_DIST = 15.0;
+const MIN_DIST = 4.0;
+const MIN_SUBJECT_DIST = 6.0;
+
+function cameraDir(az, el) {
+  return new THREE.Vector3(
+    Math.sin(az) * Math.cos(el),
+    Math.sin(el),
+    Math.cos(az) * Math.cos(el),
+  );
+}
+
+// Derive lente de l'azimut sur toute la duree -- pas un plan fige a l'oeil
+// mort, juste assez de mouvement pour lire comme une camera tenue plutot
+// que verrouillee, sans jamais s'approcher d'une coupe.
+function baseCameraAngles(t) {
+  const f = Math.max(0, Math.min(1, t / REAL_DURATION));
+  const az = (CAM_AZ0 + (CAM_AZ1 - CAM_AZ0) * f) * Math.PI / 180;
+  return { az, el: CAM_EL * Math.PI / 180 };
+}
+
+// Sursaut par impact -- zoom optique bref (FOV) + secousse, AMPLITUDE
+// CROISSANTE jab->cross->hook (voir HIT_STYLE.shakeAmp) : ponctue chaque
+// coup sans jamais deplacer la cible ni couper vers un autre cadrage --
+// le plan large reste le meme plan du debut a la fin.
+const FOV_BASE = 42;
+function fovAt(t) {
+  let fov = FOV_BASE;
+  for (const h of HITS) {
+    const age = t - h.real_impact_t;
+    const dur = h.shakeDur + 0.06;
+    if (age < 0 || age > dur) continue;
+    const drop = 7 * (1 + h.shakeAmp * 3);
+    if (age < 0.035) {
+      fov = FOV_BASE - drop * (age / 0.035);
+    } else {
+      const rel = Math.min(1, (age - 0.035) / (dur - 0.035));
+      fov = FOV_BASE - drop * (1 - rel);
+    }
+  }
+  return fov;
+}
+function shakeOffset(t) {
+  let x = 0, y = 0, z = 0;
+  for (const h of HITS) {
+    const age = t - h.real_impact_t;
+    if (age < 0 || age > h.shakeDur) continue;
+    const decay = 1 - age / h.shakeDur;
+    const amp = h.shakeAmp;
+    x += Math.sin(age * 140) * amp * decay;
+    y += Math.sin(age * 97 + 1.4) * amp * 0.7 * decay;
+    z += Math.sin(age * 121 + 0.6) * amp * 0.6 * decay;
+  }
+  return { x, y, z };
+}
+
+// ---------------------------------------------------------------------
+// Scene Three.js -- meme structure que r6_directional_punch (dome de
+// ciel, lumiere directionnelle + remplissage hemispherique, sol/mur
+// textures, personnages en BoxGeometry par segment).
+const renderer = new THREE.WebGLRenderer({ canvas: glCanvas, antialias: true });
+renderer.setSize(1200, 900, false);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+if (renderer.outputColorSpace !== undefined) renderer.outputColorSpace = THREE.SRGBColorSpace;
+if (renderer.physicallyCorrectLights !== undefined) renderer.physicallyCorrectLights = true;
+if (renderer.toneMapping !== undefined) { renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05; }
+
+const scene = new THREE.Scene();
+const HORIZON_COLOR = 0x3a2818, ZENITH_COLOR = 0x171009;
+scene.background = new THREE.Color(ZENITH_COLOR);
+scene.fog = new THREE.Fog(HORIZON_COLOR, 12, 42);
+
+const camera = new THREE.PerspectiveCamera(42, 1200 / 900, 0.1, 200);
+
+function buildSkyDome() {
+  const geo = new THREE.SphereGeometry(150, 24, 16);
+  const pos = geo.attributes.position;
+  const colors = new Float32Array(pos.count * 3);
+  const horizon = new THREE.Color(HORIZON_COLOR), zenith = new THREE.Color(ZENITH_COLOR);
+  const tmp = new THREE.Color();
+  for (let i = 0; i < pos.count; i++) {
+    const y = pos.getY(i) / 150;
+    const f = Math.max(0, Math.min(1, (y + 0.05) * 1.15));
+    tmp.copy(horizon).lerp(zenith, f);
+    colors[i * 3] = tmp.r; colors[i * 3 + 1] = tmp.g; colors[i * 3 + 2] = tmp.b;
+  }
+  geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+  const mat = new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide, fog: false, depthWrite: false });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.renderOrder = -10;
+  return mesh;
+}
+scene.add(buildSkyDome());
+
+const keyLight = new THREE.DirectionalLight(0xffd9a8, 2.6);
+keyLight.position.set(-4, 10, 5);
+keyLight.castShadow = true;
+keyLight.shadow.mapSize.set(2048, 2048);
+keyLight.shadow.camera.left = -12; keyLight.shadow.camera.right = 12;
+keyLight.shadow.camera.top = 10; keyLight.shadow.camera.bottom = -12;
+keyLight.shadow.camera.near = 1; keyLight.shadow.camera.far = 32;
+keyLight.shadow.bias = -0.0015;
+scene.add(keyLight);
+scene.add(keyLight.target);
+keyLight.target.position.set(0, 2, -5);
+
+const fillLight = new THREE.HemisphereLight(0x6a5a46, 0x1a1410, 0.65);
+scene.add(fillLight);
+
+const rimLight = new THREE.DirectionalLight(0xff8a3c, 0.55);
+rimLight.position.set(4, 4, -12);
+scene.add(rimLight);
+
+const texLoader = new THREE.TextureLoader();
+function loadTex(name, repeatX, repeatY) {
+  const tex = texLoader.load("data:image/png;base64," + TEXTURES_B64[name]);
+  tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(repeatX, repeatY);
+  if (tex.colorSpace !== undefined) tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+const groundTex = loadTex("stone_ground", 20, 20);
+const groundMat = new THREE.MeshStandardMaterial({ map: groundTex, roughness: 0.92, metalness: 0.02 });
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(70, 70), groundMat);
+ground.rotation.x = -Math.PI / 2;
+ground.position.set(0, 0, -7);
+ground.receiveShadow = true;
+scene.add(ground);
+
+const wallTex = loadTex("ruin_wall", 12, 2.2);
+const wallMat = new THREE.MeshStandardMaterial({ map: wallTex, roughness: 0.97, metalness: 0.0 });
+const wall = new THREE.Mesh(new THREE.PlaneGeometry(48, 9), wallMat);
+wall.position.set(0, 4.4, -16.5);
+wall.receiveShadow = true;
+scene.add(wall);
+
+function rgbToThreeColor(rgbArr) {
+  return new THREE.Color(rgbArr[0] / 255, rgbArr[1] / 255, rgbArr[2] / 255);
+}
+function hexToRgb(hex) {
+  hex = hex.replace("#", "").trim();
+  const n = parseInt(hex, 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+function buildRigMeshes(rgb, roughness) {
+  const meshes = {};
+  for (const part of DATA.part_order) {
+    if (part === "HumanoidRootPart") continue;
+    const size = DATA.part_sizes[part];
+    const color = LEGS.has(part) ? rgb.clone().multiplyScalar(0.72) : rgb;
+    const mat = new THREE.MeshStandardMaterial({ color, roughness, metalness: 0.06 });
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(size[0], size[1], size[2]), mat);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    scene.add(mesh);
+    meshes[part] = mesh;
+  }
+  return meshes;
+}
+
+const attackerMeshes = buildRigMeshes(rgbToThreeColor(hexToRgb(cssVar("--rig-attacker"))), 0.55);
+const dummyMeshes = buildRigMeshes(rgbToThreeColor(hexToRgb(cssVar("--rig-dummy"))), 0.72);
+
+const _m4 = new THREE.Matrix4();
+function applyPoseToMesh(mesh, p, r) {
+  mesh.position.set(p[0], p[1], p[2]);
+  _m4.set(
+    r[0], r[1], r[2], 0,
+    r[3], r[4], r[5], 0,
+    r[6], r[7], r[8], 0,
+    0, 0, 0, 1,
+  );
+  mesh.quaternion.setFromRotationMatrix(_m4);
+}
+
+function frameAt(frames, t) {
+  const dt = 1 / DATA.fps;
+  const idx = Math.max(0, Math.min(frames.length - 2, Math.floor(t / dt)));
+  const f0 = frames[idx], f1 = frames[idx + 1];
+  const frac = Math.max(0, Math.min(1, (t - f0.t) / (f1.t - f0.t || 1)));
+  return { f0, f1, frac };
+}
+function slerpish(a, b, f) {
+  const m = a.map((v, i) => v + (b[i] - v) * f);
+  const c0 = [m[0], m[3], m[6]], c1 = [m[1], m[4], m[7]];
+  const n0 = Math.hypot(c0[0], c0[1], c0[2]) || 1;
+  const e0 = c0.map(v => v / n0);
+  const d = e0[0]*c1[0] + e0[1]*c1[1] + e0[2]*c1[2];
+  let e1 = c1.map((v, i) => v - d * e0[i]);
+  const n1 = Math.hypot(e1[0], e1[1], e1[2]) || 1;
+  e1 = e1.map(v => v / n1);
+  const e2 = [e0[1]*e1[2]-e0[2]*e1[1], e0[2]*e1[0]-e0[0]*e1[2], e0[0]*e1[1]-e0[1]*e1[0]];
+  return [e0[0], e1[0], e2[0], e0[1], e1[1], e2[1], e0[2], e1[2], e2[2]];
+}
+function sampleChar(frames, t) {
+  const { f0, f1, frac } = frameAt(frames, t);
+  const out = {};
+  for (const part of DATA.part_order) {
+    const a = f0[part], b = f1[part];
+    out[part] = { p: a.p.map((v, i) => v + (b.p[i] - v) * frac), r: slerpish(a.r, b.r, frac) };
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------------
+// VFX en surimpression (canvas 2D transparent empile sur le WebGL).
+const _projV = new THREE.Vector3();
+function worldToScreen(x, y, z) {
+  _projV.set(x, y, z).project(camera);
+  return {
+    x: (_projV.x * 0.5 + 0.5) * overlay.width,
+    y: (1 - (_projV.y * 0.5 + 0.5)) * overlay.height,
+  };
+}
+
+// Lueur de charge sur le poing qui frappe -- meme technique que le
+// direct du droit, mais SANS deformation du bras (voir smear plus bas) :
+// les 3 references (Black Flash/Rewind Clock/Stagnant Rage, analysees
+// frame par frame) ne montrent JAMAIS un membre qui s'etire pendant la
+// charge, seulement un VFX statique (lueur, anneau, rune) -- c'est cette
+// lueur-la, generalisee aux 3 coups avec une couleur par coup.
+function drawFistCharge(t, hit, fistScreen) {
+  if (t < hit.windup_t || t >= hit.impact_t) return;
+  const f = Math.min(1, (t - hit.windup_t) / Math.max(1e-6, hit.impact_t - hit.windup_t));
+  const pulseHz = 2.5 + f * 4.0;
+  const pulse = 0.75 + 0.25 * Math.sin(t * pulseHz * Math.PI * 2);
+  const intensity = f * pulse;
+  const r = (12 + f * 18) * pulse;
+  octx.save();
+  octx.globalCompositeOperation = "lighter";
+  const halo = octx.createRadialGradient(fistScreen.x, fistScreen.y, 0, fistScreen.x, fistScreen.y, r * 2.2);
+  halo.addColorStop(0, `rgba(${hit.glow},${0.5 * intensity})`);
+  halo.addColorStop(1, `rgba(${hit.glow},0)`);
+  octx.fillStyle = halo;
+  octx.beginPath(); octx.arc(fistScreen.x, fistScreen.y, r * 2.2, 0, Math.PI * 2); octx.fill();
+  const core = octx.createRadialGradient(fistScreen.x, fistScreen.y, 0, fistScreen.x, fistScreen.y, r * 0.6);
+  core.addColorStop(0, `rgba(255,240,220,${0.8 * intensity})`);
+  core.addColorStop(1, `rgba(${hit.glow},${0.4 * intensity})`);
+  octx.fillStyle = core;
+  octx.beginPath(); octx.arc(fistScreen.x, fistScreen.y, r * 0.6, 0, Math.PI * 2); octx.fill();
+  octx.restore();
+}
+
+// Smear epaule->poing + trainee -- UNIQUEMENT pendant l'AVANCEE de
+// chaque coup (windup_t -> impact_t), jamais le recul : correction
+// directement issue de l'analyse des 3 videos de reference envoyees
+// ("l'etirement doit etre sur l'avance, pas le recul"). Meme mecanisme
+// que le direct du droit, generalise a un bras/une fenetre par coup.
+function shoulderWorld(torsoPose, isLeft) {
+  const r = torsoPose.r, p = torsoPose.p;
+  const lx = isLeft ? -0.9 : 0.9, ly = 0.6, lz = 0.0;
+  return [
+    p[0] + r[0] * lx + r[1] * ly + r[2] * lz,
+    p[1] + r[3] * lx + r[4] * ly + r[5] * lz,
+    p[2] + r[6] * lx + r[7] * ly + r[8] * lz,
+  ];
+}
+function drawArmSmear(t, hit, attPoseNow) {
+  const lookback = 0.07;
+  if (t < hit.windup_t || t > hit.impact_t + 0.02) return;
+  const f = Math.min(1, (t - hit.windup_t) / Math.max(1e-6, hit.impact_t - hit.windup_t));
+  const envelope = Math.min(1, f * 2.2);
+  if (envelope <= 0.02) return;
+
+  const prevT = Math.max(hit.windup_t, t - lookback);
+  const prevPose = sampleChar(DATA.attacker_frames, prevT);
+  const isLeft = hit.arm === "Left Arm";
+  const shoulderNow = shoulderWorld(attPoseNow["Torso"], isLeft);
+  const fistNow = attPoseNow[hit.arm].p;
+  const fistPrev = prevPose[hit.arm].p;
+
+  const s0 = worldToScreen(shoulderNow[0], shoulderNow[1], shoulderNow[2]);
+  const s1 = worldToScreen(fistNow[0], fistNow[1], fistNow[2]);
+  const sPrev = worldToScreen(fistPrev[0], fistPrev[1], fistPrev[2]);
+
+  octx.save();
+  octx.globalCompositeOperation = "lighter";
+  const dx = s1.x - s0.x, dy = s1.y - s0.y;
+  const len = Math.hypot(dx, dy) || 1;
+  const nx = -dy / len, ny = dx / len;
+  const width = 22 * envelope;
+  octx.fillStyle = `rgba(255,225,190,${0.26 * envelope})`;
+  octx.beginPath();
+  octx.moveTo(s0.x, s0.y);
+  octx.lineTo(s1.x + nx * width, s1.y + ny * width);
+  octx.lineTo(s1.x - nx * width, s1.y - ny * width);
+  octx.closePath();
+  octx.fill();
+
+  const tdx = s1.x - sPrev.x, tdy = s1.y - sPrev.y;
+  const tlen = Math.hypot(tdx, tdy) || 1;
+  const tnx = -tdy / tlen, tny = tdx / tlen;
+  const tw = 9 * envelope;
+  const trailGrad = octx.createLinearGradient(sPrev.x, sPrev.y, s1.x, s1.y);
+  trailGrad.addColorStop(0, "rgba(255,255,255,0)");
+  trailGrad.addColorStop(1, `rgba(255,255,255,${0.5 * envelope})`);
+  octx.fillStyle = trailGrad;
+  octx.beginPath();
+  octx.moveTo(sPrev.x + tnx * tw * 0.15, sPrev.y + tny * tw * 0.15);
+  octx.lineTo(s1.x + tnx * tw, s1.y + tny * tw);
+  octx.lineTo(s1.x - tnx * tw, s1.y - tny * tw);
+  octx.lineTo(sPrev.x - tnx * tw * 0.15, sPrev.y - tny * tw * 0.15);
+  octx.closePath();
+  octx.fill();
+  octx.restore();
+}
+
+// Flash + traits de vitesse au contact -- meme langage manga que le
+// direct du droit, densite/duree croissantes par coup (voir HIT_STYLE).
+function drawImpactFrame(t, hit, contactScreen) {
+  const age = t - hit.real_impact_t;
+  const linesDur = 0.10 + hit.shakeAmp * 0.4;
+  if (age < 0 || age >= linesDur) return;
+  const flashDur = 0.03 + hit.flashAlpha * 0.02;
+  if (age < flashDur) {
+    octx.save();
+    octx.globalAlpha = hit.flashAlpha * Math.max(0, 1 - age / flashDur * 0.15);
+    octx.fillStyle = "#f5f0e6";
+    octx.fillRect(0, 0, overlay.width, overlay.height);
+    octx.restore();
+    return;
+  }
+  const f = (age - flashDur) / (linesDur - flashDur);
+  octx.save();
+  octx.fillStyle = "#f5f0e6";
+  octx.globalAlpha = Math.max(0, hit.flashAlpha - f * hit.flashAlpha);
+  octx.fillRect(0, 0, overlay.width, overlay.height);
+  octx.globalAlpha = 1;
+  const cxp = contactScreen.x, cyp = contactScreen.y;
+  const N = hit.linesN;
+  octx.strokeStyle = "#0c0a08";
+  for (let i = 0; i < N; i++) {
+    const ang = (i / N) * Math.PI * 2 + Math.sin(i * 12.9) * 0.12;
+    const jitter = Math.sin(i * 7.3) * 0.5 + 0.5;
+    const len = (180 + jitter * 320) * (1 - f * 0.25);
+    const inner = 20 + jitter * 26;
+    const w = 2.6 + jitter * 7.0 * (1 - f);
+    const x0 = cxp + Math.cos(ang) * inner, y0 = cyp + Math.sin(ang) * inner * 0.85;
+    const x1 = cxp + Math.cos(ang) * (inner + len), y1 = cyp + Math.sin(ang) * (inner + len) * 0.85;
+    octx.lineWidth = w;
+    octx.beginPath(); octx.moveTo(x0, y0); octx.lineTo(x1, y1); octx.stroke();
+  }
+  const rg = octx.createRadialGradient(cxp, cyp, 0, cxp, cyp, 90);
+  rg.addColorStop(0, "rgba(255,250,235,0.85)"); rg.addColorStop(1, "rgba(255,250,235,0)");
+  octx.fillStyle = rg;
+  octx.beginPath(); octx.arc(cxp, cyp, 90, 0, Math.PI * 2); octx.fill();
+  octx.restore();
+}
+
+// Debris balistiques au contact -- deterministe (sin a constantes
+// fixes), densite croissante par coup.
+function drawDebrisBurst(t, hit, contactScreen) {
+  const age = t - hit.real_impact_t;
+  const life = 0.35 + hit.shakeAmp * 1.2;
+  if (age < 0.015 || age >= life) return;
+  octx.save();
+  for (let i = 0; i < hit.debrisN; i++) {
+    const seed = i * 3.71 + 1.3;
+    const ang = (i / hit.debrisN) * Math.PI * 2 + Math.sin(seed) * 0.6 - Math.PI * 0.5;
+    const speed = 180 + 130 * (Math.sin(seed * 1.9) * 0.5 + 0.5);
+    const size = 6 + 8 * (Math.sin(seed * 2.7) * 0.5 + 0.5);
+    const spin0 = seed * 2.1;
+    const spinSpeed = 4.0 + 3.0 * Math.sin(seed * 3.3);
+    const gravity = 320;
+    const dx = Math.cos(ang) * speed * age;
+    const dy = Math.sin(ang) * speed * 0.72 * age + 0.5 * gravity * age * age;
+    const px = contactScreen.x + dx, py = contactScreen.y + dy;
+    const lifeFrac = age / life;
+    const alpha = Math.max(0, 1 - Math.pow(lifeFrac, 1.6));
+    if (alpha <= 0.01) continue;
+    const rot = spin0 + spinSpeed * age;
+    octx.save();
+    octx.translate(px, py);
+    octx.rotate(rot);
+    octx.globalAlpha = alpha;
+    octx.beginPath();
+    for (let v = 0; v < 5; v++) {
+      const a2 = (v / 5) * Math.PI * 2;
+      const r2 = size * (0.7 + 0.3 * Math.sin(seed * 5.1 + v * 2.3));
+      const vx = Math.cos(a2) * r2, vy = Math.sin(a2) * r2 * 0.85;
+      if (v === 0) octx.moveTo(vx, vy); else octx.lineTo(vx, vy);
+    }
+    octx.closePath();
+    octx.fillStyle = "#3a2f26";
+    octx.fill();
+    octx.fillStyle = "rgba(180,140,95,0.55)";
+    octx.save(); octx.clip();
+    octx.beginPath(); octx.ellipse(-size * 0.2, -size * 0.2, size * 0.5, size * 0.35, 0, 0, Math.PI * 2); octx.fill();
+    octx.restore();
+    octx.restore();
+  }
+  octx.restore();
+}
+
+// Etirement -- deux fenetres par coup, jamais superposees : pendant
+// l'avancee (releaseStretchFactor, ancre a l'EPAULE) puis, apres
+// l'impact, un etirement d'impact bref (armStretchFactor, ancre a la
+// MAIN). Voir le README pour l'historique de cette correction (l'analyse
+// des 3 videos de reference a confirme : jamais pendant le recul).
+function releaseStretchFactor(t, hit) {
+  if (t < hit.windup_t || t >= hit.impact_t) return 1.0;
+  const f = (t - hit.windup_t) / Math.max(1e-6, hit.impact_t - hit.windup_t);
+  return 1.0 + hit.stretchPeak * Math.pow(f, 1.6);
+}
+function armStretchFactor(t, hit) {
+  const age = t - hit.impact_t;
+  const dur = 0.20, attack = 0.03;
+  if (age < 0 || age > dur) return 1.0;
+  const a = Math.min(1, age / attack);
+  const relAge = Math.max(0, age - attack), relDur = Math.max(1e-6, dur - attack);
+  const rel = Math.max(0, 1 - Math.pow(relAge / relDur, 1.4));
+  return 1.0 + hit.impactPeak * a * rel;
+}
+
+// ---------------------------------------------------------------------
+function render(t) {
+  const pt = poseTime(t);
+  const base = baseCameraAngles(t);
+  const target = new THREE.Vector3(0, CAM_TY, CAM_TZ);
+  const dir = cameraDir(base.az, base.el);
+
+  const attPose = sampleChar(DATA.attacker_frames, pt);
+  const dumPose = sampleChar(DATA.dummy_frames, pt);
+
+  let dist = Math.max(MIN_DIST, BASE_DIST / CAM_SCALE);
+  const candidate = target.clone().addScaledVector(dir, dist);
+  const attTorso = new THREE.Vector3(...attPose["Torso"].p);
+  const dumTorso = new THREE.Vector3(...dumPose["Torso"].p);
+  const nearestSubjectDist = Math.min(candidate.distanceTo(attTorso), candidate.distanceTo(dumTorso));
+  if (nearestSubjectDist < MIN_SUBJECT_DIST) dist += (MIN_SUBJECT_DIST - nearestSubjectDist);
+
+  const wp = target.clone().addScaledVector(dir, dist);
+  const shake = shakeOffset(t);
+  camera.position.set(wp.x + shake.x, wp.y + shake.y, wp.z + shake.z);
+  camera.lookAt(target);
+  camera.fov = fovAt(t);
+  camera.updateProjectionMatrix();
+
+  for (const part of DATA.part_order) {
+    if (part === "HumanoidRootPart") continue;
+    applyPoseToMesh(attackerMeshes[part], attPose[part].p, attPose[part].r);
+    applyPoseToMesh(dummyMeshes[part], dumPose[part].p, dumPose[part].r);
+  }
+
+  // Etirement -- boucle sur les 3 coups (au plus un est actif a un instant
+  // donne, les autres retombent a 1.0 -- voir les fonctions ci-dessus).
+  const touchedMeshes = [];
+  for (const hit of HITS) {
+    const mesh = attackerMeshes[hit.arm];
+    const stretch = pt < hit.impact_t ? releaseStretchFactor(pt, hit) : armStretchFactor(pt, hit);
+    if (stretch > 1.0) {
+      mesh.scale.set(1, stretch, 1);
+      const armLen = DATA.part_sizes[hit.arm][1];
+      const extra = (stretch - 1) * armLen * 0.5;
+      const isReleasing = pt < hit.impact_t;
+      const localDir = isReleasing ? new THREE.Vector3(0, -1, 0) : new THREE.Vector3(0, 1, 0);
+      const shift = localDir.applyQuaternion(mesh.quaternion).multiplyScalar(extra);
+      mesh.position.add(shift);
+      touchedMeshes.push(mesh);
+    }
+  }
+
+  renderer.render(scene, camera);
+  for (const mesh of touchedMeshes) mesh.scale.set(1, 1, 1);
+
+  octx.clearRect(0, 0, overlay.width, overlay.height);
+  for (const hit of HITS) {
+    const fistWorld = attPose[hit.arm].p;
+    const fistScreen = worldToScreen(fistWorld[0], fistWorld[1], fistWorld[2]);
+    drawFistCharge(pt, hit, fistScreen);
+    drawArmSmear(pt, hit, attPose);
+    drawImpactFrame(t, hit, fistScreen);
+    drawDebrisBurst(t, hit, fistScreen);
+  }
+
+  const phase = currentPhase(t);
+  shotNameEl.textContent = "large";
+  phaseNameEl2.textContent = phase.name.replace("_", " ");
+  timecodeEl.textContent = t.toFixed(2) + "s / " + REAL_DURATION.toFixed(2) + "s";
+}
+
+let playing = true, speed = 1, simTime = 0, lastWall = null;
+function setPlaying(p) {
+  playing = p;
+  playIcon.style.display = p ? "none" : "block";
+  pauseIcon.style.display = p ? "block" : "none";
+}
+playBtn.addEventListener("click", () => setPlaying(!playing));
+scrub.addEventListener("input", () => { simTime = (scrub.value / 1000) * REAL_DURATION; render(simTime); });
+document.querySelectorAll("#speedRow button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll("#speedRow button").forEach(x => x.classList.remove("active"));
+  b.classList.add("active"); speed = parseFloat(b.dataset.speed);
+}));
+
+function loop(ts) {
+  if (lastWall === null) lastWall = ts;
+  const dt = Math.min(0.05, (ts - lastWall) / 1000);
+  lastWall = ts;
+  if (playing) {
+    simTime += dt * speed;
+    if (simTime > REAL_DURATION) simTime = 0;
+    scrub.value = Math.round((simTime / REAL_DURATION) * 1000);
+  }
+  render(simTime);
+  requestAnimationFrame(loop);
+}
+window.__render = render;
+window.__setPlaying = setPlaying;
+window.__setSimTime = (t) => { simTime = t; };
+requestAnimationFrame(loop);
+</script>
