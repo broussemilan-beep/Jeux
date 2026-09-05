@@ -57,21 +57,23 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
 <div class="stage">
   <p class="eyebrow">Prototype isolé · Roblox R6 · identité de compétence · rendu WebGL</p>
   <h1>Coup de pied de roche</h1>
-  <p class="sub">Un seul rig R6 (6 segments rigides, aucun coude/genou) : prise d'appui, coup de pied circulaire très
-    large qui propulse une énorme roche posée devant lui, puis enchaîne aussitôt avec une frappe de suivi qui
-    redirige la roche — déjà en vol — vers sa trajectoire finale. La rotation du bassin/torse est délibérément
-    <strong>exagérée</strong> aux deux frappes (chambrage puis renversement complet, jusqu'à 140° d'amplitude) pour
+  <p class="sub">Un seul rig R6 (6 segments rigides, aucun coude/genou) : le personnage <strong>écrase le sol de sa
+    jambe droite</strong> (un stomp vertical, pas un balayage) et fait <strong>jaillir une énorme roche</strong>
+    exactement au point d'impact mesuré de ce stomp — la roche n'existe pas avant cet instant. Il enchaîne aussitôt
+    avec un coup de pied circulaire très large qui propulse cette roche fraîchement sortie, puis une frappe de suivi
+    qui la redirige — déjà en vol — vers sa trajectoire finale. La rotation du bassin/torse est délibérément
+    <strong>exagérée</strong> aux frappes (chambrage puis renversement complet, jusqu'à 140° d'amplitude) pour
     compenser l'absence de genou/cheville du rig — seule façon de lire un coup de pied comme puissant sur ce
     squelette. Poses <strong>résolues par le moteur d'animation</strong> à partir de <code>choreography.py</code> ;
-    la roche suit une trajectoire scriptée indépendante (<code>rock_track.py</code>), le point de contact des deux
-    frappes ayant été <strong>mesuré</strong> par cinématique directe puis utilisé pour placer la roche — jamais
-    l'inverse (voir le README du prototype).</p>
+    la roche suit une trajectoire scriptée indépendante (<code>rock_track.py</code>), le point de contact des
+    frappes (et le point d'impact du stomp qui fait naître la roche) ayant été <strong>mesuré</strong> par
+    cinématique directe puis utilisé pour placer la roche — jamais l'inverse (voir le README du prototype).</p>
 
   <div class="card">
     <div class="viewport-wrap">
       <canvas id="stage" width="1200" height="900"></canvas>
       <canvas id="overlay" width="1200" height="900"></canvas>
-      <div class="chip left">phase · <b id="phaseName">présence</b></div>
+      <div class="chip left">phase · <b id="phaseName">garde</b></div>
       <div class="chip right" id="timecode">0.00s / 0.00s</div>
     </div>
 
@@ -87,7 +89,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
         </div>
       </div>
       <div class="row-bottom">
-        <div class="phase-label">segment <b id="phaseName2">présence</b></div>
+        <div class="phase-label">segment <b id="phaseName2">garde</b></div>
         <div style="display:flex; gap:8px; flex-wrap:wrap">
           <div class="btn-row" id="speedRow">
             <button data-speed="0.1">0.1×</button>
@@ -104,12 +106,15 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
     (<code>props_rock.rock_parts()</code>, seed fixe déterministe) inscrit dans la sphère de collision utilisée par
     <code>rock_track.py</code> — mêmes VRAIES données que la trajectoire livrée, pas une reconstitution approximative
     pour le lecteur.</p>
-  <p class="note"><strong>Caméra en trois mouvements, jamais de coupe franche</strong> : basse/trois-quarts (légère
-    dérive continue) pendant toute la prise d'appui et le coup de pied — la roche, à peine lancée, n'a pas eu le
-    temps de s'éloigner, la caméra reste sur le geste — puis un long panoramique continu (aucun saut de position)
-    l'amène derrière l'axe de vol pendant l'enchaînement vers la frappe de suivi (cadre large, personnage ET roche
-    visibles), avant de se refermer en poursuite serrée sur la roche seule dès qu'elle est redirigée, avec un bref
-    zoom au moment de l'impact.</p>
+  <p class="note"><strong>Caméra en quatre mouvements, jamais de coupe franche</strong> : un plan <strong>bas et
+    rapproché</strong> dédié au stomp (chambrage → tension tenue → écrasement au sol → récupération) — lisibilité de
+    la jambe droite qui s'écrase verticalement et de la fissure/poussière au point d'impact — puis une remontée
+    continue vers le basse/trois-quarts habituel pendant la prise d'appui et le coup de pied circulaire — la roche,
+    à peine jaillie puis lancée, n'a pas eu le temps de s'éloigner, la caméra reste sur le geste — puis un long
+    panoramique continu (aucun saut de position) l'amène derrière l'axe de vol pendant l'enchaînement vers la frappe
+    de suivi (cadre large, personnage ET roche visibles), avant de se refermer en poursuite serrée sur la roche
+    seule dès qu'elle est redirigée, avec un bref zoom au moment de l'impact. Toutes les transitions entre plans
+    sont interpolées (azimut/élévation/distance), jamais un saut de cadrage.</p>
   <p class="note"><strong>Mise en scène du lecteur, pas les fichiers livrés</strong> : le décor (sol, mur en ruine)
     est dessiné par ce lecteur à partir des mêmes textures que <code>r6_hit_combo</code>, mais n'existe dans aucun
     fichier de compétence — la roche intacte et ses débris d'impact, eux, viennent directement de
@@ -143,7 +148,11 @@ timecodeEl.textContent = "0.00s / " + SCENE_DURATION.toFixed(2) + "s";
 // Segmentation de la scène pour la piste de phases + l'étiquette -- pure
 // mise en scène du lecteur, ne modifie rien à choreography.py/rock_track.py.
 const PHASES = [
-  { name: "présence",            kind: "calm",   t0: 0,                     t1: KT.windup_t },
+  { name: "garde",                kind: "calm",   t0: 0,                      t1: KT.stomp_windup_t },
+  { name: "stomp — chambrage",    kind: "charge", t0: KT.stomp_windup_t,      t1: KT.stomp_hold_t },
+  { name: "stomp — tension",      kind: "hold",   t0: KT.stomp_hold_t,        t1: KT.stomp_strike_t },
+  { name: "stomp — impact",       kind: "impact", t0: KT.stomp_strike_t,      t1: KT.stomp_recover_t },
+  { name: "jaillissement",        kind: "flight", t0: KT.stomp_recover_t,     t1: KT.windup_t },
   { name: "prise d'appui",       kind: "charge", t0: KT.windup_t,           t1: KT.coil_t },
   { name: "chambrage",           kind: "hold",   t0: KT.coil_t,             t1: KT.coil_hold_t },
   { name: "coup de pied",        kind: "impact", t0: KT.coil_hold_t,        t1: KT.followthrough_t },
@@ -394,7 +403,16 @@ function updateRock(t) {
   // ET debris restaient visibles EN MEME TEMPS pendant toute la fenetre
   // entre le dernier echantillon "redirigee" et le premier "impact" (bug
   // trouve par capture reelle a t=IMPACT_T, jamais suppose).
-  const rockVisible = t < KT.impact_t && !!s.pos;
+  // Meme garde EXPLICITE sur le bord d'APPARITION (t >= stomp_strike_t)
+  // que celle deja en place sur le bord de DISPARITION (t < impact_t) ci-
+  // dessous, pour la meme raison : sampleRock() interpole entre deux
+  // echantillons de part et d'autre de STOMP_STRIKE_T (l'un a pos=null en
+  // phase "absente", l'autre deja en phase "jaillissement") en tombant sur
+  // le cote non-nul des que frac depasse 0 -- sans ce garde, la roche
+  // (encore sous terre, Y negatif) devenait visible jusqu'a une frame
+  // (1/30s) AVANT l'instant du stomp, trouve par capture reelle juste
+  // avant STOMP_STRIKE_T, jamais suppose.
+  const rockVisible = t >= KT.stomp_strike_t && t < KT.impact_t && !!s.pos;
   rockGroup.visible = rockVisible;
   if (rockVisible) {
     rockGroup.position.set(s.pos[0], s.pos[1], s.pos[2]);
@@ -454,12 +472,35 @@ const CHASE_AZ_DEG = CHASE_AZ * 180 / Math.PI;
 // FOLLOWUP_STRIKE_T, une fois la roche livree a elle-meme.
 const CAM_KEYS = [
   { t: 0.0,                            az: 62,          el: -11, dist: 12.4 },
-  { t: KT.windup_t,                     az: 65,          el: -12, dist: 11.6 },
-  { t: KT.coil_t,                       az: 68,          el: -13, dist: 10.8 },
-  { t: KT.coil_hold_t,                  az: 69,          el: -13, dist: 10.6 },
-  { t: KT.strike_t,                     az: 66,          el: -12, dist: 11.0 },
-  { t: KT.followthrough_t,              az: 60,          el: -9,  dist: 11.4 },
-  { t: KT.recover_t,                    az: 55,          el: -5,  dist: 11.8 },
+  // -- plan BAS dedie au stomp (brief : "camera basse pendant le stomp,
+  // lisibilite de l'ecrasement vertical de la jambe et de la fissure au
+  // sol", voir README) : elevation nettement plus negative (camera pres du
+  // sol, quasi au niveau du point d'impact) + distance resserree par
+  // rapport au basse/trois-quarts du coup de pied qui suit -- verifie par
+  // capture reelle que la camera reste au-dessus du sol (Y camera > 0)
+  // pour chaque cle malgre l'elevation forte, cf. calcul dans le worklog.
+  { t: KT.stomp_windup_t,               az: 46,          el: -9,  dist: 15.5 },
+  { t: KT.stomp_hold_t,                 az: 44,          el: -10, dist: 14.6 },
+  { t: KT.stomp_strike_t,               az: 44,          el: -9,  dist: 14.4 },
+  { t: KT.stomp_recover_t,              az: 50,          el: -10, dist: 14.6 },
+  // -- la roche jaillit desormais a 1.3-2 studs du personnage (au lieu de
+  // ~4.5 avant correction) et reste "enorme" (diametre 4 studs, voir
+  // ROCK_RADIUS) : a distance/elevation identiques a l'ancien plan bas
+  // (verifie par capture reelle), elle recouvrait la QUASI-TOTALITE du
+  // personnage quel que soit l'azimut essaye (l'ecart perso->roche, ~1.3
+  // stud, est trop petit pour qu'un simple changement d'azimut les separe
+  // a l'ecran -- teste 45 a 125deg, aucun ne suffit seul). Ce qui separe
+  // reellement : ELEVATION plus haute (regard plonge legerement, montre le
+  // torse au-dessus de la roche au lieu de se faire avaler par elle) +
+  // distance nettement plus grande -- plan releve, pas bas, pendant cette
+  // portion (le plan BAS reste reserve au STOMP ci-dessus, ou la roche
+  // n'existe pas encore).
+  { t: KT.windup_t,                     az: 60,          el: 8,   dist: 16.5 },
+  { t: KT.coil_t,                       az: 64,          el: 10,  dist: 16.0 },
+  { t: KT.coil_hold_t,                  az: 65,          el: 11,  dist: 15.8 },
+  { t: KT.strike_t,                     az: 62,          el: 10,  dist: 16.2 },
+  { t: KT.followthrough_t,              az: 57,          el: 8,   dist: 16.8 },
+  { t: KT.recover_t,                    az: 52,          el: 4,   dist: 17.2 },
   { t: KT.followup_windup_t,            az: 56,          el: -2,  dist: 11.4 },
   { t: KT.followup_coil_hold_t,         az: 57,          el: 0,   dist: 11.0 },
   { t: KT.followup_strike_t,            az: 56,          el: 0,   dist: 11.0 },
@@ -539,7 +580,16 @@ function fovPunch(t) {
 const _camTargetV = new THREE.Vector3();
 function updateCamera(t, charPose, rockSample) {
   const cA = charAnchor(charPose);
-  const rA = (rockSample && rockSample.pos) ? rockSample.pos : DATA.world_target_pos;
+  // Repli quand la roche n'a pas de position (rockSample.pos === null) :
+  // AVANT stomp_strike_t elle n'existe simplement pas encore (phase
+  // "absente") -- replier sur world_target_pos (tres loin, Z=-34) tirerait
+  // le point vise loin du personnage pendant tout le stomp/la garde, bug
+  // trouve en relisant updateCamera() (le point vise glissait deja vers un
+  // point a Z=-34 des t=0 avant meme que la roche existe). Repli correct :
+  // le personnage lui-meme tant que la roche n'existe pas, world_target_pos
+  // seulement APRES l'impact final (phase "impact", plus de position utile
+  // mais la camera doit rester pres du point d'impact reel).
+  const rA = (rockSample && rockSample.pos) ? rockSample.pos : (t >= KT.impact_t ? DATA.world_target_pos : cA);
   const w = targetWeight(t);
   const target = lerp3(cA, rA, w);
   const k = camKeyAt(t);
@@ -570,9 +620,12 @@ function worldToScreen(x, y, z) {
   };
 }
 
-// Poussiere/gravats legers autour de la roche au repos (Phase 1) --
-// subtil, la roche est juste posee la, pas un effet qui attire l'oeil.
-// Deterministe (sin a constantes fixes), jamais Math.random().
+// Poussiere/gravats legers autour de la roche au repos (phase "repos" de
+// rock_track.py, ERUPTION_END_T..STRIKE_T -- PAS depuis t=0 : avant
+// STOMP_STRIKE_T la roche n'existe pas encore, il n'y a rien a saupoudrer
+// de poussiere a cet endroit-la tant qu'elle n'a pas jailli). Subtil, la
+// roche est juste posee la, pas un effet qui attire l'oeil. Deterministe
+// (sin a constantes fixes), jamais Math.random().
 function drawRestDust(t, rockScreen) {
   if (rockScreen.behind) return;
   octx.save();
@@ -641,6 +694,82 @@ function drawKickDustBurst(t, footScreen) {
     octx.fillStyle = `rgba(196,174,138,${alpha})`;
     octx.beginPath(); octx.arc(px, py, size * (1 - lifeFrac * 0.3), 0, Math.PI * 2); octx.fill();
   }
+  octx.restore();
+}
+
+// Jaillissement (STOMP_STRIKE_T) -- la roche NAIT ici : burst de
+// poussiere/gravats violent au point d'impact du stomp (STOMP_POINT,
+// mesure par cinematique directe, voir choreography.py) + fissure
+// persistante au sol. Doit lire comme une eruption forcee, pas un pop-in
+// discret (brief utilisateur explicite -- voir README) : plus de
+// particules, plus rapides et avec un biais vers le haut (la roche pousse
+// a travers le sol) que le simple burst de poussiere du coup de pied
+// ci-dessus.
+function drawStompDustBurst(t, groundScreen) {
+  const age = t - KT.stomp_strike_t;
+  const life = 0.62;
+  if (age < 0 || age >= life) return;
+  octx.save();
+  octx.globalCompositeOperation = "lighter";
+  const N = 26;
+  for (let i = 0; i < N; i++) {
+    const seed = i * 3.13 + 0.9;
+    const ang = (i / N) * Math.PI * 2 + Math.sin(seed) * 0.45;
+    const speed = 95 + 140 * (Math.sin(seed * 1.7) * 0.5 + 0.5);
+    const size = 6 + 11 * (Math.sin(seed * 2.3) * 0.5 + 0.5);
+    const gravity = 170;
+    const dx = Math.cos(ang) * speed * age;
+    // biais vers le haut (upward bias) -- la roche EMERGE, la poussiere
+    // qu'elle souleve part davantage vers le haut qu'un simple burst de
+    // pied posant au sol -- puis retombe sous la gravite.
+    const dy = -Math.abs(Math.sin(ang)) * speed * 0.85 * age - 70 * age + 0.5 * gravity * age * age * 0.4;
+    const px = groundScreen.x + dx, py = groundScreen.y + dy;
+    const lifeFrac = age / life;
+    const alpha = Math.max(0, 1 - Math.pow(lifeFrac, 1.4)) * 0.72;
+    if (alpha <= 0.01) continue;
+    octx.fillStyle = `rgba(204,184,148,${alpha})`;
+    octx.beginPath(); octx.arc(px, py, size * (1 - lifeFrac * 0.25), 0, Math.PI * 2); octx.fill();
+  }
+  octx.restore();
+}
+
+// Fissure au sol au point d'impact du stomp -- apparait avec le burst
+// ci-dessus (fondu tres bref) puis RESTE (une fissure ne se referme pas
+// toute seule) : contrairement aux autres VFX de ce lecteur, celui-ci ne
+// s'eteint jamais une fois apparu. Geometrie deterministe (sin a
+// constantes fixes, jamais Math.random()) donc un decalage FIXE, pas une
+// fissure qui continue de bouger apres son apparition.
+function drawGroundCrack(t, groundScreen) {
+  const age = t - KT.stomp_strike_t;
+  if (age < 0) return;
+  const fadeIn = Math.min(1, age / 0.18);
+  octx.save();
+  octx.globalAlpha = fadeIn;
+  octx.strokeStyle = "#171009";
+  octx.lineCap = "round";
+  const N = 7;
+  for (let i = 0; i < N; i++) {
+    const seed = i * 2.31 + 0.4;
+    const ang = (i / N) * Math.PI * 2 + Math.sin(seed) * 0.6;
+    const len = 44 + 36 * (Math.sin(seed * 1.7) * 0.5 + 0.5);
+    const segs = 3;
+    let x = groundScreen.x, y = groundScreen.y;
+    octx.lineWidth = 3.0 - i * 0.14;
+    octx.beginPath();
+    octx.moveTo(x, y);
+    for (let s = 1; s <= segs; s++) {
+      const jag = Math.sin(seed * 3 + s * 2.7) * 9;
+      x += Math.cos(ang) * (len / segs) + jag * 0.3;
+      y += Math.sin(ang) * (len / segs) * 0.4 + jag * 0.15;
+      octx.lineTo(x, y);
+    }
+    octx.stroke();
+  }
+  // petit halo de terre retournee au centre, sous le cluster de gravats.
+  const rg = octx.createRadialGradient(groundScreen.x, groundScreen.y, 0, groundScreen.x, groundScreen.y, 34);
+  rg.addColorStop(0, "rgba(40,32,22,0.55)"); rg.addColorStop(1, "rgba(40,32,22,0)");
+  octx.fillStyle = rg;
+  octx.beginPath(); octx.arc(groundScreen.x, groundScreen.y, 34, 0, Math.PI * 2); octx.fill();
   octx.restore();
 }
 
@@ -812,7 +941,14 @@ function render(t) {
 
   octx.clearRect(0, 0, overlay.width, overlay.height);
 
-  if (t < KT.strike_t) {
+  if (t >= KT.stomp_strike_t) {
+    const groundScreen = worldToScreen(DATA.stomp_point[0], 0.05, DATA.stomp_point[2]);
+    if (!groundScreen.behind) {
+      drawGroundCrack(t, groundScreen);
+      drawStompDustBurst(t, groundScreen);
+    }
+  }
+  if (t >= KT.eruption_end_t && t < KT.strike_t) {
     const restScreen = worldToScreen(DATA.rock_rest_pos[0], DATA.rock_rest_pos[1], DATA.rock_rest_pos[2]);
     if (!restScreen.behind) drawRestDust(t, restScreen);
   }

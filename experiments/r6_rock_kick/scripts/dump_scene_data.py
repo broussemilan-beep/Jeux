@@ -137,8 +137,23 @@ def main():
         "kick_contact_point": [float(v) for v in ch.KICK_CONTACT_POINT],
         "followup_contact_point": [float(v) for v in ch.FOLLOWUP_CONTACT_POINT],
         "followup_rock_center": [float(v) for v in ch.FOLLOWUP_ROCK_CENTER],
+        # -- point d'impact MESURE du stomp (voir choreography.STOMP_POINT) :
+        # c'est LA ou la roche jaillit et ou le lecteur doit ancrer le VFX de
+        # fissure/poussiere au sol (pas un point choisi a l'oeil cote lecteur).
+        "stomp_point": [float(v) for v in ch.STOMP_POINT],
         "key_times": {
             "t0_end": ch.T0_END,
+            # -- phase STOMP (voir choreography.py) : bornes exposees pour que
+            # le lecteur cale sa camera basse dediee et son VFX de jaillissement
+            # dessus, jamais devinees cote JS.
+            "stomp_windup_t": ch.STOMP_WINDUP_T,
+            "stomp_hold_t": ch.STOMP_HOLD_T,
+            "stomp_strike_t": ch.STOMP_STRIKE_T,
+            "stomp_recover_t": ch.STOMP_RECOVER_T,
+            # -- fin du jaillissement de la roche (voir rock_track.ERUPTION_END_T)
+            # -- distinct de stomp_recover_t (le corps recupere plus vite que la
+            # roche ne finit de jaillir, voir README/docstring de rock_track.py).
+            "eruption_end_t": rt.ERUPTION_END_T,
             "windup_t": ch.WINDUP_T,
             "coil_t": ch.COIL_T,
             "coil_hold_t": ch.COIL_HOLD_T,
