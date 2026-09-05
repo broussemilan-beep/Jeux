@@ -218,8 +218,79 @@ section Recherche).
 
 ## Lecteur
 
-_À compléter après vérification des captures._
+`experiments/r6_solar_smite/output/solar_smite_viewer_final.html` —
+Three.js, deux rigs (attaquant + mannequin), généré par
+`dump_scene_data.py` + `build_viewer.py` à partir de `choreography.py`
+et `solar_track.py` (aucune valeur improvisée côté lecteur : poses,
+trajectoire du noyau fusionné et rayons viennent des scripts déjà
+vérifiés). Hitstop cumulatif escaladant sur les 3 impacts, shake
+omnidirectionnel classique sur les 2 coups de combo et shake
+DIRECTIONNEL (vers le bas) à décroissance EXPONENTIELLE dédié au
+finisher (amélioration délibérée par rapport au shake
+omnidirectionnel/linéaire déjà existant dans `r6_hit_combo` — voir
+Recherche). Caméra serrée dès `t=0`, changement d'angle progressif
+entre les 2 coups puis cadrage très serré sur la fusion/l'impact.
+
+Deux défauts trouvés et corrigés pendant la construction du lecteur
+(par l'agent qui l'a bâti, vérifiés indépendamment par moi avant/après
+correction, jamais pris au mot) :
+
+- **`OPEN_ARMS` avait les signes inversés** — la rotation C0 du joint
+  d'épaule permute les axes ; `rz` négatif sur le bras droit le
+  faisait TRAVERSER vers le centre/la gauche au lieu de l'écarter sur
+  le côté (mesuré : poing droit à X=-0.42, à GAUCHE du centre, à
+  `OPEN_T`). Corrigé dans `choreography.py` (`Right Arm rz=+82, Left
+  Arm rz=-82`) — revérifié par calcul (poing droit X=+2.56, gauche
+  X=-2.56, écartement symétrique) ET par un rendu diagnostic vue de
+  dessus avant d'accepter la capture corrigée.
+- **Le noyau fusionné restait visible à pleine intensité pendant le
+  hitstop du finisher**, noyant le starburst d'impact (`drawFinisherBurst`)
+  dans son propre halo — pas un problème d'opacité du burst comme
+  supposé au départ (testé en A/B, aucun effet), la vraie cause était
+  le noyau qui ne s'éteignait jamais. Corrigé par un fondu du noyau
+  fusionné (matériau + lumière + halo 2D) sur les 0.25s réelles suivant
+  l'impact.
+
+### Point de vigilance (disclosed, pas corrigé)
+
+Pendant les 2 coups de combo (captures 03/04), le mannequin-cible
+n'est **pas visible dans le cadre** — la caméra reste majoritairement
+centrée sur l'attaquant pendant le combo (`tw` ≈ 0.28-0.42 dans les
+repères caméra, ne bascule franchement vers la cible qu'à l'approche du
+finisher, `tw` ≈ 0.55-0.78). C'est un choix de mise en scène délibéré
+(cohérent avec "caméra rapprochée dès l'ouverture" — priorité à la
+performance de l'attaquant, pas un plan large des deux personnages
+comme `r6_hit_combo`), mais ça a un coût de lisibilité réel : on ne
+VOIT pas le mannequin encaisser les 2 premiers coups, seulement le
+finisher (capture 08). Non corrigé pour cette itération — signalé
+plutôt que caché.
 
 ## Vérification (captures)
 
-_À compléter après vérification des captures._
+9 captures committées dans `captures/verification/` (même convention
+que les prototypes précédents), toutes vérifiées par moi-même en
+ouvrant chaque image (jamais un rapport d'agent pris au mot) :
+
+- `2026-09-05-solar-smite-00-garde.png` — attente vivante, garde initiale.
+- `2026-09-05-solar-smite-01-ouverture.png` — bras écartés (après
+  correction du signe, voir ci-dessus) ; ambigu à cet angle de caméra
+  précis (le T-pose ne se lit pas franchement de face), mais confirmé
+  correct par calcul et par un rendu diagnostic vue de dessus.
+- `2026-09-05-solar-smite-02-charge-particules.png` — noyau visible
+  dans la main, quelques particules aspirées visibles autour.
+- `2026-09-05-solar-smite-03-combo1-impact.png` / `-04-combo2-impact.png`
+  — capturées pile à l'instant du flash d'impact (image délavée/
+  surexposée) : attendu (voir CLAUDE.md/note plus haut sur l'écueil
+  déjà rencontré 2 fois dans ce dépôt — flash au pic, pas un bug de
+  rendu), confirmé par l'agent via un instant décalé de +0.15s hors
+  livraison (éclats/mannequin qui flinche visibles).
+- `2026-09-05-solar-smite-05-finisher-montee.png` — les deux noyaux,
+  grossis et rapprochés au-dessus de la tête, prêts à fusionner.
+- `2026-09-05-solar-smite-06-finisher-impact-flash.png` — flash blanc
+  plein cadre à `FIN_STRIKE_T` (attendu, même écueil que ci-dessus).
+- `2026-09-05-solar-smite-07-finisher-impact-apres.png` — +0.15s après
+  le flash : grosse explosion solaire dorée avec un starburst blanc net
+  et visible en son centre (après la correction du fondu du noyau
+  fusionné, voir ci-dessus) — le plus gros VFX du dépôt à ce jour.
+- `2026-09-05-solar-smite-08-mannequin-ecrase.png` — mannequin écrasé/
+  affalé au sol après le finisher, marque de sol persistante visible.

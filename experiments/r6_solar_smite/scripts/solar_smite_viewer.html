@@ -475,6 +475,7 @@ function makeCoreGroup(coreSeg = 20) {
   const rim = new THREE.Mesh(new THREE.SphereGeometry(1.55, coreSeg, coreSeg * 0.7), rimMat);
   group.add(rim); group.add(hot);
   group.visible = false;
+  group.hotMat = hotMat; group.rimMat = rimMat; // acces direct pour un fondu (voir noyau fusionne post-impact)
   scene.add(group);
   return group;
 }
@@ -788,8 +789,12 @@ function drawFinisherBurst(t, contactScreen) {
   if (coreAlpha > 0) {
     const r = 60 + 200 * Math.min(1, age / 0.2);
     const rg = octx.createRadialGradient(contactScreen.x, contactScreen.y, 0, contactScreen.x, contactScreen.y, r);
-    rg.addColorStop(0, `rgba(255,255,255,${0.95 * coreAlpha})`);
-    rg.addColorStop(0.35, `rgba(${HOT[0]},${HOT[1]},${HOT[2]},${0.7 * coreAlpha})`);
+    // Opacite reduite (etait 0.95/0.7) : le halo central noyait les traits
+    // d'energie/eclats de drawFinisherBurst ci-dessus -- observation de
+    // qualite sur la capture 07-finisher-impact-apres, cf. rapport de
+    // capture. Le halo reste visible mais laisse les eclats se detacher.
+    rg.addColorStop(0, `rgba(255,255,255,${0.55 * coreAlpha})`);
+    rg.addColorStop(0.35, `rgba(${HOT[0]},${HOT[1]},${HOT[2]},${0.38 * coreAlpha})`);
     rg.addColorStop(1, `rgba(${RIM[0]},${RIM[1]},${RIM[2]},0)`);
     octx.fillStyle = rg;
     octx.beginPath(); octx.arc(contactScreen.x, contactScreen.y, r, 0, Math.PI * 2); octx.fill();
@@ -880,12 +885,17 @@ function updateExplosionMeshes(t) {
   const r = SOL.impact_max_radius * (1 - Math.pow(1 - f, 2.0));
   explosionMesh.position.set(SOL.fin_contact_point[0], SOL.fin_contact_point[1], SOL.fin_contact_point[2]);
   explosionMesh.scale.setScalar(Math.max(0.05, r));
-  explosionMat.opacity = Math.max(0, 0.55 * (1 - f) * (1 - f));
+  // Opacite reduite (etait 0.55) : cette sphere additive (avec flareMesh
+  // ci-dessous) est le vrai "halo central" qui noyait les eclats/traits
+  // d'energie de drawFinisherBurst sur la capture 07-finisher-impact-apres
+  // -- le degrade 2D de drawFinisherBurst (voir plus haut) contribue peu
+  // a cet instant precis, verifie par capture A/B avant d'etendre ici.
+  explosionMat.opacity = Math.max(0, 0.35 * (1 - f) * (1 - f));
   if (flareMesh.visible) {
     const fAge = Math.min(1, age / (SOL.impact_flash_s * 2.5));
     flareMesh.position.copy(explosionMesh.position);
     flareMesh.scale.setScalar(0.4 + 1.6 * fAge);
-    flareMat.opacity = Math.max(0, 0.9 * (1 - fAge));
+    flareMat.opacity = Math.max(0, 0.5 * (1 - fAge));
   }
   const ringR = SOL.impact_max_radius * 1.15 * (1 - Math.pow(1 - f, 2.4));
   ringMesh.scale.set(Math.max(0.05, ringR), Math.max(0.05, ringR), 1);
@@ -919,16 +929,30 @@ function render(tReal) {
     coreLeft.position.set(...handL); coreLeft.scale.setScalar(rHand);
   }
   coreMerged.visible = !!(merged && merged.phase === "fusion");
+  // Fondu du noyau fusionne des que l'impact REEL a eu lieu (HITF.real_impact_t) :
+  // pendant le gel de pose (hitstop) qui suit un coup, pt reste bloque sur
+  // fin_strike_t donc mergedCore(pt) reste en phase "fusion" indefiniment
+  // tant que le hold dure, meme si en temps reel l'explosion (burst/flash)
+  // joue deja. Sans ce fondu, le noyau (a pleine opacite/lumiere/halo 2D)
+  // noyait entierement les eclats/traits d'energie de drawFinisherBurst --
+  // observation de qualite sur la capture 07-finisher-impact-apres.
+  // AUCUN effet avant l'impact reel (mergedCoreFade=1 tant que tReal <=
+  // HITF.real_impact_t) : la charge/coil/frappe restent inchangees.
+  const mergedCoreFade = (coreMerged.visible && tReal > HITF.real_impact_t)
+    ? Math.max(0, 1 - (tReal - HITF.real_impact_t) / 0.25)
+    : 1;
   if (coreMerged.visible) {
     coreMerged.position.set(...merged.pos);
     coreMerged.scale.setScalar(merged.radius);
+    coreMerged.hotMat.opacity = 0.95 * mergedCoreFade;
+    coreMerged.rimMat.opacity = 0.45 * mergedCoreFade;
   }
   handLightR.intensity = showHandCores ? 2.4 * (rHand / SOL.core_radius_grown) : 0;
   handLightL.intensity = showHandCores ? 2.4 * (rHand / SOL.core_radius_grown) : 0;
   handLightR.position.set(...handR); handLightL.position.set(...handL);
   if (coreMerged.visible) {
     mergedLight.position.set(...merged.pos);
-    mergedLight.intensity = 3.0 * (merged.radius / SOL.merged_radius_strike);
+    mergedLight.intensity = 3.0 * (merged.radius / SOL.merged_radius_strike) * mergedCoreFade;
   } else {
     const fAge = tReal - HITF.real_impact_t;
     mergedLight.intensity = (fAge >= 0 && fAge < 0.5) ? 4.0 * Math.max(0, 1 - fAge / 0.5) : 0;
@@ -952,7 +976,7 @@ function render(tReal) {
   }
   if (coreMerged.visible) {
     const sM = worldToScreen(...merged.pos);
-    if (!sM.behind) drawSolarHalo(sM.x, sM.y, worldRadiusToPx(merged.radius, merged.pos), 1.35);
+    if (!sM.behind) drawSolarHalo(sM.x, sM.y, worldRadiusToPx(merged.radius, merged.pos), 1.35 * mergedCoreFade);
   }
   for (const hit of [HIT1, HIT2]) {
     if (hit.arm) drawArmSmear(pt, hit, attPose);
