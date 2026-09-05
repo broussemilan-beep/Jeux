@@ -1,0 +1,1196 @@
+<title>Combat pour le trône</title>
+<style>
+:root {
+  --bg: #100d0a; --panel: #1a1611; --panel-2: #201b15; --ink: #ece5d6;
+  --sub: #a89d87; --grid: #332c22; --rig-hero: #2f6fa8; --rig-rival: #8a2a2a;
+  --edge: #0a0806; --ghost: #4a4030; --accent: #d9a13f; --gold: #e0a955;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f1ea; --panel: #ffffff; --panel-2: #eee9de; --ink: #241f18;
+    --sub: #6b6255; --grid: #d9d2c2; --rig-hero: #2a5d8f; --rig-rival: #96322f;
+    --edge: #241f18; --ghost: #b8ae98; --accent: #b3722c; --gold: #b3872c;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f4f1ea; --panel: #ffffff; --panel-2: #eee9de; --ink: #241f18;
+  --sub: #6b6255; --grid: #d9d2c2; --rig-hero: #2a5d8f; --rig-rival: #96322f;
+  --edge: #241f18; --ghost: #b8ae98; --accent: #b3722c; --gold: #b3872c;
+}
+body { background: var(--bg); color: var(--ink); font-family: "Iowan Old Style", "Georgia", serif; }
+.stage { max-width: 980px; margin: 0 auto; padding: 28px 20px 48px; }
+.eyebrow { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin: 0 0 6px; font-family: Oswald, sans-serif; }
+h1 { font-size: 30px; margin: 0 0 10px; }
+.sub { color: var(--sub); font-size: 14.5px; line-height: 1.55; max-width: 760px; margin: 0 0 20px; }
+.card { background: var(--panel); border: 1px solid var(--grid); border-radius: 14px; padding: 14px; }
+.viewport-wrap { position: relative; border-radius: 10px; overflow: hidden; background: #000; }
+canvas { display: block; width: 100%; height: auto; }
+#overlay { position: absolute; inset: 0; pointer-events: none; }
+.chip { position: absolute; top: 10px; font-family: Oswald, sans-serif; font-size: 12px; padding: 5px 10px; border-radius: 999px; background: rgba(0,0,0,0.45); color: #fff; letter-spacing: 0.03em; }
+.chip.left { left: 10px; } .chip.right { right: 10px; }
+.controls { padding-top: 12px; display: flex; flex-direction: column; gap: 10px; }
+.transport { display: flex; align-items: center; gap: 12px; }
+.play-btn { width: 40px; height: 40px; border-radius: 50%; border: none; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+.play-btn svg { width: 18px; height: 18px; }
+.scrub-col { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.phase-track { display: flex; height: 6px; border-radius: 4px; overflow: hidden; }
+.phase-seg { height: 100%; }
+.phase-seg[data-kind="calm"] { background: var(--ghost); }
+.phase-seg[data-kind="charge"] { background: var(--gold); }
+.phase-seg[data-kind="impact"] { background: var(--rig-rival); }
+.phase-seg[data-kind="climb"] { background: var(--rig-hero); }
+.phase-seg[data-kind="crown"] { background: var(--gold); }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+.row-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+.phase-label { font-family: Oswald, sans-serif; font-size: 13px; color: var(--sub); text-transform: uppercase; letter-spacing: 0.05em; }
+.phase-label b { color: var(--ink); }
+.btn-row { display: flex; gap: 4px; background: var(--panel-2); border-radius: 8px; padding: 3px; }
+.btn-row button { border: none; background: transparent; color: var(--sub); font-family: Oswald, sans-serif; font-size: 12px; padding: 5px 10px; border-radius: 6px; cursor: pointer; }
+.btn-row button.active { background: var(--accent); color: #fff; }
+.note { color: var(--sub); font-size: 13px; line-height: 1.6; max-width: 780px; margin-top: 16px; }
+.note strong { color: var(--ink); }
+</style>
+
+<div class="stage">
+  <p class="eyebrow">Prototype isolé · Roblox R6 · deux rigs actifs + décor destructible + Model trône/couronne · rendu WebGL</p>
+  <h1>Combat pour le trône</h1>
+  <p class="sub">Scène complète (~38s) : deux rigs R6 <strong>indépendants et actifs</strong> (Hero, Rival) s'affrontent —
+    garde, échange d'ouverture, combo jab/cross/hook de Hero, esquive puis coup de pied circulaire qui projette Rival
+    contre un <strong>pilier de pierre destructible</strong>, un dernier coup de grâce — avant que Hero, vainqueur,
+    ne marche jusqu'au trône déjà bâti (<code>r6_throne_crown</code>), gravisse l'escalier et se couronne. Les deux
+    personnages sont <strong>échantillonnés directement par le moteur</strong> (<code>anim_engine.build_rig() /
+    apply_choreography() / sample()</code>, la même équation que les autres prototypes) plutôt que rejoués depuis un
+    <code>.rbxmx</code> exporté — ce prototype n'exporte aucun fichier intermédiaire, la chorégraphie va droit au
+    lecteur. Le pilier, le trône/escalier et la couronne restent des <code>Model</code> Roblox statiques (Part par
+    Part, voir <code>props.py</code>/<code>props_battle.py</code>) ; la couronne change de parent en cours de scène
+    (coussin → main → tête), recalculée ici comme le fait <code>compute_crown_track.py</code> de
+    <code>r6_throne_crown</code>.</p>
+
+  <div class="card">
+    <div class="viewport-wrap">
+      <canvas id="stage" width="1200" height="900"></canvas>
+      <canvas id="overlay" width="1200" height="900"></canvas>
+      <div class="chip left" id="shotChip">plan · <b id="shotName">garde</b></div>
+      <div class="chip right" id="timecode">0.00s / 38.34s</div>
+    </div>
+
+    <div class="controls">
+      <div class="transport">
+        <button class="play-btn" id="playBtn" aria-label="Lecture / pause">
+          <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M8 5v14l11-7z"/></svg>
+          <svg id="pauseIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+        </button>
+        <div class="scrub-col">
+          <div class="phase-track" id="phaseTrack"></div>
+          <input type="range" id="scrub" min="0" max="1000" value="0" step="1" aria-label="Position dans la scène">
+        </div>
+      </div>
+      <div class="row-bottom">
+        <div class="phase-label">phase <b id="phaseName2">garde</b></div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap">
+          <div class="btn-row" id="speedRow">
+            <button data-speed="0.25">0.25×</button>
+            <button data-speed="0.5">0.5×</button>
+            <button data-speed="1" class="active">1×</button>
+            <button data-speed="2">2×</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="note"><strong>Deux rigs actifs, pas un attaquant contre un mannequin</strong> : contrairement à
+    <code>r6_hit_combo</code>, Rival encaisse, se relance, charge un grand crochet, se fait projeter, titube et
+    s'effondre — chaque pose est une vraie chorégraphie (<code>choreography.rival_track()</code>), pas une réaction
+    statique. Au-delà du dernier keyframe de chacun (<code>rival_track()</code> s'arrête à la victoire de Hero, il ne
+    monte pas les marches), le rig <strong>tient sa dernière pose</strong> — extrapolation <code>CONSTANT</code> par
+    défaut des F-curves Blender au-delà de la dernière keyframe, vérifié avant d'en dépendre plutôt que supposé —
+    exactement le comportement voulu (Rival reste K.O. au sol pendant tout le sacre).</p>
+  <p class="note"><strong>Le pilier ne se casse jamais deux fois</strong> : deux groupes de Parts statiques
+    (<code>props_battle.pillar_parts</code>/<code>pillar_debris_parts</code>, fragments dispersés de façon
+    déterministe par seed) sont construits une seule fois au chargement ; le lecteur bascule simplement leur
+    visibilité au moment exact de l'impact (<code>PILLAR_HIT_T</code>) — un bris scripté et reproductible, pas une
+    simulation physique en temps réel.</p>
+  <p class="note"><strong>Caméra empruntée aux deux prototypes de référence</strong> : pendant tout le combat, un
+    système de plans à cible dynamique (milieu Hero/Rival, ou l'un des deux seul) façon <code>r6_hit_combo</code> —
+    coordonnées sphériques azimut/élévation/distance, sursaut de FOV + secousse à chaque impact — avec des cuts
+    volontairement <strong>serrés sur chaque coup</strong> (jab/cross/hook/kick/finisher) et <strong>larges</strong>
+    sur le télégraphe du grand crochet et l'esquive. Dès la marche victorieuse jusqu'au sacre, le lecteur
+    <strong>reprend telles quelles</strong> les six valeurs de plan (azimut/élévation/échelle/cible) de
+    <code>r6_throne_crown/throne_crown_viewer.html</code> — même repère monde, même personnage, même trône : aucune
+    raison de les redécouvrir.</p>
+  <p class="note"><strong>VFX</strong> : lueur de charge + smear de bras/jambe + flash/traits/étincelles/anneau de
+    choc à chaque coup (jab/cross/hook/kick/finisher), intensité croissante jusqu'au finisher — même code que
+    <code>r6_hit_combo</code>, généralisé aux deux combattants et à une jambe (le coup de pied). Le bris du pilier
+    reprend le même éclat + anneau de choc, mais avec une palette pierre/poussière et un nuage de débris plus
+    lent/plus large qu'un impact de poing — pas de nouvelle recette, une adaptation de palette.</p>
+  <p class="note"><strong>Rig des deux personnages</strong> : même rig R6 vérifié (dépôt Adonis, licence MIT) que les
+    autres prototypes de ce dossier.</p>
+</div>
+
+<script>__THREE_JS__</script>
+<script>
+const DATA = __SCENE_DATA__;
+const TEXTURES_B64 = __TEXTURES_B64__;
+const LEGS = new Set(["Right Leg", "Left Leg"]);
+const I3 = [1,0,0, 0,1,0, 0,0,1];
+
+const glCanvas = document.getElementById("stage");
+const overlay = document.getElementById("overlay");
+const octx = overlay.getContext("2d");
+const scrub = document.getElementById("scrub");
+const playBtn = document.getElementById("playBtn");
+const playIcon = document.getElementById("playIcon");
+const pauseIcon = document.getElementById("pauseIcon");
+const shotNameEl = document.getElementById("shotName");
+const phaseNameEl2 = document.getElementById("phaseName2");
+const timecodeEl = document.getElementById("timecode");
+const phaseTrack = document.getElementById("phaseTrack");
+
+const IT = DATA.instants;
+const DURATION = DATA.duration;
+
+// ---------------------------------------------------------------------
+// Coups/impacts -- meme mecanisme de hitstop CUMULATIF que r6_hit_combo
+// (poseTime()), generalise a 7 evenements repartis sur toute la scene
+// (au lieu de 3 sur ~2s) : jab d'ouverture de Rival, combo complet de
+// Hero, coup de pied, bris du pilier, coup de grace. Chaque entree gele
+// la pose au moment de l'impact pendant sa propre duree ; tout ce qui
+// suit est decale par la SOMME des gels deja ecoules.
+const HITS = [
+  { name: "rival_jab", fighter: "rival", arm: "Left Arm", kind: "punch",
+    windup_t: IT.rival_jab_windup, impact_t: IT.rival_jab, hitstopDur: 2/30,
+    stretchPeak: 0.22, impactPeak: 0.16, debrisN: 6, linesN: 16, flashAlpha: 0.45,
+    shakeAmp: 0.045, shakeDur: 0.10, glow: "255,150,60" },
+  { name: "hero_jab", fighter: "hero", arm: "Left Arm", kind: "punch",
+    windup_t: IT.hero_jab_windup, impact_t: IT.hero_jab, hitstopDur: 2/30,
+    stretchPeak: 0.22, impactPeak: 0.16, debrisN: 6, linesN: 16, flashAlpha: 0.50,
+    shakeAmp: 0.045, shakeDur: 0.10, glow: "255,150,60" },
+  { name: "hero_cross", fighter: "hero", arm: "Right Arm", kind: "punch",
+    windup_t: IT.hero_cross_windup, impact_t: IT.hero_cross, hitstopDur: 3/30,
+    stretchPeak: 0.45, impactPeak: 0.30, debrisN: 12, linesN: 30, flashAlpha: 0.78,
+    shakeAmp: 0.085, shakeDur: 0.15, glow: "255,150,60" },
+  { name: "hero_hook", fighter: "hero", arm: "Left Arm", kind: "punch",
+    windup_t: IT.hero_hook_windup, impact_t: IT.hero_hook, hitstopDur: 6/30,
+    stretchPeak: 0.65, impactPeak: 0.42, debrisN: 20, linesN: 44, flashAlpha: 1.00,
+    shakeAmp: 0.16, shakeDur: 0.22, glow: "255,90,190" },
+  { name: "kick", fighter: "hero", arm: "Right Leg", kind: "kick",
+    windup_t: IT.kick_windup, impact_t: IT.kick_strike, hitstopDur: 5/30,
+    stretchPeak: 0.35, impactPeak: 0.30, debrisN: 16, linesN: 34, flashAlpha: 0.85,
+    shakeAmp: 0.13, shakeDur: 0.18, glow: "255,120,60" },
+  { name: "pillar", fighter: null, arm: null, kind: "pillar",
+    windup_t: IT.kick_strike, impact_t: IT.pillar_hit, hitstopDur: 3/30,
+    stretchPeak: 0, impactPeak: 0, debrisN: 26, linesN: 20, flashAlpha: 0.35,
+    shakeAmp: 0.14, shakeDur: 0.22, glow: "210,180,140" },
+  { name: "finisher", fighter: "hero", arm: "Left Arm", kind: "punch",
+    windup_t: IT.finish_coil, impact_t: IT.finish_strike, hitstopDur: 9/30,
+    stretchPeak: 0.70, impactPeak: 0.46, debrisN: 24, linesN: 50, flashAlpha: 1.00,
+    shakeAmp: 0.20, shakeDur: 0.26, glow: "255,80,60" },
+];
+
+function poseTime(tReal) {
+  let shift = 0;
+  for (const h of HITS) {
+    const realImpact = h.impact_t + shift;
+    if (tReal < realImpact) return tReal - shift;
+    if (tReal < realImpact + h.hitstopDur) return h.impact_t;
+    shift += h.hitstopDur;
+  }
+  return tReal - shift;
+}
+const TOTAL_HITSTOP = HITS.reduce((s, h) => s + h.hitstopDur, 0);
+const REAL_DURATION = DURATION + TOTAL_HITSTOP;
+
+let _shiftAcc = 0;
+for (const h of HITS) {
+  h.real_impact_t = h.impact_t + _shiftAcc;
+  _shiftAcc += h.hitstopDur;
+}
+
+// ---------------------------------------------------------------------
+// Piste de phases (affichage seulement -- l'ecart de quelques dixiemes
+// de seconde introduit par le hitstop cumule sur les libelles n'est
+// jamais perceptible sur une scene de 38s).
+const PHASE_KIND = {
+  garde: "calm", jab_rival_encaisse: "impact", combo_hero: "impact",
+  regroupement: "calm", esquive_et_kick: "impact", finisher: "impact",
+  victoire_et_marche: "charge", montee_trone: "climb", assise_couronnement: "crown",
+  jab: "impact", encaisse_combo: "impact", haymaker_et_kick_encaisse: "impact",
+  titubation_et_ko: "impact", ko_tenu: "calm",
+};
+const PHASES = DATA.hero_phases;
+
+function rebuildPhaseTrack() {
+  phaseTrack.innerHTML = "";
+  PHASES.forEach(p => {
+    const seg = document.createElement("div");
+    seg.className = "phase-seg";
+    seg.dataset.kind = PHASE_KIND[p.name] || "calm";
+    seg.style.width = (Math.max(0, p.t1 - p.t0) / REAL_DURATION * 100) + "%";
+    phaseTrack.appendChild(seg);
+  });
+}
+rebuildPhaseTrack();
+
+function currentPhase(t) {
+  for (const p of PHASES) if (t >= p.t0 - 1e-6 && t <= p.t1 + 1e-6) return p;
+  return PHASES[PHASES.length - 1];
+}
+
+// ---------------------------------------------------------------------
+// Camera -- deux systemes bout a bout :
+//  1. FIGHT_SHOTS (0 .. IT.beat5_end=IT.walk_end) : cible DYNAMIQUE
+//     (milieu Hero/Rival, ou l'un des deux) -- les deux combattants
+//     couvrent ~20 studs de profondeur d'arene selon le beat, une cible
+//     fixe par plan (comme dans throne_crown) ne suivrait pas. Meme
+//     modele spherique (az/el/distance autour d'une cible) que les deux
+//     lecteurs de reference.
+//  2. THRONE_SHOTS (IT.beat5_end .. fin) : repris VERBATIM (memes
+//     az/el/echelle/cible) de r6_throne_crown/throne_crown_viewer.html
+//     -- meme repere monde, meme personnage, meme trone.
+const FIGHT_SHOTS = [
+  { name: "garde", t0: 0, t1: IT.t0_end, follow: "mid",
+    az0: -92, az1: -90, el0: 9, el1: 10, sc0: 0.82, sc1: 0.85, tyOff: 1.3 },
+  { name: "jab d'ouverture", t0: IT.t0_end, t1: IT.beat1_end, follow: "mid",
+    az0: -90, az1: -88, el0: 10, el1: 11, sc0: 0.85, sc1: 0.95, tyOff: 1.3 },
+  { name: "combo", t0: IT.beat1_end, t1: IT.beat2_end, follow: "mid",
+    az0: -88, az1: -84, el0: 11, el1: 13, sc0: 0.95, sc1: 1.18, tyOff: 1.15 },
+  { name: "respiration", t0: IT.beat2_end, t1: IT.beat3_start, follow: "mid",
+    az0: -84, az1: -80, el0: 12, el1: 11, sc0: 1.18, sc1: 0.78, tyOff: 1.3 },
+  { name: "grand crochet", t0: IT.beat3_start, t1: IT.kick_windup, follow: "mid",
+    az0: -80, az1: -77, el0: 11, el1: 12, sc0: 0.78, sc1: 0.76, tyOff: 1.3 },
+  { name: "coup de pied", t0: IT.kick_windup, t1: IT.kick_strike + 0.15, follow: "mid",
+    az0: -77, az1: -75, el0: 12, el1: 14, sc0: 0.76, sc1: 1.35, tyOff: 1.1 },
+  { name: "pilier brisé", t0: IT.kick_strike + 0.15, t1: IT.beat3_end, follow: "rival",
+    az0: -75, az1: -70, el0: 14, el1: 12, sc0: 1.35, sc1: 0.92, tyOff: 1.0 },
+  { name: "approche finale", t0: IT.beat3_end, t1: IT.finish_windup, follow: "mid",
+    az0: -70, az1: -68, el0: 12, el1: 12, sc0: 0.92, sc1: 0.90, tyOff: 1.3 },
+  { name: "coup de grâce", t0: IT.finish_windup, t1: IT.beat4_end, follow: "mid",
+    az0: -68, az1: -65, el0: 12, el1: 14, sc0: 0.90, sc1: 1.32, tyOff: 1.05 },
+  { name: "victoire", t0: IT.beat4_end, t1: IT.flex_hold, follow: "hero",
+    az0: -65, az1: -58, el0: 13, el1: 12, sc0: 1.32, sc1: 0.74, tyOff: 1.4 },
+  // az proche de celui de departa du plan "montee" de throne_crown (-58)
+  // pour un raccord de cadrage sans a-coup a IT.beat5_end -- PAS une vue
+  // "de dos" (az~180) : a cette distance (plan large), un azimut proche
+  // de 180 place la camera derriere le personnage, DANS l'axe du mur en
+  // ruine de fond d'arene (wall, tres loin en -Z) -- trouve par capture
+  // d'ecran (mur en gros plan, tout l'ecran), corrige en gardant un plan
+  // 3/4 AVANT (voir montee de throne_crown_viewer.html, meme logique).
+  { name: "vers le trône", t0: IT.turn_start, t1: IT.walk_end, follow: "hero",
+    az0: -62, az1: -52, el0: 10, el1: 12, sc0: 0.52, sc1: 0.62, tyOff: 1.5 },
+];
+
+// -- Reprises telles quelles de throne_crown_viewer.html (SHOTS), memes
+// valeurs numeriques -- seules les bornes de temps sont recalculees ici
+// (decalees par la montee de l'escalier + le combat, voir dump_scene_data.
+// instants sit_*/climb_*).
+const THRONE_SHOTS = [
+  { name: "montée", t0: IT.beat5_end, t1: IT.climb_montee_end,
+    az0: -58, az1: -50, el0: 10, el1: 14, sc0: 0.80, sc1: 0.94, tz0: -6.4, tz1: -2.1, ty0: 3.6, ty1: 4.8 },
+  { name: "demi-tour", t0: IT.climb_montee_end, t1: IT.climb_end,
+    az0: -140, az1: -115, el0: 13, el1: 15, sc0: 1.00, sc1: 1.10, tz0: -1.6, tz1: -1.4, ty0: 4.8, ty1: 5.2 },
+  { name: "approche", t0: IT.climb_end, t1: IT.sit_approche_end,
+    az0: -115, az1: -150, el0: 14, el1: 13, sc0: 1.05, sc1: 1.15, tz0: -1.2, tz1: -0.6, ty0: 5.2, ty1: 5.6 },
+  { name: "assise", t0: IT.sit_approche_end, t1: IT.sit_assise_end,
+    az0: -150, az1: -145, el0: 13, el1: 13, sc0: 0.80, sc1: 0.84, tz0: 0.2, tz1: 0.3, ty0: 5.6, ty1: 5.8 },
+  { name: "couronnement", t0: IT.sit_assise_end, t1: IT.sit_couronnement_end,
+    az0: -150, az1: -135, el0: 15, el1: 21, sc0: 1.05, sc1: 1.35, tz0: 0.4, tz1: 0.5, ty0: 5.9, ty1: 6.3 },
+  { name: "pose finale", t0: IT.sit_couronnement_end, t1: IT.sit_pose_finale_end + 1e-3,
+    az0: -160, az1: -150, el0: 11, el1: 12, sc0: 0.68, sc1: 0.72, tz0: -0.6, tz1: -0.3, ty0: 5.5, ty1: 5.6 },
+];
+
+function shotAt(list, t) {
+  for (const s of list) if (t >= s.t0 - 1e-6 && t < s.t1 + 1e-6) return s;
+  return list[list.length - 1];
+}
+
+const BASE_DIST = 15.0;
+// -- distance de base propre a THRONE_SHOTS : les valeurs sc0/sc1
+// reprises de throne_crown_viewer.html sont calibrees contre SON
+// BASE_DIST=13.0, pas 15.0 -- les reutiliser sous le mauvais diviseur
+// pousse la camera trop loin (plans "montee"/"demi-tour" trouves trop
+// eloignes/de travers par capture d'ecran) sans jamais reproduire le
+// cadrage d'origine.
+const ROOM_BASE_DIST = 13.0;
+const MIN_DIST = 3.5;
+const MIN_SUBJECT_DIST = 5.2;
+const ROOM_Z_LIMIT = 1.6;   // meme filet de securite que throne_crown_viewer.html
+
+function cameraDir(az, el) {
+  return new THREE.Vector3(
+    Math.sin(az) * Math.cos(el),
+    Math.sin(el),
+    Math.cos(az) * Math.cos(el),
+  );
+}
+
+function cameraAt(pt, heroPose, rivalPose) {
+  if (pt < IT.beat5_end) {
+    const s = shotAt(FIGHT_SHOTS, pt);
+    const f = Math.max(0, Math.min(1, (pt - s.t0) / Math.max(1e-6, s.t1 - s.t0)));
+    const e = 1 - Math.pow(1 - f, 2);
+    const lerp = (a, b) => a + (b - a) * e;
+    const heroP = heroPose["Torso"].p, rivalP = rivalPose["Torso"].p;
+    let tx, ty, tz;
+    if (s.follow === "hero") { tx = heroP[0]; ty = heroP[1]; tz = heroP[2]; }
+    else if (s.follow === "rival") { tx = rivalP[0]; ty = rivalP[1]; tz = rivalP[2]; }
+    else { tx = (heroP[0] + rivalP[0]) / 2; ty = (heroP[1] + rivalP[1]) / 2; tz = (heroP[2] + rivalP[2]) / 2; }
+    return {
+      shot: s, az: lerp(s.az0, s.az1) * Math.PI / 180, el: lerp(s.el0, s.el1) * Math.PI / 180,
+      scale: lerp(s.sc0, s.sc1), tx, ty: ty + s.tyOff, tz, room: false,
+    };
+  }
+  const s = shotAt(THRONE_SHOTS, pt);
+  const f = Math.max(0, Math.min(1, (pt - s.t0) / Math.max(1e-6, s.t1 - s.t0)));
+  const e = 1 - Math.pow(1 - f, 2);
+  const lerp = (a, b) => a + (b - a) * e;
+  return {
+    shot: s, az: lerp(s.az0, s.az1) * Math.PI / 180, el: lerp(s.el0, s.el1) * Math.PI / 180,
+    scale: lerp(s.sc0, s.sc1), tx: 0, tz: lerp(s.tz0, s.tz1), ty: lerp(s.ty0, s.ty1), room: true,
+  };
+}
+
+// Sursaut par impact -- zoom optique bref (FOV) + secousse, meme
+// mecanique que r6_hit_combo, appliquee aux 7 evenements de HITS.
+const FOV_BASE = 42;
+function fovAt(t) {
+  let fov = FOV_BASE;
+  for (const h of HITS) {
+    const age = t - h.real_impact_t;
+    const dur = h.shakeDur + 0.06;
+    if (age < 0 || age > dur) continue;
+    const drop = 7 * (1 + h.shakeAmp * 3);
+    if (age < 0.035) fov = FOV_BASE - drop * (age / 0.035);
+    else { const rel = Math.min(1, (age - 0.035) / (dur - 0.035)); fov = FOV_BASE - drop * (1 - rel); }
+  }
+  return fov;
+}
+function shakeOffset(t) {
+  let x = 0, y = 0, z = 0;
+  for (const h of HITS) {
+    const age = t - h.real_impact_t;
+    if (age < 0 || age > h.shakeDur) continue;
+    const decay = 1 - age / h.shakeDur;
+    const amp = h.shakeAmp;
+    x += Math.sin(age * 140) * amp * decay;
+    y += Math.sin(age * 97 + 1.4) * amp * 0.7 * decay;
+    z += Math.sin(age * 121 + 0.6) * amp * 0.6 * decay;
+  }
+  return { x, y, z };
+}
+
+// ---------------------------------------------------------------------
+// Scene Three.js
+const renderer = new THREE.WebGLRenderer({ canvas: glCanvas, antialias: true });
+renderer.setSize(1200, 900, false);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+if (renderer.outputColorSpace !== undefined) renderer.outputColorSpace = THREE.SRGBColorSpace;
+if (renderer.physicallyCorrectLights !== undefined) renderer.physicallyCorrectLights = true;
+if (renderer.toneMapping !== undefined) { renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.06; }
+
+const scene = new THREE.Scene();
+const HORIZON_COLOR = 0x3f2a16, ZENITH_COLOR = 0x120d10;
+scene.background = new THREE.Color(ZENITH_COLOR);
+scene.fog = new THREE.Fog(HORIZON_COLOR, 12, 46);
+
+const camera = new THREE.PerspectiveCamera(42, 1200 / 900, 0.1, 220);
+
+function buildSkyDome() {
+  const geo = new THREE.SphereGeometry(160, 24, 16);
+  const pos = geo.attributes.position;
+  const colors = new Float32Array(pos.count * 3);
+  const horizon = new THREE.Color(HORIZON_COLOR), zenith = new THREE.Color(ZENITH_COLOR);
+  const tmp = new THREE.Color();
+  for (let i = 0; i < pos.count; i++) {
+    const y = pos.getY(i) / 160;
+    const f = Math.max(0, Math.min(1, (y + 0.05) * 1.15));
+    tmp.copy(horizon).lerp(zenith, f);
+    colors[i * 3] = tmp.r; colors[i * 3 + 1] = tmp.g; colors[i * 3 + 2] = tmp.b;
+  }
+  geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+  const mat = new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide, fog: false, depthWrite: false });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.renderOrder = -10;
+  return mesh;
+}
+scene.add(buildSkyDome());
+
+// Deux configurations de cle -- une lumiere directionnelle n'a pas de
+// portee spatiale, seule sa DIRECTION (position -> cible) compte pour
+// l'ombrage : la meme direction ne peut pas eclairer correctement a la
+// fois le mur de fond d'arene (normale +Z, cote combat, meme choix que
+// r6_hit_combo) ET le dossier du trone (normale -Z, cote salle) -- ce
+// sont des normales OPPOSEES. Trouve par capture d'ecran (dossier/
+// couronnement entierement noirs avec la cle unique orientee pour
+// l'arene) : la cle est donc REPOSITIONNEE chaque frame selon la portion
+// de la scene (combat vs trone), plutot qu'un compromis qui n'eclaire
+// correctement ni l'un ni l'autre. Cote trone, memes valeurs EXACTES que
+// throne_crown_viewer.html (deja verifiees par capture dans ce
+// prototype-la) -- pas redecouvertes ici.
+const FIGHT_LIGHT = { pos: [-5, 12, -2], target: [0, 2, -10], shadow: { l: -26, r: 14, t: 18, b: -20, near: 1, far: 48 } };
+const ROOM_LIGHT = { pos: [-5.4, 12.6, -4.56], target: [0, 3, 0], shadow: { l: -10, r: 10, t: 18, b: -6, near: 1, far: 40 } };
+
+const keyLight = new THREE.DirectionalLight(0xffd9a8, 2.5);
+keyLight.castShadow = true;
+keyLight.shadow.mapSize.set(2048, 2048);
+keyLight.shadow.bias = -0.0015;
+scene.add(keyLight);
+scene.add(keyLight.target);
+
+let _keyLightRoom = null;
+function setKeyLightMode(room) {
+  if (_keyLightRoom === room) return;
+  _keyLightRoom = room;
+  const cfg = room ? ROOM_LIGHT : FIGHT_LIGHT;
+  keyLight.position.set(...cfg.pos);
+  keyLight.target.position.set(...cfg.target);
+  const s = keyLight.shadow.camera;
+  s.left = cfg.shadow.l; s.right = cfg.shadow.r;
+  s.top = cfg.shadow.t; s.bottom = cfg.shadow.b;
+  s.near = cfg.shadow.near; s.far = cfg.shadow.far;
+  s.updateProjectionMatrix();
+}
+setKeyLightMode(false);
+
+const fillLight = new THREE.HemisphereLight(0x6a5a46, 0x1a1410, 0.62);
+scene.add(fillLight);
+
+const rimLight = new THREE.DirectionalLight(0xff8a3c, 0.5);
+rimLight.position.set(4, 4, -20);
+scene.add(rimLight);
+
+// ---------------------------------------------------------------------
+// Chargement pre-resolu des textures (voir throne_crown_viewer.html --
+// evite un .clone() sur une image encore en train de decoder).
+function loadImage(b64) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.src = "data:image/png;base64," + b64;
+  });
+}
+const TEX_CACHE = {};
+async function preloadTextures() {
+  const bases = ["slate", "marble", "cobblestone", "metal", "fabric", "wood"];
+  for (const base of bases) {
+    const entry = {};
+    for (const key of ["color", "normal", "roughness", "metalness"]) {
+      const b64 = TEXTURES_B64[base + "_" + key];
+      if (!b64) { entry[key] = null; continue; }
+      const img = await loadImage(b64);
+      const tex = new THREE.Texture(img);
+      tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.RepeatWrapping;
+      tex.needsUpdate = true;
+      if (key === "color" && tex.colorSpace !== undefined) tex.colorSpace = THREE.SRGBColorSpace;
+      entry[key] = tex;
+    }
+    TEX_CACHE[base] = entry;
+  }
+  for (const name of ["ruin_wall", "stone_ground"]) {
+    const b64 = TEXTURES_B64[name];
+    if (!b64) continue;
+    const img = await loadImage(b64);
+    const tex = new THREE.Texture(img);
+    tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.RepeatWrapping;
+    tex.needsUpdate = true;
+    if (tex.colorSpace !== undefined) tex.colorSpace = THREE.SRGBColorSpace;
+    TEX_CACHE[name] = { color: tex };
+  }
+}
+function cloneTex(t) {
+  if (!t) return null;
+  const c = t.clone();
+  c.needsUpdate = true;
+  return c;
+}
+
+const ROBLOX_MATERIAL = {
+  Slate: { tex: "slate", studsPerTile: 2.6, roughness: 0.70, metalness: 0.03 },
+  Marble: { tex: "marble", studsPerTile: 3.0, roughness: 0.35, metalness: 0.03 },
+  Cobblestone: { tex: "cobblestone", studsPerTile: 2.6, roughness: 0.78, metalness: 0.0 },
+  Metal: { tex: "metal", studsPerTile: 1.3, roughness: 0.28, metalness: 0.85 },
+  Fabric: { tex: "fabric", studsPerTile: 0.7, roughness: 0.88, metalness: 0.0 },
+  Wood: { tex: "wood", studsPerTile: 1.8, roughness: 0.50, metalness: 0.03 },
+  // -- pilier/debris (props_battle.py) : pas de famille PBR dediee, on
+  // reutilise les textures de pierre/pave deja vendorisees plutot que
+  // d'en generer de nouvelles pour ce prototype.
+  Granite: { tex: "slate", studsPerTile: 2.2, roughness: 0.80, metalness: 0.02 },
+  Rock: { tex: "cobblestone", studsPerTile: 1.8, roughness: 0.88, metalness: 0.0 },
+};
+
+function rgbToThreeColor(rgbArr) { return new THREE.Color(rgbArr[0] / 255, rgbArr[1] / 255, rgbArr[2] / 255); }
+function hexToRgb(hex) {
+  hex = hex.replace("#", "").trim();
+  const n = parseInt(hex, 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+function buildMaterialForSpec(spec) {
+  const matName = spec.material;
+  const color = rgbToThreeColor(spec.color);
+  if (matName === "Neon") {
+    return new THREE.MeshStandardMaterial({ color, emissive: color.clone(), emissiveIntensity: 1.7, roughness: 0.35, metalness: 0.1 });
+  }
+  const rules = ROBLOX_MATERIAL[matName];
+  if (!rules) return new THREE.MeshStandardMaterial({ color, roughness: 0.55, metalness: 0.06 });
+  const base = TEX_CACHE[rules.tex];
+  const avgDim = (spec.size[0] + spec.size[1] + spec.size[2]) / 3;
+  const rep = Math.max(0.6, avgDim / rules.studsPerTile);
+  const map = cloneTex(base.color), normalMap = cloneTex(base.normal),
+        roughnessMap = cloneTex(base.roughness), metalnessMap = cloneTex(base.metalness);
+  [map, normalMap, roughnessMap, metalnessMap].forEach(t => { if (t) t.repeat.set(rep, rep); });
+  const mat = new THREE.MeshStandardMaterial({
+    map, normalMap, roughnessMap, metalnessMap,
+    roughness: roughnessMap ? 1.0 : rules.roughness,
+    metalness: metalnessMap ? 1.0 : rules.metalness,
+  });
+  if (normalMap) mat.normalScale = new THREE.Vector2(0.9, 0.9);
+  return mat;
+}
+
+function buildGeometryForSpec(spec) {
+  const shape = spec.shape || "1";
+  const size = spec.size;
+  if (shape === "0") {
+    const r = Math.min(size[0], size[1], size[2]) / 2;
+    return new THREE.SphereGeometry(r, 16, 12);
+  }
+  if (shape === "2") {
+    const radius = size[1] / 2, length = size[0];
+    const geo = new THREE.CylinderGeometry(radius, radius, length, 20);
+    geo.rotateZ(-Math.PI / 2);
+    return geo;
+  }
+  return new THREE.BoxGeometry(size[0], size[1], size[2]);
+}
+
+const _m4 = new THREE.Matrix4();
+function applyPoseToMesh(mesh, p, r) {
+  mesh.position.set(p[0], p[1], p[2]);
+  _m4.set(
+    r[0], r[1], r[2], 0,
+    r[3], r[4], r[5], 0,
+    r[6], r[7], r[8], 0,
+    0, 0, 0, 1,
+  );
+  mesh.quaternion.setFromRotationMatrix(_m4);
+}
+
+function buildStaticGroup(parts) {
+  const group = new THREE.Group();
+  for (const spec of parts) {
+    const geo = buildGeometryForSpec(spec);
+    const mat = buildMaterialForSpec(spec);
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    const flatRot = spec.rot.flat ? spec.rot.flat() : [].concat(...spec.rot);
+    applyPoseToMesh(mesh, spec.pos, flatRot);
+    group.add(mesh);
+  }
+  scene.add(group);
+  return group;
+}
+
+function buildRigMeshes(rgb, roughness) {
+  const meshes = {};
+  for (const part of DATA.part_order) {
+    if (part === "HumanoidRootPart") continue;
+    const size = DATA.part_sizes[part];
+    const color = LEGS.has(part) ? rgb.clone().multiplyScalar(0.72) : rgb;
+    const mat = new THREE.MeshStandardMaterial({ color, roughness, metalness: 0.06 });
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(size[0], size[1], size[2]), mat);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    scene.add(mesh);
+    meshes[part] = mesh;
+  }
+  return meshes;
+}
+
+// ---------------------------------------------------------------------
+// Echantillonnage des frames decimees -- meme technique (interpolation
+// lineaire + slerp approx) que les deux lecteurs de reference.
+function frameAt(frames, t) {
+  const dt = 1 / DATA.fps;
+  const idx = Math.max(0, Math.min(frames.length - 2, Math.floor(t / dt)));
+  const f0 = frames[idx], f1 = frames[idx + 1];
+  const frac = Math.max(0, Math.min(1, (t - f0.t) / (f1.t - f0.t || 1)));
+  return { f0, f1, frac };
+}
+function slerpish(a, b, f) {
+  const m = a.map((v, i) => v + (b[i] - v) * f);
+  const c0 = [m[0], m[3], m[6]], c1 = [m[1], m[4], m[7]];
+  const n0 = Math.hypot(c0[0], c0[1], c0[2]) || 1;
+  const e0 = c0.map(v => v / n0);
+  const d = e0[0]*c1[0] + e0[1]*c1[1] + e0[2]*c1[2];
+  let e1 = c1.map((v, i) => v - d * e0[i]);
+  const n1 = Math.hypot(e1[0], e1[1], e1[2]) || 1;
+  e1 = e1.map(v => v / n1);
+  const e2 = [e0[1]*e1[2]-e0[2]*e1[1], e0[2]*e1[0]-e0[0]*e1[2], e0[0]*e1[1]-e0[1]*e1[0]];
+  return [e0[0], e1[0], e2[0], e0[1], e1[1], e2[1], e0[2], e1[2], e2[2]];
+}
+function sampleChar(frames, t) {
+  const { f0, f1, frac } = frameAt(frames, t);
+  const out = {};
+  for (const part of DATA.part_order) {
+    const a = f0[part], b = f1[part];
+    out[part] = { p: a.p.map((v, i) => v + (b.p[i] - v) * frac), r: slerpish(a.r, b.r, frac) };
+  }
+  return out;
+}
+function sampleCrown(t) {
+  const { f0, f1, frac } = frameAt(DATA.crown_frames, t);
+  const out = {};
+  for (const name of DATA.crown_part_names) {
+    const a = f0[name], b = f1[name];
+    out[name] = { p: a.p.map((v, i) => v + (b.p[i] - v) * frac), r: slerpish(a.r, b.r, frac) };
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------------
+// VFX en surimpression (canvas 2D transparent empile sur le WebGL).
+const _projV = new THREE.Vector3();
+function worldToScreen(x, y, z) {
+  _projV.set(x, y, z).project(camera);
+  return { x: (_projV.x * 0.5 + 0.5) * overlay.width, y: (1 - (_projV.y * 0.5 + 0.5)) * overlay.height };
+}
+
+function drawFistCharge(t, hit, fistScreen) {
+  if (t < hit.windup_t || t >= hit.impact_t) return;
+  const f = Math.min(1, (t - hit.windup_t) / Math.max(1e-6, hit.impact_t - hit.windup_t));
+  const pulseHz = 2.5 + f * 4.0;
+  const pulse = 0.75 + 0.25 * Math.sin(t * pulseHz * Math.PI * 2);
+  const intensity = f * pulse;
+  const r = (12 + f * 18) * pulse;
+  octx.save();
+  octx.globalCompositeOperation = "lighter";
+  const halo = octx.createRadialGradient(fistScreen.x, fistScreen.y, 0, fistScreen.x, fistScreen.y, r * 2.2);
+  halo.addColorStop(0, `rgba(${hit.glow},${0.5 * intensity})`);
+  halo.addColorStop(1, `rgba(${hit.glow},0)`);
+  octx.fillStyle = halo;
+  octx.beginPath(); octx.arc(fistScreen.x, fistScreen.y, r * 2.2, 0, Math.PI * 2); octx.fill();
+  const core = octx.createRadialGradient(fistScreen.x, fistScreen.y, 0, fistScreen.x, fistScreen.y, r * 0.6);
+  core.addColorStop(0, `rgba(255,240,220,${0.8 * intensity})`);
+  core.addColorStop(1, `rgba(${hit.glow},${0.4 * intensity})`);
+  octx.fillStyle = core;
+  octx.beginPath(); octx.arc(fistScreen.x, fistScreen.y, r * 0.6, 0, Math.PI * 2); octx.fill();
+  octx.restore();
+}
+
+function limbWorld(pose, part) { return pose[part].p; }
+function shoulderWorld(torsoPose, isLeft) {
+  const r = torsoPose.r, p = torsoPose.p;
+  const lx = isLeft ? -0.9 : 0.9, ly = 0.6, lz = 0.0;
+  return [p[0] + r[0]*lx + r[1]*ly + r[2]*lz, p[1] + r[3]*lx + r[4]*ly + r[5]*lz, p[2] + r[6]*lx + r[7]*ly + r[8]*lz];
+}
+function drawArmSmear(t, hit, framesByFighter) {
+  const lookback = 0.07;
+  if (t < hit.windup_t || t > hit.impact_t + 0.02) return;
+  const f = Math.min(1, (t - hit.windup_t) / Math.max(1e-6, hit.impact_t - hit.windup_t));
+  const envelope = Math.min(1, f * 2.2);
+  if (envelope <= 0.02) return;
+
+  const frames = framesByFighter[hit.fighter];
+  const poseNow = sampleChar(frames, t);
+  const prevT = Math.max(hit.windup_t, t - lookback);
+  const prevPose = sampleChar(frames, prevT);
+  const isLeft = hit.arm.startsWith("Left");
+  const anchorNow = LEGS.has(hit.arm) ? poseNow["Torso"].p : shoulderWorld(poseNow["Torso"], isLeft);
+  const tipNow = limbWorld(poseNow, hit.arm);
+  const tipPrev = limbWorld(prevPose, hit.arm);
+
+  const s0 = worldToScreen(anchorNow[0], anchorNow[1], anchorNow[2]);
+  const s1 = worldToScreen(tipNow[0], tipNow[1], tipNow[2]);
+  const sPrev = worldToScreen(tipPrev[0], tipPrev[1], tipPrev[2]);
+
+  octx.save();
+  octx.globalCompositeOperation = "lighter";
+  const dx = s1.x - s0.x, dy = s1.y - s0.y;
+  const len = Math.hypot(dx, dy) || 1;
+  const nx = -dy / len, ny = dx / len;
+  const width = 22 * envelope;
+  octx.fillStyle = `rgba(255,225,190,${0.26 * envelope})`;
+  octx.beginPath();
+  octx.moveTo(s0.x, s0.y);
+  octx.lineTo(s1.x + nx * width, s1.y + ny * width);
+  octx.lineTo(s1.x - nx * width, s1.y - ny * width);
+  octx.closePath(); octx.fill();
+
+  const tdx = s1.x - sPrev.x, tdy = s1.y - sPrev.y;
+  const tlen = Math.hypot(tdx, tdy) || 1;
+  const tnx = -tdy / tlen, tny = tdx / tlen;
+  const tw = 9 * envelope;
+  const trailGrad = octx.createLinearGradient(sPrev.x, sPrev.y, s1.x, s1.y);
+  trailGrad.addColorStop(0, "rgba(255,255,255,0)");
+  trailGrad.addColorStop(1, `rgba(255,255,255,${0.5 * envelope})`);
+  octx.fillStyle = trailGrad;
+  octx.beginPath();
+  octx.moveTo(sPrev.x + tnx*tw*0.15, sPrev.y + tny*tw*0.15);
+  octx.lineTo(s1.x + tnx*tw, s1.y + tny*tw);
+  octx.lineTo(s1.x - tnx*tw, s1.y - tny*tw);
+  octx.lineTo(sPrev.x - tnx*tw*0.15, sPrev.y - tny*tw*0.15);
+  octx.closePath(); octx.fill();
+  octx.restore();
+}
+
+function drawImpactFrame(t, hit, contactScreen) {
+  const age = t - hit.real_impact_t;
+  const linesDur = 0.10 + hit.shakeAmp * 0.4;
+  if (age < 0 || age >= linesDur) return;
+  const flashDur = 0.03 + hit.flashAlpha * 0.02;
+  if (age < flashDur) {
+    octx.save();
+    octx.globalAlpha = hit.flashAlpha * Math.max(0, 1 - age / flashDur * 0.15);
+    octx.fillStyle = "#f5f0e6";
+    octx.fillRect(0, 0, overlay.width, overlay.height);
+    octx.restore();
+    return;
+  }
+  const f = (age - flashDur) / (linesDur - flashDur);
+  octx.save();
+  octx.fillStyle = "#f5f0e6";
+  octx.globalAlpha = Math.max(0, hit.flashAlpha - f * hit.flashAlpha);
+  octx.fillRect(0, 0, overlay.width, overlay.height);
+  octx.globalAlpha = 1;
+  const cxp = contactScreen.x, cyp = contactScreen.y;
+  const N = hit.linesN;
+  octx.strokeStyle = "#0c0a08";
+  for (let i = 0; i < N; i++) {
+    const ang = (i / N) * Math.PI * 2 + Math.sin(i * 12.9) * 0.12;
+    const jitter = Math.sin(i * 7.3) * 0.5 + 0.5;
+    const len = (180 + jitter * 320) * (1 - f * 0.25);
+    const inner = 20 + jitter * 26;
+    const w = 2.6 + jitter * 7.0 * (1 - f);
+    const x0 = cxp + Math.cos(ang) * inner, y0 = cyp + Math.sin(ang) * inner * 0.85;
+    const x1 = cxp + Math.cos(ang) * (inner + len), y1 = cyp + Math.sin(ang) * (inner + len) * 0.85;
+    octx.lineWidth = w;
+    octx.beginPath(); octx.moveTo(x0, y0); octx.lineTo(x1, y1); octx.stroke();
+  }
+  const rg = octx.createRadialGradient(cxp, cyp, 0, cxp, cyp, 90);
+  rg.addColorStop(0, "rgba(255,250,235,0.85)"); rg.addColorStop(1, "rgba(255,250,235,0)");
+  octx.fillStyle = rg;
+  octx.beginPath(); octx.arc(cxp, cyp, 90, 0, Math.PI * 2); octx.fill();
+  octx.restore();
+}
+
+function drawDebrisBurst(t, hit, contactScreen) {
+  const age = t - hit.real_impact_t;
+  const life = 0.35 + hit.shakeAmp * 1.2;
+  if (age < 0.015 || age >= life) return;
+  octx.save();
+  for (let i = 0; i < hit.debrisN; i++) {
+    const seed = i * 3.71 + 1.3;
+    const ang = (i / hit.debrisN) * Math.PI * 2 + Math.sin(seed) * 0.6 - Math.PI * 0.5;
+    const speed = 180 + 130 * (Math.sin(seed * 1.9) * 0.5 + 0.5);
+    const size = 6 + 8 * (Math.sin(seed * 2.7) * 0.5 + 0.5);
+    const spin0 = seed * 2.1;
+    const spinSpeed = 4.0 + 3.0 * Math.sin(seed * 3.3);
+    const gravity = 320;
+    const dx = Math.cos(ang) * speed * age;
+    const dy = Math.sin(ang) * speed * 0.72 * age + 0.5 * gravity * age * age;
+    const px = contactScreen.x + dx, py = contactScreen.y + dy;
+    const lifeFrac = age / life;
+    const alpha = Math.max(0, 1 - Math.pow(lifeFrac, 1.6));
+    if (alpha <= 0.01) continue;
+    const rot = spin0 + spinSpeed * age;
+    octx.save();
+    octx.translate(px, py);
+    octx.rotate(rot);
+    octx.globalAlpha = alpha;
+    octx.beginPath();
+    for (let v = 0; v < 5; v++) {
+      const a2 = (v / 5) * Math.PI * 2;
+      const r2 = size * (0.7 + 0.3 * Math.sin(seed * 5.1 + v * 2.3));
+      const vx = Math.cos(a2) * r2, vy = Math.sin(a2) * r2 * 0.85;
+      if (v === 0) octx.moveTo(vx, vy); else octx.lineTo(vx, vy);
+    }
+    octx.closePath();
+    octx.fillStyle = "#3a2f26";
+    octx.fill();
+    octx.fillStyle = "rgba(180,140,95,0.55)";
+    octx.save(); octx.clip();
+    octx.beginPath(); octx.ellipse(-size*0.2, -size*0.2, size*0.5, size*0.35, 0, 0, Math.PI*2); octx.fill();
+    octx.restore();
+    octx.restore();
+  }
+  octx.restore();
+}
+
+// Nuage de poussière/gravats -- adaptation de drawDebrisBurst avec une
+// palette pierre (teintes props_battle.DEBRIS_STONE) et une chute plus
+// lente/plus large (nuage, pas des eclats balistiques nets) pour le
+// pilier, sur demande de tache ("stone-toned palette", pas une nouvelle
+// recette).
+function drawPillarDust(t, hit, contactScreen) {
+  const age = t - hit.real_impact_t;
+  const life = 0.9;
+  if (age < 0 || age >= life) return;
+  octx.save();
+  for (let i = 0; i < hit.debrisN; i++) {
+    const seed = i * 2.63 + 0.7;
+    const ang = (i / hit.debrisN) * Math.PI * 2 + Math.sin(seed) * 1.1;
+    const speed = 60 + 90 * (Math.sin(seed * 1.7) * 0.5 + 0.5);
+    const size = 10 + 22 * (Math.sin(seed * 2.1) * 0.5 + 0.5);
+    const drift = age * speed;
+    const rise = -40 * age + 60 * age * age;   // monte puis retombe doucement (poussiere, pas gravier)
+    const px = contactScreen.x + Math.cos(ang) * drift;
+    const py = contactScreen.y + Math.sin(ang) * drift * 0.5 + rise;
+    const lifeFrac = age / life;
+    const alpha = Math.max(0, 0.55 * (1 - Math.pow(lifeFrac, 1.3)));
+    if (alpha <= 0.01) continue;
+    const g = octx.createRadialGradient(px, py, 0, px, py, size);
+    g.addColorStop(0, `rgba(150,138,116,${alpha})`);
+    g.addColorStop(1, "rgba(96,88,72,0)");
+    octx.fillStyle = g;
+    octx.beginPath(); octx.arc(px, py, size, 0, Math.PI * 2); octx.fill();
+  }
+  octx.restore();
+}
+
+function drawImpactSpark(t, hit, contactScreen) {
+  const age = t - hit.real_impact_t;
+  const life = 0.16 + hit.shakeAmp * 0.5;
+  if (age < 0 || age >= life) return;
+  octx.save();
+  octx.globalCompositeOperation = "lighter";
+  const n = Math.round(hit.linesN * 0.6);
+  for (let i = 0; i < n; i++) {
+    const seed = i * 5.23 + 2.1;
+    const ang = (i / n) * Math.PI * 2 + Math.sin(seed) * 0.4;
+    const speed = 260 + 220 * (Math.sin(seed * 1.7) * 0.5 + 0.5);
+    const len = 14 + 26 * (Math.sin(seed * 2.3) * 0.5 + 0.5);
+    const dist = speed * age;
+    const lifeFrac = age / life;
+    const alpha = Math.max(0, 1 - Math.pow(lifeFrac, 1.4));
+    if (alpha <= 0.02) continue;
+    const x0 = contactScreen.x + Math.cos(ang) * dist, y0 = contactScreen.y + Math.sin(ang) * dist * 0.85;
+    const x1 = contactScreen.x + Math.cos(ang) * (dist + len), y1 = contactScreen.y + Math.sin(ang) * (dist + len) * 0.85;
+    octx.strokeStyle = `rgba(${hit.glow},${alpha})`;
+    octx.lineWidth = 2.4 * alpha + 0.6;
+    octx.beginPath(); octx.moveTo(x0, y0); octx.lineTo(x1, y1); octx.stroke();
+  }
+  const coreAlpha = Math.max(0, 1 - age / (life * 0.5));
+  if (coreAlpha > 0) {
+    const core = octx.createRadialGradient(contactScreen.x, contactScreen.y, 0, contactScreen.x, contactScreen.y, 34);
+    core.addColorStop(0, `rgba(255,255,255,${0.9 * coreAlpha})`);
+    core.addColorStop(0.4, `rgba(${hit.glow},${0.6 * coreAlpha})`);
+    core.addColorStop(1, `rgba(${hit.glow},0)`);
+    octx.fillStyle = core;
+    octx.beginPath(); octx.arc(contactScreen.x, contactScreen.y, 34, 0, Math.PI * 2); octx.fill();
+  }
+  octx.restore();
+}
+
+function drawShockwaveRing(t, hit, contactScreen) {
+  const age = t - hit.real_impact_t;
+  const dur = 0.16 + hit.shakeAmp * 0.55;
+  if (age < 0 || age >= dur) return;
+  const f = age / dur;
+  const maxR = 60 + hit.debrisN * 6;
+  const r = maxR * (1 - Math.pow(1 - f, 2.2));
+  const alpha = Math.max(0, 1 - f) * 0.85;
+  octx.save();
+  octx.globalCompositeOperation = "lighter";
+  octx.strokeStyle = `rgba(${hit.glow},${alpha})`;
+  octx.lineWidth = Math.max(1, 7 * (1 - f));
+  octx.beginPath();
+  octx.ellipse(contactScreen.x, contactScreen.y, r, r * 0.82, 0, 0, Math.PI * 2);
+  octx.stroke();
+  octx.restore();
+}
+
+function releaseStretchFactor(t, hit) {
+  if (t < hit.windup_t || t >= hit.impact_t) return 1.0;
+  const f = (t - hit.windup_t) / Math.max(1e-6, hit.impact_t - hit.windup_t);
+  return 1.0 + hit.stretchPeak * Math.pow(f, 1.6);
+}
+function armStretchFactor(t, hit) {
+  const age = t - hit.impact_t;
+  const dur = 0.20, attack = 0.03;
+  if (age < 0 || age > dur) return 1.0;
+  const a = Math.min(1, age / attack);
+  const relAge = Math.max(0, age - attack), relDur = Math.max(1e-6, dur - attack);
+  const rel = Math.max(0, 1 - Math.pow(relAge / relDur, 1.4));
+  return 1.0 + hit.impactPeak * a * rel;
+}
+
+// -- Halo de la couronne + gemmes, et eclat du sacre -- repris tels
+// quels de throne_crown_viewer.html (memes fonctions, memes constantes).
+const CROWNED_T = IT.placed_t;
+function drawCrownGlow(t, crownPose) {
+  if (t < CROWNED_T - 0.5) return;
+  const grow = Math.min(1, (t - (CROWNED_T - 0.5)) / 0.5);
+  const pulse = 0.8 + 0.2 * Math.sin(t * 5.2);
+  octx.save();
+  octx.globalCompositeOperation = "lighter";
+  const band = crownPose["Band"];
+  const bs = worldToScreen(band.p[0], band.p[1], band.p[2]);
+  const R = 92 * grow * pulse;
+  const halo = octx.createRadialGradient(bs.x, bs.y, 0, bs.x, bs.y, R);
+  halo.addColorStop(0, `rgba(255,224,150,${0.34 * grow})`);
+  halo.addColorStop(0.4, `rgba(255,200,110,${0.16 * grow})`);
+  halo.addColorStop(1, "rgba(255,200,110,0)");
+  octx.fillStyle = halo;
+  octx.beginPath(); octx.arc(bs.x, bs.y, R, 0, Math.PI * 2); octx.fill();
+  for (let s = 0; s < 4; s++) {
+    const ang = t * 1.3 + s * Math.PI / 2;
+    const len = 34 * grow * pulse;
+    const dx = Math.cos(ang) * len, dy = Math.sin(ang) * len * 0.6;
+    const sg = octx.createLinearGradient(bs.x - dx, bs.y - dy, bs.x + dx, bs.y + dy);
+    sg.addColorStop(0, "rgba(255,240,200,0)");
+    sg.addColorStop(0.5, `rgba(255,240,200,${0.55 * grow})`);
+    sg.addColorStop(1, "rgba(255,240,200,0)");
+    octx.strokeStyle = sg; octx.lineWidth = 2;
+    octx.beginPath(); octx.moveTo(bs.x - dx, bs.y - dy); octx.lineTo(bs.x + dx, bs.y + dy); octx.stroke();
+  }
+  for (const name of DATA.crown_part_names) {
+    if (!name.endsWith("_Gem") && name !== "Band") continue;
+    const cp = crownPose[name];
+    const s = worldToScreen(cp.p[0], cp.p[1], cp.p[2]);
+    const r = (name === "Band" ? 26 : 20) * grow * pulse;
+    const alpha = (name === "Band" ? 0.22 : 0.48) * grow;
+    const color = name === "Band" ? "255,221,140" : "255,150,190";
+    const g = octx.createRadialGradient(s.x, s.y, 0, s.x, s.y, r);
+    g.addColorStop(0, `rgba(${color},${alpha})`);
+    g.addColorStop(1, `rgba(${color},0)`);
+    octx.fillStyle = g;
+    octx.beginPath(); octx.arc(s.x, s.y, r, 0, Math.PI * 2); octx.fill();
+  }
+  octx.restore();
+}
+const CORONATION_FLASH_DUR = 0.07, CORONATION_RAYS_DUR = 0.30;
+function drawCoronationFlash(t, screenPos) {
+  const age = t - CROWNED_T;
+  if (age < 0 || age >= CORONATION_RAYS_DUR) return;
+  octx.save();
+  if (age < CORONATION_FLASH_DUR) {
+    octx.globalAlpha = 0.55 * (1 - age / CORONATION_FLASH_DUR);
+    octx.fillStyle = "#fff2d6";
+    octx.fillRect(0, 0, overlay.width, overlay.height);
+  }
+  const f = age / CORONATION_RAYS_DUR;
+  const N = 16;
+  octx.globalCompositeOperation = "lighter";
+  for (let i = 0; i < N; i++) {
+    const ang = (i / N) * Math.PI * 2 + Math.sin(i * 5.3) * 0.15;
+    const reach = (60 + 240 * f) * (0.7 + 0.3 * Math.sin(i * 2.7));
+    const x1 = screenPos.x + Math.cos(ang) * reach, y1 = screenPos.y + Math.sin(ang) * reach * 0.75;
+    const rg = octx.createLinearGradient(screenPos.x, screenPos.y, x1, y1);
+    const a = Math.max(0, 0.6 * (1 - f));
+    rg.addColorStop(0, `rgba(255,224,150,${a})`);
+    rg.addColorStop(1, "rgba(255,224,150,0)");
+    octx.strokeStyle = rg;
+    octx.lineWidth = 2.4 * (1 - f * 0.6);
+    octx.beginPath(); octx.moveTo(screenPos.x, screenPos.y); octx.lineTo(x1, y1); octx.stroke();
+  }
+  octx.restore();
+}
+
+// ---------------------------------------------------------------------
+async function main() {
+await preloadTextures();
+
+const groundTex = cloneTex(TEX_CACHE["stone_ground"] ? TEX_CACHE["stone_ground"].color : null);
+if (groundTex) groundTex.repeat.set(26, 26);
+const groundMat = groundTex
+  ? new THREE.MeshStandardMaterial({ map: groundTex, roughness: 0.92, metalness: 0.02 })
+  : new THREE.MeshStandardMaterial({ color: 0x555050, roughness: 0.92 });
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(100, 100), groundMat);
+ground.rotation.x = -Math.PI / 2;
+ground.position.set(0, 0, -10);
+ground.receiveShadow = true;
+scene.add(ground);
+
+// -- mur en ruine au fond de l'arene, derriere Rival (meme texture que
+// r6_hit_combo) : contient visuellement le combat sans jamais chevaucher
+// le trone (bien plus loin en +Z).
+const wallTex = cloneTex(TEX_CACHE["ruin_wall"] ? TEX_CACHE["ruin_wall"].color : null);
+if (wallTex) wallTex.repeat.set(14, 2.2);
+const wallMat = wallTex
+  ? new THREE.MeshStandardMaterial({ map: wallTex, roughness: 0.97, metalness: 0.0 })
+  : new THREE.MeshStandardMaterial({ color: 0x3a332a, roughness: 0.97 });
+const wall = new THREE.Mesh(new THREE.PlaneGeometry(56, 9), wallMat);
+wall.position.set(0, 4.4, -27.5);
+wall.receiveShadow = true;
+scene.add(wall);
+
+// -- trone + escalier, statiques.
+buildStaticGroup(DATA.static_parts);
+
+// -- pilier : deux groupes, un seul visible a la fois (bascule dans
+// render(), voir plus bas) -- jamais de simulation physique, un swap.
+const pillarGroup = buildStaticGroup(DATA.pillar_parts);
+const debrisGroup = buildStaticGroup(DATA.pillar_debris_parts);
+debrisGroup.visible = false;
+
+// -- deux rigs actifs.
+const heroColor = rgbToThreeColor(hexToRgb(cssVar("--rig-hero")));
+const rivalColor = rgbToThreeColor(hexToRgb(cssVar("--rig-rival")));
+const heroMeshes = buildRigMeshes(heroColor, 0.55);
+const rivalMeshes = buildRigMeshes(rivalColor, 0.60);
+const MESHES_BY_FIGHTER = { hero: heroMeshes, rival: rivalMeshes };
+const FRAMES_BY_FIGHTER = { hero: DATA.hero_frames, rival: DATA.rival_frames };
+
+// -- couronne : geometrie/materiau construits une fois (voir
+// dump_scene_data.crown_frames_at), pose appliquee chaque frame.
+// Taille/couleur/materiau/forme de chaque piece sont constantes sur
+// toute la scene (seule la pose change, voir dump_scene_data.
+// crown_frames_at) -- livrees une fois dans DATA.crown_part_specs plutot
+// que repetees dans chaque frame.
+const crownMeshes = {};
+{
+  const firstFrame = DATA.crown_frames[0];
+  for (const name of DATA.crown_part_names) {
+    const spec = { ...DATA.crown_part_specs[name], pos: firstFrame[name].p };
+    const geo = buildGeometryForSpec(spec);
+    const mat = buildMaterialForSpec(spec);
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    scene.add(mesh);
+    crownMeshes[name] = mesh;
+  }
+}
+
+// ---------------------------------------------------------------------
+function render(t) {
+  const pt = poseTime(t);
+
+  const heroPose = sampleChar(DATA.hero_frames, pt);
+  const rivalPose = sampleChar(DATA.rival_frames, pt);
+  const crownPose = sampleCrown(pt);
+
+  const cam = cameraAt(pt, heroPose, rivalPose);
+  setKeyLightMode(cam.room);
+  const target = new THREE.Vector3(cam.tx, cam.ty, cam.tz);
+  const dir = cameraDir(cam.az, cam.el);
+
+  let dist = Math.max(MIN_DIST, (cam.room ? ROOM_BASE_DIST : BASE_DIST) / cam.scale);
+  if (cam.room && dir.z > 1e-4) {
+    const capDist = (ROOM_Z_LIMIT - target.z) / dir.z;
+    if (capDist > 0) dist = Math.min(dist, capDist);
+  }
+  const candidate = target.clone().addScaledVector(dir, dist);
+  const heroTorso = new THREE.Vector3(...heroPose["Torso"].p);
+  let nearestSubjectDist;
+  if (cam.room) {
+    nearestSubjectDist = candidate.distanceTo(heroTorso);
+  } else {
+    const rivalTorso = new THREE.Vector3(...rivalPose["Torso"].p);
+    nearestSubjectDist = Math.min(candidate.distanceTo(heroTorso), candidate.distanceTo(rivalTorso));
+  }
+  if (nearestSubjectDist < MIN_SUBJECT_DIST) dist += (MIN_SUBJECT_DIST - nearestSubjectDist);
+
+  const wp = target.clone().addScaledVector(dir, dist);
+  const shake = shakeOffset(t);
+  camera.position.set(wp.x + shake.x, wp.y + shake.y, wp.z + shake.z);
+  camera.lookAt(target);
+  camera.fov = fovAt(t);
+  camera.updateProjectionMatrix();
+
+  for (const part of DATA.part_order) {
+    if (part === "HumanoidRootPart") continue;
+    applyPoseToMesh(heroMeshes[part], heroPose[part].p, heroPose[part].r);
+    applyPoseToMesh(rivalMeshes[part], rivalPose[part].p, rivalPose[part].r);
+  }
+  for (const name of DATA.crown_part_names) {
+    applyPoseToMesh(crownMeshes[name], crownPose[name].p, crownPose[name].r);
+  }
+
+  // -- bris du pilier : bascule de visibilite au moment exact, en temps
+  // de POSE (meme grille que le reste de la scene, jamais le temps reel
+  // decale par le hitstop).
+  const pillarBroken = pt >= DATA.pillar_hit_t;
+  pillarGroup.visible = !pillarBroken;
+  debrisGroup.visible = pillarBroken;
+
+  // -- etirement de bras/jambe sur le coup en cours (au plus un actif a
+  // la fois, generalisation de r6_hit_combo a un ensemble de coups
+  // etale sur toute la scene plutot que 3 dans les 3 premieres secondes).
+  const touchedMeshes = [];
+  for (const hit of HITS) {
+    if (hit.kind === "pillar" || !hit.fighter) continue;
+    const mesh = MESHES_BY_FIGHTER[hit.fighter][hit.arm];
+    const stretch = pt < hit.impact_t ? releaseStretchFactor(pt, hit) : armStretchFactor(pt, hit);
+    if (stretch > 1.0) {
+      mesh.scale.set(1, stretch, 1);
+      const limbLen = DATA.part_sizes[hit.arm][1];
+      const extra = (stretch - 1) * limbLen * 0.5;
+      const isReleasing = pt < hit.impact_t;
+      const localDir = isReleasing ? new THREE.Vector3(0, -1, 0) : new THREE.Vector3(0, 1, 0);
+      const shift = localDir.applyQuaternion(mesh.quaternion).multiplyScalar(extra);
+      mesh.position.add(shift);
+      touchedMeshes.push(mesh);
+    }
+  }
+
+  renderer.render(scene, camera);
+  for (const mesh of touchedMeshes) mesh.scale.set(1, 1, 1);
+
+  octx.clearRect(0, 0, overlay.width, overlay.height);
+  for (const hit of HITS) {
+    if (hit.kind === "pillar") {
+      const cs = worldToScreen(DATA.pillar_pos[0], DATA.pillar_pos[1] + 2.2, DATA.pillar_pos[2]);
+      drawShockwaveRing(t, hit, cs);
+      drawImpactSpark(t, hit, cs);
+      drawPillarDust(t, hit, cs);
+      continue;
+    }
+    const pose = hit.fighter === "hero" ? heroPose : rivalPose;
+    const tipWorld = limbWorld(pose, hit.arm);
+    const tipScreen = worldToScreen(tipWorld[0], tipWorld[1], tipWorld[2]);
+    drawFistCharge(pt, hit, tipScreen);
+    drawArmSmear(pt, hit, FRAMES_BY_FIGHTER);
+    drawImpactFrame(t, hit, tipScreen);
+    drawShockwaveRing(t, hit, tipScreen);
+    drawImpactSpark(t, hit, tipScreen);
+    drawDebrisBurst(t, hit, tipScreen);
+  }
+  drawCrownGlow(pt, crownPose);
+  const headTop = crownPose["Band"].p;
+  drawCoronationFlash(t, worldToScreen(headTop[0], headTop[1], headTop[2]));
+
+  const phase = currentPhase(t);
+  shotNameEl.textContent = cam.shot.name;
+  phaseNameEl2.textContent = phase.name.replace(/_/g, " ");
+  timecodeEl.textContent = t.toFixed(2) + "s / " + REAL_DURATION.toFixed(2) + "s";
+}
+
+let playing = true, speed = 1, simTime = 0, lastWall = null;
+function setPlaying(p) {
+  playing = p;
+  playIcon.style.display = p ? "none" : "block";
+  pauseIcon.style.display = p ? "block" : "none";
+}
+playBtn.addEventListener("click", () => setPlaying(!playing));
+scrub.addEventListener("input", () => { simTime = (scrub.value / 1000) * REAL_DURATION; render(simTime); });
+document.querySelectorAll("#speedRow button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll("#speedRow button").forEach(x => x.classList.remove("active"));
+  b.classList.add("active"); speed = parseFloat(b.dataset.speed);
+}));
+
+function loop(ts) {
+  if (lastWall === null) lastWall = ts;
+  const dt = Math.min(0.05, (ts - lastWall) / 1000);
+  lastWall = ts;
+  if (playing) {
+    simTime += dt * speed;
+    if (simTime > REAL_DURATION) simTime = 0;
+    scrub.value = Math.round((simTime / REAL_DURATION) * 1000);
+  }
+  render(simTime);
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+window.__render = render;
+window.__setPlaying = setPlaying;
+window.__setSimTime = (t) => { simTime = t; };
+
+}
+main();
+</script>
