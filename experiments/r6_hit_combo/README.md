@@ -274,27 +274,102 @@ toujours OK. Captures avant/après montrant la charge en fléchissant
 (`captures/verification/2026-09-05-hit-combo-footwork-*.png`) et le
 nouveau pivot des jambes au lâcher.
 
+## Passe « hold-and-snap » (retour utilisateur, quatrième itération)
+
+Retour, après les trois passes ci-dessus : « Okk c pas la mais c tjrs pas
+smooth ou bien animé va revoir les ref que je t'avais envoyé puis fais un
+autre travail de recherche animateur Roblox etc. » Demande explicite de
+revenir sur les 3 vidéos de référence (déjà analysées pour l'impact du
+direct du droit) et de refaire une recherche « comme un animateur
+Roblox », cette fois ciblée sur la FLUIDITÉ elle-même — pas l'impact, pas
+les jambes, pas les VFX (déjà traités).
+
+**Recherche.** Un agent a réextrait les 3 vidéos image par image (~60
+fps réel, contact sheets zoomés) en se concentrant uniquement sur la
+structure temporelle du mouvement, pas sur les trajectoires exactes des
+membres (masquées par les VFX et la distance de la caméra dans ces
+montages). Constat net et contre-intuitif : sur ~60 frames consécutives
+d'un coup, **seules 5-8 % des frames montrent une pose réellement en
+train d'interpoler** — le reste alterne des **holds vraiment statiques**
+(anticipation ET réaction, 4 à 17× plus longs que le coup lui-même) et un
+**snap quasi instantané** (1-3 frames) pour le lacher, jamais une pose qui
+« coule » en continu de la charge au contact. Autre point clé : un hold
+n'est jamais un plan mort — quelque chose bouge TOUJOURS à l'écran
+pendant un hold (halo/anneau de VFX, fumée, secousse ou travelling de
+caméra), même quand le rig lui-même est parfaitement figé — c'est cette
+vie en surcouche, pas le rig, qui empêche un hold de lire comme raide.
+Recherche complémentaire (Roblox devforum / tutoriels Moon Animator) :
+même diagnostic dans la communauté Roblox — « l'interpolation par défaut
+entre keyframes lit comme robotique », la fluidité perçue vient du
+contraste entre poses clé tenues (breakdowns) et un relâchement bref, pas
+d'une interpolation continue de bout en bout.
+
+**Diagnostic sur notre combo** : `apply_choreography()` utilise des
+tangentes Bezier `AUTO_CLAMPED` sur TOUTES les keyframes, et jusqu'ici
+chaque coup n'avait qu'un point de passage instantané au coil (pas de
+vraie pose tenue) avant d'interpoler en continu vers le hip-drive puis le
+strike — exactement le contre-exemple identifié par la recherche : tout
+« coule », rien n'est jamais vraiment figé ni vraiment relâché d'un coup
+sec, ce qui lit comme mou/tweené plutôt que comme un vrai coup de poing.
+
+**Correction** (`scripts/choreography.py`) : un vrai **hold** (keyframe
+dupliquée, pose strictement identique, tenue `JAB_HOLD`/`CROSS_HOLD`/
+`HOOK_HOLD` = 3/5/7 frames — escalade jab < cross < hook, même logique
+que le reste du projet) au coil de chaque coup, avant un lâcher toujours
+aussi bref (`SNAP=1/30`, inchangé — déjà conforme à la recherche). Pendant
+le hold, le halo de charge du poing (`drawFistCharge`, lecteur) continue
+de pulser en continu — le rig est figé, l'écran ne l'est jamais.
+
+**Piège de mesure trouvé en implémentant ce hold** (documenté ici parce
+qu'il a bien failli passer inaperçu) : `calibrate.py` mesure l'écart de
+contact via `idx_at(t) = round(t*60)` sur un échantillonnage à 60 Hz. Si
+l'instant d'impact (`JAB_T`/`CROSS_T`/`HOOK_T`) ne tombe pas exactement
+sur ce quadrillage (multiple de 1/60 s), la mesure attrape un instant
+légèrement décalé de l'impact réel — jusqu'ici négligeable (~3 ms), mais
+la première version retimée de la chronologie (en secondes décimales,
+`+0.16`, `+0.18`, `+0.09`...) tombait sur un décalage deux fois plus
+grand pour le cross, suffisant pour fausser sa mesure (poing à Y=2,884 au
+lieu de 3,208, écart de contact à 0,339 au lieu de 0,366 stud) alors que
+RIEN dans la pose elle-même n'avait changé — une fausse alerte de
+régression. Corrigé à la racine : toute la chronologie est maintenant
+construite en **nombre de frames entier** (`_fr(n) = n/30`), donc
+systématiquement un multiple exact de 1/60 également — plus aucune
+ambiguïté d'arrondi possible. Reconfirmé ensuite : écarts de contact
+revenus à 0,493 / 0,366 / 0,380 stud (cross exactement comme avant,
+hook très proche de 0,393), donc bien une fausse alerte de mesure et non
+une régression de la chorégraphie.
+
+Vérifié : captures aux instants de début et de fin de chaque hold (cross
+et hook) confirmant une pose **strictement identique** entre les deux
+(`captures/verification/2026-09-05-hit-combo-holdsnap-*.png`) avec le
+halo de charge visiblement différent (pulsation) — la preuve que le rig
+est figé mais l'écran ne l'est pas. Durée totale du combo passée de
+2,63 s à 2,85 s (les holds ajoutent du temps, mais aucun temps mort
+neutre entre les coups n'est réintroduit — le principe « le retour d'un
+coup devient l'amorce du suivant » reste intact).
+
 ## Vérification
 
 Environnement : `pip install numpy bpy` (le conteneur ne les avait pas
 préinstallés cette session — packages présents dans le cache pip local,
 réinstallés sans nouveau téléchargement réseau).
 
-- `python3 calibrate.py` : écarts de contact 0,493 / 0,366 / 0,393 stud
+- `python3 calibrate.py` : écarts de contact 0,493 / 0,366 / 0,380 stud
   (jab/cross/hook), structure OK sur les deux rigs, durées égales
-  (2,63 s) — réexécuté et confirmé inchangé après la passe « niveau
-  expert » ET après la passe « jeu de jambes » (voir sections dédiées
-  ci-dessus).
+  (2,85 s) — réexécuté et confirmé après la passe « niveau expert », la
+  passe « jeu de jambes », ET la passe « hold-and-snap » (voir sections
+  dédiées ci-dessus ; un piège de mesure lié à l'échantillonnage a été
+  trouvé et corrigé pendant cette dernière passe).
 - `python3 run_scene.py` : export des deux `KeyframeSequence`,
-  « Structure OK » pour l'attaquant et le mannequin, 80 keyframes chacun.
-- `python3 build_viewer.py` : lecteur final assemblé (892 417 octets, 2
+  « Structure OK » pour l'attaquant et le mannequin, 87 keyframes chacun.
+- `python3 build_viewer.py` : lecteur final assemblé (903 567 octets, 2
   textures embarquées, three.min.js embarqué).
 - Syntaxe JS : extraction du `<script>` et `node --check` — aucune erreur
-  (revérifié après l'ajout de `drawImpactSpark`/`drawShockwaveRing`).
-- Balayage Playwright sur toute la durée (`REAL_DURATION=3,063s` après
-  l'allongement du hitstop du hook, 400 points) : **0 erreur console, 0
-  valeur caméra NaN/Infinity**, position caméra et FOV échantillonnés à
-  chaque coup sans dérive anormale.
+  (revérifié après chaque passe VFX/viewer).
+- Balayage Playwright sur toute la durée (`REAL_DURATION=3,283s` après le
+  hold-and-snap, 400 points) : **0 erreur console, 0 valeur caméra
+  NaN/Infinity**, position caméra et FOV échantillonnés à chaque coup
+  sans dérive anormale.
 - Captures visuelles à 11 instants clés (garde, windup/impact/après pour
   chaque coup, posture finale) : la caméra garde les deux personnages
   entièrement dans le cadre à tout instant, l'escalade des VFX (lignes de
@@ -320,6 +395,11 @@ réinstallés sans nouveau téléchargement réseau).
     plus larges, couleur rose/magenta distincte (finisher).
   - `2026-09-05-hit-combo-hook-hop-reaction.png` — whiplash + hop du
     mannequin pendant la projection du hook.
+  - `2026-09-05-hit-combo-holdsnap-cross-coil-start.png` et
+    `-cross-coil-held.png` — même pose du rig à 0,16 s d'écart (hold réel
+    au coil du cross), seul le halo de charge change.
+  - `2026-09-05-hit-combo-holdsnap-hook-coil-start.png` et
+    `-hook-coil-held.png` — idem pour le hook, hold le plus long du combo.
 
 ## Fichiers
 

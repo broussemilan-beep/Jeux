@@ -81,21 +81,64 @@ JAB_DIP = 0.05
 CROSS_DIP = 0.11
 HOOK_DIP = 0.17
 
-# -- Chronologie -- pas de temps mort entre les coups (retour utilisateur
-# "encore plus fluide, pas de saccade") : chaque RETRACT sert de WINDUP
-# au coup suivant, le buste passe directement d'une torsion a l'autre.
-GARDE_T = 0.18
-JAB_WINDUP_T = 0.34
-JAB_HIPDRIVE_T = 0.46 - SNAP
-JAB_T = 0.46
-CROSS_WINDUP_T = 0.62      # = retour du jab qui devient l'armement du cross
-CROSS_COIL_T = 0.80
-CROSS_HIPDRIVE_T = 0.98 - SNAP
-CROSS_T = 0.98
-HOOK_WINDUP_T = 1.14       # = retour du cross qui devient l'armement du hook
-HOOK_COIL_T = 1.34
-HOOK_HIPDRIVE_T = 1.58 - SNAP
-HOOK_T = 1.58
+# -- Chronologie -- retour utilisateur (analyse frame par frame des 3
+# videos de reference, deuxieme passe, ciblee sur la FLUIDITE et non plus
+# l'impact) : ce qui lit comme "smooth"/professionnel n'est PAS une
+# interpolation continue de bout en bout -- c'est l'inverse. Sur les 3
+# refs, ~5-8% des frames seulement montrent une VRAIE pose intermediaire
+# en train de bouger ; le reste alterne des HOLDS reellement statiques
+# (4 a 17x plus longs que le coup lui-meme) et un SNAP quasi instantane
+# (1-3 frames) pour le lacher -- jamais une pose qui "coule" en continu
+# de la charge au contact. Notre version precedente interpolait tout en
+# continu (AUTO_CLAMPED de bout en bout) : ca lit comme une animation
+# "tweenee" (mou, jamais vraiment charge ni vraiment relache), pas comme
+# un vrai coup. Corrige : un vrai HOLD statique (keyframe dupliquee, meme
+# pose) au COIL de chaque coup -- durree croissante jab<cross<hook,
+# meme logique d'escalade que le reste du projet -- puis un lacher tout
+# aussi bref qu'avant (SNAP=1/30, inchange). Pendant le hold, la scene
+# n'est PAS morte : le halo de charge du poing (drawFistCharge, deja
+# pulse en continu sur toute la fenetre windup->impact) continue de
+# vivre a l'ecran independamment de la pose du rig -- exactement le
+# "quelque chose bouge toujours meme pendant un hold" releve sur les
+# refs (VFX/camera, jamais le rig lui-meme, qui lui reste sciemment figE).
+# Toutes les constantes de chronologie ci-dessous sont construites en
+# NOMBRE DE FRAMES entieres (a 30 fps) plutot qu'en secondes decimales --
+# piege trouve en implementant ce hold : `calibrate.py` mesure via
+# `idx_at(t) = round(t*60)` sur un echantillonnage a 60 Hz ; si `t` (donc
+# JAB_T/CROSS_T/HOOK_T) ne tombe pas exactement sur ce quadrillage, la
+# mesure attrape un instant legerement DECALE de l'impact reel -- negligeable
+# d'habitude (~3 ms), mais suffisant pour fausser sensiblement l'ecart de
+# contact du cross une fois la chronologie retimee (ecart mesure tombe a
+# 0.339 stud avec une Y fausse de 0.32 stud, alors que rien dans la pose
+# elle-meme n'avait change). Corrige a la racine : chaque instant est un
+# nombre entier de frames /30, donc systematiquement un multiple exact de
+# 1/60 egalement -- aucune ambiguite d'arrondi possible.
+def _fr(n):
+    return n / 30.0
+
+
+JAB_HOLD = _fr(3)     # jab : hold court (coup rapide, leger)
+CROSS_HOLD = _fr(5)
+HOOK_HOLD = _fr(7)    # hook (finisher) : hold le plus long
+
+GARDE_T = _fr(5)
+JAB_WINDUP_T = _fr(10)                        # arrivee a la pose de charge
+JAB_WINDUP_HOLD_T = JAB_WINDUP_T + JAB_HOLD   # meme pose, tenue -- vrai hold (frame 13)
+JAB_HIPDRIVE_T = JAB_WINDUP_HOLD_T + _fr(2) - SNAP  # lacher bref (frame 14)
+JAB_T = JAB_WINDUP_HOLD_T + _fr(2)                  # frame 15
+
+CROSS_WINDUP_T = JAB_T + _fr(5)                # = retour du jab qui devient l'armement du cross (frame 20)
+CROSS_COIL_T = CROSS_WINDUP_T + _fr(5)         # arrivee au coil (frame 25)
+CROSS_COIL_HOLD_T = CROSS_COIL_T + CROSS_HOLD  # meme pose, tenue -- vrai hold (frame 30)
+CROSS_HIPDRIVE_T = CROSS_COIL_HOLD_T + _fr(3) - SNAP  # frame 32
+CROSS_T = CROSS_COIL_HOLD_T + _fr(3)                  # frame 33
+
+HOOK_WINDUP_T = CROSS_T + _fr(5)               # = retour du cross qui devient l'armement du hook (frame 38)
+HOOK_COIL_T = HOOK_WINDUP_T + _fr(6)           # arrivee au coil (le plus charge du combo, frame 44)
+HOOK_COIL_HOLD_T = HOOK_COIL_T + HOOK_HOLD     # meme pose, tenue -- le hold le plus long (frame 51)
+HOOK_HIPDRIVE_T = HOOK_COIL_HOLD_T + _fr(3) - SNAP    # frame 53
+HOOK_T = HOOK_COIL_HOLD_T + _fr(3)                    # frame 54
+
 DURATION = HOOK_T + 1.05
 
 
@@ -263,22 +306,28 @@ def attacker_combo():
         _kf(GARDE_T, root_pos=(0, GROUND_Y, ATTACKER_Z0), Torso=_READY_TORSO, Head=_READY_HEAD,
             **_READY_LEGS, **_READY_ARMS),
 
-        # -- JAB -- (creuse un peu pendant le windup, remonte presque
-        # entierement au hip-drive, pile GROUND_Y a l'impact)
+        # -- JAB -- charge, HOLD reel (meme pose tenue -- pas juste un
+        # point de passage), puis lacher bref. Le halo de charge du poing
+        # (lecteur, drawFistCharge) continue de pulser pendant tout le
+        # hold : le rig est statique, l'ecran ne l'est jamais.
         _kf(JAB_WINDUP_T, root_pos=(0, GROUND_Y - JAB_DIP * 0.4, ATTACKER_Z0), Torso=JAB_WINDUP_TORSO, Head=JAB_WINDUP_HEAD,
+            **JAB_WINDUP_LEGS, **{"Left Arm": JAB_WINDUP_LEFT_ARM, "Right Arm": JAB_WINDUP_RIGHT_ARM}),
+        _kf(JAB_WINDUP_HOLD_T, root_pos=(0, GROUND_Y - JAB_DIP * 0.4, ATTACKER_Z0), Torso=JAB_WINDUP_TORSO, Head=JAB_WINDUP_HEAD,
             **JAB_WINDUP_LEGS, **{"Left Arm": JAB_WINDUP_LEFT_ARM, "Right Arm": JAB_WINDUP_RIGHT_ARM}),
         _kf(JAB_HIPDRIVE_T, root_pos=(0, GROUND_Y - JAB_DIP * (1 - _JF_BODY), JAB_HIPDRIVE_ROOT_Z), Torso=JAB_HIPDRIVE_TORSO, Head=JAB_HIPDRIVE_HEAD,
             **JAB_HIPDRIVE_LEGS, **{"Left Arm": JAB_HIPDRIVE_LEFT_ARM, "Right Arm": JAB_HIPDRIVE_RIGHT_ARM}),
         _kf(JAB_T, root_pos=(0, GROUND_Y, JAB_LUNGE_Z), Torso=JAB_STRIKE_TORSO, Head=JAB_STRIKE_HEAD,
             **JAB_STRIKE_LEGS, **{"Left Arm": JAB_STRIKE_LEFT_ARM, "Right Arm": JAB_STRIKE_RIGHT_ARM}),
 
-        # -- CROSS (le retour du jab EST l'armement du cross -- une seule
-        # keyframe de transition, pas de pause) -- charge plus profond que
-        # le jab (coup plus puissant), meme principe : creuse au windup/
-        # coil, remonte au hip-drive, GROUND_Y pile a l'impact --
+        # -- CROSS (le retour du jab EST l'armement du cross -- pas de
+        # pause NEUTRE, mais un vrai HOLD au coil, meme principe que le
+        # jab) -- charge plus profond (CROSS_DIP), hold plus long
+        # (CROSS_HOLD) que le jab --
         _kf(CROSS_WINDUP_T, root_pos=(0, GROUND_Y - CROSS_DIP * 0.3, JAB_LUNGE_Z), Torso=CROSS_WINDUP_TORSO, Head=CROSS_WINDUP_HEAD,
             **CROSS_WINDUP_LEGS, **{"Right Arm": CROSS_WINDUP_RIGHT_ARM, "Left Arm": CROSS_WINDUP_LEFT_ARM}),
         _kf(CROSS_COIL_T, root_pos=(0, GROUND_Y - CROSS_DIP, JAB_LUNGE_Z), Torso=CROSS_COIL_TORSO, Head=CROSS_COIL_HEAD,
+            **CROSS_COIL_LEGS, **{"Right Arm": CROSS_COIL_RIGHT_ARM, "Left Arm": CROSS_COIL_LEFT_ARM}),
+        _kf(CROSS_COIL_HOLD_T, root_pos=(0, GROUND_Y - CROSS_DIP, JAB_LUNGE_Z), Torso=CROSS_COIL_TORSO, Head=CROSS_COIL_HEAD,
             **CROSS_COIL_LEGS, **{"Right Arm": CROSS_COIL_RIGHT_ARM, "Left Arm": CROSS_COIL_LEFT_ARM}),
         _kf(CROSS_HIPDRIVE_T, root_pos=(0, GROUND_Y - CROSS_DIP * (1 - _CF_BODY), CROSS_HIPDRIVE_ROOT_Z), Torso=CROSS_HIPDRIVE_TORSO, Head=CROSS_HIPDRIVE_HEAD,
             **CROSS_HIPDRIVE_LEGS, **{"Right Arm": CROSS_HIPDRIVE_RIGHT_ARM, "Left Arm": CROSS_HIPDRIVE_LEFT_ARM}),
@@ -286,11 +335,14 @@ def attacker_combo():
             **CROSS_STRIKE_LEGS, **{"Right Arm": CROSS_STRIKE_RIGHT_ARM, "Left Arm": CROSS_STRIKE_LEFT_ARM}),
 
         # -- HOOK (finisher -- le retour du cross EST l'armement du hook)
-        # -- la charge la plus profonde du combo (HOOK_DIP), le finisher
-        # doit se lire comme le coup qui pousse le plus depuis le sol --
+        # -- la charge la plus profonde (HOOK_DIP) ET le hold le plus long
+        # (HOOK_HOLD) du combo, le finisher doit se lire comme LE coup qui
+        # se charge le plus avant de partir --
         _kf(HOOK_WINDUP_T, root_pos=(0, GROUND_Y - HOOK_DIP * 0.35, CROSS_LUNGE_Z), Torso=HOOK_WINDUP_TORSO, Head=HOOK_WINDUP_HEAD,
             **HOOK_WINDUP_LEGS, **{"Left Arm": HOOK_WINDUP_LEFT_ARM, "Right Arm": HOOK_WINDUP_RIGHT_ARM}),
         _kf(HOOK_COIL_T, root_pos=(0, GROUND_Y - HOOK_DIP, CROSS_LUNGE_Z), Torso=HOOK_COIL_TORSO, Head=HOOK_COIL_HEAD,
+            **HOOK_COIL_LEGS, **{"Left Arm": HOOK_COIL_LEFT_ARM, "Right Arm": HOOK_COIL_RIGHT_ARM}),
+        _kf(HOOK_COIL_HOLD_T, root_pos=(0, GROUND_Y - HOOK_DIP, CROSS_LUNGE_Z), Torso=HOOK_COIL_TORSO, Head=HOOK_COIL_HEAD,
             **HOOK_COIL_LEGS, **{"Left Arm": HOOK_COIL_LEFT_ARM, "Right Arm": HOOK_COIL_RIGHT_ARM}),
         _kf(HOOK_HIPDRIVE_T, root_pos=(0, GROUND_Y - HOOK_DIP * (1 - _HF_BODY), HOOK_HIPDRIVE_ROOT_Z), Torso=HOOK_HIPDRIVE_TORSO, Head=HOOK_HIPDRIVE_HEAD,
             **HOOK_HIPDRIVE_LEGS, **{"Left Arm": HOOK_HIPDRIVE_LEFT_ARM, "Right Arm": HOOK_HIPDRIVE_RIGHT_ARM}),
