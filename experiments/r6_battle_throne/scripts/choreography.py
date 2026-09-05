@@ -133,6 +133,57 @@ def _mirror_kf(kf, reflect_c, dt, root_part_override):
     return nk
 
 
+# -- Attente vivante (transfert de poids pied a pied, leger balancement
+# du buste) -- retour utilisateur explicite : "ça manque de fluidite...
+# les pieds tjrs trop encre dans le sol et pas en mouvement avec les
+# geste". Un hold-and-snap plat (2 keyframes identiques tenues plusieurs
+# secondes, comme l'ancien Beat 0/flex de victoire) est juste pour une
+# CHARGE DE COUP (le principe reste valable, voir la lecon "hold-and-
+# snap" du combo de poing) -- mais un combattant qui ATTEND (garde avant
+# l'echange, pose de victoire tenue) n'est jamais parfaitement immobile,
+# il bouge en continu (bounce sur les appuis, leger balancement) meme
+# sans rien "faire". Deux vocabulaires distincts, pas une contradiction :
+# un coil de frappe reste un vrai gel (tension qui monte), une attente
+# est une oscillation continue de faible amplitude.
+def _idle_stance_kf(t, root_pos, humanoid_root_part, base_torso, base_head, base_legs, base_arms, phase,
+                     amp_leg=3.0, amp_torso=2.0):
+    s, c = math.sin(phase), math.cos(phase)
+    legs = {
+        "Right Leg": (base_legs["Right Leg"][0], base_legs["Right Leg"][1], base_legs["Right Leg"][2] + amp_leg * s),
+        "Left Leg": (base_legs["Left Leg"][0], base_legs["Left Leg"][1], base_legs["Left Leg"][2] - amp_leg * s),
+    }
+    torso = (base_torso[0], base_torso[1] + amp_torso * c, base_torso[2])
+    root_y = grounded_root_y_balanced(torso, legs["Left Leg"], legs["Right Leg"])
+    x, _, z = root_pos
+    return _kf(t, root_pos=(x, root_y, z), HumanoidRootPart=humanoid_root_part,
+               Torso=torso, Head=base_head, **legs, **base_arms)
+
+
+def _idle_stance_span(t0, t1, root_pos, humanoid_root_part, base_torso, base_head, base_legs, base_arms,
+                       period=0.55, phase0=0.0, amp_leg=3.0, amp_torso=2.0):
+    """Genere une suite de keyframes (une par demi-cycle, soit ~period/2
+    secondes) entre t0 et t1 au lieu d'un hold plat a 2 keyframes --
+    voir note ci-dessus. `phase0` desynchronise Hero/Rival : deux
+    combattants qui respirent exactement au meme rythme liraient comme
+    un reflet l'un de l'autre plutot que deux individus."""
+    # -- la PREMIERE et la DERNIERE keyframe reviennent exactement a la
+    # pose de base (amplitude nulle), seul l'interieur du span oscille :
+    # ce qui precede/suit un span d'attente est toujours la pose de base
+    # a l'identique (arrivee sur la garde, garde de depart d'un echange,
+    # etc.) -- sans ce bornage, le raccord ferait un petit saut visible a
+    # la phase ou l'oscillation se trouvait par hasard.
+    kfs = []
+    half_period = period / 2.0
+    n = max(1, round((t1 - t0) / half_period))
+    for i in range(n + 1):
+        t = t0 + (t1 - t0) * i / n
+        phase = phase0 + (t - t0) / period * 2 * math.pi
+        a_leg, a_torso = (0.0, 0.0) if i in (0, n) else (amp_leg, amp_torso)
+        kfs.append(_idle_stance_kf(t, root_pos, humanoid_root_part, base_torso, base_head, base_legs, base_arms,
+                                    phase, a_leg, a_torso))
+    return kfs
+
+
 # =======================================================================
 # Disposition de l'arene
 # =======================================================================
@@ -157,18 +208,16 @@ T0_END = _fr(150)   # 5.0s -- vraie tension avant l'echange, pas un simple point
 
 
 def _beat0():
-    hero = [
-        _kf(0.00, root_pos=(0, pc._READY_ROOT_Y, HERO_HOME_Z), Torso=pc._READY_TORSO,
-            Head=pc._READY_HEAD, **pc._READY_LEGS, **pc._READY_ARMS),
-        _kf(T0_END, root_pos=(0, pc._READY_ROOT_Y, HERO_HOME_Z), Torso=pc._READY_TORSO,
-            Head=pc._READY_HEAD, **pc._READY_LEGS, **pc._READY_ARMS),
-    ]
-    rival = [
-        _kf(0.00, root_pos=(0, pc._READY_ROOT_Y, RIVAL_HOME_Z), HumanoidRootPart=RIVAL_FACE,
-            Torso=pc._READY_TORSO, Head=pc._READY_HEAD, **pc._READY_LEGS, **pc._READY_ARMS),
-        _kf(T0_END, root_pos=(0, pc._READY_ROOT_Y, RIVAL_HOME_Z), HumanoidRootPart=RIVAL_FACE,
-            Torso=pc._READY_TORSO, Head=pc._READY_HEAD, **pc._READY_LEGS, **pc._READY_ARMS),
-    ]
+    # -- garde tenue 5s : jamais un hold plat (voir _idle_stance_span) --
+    # Hero et Rival bougent en continu, a des cadences legerement
+    # differentes (0.58s/0.50s) et des phases opposees, pour ne pas
+    # lire comme deux miroirs synchronises.
+    hero = _idle_stance_span(0.00, T0_END, (0, 0, HERO_HOME_Z), REST,
+                              pc._READY_TORSO, pc._READY_HEAD, pc._READY_LEGS, pc._READY_ARMS,
+                              period=0.58, phase0=0.0)
+    rival = _idle_stance_span(0.00, T0_END, (0, 0, RIVAL_HOME_Z), RIVAL_FACE,
+                               pc._READY_TORSO, pc._READY_HEAD, pc._READY_LEGS, pc._READY_ARMS,
+                               period=0.50, phase0=math.pi)
     return hero, rival
 
 
@@ -273,11 +322,14 @@ def _beat_regroup():
         _kf(REGROUP_SQUARE_T, root_pos=(0, pc._READY_ROOT_Y, HERO_HOME_Z), Torso=pc._READY_TORSO,
             Head=pc._READY_HEAD, **pc._READY_LEGS, **pc._READY_ARMS),
     ]
-    rival = [
-        _kf(REGROUP_START, root_pos=(0, DAZED_GROUNDED_ROOT_Y, -22.4), HumanoidRootPart=(0, 140, 0),
-            Torso=pc.DAZED_TORSO, Head=pc.DAZED_HEAD, **pc.DAZED_LEGS, **pc.DAZED_ARMS),
-        _kf(REGROUP_HOLD_T, root_pos=(0, DAZED_GROUNDED_ROOT_Y, -22.4), HumanoidRootPart=(0, 140, 0),
-            Torso=pc.DAZED_TORSO, Head=pc.DAZED_HEAD, **pc.DAZED_LEGS, **pc.DAZED_ARMS),
+    # -- hebete, Rival TITUBE plutot que de rester fige (meme retour
+    # utilisateur que Beat 0/flex : jamais un hold plat) -- amplitude et
+    # cadence plus marquees qu'une attente normale, ca doit lire comme un
+    # vacillement, pas une garde.
+    rival = _idle_stance_span(REGROUP_START, REGROUP_HOLD_T, (0, 0, -22.4), (0, 140, 0),
+                               pc.DAZED_TORSO, pc.DAZED_HEAD, pc.DAZED_LEGS, pc.DAZED_ARMS,
+                               period=0.40, phase0=0.0, amp_leg=5.0, amp_torso=4.0)
+    rival += [
         _kf(REGROUP_TURN_T, root_pos=(0, GROUND_Y, REGROUP_RIVAL_TURN_Z), HumanoidRootPart=RIVAL_FACE,
             Torso=REGROUP_RIVAL_TURN_TORSO, Head=REGROUP_RIVAL_TURN_HEAD,
             **REGROUP_RIVAL_TURN_LEGS, **REGROUP_RIVAL_TURN_ARMS),
@@ -568,7 +620,6 @@ FLEX_HEAD = (-12, 0, 0)
 FLEX_LEGS = {"Right Leg": (-4, 0, 10), "Left Leg": (-4, 0, -10)}
 FLEX_LEFT_ARM = (150, 0, 20)
 FLEX_RIGHT_ARM = (150, 0, -20)
-FLEX_ROOT_Y = grounded_root_y_balanced(FLEX_TORSO, FLEX_LEGS["Left Leg"], FLEX_LEGS["Right Leg"])
 
 # -- bras de marche, IDENTIQUES a ceux de climb_stairs() pendant toute la
 # locomotion (montee ET demi-tour) -- jamais d'oscillation de bras, meme
@@ -602,12 +653,16 @@ def _beat5():
         _kf(SETTLE_T, root_pos=(0, SETTLE_ROOT_Y, FINISH_LUNGE_Z), Torso=SETTLE_TORSO,
             Head=SETTLE_HEAD, **SETTLE_LEGS,
             **{"Left Arm": SETTLE_LEFT_ARM, "Right Arm": SETTLE_RIGHT_ARM}),
-        _kf(FLEX_T, root_pos=(0, FLEX_ROOT_Y, FINISH_LUNGE_Z), Torso=FLEX_TORSO,
-            Head=FLEX_HEAD, **FLEX_LEGS,
-            **{"Left Arm": FLEX_LEFT_ARM, "Right Arm": FLEX_RIGHT_ARM}),
-        _kf(FLEX_HOLD_T, root_pos=(0, FLEX_ROOT_Y, FINISH_LUNGE_Z), Torso=FLEX_TORSO,
-            Head=FLEX_HEAD, **FLEX_LEGS,
-            **{"Left Arm": FLEX_LEFT_ARM, "Right Arm": FLEX_RIGHT_ARM}),
+    ]
+    # -- flex de victoire tenu ~3.5s : jamais un hold plat non plus (meme
+    # retour utilisateur que Beat 0) -- oscillation d'attente entre
+    # l'arrivee (FLEX_T) et le debut du demi-tour (FLEX_HOLD_T), bornee
+    # a la pose FLEX_* exacte aux deux bouts (voir _idle_stance_span).
+    hero += _idle_stance_span(FLEX_T, FLEX_HOLD_T, (0, 0, FINISH_LUNGE_Z), REST,
+                               FLEX_TORSO, FLEX_HEAD, FLEX_LEGS,
+                               {"Left Arm": FLEX_LEFT_ARM, "Right Arm": FLEX_RIGHT_ARM},
+                               period=0.65, phase0=0.0, amp_leg=2.5, amp_torso=1.5)
+    hero += [
         # -- demi-tour, meme technique/proportions que climb_stairs() mais
         # en sens INVERSE (Hero part face -Z vers Rival vaincu, doit finir
         # face +Z vers le trone) : 0 -> 0 -> 90 -> 160 -> 180 au lieu de

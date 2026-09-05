@@ -242,6 +242,58 @@ autour de l'impact : la caméra ne bouge jamais, seul le VFX traverse sa
 propre sous-phase de flash. Toutes les autres captures d'impact avaient
 simplement été prises après cette fenêtre par hasard.
 
+## Passe « attente vivante » (pieds encrés / manque de fluidité)
+
+Retour utilisateur explicite : « ça manque de fluidité, de idle pose, de
+mouvement style combat... les pieds tjrs trop encré dans le sol et pas en
+mouvement avec les geste. »
+
+Diagnostic mesuré (pas suppose) : les deux plus longs holds de la scène
+étaient des holds **plats** -- littéralement 2 keyframes identiques,
+aucune interpolation entre les deux :
+- Beat 0 (garde d'ouverture) : **5.0 s** entièrement figées.
+- Beat 5 (flex de victoire) : **3.5 s** entièrement figées.
+
+Ironie mesurée : ces deux durées avaient été **volontairement gonflées**
+lors de la passe précédente pour atteindre l'exigence "≥ 30 s" -- en
+ajoutant du temps mort plutôt que du mouvement, cette meme passe a
+directement causé le probleme signalé ici. La bonne reponse n'est pas
+de raccourcir ces holds (la duree totale doit rester ≥ 30 s) mais de
+remplacer le temps mort par du VRAI mouvement.
+
+Distinction explicite avec la leçon "hold-and-snap" (voir README de
+r6_hit_combo) : cette leçon reste valable pour un **coil de frappe** (la
+charge d'un coup DOIT se figer, c'est la tension qui rend le lâcher
+lisible). Mais un combattant qui **attend** (garde avant l'échange, pose
+de victoire tenue) n'est jamais parfaitement immobile dans la réalité --
+il bouge en continu (transfert de poids pied à pied, léger balancement
+du buste), même sans rien "faire". Ce sont deux vocabulaires distincts,
+pas une contradiction.
+
+Correctif : `_idle_stance_span()` (`scripts/choreography.py`) génère une
+oscillation continue (transfert de poids Left/Right Leg en opposition de
+phase + léger balancement `Torso.Y`, `root_pos.Y` recalé à chaque
+keyframe par `grounded_root_y_balanced` pour que les pieds restent
+plantés) au lieu d'un hold à 2 keyframes -- bornée à la pose de base
+exacte aux deux extrémités (aucun saut au raccord avec ce qui précède/
+suit). Appliqué à :
+- **Beat 0** (garde, 5.0 s) : Hero et Rival oscillent à des cadences
+  différentes (0.58 s / 0.50 s) et en opposition de phase, pour ne pas
+  lire comme deux miroirs synchronisés.
+- **Beat 5** (flex de victoire, 3.5 s) : amplitude réduite (2.5°/1.5°
+  contre 3°/2° pour la garde) -- une pose de triomphe tenue oscille
+  moins qu'une garde de combat.
+- **Beat R** (Rival hébété) : amplitude et cadence **augmentées**
+  (5°/4°, période 0.40 s) -- ça doit lire comme un vacillement, pas une
+  garde.
+
+Revérifié après coup, rien n'a régressé :
+`calibrate_battle.py` -- écarts de contact inchangés (0.493/0.366/0.380/
+0.824/0.475 stud, aucune valeur modifiée par cette passe, purement une
+question d'attente entre les coups) ; `foot_check_battle.py` -- toujours
+zéro anomalie non expliquée (l'oscillation reste sous le seuil de
+tolérance grâce au recalage `grounded_root_y_balanced` par keyframe).
+
 ## Vérification (captures)
 
 Captures dans `captures/verification/` (rendu réel du lecteur, via
@@ -258,6 +310,12 @@ Playwright, pas décrites en prose) :
 - `2026-09-05-battle-throne-coronation.png` -- raccord complet jusqu'au
   couronnement sur le trône (silhouette sombre, même esthétique que
   `r6_throne_crown`).
+- `2026-09-05-battle-throne-idle-garde-a.png` / `-idle-garde-b.png` --
+  même plan de garde, à 1.1 s d'écart : le buste et les jambes des deux
+  combattants ont visiblement changé d'inclinaison (voir passe
+  ci-dessus) -- pas la même pose figée deux fois.
+- `2026-09-05-battle-throne-idle-flex-a.png` / `-idle-flex-b.png` -- le
+  flex de victoire à deux instants distincts du hold, même vérification.
 
 Lecteur complet (39,3 s, scrub/lecture/vitesse) :
 `experiments/r6_battle_throne/output/battle_throne_viewer_final.html`,
