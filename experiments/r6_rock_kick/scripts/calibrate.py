@@ -84,11 +84,13 @@ def main():
         worst = max(abs(ly), abs(ry))
         flag = ""
         if worst > TOLERANCE:
-            # -- attendu : jambe qui frappe en l'air pendant les deux
-            # coups (coup de pied ET son chambrage/suite, la jambe droite
-            # ne touche jamais le sol dans ces fenetres).
+            # -- attendu : jambe droite en l'air pendant le chambrage du
+            # stomp (elle se souleve avant de s'ecraser au sol) ET
+            # pendant le coup de pied circulaire (chambrage/suite) -- la
+            # jambe droite ne touche jamais le sol dans ces deux fenetres.
+            stomp_window = ch.STOMP_WINDUP_T - 0.01 <= t <= ch.STOMP_HOLD_T + 0.01
             kick_window = ch.WINDUP_T - 0.01 <= t <= ch.FOLLOWTHROUGH_T + 0.01
-            if kick_window and abs(ry) > TOLERANCE and abs(ly) <= TOLERANCE:
+            if (stomp_window or kick_window) and abs(ry) > TOLERANCE and abs(ly) <= TOLERANCE:
                 flag = "  (attendu : jambe qui frappe en l'air)"
             else:
                 flag = "  <-- ANOMALIE NON EXPLIQUEE"

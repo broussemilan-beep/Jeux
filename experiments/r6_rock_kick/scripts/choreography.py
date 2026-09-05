@@ -1,9 +1,20 @@
 """
-Identite : le personnage donne un coup de pied circulaire tres large a
-une enorme roche posee devant/legerement sur le cote, la propulse comme
-projectile, puis enchaine avec une frappe SUR la roche en plein vol pour
-la rediriger plus fort vers sa trajectoire finale (impact
-environnemental si aucune cible n'est touchee -- voir rock_track.py).
+Identite : le personnage TAPE LE SOL avec la jambe droite (un
+enfoncement/stomp, pas un coup de pied lateral) -- l'impact fait
+JAILLIR une enorme roche du sol a cet endroit precis. Le personnage
+enchaine ensuite avec un coup de pied circulaire tres large qui propulse
+cette roche fraichement sortie comme projectile, puis une frappe SUR la
+roche en plein vol pour la rediriger plus fort vers sa trajectoire
+finale (impact environnemental si aucune cible n'est touchee -- voir
+rock_track.py).
+
+Correction explicite apres un premier essai ou la roche etait deja
+presente au sol AVANT l'action (retour utilisateur : "c pas tout a fait
+ca en gros le perso tape le sol avec sa jambe droit et fait ressortir
+une roche du sol") : l'apparition de la roche n'est plus un decor
+prealable, c'est la CONSEQUENCE MESUREE du point d'impact du stomp
+(voir STOMP_POINT plus bas) -- jamais un point choisi a l'oeil puis la
+roche posee approximativement devant le personnage.
 
 Lecons explicitement reappliquees suite aux retours utilisateur sur
 `r6_battle_throne` (jamais redecouvertes, portees ici des le depart) :
@@ -205,10 +216,10 @@ _READY_ARMS = {"Right Arm": (18, 0, -8), "Left Arm": (20, 0, 10)}
 _READY_ROOT_Y = grounded_root_y_balanced(_READY_TORSO, _READY_LEGS["Left Leg"], _READY_LEGS["Right Leg"])
 
 # =======================================================================
-# Phase 1 -- presence de la roche (T0_END secondes). Attente vivante,
-# PAS un hold plat (voir lecon de module).
+# Phase 1 -- garde initiale, AUCUNE roche encore (T0_END secondes).
+# Attente vivante, PAS un hold plat (voir lecon de module).
 # =======================================================================
-T0_END = _fr(36)   # 1.2s -- juste assez pour etablir le plan avant l'action, pas une pause morte
+T0_END = _fr(18)   # 0.6s -- juste assez pour etablir le plan, la roche n'existe pas encore a ce stade
 
 
 def phase1_idle():
@@ -218,7 +229,71 @@ def phase1_idle():
 
 
 # =======================================================================
-# Phase 2 -- prise d'appui + coup de pied circulaire tres large.
+# Phase STOMP -- la jambe droite s'enfonce dans le sol. Meme discipline
+# hold-and-snap que le reste du combo (chambrage tenu, lacher en
+# quelques frames), mais un STOMP est un mouvement VERTICAL (la jambe
+# retombe depuis un chambrage haut jusqu'a s'ecraser au sol), pas un
+# balayage lateral comme le coup de pied circulaire qui suit -- le
+# torse charge en ARRIERE au chambrage (contrepoids pendant que la
+# jambe se leve) puis fouette vers l'AVANT/BAS au lacher (transferer le
+# poids du corps dans l'impact, meme exageration bassin/torse que
+# partout ailleurs dans ce fichier).
+# =======================================================================
+STOMP_WINDUP_T = T0_END + _fr(12)    # 0.4s : la jambe droite se souleve
+STOMP_HOLD_T = STOMP_WINDUP_T + _fr(6)   # vrai hold (0.2s) -- la jambe reste chargee en l'air avant de s'ecraser
+STOMP_STRIKE_T = STOMP_HOLD_T + _fr(3)   # lacher rapide (0.1s) -- la jambe s'ecrase au sol
+STOMP_RECOVER_T = STOMP_STRIKE_T + _fr(6)  # le corps absorbe le choc de l'impact avant d'enchainer
+
+STOMP_WINDUP_TORSO = (-18, 8, 0)
+STOMP_WINDUP_HEAD = (-10, 0, 0)
+STOMP_WINDUP_LEGS = {"Right Leg": (80, 0, -4), "Left Leg": (2, 0, 4)}
+STOMP_WINDUP_ARMS = {"Right Arm": (10, 0, -10), "Left Arm": (55, 0, 22)}
+STOMP_WINDUP_ROOT_Y = grounded_root_y(STOMP_WINDUP_TORSO, STOMP_WINDUP_LEGS["Left Leg"], "Left Leg")
+
+# -- lacher : le torse renverse de Y=+8 (charge arriere) a Y=+4 (fouette
+# avant/bas, X : -18 -> +32) ; la jambe droite s'ecrase du chambrage
+# (X=80) jusqu'a quasiment sous la hanche (X=-8) -- MEME axe Z conserve
+# (-4 -> -8, un stomp descend, il ne change pas de cote comme le coup de
+# pied circulaire qui suit) : c'est un ecrasement vertical, pas un fouet
+# lateral.
+STOMP_STRIKE_TORSO = (32, 4, 0)
+STOMP_STRIKE_HEAD = (20, 0, 0)
+STOMP_STRIKE_LEGS = {"Right Leg": (-8, 0, -8), "Left Leg": (4, 0, 6)}
+STOMP_STRIKE_ARMS = {"Right Arm": (55, 0, -18), "Left Arm": (12, 0, 16)}
+STOMP_STRIKE_ROOT_Y = grounded_root_y(STOMP_STRIKE_TORSO, STOMP_STRIKE_LEGS["Left Leg"], "Left Leg")
+
+# -- point d'impact MESURE (pas choisi a l'oeil) : c'est LA ou la roche
+# va jaillir du sol -- voir ROCK_X0/ROCK_Z0 plus bas, qui reprennent
+# directement X/Z de ce point (seul Y differe, la roche repose au sol
+# a Y=ROCK_RADIUS, le pied lui-meme s'enfonce legerement sous Y=0 au
+# moment de l'impact -- normal pour un stomp qui fissure le sol, pas
+# une anomalie de placement).
+_STOMP_STRIKE_ROOT_POS = (0.0, STOMP_STRIKE_ROOT_Y, CHAR_Z)
+STOMP_POINT = foot_tip_world(_STOMP_STRIKE_ROOT_POS, STOMP_STRIKE_TORSO, STOMP_STRIKE_LEGS["Right Leg"], "Right Leg")
+
+STOMP_RECOVER_TORSO = (10, 6, 0)
+STOMP_RECOVER_HEAD = (6, 0, 0)
+STOMP_RECOVER_LEGS = {"Right Leg": (2, 0, 2), "Left Leg": (6, 0, -4)}
+STOMP_RECOVER_ARMS = {"Right Arm": (28, 0, -14), "Left Arm": (22, 0, 16)}
+STOMP_RECOVER_ROOT_Y = grounded_root_y_balanced(STOMP_RECOVER_TORSO, STOMP_RECOVER_LEGS["Left Leg"], STOMP_RECOVER_LEGS["Right Leg"])
+
+
+def phase_stomp():
+    return [
+        _kf(STOMP_WINDUP_T, root_pos=(0, STOMP_WINDUP_ROOT_Y, CHAR_Z), Torso=STOMP_WINDUP_TORSO,
+            Head=STOMP_WINDUP_HEAD, **STOMP_WINDUP_LEGS, **STOMP_WINDUP_ARMS),
+        _kf(STOMP_HOLD_T, root_pos=(0, STOMP_WINDUP_ROOT_Y, CHAR_Z), Torso=STOMP_WINDUP_TORSO,
+            Head=STOMP_WINDUP_HEAD, **STOMP_WINDUP_LEGS, **STOMP_WINDUP_ARMS),
+        _kf(STOMP_STRIKE_T, root_pos=(0, STOMP_STRIKE_ROOT_Y, CHAR_Z), Torso=STOMP_STRIKE_TORSO,
+            Head=STOMP_STRIKE_HEAD, **STOMP_STRIKE_LEGS, **STOMP_STRIKE_ARMS),
+        _kf(STOMP_RECOVER_T, root_pos=(0, STOMP_RECOVER_ROOT_Y, CHAR_Z), Torso=STOMP_RECOVER_TORSO,
+            Head=STOMP_RECOVER_HEAD, **STOMP_RECOVER_LEGS, **STOMP_RECOVER_ARMS),
+    ]
+
+
+# =======================================================================
+# Phase 2 -- prise d'appui + coup de pied circulaire tres large (frappe
+# la roche qui vient de jaillir du sol -- voir STOMP_POINT ci-dessus).
 # Chaine cinetique EXPLICITE : la jambe d'appui (Left) pivote en premier
 # (WINDUP), le torse suit et charge tres au-dela de ce qu'un torse humain
 # ferait (retour utilisateur : exagerer pour compenser l'absence de
@@ -227,7 +302,7 @@ def phase1_idle():
 # est ce qui bouge le plus vite et le plus tard dans la chaine, comme un
 # fouet.
 # =======================================================================
-WINDUP_T = T0_END + _fr(15)     # 0.5s : mise en garde, debut du transfert de poids
+WINDUP_T = STOMP_RECOVER_T + _fr(6)     # enchaine directement depuis la recuperation du stomp
 COIL_T = WINDUP_T + _fr(18)     # 0.6s : chambrage complet
 COIL_HOLD_T = COIL_T + _fr(6)   # vrai hold (0.2s) -- la tension doit se voir avant le lacher
 STRIKE_T = COIL_HOLD_T + _fr(2)  # snap quasi instantane (cf. hold-and-snap)
@@ -260,15 +335,22 @@ STRIKE_LEGS = {"Right Leg": (96, 0, 58), "Left Leg": (6, 30, -10)}
 STRIKE_ARMS = {"Right Arm": (34, 0, -30), "Left Arm": (70, 0, 60)}
 STRIKE_ROOT_Y = grounded_root_y(STRIKE_TORSO, STRIKE_LEGS["Left Leg"], "Left Leg")
 
-# -- point de contact MESURE (pas devine) : la roche est placee ici,
-# pas l'inverse -- voir docstring de module.
+# -- point de contact du coup de pied MESURE (verification, pas
+# placement -- voir plus bas) : contrairement au premier essai, la
+# roche n'est plus placee a partir de ce point. Elle jaillit du sol a
+# STOMP_POINT (voir Phase STOMP ci-dessus) ; ce contact-ci sert
+# seulement a VERIFIER que le pied qui frappe atteint bien sa surface,
+# via calibrate.py.
 _STRIKE_ROOT_POS = (0.0, STRIKE_ROOT_Y, CHAR_Z)
 KICK_CONTACT_POINT = foot_tip_world(_STRIKE_ROOT_POS, STRIKE_TORSO, STRIKE_LEGS["Right Leg"], "Right Leg")
 
-_ROCK_REST_CENTER = sphere_center_for_surface_contact(KICK_CONTACT_POINT, (0.0, CHAR_Z), ROCK_RADIUS)
-ROCK_X0 = float(_ROCK_REST_CENTER[0])
-ROCK_Z0 = float(_ROCK_REST_CENTER[2])
-ROCK_REST_Y = float(_ROCK_REST_CENTER[1])  # = ROCK_RADIUS (posee au sol) -- voir sphere_center_for_surface_contact
+# -- la roche jaillit EXACTEMENT au point d'impact du stomp (X/Z de
+# STOMP_POINT) ; seul Y differe (la roche repose au sol une fois sortie,
+# Y=ROCK_RADIUS, quel que soit le Y exact -- legerement negatif -- du
+# pied qui a fissure le sol a cet endroit).
+ROCK_X0 = float(STOMP_POINT[0])
+ROCK_Z0 = float(STOMP_POINT[2])
+ROCK_REST_Y = ROCK_RADIUS
 
 # -- suite : le torse continue de tourner sous son propre elan
 # (over-rotation -- l'inertie ne s'arrete pas net a l'instant du contact)
@@ -380,13 +462,15 @@ def phase4_followup():
 
 
 def striker_track():
-    keyframes = phase1_idle() + phase2_kick() + phase4_followup()
+    keyframes = phase1_idle() + phase_stomp() + phase2_kick() + phase4_followup()
     phases = [
-        {"name": "presence_roche", "t0": 0.0, "t1": WINDUP_T, "expected_reversals": {}},
+        {"name": "garde", "t0": 0.0, "t1": STOMP_WINDUP_T, "expected_reversals": {}},
+        {"name": "stomp", "t0": STOMP_WINDUP_T, "t1": WINDUP_T, "expected_reversals": {}},
         {"name": "coup_de_pied", "t0": WINDUP_T, "t1": RECOVER_T, "expected_reversals": {}},
         {"name": "frappe_de_suivi", "t0": RECOVER_T, "t1": FOLLOWUP_RECOVER_T, "expected_reversals": {}},
     ]
-    preview_times = [0.0, WINDUP_T, COIL_T, COIL_HOLD_T, STRIKE_T, FOLLOWTHROUGH_T, RECOVER_T,
+    preview_times = [0.0, STOMP_WINDUP_T, STOMP_HOLD_T, STOMP_STRIKE_T, STOMP_RECOVER_T,
+                      WINDUP_T, COIL_T, COIL_HOLD_T, STRIKE_T, FOLLOWTHROUGH_T, RECOVER_T,
                       FOLLOWUP_WINDUP_T, FOLLOWUP_COIL_T, FOLLOWUP_STRIKE_T, FOLLOWUP_RECOVER_T]
     engine_opts = {"handle_type": "AUTO_CLAMPED"}
     return keyframes, phases, preview_times, engine_opts

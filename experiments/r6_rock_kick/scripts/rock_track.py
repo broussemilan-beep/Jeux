@@ -7,35 +7,60 @@ trajectoire est SCRIPTEE (des points choisis pour la lecture, pas
 derives d'une simulation physique -- ce depot n'a pas de moteur physique,
 voir la note de orb_track.py sur ce choix).
 
-Quatre phases, exactement les 4 phases de la demande utilisateur :
-  1. t < STRIKE_T             : "repos" -- la roche est posee devant le
-     personnage (position fixe, voir choreography.KICK_CONTACT_POINT).
-  2. STRIKE_T..FOLLOWUP_STRIKE_T : "lancee" -- propulsee vers le CENTRE
+Six phases (les 4 de la demande utilisateur, plus la naissance de la
+roche elle-meme -- corrigee suite au retour "le perso tape le sol...
+fait ressortir une roche du sol", qui exige que la roche N'EXISTE PAS
+avant l'impact du stomp, pas seulement qu'elle soit deja posee la) :
+  0. t < STOMP_STRIKE_T       : "absente" -- la roche n'existe pas
+     encore, rien a afficher (meme convention que orb_track.py avant
+     RAISE_T : rayon/existence nulle, pas une position par defaut).
+  1. STOMP_STRIKE_T..ERUPTION_END_T : "jaillissement" -- la roche sort
+     du sol exactement au point d'impact du stomp
+     (choreography.STOMP_POINT, mesure par cinematique directe sur le
+     pied, jamais choisi a l'oeil), montee rapide avec un leger
+     depassement/rebond (elle jaillit avec force, ne glisse pas
+     doucement hors du sol) avant de se stabiliser posee au sol.
+  2. ERUPTION_END_T..STRIKE_T : "repos" -- la roche fraichement sortie
+     attend, immobile, le temps que le personnage termine son
+     chambrage pour le coup de pied.
+  3. STRIKE_T..FOLLOWUP_STRIKE_T : "lancee" -- propulsee vers le CENTRE
      calcule (choreography.FOLLOWUP_ROCK_CENTER) tel que le point EXACT
      ou le poing de la frappe de suivi va la toucher
      (FOLLOWUP_CONTACT_POINT, mesure par cinematique directe, pas choisi
      a l'oeil) tombe sur SA SURFACE, jamais sur son centre -- arc vers
      le haut (un objet lance, pas une ligne droite), rotation qui
      s'accelere.
-  3. FOLLOWUP_STRIKE_T..IMPACT_T : "redirigee" -- la frappe de suivi la
+  4. FOLLOWUP_STRIKE_T..IMPACT_T : "redirigee" -- la frappe de suivi la
      renvoie plus fort et plus plat vers WORLD_TARGET_POS (un point
      choisi, loin -- voir la note gameplay : "la competence doit rester
      fonctionnelle sans cible, la roche poursuit sa trajectoire et
      termine par un impact environnemental" -- ce point represente ce
      mur/sol lointain, pas un adversaire precis).
-  4. t >= IMPACT_T            : "impact" -- plus de position utile, le
+  5. t >= IMPACT_T            : "impact" -- plus de position utile, le
      lecteur bascule sur les VFX d'impact a cet instant.
 """
 import json
+import math
 
 import numpy as np
 
-from choreography import (STRIKE_T, FOLLOWUP_STRIKE_T, ROCK_X0, ROCK_Z0, ROCK_REST_Y,
+from choreography import (STOMP_STRIKE_T, STRIKE_T, FOLLOWUP_STRIKE_T, ROCK_X0, ROCK_Z0, ROCK_REST_Y,
                            ROCK_RADIUS, FOLLOWUP_CONTACT_POINT, FOLLOWUP_ROCK_CENTER, TOTAL_DURATION)
 
 SAMPLE_HZ = 30
 
 REST_POS = np.array([ROCK_X0, ROCK_REST_Y, ROCK_Z0])
+
+# -- duree du jaillissement : assez bref pour lire comme un eclatement
+# (pas une roche qui "pousse" lentement), mais laisse le temps a un
+# rebond/depassement d'etre visible avant STRIKE_T (0.55s de marge dans
+# la chronologie actuelle -- voir choreography.STOMP_STRIKE_T/STRIKE_T).
+ERUPTION_S = 0.40
+ERUPTION_END_T = STOMP_STRIKE_T + ERUPTION_S
+# -- profondeur de depart : la roche part d'assez bas sous le sol pour
+# que sa remontee traverse visiblement la surface, pas un simple "pop"
+# a fleur de sol.
+_ERUPTION_START_Y = -ROCK_RADIUS * 0.85
 
 # -- vol redirige, apres la frappe de suivi -- but choisi (pas mesure
 # sur un adversaire) : loin devant et legerement de cote, au niveau du
@@ -54,11 +79,32 @@ def _ease_out(f):
     return 1.0 - (1.0 - f) * (1.0 - f)
 
 
+def _ease_in(f):
+    """Depart lent, accelere -- copie de orb_track.py : une croissance
+    qui accelere se lit mieux qu'une vitesse constante."""
+    return f * f
+
+
 def rock_position(t):
-    """Position MONDE (np.array) + angle de spin (deg, autour d'un axe
-    tumbling fixe) + phase, pour un instant t. Utilise directement par
-    calibrate.py (verification des raccords) et par dump_scene_data.py
-    (echantillonnage pour le lecteur)."""
+    """Position MONDE (np.array ou None si la roche n'existe pas encore)
+    + angle de spin (deg, autour d'un axe tumbling fixe) + phase, pour
+    un instant t. Utilise directement par calibrate.py (verification
+    des raccords) et par dump_scene_data.py (echantillonnage pour le
+    lecteur)."""
+    if t < STOMP_STRIKE_T:
+        return None, 0.0, "absente"
+    if t < ERUPTION_END_T:
+        frac = (t - STOMP_STRIKE_T) / ERUPTION_S
+        # -- jaillissement avec depassement : monte au-dela de sa
+        # hauteur de repos puis retombe s'y stabiliser (amorti par
+        # (1-f)) -- lit comme une roche EJECTEE avec force, pas posee
+        # doucement en place.
+        f = _ease_in(min(1.0, frac))
+        overshoot = 0.6 * math.sin(math.pi * f) * (1.0 - f)
+        y = _ERUPTION_START_Y + (ROCK_REST_Y - _ERUPTION_START_Y) * f + overshoot
+        pos = np.array([ROCK_X0, y, ROCK_Z0])
+        spin = 40.0 * f   # tumbling leger pendant l'ejection -- pas encore le tumbling rapide du lancer
+        return pos, spin, "jaillissement"
     if t < STRIKE_T:
         return REST_POS.copy(), 0.0, "repos"
     if t < FOLLOWUP_STRIKE_T:
@@ -103,6 +149,8 @@ def main():
         "char_duration": TOTAL_DURATION,
         "world_target_pos": [float(v) for v in WORLD_TARGET_POS],
         "rest_pos": [float(v) for v in REST_POS],
+        "stomp_strike_t": STOMP_STRIKE_T,
+        "eruption_end_t": ERUPTION_END_T,
         "followup_contact_point": [float(v) for v in FOLLOWUP_CONTACT_POINT],
         "note": ("Trajectoire monde de la roche. A appliquer via un script "
                  "(CFrame direct), PAS via l'Animator -- meme principe que "
@@ -114,11 +162,19 @@ def main():
         json.dump(out, f, indent=1)
     print(f"ecrit {path}, {len(track)} echantillons, impact a t={IMPACT_T:.3f}s")
 
-    # -- verification : pas de saut de position aux deux raccords de
-    # phase (repos->lancee a STRIKE_T, lancee->redirigee a
-    # FOLLOWUP_STRIKE_T) -- la position doit coincider exactement des
-    # deux cotes de chaque frontiere.
-    for label, t_boundary in (("repos->lancee", STRIKE_T), ("lancee->redirigee", FOLLOWUP_STRIKE_T)):
+    # -- verification : la roche n'existe pas avant l'impact du stomp
+    # (retour utilisateur -- elle doit "sortir du sol", pas etre deja
+    # la), et son point de depart est bien au point d'impact mesure.
+    i0 = round(STOMP_STRIKE_T * SAMPLE_HZ)
+    print(f"  avant le stomp (t={STOMP_STRIKE_T - 1/SAMPLE_HZ:.3f}s) : pos={track[i0 - 1]['pos']} (doit etre None)")
+    print(f"  au stomp (t={STOMP_STRIKE_T:.3f}s) : pos={track[i0]['pos']} (doit demarrer a X/Z=[{ROCK_X0:.3f}, {ROCK_Z0:.3f}], sous le sol en Y)")
+
+    # -- pas de saut de position aux raccords de phase restants
+    # (jaillissement->repos, repos->lancee, lancee->redirigee) -- la
+    # position doit coincider exactement des deux cotes de chaque
+    # frontiere.
+    for label, t_boundary in (("jaillissement->repos", ERUPTION_END_T),
+                               ("repos->lancee", STRIKE_T), ("lancee->redirigee", FOLLOWUP_STRIKE_T)):
         i = round(t_boundary * SAMPLE_HZ)
         p_before = np.array(track[i - 1]["pos"])
         p_after = np.array(track[i]["pos"])
