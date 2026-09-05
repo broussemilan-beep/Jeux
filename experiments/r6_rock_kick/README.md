@@ -159,8 +159,63 @@ suivre le projectile pendant le vol (Phase 3/4), zoom court sur
 l'impact final — voir `battle_throne` / `hit_combo` pour le système de
 plans/coupes déjà établi, réutilisé ici avec ces cues spécifiques.
 
+## Lecteur (`scripts/dump_scene_data.py` + `build_viewer.py` + `rock_kick_viewer.html`)
+
+Échantillonne le personnage directement via `anim_engine.build_rig()`/
+`apply_choreography()`/`sample()` (pas de round-trip par `.rbxmx` --
+les contacts déjà calibrés le sont sous la convention position-only de
+`anim_engine`, un aller-retour par `resolve_rbxmx` en désynchroniserait
+la mesure). La roche est un `Group` Three.js qui suit `rock_position(t)`
+image par image (position + rotation de tumbling depuis `spin_deg`),
+et bascule vers le cluster de débris statique (`rock_debris_parts`,
+placé à `rock_track.WORLD_TARGET_POS`) strictement à partir de
+`IMPACT_T` -- piège trouvé et corrigé en cours de route : la roche
+restait visible APRÈS l'impact (la fonction d'échantillonnage tient la
+dernière position valide en interpolant vers un échantillon nul), la
+bascule est maintenant sur `t >= IMPACT_T` explicitement, pas sur
+"position nulle".
+
+Caméra : trois-quarts arrière bas pendant tout le coup de pied ET la
+prise d'appui de la frappe de suivi (un passage prématuré vers un plan
+de poursuite écrasait l'écart de profondeur poing/roche en un
+amoncellement illisible, vérifié par capture) ; poursuite dérivée du
+vrai vecteur de vol (`FOLLOWUP_ROCK_CENTER -> WORLD_TARGET_POS`)
+seulement après `FOLLOWUP_STRIKE_T` ; zoom court sur l'impact.
+
+**Piège de vérification (même famille que celui déjà documenté sur
+`r6_battle_throne`)** : une capture prise pile à `IMPACT_T` (5,017 s)
+montre un flash plein écran presque tout blanc -- pas un bug de
+rendu : le flash d'impact est bref par conception (`flash bref`,
+demande utilisateur), une capture 0,28 s plus tard montre l'éclat en
+étoile + les débris + l'onde de choc parfaitement lisibles, dans le
+même style déjà établi par `r6_hit_combo`.
+
+**Défauts connus, pour une passe de suite** :
+- Les particules de vitesse pendant le vol (Phase 3/4) sont présentes
+  mais discrètes à l'échelle d'une vignette -- a resserrer si le rendu
+  en jeu réel les juge trop faibles.
+- Les fragments de débris sont des boîtes axées sur les axes du monde
+  (pas de rotation par fragment, `props_rock.rock_debris_parts()` n'en
+  exporte pas) -- purement cosmétique, lisible mais un peu plat comparé
+  au cluster de sphères de la roche intacte.
+
 ## Vérification (captures)
 
-Voir `captures/verification/` (préfixe `2026-09-05-rock-kick-`) pour
-les captures Playwright du lecteur réel — pas décrites en prose ici,
-voir directement les fichiers.
+Captures dans `captures/verification/` (rendu réel du lecteur, via
+Playwright) :
+
+- `2026-09-05-rock-kick-idle.png` -- Phase 1, présence de la roche,
+  attente vivante (pas un arrêt sur image).
+- `2026-09-05-rock-kick-coil-hold.png` -- chambrage tenu (hold-and-snap),
+  torse tourné à l'exagéré.
+- `2026-09-05-rock-kick-strike-contact.png` -- instant du contact : le
+  pied touche la roche exactement à sa surface (voir calibration).
+- `2026-09-05-rock-kick-rock-airborne.png` -- juste après, la roche a
+  quitté le sol (ombre visible, roche décollée).
+- `2026-09-05-rock-kick-followup-strike.png` -- la frappe de suivi
+  redirige la roche déjà en vol.
+- `2026-09-05-rock-kick-impact-vfx.png` -- impact (0,28 s après
+  `IMPACT_T`, hors de la fenêtre de flash plein écran -- voir piège de
+  vérification ci-dessus) : éclat en étoile, débris, onde de choc.
+
+Lecteur complet : `experiments/r6_rock_kick/output/rock_kick_viewer_final.html`.
