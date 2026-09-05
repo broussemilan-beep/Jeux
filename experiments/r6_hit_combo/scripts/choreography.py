@@ -44,8 +44,67 @@ resupposee) :
     l'attaquant).
   - Aucun coude/genou (contrainte du rig, voir r6_rig.py).
 """
+import math
+
+import numpy as np
+
+from r6_rig import JOINTS, PART_SIZES, joint_for_part
 
 REST = (0.0, 0.0, 0.0)
+
+
+def _euler_xyz_matrix(rx_deg, ry_deg, rz_deg):
+    """Meme maths que anim_engine.euler_xyz_matrix (CFrame.Angles de
+    Roblox), reimplementee ici pour garder ce module sans dependance a
+    bpy -- dump_scene_data.py l'importe directement, sans passer par
+    anim_engine/bpy."""
+    rx, ry, rz = math.radians(rx_deg), math.radians(ry_deg), math.radians(rz_deg)
+    cx, sx = math.cos(rx), math.sin(rx)
+    cy, sy = math.cos(ry), math.sin(ry)
+    cz, sz = math.cos(rz), math.sin(rz)
+    Rx = np.array([[1, 0, 0], [0, cx, -sx], [0, sx, cx]])
+    Ry = np.array([[cy, 0, sy], [0, 1, 0], [-sy, 0, cy]])
+    Rz = np.array([[cz, -sz, 0], [sz, cz, 0], [0, 0, 1]])
+    return Rx @ Ry @ Rz
+
+
+def grounded_root_y(torso_rot, leg_rot, leg_part, target_y=0.0):
+    """Hauteur de racine EXACTE qui pose le pied de `leg_part` a
+    `target_y` (le sol), etant donnes les rotations prevues du buste et
+    de cette jambe -- cinematique directe (memes C0/C1 que anim_engine/
+    calibrate.py). Resolu analytiquement, pas par recherche numerique :
+    translater la racine en Y deplace le pied de EXACTEMENT la meme
+    quantite (la rotation ne depend pas de Y), donc une seule evaluation
+    suffit. Necessaire car mesure (voir README, passe "placement") : le
+    buste (Torso) qui pivote fort au coil souleve ou enfonce le pied
+    BIEN PLUS que la rotation propre de la jambe elle-meme (jusqu'a 0,24
+    stud sur le hook rien qu'avec la rotation du buste, jambe locale a
+    zero) -- un simple offset constant sur root_pos.Y ne peut pas suivre
+    ca, il faut la vraie cinematique."""
+    joint = joint_for_part(leg_part)
+    c0 = np.array(JOINTS[joint]["C0"]["pos"])
+    c1 = np.array(JOINTS[joint]["C1"]["pos"])
+    r_torso = _euler_xyz_matrix(*torso_rot)
+    r_leg_local = _euler_xyz_matrix(*leg_rot)
+    leg_local_pos = c0 - r_leg_local @ c1
+    r_leg_world = r_torso @ r_leg_local
+    half = PART_SIZES[leg_part][1] / 2.0
+    tip_offset_y = (r_torso @ leg_local_pos + r_leg_world @ np.array([0.0, -half, 0.0]))[1]
+    return target_y - tip_offset_y
+
+
+def grounded_root_y_balanced(torso_rot, left_rot, right_rot, target_y=0.0):
+    """Quand les DEUX jambes portent du poids (charge, avant tout
+    transfert marque vers l'avant ou l'arriere), caler sur une seule
+    jambe laisse forcement l'autre flotter ou s'enfoncer d'autant (les
+    deux solutions individuelles sont symetriques par rapport a la
+    moyenne, le systeme etant lineaire en root_pos.Y) -- mesure sur le
+    hook : 0,236 stud de chaque cote au lieu de 0 d'un cote et 0,47 de
+    l'autre si on force une seule jambe. La moyenne partage l'erreur
+    entre les deux pieds plutot que de la concentrer sur un seul."""
+    y_left = grounded_root_y(torso_rot, left_rot, "Left Leg", target_y)
+    y_right = grounded_root_y(torso_rot, right_rot, "Right Leg", target_y)
+    return (y_left + y_right) / 2.0
 
 
 def _kf(time, root_pos=(0.0, 3.0, 0.0), HumanoidRootPart=REST, Torso=REST,
@@ -66,20 +125,21 @@ ATTACKER_Z0 = -1.2
 DUMMY_Z = -6.6
 SNAP = 1 / 30  # une frame de sortie a 30 fps -- voir docstring de module
 
-# -- Jeu de jambes : la racine (HumanoidRootPart, donc les hanches) NE
-# BOUGEAIT JAMAIS en Y avant cette correction -- root_pos utilisait
-# GROUND_Y partout, constant du debut a la fin, alors qu'un vrai coup de
-# poing part des jambes (charge en flechissant, detente vers le haut/
-# avant au lacher). Retour utilisateur : "le jeu du coup et des jambes
-# c'est trop statique". Chaque coup CHARGE (creuse sous GROUND_Y pendant
-# windup/coil, amplitude croissante jab<cross<hook, meme principe
-# d'escalade que le VFX du lecteur) puis SE DETEND en remontant tout pres
-# de GROUND_Y au moment du hip-drive -- et EXACTEMENT GROUND_Y a l'instant
-# de l'impact (JAB_T/CROSS_T/HOOK_T) pour ne PAS decalibrer le contact
-# deja mesure (calibrate.py) : seule la Y des frames INTERMEDIAIRES change.
-JAB_DIP = 0.05
-CROSS_DIP = 0.11
-HOOK_DIP = 0.17
+# -- Jeu de jambes : root_pos.Y a d'abord ete varie via un simple OFFSET
+# CONSTANT (creuse pendant la charge, remonte au lacher) pour vendre
+# l'idee que le coup part des jambes. Mesure (foot_check.py) apres coup :
+# le rig n'a pas de genou -- baisser la racine d'un montant fixe, sans
+# tenir compte de la rotation reelle du buste et de la jambe a cet
+# instant precis, fait SOMBRER un pied sous le sol (jusqu'a -0,10 stud
+# mesure) pendant qu'une autre pose, elle, fait flotter l'autre pied
+# encore plus haut -- le buste seul (Torso qui pivote fort au coil) peut
+# soulever un pied de 0,24 stud, BIEN PLUS que la rotation propre de la
+# jambe. Retour utilisateur ("le placement... n'est pas bon") confirme.
+# Remplace par `grounded_root_y()` (plus haut) : la racine est calee par
+# la VRAIE cinematique directe (meme C0/C1 que anim_engine/calibrate.py)
+# pour que la jambe AVANT (celle qui plante) ait son pied exactement au
+# sol a chaque pose, quelle que soit la rotation du buste ce jour-la --
+# jamais un offset devine.
 
 # -- Chronologie -- retour utilisateur (analyse frame par frame des 3
 # videos de reference, deuxieme passe, ciblee sur la FLUIDITE et non plus
@@ -159,6 +219,7 @@ _READY_TORSO = (5, 0, 0)
 _READY_HEAD = (3, 0, 0)
 _READY_LEGS = {"Right Leg": (5, 0, 7), "Left Leg": (7, 0, -6)}
 _READY_ARMS = {"Right Arm": (62, 0, -10), "Left Arm": (66, 0, 12)}
+_READY_ROOT_Y = grounded_root_y(_READY_TORSO, _READY_LEGS["Left Leg"], "Left Leg")
 
 # -- JAB (gauche) -- rapide, amplitude modeste (un jab ne charge pas
 # loin), sert surtout a amorcer l'oscillation du buste pour le cross qui
@@ -168,6 +229,7 @@ JAB_WINDUP_HEAD = (3, 5, 0)
 JAB_WINDUP_LEGS = {"Right Leg": (7, 0, 8), "Left Leg": (9, 0, -7)}
 JAB_WINDUP_LEFT_ARM = (52, 0, 16)
 JAB_WINDUP_RIGHT_ARM = (64, 0, -11)
+JAB_WINDUP_ROOT_Y = grounded_root_y(JAB_WINDUP_TORSO, JAB_WINDUP_LEGS["Left Leg"], "Left Leg")
 
 JAB_STRIKE_TORSO = (-3, -15, 0)
 JAB_STRIKE_HEAD = (5, -7, 0)
@@ -192,6 +254,7 @@ JAB_HIPDRIVE_LEGS = lerp_legs(JAB_WINDUP_LEGS, JAB_STRIKE_LEGS, _JF_BODY)
 JAB_HIPDRIVE_LEFT_ARM = lerp3(JAB_WINDUP_LEFT_ARM, JAB_STRIKE_LEFT_ARM, _JF_ARM)
 JAB_HIPDRIVE_RIGHT_ARM = lerp3(JAB_WINDUP_RIGHT_ARM, JAB_STRIKE_RIGHT_ARM, _JF_BODY)
 JAB_HIPDRIVE_ROOT_Z = ATTACKER_Z0 + _JF_BODY * (JAB_LUNGE_Z - ATTACKER_Z0)
+JAB_HIPDRIVE_ROOT_Y = grounded_root_y(JAB_HIPDRIVE_TORSO, JAB_HIPDRIVE_LEGS["Left Leg"], "Left Leg")
 
 # -- CROSS (droit) -- meme mecanique de puissance que r6_directional_punch
 # (chaine cinetique complete, buste dominant), retimee ici pour s'enchainer
@@ -203,26 +266,46 @@ CROSS_WINDUP_HEAD = (5, 4, 0)
 CROSS_WINDUP_LEGS = {"Right Leg": (9, 0, 9), "Left Leg": (10, 0, -7)}
 CROSS_WINDUP_RIGHT_ARM = (-25, 0, -9)
 CROSS_WINDUP_LEFT_ARM = (58, 0, 20)
+# Racine calee sur la jambe AVANT (Left, plantee) pour ce buste-la --
+# voir grounded_root_y(), passe "placement".
+# Cale sur LA MOYENNE des deux jambes pendant la charge -- le poids
+# n'est pas encore transfere d'un cote, une seule jambe de reference
+# laisse l'autre flotter/s'enfoncer de deux fois plus (mesure, voir
+# grounded_root_y_balanced()). Le transfert franc vers l'avant (Left)
+# n'arrive qu'au hip-drive/strike.
+CROSS_WINDUP_ROOT_Y = grounded_root_y_balanced(CROSS_WINDUP_TORSO, CROSS_WINDUP_LEGS["Left Leg"], CROSS_WINDUP_LEGS["Right Leg"])
 
 CROSS_COIL_TORSO = (11, -28, 3)
 CROSS_COIL_HEAD = (9, -18, 0)
-# Jeu de jambes -- retour utilisateur ("les jambes c'est trop statique") :
-# la jambe AVANT (Left, qui va planter/encaisser le transfert de poids)
-# charge plus large (Z plus negatif) et la jambe ARRIERE (Right, qui va
-# pousser/pivoter) charge plus fort en flexion (X plus grand) -- avant,
-# les deux jambes bougeaient a peine entre le coil et le strike (6-8
-# degres), ce qui ne lisait aucun vrai transfert de poids.
-CROSS_COIL_LEGS = {"Right Leg": (19, 0, 16), "Left Leg": (20, 0, -14)}
+# Jeu de jambes -- retour utilisateur ("les jambes c'est trop statique",
+# PUIS "le placement et le jeu de jambes n'est pas bon" une fois le
+# premier essai mesure). Diagnostic mesure (voir foot_check dans le
+# README) : le rig n'a pas de genou -- CHAQUE degre de rotation de
+# hanche (X ou Z, les deux comptent, angle combine) souleve le PIED du
+# sol proportionnellement a 1-cos(angle), puisque la jambe est un
+# segment rigide qui pivote day autour de la hanche. Le premier essai
+# (Left Leg jusqu'a 34 degres) soulevait le pied de 0,29 a 0,57 stud au-
+# dessus du sol au moment meme du coup -- visible, pas juste "pas assez
+# de jeu de jambes" comme avant, mais un vrai defaut de placement.
+# Correction : la jambe AVANT (Left, qui plante/encaisse le transfert de
+# poids pour un cross) reste PRES DE LA VERTICALE au moment du coup
+# (angle modeste, pied mesure a moins de 0,05 stud du sol) ; la jambe
+# ARRIERE (Right, qui pousse/pivote sur l'avant du pied) porte le
+# vrai swing visible -- un talon qui se souleve en poussant est
+# anatomiquement correct, un pied avant qui flotte a 0,3 stud ne l'est
+# pas.
+CROSS_COIL_LEGS = {"Right Leg": (19, 0, 16), "Left Leg": (11, 0, -8)}
 CROSS_COIL_RIGHT_ARM = (-85, 0, -17)
 CROSS_COIL_LEFT_ARM = (46, 0, 40)
+CROSS_COIL_ROOT_Y = grounded_root_y_balanced(CROSS_COIL_TORSO, CROSS_COIL_LEGS["Left Leg"], CROSS_COIL_LEGS["Right Leg"])
 
 CROSS_STRIKE_TORSO = (-8, 34, 0)
 CROSS_STRIKE_HEAD = (10, 12, 0)
-# Jambe arriere (Right) qui pousse/pivote : grand swing X (19 -> -18,
-# 37 degres, contre 31 avant). Jambe avant (Left) qui plante sous le
-# poids transfere : compression nette (20 -> 34) + leger pivot vers
-# l'exterieur (Z -14 -> 2) au lieu de rester quasi immobile.
-CROSS_STRIKE_LEGS = {"Right Leg": (-18, 0, 10), "Left Leg": (34, 0, 2)}
+# Jambe arriere (Right) qui pousse/pivote : grand swing (19 -> -18,
+# talon souleve -- realiste). Jambe avant (Left) qui plante : angle
+# modeste (11 -> 8), pied mesure a moins de 0,05 stud du sol (voir
+# foot_check.py) au lieu des 0,29 stud du premier essai.
+CROSS_STRIKE_LEGS = {"Right Leg": (-18, 0, 10), "Left Leg": (5, 0, 2)}
 CROSS_STRIKE_RIGHT_ARM = (90, 0, -4)
 CROSS_STRIKE_LEFT_ARM = (10, 0, -18)
 # Idem jab : calibre par mesure. Premiere valeur (-7.109) etait FAUSSE --
@@ -239,6 +322,7 @@ CROSS_HIPDRIVE_LEGS = lerp_legs(CROSS_COIL_LEGS, CROSS_STRIKE_LEGS, _CF_BODY)
 CROSS_HIPDRIVE_RIGHT_ARM = lerp3(CROSS_COIL_RIGHT_ARM, CROSS_STRIKE_RIGHT_ARM, _CF_ARM)
 CROSS_HIPDRIVE_LEFT_ARM = lerp3(CROSS_COIL_LEFT_ARM, CROSS_STRIKE_LEFT_ARM, 0.85)
 CROSS_HIPDRIVE_ROOT_Z = ATTACKER_Z0 + _CF_BODY * (CROSS_LUNGE_Z - ATTACKER_Z0)
+CROSS_HIPDRIVE_ROOT_Y = grounded_root_y(CROSS_HIPDRIVE_TORSO, CROSS_HIPDRIVE_LEGS["Left Leg"], "Left Leg")
 
 # -- HOOK (gauche) -- le finisher : pas un coup droit mais un balayage
 # lateral (Z, pas seulement X) porte par une GRANDE rotation du buste --
@@ -256,22 +340,29 @@ HOOK_WINDUP_LEGS = {"Right Leg": (12, 0, 10), "Left Leg": (14, 0, -9)}
 # jab/cross (tous deux des coups droits).
 HOOK_WINDUP_LEFT_ARM = (70, 0, -50)
 HOOK_WINDUP_RIGHT_ARM = (30, 0, -14)
+HOOK_WINDUP_ROOT_Y = grounded_root_y_balanced(HOOK_WINDUP_TORSO, HOOK_WINDUP_LEGS["Left Leg"], HOOK_WINDUP_LEGS["Right Leg"])
 
 HOOK_COIL_TORSO = (14, -40, -4)
 HOOK_COIL_HEAD = (9, -24, 0)
-HOOK_COIL_LEGS = {"Right Leg": (20, 0, 18), "Left Leg": (24, 0, -18)}
+HOOK_COIL_LEGS = {"Right Leg": (20, 0, 18), "Left Leg": (7, 0, -5)}
 HOOK_COIL_LEFT_ARM = (78, 0, -78)
 HOOK_COIL_RIGHT_ARM = (26, 0, -16)
+# Mesure sans compensation : le buste seul (X=14, Y=-40) souleve deja le
+# pied avant de 0,24 stud, bien avant meme de compter la rotation propre
+# de la jambe -- voir grounded_root_y(), passe "placement".
+HOOK_COIL_ROOT_Y = grounded_root_y_balanced(HOOK_COIL_TORSO, HOOK_COIL_LEGS["Left Leg"], HOOK_COIL_LEGS["Right Leg"])
 
 HOOK_STRIKE_TORSO = (-10, 46, 2)
 HOOK_STRIKE_HEAD = (12, 22, 0)
 # Le hook pivote sur la jambe AVANT (Left, meme cote que le bras qui
-# frappe) : le pied tourne vers l'interieur pendant que la hanche
-# balaie -- Left Leg Z fait donc un grand swing (-18 -> 14, 32 degres,
-# echo au bras dont le Z va de -78 a 91) au lieu de rester quasi fixe
-# (-12 -> -6, 6 degres, avant correction). La jambe arriere (Right)
-# suit la rotation de hanche.
-HOOK_STRIKE_LEGS = {"Right Leg": (-20, 0, 16), "Left Leg": (34, 0, 14)}
+# frappe) : un vrai lead hook pivote sur la BOULE du pied avant, talon
+# legerement souleve -- mais mesure (foot_check.py), le premier essai
+# (X=34, Z=14) soulevait le pied ENTIER de 0,40 stud, bien au-dela d'un
+# talon qui se souleve. Reduit a un angle qui souleve le talon de facon
+# credible (~0,1 stud, mesure) sans faire flotter tout le pied : X plus
+# petit, Z qui garde le sens du pivot (vers l'interieur, echo au bras
+# dont le Z va de -78 a 91) mais une amplitude bien moindre.
+HOOK_STRIKE_LEGS = {"Right Leg": (-20, 0, 16), "Left Leg": (16, 0, 8)}
 HOOK_STRIKE_LEFT_ARM = (88, 0, 91)     # balaye de l'exterieur (Z negatif, charge) vers l'interieur (Z positif, croise sur la cible) -- Z calibre par balayage numerique (0,380 stud, voir calibrate.py), pas devine
 HOOK_STRIKE_RIGHT_ARM = (18, 0, -20)
 # Idem jab/cross : calibre par mesure PROPRE (secondary_motion=None).
@@ -284,6 +375,7 @@ HOOK_HIPDRIVE_LEGS = lerp_legs(HOOK_COIL_LEGS, HOOK_STRIKE_LEGS, _HF_BODY)
 HOOK_HIPDRIVE_LEFT_ARM = lerp3(HOOK_COIL_LEFT_ARM, HOOK_STRIKE_LEFT_ARM, _HF_ARM)
 HOOK_HIPDRIVE_RIGHT_ARM = lerp3(HOOK_COIL_RIGHT_ARM, HOOK_STRIKE_RIGHT_ARM, _HF_BODY)
 HOOK_HIPDRIVE_ROOT_Z = CROSS_LUNGE_Z + _HF_BODY * (HOOK_LUNGE_Z - CROSS_LUNGE_Z)
+HOOK_HIPDRIVE_ROOT_Y = grounded_root_y(HOOK_HIPDRIVE_TORSO, HOOK_HIPDRIVE_LEGS["Left Leg"], "Left Leg")
 
 # -- Follow-through + pose finale (fiere, le combo est termine) --
 OVERSHOOT_TORSO = (2, 58, 4)
@@ -295,69 +387,77 @@ RECOVER_HEAD = (-6, 4, 0)
 RECOVER_LEFT_ARM = (30, 0, 12)
 RECOVER_RIGHT_ARM = (34, 0, -14)
 
+# OVERSHOOT/RECOVER reutilisent HOOK_STRIKE_LEGS (le corps continue sur
+# sa lancee, les jambes n'ont pas de nouvelle pose propre) -- mais le
+# buste, lui, continue de tourner (OVERSHOOT_TORSO.Y=58 contre 46 au
+# strike), ce qui a lui seul soulevait les deux pieds de plus de 0,2
+# stud (mesure) avant cette correction. Cale sur la jambe avant, comme
+# le reste du combo.
+OVERSHOOT_ROOT_Y = grounded_root_y_balanced(OVERSHOOT_TORSO, HOOK_STRIKE_LEGS["Left Leg"], HOOK_STRIKE_LEGS["Right Leg"])
+RECOVER_ROOT_Y = grounded_root_y_balanced(RECOVER_TORSO, HOOK_STRIKE_LEGS["Left Leg"], HOOK_STRIKE_LEGS["Right Leg"])
+
 FINAL_TORSO = (-8, 0, 0)
 FINAL_HEAD = (-6, 0, 0)
+FINAL_ROOT_Y = grounded_root_y(FINAL_TORSO, _READY_LEGS["Left Leg"], "Left Leg")
 
 
 def attacker_combo():
     keyframes = [
-        _kf(0.00, root_pos=(0, GROUND_Y, ATTACKER_Z0), Torso=_READY_TORSO, Head=_READY_HEAD,
+        _kf(0.00, root_pos=(0, _READY_ROOT_Y, ATTACKER_Z0), Torso=_READY_TORSO, Head=_READY_HEAD,
             **_READY_LEGS, **_READY_ARMS),
-        _kf(GARDE_T, root_pos=(0, GROUND_Y, ATTACKER_Z0), Torso=_READY_TORSO, Head=_READY_HEAD,
+        _kf(GARDE_T, root_pos=(0, _READY_ROOT_Y, ATTACKER_Z0), Torso=_READY_TORSO, Head=_READY_HEAD,
             **_READY_LEGS, **_READY_ARMS),
 
         # -- JAB -- charge, HOLD reel (meme pose tenue -- pas juste un
         # point de passage), puis lacher bref. Le halo de charge du poing
         # (lecteur, drawFistCharge) continue de pulser pendant tout le
         # hold : le rig est statique, l'ecran ne l'est jamais.
-        _kf(JAB_WINDUP_T, root_pos=(0, GROUND_Y - JAB_DIP * 0.4, ATTACKER_Z0), Torso=JAB_WINDUP_TORSO, Head=JAB_WINDUP_HEAD,
+        _kf(JAB_WINDUP_T, root_pos=(0, JAB_WINDUP_ROOT_Y, ATTACKER_Z0), Torso=JAB_WINDUP_TORSO, Head=JAB_WINDUP_HEAD,
             **JAB_WINDUP_LEGS, **{"Left Arm": JAB_WINDUP_LEFT_ARM, "Right Arm": JAB_WINDUP_RIGHT_ARM}),
-        _kf(JAB_WINDUP_HOLD_T, root_pos=(0, GROUND_Y - JAB_DIP * 0.4, ATTACKER_Z0), Torso=JAB_WINDUP_TORSO, Head=JAB_WINDUP_HEAD,
+        _kf(JAB_WINDUP_HOLD_T, root_pos=(0, JAB_WINDUP_ROOT_Y, ATTACKER_Z0), Torso=JAB_WINDUP_TORSO, Head=JAB_WINDUP_HEAD,
             **JAB_WINDUP_LEGS, **{"Left Arm": JAB_WINDUP_LEFT_ARM, "Right Arm": JAB_WINDUP_RIGHT_ARM}),
-        _kf(JAB_HIPDRIVE_T, root_pos=(0, GROUND_Y - JAB_DIP * (1 - _JF_BODY), JAB_HIPDRIVE_ROOT_Z), Torso=JAB_HIPDRIVE_TORSO, Head=JAB_HIPDRIVE_HEAD,
+        _kf(JAB_HIPDRIVE_T, root_pos=(0, JAB_HIPDRIVE_ROOT_Y, JAB_HIPDRIVE_ROOT_Z), Torso=JAB_HIPDRIVE_TORSO, Head=JAB_HIPDRIVE_HEAD,
             **JAB_HIPDRIVE_LEGS, **{"Left Arm": JAB_HIPDRIVE_LEFT_ARM, "Right Arm": JAB_HIPDRIVE_RIGHT_ARM}),
         _kf(JAB_T, root_pos=(0, GROUND_Y, JAB_LUNGE_Z), Torso=JAB_STRIKE_TORSO, Head=JAB_STRIKE_HEAD,
             **JAB_STRIKE_LEGS, **{"Left Arm": JAB_STRIKE_LEFT_ARM, "Right Arm": JAB_STRIKE_RIGHT_ARM}),
 
         # -- CROSS (le retour du jab EST l'armement du cross -- pas de
         # pause NEUTRE, mais un vrai HOLD au coil, meme principe que le
-        # jab) -- charge plus profond (CROSS_DIP), hold plus long
-        # (CROSS_HOLD) que le jab --
-        _kf(CROSS_WINDUP_T, root_pos=(0, GROUND_Y - CROSS_DIP * 0.3, JAB_LUNGE_Z), Torso=CROSS_WINDUP_TORSO, Head=CROSS_WINDUP_HEAD,
+        # jab) -- root_pos.Y calee par grounded_root_y() sur la jambe
+        # avant (Left) a chaque pose intermediaire, PAS un offset
+        # constant (voir la note "placement" plus haut) --
+        _kf(CROSS_WINDUP_T, root_pos=(0, CROSS_WINDUP_ROOT_Y, JAB_LUNGE_Z), Torso=CROSS_WINDUP_TORSO, Head=CROSS_WINDUP_HEAD,
             **CROSS_WINDUP_LEGS, **{"Right Arm": CROSS_WINDUP_RIGHT_ARM, "Left Arm": CROSS_WINDUP_LEFT_ARM}),
-        _kf(CROSS_COIL_T, root_pos=(0, GROUND_Y - CROSS_DIP, JAB_LUNGE_Z), Torso=CROSS_COIL_TORSO, Head=CROSS_COIL_HEAD,
+        _kf(CROSS_COIL_T, root_pos=(0, CROSS_COIL_ROOT_Y, JAB_LUNGE_Z), Torso=CROSS_COIL_TORSO, Head=CROSS_COIL_HEAD,
             **CROSS_COIL_LEGS, **{"Right Arm": CROSS_COIL_RIGHT_ARM, "Left Arm": CROSS_COIL_LEFT_ARM}),
-        _kf(CROSS_COIL_HOLD_T, root_pos=(0, GROUND_Y - CROSS_DIP, JAB_LUNGE_Z), Torso=CROSS_COIL_TORSO, Head=CROSS_COIL_HEAD,
+        _kf(CROSS_COIL_HOLD_T, root_pos=(0, CROSS_COIL_ROOT_Y, JAB_LUNGE_Z), Torso=CROSS_COIL_TORSO, Head=CROSS_COIL_HEAD,
             **CROSS_COIL_LEGS, **{"Right Arm": CROSS_COIL_RIGHT_ARM, "Left Arm": CROSS_COIL_LEFT_ARM}),
-        _kf(CROSS_HIPDRIVE_T, root_pos=(0, GROUND_Y - CROSS_DIP * (1 - _CF_BODY), CROSS_HIPDRIVE_ROOT_Z), Torso=CROSS_HIPDRIVE_TORSO, Head=CROSS_HIPDRIVE_HEAD,
+        _kf(CROSS_HIPDRIVE_T, root_pos=(0, CROSS_HIPDRIVE_ROOT_Y, CROSS_HIPDRIVE_ROOT_Z), Torso=CROSS_HIPDRIVE_TORSO, Head=CROSS_HIPDRIVE_HEAD,
             **CROSS_HIPDRIVE_LEGS, **{"Right Arm": CROSS_HIPDRIVE_RIGHT_ARM, "Left Arm": CROSS_HIPDRIVE_LEFT_ARM}),
         _kf(CROSS_T, root_pos=(0, GROUND_Y, CROSS_LUNGE_Z), Torso=CROSS_STRIKE_TORSO, Head=CROSS_STRIKE_HEAD,
             **CROSS_STRIKE_LEGS, **{"Right Arm": CROSS_STRIKE_RIGHT_ARM, "Left Arm": CROSS_STRIKE_LEFT_ARM}),
 
         # -- HOOK (finisher -- le retour du cross EST l'armement du hook)
-        # -- la charge la plus profonde (HOOK_DIP) ET le hold le plus long
-        # (HOOK_HOLD) du combo, le finisher doit se lire comme LE coup qui
-        # se charge le plus avant de partir --
-        _kf(HOOK_WINDUP_T, root_pos=(0, GROUND_Y - HOOK_DIP * 0.35, CROSS_LUNGE_Z), Torso=HOOK_WINDUP_TORSO, Head=HOOK_WINDUP_HEAD,
+        # -- meme principe, root_pos.Y calee par cinematique directe --
+        _kf(HOOK_WINDUP_T, root_pos=(0, HOOK_WINDUP_ROOT_Y, CROSS_LUNGE_Z), Torso=HOOK_WINDUP_TORSO, Head=HOOK_WINDUP_HEAD,
             **HOOK_WINDUP_LEGS, **{"Left Arm": HOOK_WINDUP_LEFT_ARM, "Right Arm": HOOK_WINDUP_RIGHT_ARM}),
-        _kf(HOOK_COIL_T, root_pos=(0, GROUND_Y - HOOK_DIP, CROSS_LUNGE_Z), Torso=HOOK_COIL_TORSO, Head=HOOK_COIL_HEAD,
+        _kf(HOOK_COIL_T, root_pos=(0, HOOK_COIL_ROOT_Y, CROSS_LUNGE_Z), Torso=HOOK_COIL_TORSO, Head=HOOK_COIL_HEAD,
             **HOOK_COIL_LEGS, **{"Left Arm": HOOK_COIL_LEFT_ARM, "Right Arm": HOOK_COIL_RIGHT_ARM}),
-        _kf(HOOK_COIL_HOLD_T, root_pos=(0, GROUND_Y - HOOK_DIP, CROSS_LUNGE_Z), Torso=HOOK_COIL_TORSO, Head=HOOK_COIL_HEAD,
+        _kf(HOOK_COIL_HOLD_T, root_pos=(0, HOOK_COIL_ROOT_Y, CROSS_LUNGE_Z), Torso=HOOK_COIL_TORSO, Head=HOOK_COIL_HEAD,
             **HOOK_COIL_LEGS, **{"Left Arm": HOOK_COIL_LEFT_ARM, "Right Arm": HOOK_COIL_RIGHT_ARM}),
-        _kf(HOOK_HIPDRIVE_T, root_pos=(0, GROUND_Y - HOOK_DIP * (1 - _HF_BODY), HOOK_HIPDRIVE_ROOT_Z), Torso=HOOK_HIPDRIVE_TORSO, Head=HOOK_HIPDRIVE_HEAD,
+        _kf(HOOK_HIPDRIVE_T, root_pos=(0, HOOK_HIPDRIVE_ROOT_Y, HOOK_HIPDRIVE_ROOT_Z), Torso=HOOK_HIPDRIVE_TORSO, Head=HOOK_HIPDRIVE_HEAD,
             **HOOK_HIPDRIVE_LEGS, **{"Left Arm": HOOK_HIPDRIVE_LEFT_ARM, "Right Arm": HOOK_HIPDRIVE_RIGHT_ARM}),
         _kf(HOOK_T, root_pos=(0, GROUND_Y, HOOK_LUNGE_Z), Torso=HOOK_STRIKE_TORSO, Head=HOOK_STRIKE_HEAD,
             **HOOK_STRIKE_LEGS, **{"Left Arm": HOOK_STRIKE_LEFT_ARM, "Right Arm": HOOK_STRIKE_RIGHT_ARM}),
 
-        # -- follow-through + pose finale -- leger rebond vers le HAUT
-        # juste apres l'impact (le corps continue de monter/avancer sur
-        # sa lancee, plutot que de retomber platement a GROUND_Y), puis
-        # redescend en se stabilisant --
-        _kf(HOOK_T + 0.08, root_pos=(0, GROUND_Y + 0.05, HOOK_LUNGE_Z - 0.2), Torso=OVERSHOOT_TORSO, Head=OVERSHOOT_HEAD,
+        # -- follow-through + pose finale -- root_pos.Y a nouveau calee
+        # par cinematique directe (le buste continue de tourner apres
+        # l'impact, ce qui a lui seul souleve les pieds -- voir plus haut) --
+        _kf(HOOK_T + 0.08, root_pos=(0, OVERSHOOT_ROOT_Y, HOOK_LUNGE_Z - 0.2), Torso=OVERSHOOT_TORSO, Head=OVERSHOOT_HEAD,
             **HOOK_STRIKE_LEGS, **{"Left Arm": OVERSHOOT_LEFT_ARM, "Right Arm": HOOK_STRIKE_RIGHT_ARM}),
-        _kf(HOOK_T + 0.45, root_pos=(0, GROUND_Y, HOOK_LUNGE_Z), Torso=RECOVER_TORSO, Head=RECOVER_HEAD,
+        _kf(HOOK_T + 0.45, root_pos=(0, RECOVER_ROOT_Y, HOOK_LUNGE_Z), Torso=RECOVER_TORSO, Head=RECOVER_HEAD,
             **HOOK_STRIKE_LEGS, **{"Left Arm": RECOVER_LEFT_ARM, "Right Arm": RECOVER_RIGHT_ARM}),
-        _kf(DURATION, root_pos=(0, GROUND_Y, HOOK_LUNGE_Z + 0.35), Torso=FINAL_TORSO, Head=FINAL_HEAD,
+        _kf(DURATION, root_pos=(0, FINAL_ROOT_Y, HOOK_LUNGE_Z + 0.35), Torso=FINAL_TORSO, Head=FINAL_HEAD,
             **_READY_LEGS, **{"Left Arm": (10, 0, 12), "Right Arm": (10, 0, -12)}),
     ]
     phases = [

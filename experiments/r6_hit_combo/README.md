@@ -348,6 +348,73 @@ est figé mais l'écran ne l'est pas. Durée totale du combo passée de
 neutre entre les coups n'est réintroduit — le principe « le retour d'un
 coup devient l'amorce du suivant » reste intact).
 
+## Passe « placement des pieds » (retour utilisateur, cinquième itération)
+
+Retour : « Refais mais retravaille les jambes le placement et le jeux de
+jambes n'est pas bon. » Diagnostic mesuré (nouveau script
+`scripts/foot_check.py`, cinématique directe sur les 6 segments, même
+équation que `calibrate.py`) : la passe « jeu de jambes » précédente avait
+**deux bugs de placement réels**, pas juste un manque de style :
+
+1. **Le pied flottait jusqu'à 0,57 stud au-dessus du sol** au moment
+   même du coup (cross et hook) — cause : la rotation de jambe amplifiée
+   au tour précédent (jusqu'à 34°) soulève mécaniquement le pied d'un
+   segment RIGIDE SANS GENOU qui pivote autour de la hanche (facteur
+   `1-cos(angle)`), et personne ne recalculait la hauteur de la racine en
+   conséquence.
+2. **Le buste (Torso) à lui seul soulève ou enfonce le pied bien plus que
+   la jambe** — mesuré : `HOOK_COIL_TORSO` (torsion à 40°) soulève le pied
+   de 0,24 stud même avec la jambe parfaitement verticale (rotation
+   locale à zéro). Les jambes sont enfants du Torso dans la hiérarchie du
+   rig (`Torso <- HumanoidRootPart`, `Left/Right Leg <- Torso`), donc
+   TOUTE rotation du buste se répercute sur la position du pied — un
+   simple offset de `root_pos.Y` (l'ancien correctif « jeu de jambes »)
+   ne peut pas suivre ça, il ne connaît pas la rotation réelle du buste
+   à cet instant.
+
+**Correction, deux volets :**
+
+- **Angles de jambe réduits aux instants de frappe** — la jambe qui
+  plante (celle qui reçoit le transfert de poids) reste modeste en
+  rotation ; celle qui pousse/pivote porte le swing visible (un talon qui
+  se soulève en poussant est réaliste, un pied entier qui flotte ne
+  l'est pas).
+- **`grounded_root_y()`** (nouvelle fonction, `scripts/choreography.py`) :
+  calcule par cinématique directe EXACTE (mêmes C0/C1 que
+  `anim_engine`/`calibrate.py`) la hauteur de racine qui pose un pied
+  donné pile au sol, étant donnée la rotation prévue du buste ET de la
+  jambe à cet instant — plus un offset constant deviné. Résolu
+  analytiquement (translater la racine en Y déplace le pied de
+  exactement la même quantité, une seule évaluation suffit, pas de
+  recherche numérique). Pendant la charge (les deux jambes portent
+  encore du poids), **`grounded_root_y_balanced()`** fait la moyenne des
+  deux solutions individuelles plutôt que de forcer une seule jambe —
+  concentrer l'erreur sur un seul pied donnait 0 stud d'un côté contre
+  0,24-0,47 de l'autre ; la moyenne partage l'erreur (~0,12 stud de
+  chaque côté, deux fois moins que le pire cas d'avant). Root Y reste
+  **exactement `GROUND_Y`** aux 3 instants d'impact eux-mêmes
+  (JAB_T/CROSS_T/HOOK_T) — condition absolue pour ne pas décalibrer le
+  contact déjà mesuré.
+
+**Résultat mesuré** (`foot_check.py`, avant → après) :
+
+| Instant | Avant | Après |
+|---|---|---|
+| Cross, hold au coil | 0,13 / 0,17 stud | 0,02 / 0,02 stud |
+| Hook, hold au coil (le plus long) | 0,31 / 0,00 stud (un pied dans le sol) | 0,12 / 0,12 stud (partagé) |
+| Suivi de coup (overshoot) | 0,22 / 0,22 stud | 0,00 / 0,00 stud |
+| Récupération | 0,12 / 0,20 stud | 0,04 / 0,04 stud |
+
+Aux instants de frappe eux-mêmes (root Y verrouillée à `GROUND_Y` pour
+la calibration), un résidu modeste subsiste sur la jambe avant du hook
+(0,15 stud) — c'est le talon qui se soulève pendant le pivot du lead
+hook, anatomiquement correct pour ce coup précis, pas un artefact.
+
+Vérifié : `calibrate.py` reconfirme les écarts de contact **inchangés au
+stud près** (0,493 / 0,366 / 0,380), aucune keyframe d'impact touchée.
+Captures avant/après (`captures/verification/2026-09-05-hit-combo-
+footwork-placement-*.png`) confirmant les pieds au sol pendant les holds.
+
 ## Vérification
 
 Environnement : `pip install numpy bpy` (le conteneur ne les avait pas
@@ -412,6 +479,7 @@ r6_hit_combo/
 │   │   preview.py, gen_textures.py   # copiés tels quels
 │   ├── choreography.py         # NOUVEAU — combo jab/cross/hook
 │   ├── calibrate.py            # NOUVEAU — adapté (3 coups à vérifier)
+│   ├── foot_check.py           # NOUVEAU — placement des pieds au sol
 │   ├── run_scene.py            # NOUVEAU — adapté (2 exports combo)
 │   ├── dump_scene_data.py      # NOUVEAU — expose DATA.hits (windup/impact par coup)
 │   ├── build_viewer.py         # NOUVEAU — adapté (sortie hit_combo_viewer_final.html)
