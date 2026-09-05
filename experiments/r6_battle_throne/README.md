@@ -206,3 +206,59 @@ pilier s'y intègre plutôt que d'introduire un nouveau style), colonne
 
 Bascule entre les deux états gérée côté lecteur (scripted, pas de
 simulation physique temps réel — cohérent avec le reste du pipeline).
+
+## Lecteur (`scripts/dump_scene_data.py` + `build_viewer.py` + `battle_throne_viewer.html`)
+
+`dump_scene_data.py` échantillonne `hero_track()`/`rival_track()`
+**directement** via `anim_engine.build_rig()`/`apply_choreography()`/
+`sample()` (comme `calibrate_battle.py` -- pas de round-trip par un
+`.rbxmx` exporté). Il recalcule aussi la trajectoire de la couronne
+(coussin → main → tête) à partir des échantillons de Hero, avec la même
+recette que `r6_throne_crown/scripts/compute_crown_track.py` (ce fichier
+n'est pas directement importable ici -- ses propres imports ne résolvent
+pas dans ce prototype isolé -- la recette est donc reproduite localement,
+documentée dans la docstring). Géométrie statique exportée telle quelle :
+`props.staircase_parts()`/`throne_parts()`, `props_battle.pillar_parts()`/
+`pillar_debris_parts()`.
+
+`battle_throne_viewer.html` réutilise telles quelles les briques déjà
+vérifiées des deux prototypes source : le rendu de rig et le système VFX
+d'impact (flash plein écran bref + éclats/anneau de choc) de
+`r6_hit_combo`, le rendu de Parts (boîtes/cylindres texturés) et
+l'éclairage/la caméra de la montée-assise-couronnement de
+`r6_throne_crown`. Deux rigs indépendants, bascule pilier intact/débris
+au moment exact de `PILLAR_HIT_T`, caméra dynamique suivant l'action
+pendant le combat puis les six plans chorégraphiés du trône à partir de
+`BEAT5_END`.
+
+**Piège de vérification rencontré, pas un bug** : chaque impact déclenche
+un flash plein écran de ~50 ms (bloc `return` anticipé dans le code VFX
+partagé) *avant* que les éclats en étoile ne s'affichent. Un premier
+passage de capture à `+0.02s` après l'instant du coup de grâce
+(`FINISH_STRIKE_T`) tombait pile dans cette fenêtre et ne montrait qu'un
+flash blanc sans les rigs -- lu à tort comme "caméra qui vise le vide".
+Vérifié faux en comparant `-0.15s / +0.02s / +0.05s / +0.08s / +0.20s`
+autour de l'impact : la caméra ne bouge jamais, seul le VFX traverse sa
+propre sous-phase de flash. Toutes les autres captures d'impact avaient
+simplement été prises après cette fenêtre par hasard.
+
+## Vérification (captures)
+
+Captures dans `captures/verification/` (rendu réel du lecteur, via
+Playwright, pas décrites en prose) :
+
+- `2026-09-05-battle-throne-faceoff.png` -- garde, les deux rigs actifs
+  face à face, pilier intact visible entre eux.
+- `2026-09-05-battle-throne-pillar-intact.png` / `-pillar-broken.png` --
+  le pilier avant/après l'impact du coup de pied (bascule Part↔débris).
+- `2026-09-05-battle-throne-finisher-impact.png` -- le coup de grâce,
+  VFX + les deux rigs correctement cadrés (voir piège ci-dessus).
+- `2026-09-05-battle-throne-victory-flex.png` -- Hero, vainqueur, pose de
+  victoire avant le demi-tour et la marche.
+- `2026-09-05-battle-throne-coronation.png` -- raccord complet jusqu'au
+  couronnement sur le trône (silhouette sombre, même esthétique que
+  `r6_throne_crown`).
+
+Lecteur complet (39,3 s, scrub/lecture/vitesse) :
+`experiments/r6_battle_throne/output/battle_throne_viewer_final.html`,
+publié : https://claude.ai/code/artifact/3137aca1-dd0f-40aa-b7dc-627634d1cf71
