@@ -218,4 +218,5 @@ Playwright) :
   `IMPACT_T`, hors de la fenêtre de flash plein écran -- voir piège de
   vérification ci-dessus) : éclat en étoile, débris, onde de choc.
 
-Lecteur complet : `experiments/r6_rock_kick/output/rock_kick_viewer_final.html`.
+Lecteur complet : `experiments/r6_rock_kick/output/rock_kick_viewer_final.html`,
+publié : https://claude.ai/code/artifact/0f777e2c-6f27-4d22-954c-b3d9ff4ce040
