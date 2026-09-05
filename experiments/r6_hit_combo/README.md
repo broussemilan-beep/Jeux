@@ -35,7 +35,7 @@ Quatre exigences distinctes, toutes structurantes :
   mannequin (même rig, même durée) : attente → encaisse jab → encaisse
   cross → projeté par le hook → hébété.
 - Lecteur HTML (deux rigs synchronisés, VFX par coup, caméra large fixe) :
-  voir l'artifact publié (lien communiqué séparément après publication).
+  https://claude.ai/code/artifact/12078c70-ab22-41f9-88ec-6c5c76a65659
 
 ## Chorégraphie : pas de temps mort entre les coups
 
