@@ -415,6 +415,50 @@ stud près** (0,493 / 0,366 / 0,380), aucune keyframe d'impact touchée.
 Captures avant/après (`captures/verification/2026-09-05-hit-combo-
 footwork-placement-*.png`) confirmant les pieds au sol pendant les holds.
 
+## Passe « axes des jambes » (retour utilisateur, sixième itération)
+
+Retour : « Les appuis des jambes sont toujours pareils, [orientés] vers
+l'avant, c'est pas logique — quand tu mets un coup les axes des jambes
+doivent changer et le jeu de jambes doit changer selon l'envoi de la
+charge du poing. » Diagnostic sur la passe « placement » précédente :
+`Right Leg.Z` (la jambe qui porte le swing pour cross/hook) restait
+**toujours positif**, juste plus grand d'un coup à l'autre (7° au repos
+→ 9° au jab → 16° au coil du cross...) — jamais un vrai changement de
+sens de rotation, seulement une amplitude croissante. Ça lit comme « la
+même jambe qui pousse un peu plus fort », pas comme un pivot qui répond
+à la direction du coup.
+
+**Correction** (`scripts/choreography.py`) : chaque jambe motrice
+(Right pour le cross, Left pour le hook — même principe que les bras)
+se charge maintenant large vers l'extérieur au coil (Z fortement négatif
+ou positif selon la jambe) puis **bascule de signe** au strike (le pied
+a fini de pivoter) — exactement le même principe de renversement déjà
+utilisé sur les bras (`HOOK_STRIKE_LEFT_ARM.Z` : -78° → 91°), appliqué
+cette fois à la jambe. Le hook (finisher) va plus loin que le cross : les
+**deux jambes** se chargent et basculent (toute la hanche tourne), alors
+que pour le cross seule la jambe arrière bouge vraiment (la jambe avant
+reste plantée, elle reçoit le poids, elle n'a pas besoin de pivoter).
+
+**Tension découverte en réglant l'amplitude** : un renversement de signe
+trop large (essayé d'abord : jusqu'à ±34°) recréait exactement le bug de
+la passe précédente — mesuré, le pied remontait à 0,51 stud du sol,
+pire qu'avant. Le facteur `1-cos(angle)` qui soulève le pied ne se
+soucie pas de savoir si la rotation est sur X ou sur Z : un grand
+changement d'AXE soulève le pied tout autant qu'un grand changement
+d'AMPLITUDE sur le même axe. Réglé par itérations mesurées
+(`foot_check.py`) : le renversement reste net (le signe change bien) mais
+l'amplitude finale à chaque bout est modérée — assez pour se voir
+clairement à l'écran, pas assez pour recasser le placement.
+
+Vérifié : `calibrate.py` reconfirme les écarts de contact inchangés
+(0,493 / 0,366 / 0,380 — les jambes ne touchent ni aux bras ni au buste).
+`foot_check.py` : le hold du hook (le plus long, le plus exposé) est
+remonté à ~0,19 stud de chaque côté (contre 0,12 juste après la passe
+précédente) — un compromis mesuré et assumé entre un vrai changement
+d'axe visible et un placement propre, pas une régression silencieuse.
+Captures avant/après montrant le renversement de pivot au cross et au
+hook (`captures/verification/2026-09-05-hit-combo-leg-axis-*.png`).
+
 ## Vérification
 
 Environnement : `pip install numpy bpy` (le conteneur ne les avait pas

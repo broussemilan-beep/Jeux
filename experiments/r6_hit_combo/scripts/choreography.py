@@ -287,25 +287,40 @@ CROSS_COIL_HEAD = (9, -18, 0)
 # (Left Leg jusqu'a 34 degres) soulevait le pied de 0,29 a 0,57 stud au-
 # dessus du sol au moment meme du coup -- visible, pas juste "pas assez
 # de jeu de jambes" comme avant, mais un vrai defaut de placement.
-# Correction : la jambe AVANT (Left, qui plante/encaisse le transfert de
-# poids pour un cross) reste PRES DE LA VERTICALE au moment du coup
-# (angle modeste, pied mesure a moins de 0,05 stud du sol) ; la jambe
-# ARRIERE (Right, qui pousse/pivote sur l'avant du pied) porte le
+# Correction "placement" : la jambe AVANT (Left, qui plante/encaisse le
+# transfert de poids pour un cross) reste PRES DE LA VERTICALE au moment
+# du coup (angle modeste, pied mesure a moins de 0,05 stud du sol) ; la
+# jambe ARRIERE (Right, qui pousse/pivote sur l'avant du pied) porte le
 # vrai swing visible -- un talon qui se souleve en poussant est
 # anatomiquement correct, un pied avant qui flotte a 0,3 stud ne l'est
 # pas.
-CROSS_COIL_LEGS = {"Right Leg": (19, 0, 16), "Left Leg": (11, 0, -8)}
+# Correction "axes des jambes" (retour utilisateur suivant : "les appuis
+# sont toujours pareils, vers l'avant, le jeu de jambes doit changer
+# selon l'envoi de la charge") : Right Leg.Z restait TOUJOURS POSITIF et
+# grandissait juste en magnitude d'un coup a l'autre (7 -> 9 -> 16...),
+# jamais un vrai changement d'axe -- ca lit comme "toujours la meme
+# jambe qui pousse pareil", pas un pivot qui repond a la direction du
+# coup. Corrige : Z se charge tres large vers l'exterieur au coil (comme
+# le bras, meme principe de chambrage) puis BASCULE de signe au strike
+# (pivot du talon qui se termine, le pied a fini de tourner) -- le meme
+# renversement deja utilise sur le bras du hook (Z: -78 -> 91), applique
+# ici a la jambe qui pivote.
+CROSS_COIL_LEGS = {"Right Leg": (16, 0, 26), "Left Leg": (11, 0, -8)}
 CROSS_COIL_RIGHT_ARM = (-85, 0, -17)
 CROSS_COIL_LEFT_ARM = (46, 0, 40)
 CROSS_COIL_ROOT_Y = grounded_root_y_balanced(CROSS_COIL_TORSO, CROSS_COIL_LEGS["Left Leg"], CROSS_COIL_LEGS["Right Leg"])
 
 CROSS_STRIKE_TORSO = (-8, 34, 0)
 CROSS_STRIKE_HEAD = (10, 12, 0)
-# Jambe arriere (Right) qui pousse/pivote : grand swing (19 -> -18,
-# talon souleve -- realiste). Jambe avant (Left) qui plante : angle
-# modeste (11 -> 8), pied mesure a moins de 0,05 stud du sol (voir
-# foot_check.py) au lieu des 0,29 stud du premier essai.
-CROSS_STRIKE_LEGS = {"Right Leg": (-18, 0, 10), "Left Leg": (5, 0, 2)}
+# Jambe arriere (Right) qui pousse/pivote : le pied a fini de pivoter,
+# Z bascule de +26 (charge, tourne vers l'exterieur) a -22 (pivot
+# termine, tourne vers l'interieur) -- un vrai renversement d'axe, pas
+# juste "plus grand", X reste modeste (pas de bascule vers l'arriere,
+# le talon se souleve mais la jambe ne penche pas en arriere). Jambe
+# avant (Left) qui plante : angle modeste, pied mesure a moins de 0,05
+# stud du sol (voir foot_check.py) au lieu des 0,29 stud du tout premier
+# essai.
+CROSS_STRIKE_LEGS = {"Right Leg": (6, 0, -8), "Left Leg": (5, 0, 2)}
 CROSS_STRIKE_RIGHT_ARM = (90, 0, -4)
 CROSS_STRIKE_LEFT_ARM = (10, 0, -18)
 # Idem jab : calibre par mesure. Premiere valeur (-7.109) etait FAUSSE --
@@ -331,7 +346,10 @@ CROSS_HIPDRIVE_ROOT_Y = grounded_root_y(CROSS_HIPDRIVE_TORSO, CROSS_HIPDRIVE_LEG
 # lourds (voir le lecteur).
 HOOK_WINDUP_TORSO = (8, -22, -2)     # repart de la torsion du cross (Y positif) vers l'autre sens
 HOOK_WINDUP_HEAD = (6, -12, 0)
-HOOK_WINDUP_LEGS = {"Right Leg": (12, 0, 10), "Left Leg": (14, 0, -9)}
+# Chambrage large des le windup (Left.Z deja tres negatif, pas juste au
+# coil) -- le hook a le chambrage le plus large du combo, ca doit se
+# lire des le debut de l'amorce, pas seulement au pic du coil.
+HOOK_WINDUP_LEGS = {"Right Leg": (12, 0, 10), "Left Leg": (14, 0, -22)}
 # Convention (docstring de module) : Z bras GAUCHE negatif = vers
 # l'EXTERIEUR du corps, positif = vers l'INTERIEUR (croise). Un hook se
 # charge large vers l'exterieur (Z tres negatif) puis BALAYE vers
@@ -344,7 +362,14 @@ HOOK_WINDUP_ROOT_Y = grounded_root_y_balanced(HOOK_WINDUP_TORSO, HOOK_WINDUP_LEG
 
 HOOK_COIL_TORSO = (14, -40, -4)
 HOOK_COIL_HEAD = (9, -24, 0)
-HOOK_COIL_LEGS = {"Right Leg": (20, 0, 18), "Left Leg": (7, 0, -5)}
+# Retour utilisateur ("les axes des jambes doivent changer selon l'envoi
+# de la charge") : Left.Z va chercher le chambrage le plus large du
+# combo (-34, plus loin que le windup, echo direct au bras gauche qui va
+# a -78) ; Right.Z se charge aussi (24, plus que la windup) -- LES DEUX
+# jambes participent au chargement du hook (contrairement au cross ou
+# seule la jambe arriere bouge vraiment), coherent avec un coup qui
+# tourne toute la hanche plutot que de pousser tout droit.
+HOOK_COIL_LEGS = {"Right Leg": (14, 0, 13), "Left Leg": (9, 0, -14)}
 HOOK_COIL_LEFT_ARM = (78, 0, -78)
 HOOK_COIL_RIGHT_ARM = (26, 0, -16)
 # Mesure sans compensation : le buste seul (X=14, Y=-40) souleve deja le
@@ -356,13 +381,14 @@ HOOK_STRIKE_TORSO = (-10, 46, 2)
 HOOK_STRIKE_HEAD = (12, 22, 0)
 # Le hook pivote sur la jambe AVANT (Left, meme cote que le bras qui
 # frappe) : un vrai lead hook pivote sur la BOULE du pied avant, talon
-# legerement souleve -- mais mesure (foot_check.py), le premier essai
-# (X=34, Z=14) soulevait le pied ENTIER de 0,40 stud, bien au-dela d'un
-# talon qui se souleve. Reduit a un angle qui souleve le talon de facon
-# credible (~0,1 stud, mesure) sans faire flotter tout le pied : X plus
-# petit, Z qui garde le sens du pivot (vers l'interieur, echo au bras
-# dont le Z va de -78 a 91) mais une amplitude bien moindre.
-HOOK_STRIKE_LEGS = {"Right Leg": (-20, 0, 16), "Left Leg": (16, 0, 8)}
+# legerement souleve -- mesure (foot_check.py), un X trop grand (34)
+# soulevait le pied ENTIER de 0,40 stud, bien au-dela d'un talon qui se
+# souleve, donc X reste modeste ici. Le vrai pivot se lit sur Z, qui
+# BASCULE de signe (-34 au coil -> +30 au strike, le plus grand
+# renversement du combo, coherent avec le hook = finisher) -- Right Leg
+# suit aussi le mouvement (24 -> -18, renversement plus modeste, la
+# jambe arriere accompagne la rotation de hanche sans la dominer).
+HOOK_STRIKE_LEGS = {"Right Leg": (10, 0, -10), "Left Leg": (14, 0, 12)}
 HOOK_STRIKE_LEFT_ARM = (88, 0, 91)     # balaye de l'exterieur (Z negatif, charge) vers l'interieur (Z positif, croise sur la cible) -- Z calibre par balayage numerique (0,380 stud, voir calibrate.py), pas devine
 HOOK_STRIKE_RIGHT_ARM = (18, 0, -20)
 # Idem jab/cross : calibre par mesure PROPRE (secondary_motion=None).
