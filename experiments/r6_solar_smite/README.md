@@ -218,6 +218,8 @@ section Recherche).
 
 ## Lecteur
 
+Publié : https://claude.ai/code/artifact/c12651a9-9842-4c76-a91a-a3a51c794dc4
+
 `experiments/r6_solar_smite/output/solar_smite_viewer_final.html` —
 Three.js, deux rigs (attaquant + mannequin), généré par
 `dump_scene_data.py` + `build_viewer.py` à partir de `choreography.py`
