@@ -218,7 +218,15 @@ CHARGE_HOLD_T = CHARGE_T + _fr(20)
 OPEN_TORSO = (-6, 0, 0)
 OPEN_HEAD = (-4, 0, 0)
 OPEN_LEGS = {"Right Leg": (6, 0, 10), "Left Leg": (8, 0, -9)}
-OPEN_ARMS = {"Right Arm": (8, 0, -82), "Left Arm": (8, 0, 82)}
+# -- rz calibre par balayage numerique (fist_tip_world) : le signe
+# intuitif (Right Arm negatif = "vers l'exterieur") etait FAUX -- la
+# rotation C0 du joint d'epaule permute les axes, rz negatif fait en
+# realite TRAVERSER le bras vers le centre/l'autre cote (verifie :
+# rz=-82 donnait poing droit a X=-0.42, soit a GAUCHE du centre). Le
+# signe correct pour un vrai ecartement lateral est INVERSE de
+# l'intuition : Right Arm positif, Left Arm negatif (confirme : rz=+82
+# donne poing droit a X=+2.56, bien ecarte sur le cote droit).
+OPEN_ARMS = {"Right Arm": (8, 0, 82), "Left Arm": (8, 0, -82)}
 OPEN_ROOT_Y = grounded_root_y_balanced(OPEN_TORSO, OPEN_LEGS["Left Leg"], OPEN_LEGS["Right Leg"])
 
 CHARGE_TORSO = (-10, 0, 0)

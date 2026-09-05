@@ -1,0 +1,1007 @@
+<title>Frappe solaire</title>
+<style>
+:root {
+  --bg: #0d0906; --panel: #1a1410; --panel-2: #201811; --ink: #f0e6d4;
+  --sub: #b3a186; --grid: #362a1c; --rig-attacker: #7a2020; --rig-dummy: #6b5a3a;
+  --edge: #0a0806; --ghost: #4a4030; --accent: #f2a53c; --gold: #ffcf6b; --hold: #d98a2a; --impact: #ff5a2a;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f7f1e4; --panel: #ffffff; --panel-2: #efe6d2; --ink: #241f18;
+    --sub: #6b6255; --grid: #ded0ac; --rig-attacker: #a13a2c; --rig-dummy: #9c8a63;
+    --edge: #241f18; --ghost: #b8ae98; --accent: #c1780f; --gold: #a9781c; --hold: #b3661a; --impact: #c23e14;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f7f1e4; --panel: #ffffff; --panel-2: #efe6d2; --ink: #241f18;
+  --sub: #6b6255; --grid: #ded0ac; --rig-attacker: #a13a2c; --rig-dummy: #9c8a63;
+  --edge: #241f18; --ghost: #b8ae98; --accent: #c1780f; --gold: #a9781c; --hold: #b3661a; --impact: #c23e14;
+}
+body { background: var(--bg); color: var(--ink); font-family: "Iowan Old Style", "Georgia", serif; }
+.stage { max-width: 980px; margin: 0 auto; padding: 28px 20px 48px; }
+.eyebrow { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin: 0 0 6px; font-family: Oswald, sans-serif; }
+h1 { font-size: 30px; margin: 0 0 10px; }
+.sub { color: var(--sub); font-size: 14.5px; line-height: 1.55; max-width: 760px; margin: 0 0 20px; }
+.card { background: var(--panel); border: 1px solid var(--grid); border-radius: 14px; padding: 14px; }
+.viewport-wrap { position: relative; border-radius: 10px; overflow: hidden; background: #000; }
+canvas { display: block; width: 100%; height: auto; }
+#overlay { position: absolute; inset: 0; pointer-events: none; }
+.chip { position: absolute; top: 10px; font-family: Oswald, sans-serif; font-size: 12px; padding: 5px 10px; border-radius: 999px; background: rgba(0,0,0,0.45); color: #fff; letter-spacing: 0.03em; }
+.chip.left { left: 10px; } .chip.right { right: 10px; }
+.controls { padding-top: 12px; display: flex; flex-direction: column; gap: 10px; }
+.transport { display: flex; align-items: center; gap: 12px; }
+.play-btn { width: 40px; height: 40px; border-radius: 50%; border: none; background: var(--accent); color: #201811; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+.play-btn svg { width: 18px; height: 18px; }
+.scrub-col { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.phase-track { display: flex; height: 6px; border-radius: 4px; overflow: hidden; }
+.phase-seg { height: 100%; }
+.phase-seg[data-kind="calm"] { background: var(--ghost); }
+.phase-seg[data-kind="charge"] { background: var(--gold); }
+.phase-seg[data-kind="hold"] { background: var(--hold); }
+.phase-seg[data-kind="impact"] { background: var(--impact); }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+.row-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+.phase-label { font-family: Oswald, sans-serif; font-size: 13px; color: var(--sub); text-transform: uppercase; letter-spacing: 0.05em; }
+.phase-label b { color: var(--ink); }
+.btn-row { display: flex; gap: 4px; background: var(--panel-2); border-radius: 8px; padding: 3px; }
+.btn-row button { border: none; background: transparent; color: var(--sub); font-family: Oswald, sans-serif; font-size: 12px; padding: 5px 10px; border-radius: 6px; cursor: pointer; }
+.btn-row button.active { background: var(--accent); color: #201811; }
+.note { color: var(--sub); font-size: 13px; line-height: 1.6; max-width: 780px; margin-top: 16px; }
+.note strong { color: var(--ink); }
+</style>
+
+<div class="stage">
+  <p class="eyebrow">Prototype isolé · Roblox R6 · deux rigs + VFX solaire scripté · rendu WebGL</p>
+  <h1>Frappe solaire — deux noyaux, combo, coup final</h1>
+  <p class="sub">L'attaquant concentre une sphère d'énergie solaire dans chaque main (particules <strong>aspirées</strong>
+    vers le poing, pas un simple halo qui grossit sur place), enchaîne un combo rapproché de deux coups en avançant
+    sur un mannequin qui encaisse, puis lève les deux bras au-dessus de la tête pour fusionner les deux noyaux en un
+    seul et l'abattre sur le crâne de sa cible. Poses résolues par le moteur d'animation
+    (<code>Part1 = Part0 · C0 · Transform · C1⁻¹</code>) à partir de <code>choreography.py</code> ; la trajectoire du
+    noyau fusionné et le rayon de chaque noyau viennent de <code>solar_track.py</code>, jamais improvisés côté
+    lecteur.</p>
+
+  <div class="card">
+    <div class="viewport-wrap">
+      <canvas id="stage" width="1200" height="900"></canvas>
+      <canvas id="overlay" width="1200" height="900"></canvas>
+      <div class="chip left" id="shotChip">phase · <b id="phaseName">garde</b></div>
+      <div class="chip right" id="timecode">0.00s / 0.00s</div>
+    </div>
+
+    <div class="controls">
+      <div class="transport">
+        <button class="play-btn" id="playBtn" aria-label="Lecture / pause">
+          <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M8 5v14l11-7z"/></svg>
+          <svg id="pauseIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+        </button>
+        <div class="scrub-col">
+          <div class="phase-track" id="phaseTrack"></div>
+          <input type="range" id="scrub" min="0" max="1000" value="0" step="1" aria-label="Position dans la scène">
+        </div>
+      </div>
+      <div class="row-bottom">
+        <div class="phase-label">segment <b id="phaseName2">garde</b></div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap">
+          <div class="btn-row" id="speedRow">
+            <button data-speed="0.1">0.1×</button>
+            <button data-speed="0.25">0.25×</button>
+            <button data-speed="0.5">0.5×</button>
+            <button data-speed="1" class="active">1×</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="note"><strong>Particules aspirées, pas un burst sortant</strong> : vocabulaire visuel neuf pour ce dépôt
+    (tout le reste — <code>r6_rock_kick</code>, <code>r6_hit_combo</code> — n'a que des bursts qui partent VERS
+    l'extérieur). Pendant la charge (<code>CHARGE_T</code>..<code>CHARGE_HOLD_T</code>), chaque particule naît loin
+    de la main puis est CAPTURÉE par le noyau naissant, avec un échelonnement individuel
+    (<code>phase_offset</code>, voir <code>solar_track.inward_particle_spawn()</code>) pour que ça se lise comme des
+    dizaines de particules indépendantes qui convergent, pas un seul anneau qui se contracte.</p>
+  <p class="note"><strong>Shake directionnel à décroissance exponentielle, uniquement sur le coup final</strong> : les
+    deux coups de combo gardent le shake omnidirectionnel/décroissance linéaire déjà utilisé dans
+    <code>r6_hit_combo</code> (<code>x += sin(age·f)·amp·(1-age/dur)</code>) — suffisant pour un jab/cross. Le
+    finisher, lui, est un coup descendant : l'écran doit visiblement être poussé VERS LE BAS à l'impact, pas trembler
+    dans toutes les directions à la fois. Formule dédiée :
+    <code>offset = direction_bas · amplitude · exp(-age/décroissance) · sin(fréquence·age)</code> — l'exponentielle
+    (au lieu du <code>1 - age/dur</code> des deux premiers coups) donne un premier à-coup net qui s'éteint très vite,
+    pas une oscillation qui s'étire.</p>
+  <p class="note"><strong>Caméra serrée dès l'ouverture</strong> : contrairement aux prototypes précédents (plan
+    large/idle au départ, coupé ensuite par des sursauts ponctuels), la caméra est déjà proche du personnage à
+    <code>t=0</code>. Un changement d'angle discret marque chaque coup du combo (l'azimut glisse de -32° à -70° entre
+    la garde et le coup 2 — jamais une coupe franche, toujours interpolé), avant un cadrage TRÈS serré (distance
+    divisée par ~1.5 par rapport au reste de la scène) sur la fusion des noyaux et l'impact final.</p>
+  <p class="note"><strong>Fusion des noyaux, pas deux halos superposés</strong> : entre <code>FIN_COIL_HOLD_T</code> et
+    <code>FIN_STRIKE_T</code>, les deux noyaux individuels disparaissent au profit d'UN SEUL noyau fusionné
+    (<code>solar_track.merged_core_position()</code>, rejoué ici en JS avec la même non-linéarité
+    <code>FIN_MID_F</code> que la descente du corps — le noyau ne doit jamais sembler en avance ou en retard sur les
+    mains qui le portent) dont le rayon croît de <code>MERGED_RADIUS_COIL</code> à <code>MERGED_RADIUS_STRIKE</code>,
+    plus gros que tout noyau individuel du combo et plus gros que le VFX de poing chargé de
+    <code>r6_hit_combo</code>.</p>
+  <p class="note"><strong>Impact final au-delà de tout ce qui existe dans ce dépôt</strong> : flash plein écran
+    (<code>IMPACT_FLASH_S</code>), sphère d'explosion 3D en fondu additif qui grandit jusqu'à
+    <code>IMPACT_MAX_RADIUS</code> = 9 studs (quasi deux fois la taille d'un personnage), onde de choc au sol,
+    poussière/étincelles projetées, plus le hitstop le plus long du set (16 frames, contre 8 pour le hook de
+    <code>r6_hit_combo</code>) — amplitude croissante sur les 3 impacts (combo 1 → combo 2 → finisher), conforme à
+    <code>HIT_WINDOWS</code> (fenêtre de hit et knockback qualitatif croissants, voir <code>choreography.py</code>).
+    Réaction du mannequin synchronisée sur les mêmes instants : recul horizontal croissant sur les 2 coups de combo,
+    puis ÉCRASEMENT vers le bas (pas un simple recul) sur le finisher — <code>dummy_reaction()</code> ne fait que
+    rejouer ce qui est déjà chorégraphié, ce lecteur ne réinvente rien de la pose.</p>
+  <p class="note"><strong>Rig des deux personnages, décor du lecteur</strong> : même rig R6 vérifié (dépôt Adonis,
+    licence MIT — voir <code>rig/PROVENANCE.md</code>) et mêmes textures de décor (<code>stone_ground</code>,
+    <code>ruin_wall</code>) que <code>r6_hit_combo</code>/<code>r6_rock_kick</code> — ni le décor ni les textures
+    n'existent dans un fichier de compétence livré, c'est la mise en scène de CE lecteur.</p>
+</div>
+
+<script>__THREE_JS__</script>
+<script>
+const DATA = __SCENE_DATA__;
+const TEXTURES_B64 = __TEXTURES_B64__;
+const LEGS = new Set(["Right Leg", "Left Leg"]);
+const KT = DATA.key_times;
+const SOL = DATA.solar;
+const FIN_MID_F = SOL.fin_mid_f;
+const DURATION = DATA.duration;
+
+const glCanvas = document.getElementById("stage");
+const overlay = document.getElementById("overlay");
+const octx = overlay.getContext("2d");
+const scrub = document.getElementById("scrub");
+const playBtn = document.getElementById("playBtn");
+const playIcon = document.getElementById("playIcon");
+const pauseIcon = document.getElementById("pauseIcon");
+const phaseNameEl = document.getElementById("phaseName");
+const phaseNameEl2 = document.getElementById("phaseName2");
+const timecodeEl = document.getElementById("timecode");
+const phaseTrack = document.getElementById("phaseTrack");
+
+// ---------------------------------------------------------------------
+// Hitstop -- 3 impacts (2 coups de combo + finisher), amplitude croissante
+// (voir HIT_WINDOWS.*.knockback : leger/modere/maximal). Meme mecanisme
+// cumulatif que r6_hit_combo/hit_combo_viewer.html (poseTime()) : chaque
+// impact gele la POSE pendant sa duree, tout ce qui suit est decale par la
+// somme des gels deja ecoules -- le VFX/camera/shake reagissent eux au
+// temps REEL (real_impact_t), jamais au temps de pose.
+const HITS = [
+  { name: "combo_1", impact_t: KT.strike1_t, windup_t: DATA.hit_windows.combo_1.t0, arm: "Right Arm",
+    hitstopDur: 3 / 30, shakeAmp: 0.055, shakeDur: 0.12, glow: "255,225,150" },
+  { name: "combo_2", impact_t: KT.strike2_t, windup_t: DATA.hit_windows.combo_2.t0, arm: "Left Arm",
+    hitstopDur: 6 / 30, shakeAmp: 0.10, shakeDur: 0.17, glow: "255,205,120" },
+  { name: "finisher", impact_t: KT.fin_strike_t, windup_t: DATA.hit_windows.finisher.t0, arm: null,
+    hitstopDur: 16 / 30, shakeAmp: 0, shakeDur: 0, glow: "255,244,200" },
+];
+function poseTime(tReal) {
+  let shift = 0;
+  for (const h of HITS) {
+    const realImpact = h.impact_t + shift;
+    if (tReal < realImpact) return tReal - shift;
+    if (tReal < realImpact + h.hitstopDur) return h.impact_t;
+    shift += h.hitstopDur;
+  }
+  return tReal - shift;
+}
+const TOTAL_HITSTOP = HITS.reduce((s, h) => s + h.hitstopDur, 0);
+const REAL_DURATION = DURATION + TOTAL_HITSTOP;
+let _shiftAcc = 0;
+for (const h of HITS) { h.real_impact_t = h.impact_t + _shiftAcc; _shiftAcc += h.hitstopDur; }
+const [HIT1, HIT2, HITF] = HITS;
+// Inverse EXACTE de poseTime() -- convertit un instant de POSE (une
+// constante de choreography.py/solar_track.py, ex. STRIKE2_T) en instant
+// REEL (celui que window.__setSimTime()/le scrub attendent) en tenant
+// compte du decalage cumule par les hitstops deja ecoules a cet instant.
+// Necessaire pour capturer PRECISEMENT un instant chorégraphié une fois
+// qu'au moins un hitstop precedent a decale la grille temps reel -- sans
+// ca, demander STRIKE2_T tel quel atterrirait ~0.1s AVANT le vrai impact.
+function poseToReal(pt) {
+  let shift = 0;
+  for (const h of HITS) {
+    if (pt <= h.impact_t) return pt + shift;
+    shift += h.hitstopDur;
+  }
+  return pt + shift;
+}
+
+timecodeEl.textContent = "0.00s / " + REAL_DURATION.toFixed(2) + "s";
+
+// ---------------------------------------------------------------------
+// Segmentation de la scene (mise en scene du lecteur uniquement).
+const PHASES = [
+  { name: "garde", kind: "calm", t0: 0, t1: KT.open_t },
+  { name: "ouverture", kind: "charge", t0: KT.open_t, t1: KT.charge_t },
+  { name: "charge des noyaux", kind: "hold", t0: KT.charge_t, t1: KT.charge_hold_t },
+  { name: "coup 1 — chambrage", kind: "charge", t0: KT.charge_hold_t, t1: HIT1.real_impact_t },
+  { name: "coup 1 — impact", kind: "impact", t0: HIT1.real_impact_t, t1: HIT1.real_impact_t + HIT1.hitstopDur + 0.12 },
+  { name: "coup 2 — chambrage", kind: "charge", t0: HIT1.real_impact_t + HIT1.hitstopDur + 0.12, t1: HIT2.real_impact_t },
+  { name: "coup 2 — impact", kind: "impact", t0: HIT2.real_impact_t, t1: HIT2.real_impact_t + HIT2.hitstopDur + 0.14 },
+  { name: "montée du finisher", kind: "charge", t0: HIT2.real_impact_t + HIT2.hitstopDur + 0.14, t1: KT.fin_coil_t + (HIT1.hitstopDur + HIT2.hitstopDur) },
+  { name: "fusion des noyaux", kind: "hold", t0: KT.fin_coil_hold_t + (HIT1.hitstopDur + HIT2.hitstopDur), t1: HITF.real_impact_t },
+  { name: "frappe finale", kind: "impact", t0: HITF.real_impact_t, t1: HITF.real_impact_t + HITF.hitstopDur + 0.6 },
+  { name: "mannequin écrasé", kind: "calm", t0: HITF.real_impact_t + HITF.hitstopDur + 0.6, t1: REAL_DURATION },
+];
+function rebuildPhaseTrack() {
+  phaseTrack.innerHTML = "";
+  PHASES.forEach(p => {
+    const seg = document.createElement("div");
+    seg.className = "phase-seg";
+    seg.dataset.kind = p.kind;
+    seg.style.width = (Math.max(0, p.t1 - p.t0) / REAL_DURATION * 100) + "%";
+    phaseTrack.appendChild(seg);
+  });
+}
+rebuildPhaseTrack();
+function currentPhase(t) {
+  // Intervalle demi-ouvert [t0,t1) -- a la frontiere exacte d'un impact,
+  // l'etiquette doit basculer sur "impact" plutot que rester sur le
+  // "chambrage" qui precede (les deux segments partagent le meme instant
+  // t1==t0).
+  for (const p of PHASES) if (t >= p.t0 - 1e-6 && t < p.t1 - 1e-6) return p;
+  return PHASES[PHASES.length - 1];
+}
+
+// ---------------------------------------------------------------------
+// Echantillonnage personnage -- meme principe (lerp position, slerp
+// approx rotation) que r6_hit_combo/r6_rock_kick.
+function frameAt(frames, t) {
+  const dt = 1 / DATA.fps;
+  const idx = Math.max(0, Math.min(frames.length - 2, Math.floor(t / dt)));
+  const f0 = frames[idx], f1 = frames[idx + 1];
+  const frac = Math.max(0, Math.min(1, (t - f0.t) / (f1.t - f0.t || 1)));
+  return { f0, f1, frac };
+}
+function slerpish(a, b, f) {
+  const m = a.map((v, i) => v + (b[i] - v) * f);
+  const c0 = [m[0], m[3], m[6]], c1 = [m[1], m[4], m[7]];
+  const n0 = Math.hypot(c0[0], c0[1], c0[2]) || 1;
+  const e0 = c0.map(v => v / n0);
+  const d = e0[0]*c1[0] + e0[1]*c1[1] + e0[2]*c1[2];
+  let e1 = c1.map((v, i) => v - d * e0[i]);
+  const n1 = Math.hypot(e1[0], e1[1], e1[2]) || 1;
+  e1 = e1.map(v => v / n1);
+  const e2 = [e0[1]*e1[2]-e0[2]*e1[1], e0[2]*e1[0]-e0[0]*e1[2], e0[0]*e1[1]-e0[1]*e1[0]];
+  return [e0[0], e1[0], e2[0], e0[1], e1[1], e2[1], e0[2], e1[2], e2[2]];
+}
+function sampleChar(frames, t) {
+  const { f0, f1, frac } = frameAt(frames, t);
+  const out = {};
+  for (const part of DATA.part_order) {
+    if (part === "HumanoidRootPart") continue;
+    const a = f0[part], b = f1[part];
+    out[part] = { p: a.p.map((v, i) => v + (b.p[i] - v) * frac), r: slerpish(a.r, b.r, frac) };
+  }
+  return out;
+}
+// Bout du membre (main/pied) -- centre de la part + R @ (0,-half,0), MEME
+// convention que choreography.fist_tip_world()/calibrate.tip_world() (le
+// rig n'a pas d'os separe pour la main : le "poing" est l'extremite basse
+// de la boite "Right Arm"/"Left Arm").
+function armTipWorld(pose, part) {
+  const half = DATA.part_sizes[part][1] / 2;
+  const p = pose.p, r = pose.r;
+  return [p[0] - r[1] * half, p[1] - r[4] * half, p[2] - r[7] * half];
+}
+
+// ---------------------------------------------------------------------
+// Noyaux solaires -- reimplementation JS PURE des fonctions de
+// solar_track.py (memes constantes, memes seuils -- jamais redevine).
+function easeIn(f) { return f * f; }
+function coreRadius(t) {
+  if (t < SOL.charge_t) return null;
+  if (t < SOL.charge_hold_t) {
+    const f = (t - SOL.charge_t) / (SOL.charge_hold_t - SOL.charge_t);
+    return SOL.core_radius_seed + (SOL.core_radius_grown - SOL.core_radius_seed) * easeIn(Math.min(1, f));
+  }
+  if (t < SOL.fin_coil_t) return SOL.core_radius_grown;
+  return null;
+}
+// Entre FIN_COIL_T et FIN_COIL_HOLD_T (phase "distincts") : les 2 noyaux
+// restent 2 sources separees (voir docstring solar_track.py) mais ce
+// lecteur les fait grossir vers MERGED_RADIUS_COIL -- interpretation
+// visuelle du lecteur (annonce la fusion a venir), bornee par les 2
+// constantes mesurees, jamais une valeur inventee hors de cet intervalle.
+function handCoreRadius(t) {
+  const r = coreRadius(t);
+  if (r !== null) return r;
+  if (t >= SOL.fin_coil_t && t <= SOL.fin_coil_hold_t) {
+    const f = (t - SOL.fin_coil_t) / Math.max(1e-6, SOL.fin_coil_hold_t - SOL.fin_coil_t);
+    return SOL.core_radius_grown + (SOL.merged_radius_coil - SOL.core_radius_grown) * f;
+  }
+  return null;
+}
+function mergedCore(t) {
+  if (t < SOL.fin_coil_t || t > SOL.fin_strike_t) return null;
+  if (t <= SOL.fin_coil_hold_t) return { phase: "distincts" };
+  let frac;
+  if (t <= SOL.fin_mid_t) {
+    frac = (t - SOL.fin_coil_hold_t) / (SOL.fin_mid_t - SOL.fin_coil_hold_t) * FIN_MID_F;
+  } else {
+    frac = FIN_MID_F + (t - SOL.fin_mid_t) / (SOL.fin_strike_t - SOL.fin_mid_t) * (1.0 - FIN_MID_F);
+  }
+  const f = Math.max(0, Math.min(1, frac));
+  const merge = SOL.core_merge_point, contact = SOL.fin_contact_point;
+  const pos = [0, 1, 2].map(i => merge[i] + (contact[i] - merge[i]) * f);
+  const radius = SOL.merged_radius_coil + (SOL.merged_radius_strike - SOL.merged_radius_coil) * f;
+  return { phase: "fusion", pos, radius };
+}
+// Particules aspirees (charge uniquement) -- meme formule que le mandat :
+// local_f = clamp((t-CHARGE_T-phase_offset)/(CHARGE_HOLD_T-CHARGE_T-phase_offset),0,1)
+// position = handWorld + start*(1-ease_in(local_f)).
+function inwardParticlePos(hand, particle, t) {
+  const span = Math.max(1e-3, (SOL.charge_hold_t - SOL.charge_t) - particle.phase_offset);
+  const f = Math.max(0, Math.min(1, (t - SOL.charge_t - particle.phase_offset) / span));
+  const shrink = 1 - easeIn(f);
+  return { pos: [hand[0] + particle.start[0] * shrink, hand[1] + particle.start[1] * shrink, hand[2] + particle.start[2] * shrink], f };
+}
+
+// ---------------------------------------------------------------------
+// Scene Three.js -- meme structure que r6_hit_combo/r6_rock_kick (dome de
+// ciel, lumiere directionnelle + remplissage hemispherique, sol/mur
+// textures, personnages en BoxGeometry par segment).
+const renderer = new THREE.WebGLRenderer({ canvas: glCanvas, antialias: true });
+renderer.setSize(1200, 900, false);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+if (renderer.outputColorSpace !== undefined) renderer.outputColorSpace = THREE.SRGBColorSpace;
+if (renderer.physicallyCorrectLights !== undefined) renderer.physicallyCorrectLights = true;
+if (renderer.toneMapping !== undefined) { renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.1; }
+
+const scene = new THREE.Scene();
+const HORIZON_COLOR = 0x3a2412, ZENITH_COLOR = 0x110c08;
+scene.background = new THREE.Color(ZENITH_COLOR);
+scene.fog = new THREE.Fog(HORIZON_COLOR, 10, 40);
+
+const FOV_BASE = 46;
+const camera = new THREE.PerspectiveCamera(FOV_BASE, 1200 / 900, 0.1, 200);
+
+function buildSkyDome() {
+  const geo = new THREE.SphereGeometry(150, 24, 16);
+  const pos = geo.attributes.position;
+  const colors = new Float32Array(pos.count * 3);
+  const horizon = new THREE.Color(HORIZON_COLOR), zenith = new THREE.Color(ZENITH_COLOR);
+  const tmp = new THREE.Color();
+  for (let i = 0; i < pos.count; i++) {
+    const y = pos.getY(i) / 150;
+    const f = Math.max(0, Math.min(1, (y + 0.05) * 1.15));
+    tmp.copy(horizon).lerp(zenith, f);
+    colors[i * 3] = tmp.r; colors[i * 3 + 1] = tmp.g; colors[i * 3 + 2] = tmp.b;
+  }
+  geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+  const mat = new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide, fog: false, depthWrite: false });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.renderOrder = -10;
+  return mesh;
+}
+scene.add(buildSkyDome());
+
+const keyLight = new THREE.DirectionalLight(0xffdca8, 2.5);
+keyLight.position.set(-4, 10, 4);
+keyLight.castShadow = true;
+keyLight.shadow.mapSize.set(2048, 2048);
+keyLight.shadow.camera.left = -12; keyLight.shadow.camera.right = 12;
+keyLight.shadow.camera.top = 10; keyLight.shadow.camera.bottom = -14;
+keyLight.shadow.camera.near = 1; keyLight.shadow.camera.far = 32;
+keyLight.shadow.bias = -0.0015;
+scene.add(keyLight);
+scene.add(keyLight.target);
+keyLight.target.position.set(0, 2, -6);
+
+const fillLight = new THREE.HemisphereLight(0x6a5a46, 0x1a1410, 0.6);
+scene.add(fillLight);
+
+const rimLight = new THREE.DirectionalLight(0xff8a3c, 0.5);
+rimLight.position.set(4, 4, -14);
+scene.add(rimLight);
+
+// Lumieres dynamiques des noyaux -- eclairent reellement le rig depuis la
+// main/le point de fusion (bloom "pauvre" compense par un vrai point light,
+// pas seulement un halo 2D peint par-dessus).
+const handLightR = new THREE.PointLight(0xffe6b0, 0, 9, 2.0);
+const handLightL = new THREE.PointLight(0xffe6b0, 0, 9, 2.0);
+const mergedLight = new THREE.PointLight(0xfff2d0, 0, 22, 1.6);
+scene.add(handLightR, handLightL, mergedLight);
+
+const texLoader = new THREE.TextureLoader();
+function loadTex(name, repeatX, repeatY) {
+  const tex = texLoader.load("data:image/png;base64," + TEXTURES_B64[name]);
+  tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(repeatX, repeatY);
+  if (tex.colorSpace !== undefined) tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+const groundTex = loadTex("stone_ground", 22, 22);
+const groundMat = new THREE.MeshStandardMaterial({ map: groundTex, roughness: 0.92, metalness: 0.02 });
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(70, 70), groundMat);
+ground.rotation.x = -Math.PI / 2;
+ground.position.set(0, 0, -7);
+ground.receiveShadow = true;
+scene.add(ground);
+
+const wallTex = loadTex("ruin_wall", 12, 2.2);
+const wallMat = new THREE.MeshStandardMaterial({ map: wallTex, roughness: 0.97, metalness: 0.0 });
+const wall = new THREE.Mesh(new THREE.PlaneGeometry(48, 9), wallMat);
+wall.position.set(0, 4.4, -17.5);
+wall.receiveShadow = true;
+scene.add(wall);
+
+function rgbToThreeColor(rgbArr) { return new THREE.Color(rgbArr[0] / 255, rgbArr[1] / 255, rgbArr[2] / 255); }
+function hexToRgb(hex) {
+  hex = hex.replace("#", "").trim();
+  const n = parseInt(hex, 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+function buildRigMeshes(rgb, roughness) {
+  const meshes = {};
+  for (const part of DATA.part_order) {
+    if (part === "HumanoidRootPart") continue;
+    const size = DATA.part_sizes[part];
+    const color = LEGS.has(part) ? rgb.clone().multiplyScalar(0.72) : rgb;
+    const mat = new THREE.MeshStandardMaterial({ color, roughness, metalness: 0.06 });
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(size[0], size[1], size[2]), mat);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    scene.add(mesh);
+    meshes[part] = mesh;
+  }
+  return meshes;
+}
+const attackerMeshes = buildRigMeshes(rgbToThreeColor(hexToRgb(cssVar("--rig-attacker"))), 0.55);
+const dummyMeshes = buildRigMeshes(rgbToThreeColor(hexToRgb(cssVar("--rig-dummy"))), 0.72);
+
+const _m4 = new THREE.Matrix4();
+function applyPoseToMesh(mesh, p, r) {
+  mesh.position.set(p[0], p[1], p[2]);
+  _m4.set(
+    r[0], r[1], r[2], 0,
+    r[3], r[4], r[5], 0,
+    r[6], r[7], r[8], 0,
+    0, 0, 0, 1,
+  );
+  mesh.quaternion.setFromRotationMatrix(_m4);
+}
+
+// ---------------------------------------------------------------------
+// Meshes des noyaux -- sphere "coeur chaud" + sphere "aura" plus large,
+// additif toutes les deux (approche bloom-pauvre : lumiere reelle
+// (PointLight ci-dessus) + halo peint en 2D par-dessus, voir plus bas).
+const HOT = SOL.core_color_hot, RIM = SOL.core_color_rim;
+function makeCoreGroup(coreSeg = 20) {
+  const group = new THREE.Group();
+  const hotMat = new THREE.MeshBasicMaterial({ color: rgbToThreeColor(HOT), transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending, depthWrite: false });
+  const rimMat = new THREE.MeshBasicMaterial({ color: rgbToThreeColor(RIM), transparent: true, opacity: 0.45, blending: THREE.AdditiveBlending, depthWrite: false });
+  const hot = new THREE.Mesh(new THREE.SphereGeometry(1, coreSeg, coreSeg * 0.7), hotMat);
+  const rim = new THREE.Mesh(new THREE.SphereGeometry(1.55, coreSeg, coreSeg * 0.7), rimMat);
+  group.add(rim); group.add(hot);
+  group.visible = false;
+  scene.add(group);
+  return group;
+}
+const coreRight = makeCoreGroup(16);
+const coreLeft = makeCoreGroup(16);
+const coreMerged = makeCoreGroup(28);
+
+// ---------------------------------------------------------------------
+// Camera -- brief : deja serree a t=0 (pas de plan large idle), un
+// changement d'angle discret par coup de combo, cadrage TRES serre sur la
+// fusion/l'impact final. CAM_KEYS references en TEMPS DE POSE (pt) : ainsi
+// pendant un hitstop, ou pt reste bloque sur l'instant d'impact, le cadrage
+// reste lui aussi fige sur sa cle -- la camera ne "fuit" pas une pose
+// gelee -- puis reprend son interpolation des que le hitstop se termine.
+function cameraDir(az, el) {
+  return new THREE.Vector3(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el));
+}
+function smoothstep(e0, e1, x) { const t = Math.max(0, Math.min(1, (x - e0) / ((e1 - e0) || 1e-6))); return t * t * (3 - 2 * t); }
+function lerp(a, b, f) { return a + (b - a) * f; }
+
+const CAM_KEYS = [
+  { t: 0.0,                    az: -32, el: 5,  dist: 7.6, tw: 0.06 },
+  { t: KT.open_t,               az: -52, el: 11, dist: 8.4, tw: 0.06 },
+  { t: KT.charge_t,             az: -46, el: 13, dist: 7.3, tw: 0.05 },
+  { t: KT.charge_hold_t,        az: -44, el: 13, dist: 7.0, tw: 0.05 },
+  { t: KT.strike1_windup_t,     az: -45, el: 7,  dist: 7.6, tw: 0.14 },
+  { t: KT.strike1_t,            az: -50, el: 7,  dist: 7.8, tw: 0.28 },
+  { t: KT.strike2_windup_t,     az: -62, el: 6,  dist: 7.9, tw: 0.30 },
+  { t: KT.strike2_t,            az: -70, el: 6,  dist: 8.1, tw: 0.42 },
+  { t: KT.fin_recover_t,        az: -55, el: 8,  dist: 8.6, tw: 0.32 },
+  { t: KT.fin_coil_t,           az: -40, el: 11, dist: 8.8, tw: 0.32 },
+  { t: KT.fin_coil_hold_t,      az: -34, el: 13, dist: 8.4, tw: 0.38 },
+  { t: KT.fin_mid_t,            az: -27, el: 15, dist: 7.2, tw: 0.55 },
+  { t: KT.fin_strike_t,         az: -21, el: 17, dist: 5.8, tw: 0.75 },
+  { t: KT.fin_strike_t + 0.5,   az: -46, el: 10, dist: 10.6, tw: 0.78 },
+  { t: KT.fin_followthrough_t + 0.3, az: -50, el: 9,  dist: 11.6, tw: 0.72 },
+  { t: DURATION,                az: -50, el: 8,  dist: 12.6, tw: 0.65 },
+];
+function camKeyAt(pt) {
+  if (pt <= CAM_KEYS[0].t) return CAM_KEYS[0];
+  for (let i = 0; i < CAM_KEYS.length - 1; i++) {
+    const a = CAM_KEYS[i], b = CAM_KEYS[i + 1];
+    if (pt >= a.t && pt <= b.t) {
+      const f = smoothstep(a.t, b.t, pt);
+      return { az: lerp(a.az, b.az, f), el: lerp(a.el, b.el, f), dist: lerp(a.dist, b.dist, f), tw: lerp(a.tw, b.tw, f) };
+    }
+  }
+  return CAM_KEYS[CAM_KEYS.length - 1];
+}
+function attAnchor(pose) { const p = pose["Torso"].p; return [p[0], p[1] + 0.15, p[2]]; }
+function dumAnchor(pose) { const p = pose["Head"].p; return [p[0], p[1], p[2]]; }
+
+// Shake simple omnidirectionnel/decroissance lineaire -- reutilise TEL
+// QUEL sur les 2 coups de combo (r6_hit_combo.shakeOffset()).
+function comboShake(t) {
+  let x = 0, y = 0, z = 0;
+  for (const h of [HIT1, HIT2]) {
+    const age = t - h.real_impact_t;
+    if (age < 0 || age > h.shakeDur) continue;
+    const decay = 1 - age / h.shakeDur;
+    x += Math.sin(age * 140) * h.shakeAmp * decay;
+    y += Math.sin(age * 97 + 1.4) * h.shakeAmp * 0.7 * decay;
+    z += Math.sin(age * 121 + 0.6) * h.shakeAmp * 0.6 * decay;
+  }
+  return { x, y, z };
+}
+// Shake DIRECTIONNEL a decroissance EXPONENTIELLE -- reserve au finisher
+// (point 1 du mandat) : offset = direction_bas * amplitude *
+// exp(-age/decroissance) * sin(frequence*age). La frappe est descendante,
+// donc l'ecran doit etre pousse vers le BAS a l'impact (composante -Y
+// dominante), pas trembler egalement dans toutes les directions comme le
+// shake omnidirectionnel ci-dessus. Un tres leger jitter lateral (poids
+// 0.18) casse la purete de l'axe sans jamais dominer la direction.
+const FIN_SHAKE_AMP = 0.62, FIN_SHAKE_TIMESCALE = 0.085, FIN_SHAKE_FREQ = 15.5, FIN_SHAKE_DUR = 0.55;
+const FIN_SHAKE_DIR = (() => { const v = [0, -1, -0.10]; const n = Math.hypot(v[0], v[1], v[2]); return v.map(c => c / n); })();
+function finisherShake(t) {
+  const age = t - HITF.real_impact_t;
+  if (age < 0 || age > FIN_SHAKE_DUR) return { x: 0, y: 0, z: 0 };
+  const decay = Math.exp(-age / FIN_SHAKE_TIMESCALE);
+  const s = FIN_SHAKE_AMP * decay * Math.sin(2 * Math.PI * FIN_SHAKE_FREQ * age);
+  const jitter = FIN_SHAKE_AMP * 0.18 * decay * Math.sin(2 * Math.PI * (FIN_SHAKE_FREQ * 2.3) * age + 0.7);
+  return { x: FIN_SHAKE_DIR[0] * s + jitter, y: FIN_SHAKE_DIR[1] * s, z: FIN_SHAKE_DIR[2] * s + jitter * 0.4 };
+}
+function shakeOffset(t) {
+  const a = comboShake(t), b = finisherShake(t);
+  return { x: a.x + b.x, y: a.y + b.y, z: a.z + b.z };
+}
+function fovAt(t) {
+  let fov = FOV_BASE;
+  for (const h of [HIT1, HIT2]) {
+    const age = t - h.real_impact_t;
+    const dur = h.shakeDur + 0.06;
+    if (age < 0 || age > dur) continue;
+    const drop = 6 * (1 + h.shakeAmp * 3);
+    fov -= age < 0.035 ? drop * (age / 0.035) : drop * Math.max(0, 1 - (age - 0.035) / (dur - 0.035));
+  }
+  const age = t - HITF.real_impact_t;
+  if (age >= 0 && age <= FIN_SHAKE_DUR + 0.1) {
+    const decay = Math.exp(-age / (FIN_SHAKE_TIMESCALE * 1.6));
+    fov -= 10 * decay;
+  }
+  return fov;
+}
+
+const _camTargetV = new THREE.Vector3();
+function updateCamera(pt, t, attPose, dumPose) {
+  const k = camKeyAt(pt);
+  const az = k.az * Math.PI / 180, el = k.el * Math.PI / 180;
+  const dir = cameraDir(az, el);
+  const target = [0, 0, 0].map((_, i) => lerp(attAnchor(attPose)[i], dumAnchor(dumPose)[i], k.tw));
+  const shake = shakeOffset(t);
+  camera.position.set(target[0] + dir.x * k.dist + shake.x, target[1] + dir.y * k.dist + shake.y, target[2] + dir.z * k.dist + shake.z);
+  _camTargetV.set(target[0], target[1], target[2]);
+  camera.lookAt(_camTargetV);
+  camera.fov = fovAt(t);
+  camera.updateProjectionMatrix();
+}
+
+// ---------------------------------------------------------------------
+// VFX en surimpression (canvas 2D transparent empile sur le WebGL).
+const _projV = new THREE.Vector3();
+function worldToScreen(x, y, z) {
+  _projV.set(x, y, z).project(camera);
+  return { x: (_projV.x * 0.5 + 0.5) * overlay.width, y: (1 - (_projV.y * 0.5 + 0.5)) * overlay.height, behind: _projV.z > 1 };
+}
+function worldRadiusToPx(worldR, worldPos) {
+  const dx = worldPos[0] - camera.position.x, dy = worldPos[1] - camera.position.y, dz = worldPos[2] - camera.position.z;
+  const dist = Math.max(0.6, Math.hypot(dx, dy, dz));
+  const vFov = camera.fov * Math.PI / 180;
+  const pxPerUnit = (overlay.height / 2) / (Math.tan(vFov / 2) * dist);
+  return worldR * pxPerUnit;
+}
+function drawSolarHalo(sx, sy, pxR, intensity) {
+  octx.save();
+  octx.globalCompositeOperation = "lighter";
+  const outerR = Math.max(2, pxR * 2.6) * intensity;
+  const halo = octx.createRadialGradient(sx, sy, 0, sx, sy, outerR);
+  halo.addColorStop(0, `rgba(${HOT[0]},${HOT[1]},${HOT[2]},${0.55 * intensity})`);
+  halo.addColorStop(0.45, `rgba(${RIM[0]},${RIM[1]},${RIM[2]},${0.32 * intensity})`);
+  halo.addColorStop(1, `rgba(${RIM[0]},${RIM[1]},${RIM[2]},0)`);
+  octx.fillStyle = halo;
+  octx.beginPath(); octx.arc(sx, sy, outerR, 0, Math.PI * 2); octx.fill();
+  const coreR = Math.max(1.4, pxR * 1.05);
+  const core = octx.createRadialGradient(sx, sy, 0, sx, sy, coreR);
+  core.addColorStop(0, `rgba(255,255,255,${0.95 * intensity})`);
+  core.addColorStop(0.6, `rgba(${HOT[0]},${HOT[1]},${HOT[2]},${0.8 * intensity})`);
+  core.addColorStop(1, `rgba(${RIM[0]},${RIM[1]},${RIM[2]},${0.5 * intensity})`);
+  octx.fillStyle = core;
+  octx.beginPath(); octx.arc(sx, sy, coreR, 0, Math.PI * 2); octx.fill();
+  octx.restore();
+}
+
+// Particules aspirees (charge uniquement) -- points lumineux qui
+// convergent vers chaque main, echelonnes par phase_offset (voir
+// inwardParticlePos ci-dessus).
+function drawInwardParticles(pt, handWorld) {
+  if (pt < SOL.charge_t || pt > SOL.charge_hold_t) return;
+  for (const particle of SOL.inward_particles) {
+    const { pos, f } = inwardParticlePos(handWorld, particle, pt);
+    const s = worldToScreen(pos[0], pos[1], pos[2]);
+    if (s.behind) continue;
+    const size = 1.6 + 2.2 * f;
+    const alpha = 0.25 + 0.65 * f;
+    octx.save();
+    octx.globalCompositeOperation = "lighter";
+    const g = octx.createRadialGradient(s.x, s.y, 0, s.x, s.y, size * 2.4);
+    g.addColorStop(0, `rgba(255,250,235,${alpha})`);
+    g.addColorStop(0.5, `rgba(${RIM[0]},${RIM[1]},${RIM[2]},${alpha * 0.6})`);
+    g.addColorStop(1, `rgba(${RIM[0]},${RIM[1]},${RIM[2]},0)`);
+    octx.fillStyle = g;
+    octx.beginPath(); octx.arc(s.x, s.y, size * 2.4, 0, Math.PI * 2); octx.fill();
+    octx.restore();
+  }
+}
+
+// Trainee courte sur le bras qui frappe pendant le combo -- meme
+// technique que r6_hit_combo.drawArmSmear() (epaule->poing + trainee),
+// retheme blanc-or solaire, active seulement HIT.windup_t..impact_t.
+function shoulderWorld(torsoPose, isLeft) {
+  const r = torsoPose.r, p = torsoPose.p;
+  const lx = isLeft ? -0.9 : 0.9, ly = 0.6, lz = 0.0;
+  return [p[0] + r[0]*lx + r[1]*ly + r[2]*lz, p[1] + r[3]*lx + r[4]*ly + r[5]*lz, p[2] + r[6]*lx + r[7]*ly + r[8]*lz];
+}
+function drawArmSmear(pt, hit, attPoseNow) {
+  if (!hit.arm) return;
+  if (pt < hit.windup_t || pt > hit.impact_t + 0.02) return;
+  const f = Math.min(1, (pt - hit.windup_t) / Math.max(1e-6, hit.impact_t - hit.windup_t));
+  const envelope = Math.min(1, f * 2.2);
+  if (envelope <= 0.02) return;
+  const prevT = Math.max(hit.windup_t, pt - 0.06);
+  const prevPose = sampleChar(DATA.attacker_frames, prevT);
+  const isLeft = hit.arm === "Left Arm";
+  const shoulderNow = shoulderWorld(attPoseNow["Torso"], isLeft);
+  const fistNow = attPoseNow[hit.arm].p;
+  const fistPrev = prevPose[hit.arm].p;
+  const s0 = worldToScreen(...shoulderNow), s1 = worldToScreen(...fistNow), sPrev = worldToScreen(...fistPrev);
+  octx.save();
+  octx.globalCompositeOperation = "lighter";
+  const dx = s1.x - s0.x, dy = s1.y - s0.y, len = Math.hypot(dx, dy) || 1;
+  const nx = -dy / len, ny = dx / len, width = 20 * envelope;
+  octx.fillStyle = `rgba(255,238,205,${0.28 * envelope})`;
+  octx.beginPath();
+  octx.moveTo(s0.x, s0.y);
+  octx.lineTo(s1.x + nx * width, s1.y + ny * width);
+  octx.lineTo(s1.x - nx * width, s1.y - ny * width);
+  octx.closePath(); octx.fill();
+  const tdx = s1.x - sPrev.x, tdy = s1.y - sPrev.y, tlen = Math.hypot(tdx, tdy) || 1;
+  const tnx = -tdy / tlen, tny = tdx / tlen, tw = 8 * envelope;
+  const trailGrad = octx.createLinearGradient(sPrev.x, sPrev.y, s1.x, s1.y);
+  trailGrad.addColorStop(0, "rgba(255,255,255,0)");
+  trailGrad.addColorStop(1, `rgba(255,255,255,${0.55 * envelope})`);
+  octx.fillStyle = trailGrad;
+  octx.beginPath();
+  octx.moveTo(sPrev.x + tnx*tw*0.15, sPrev.y + tny*tw*0.15);
+  octx.lineTo(s1.x + tnx*tw, s1.y + tny*tw);
+  octx.lineTo(s1.x - tnx*tw, s1.y - tny*tw);
+  octx.lineTo(sPrev.x - tnx*tw*0.15, sPrev.y - tny*tw*0.15);
+  octx.closePath(); octx.fill();
+  octx.restore();
+}
+
+// Flash + eclats au contact de chaque coup de combo (langage deja etabli,
+// voir r6_hit_combo) -- intensite croissante coup1 -> coup2.
+const COMBO_FLASH = { combo_1: 0.55, combo_2: 0.75 };
+function drawComboImpact(t, hit, contactScreen) {
+  const age = t - hit.real_impact_t;
+  const life = 0.30 + hit.shakeAmp * 1.4;
+  if (age < 0 || age >= life) return;
+  const flashAlpha = COMBO_FLASH[hit.name];
+  const flashDur = 0.03 + flashAlpha * 0.02;
+  octx.save();
+  if (age < flashDur) {
+    octx.globalAlpha = flashAlpha * Math.max(0, 1 - age / flashDur * 0.15);
+    octx.fillStyle = "#fff6df";
+    octx.fillRect(0, 0, overlay.width, overlay.height);
+    octx.restore();
+    return;
+  }
+  const cxp = contactScreen.x, cyp = contactScreen.y;
+  const N = Math.round(18 + hit.shakeAmp * 140);
+  octx.globalCompositeOperation = "lighter";
+  for (let i = 0; i < N; i++) {
+    const seed = i * 3.71 + 1.3;
+    const ang = (i / N) * Math.PI * 2 + Math.sin(seed) * 0.5;
+    const speed = 200 + 170 * (Math.sin(seed * 1.9) * 0.5 + 0.5);
+    const dist = speed * age;
+    const len = 12 + 22 * (Math.sin(seed * 2.3) * 0.5 + 0.5);
+    const lifeFrac = age / life;
+    const alpha = Math.max(0, 1 - Math.pow(lifeFrac, 1.4));
+    if (alpha <= 0.02) continue;
+    const x0 = cxp + Math.cos(ang) * dist, y0 = cyp + Math.sin(ang) * dist * 0.85;
+    const x1 = cxp + Math.cos(ang) * (dist + len), y1 = cyp + Math.sin(ang) * (dist + len) * 0.85;
+    octx.strokeStyle = `rgba(${hit.glow},${alpha})`;
+    octx.lineWidth = 2.2 * alpha + 0.6;
+    octx.beginPath(); octx.moveTo(x0, y0); octx.lineTo(x1, y1); octx.stroke();
+  }
+  const coreAlpha = Math.max(0, 1 - age / (life * 0.5));
+  if (coreAlpha > 0) {
+    const rg = octx.createRadialGradient(cxp, cyp, 0, cxp, cyp, 46);
+    rg.addColorStop(0, `rgba(255,255,255,${0.9 * coreAlpha})`);
+    rg.addColorStop(0.4, `rgba(${hit.glow},${0.55 * coreAlpha})`);
+    rg.addColorStop(1, `rgba(${hit.glow},0)`);
+    octx.fillStyle = rg;
+    octx.beginPath(); octx.arc(cxp, cyp, 46, 0, Math.PI * 2); octx.fill();
+  }
+  octx.restore();
+}
+
+// ---------------------------------------------------------------------
+// Impact final -- flash plein ecran, explosion 3D (spheres additives),
+// onde de choc au sol, eclats/poussiere projetes, marque de sol
+// persistante. Tout est ancre sur SOL.fin_contact_point (mesure par
+// choreography.py, jamais devine).
+const GROUND_CONTACT = [SOL.fin_contact_point[0], 0.05, SOL.fin_contact_point[2]];
+function drawFinisherFlash(t) {
+  const age = t - HITF.real_impact_t;
+  if (age < 0 || age >= SOL.impact_flash_s) return;
+  const alpha = Math.max(0, 1 - Math.pow(age / SOL.impact_flash_s, 1.3));
+  octx.save();
+  octx.fillStyle = "#ffffff";
+  octx.globalAlpha = alpha;
+  octx.fillRect(0, 0, overlay.width, overlay.height);
+  octx.restore();
+}
+function drawFinisherBurst(t, contactScreen) {
+  const age = t - HITF.real_impact_t;
+  const life = SOL.impact_shockwave_s + 0.35;
+  if (age < 0 || age >= life) return;
+  octx.save();
+  octx.globalCompositeOperation = "lighter";
+  const N = 64;
+  for (let i = 0; i < N; i++) {
+    const seed = i * 2.71 + 0.9;
+    const ang = (i / N) * Math.PI * 2 + Math.sin(seed) * 0.4 - Math.PI * 0.5;
+    const speed = 260 + 260 * (Math.sin(seed * 1.9) * 0.5 + 0.5);
+    const len = 20 + 46 * (Math.sin(seed * 2.3) * 0.5 + 0.5);
+    const dist = speed * age;
+    const gravity = 200;
+    const dx = Math.cos(ang) * dist, dy = Math.sin(ang) * dist * 0.7 + 0.5 * gravity * age * age * 0.5;
+    const lifeFrac = age / life;
+    const alpha = Math.max(0, 1 - Math.pow(lifeFrac, 1.3));
+    if (alpha <= 0.02) continue;
+    const x0 = contactScreen.x + dx, y0 = contactScreen.y + dy;
+    const x1 = x0 - Math.cos(ang) * len, y1 = y0 - Math.sin(ang) * len * 0.7;
+    const warm = lifeFrac < 0.4;
+    octx.strokeStyle = warm ? `rgba(255,250,225,${alpha})` : `rgba(${RIM[0]},${RIM[1]},${RIM[2]},${alpha})`;
+    octx.lineWidth = 3.0 * alpha + 0.8;
+    octx.beginPath(); octx.moveTo(x0, y0); octx.lineTo(x1, y1); octx.stroke();
+  }
+  const coreAlpha = Math.max(0, 1 - age / (SOL.impact_flash_s * 3));
+  if (coreAlpha > 0) {
+    const r = 60 + 200 * Math.min(1, age / 0.2);
+    const rg = octx.createRadialGradient(contactScreen.x, contactScreen.y, 0, contactScreen.x, contactScreen.y, r);
+    rg.addColorStop(0, `rgba(255,255,255,${0.95 * coreAlpha})`);
+    rg.addColorStop(0.35, `rgba(${HOT[0]},${HOT[1]},${HOT[2]},${0.7 * coreAlpha})`);
+    rg.addColorStop(1, `rgba(${RIM[0]},${RIM[1]},${RIM[2]},0)`);
+    octx.fillStyle = rg;
+    octx.beginPath(); octx.arc(contactScreen.x, contactScreen.y, r, 0, Math.PI * 2); octx.fill();
+  }
+  octx.restore();
+}
+function drawGroundDust(t, groundScreen) {
+  const age = t - HITF.real_impact_t;
+  const life = 0.85;
+  if (age < 0 || age >= life) return;
+  octx.save();
+  const N = 30;
+  for (let i = 0; i < N; i++) {
+    const seed = i * 3.13 + 0.9;
+    const ang = (i / N) * Math.PI * 2 + Math.sin(seed) * 0.45;
+    const speed = 110 + 160 * (Math.sin(seed * 1.7) * 0.5 + 0.5);
+    const size = 7 + 12 * (Math.sin(seed * 2.3) * 0.5 + 0.5);
+    const gravity = 190;
+    const dx = Math.cos(ang) * speed * age;
+    const dy = -Math.abs(Math.sin(ang)) * speed * 0.7 * age - 60 * age + 0.5 * gravity * age * age * 0.4;
+    const px = groundScreen.x + dx, py = groundScreen.y + dy;
+    const lifeFrac = age / life;
+    const alpha = Math.max(0, 1 - Math.pow(lifeFrac, 1.4)) * 0.7;
+    if (alpha <= 0.01) continue;
+    octx.fillStyle = `rgba(214,196,158,${alpha})`;
+    octx.beginPath(); octx.arc(px, py, size * (1 - lifeFrac * 0.25), 0, Math.PI * 2); octx.fill();
+  }
+  octx.restore();
+}
+function drawScorchMark(t, groundScreen) {
+  const age = t - HITF.real_impact_t;
+  if (age < 0) return;
+  const fadeIn = Math.min(1, age / 0.2);
+  octx.save();
+  octx.globalAlpha = fadeIn;
+  octx.strokeStyle = "#1c1108";
+  octx.lineCap = "round";
+  const N = 9;
+  for (let i = 0; i < N; i++) {
+    const seed = i * 2.31 + 0.4;
+    const ang = (i / N) * Math.PI * 2 + Math.sin(seed) * 0.5;
+    const len = 60 + 42 * (Math.sin(seed * 1.7) * 0.5 + 0.5);
+    let x = groundScreen.x, y = groundScreen.y;
+    octx.lineWidth = 3.4 - i * 0.12;
+    octx.beginPath(); octx.moveTo(x, y);
+    for (let s = 1; s <= 3; s++) {
+      const jag = Math.sin(seed * 3 + s * 2.7) * 10;
+      x += Math.cos(ang) * (len / 3) + jag * 0.3;
+      y += Math.sin(ang) * (len / 3) * 0.4 + jag * 0.15;
+      octx.lineTo(x, y);
+    }
+    octx.stroke();
+  }
+  const rg = octx.createRadialGradient(groundScreen.x, groundScreen.y, 0, groundScreen.x, groundScreen.y, 44);
+  rg.addColorStop(0, "rgba(40,22,12,0.6)"); rg.addColorStop(1, "rgba(40,22,12,0)");
+  octx.fillStyle = rg;
+  octx.beginPath(); octx.arc(groundScreen.x, groundScreen.y, 44, 0, Math.PI * 2); octx.fill();
+  octx.restore();
+}
+
+// Explosion 3D (spheres additives, monde reel -- rayon jusqu'a
+// IMPACT_MAX_RADIUS = 9 studs, voir solar_track.py) + anneau d'onde de
+// choc a plat sur le sol.
+const explosionMat = new THREE.MeshBasicMaterial({ color: rgbToThreeColor(HOT), transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
+const explosionMesh = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 18), explosionMat);
+explosionMesh.visible = false;
+scene.add(explosionMesh);
+const flareMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
+const flareMesh = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 12), flareMat);
+flareMesh.visible = false;
+scene.add(flareMesh);
+const ringMat = new THREE.MeshBasicMaterial({ color: rgbToThreeColor(RIM), transparent: true, opacity: 0, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false });
+const ringMesh = new THREE.Mesh(new THREE.RingGeometry(0.85, 1, 64), ringMat);
+ringMesh.rotation.x = -Math.PI / 2;
+ringMesh.position.set(GROUND_CONTACT[0], 0.06, GROUND_CONTACT[2]);
+ringMesh.visible = false;
+scene.add(ringMesh);
+
+function updateExplosionMeshes(t) {
+  const age = t - HITF.real_impact_t;
+  const dur = SOL.impact_shockwave_s;
+  const active = age >= 0 && age <= dur + 0.25;
+  explosionMesh.visible = active;
+  ringMesh.visible = active;
+  flareMesh.visible = age >= 0 && age < SOL.impact_flash_s * 2.5;
+  if (!active && !flareMesh.visible) return;
+  const f = Math.max(0, Math.min(1, age / dur));
+  const r = SOL.impact_max_radius * (1 - Math.pow(1 - f, 2.0));
+  explosionMesh.position.set(SOL.fin_contact_point[0], SOL.fin_contact_point[1], SOL.fin_contact_point[2]);
+  explosionMesh.scale.setScalar(Math.max(0.05, r));
+  explosionMat.opacity = Math.max(0, 0.55 * (1 - f) * (1 - f));
+  if (flareMesh.visible) {
+    const fAge = Math.min(1, age / (SOL.impact_flash_s * 2.5));
+    flareMesh.position.copy(explosionMesh.position);
+    flareMesh.scale.setScalar(0.4 + 1.6 * fAge);
+    flareMat.opacity = Math.max(0, 0.9 * (1 - fAge));
+  }
+  const ringR = SOL.impact_max_radius * 1.15 * (1 - Math.pow(1 - f, 2.4));
+  ringMesh.scale.set(Math.max(0.05, ringR), Math.max(0.05, ringR), 1);
+  ringMat.opacity = Math.max(0, 0.6 * (1 - f));
+}
+
+// ---------------------------------------------------------------------
+function render(tReal) {
+  const pt = poseTime(tReal);
+  const attPose = sampleChar(DATA.attacker_frames, pt);
+  const dumPose = sampleChar(DATA.dummy_frames, pt);
+
+  updateCamera(pt, tReal, attPose, dumPose);
+
+  for (const part of DATA.part_order) {
+    if (part === "HumanoidRootPart") continue;
+    applyPoseToMesh(attackerMeshes[part], attPose[part].p, attPose[part].r);
+    applyPoseToMesh(dummyMeshes[part], dumPose[part].p, dumPose[part].r);
+  }
+
+  // -- noyaux attaches aux mains (charge, combo, coil "distincts").
+  const handR = armTipWorld(attPose["Right Arm"], "Right Arm");
+  const handL = armTipWorld(attPose["Left Arm"], "Left Arm");
+  const rHand = handCoreRadius(pt);
+  const merged = mergedCore(pt);
+  const showHandCores = rHand !== null && (merged === null || merged.phase === "distincts");
+  coreRight.visible = showHandCores;
+  coreLeft.visible = showHandCores;
+  if (showHandCores) {
+    coreRight.position.set(...handR); coreRight.scale.setScalar(rHand);
+    coreLeft.position.set(...handL); coreLeft.scale.setScalar(rHand);
+  }
+  coreMerged.visible = !!(merged && merged.phase === "fusion");
+  if (coreMerged.visible) {
+    coreMerged.position.set(...merged.pos);
+    coreMerged.scale.setScalar(merged.radius);
+  }
+  handLightR.intensity = showHandCores ? 2.4 * (rHand / SOL.core_radius_grown) : 0;
+  handLightL.intensity = showHandCores ? 2.4 * (rHand / SOL.core_radius_grown) : 0;
+  handLightR.position.set(...handR); handLightL.position.set(...handL);
+  if (coreMerged.visible) {
+    mergedLight.position.set(...merged.pos);
+    mergedLight.intensity = 3.0 * (merged.radius / SOL.merged_radius_strike);
+  } else {
+    const fAge = tReal - HITF.real_impact_t;
+    mergedLight.intensity = (fAge >= 0 && fAge < 0.5) ? 4.0 * Math.max(0, 1 - fAge / 0.5) : 0;
+    mergedLight.position.set(SOL.fin_contact_point[0], SOL.fin_contact_point[1], SOL.fin_contact_point[2]);
+  }
+
+  updateExplosionMeshes(tReal);
+  renderer.render(scene, camera);
+
+  // -- surimpression 2D.
+  octx.clearRect(0, 0, overlay.width, overlay.height);
+
+  if (pt >= SOL.charge_t && pt <= SOL.charge_hold_t) {
+    drawInwardParticles(pt, handR);
+    drawInwardParticles(pt, handL);
+  }
+  if (showHandCores) {
+    const sR = worldToScreen(...handR), sL = worldToScreen(...handL);
+    if (!sR.behind) drawSolarHalo(sR.x, sR.y, worldRadiusToPx(rHand, handR), 1.0);
+    if (!sL.behind) drawSolarHalo(sL.x, sL.y, worldRadiusToPx(rHand, handL), 1.0);
+  }
+  if (coreMerged.visible) {
+    const sM = worldToScreen(...merged.pos);
+    if (!sM.behind) drawSolarHalo(sM.x, sM.y, worldRadiusToPx(merged.radius, merged.pos), 1.35);
+  }
+  for (const hit of [HIT1, HIT2]) {
+    if (hit.arm) drawArmSmear(pt, hit, attPose);
+    const fistWorld = attPose[hit.arm].p;
+    const fistScreen = worldToScreen(fistWorld[0], fistWorld[1], fistWorld[2]);
+    if (!fistScreen.behind) drawComboImpact(tReal, hit, fistScreen);
+  }
+  if (tReal >= HITF.real_impact_t) {
+    const contactScreen = worldToScreen(SOL.fin_contact_point[0], SOL.fin_contact_point[1], SOL.fin_contact_point[2]);
+    const groundScreen = worldToScreen(GROUND_CONTACT[0], GROUND_CONTACT[1], GROUND_CONTACT[2]);
+    if (!groundScreen.behind) { drawScorchMark(tReal, groundScreen); drawGroundDust(tReal, groundScreen); }
+    if (!contactScreen.behind) drawFinisherBurst(tReal, contactScreen);
+    drawFinisherFlash(tReal);
+  }
+
+  const phase = currentPhase(tReal);
+  phaseNameEl.textContent = phase.name;
+  phaseNameEl2.textContent = phase.name;
+  timecodeEl.textContent = tReal.toFixed(2) + "s / " + REAL_DURATION.toFixed(2) + "s";
+}
+
+let playing = true, speed = 1, simTime = 0, lastWall = null;
+function setPlaying(p) {
+  playing = p;
+  playIcon.style.display = p ? "none" : "block";
+  pauseIcon.style.display = p ? "block" : "none";
+}
+playBtn.addEventListener("click", () => setPlaying(!playing));
+scrub.addEventListener("input", () => { simTime = (scrub.value / 1000) * REAL_DURATION; render(simTime); });
+document.querySelectorAll("#speedRow button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll("#speedRow button").forEach(x => x.classList.remove("active"));
+  b.classList.add("active"); speed = parseFloat(b.dataset.speed);
+}));
+
+function loop(ts) {
+  if (lastWall === null) lastWall = ts;
+  const dt = Math.min(0.05, (ts - lastWall) / 1000);
+  lastWall = ts;
+  if (playing) {
+    simTime += dt * speed;
+    if (simTime > REAL_DURATION) simTime = 0;
+    scrub.value = Math.round((simTime / REAL_DURATION) * 1000);
+  }
+  render(simTime);
+  requestAnimationFrame(loop);
+}
+window.__render = () => render(simTime);
+window.__setPlaying = setPlaying;
+window.__setSimTime = (t) => { simTime = t; scrub.value = Math.round((simTime / REAL_DURATION) * 1000); };
+window.__poseToReal = poseToReal;
+requestAnimationFrame(loop);
+</script>
