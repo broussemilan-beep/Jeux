@@ -177,39 +177,101 @@ charge). Ici, une seule caméra, un seul plan du début à la fin :
   ci-dessus) — le seul répondant visuel à l'impact, jamais un
   changement de plan.
 
+## Passe « niveau expert » (retour utilisateur, deuxième itération)
+
+Retour après la première livraison : « Je veux aussi animation de hit etc
+vraiment du niveau expert. » Clarifié via question : portée = ce combo
+existant (pas un nouveau prototype), trois axes explicitement visés — la
+réaction du mannequin, le VFX au contact, le timing/hitstop. Trois
+changements ciblés, chacun vérifié pour ne PAS régresser la calibration
+déjà établie :
+
+1. **Réaction du mannequin — whiplash + rebond, jamais un retour à
+   l'idle** (`scripts/choreography.py`, `dummy_combo_reaction()`). Avant :
+   jab et cross tenaient une seule pose figée (snap sur le contact, puis
+   silence complet) jusqu'au coup suivant — seule la vibration secondaire
+   (ressort) donnait un peu de vie. Ajouté pour les trois coups : la
+   rotation du buste/tête **continue** un instant au-delà de la pose de
+   contact (l'inertie du coup n'est pas absorbée instantanément —
+   `JAB_OVERSHOOT_*`, `CROSS_OVERSHOOT_*`, `HOOK_OVERSHOOT_*`, +0,05 à
+   +0,08 s après chaque impact), puis un rebond élastique **partiel** qui
+   ne revient jamais à l'idle (`JAB_SETTLE_*`, `CROSS_SETTLE_*` — le combo
+   n'a pas de temps mort, le coup suivant arrive avant toute récupération
+   complète). Le hook (finisher) reçoit en plus un **court hop** vertical
+   (`HOOK_HOP_Y = GROUND_Y + 0,42`) pendant la projection, avant
+   l'atterrissage à `HOOK_T + 0,35 s` — vend la taille du coup, pas
+   seulement sa rotation.
+   - Vérifié : `calibrate.py` réexécuté après le changement — écarts de
+     contact **inchangés** (0,493 / 0,366 / 0,390 stud, contre
+     0,493 / 0,366 / 0,393 avant — écart de 0,003 stud dû au bruit de la
+     vibration secondaire sur la pose idle précédant chaque impact, pas
+     une régression), structure toujours OK sur les deux rigs. Les
+     nouvelles keyframes sont toutes **après** l'instant d'impact exact
+     (jamais AU moment mesuré) — aucun risque de décalibrer le contact.
+2. **VFX au contact — éclats d'énergie colorés + anneau de choc**
+   (`scripts/hit_combo_viewer.html`, `drawImpactSpark()` et
+   `drawShockwaveRing()`, nouvelles). Avant : flash plein écran + lignes
+   de vitesse noires (encre, style manga) + débris de gravats bruns —
+   tout le langage visuel était celui d'un choc de MATIÈRE, rien ne
+   rendait l'ÉNERGIE du coup au moment précis du contact (seul le halo de
+   charge, avant l'impact, portait une couleur). Ajouté : un anneau fin
+   qui s'étend et s'efface (blend additif, couleur `hit.glow` — orange
+   jab/cross, rose/magenta hook) et des traînées lumineuses radiantes
+   avec un cœur blanc bref au centre — les deux se superposent au
+   flash/lignes/débris existants, ne les remplacent pas. Toujours
+   déterministe (`sin(i*constante)`), toujours calé sur `hit.debrisN` /
+   `hit.shakeAmp` pour l'escalade jab < cross < hook déjà établie.
+3. **Timing — hitstop du hook allongé** : `hitstopDur` du hook passé de
+   `6/30` à `8/30` (0,267 s, contre 0,200 s) — le finisher gèle
+   sensiblement plus longtemps que le cross (`3/30`), creusant l'écart
+   déjà voulu entre les trois coups plutôt qu'une simple progression
+   linéaire 2/3/6 → 2/3/8.
+
 ## Vérification
 
 Environnement : `pip install numpy bpy` (le conteneur ne les avait pas
 préinstallés cette session — packages présents dans le cache pip local,
 réinstallés sans nouveau téléchargement réseau).
 
-- `python3 calibrate.py` : écarts de contact 0,493 / 0,366 / 0,393 stud
+- `python3 calibrate.py` : écarts de contact 0,493 / 0,366 / 0,390 stud
   (jab/cross/hook), structure OK sur les deux rigs, durées égales
-  (2,63 s).
+  (2,63 s) — réexécuté et confirmé inchangé après la passe « niveau
+  expert » (voir section dédiée ci-dessus).
 - `python3 run_scene.py` : export des deux `KeyframeSequence`,
   « Structure OK » pour l'attaquant et le mannequin, 80 keyframes chacun.
-- `python3 build_viewer.py` : lecteur final assemblé (889 125 octets, 2
+- `python3 build_viewer.py` : lecteur final assemblé (892 312 octets, 2
   textures embarquées, three.min.js embarqué).
-- Syntaxe JS : extraction du `<script>` et `node --check` — aucune erreur.
-- Balayage Playwright sur toute la durée (`REAL_DURATION=2,997s`, 400
-  points) : **0 erreur console, 0 valeur caméra NaN/Infinity**, position
-  caméra et FOV échantillonnés à chaque coup sans dérive anormale.
+- Syntaxe JS : extraction du `<script>` et `node --check` — aucune erreur
+  (revérifié après l'ajout de `drawImpactSpark`/`drawShockwaveRing`).
+- Balayage Playwright sur toute la durée (`REAL_DURATION=3,063s` après
+  l'allongement du hitstop du hook, 400 points) : **0 erreur console, 0
+  valeur caméra NaN/Infinity**, position caméra et FOV échantillonnés à
+  chaque coup sans dérive anormale.
 - Captures visuelles à 11 instants clés (garde, windup/impact/après pour
   chaque coup, posture finale) : la caméra garde les deux personnages
   entièrement dans le cadre à tout instant, l'escalade des VFX (lignes de
-  vitesse plus denses, flash plus intense, secousse plus marquée) est
-  visible à l'œil du jab au hook, aucune coupe, aucun artefact de rendu.
-  Captures représentatives committées dans `captures/verification/` :
+  vitesse, éclats d'énergie, anneau de choc, flash, secousse) est visible
+  à l'œil du jab au hook, aucune coupe, aucun artefact de rendu. Captures
+  représentatives committées dans `captures/verification/` :
   - `2026-09-05-hit-combo-wide-camera-garde.png` — plan d'ouverture,
     scène entière dans le cadre.
   - `2026-09-05-hit-combo-jab-impact-flash.png` — flash + zoom optique au
-    premier contact.
+    premier contact (avant la passe « niveau expert »).
   - `2026-09-05-hit-combo-cross-impact-flash.png` — lignes de vitesse
-    plus denses que le jab (escalade).
+    plus denses que le jab (escalade, avant la passe « niveau expert »).
   - `2026-09-05-hit-combo-hook-stagger-debris.png` — projection du
-    finisher, débris visibles, plan large maintenu.
+    finisher, débris visibles, plan large maintenu (avant la passe
+    « niveau expert »).
   - `2026-09-05-hit-combo-wide-camera-finale.png` — posture finale, plan
     large maintenu jusqu'au bout.
+  - `2026-09-05-hit-combo-vfx-spark-ring-jab.png` — nouvel anneau de choc
+    + éclats d'énergie (orange) au contact du jab.
+  - `2026-09-05-hit-combo-vfx-spark-ring-cross.png` — anneau/éclats plus
+    larges au cross (escalade).
+  - `2026-09-05-hit-combo-vfx-spark-ring-hook.png` — anneau/éclats les
+    plus larges, couleur rose/magenta distincte (finisher).
+  - `2026-09-05-hit-combo-hook-hop-reaction.png` — whiplash + hop du
+    mannequin pendant la projection du hook.
 
 ## Fichiers
 

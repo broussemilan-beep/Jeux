@@ -298,16 +298,33 @@ JAB_HIT_TORSO = (-10, 0, 3)
 JAB_HIT_HEAD = (-16, -4, 0)
 JAB_HIT_ARMS = {"Right Arm": (40, 0, 20), "Left Arm": (40, 0, -25)}
 JAB_HIT_LEGS = {"Right Leg": (-4, 0, 4), "Left Leg": (2, 0, -4)}
+# -- whiplash : la rotation continue un instant au-dela de la pose de
+# contact (l'inertie du coup n'est pas absorbee instantanement), avant un
+# rebond elastique partiel qui NE revient PAS a l'idle (le prochain coup
+# arrive avant toute recuperation complete -- combo sans temps mort).
+JAB_OVERSHOOT_TORSO = (-15, 0, 4)
+JAB_OVERSHOOT_HEAD = (-23, -6, 0)
+JAB_SETTLE_TORSO = (-6, 0, 2)
+JAB_SETTLE_HEAD = (-9, -2, 0)
 
 CROSS_HIT_TORSO = (-30, 0, 7)
 CROSS_HIT_HEAD = (-36, -9, 0)
 CROSS_HIT_ARMS = {"Right Arm": (130, 0, 50), "Left Arm": (130, 0, -62)}
 CROSS_HIT_LEGS = {"Right Leg": (-16, 0, 9), "Left Leg": (9, 0, -12)}
+CROSS_OVERSHOOT_TORSO = (-38, 0, 9)
+CROSS_OVERSHOOT_HEAD = (-44, -12, 0)
+CROSS_SETTLE_TORSO = (-19, 0, 4)
+CROSS_SETTLE_HEAD = (-23, -5, 0)
 
 HOOK_HIT_TORSO = (-18, 40, -10)
 HOOK_HIT_HEAD = (-24, 46, -6)
 HOOK_HIT_ARMS = {"Right Arm": (150, 0, 70), "Left Arm": (150, 0, -85)}
 HOOK_HIT_LEGS = {"Right Leg": (-20, 0, 20), "Left Leg": (-8, 0, -22)}
+# -- le finisher : whiplash + court hop (racine Y) pendant la projection,
+# le corps continue de tourner sous l'impact avant de retomber au sol.
+HOOK_OVERSHOOT_TORSO = (-22, 48, -12)
+HOOK_OVERSHOOT_HEAD = (-30, 55, -8)
+HOOK_HOP_Y = GROUND_Y + 0.42
 
 DAZED_TORSO = (26, 0, -6)
 DAZED_HEAD = (14, 8, 0)
@@ -321,19 +338,33 @@ def dummy_combo_reaction():
             Torso=DUMMY_IDLE_TORSO, Head=DUMMY_IDLE_HEAD, **DUMMY_IDLE_LEGS, **DUMMY_IDLE_ARMS),
         _kf(JAB_T - 0.03, root_pos=(0, GROUND_Y, DUMMY_Z), HumanoidRootPart=(0, 180, 0),
             Torso=DUMMY_IDLE_TORSO, Head=DUMMY_IDLE_HEAD, **DUMMY_IDLE_LEGS, **DUMMY_IDLE_ARMS),
-        # -- flinch au jab : bref, petit, il encaisse et reste debout --
+        # -- flinch au jab : snap sur le contact, puis whiplash + rebond
+        # partiel (jamais un retour a l'idle -- le cross arrive avant) --
         _kf(JAB_T, root_pos=(0, GROUND_Y, DUMMY_Z), HumanoidRootPart=(0, 180, 0),
             Torso=JAB_HIT_TORSO, Head=JAB_HIT_HEAD, **JAB_HIT_LEGS, **JAB_HIT_ARMS),
+        _kf(JAB_T + 0.05, root_pos=(0, GROUND_Y, DUMMY_Z), HumanoidRootPart=(0, 180, 0),
+            Torso=JAB_OVERSHOOT_TORSO, Head=JAB_OVERSHOOT_HEAD, **JAB_HIT_LEGS, **JAB_HIT_ARMS),
+        _kf(JAB_T + 0.16, root_pos=(0, GROUND_Y, DUMMY_Z - 0.15), HumanoidRootPart=(0, 180, 0),
+            Torso=JAB_SETTLE_TORSO, Head=JAB_SETTLE_HEAD, **JAB_HIT_LEGS, **JAB_HIT_ARMS),
         _kf(CROSS_T - 0.03, root_pos=(0, GROUND_Y, DUMMY_Z - 0.15), HumanoidRootPart=(0, 180, 0),
-            Torso=JAB_HIT_TORSO, Head=JAB_HIT_HEAD, **JAB_HIT_LEGS, **JAB_HIT_ARMS),
-        # -- vacille fort au cross : recul net --
+            Torso=JAB_SETTLE_TORSO, Head=JAB_SETTLE_HEAD, **JAB_HIT_LEGS, **JAB_HIT_ARMS),
+        # -- vacille fort au cross : meme principe (snap -> whiplash ->
+        # rebond partiel), amplitude plus grande --
         _kf(CROSS_T, root_pos=(0, GROUND_Y, DUMMY_Z - 0.15), HumanoidRootPart=(0, 180, 0),
             Torso=CROSS_HIT_TORSO, Head=CROSS_HIT_HEAD, **CROSS_HIT_LEGS, **CROSS_HIT_ARMS),
+        _kf(CROSS_T + 0.06, root_pos=(0, GROUND_Y, DUMMY_Z - 0.15), HumanoidRootPart=(0, 180, 0),
+            Torso=CROSS_OVERSHOOT_TORSO, Head=CROSS_OVERSHOOT_HEAD, **CROSS_HIT_LEGS, **CROSS_HIT_ARMS),
+        _kf(CROSS_T + 0.20, root_pos=(0, GROUND_Y, DUMMY_Z - 0.85), HumanoidRootPart=(0, 180, 0),
+            Torso=CROSS_SETTLE_TORSO, Head=CROSS_SETTLE_HEAD, **CROSS_HIT_LEGS, **CROSS_HIT_ARMS),
         _kf(HOOK_T - 0.03, root_pos=(0, GROUND_Y, DUMMY_Z - 0.85), HumanoidRootPart=(0, 165, 0),
-            Torso=CROSS_HIT_TORSO, Head=CROSS_HIT_HEAD, **CROSS_HIT_LEGS, **CROSS_HIT_ARMS),
-        # -- projete par le hook : le plus grand deplacement, tete/torse tournent fort (coup lateral) --
+            Torso=CROSS_SETTLE_TORSO, Head=CROSS_SETTLE_HEAD, **CROSS_HIT_LEGS, **CROSS_HIT_ARMS),
+        # -- projete par le hook : le plus grand deplacement, tete/torse
+        # tournent fort (coup lateral), whiplash + court hop pendant la
+        # projection avant l'atterrissage --
         _kf(HOOK_T, root_pos=(0, GROUND_Y, DUMMY_Z - 0.85), HumanoidRootPart=(0, 150, 0),
             Torso=HOOK_HIT_TORSO, Head=HOOK_HIT_HEAD, **HOOK_HIT_LEGS, **HOOK_HIT_ARMS),
+        _kf(HOOK_T + 0.08, root_pos=(0, HOOK_HOP_Y, DUMMY_Z - 1.35), HumanoidRootPart=(0, 145, 0),
+            Torso=HOOK_OVERSHOOT_TORSO, Head=HOOK_OVERSHOOT_HEAD, **HOOK_HIT_LEGS, **HOOK_HIT_ARMS),
         _kf(HOOK_T + 0.35, root_pos=(0, GROUND_Y, DUMMY_Z - 2.6), HumanoidRootPart=(0, 130, 0),
             Torso=HOOK_HIT_TORSO, Head=HOOK_HIT_HEAD, **HOOK_HIT_LEGS, **HOOK_HIT_ARMS),
         _kf(HOOK_T + 0.75, root_pos=(0, GROUND_Y, DUMMY_Z - 3.0), HumanoidRootPart=(0, 140, 0),
@@ -347,7 +378,8 @@ def dummy_combo_reaction():
         {"name": "cross_encaisse", "t0": CROSS_T, "t1": HOOK_T, "expected_reversals": {}},
         {"name": "projete", "t0": HOOK_T, "t1": DURATION, "expected_reversals": {}},
     ]
-    preview_times = [0.0, JAB_T, CROSS_T, HOOK_T, HOOK_T + 0.75, DURATION]
+    preview_times = [0.0, JAB_T, JAB_T + 0.05, CROSS_T, CROSS_T + 0.06, HOOK_T, HOOK_T + 0.08,
+                      HOOK_T + 0.35, HOOK_T + 0.75, DURATION]
     engine_opts = {"handle_type": "AUTO_CLAMPED"}
     return keyframes, phases, preview_times, engine_opts
 

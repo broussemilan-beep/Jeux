@@ -159,7 +159,7 @@ const HIT_STYLE = {
            debrisN: 6,  linesN: 16, flashAlpha: 0.50, shakeAmp: 0.045, shakeDur: 0.10, glow: "255,150,60" },
   cross: { arm: "Right Arm", hitstopDur: 3 / 30, stretchPeak: 0.45, impactPeak: 0.30,
            debrisN: 12, linesN: 30, flashAlpha: 0.78, shakeAmp: 0.085, shakeDur: 0.15, glow: "255,150,60" },
-  hook:  { arm: "Left Arm",  hitstopDur: 6 / 30, stretchPeak: 0.65, impactPeak: 0.42,
+  hook:  { arm: "Left Arm",  hitstopDur: 8 / 30, stretchPeak: 0.65, impactPeak: 0.42,
            debrisN: 20, linesN: 44, flashAlpha: 1.00, shakeAmp: 0.16,  shakeDur: 0.22, glow: "255,90,190" },
 };
 const HITS = DATA.hits.map(h => ({ ...h, ...HIT_STYLE[h.name] }));
@@ -636,6 +636,72 @@ function drawDebrisBurst(t, hit, contactScreen) {
   octx.restore();
 }
 
+// Eclats d'energie colores (couleur = hit.glow) au contact -- distincts
+// des debris balistiques ci-dessus (gravats neutres, physiques) : ce sont
+// des trainees LUMINEUSES en blend additif, qui vendent le cote "coup qui
+// degage de l'energie" plutot qu'un simple choc de matiere. Retour
+// utilisateur ("vraiment du niveau expert") : le flash+lignes+debris
+// existants lisaient comme un impact MANGA (encre), mais rien ne
+// distinguait visuellement l'ENERGIE d'un coup de son escalade jab/cross/
+// hook autrement que par la couleur du halo de charge -- cet eclat rend
+// cette energie visible AU contact lui-meme. Deterministe (sin a
+// constantes fixes), jamais Math.random().
+function drawImpactSpark(t, hit, contactScreen) {
+  const age = t - hit.real_impact_t;
+  const life = 0.16 + hit.shakeAmp * 0.5;
+  if (age < 0 || age >= life) return;
+  octx.save();
+  octx.globalCompositeOperation = "lighter";
+  const n = Math.round(hit.linesN * 0.6);
+  for (let i = 0; i < n; i++) {
+    const seed = i * 5.23 + 2.1;
+    const ang = (i / n) * Math.PI * 2 + Math.sin(seed) * 0.4;
+    const speed = 260 + 220 * (Math.sin(seed * 1.7) * 0.5 + 0.5);
+    const len = 14 + 26 * (Math.sin(seed * 2.3) * 0.5 + 0.5);
+    const dist = speed * age;
+    const lifeFrac = age / life;
+    const alpha = Math.max(0, 1 - Math.pow(lifeFrac, 1.4));
+    if (alpha <= 0.02) continue;
+    const x0 = contactScreen.x + Math.cos(ang) * dist, y0 = contactScreen.y + Math.sin(ang) * dist * 0.85;
+    const x1 = contactScreen.x + Math.cos(ang) * (dist + len), y1 = contactScreen.y + Math.sin(ang) * (dist + len) * 0.85;
+    octx.strokeStyle = `rgba(${hit.glow},${alpha})`;
+    octx.lineWidth = 2.4 * alpha + 0.6;
+    octx.beginPath(); octx.moveTo(x0, y0); octx.lineTo(x1, y1); octx.stroke();
+  }
+  const coreAlpha = Math.max(0, 1 - age / (life * 0.5));
+  if (coreAlpha > 0) {
+    const core = octx.createRadialGradient(contactScreen.x, contactScreen.y, 0, contactScreen.x, contactScreen.y, 34);
+    core.addColorStop(0, `rgba(255,255,255,${0.9 * coreAlpha})`);
+    core.addColorStop(0.4, `rgba(${hit.glow},${0.6 * coreAlpha})`);
+    core.addColorStop(1, `rgba(${hit.glow},0)`);
+    octx.fillStyle = core;
+    octx.beginPath(); octx.arc(contactScreen.x, contactScreen.y, 34, 0, Math.PI * 2); octx.fill();
+  }
+  octx.restore();
+}
+
+// Anneau de choc expansif -- langage visuel classique de l'impact,
+// separe du flash plein ecran : un cercle fin, couleur du coup, qui
+// grandit et s'efface (blend additif). Rayon max et duree croissants par
+// coup (voir hit.debrisN/shakeAmp, deja les proxys d'intensite du coup).
+function drawShockwaveRing(t, hit, contactScreen) {
+  const age = t - hit.real_impact_t;
+  const dur = 0.16 + hit.shakeAmp * 0.55;
+  if (age < 0 || age >= dur) return;
+  const f = age / dur;
+  const maxR = 60 + hit.debrisN * 6;
+  const r = maxR * (1 - Math.pow(1 - f, 2.2));
+  const alpha = Math.max(0, 1 - f) * 0.85;
+  octx.save();
+  octx.globalCompositeOperation = "lighter";
+  octx.strokeStyle = `rgba(${hit.glow},${alpha})`;
+  octx.lineWidth = Math.max(1, 7 * (1 - f));
+  octx.beginPath();
+  octx.ellipse(contactScreen.x, contactScreen.y, r, r * 0.82, 0, 0, Math.PI * 2);
+  octx.stroke();
+  octx.restore();
+}
+
 // Etirement -- deux fenetres par coup, jamais superposees : pendant
 // l'avancee (releaseStretchFactor, ancre a l'EPAULE) puis, apres
 // l'impact, un etirement d'impact bref (armStretchFactor, ancre a la
@@ -714,6 +780,8 @@ function render(t) {
     drawFistCharge(pt, hit, fistScreen);
     drawArmSmear(pt, hit, attPose);
     drawImpactFrame(t, hit, fistScreen);
+    drawShockwaveRing(t, hit, fistScreen);
+    drawImpactSpark(t, hit, fistScreen);
     drawDebrisBurst(t, hit, fistScreen);
   }
 
