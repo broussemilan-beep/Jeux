@@ -515,7 +515,13 @@ const CAM_KEYS = [
   { t: KT.fin_coil_t,           az: -40, el: 11, dist: 8.8, tw: 0.32 },
   { t: KT.fin_coil_hold_t,      az: -34, el: 13, dist: 8.4, tw: 0.38 },
   { t: KT.fin_mid_t,            az: -27, el: 15, dist: 7.2, tw: 0.55 },
-  { t: KT.fin_strike_t,         az: -21, el: 17, dist: 5.8, tw: 0.75 },
+  // -- gros plan extreme au contact (reference : "Black Flash", camera
+  // quasi collee au personnage a l'instant de l'impact, pas juste
+  // "proche" -- voir experiments/_shared/vfx_craft_checklist.md,
+  // section captures de reference envoyees le 2026-09-23) : dist chute
+  // fort sur cette derniere demi-fenetre (7.2 -> 3.4), tw quasi 1
+  // (cadrage sur le point de contact, pas le torse).
+  { t: KT.fin_strike_t,         az: -19, el: 19, dist: 3.4, tw: 0.92 },
   { t: KT.fin_strike_t + 0.5,   az: -46, el: 10, dist: 10.6, tw: 0.78 },
   { t: KT.fin_followthrough_t + 0.3, az: -50, el: 9,  dist: 11.6, tw: 0.72 },
   { t: DURATION,                az: -50, el: 8,  dist: 12.6, tw: 0.65 },
@@ -781,6 +787,84 @@ function drawFinisherFlash(t) {
   octx.fillRect(0, 0, overlay.width, overlay.height);
   octx.restore();
 }
+// Silhouette graphique en pointes (etoile irreguliere), PAS un degrade --
+// reference envoyee le 2026-09-23 ("Black Flash"/"Stagnant Rage", captures
+// video) : leur pic d'impact est une forme DESSINEE (traits d'encre /
+// silhouette en eclats), jamais juste un halo radial qui grossit. Meme
+// principe ici, en canvas pur (pas de texture externe) : un polygone en
+// pointes irregulieres (seed fixe), contour dore net par-dessus un halo
+// doux -- la forme se voit comme un objet, pas comme un flou.
+const _STARBURST_SEED = [];
+(function () {
+  let s = 7.13;
+  for (let i = 0; i < 16; i++) { s = (s * 12.9898 + 3.7) % 17; _STARBURST_SEED.push(s / 17); }
+})();
+function drawImpactStarburst(t, contactScreen) {
+  const age = t - HITF.real_impact_t;
+  const dur = 0.24;
+  if (age < 0 || age >= dur) return;
+  const grow = Math.min(1, age / 0.05);
+  const fade = Math.max(0, 1 - Math.pow(Math.max(0, age - 0.05) / (dur - 0.05), 1.6));
+  const alpha = grow * fade;
+  if (alpha <= 0.01) return;
+  // -- plafonne en espace ECRAN (pas juste monde) : avec le gros plan
+  // extreme desormais utilise au contact (voir CAM_KEYS), un rayon
+  // purement mesure en studs devient enorme a l'ecran et remplit tout
+  // le cadre -- trouve en revoyant la capture 07 moi-meme (le meme
+  // ecueil "opacite plein ecran qui cache l'action" que la checklist
+  // met en garde, cette fois cause par MA propre correction) -- jamais
+  // plus de 32% de la hauteur du canvas, quelle que soit la distance
+  // camera.
+  const baseR = Math.min(worldRadiusToPx(2.6, SOL.fin_contact_point) * (0.7 + 0.3 * grow), overlay.height * 0.32);
+  const N = 14;
+  octx.save();
+  octx.globalCompositeOperation = "lighter";
+  const halo = octx.createRadialGradient(contactScreen.x, contactScreen.y, 0, contactScreen.x, contactScreen.y, baseR * 1.6);
+  halo.addColorStop(0, `rgba(255,252,235,${0.6 * alpha})`);
+  halo.addColorStop(1, "rgba(255,208,110,0)");
+  octx.fillStyle = halo;
+  octx.beginPath(); octx.arc(contactScreen.x, contactScreen.y, baseR * 1.6, 0, Math.PI * 2); octx.fill();
+  octx.beginPath();
+  for (let i = 0; i <= N * 2; i++) {
+    const k = i % (N * 2);
+    const long = k % 2 === 0;
+    const spikeSeed = _STARBURST_SEED[k % _STARBURST_SEED.length];
+    const r = baseR * (long ? (0.85 + 0.5 * spikeSeed) : (0.28 + 0.22 * spikeSeed));
+    const ang = (k / (N * 2)) * Math.PI * 2 + 0.35;
+    const px = contactScreen.x + Math.cos(ang) * r, py = contactScreen.y + Math.sin(ang) * r * 0.82;
+    if (i === 0) octx.moveTo(px, py); else octx.lineTo(px, py);
+  }
+  octx.closePath();
+  octx.fillStyle = `rgba(255,250,232,${0.85 * alpha})`;
+  octx.fill();
+  octx.lineWidth = 2.2;
+  octx.strokeStyle = `rgba(255,190,90,${0.9 * alpha})`;
+  octx.stroke();
+  octx.restore();
+}
+// Teinte plein cadre chaude/or qui accompagne l'explosion (reference :
+// les 3 captures envoyees ont chacune un lavis global qui colore toute
+// la scene selon le theme de la competence -- vert pour "Rewind Clock",
+// rouge/noir pour "Black Flash", ambre pour "Stagnant Rage"). Le theme
+// solaire de cette competence appelle un lavis chaud -- jamais assez
+// opaque pour cacher l'action (voir checklist "opacite plein ecran qui
+// cache l'action"), juste assez pour unifier la scene avec l'explosion.
+function drawColorGradeWash(t) {
+  const age = t - HITF.real_impact_t;
+  const dur = 0.6;
+  if (age < 0 || age >= dur) return;
+  const alpha = 0.22 * Math.max(0, 1 - Math.pow(age / dur, 1.1));
+  if (alpha <= 0.005) return;
+  octx.save();
+  octx.globalCompositeOperation = "multiply";
+  const g = octx.createRadialGradient(overlay.width / 2, overlay.height * 0.55, overlay.height * 0.25,
+                                       overlay.width / 2, overlay.height * 0.55, overlay.height * 0.9);
+  g.addColorStop(0, `rgba(255,255,255,${1 - alpha})`);
+  g.addColorStop(1, `rgba(255,214,150,${1 - alpha * 0.4})`);
+  octx.fillStyle = g;
+  octx.fillRect(0, 0, overlay.width, overlay.height);
+  octx.restore();
+}
 function drawFinisherBurst(t, contactScreen) {
   const age = t - HITF.real_impact_t;
   const life = SOL.impact_shockwave_s + 0.35;
@@ -1008,8 +1092,9 @@ function render(tReal) {
   if (tReal >= HITF.real_impact_t) {
     const contactScreen = worldToScreen(SOL.fin_contact_point[0], SOL.fin_contact_point[1], SOL.fin_contact_point[2]);
     const groundScreen = worldToScreen(GROUND_CONTACT[0], GROUND_CONTACT[1], GROUND_CONTACT[2]);
+    drawColorGradeWash(tReal);
     if (!groundScreen.behind) { drawScorchMark(tReal, groundScreen); drawGroundDust(tReal, groundScreen); }
-    if (!contactScreen.behind) drawFinisherBurst(tReal, contactScreen);
+    if (!contactScreen.behind) { drawFinisherBurst(tReal, contactScreen); drawImpactStarburst(tReal, contactScreen); }
     drawFinisherFlash(tReal);
   }
 

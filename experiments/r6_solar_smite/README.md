@@ -71,6 +71,71 @@ flash RADIAL localisé au point de contact ; le plein écran reste
 réservé exclusivement au finisher. Revérifié par capture (voir
 Vérification).
 
+### Suite : vraie cible visuelle envoyée par l'utilisateur (2026-09-23)
+
+Note « je met à tes animation 3/10 par rapport au ref envoyé » suivie
+de 2 images fixes + 3 captures vidéo (extraites en frames via `ffmpeg`
+— absent du sandbox, `libcaca.so.0`/`libva2` manquants, réinstallés via
+apt) montrant 3 compétences d'un vrai jeu Roblox (Jujutsu Kaisen —
+« Black Flash », « Rewind Clock », « Stagnant Rage »). Analysées
+frame par frame, pas juste survolées :
+
+- **« Black Flash »** : au pic, la caméra n'est pas juste "proche", elle
+  est quasi COLLÉE au personnage (un plan à peine plus large que le
+  poing) ; l'effet d'impact est une forme 2D DESSINÉE (traits d'encre
+  noirs sur fond rouge/blanc en plein cadre), pas un dégradé radial ;
+  après l'impact, coupe brutale vers une caméra basse et proche du sol
+  sur la cible tombée.
+- **« Rewind Clock »** : lavis de couleur PLEIN CADRE qui teinte toute
+  la scène selon le thème de la compétence (vert translucide) pendant
+  l'effet, y compris le décor autour ; sol destructible (dalles
+  brisées, gravats).
+- **« Stagnant Rage »** (comparaison "close variant" / "far variant"
+  filmées l'une après l'autre — même discipline QA que
+  "mesurer/vérifier par capture" déjà pratiquée ici) : plusieurs foyers
+  de feu DISTINCTS et décalés autour du point d'impact (pas un seul
+  centre concentrique), une silhouette d'explosion en POINTES nettes
+  (pas juste un halo), une onde de choc en dôme translucide au sol.
+
+Trois changements appliqués à `solar_smite_viewer.html`, chacun
+revérifié par capture avant/après (pas supposé) :
+
+1. **Caméra extrême au contact** — `CAM_KEYS` à `fin_strike_t` :
+   distance 5.8→3.4, poids caméra->cible 0.75→0.92 (cadrage sur le
+   point de contact, pas le torse). Le pull-back existant à
+   `fin_strike_t+0.5` (10.6) fait le "coupe vers arrière" après coup.
+2. **`drawImpactStarburst`** — une silhouette en pointes irrégulières
+   dessinée au canvas (seed fixe), PAS un dégradé, superposée au burst
+   existant à l'instant du flash.
+3. **`drawColorGradeWash`** — un lavis ambre/or plein cadre (multiply,
+   jamais assez opaque pour cacher l'action) pendant 0.6s après
+   l'impact, pour unifier toute la scène avec l'explosion (thème
+   solaire → chaud, contrairement au vert de "Rewind Clock").
+
+Un vrai bug trouvé en vérifiant MA PROPRE correction (pas pris pour
+acquis) : `drawImpactStarburst` calculait son rayon en studs projetés
+à l'écran (`worldRadiusToPx`) — avec la caméra désormais très proche,
+ça remplissait TOUT le cadre d'un motif de triangles jaunes illisible,
+exactement le défaut "opacité plein écran qui cache l'action" que la
+checklist met en garde, causé cette fois par ma propre correction.
+Corrigé en plafonnant le rayon en pixels écran (max 32% de la hauteur
+du canvas), quelle que soit la distance caméra. Revu après correction :
+la silhouette se lit maintenant comme une forme nette sur fond ambre,
+plus proche des captures de référence.
+
+**Non exploré plus loin (documenté, pas juste laissé de côté)** : les
+fichiers `.rbxm` envoyés (`100_Combat_VFX_Pack.rbxm`, etc.) contiennent
+2073 vrais `ParticleEmitter` Roblox — une source de données bien plus
+fiable qu'une lecture visuelle. `experiments/_shared/rbxm_reader.py`
+(déjà existant, validé sur d'autres fichiers) a inventorié le pack sans
+problème, mais l'extraction des courbes `Size`/`Transparency` a échoué
+avec une vraie erreur de dépassement de buffer (pas des valeurs
+plausibles à tort) — cohérent avec la limite déjà documentée en tête de
+ce module pour les tableaux de taille variable. Non corrigé cette
+session (diminishing returns face au temps déjà investi) ; piste à
+reprendre si une session future veut des courbes RÉELLES plutôt
+qu'observées à l'œil sur les vidéos.
+
 ## Recherche
 
 Fait AVANT d'écrire la moindre pose, via WebSearch (WebFetch est bloqué
@@ -319,8 +384,11 @@ ouvrant chaque image (jamais un rapport d'agent pris au mot) :
 - `2026-09-05-solar-smite-06-finisher-impact-flash.png` — flash blanc
   plein cadre à `FIN_STRIKE_T` (attendu, même écueil que ci-dessus).
 - `2026-09-05-solar-smite-07-finisher-impact-apres.png` — +0.15s après
-  le flash : grosse explosion solaire dorée avec un starburst blanc net
-  et visible en son centre (après la correction du fondu du noyau
-  fusionné, voir ci-dessus) — le plus gros VFX du dépôt à ce jour.
+  le flash : recapturée après la passe guidée par les vraies références
+  (voir Recherche) — une silhouette en pointes DESSINÉE (`drawImpactStarburst`,
+  plafonnée en pixels écran après un vrai bug de sur-remplissage trouvé
+  en vérifiant), sur un fond teinté ambre (`drawColorGradeWash`), caméra
+  bien plus rapprochée qu'avant — le plus gros VFX du dépôt à ce jour,
+  et le plus proche du langage visuel des captures de référence envoyées.
 - `2026-09-05-solar-smite-08-mannequin-ecrase.png` — mannequin écrasé/
   affalé au sol après le finisher, marque de sol persistante visible.
