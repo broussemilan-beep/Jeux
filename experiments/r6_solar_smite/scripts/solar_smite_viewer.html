@@ -699,6 +699,16 @@ function drawArmSmear(pt, hit, attPoseNow) {
 
 // Flash + eclats au contact de chaque coup de combo (langage deja etabli,
 // voir r6_hit_combo) -- intensite croissante coup1 -> coup2.
+//
+// Flash LOCALISE (radial autour du point de contact), pas plein ecran --
+// correction suite a un audit VFX (checklist adaptee de la competence
+// roblox-vfx du depot Astrablox, voir experiments/_shared/
+// vfx_craft_checklist.md, critere "l'echelle communique l'enjeu" : un
+// flash plein ecran identique sur un jab de routine et sur le finisher
+// ecrase la hierarchie visuelle -- verifie sur les captures
+// 03/04-combo-impact.png, toute l'image etait voilee, pas juste la zone
+// de contact). Le plein ecran (drawFinisherFlash) reste reserve EXCLUSIVEMENT
+// au finisher, pour que le contraste se lise comme une escalade.
 const COMBO_FLASH = { combo_1: 0.55, combo_2: 0.75 };
 function drawComboImpact(t, hit, contactScreen) {
   const age = t - hit.real_impact_t;
@@ -708,9 +718,14 @@ function drawComboImpact(t, hit, contactScreen) {
   const flashDur = 0.03 + flashAlpha * 0.02;
   octx.save();
   if (age < flashDur) {
-    octx.globalAlpha = flashAlpha * Math.max(0, 1 - age / flashDur * 0.15);
-    octx.fillStyle = "#fff6df";
-    octx.fillRect(0, 0, overlay.width, overlay.height);
+    const a = flashAlpha * Math.max(0, 1 - age / flashDur * 0.15);
+    const flashR = overlay.height * 0.42;
+    const fg = octx.createRadialGradient(contactScreen.x, contactScreen.y, 0, contactScreen.x, contactScreen.y, flashR);
+    fg.addColorStop(0, `rgba(255,246,223,${a})`);
+    fg.addColorStop(0.55, `rgba(255,246,223,${a * 0.45})`);
+    fg.addColorStop(1, "rgba(255,246,223,0)");
+    octx.fillStyle = fg;
+    octx.beginPath(); octx.arc(contactScreen.x, contactScreen.y, flashR, 0, Math.PI * 2); octx.fill();
     octx.restore();
     return;
   }

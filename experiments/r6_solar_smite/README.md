@@ -46,6 +46,31 @@ pas seulement le contenu : la demande explicite de "rechercher" avant
 de recommencer a change la methode de travail pour ce prototype (voir
 section suivante), pas seulement les chiffres de timing.
 
+### Suite : audit contre une vraie référence de craft (2026-09-23)
+
+Retour ultérieur, après consultation du dépôt public
+[Astrablox/astrablox](https://github.com/Astrablox/astrablox) (studio
+Roblox piloté par IA) : « la capacite de comprehension et vision . car
+tes animatkon sont tjes pas ouf ». Deux manques identifiés en comparant
+leur process au mien : (1) ils génèrent une image cible et la font
+juger AVANT de construire (compétence `concept-frames`) — pas
+reproductible ici, cette session n'a pas d'outil texte→image ; (2) leur
+compréhension VFX vient d'une référence dense et sourcée
+(`.agents/skills/roblox-vfx/SKILL.md`), quand la mienne (section
+"Recherche" ci-dessus) reposait sur des résumés WebSearch superficiels.
+Le point (2) a été corrigé : voir
+`experiments/_shared/vfx_craft_checklist.md` (adaptation de leur
+checklist, licence MIT, réutilisable par tout prototype futur), audit
+complet du code du viewer contre cette checklist, et une correction
+réelle trouvée + appliquée : `drawComboImpact` utilisait un flash PLEIN
+ÉCRAN (juste l'alpha variait) identique en forme sur un coup de combo
+de routine et sur le finisher — contraire au principe "l'échelle
+communique l'enjeu" de la checklist, et cause probable du voile
+uniforme observé sur les premières captures 03/04. Remplacé par un
+flash RADIAL localisé au point de contact ; le plein écran reste
+réservé exclusivement au finisher. Revérifié par capture (voir
+Vérification).
+
 ## Recherche
 
 Fait AVANT d'écrire la moindre pose, via WebSearch (WebFetch est bloqué
@@ -281,11 +306,14 @@ ouvrant chaque image (jamais un rapport d'agent pris au mot) :
 - `2026-09-05-solar-smite-02-charge-particules.png` — noyau visible
   dans la main, quelques particules aspirées visibles autour.
 - `2026-09-05-solar-smite-03-combo1-impact.png` / `-04-combo2-impact.png`
-  — capturées pile à l'instant du flash d'impact (image délavée/
-  surexposée) : attendu (voir CLAUDE.md/note plus haut sur l'écueil
-  déjà rencontré 2 fois dans ce dépôt — flash au pic, pas un bug de
-  rendu), confirmé par l'agent via un instant décalé de +0.15s hors
-  livraison (éclats/mannequin qui flinche visibles).
+  — capturées pile à l'instant du flash d'impact. Version initiale :
+  voile plein cadre (attendu au pic du flash, mais AUSSI un vrai défaut
+  trouvé par l'audit checklist — flash plein écran identique sur un
+  coup de routine et sur le finisher). Recapturées après correction
+  (flash radial localisé, voir section Recherche) : le mur et le sol
+  restent lisibles, seule la zone autour du point de contact est
+  éclairée — confirmé en ouvrant les deux images moi-même, pas
+  seulement en relisant le code du correctif.
 - `2026-09-05-solar-smite-05-finisher-montee.png` — les deux noyaux,
   grossis et rapprochés au-dessus de la tête, prêts à fusionner.
 - `2026-09-05-solar-smite-06-finisher-impact-flash.png` — flash blanc
