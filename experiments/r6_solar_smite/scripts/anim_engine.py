@@ -158,10 +158,26 @@ def apply_choreography(objs, keyframes, fps=30, handle_type="AUTO_CLAMPED", hand
 def _spring_chase(times, target, stiffness, damping_ratio, t_min=None):
     """Oscillateur amorti qui "poursuit" une courbe cible -- retard +
     depassement + stabilisation naturels, au lieu de suivre la courbe
-    Bezier bruteforce. Integration semi-implicite (Euler), pas de
-    dependance externe -- c'est la meme idee que le "secondary motion" /
-    "auto-physics" d'outils comme Cascadeur, recree ici en local (pas
-    d'API, pas de GPU necessaire dans ce sandbox -- voir README).
+    Bezier bruteforce -- meme idee que le "secondary motion" / "auto-
+    physics" d'outils comme Cascadeur, recree ici en local (pas d'API,
+    pas de GPU necessaire dans ce sandbox -- voir README).
+
+    Solution ANALYTIQUE EXACTE de l'EDO f^2*(X-g) + 2*d*f*X' + X'' = 0
+    (les 3 branches sous-amorti/critique/sur-amorti), PAS une
+    integration d'Euler -- corrige suite a la lecture directe du code
+    source de fraktality/spr (bibliotheque de ressorts de reference
+    dans la communaute Roblox, MIT, github.com/fraktality/spr/blob/
+    master/spr.lua, verifiee par lecture ligne a ligne, pas seulement
+    son README) : leur `LinearSpring.step()` resout la meme EDO
+    exactement via exp/sin/cos, independamment du pas d'echantillonnage
+    -- jamais une accumulation d'erreur numerique comme le fait Euler a
+    grand dt ou grande raideur. Meme parametrisation qu'avant
+    (`stiffness` = omega^2, `damping_ratio` = d -- aucune valeur
+    stiffness/damping_ratio existante dans ce depot n'a besoin d'etre
+    retunee, seule la METHODE DE RESOLUTION change) : `f` ci-dessous
+    est directement la frequence angulaire omega (rad/s), la
+    conversion Hz<->rad/s de spr.lua ne s'applique pas ici puisqu'on
+    n'expose jamais `stiffness` en Hz.
 
     t_min : si fourni, la sortie vaut exactement `target` avant t_min
     (aucun effet, la courbe d'origine -- deja travaillee a la main --
@@ -177,16 +193,51 @@ def _spring_chase(times, target, stiffness, damping_ratio, t_min=None):
         start_i = next((i for i, t in enumerate(times) if t >= t_min), n)
     if start_i >= n:
         return out
-    omega = stiffness ** 0.5
-    damp = 2.0 * damping_ratio * omega
+    f = stiffness ** 0.5
+    d = damping_ratio
     pos = target[start_i]
     vel = 0.0
     out[start_i] = pos
+    EPS = 1e-5
     for i in range(start_i + 1, n):
         dt = times[i] - times[i - 1]
-        accel = stiffness * (target[i] - pos) - damp * vel
-        vel += accel * dt
-        pos += vel * dt
+        g = target[i]
+        o = pos - g
+        if abs(d - 1.0) < 1e-9:  # critiquement amorti
+            q = math.exp(-f * dt)
+            w = dt * q
+            c0, c2, c3 = q + w * f, q - w * f, w * f * f
+            new_pos = o * c0 + vel * w + g
+            new_vel = vel * c2 - o * c3
+        elif d < 1.0:  # sous-amorti (cas quasi-systematique dans ce depot)
+            q = math.exp(-d * f * dt)
+            c = math.sqrt(1.0 - d * d)
+            ci, cj = math.cos(dt * f * c), math.sin(dt * f * c)
+            # -- developpement de Maclaurin pres de c=0/f*c=0 (memes
+            # garde-fous que spr.lua, jamais declenches par nos valeurs
+            # reelles de stiffness/damping_ratio mais conserves pour
+            # rester fidele a la source et correct dans tous les cas).
+            if c > EPS:
+                z = cj / c
+            else:
+                a = dt * f
+                z = a + ((a * a) * (c * c) * (c * c) / 20 - c * c) * (a * a * a) / 6
+            if f * c > EPS:
+                y = cj / (f * c)
+            else:
+                b = f * c
+                y = dt + ((dt * dt) * (b * b) * (b * b) / 20 - b * b) * (dt * dt * dt) / 6
+            new_pos = (o * (ci + z * d) + vel * y) * q + g
+            new_vel = (vel * (ci - z * d) - o * (z * f)) * q
+        else:  # sur-amorti
+            c = math.sqrt(d * d - 1.0)
+            r1, r2 = -f * (d + c), -f * (d - c)
+            co2 = (vel - o * r1) / (2 * f * c)
+            co1 = math.exp(r1 * dt) * (o - co2)
+            co2e = co2 * math.exp(r2 * dt)
+            new_pos = co1 + co2e + g
+            new_vel = co1 * r1 + co2e * r2
+        pos, vel = new_pos, new_vel
         out[i] = pos
     return out
 
