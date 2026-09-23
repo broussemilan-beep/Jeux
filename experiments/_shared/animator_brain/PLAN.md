@@ -158,7 +158,7 @@ catégories.
 |---|---|---|
 | 0 | ✅ **fait (2026-09-23)** — fichiers reçus, empreintes identiques ; rig piloté headless par `v222_rig.py` (voir `RIG_V222.md`) | hashes identiques à ceux publiés |
 | 1 | Ingérer les 19 animations du pack dans le corpus, avec la taxonomie v1 ; recalibrer les seuils d'audit par catégorie ; ré-auditer nos prototypes | écart chiffré entre nos protos et le pro, catégorie par catégorie |
-| 2 | Outil de revue de pose : rendu face/profil/3-4 **déjà disponible** (`review_render`) ; reste la caméra de jeu, la critique écrite systématique, l'export depuis `InternalArmature` et deux rigs par scène | planches de revue committées |
+| 2 | Outil de revue de pose : rendu face/profil/3-4 ✅, **export depuis le rig ✅, deux rigs par scène ✅** (2026-09-23, voir `RIG_V222.md`) ; reste la caméra de jeu et la critique écrite systématique | planches de revue committées |
 | 3 | Premier **clip de jeu** : un M1 plus la réaction de la victime, moins d'une seconde, comparé au corpus, exporté avec ses markers | distance au corpus, aller-retour moteur |
 | 4 | VFX Roblox natifs pour ce M1 (emitters, beams, textures, Luau sur markers) | `.rbxmx` qui se charge ; aperçu fidèle |
 | 5 | **Test de généralisation** : une catégorie jamais travaillée (dash ou marche), sans réglage à la main | audit vs corpus de la bonne catégorie |

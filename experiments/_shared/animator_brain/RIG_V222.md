@@ -190,9 +190,35 @@ l'agrippement tenu par `Grab` et `*Arm_GrabPoint`. Le rig est conçu pour ça.
   (`constraints.py`) deviennent des vérificateurs, plus des poseurs.
 - La **revue de pose** (étape 2 de `PLAN.md`) est disponible dès maintenant :
   `review_render()` de face, de profil et de trois quarts.
-- **Reste à brancher** :
-  - l'**export** : cuire `InternalArmature` en KeyframeSequence. Soit avec
-    l'add-on Cautioned 2.6.3 (GPL, fourni par dillydog580), soit avec notre
-    exporteur `export_kfseq.py`, en lisant les matrices des parts ; à vérifier
-    ensuite par l'aller-retour `resolve_rbxmx` ;
-  - **deux rigs dans une scène** (attaquant + victime).
+- **Export branché (2026-09-23)** : `bake_parts()` cuit les 7 parts de
+  `InternalArmature`, puis `roblox_export.write_kfseq()` écrit le
+  KeyframeSequence, avec KeyframeMarkers. La méthode applique le delta de
+  chaque os par rapport à son repos : elle ne dépend d'aucune convention
+  d'axe des os Blender. Changement de repère : Blender (Z en haut, avant +Y)
+  vers Roblox (Y en haut, avant −Z).
+  - Preuve (`tests/v222_export_selftest.py`) : aller-retour exact.
+  - Les **sommets réels** des maillages du rig collent au fichier à
+    **0,0016 stud** près.
+  - L'ancien résolveur, un code indépendant, donne 3e-5 d'écart.
+- **Deux personnages dans une scène (2026-09-23)** : `append_rig()` ajoute
+  une copie complète du rig ; Blender remappe drivers, contraintes et
+  parents vers les nouvelles copies. Preuve (`tests/v222_two_rigs_selftest.py`) :
+  - 0 référence hors de sa collection pour chaque rig ;
+  - poser l'un bouge l'autre de **0** ;
+  - réglages indépendants ;
+  - les deux exports font l'aller-retour exact.
+- **Piège trouvé : le corps n'est pas centré sur l'origine de son armature.**
+  La contrainte Child Of du HumanoidRootPart porte un décalage
+  (0, −0,226, −1,763). Tourner l'objet de 180° déplaçait donc le corps de
+  0,453 stud. `place()` corrige la position pour que le HumanoidRootPart
+  tombe **exactement** au point demandé, vérifié à 1e-4.
+- `place()` agit sur l'**objet** `__PrimaryArmature`, que suit le
+  HumanoidRootPart : c'est la position « en jeu ». `MasterControl` reste de
+  l'animation, qui passe par le RootJoint.
+  - En jeu, on place la victime à `CFrame_attaquant * décalage`, avec le
+    même décalage qu'en scène.
+  - Chaque personnage joue son propre KeyframeSequence, relatif à son propre
+    HumanoidRootPart.
+
+Preuve visuelle : `captures/verification/2026-09-23-v222-deux-rigs-scene.png`
+(pose de **test**, pas une animation).
