@@ -53,14 +53,16 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
 <div class="stage">
   <p class="eyebrow">Prototype isolé · Roblox R6 · compétence solo · disque d'accrétion + coeur noir procéduraux</p>
   <h1>Trou noir — accroupissement, lévitation, effondrement gravitationnel</h1>
-  <p class="sub">Un seul personnage : accroupissement marqué (anticipation), relevé explosif en lévitation avec les bras
-    écartés à l'horizontale (geste télékinésique, pas un lever au-dessus de la tête), des fragments du sol arrachés
-    qui orbitent en se resserrant vers un point central jusqu'à former un disque d'accrétion doré et un coeur
-    spherique pur noir, un pic de tension gravitationnelle, puis l'effondrement et l'atterrissage. Pose du personnage
-    résolue par le moteur d'animation (<code>choreography.character_track()</code>) ; tout le VFX (fragments/disque/
-    coeur/traînées/vignette) est un décor procédural indépendant recalculé ici à partir des mêmes formules que
-    <code>black_hole_track.py</code> — jamais une trajectoire pré-calculée rejouée telle quelle, jamais improvisé côté
-    lecteur.</p>
+  <p class="sub">Un seul personnage, construit avec le <b>cerveau d'animateur</b> du dépôt
+    (<code>experiments/_shared/animator_brain</code>) d'après la référence lue frame par frame : garde vivante,
+    armement en torsion (un bras part en arrière, l'autre croise), accroupissement profond pieds plantés (IK, centre de
+    masse au-dessus des appuis), jaillissement hors du crouch — les jambes se déplient <i>en l'air</i> (une jambe R6
+    sans genou ne peut pas « pousser » jusqu'à l'extension) — bras lancés l'un après l'autre, vol en V, recroquevillement
+    bras croisés, puis <b>ouverture du corps qui déclenche le flash</b> et la naissance du disque derrière lui, lutte
+    contre l'aspiration, implosion, atterrissage sur un pied puis l'autre, coup d'œil par-dessus l'épaule. Chaque membre
+    a ses propres clés (chevauchement mesuré : la tête suit le torse de ~2 frames, les bras de 2 à 4), aucune boucle
+    n'est un sinus pur, gauche et droite ne sont jamais en miroir. Le VFX (fragments/disque/cœur/traînées/vignette)
+    est recalculé ici à partir des mêmes formules que <code>black_hole_track.py</code>.</p>
 
   <div class="card">
     <div class="viewport-wrap">
@@ -794,9 +796,18 @@ const CAM_KEYS = [
   { t: KT.crouch_t,      az: 165, el: 5,  dist: charFitDist(KT.crouch_t, 0.68),      tw: 0.0  },
   { t: KT.crouch_hold_t, az: 165, el: 5,  dist: charFitDist(KT.crouch_hold_t, 0.68), tw: 0.0  },
   { t: KT.rise_t,        az: 174, el: 15, dist: charFitDist(KT.rise_t, 0.62),        tw: 0.1  },
-  { t: MID_HOLD_T,       az: 192, el: 21, dist: charFitDist(MID_HOLD_T, 0.58),       tw: 0.5  },
-  { t: KT.hold_end_t,    az: 204, el: 23, dist: 8.5,  tw: 0.75 },
-  { t: KT.climax_t,      az: 220, el: 25, dist: 12.5, tw: 1.0  },
+  { t: MID_HOLD_T,       az: 190, el: 18, dist: charFitDist(MID_HOLD_T, 0.58),       tw: 0.35 },
+  // -- refonte "cerveau d'animateur" : la camera sert les NOUVEAUX beats
+  // (reference 21-25). Le recroquevillement (curl) doit se lire en pied,
+  // puis l'ouverture en T devant le disque qui nait derriere lui (le
+  // personnage se decoupe sur le vortex, comme les frames 23-24), puis la
+  // LUTTE au climax (il resiste, penche en avant, pendant que le disque
+  // l'aspire) -- le cadrage "disque seul" d'avant rendait ce jeu invisible.
+  // Regles conservees : azimut toujours croissant, elevation en UN arc.
+  { t: KT.curl_hold_t,   az: 197, el: 19, dist: charFitDist(KT.curl_hold_t, 0.6),   tw: 0.12 },
+  { t: KT.t_settle_t,    az: 202, el: 20, dist: 12.0, tw: 0.42 },
+  { t: KT.hold_end_t,    az: 206, el: 21, dist: 12.5, tw: 0.55 },
+  { t: KT.climax_t,      az: 220, el: 22, dist: 14.0, tw: 0.6  },
   // -- garder tw HAUT tout du long de la fenetre d'effondrement
   // (VFX_EVENTS.collapse, t0..t1) : sans cette cle intermediaire a
   // collapse.t0, tw retombait continument de 1.0 (climax_t) a 0.25
@@ -809,8 +820,8 @@ const CAM_KEYS = [
   // diametre max (9.2 studs, voir note ci-dessus). Azimut CONTINUE de
   // croitre (44, pas un retour vers 0) -- meme sens que depuis le
   // decollage.
-  { t: VFX.collapse.t0,  az: 224, el: 19, dist: 12.5, tw: 0.92 },
-  { t: VFX.collapse.t1,  az: 228, el: 15, dist: 8.5,  tw: 0.35 },
+  { t: VFX.collapse.t0,  az: 224, el: 18, dist: 13.0, tw: 0.45 },
+  { t: VFX.collapse.t1,  az: 228, el: 14, dist: charFitDist(VFX.collapse.t1, 0.58), tw: 0.08 },
   { t: KT.recover_t,     az: 232, el: 12, dist: charFitDist(KT.recover_t, 0.55),     tw: 0.0  },
   { t: KT.idle_out_end,  az: 232, el: 12, dist: charFitDist(KT.idle_out_end, 0.55),  tw: 0.0  },
 ];

@@ -14,6 +14,7 @@ import numpy as np
 
 import anim_engine as ae
 import choreography as ch
+import pipeline
 import black_hole_track as bh
 from r6_rig import PART_ORDER, PART_SIZES
 
@@ -42,12 +43,7 @@ def tip_world(samples, part, i, end="bottom"):
 
 
 def _run():
-    keyframes, phases, preview_times, engine_opts = ch.character_track()
-    duration = max(k["time"] for k in keyframes)
-    objs = ae.build_rig()
-    ae.apply_choreography(objs, keyframes, **engine_opts)
-    samples = ae.sample(objs, duration_s=duration, sample_hz=60, secondary_motion=ch.SECONDARY_MOTION)
-    return samples, duration
+    return pipeline.build_samples(sample_hz=60)
 
 
 def idx_at(t, hz=60):
@@ -56,58 +52,52 @@ def idx_at(t, hz=60):
 
 def main():
     samples, duration = _run()
+    n = len(samples["Left Leg"])
+    times = [s[0] for s in samples["Left Leg"]]
 
-    print("=== placement des pieds -- 2 modes (sol / aerien), tolerance", TOLERANCE, "stud ===")
-    print("(AIRBORNE_WINDOW =", ch.AIRBORNE_WINDOW, "-- avant/apres : verifie au sol par le")
-    print(" modele a 3 cas (calage jambe seule / compromis equilibre, voir r6_solar_smite) ;")
-    print(" pendant : verifie qu'AUCUN pied ne traverse le sol -- pas de check de contact.)")
-    keyframes, _, _, _ = ch.character_track()
-    kf_by_time = {}
-    for k in keyframes:
-        kf_by_time.setdefault(round(k["time"], 6), k)
-    EPS_MATCH = 0.01
-    problems = []
-    clipping = []
-    for t in sorted(kf_by_time):
-        kf = kf_by_time[t]
-        i = min(round(t * 60), len(samples["Left Leg"]) - 1)
-        ly = tip_world(samples, "Left Leg", i, "bottom")[1]
-        ry = tip_world(samples, "Right Leg", i, "bottom")[1]
-        airborne = ch.AIRBORNE_WINDOW["t0"] <= t <= ch.AIRBORNE_WINDOW["t1"]
-        if airborne:
-            worst_below = min(ly, ry)  # negatif = traverse le sol
-            flag = ""
-            if worst_below < -TOLERANCE:
-                flag = "  <-- CLIPPING (pied sous le sol pendant la levitation)"
-                clipping.append((t, ly, ry))
-            print(f"  t={t:6.3f}  LeftFootY={ly:7.3f}  RightFootY={ry:7.3f}  [AERIEN]{flag}")
-            continue
-        worst = max(abs(ly), abs(ry))
-        flag = ""
-        if worst > TOLERANCE:
-            torso = samples["Torso"][i][1]
-            left_leg, right_leg = kf["Left Leg"], kf["Right Leg"]
-            y_left_only = ch.grounded_root_y(torso, left_leg, "Left Leg")
-            y_right_only = ch.grounded_root_y(torso, right_leg, "Right Leg")
-            root_y_used = kf["root_pos"][1]
-            if abs(root_y_used - y_left_only) < EPS_MATCH and abs(ry) > TOLERANCE and abs(ly) <= TOLERANCE:
-                flag = "  (explique : calage jambe gauche seule)"
-            elif abs(root_y_used - y_right_only) < EPS_MATCH and abs(ly) > TOLERANCE and abs(ry) <= TOLERANCE:
-                flag = "  (explique : calage jambe droite seule)"
-            elif abs(root_y_used - (y_left_only + y_right_only) / 2.0) < EPS_MATCH:
-                expected_split = abs(y_left_only - y_right_only) / 2.0
-                if abs(worst - expected_split) < EPS_MATCH:
-                    flag = f"  (explique : compromis equilibre, ecart attendu={expected_split:.3f})"
-                else:
-                    flag = "  <-- ANOMALIE NON EXPLIQUEE (compromis equilibre mais residu ne correspond pas au calcul)"
-                    problems.append((t, ly, ry))
-            else:
-                flag = "  <-- ANOMALIE NON EXPLIQUEE"
-                problems.append((t, ly, ry))
-        print(f"  t={t:6.3f}  LeftFootY={ly:7.3f}  RightFootY={ry:7.3f}{flag}")
-
-    print(f"\n{'aucune anomalie' if not problems else str(len(problems)) + ' anomalie(s)'} de placement au sol non expliquee(s)")
-    print(f"{'aucun clipping' if not clipping else str(len(clipping)) + ' clipping(s)'} pendant la levitation")
+    print("=== placement des pieds -- CHAQUE echantillon (60 Hz), tolerance", TOLERANCE, "stud ===")
+    print("  (appuis : hauteur ET derive horizontale vs cible ; hors appui : jamais sous le sol)")
+    blend = 2 / 30
+    problems, clipping = [], []
+    worst_contact = {}
+    # decollage AUTOMATIQUE (pied qui part a pleine extension, voir
+    # animator_brain.constraints.foot_lock_pass) : la fin reelle de l'appui
+    # est celle mesuree par la passe, pas la borne de securite t1.
+    toe_off = pipeline.last_log()["constraints"].get("auto_toe_off", {})
+    for leg in ("Right Leg", "Left Leg"):
+        wins = []
+        for c in ch.CONTACTS:
+            if c["leg"] != leg:
+                continue
+            c = dict(c)
+            if c.get("release_after") is not None and leg in toe_off:
+                c["t1"] = min(c["t1"], toe_off[leg] - 1 / 60)
+            wins.append(c)
+        for i in range(n):
+            t = times[i]
+            tip = tip_world(samples, leg, i, "bottom")
+            inside = [c for c in wins if c["t0"] + blend <= t <= c["t1"]]
+            if inside:
+                tgt = np.array(inside[0]["target"])
+                err_y = abs(tip[1] - tgt[1])
+                err_h = float(np.hypot(tip[0] - tgt[0], tip[2] - tgt[2]))
+                w = worst_contact.setdefault(leg, [0.0, 0.0])
+                w[0], w[1] = max(w[0], err_y), max(w[1], err_h)
+                if err_y > TOLERANCE or err_h > TOLERANCE:
+                    problems.append((leg, round(t, 3), round(err_y, 3), round(err_h, 3)))
+            elif tip[1] < -TOLERANCE:
+                clipping.append((leg, round(t, 3), round(float(tip[1]), 3)))
+    for leg, (wy, wh) in worst_contact.items():
+        print(f"  {leg:10s} pendant les appuis : ecart max hauteur={wy:.4f}  derive horizontale max={wh:.4f} stud")
+    print(f"\n{'aucune anomalie' if not problems else str(len(problems)) + ' anomalie(s)'} de placement au sol"
+          + ("" if not problems else f" -- premieres : {problems[:4]}"))
+    print(f"{'aucun clipping' if not clipping else str(len(clipping)) + ' clipping(s)'} hors appui"
+          + ("" if not clipping else f" -- premiers : {clipping[:4]}"))
+    log = pipeline.last_log()
+    print(f"  (passe foot_lock : deplacement max du bassin={log['constraints'].get('max_root_shift')} stud, "
+          f"residu max={log['constraints'].get('max_residual')} stud, "
+          f"echantillons inexacts={log['constraints'].get('inexact_samples')} ; "
+          f"ajustements d'ordre des cles d'overlap : {len(log['overlap_adjustments'])})")
 
     print("\n=== clearance mesuree aux instants-cles de la levitation (stud au-dessus du sol) ===")
     for name, t in (("RISE (decollage)", ch.RISE_T), ("CLIMAX", ch.CLIMAX_T), ("RELEASE", ch.RELEASE_T)):

@@ -10,21 +10,17 @@ black_hole_track.export_config()).
 import json
 import os
 
-import anim_engine as ae
 import black_hole_track as bh
 import choreography as ch
+import pipeline
 from calibrate import world_rotations
 from r6_rig import PART_ORDER, PART_SIZES
 
 OUT_HZ = 30
 
 
-def build_frames(choreo_fn, secondary_motion, out_hz=OUT_HZ):
-    keyframes, phases, preview_times, engine_opts = choreo_fn()
-    duration = max(k["time"] for k in keyframes)
-    objs = ae.build_rig()
-    ae.apply_choreography(objs, keyframes, **engine_opts)
-    samples = ae.sample(objs, duration_s=duration, sample_hz=out_hz, secondary_motion=secondary_motion)
+def build_frames(out_hz=OUT_HZ):
+    samples, duration = pipeline.build_samples(sample_hz=out_hz)
 
     n = len(samples["HumanoidRootPart"])
     frames = []
@@ -46,7 +42,7 @@ def build_frames(choreo_fn, secondary_motion, out_hz=OUT_HZ):
 
 
 def main():
-    char_frames, char_dur = build_frames(ch.character_track, ch.SECONDARY_MOTION)
+    char_frames, char_dur = build_frames()
 
     out = {
         "fps": OUT_HZ,
@@ -67,6 +63,15 @@ def main():
             "land_t": ch.LAND_T,
             "recover_t": ch.RECOVER_T,
             "idle_out_end": ch.IDLE_OUT_END,
+            # beats ajoutes par la refonte (cerveau d'animateur) -- lus par
+            # capture_shots.py, le lecteur ne s'en sert pas
+            "wind_t": ch.WIND_T,
+            "push_t": ch.PUSH_T,
+            "toe_off_t": ch.TOE_OFF_T,
+            "v_t": ch.V_T,
+            "curl_hold_t": ch.CURL_HOLD_T,
+            "burst_t": ch.BURST_T,
+            "t_settle_t": ch.T_SETTLE_T,
         },
     }
     path = os.environ.get("SCENE_OUT", "/tmp/black_hole_scene_data.json")

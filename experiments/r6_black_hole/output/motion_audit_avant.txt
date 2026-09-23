@@ -1,0 +1,26 @@
+Audit mouvement -- 8.233s @ 60.0 Hz -- 4/25 criteres OK
+  OK  overlap sync Torso <- root                              0.333   cible <= 0.35
+  XX  overlap sync Head <- Torso                                0.6   cible <= 0.35
+  XX  overlap retard median Head <- Torso                      -0.5   cible [1.0, 4.0] frames
+  XX  overlap sync Left Arm <- Torso                            0.6   cible <= 0.35
+  XX  overlap retard median Left Arm <- Torso                   0.5   cible [1.0, 6.0] frames
+  OK  overlap sync Left Leg <- Torso                            0.0   cible <= 0.35
+  XX  overlap retard median Left Leg <- Torso                  -2.5   cible [1.0, 6.0] frames
+  XX  overlap sync Right Arm <- Torso                           0.6   cible <= 0.35
+  XX  overlap retard median Right Arm <- Torso                  0.5   cible [1.0, 6.0] frames
+  OK  overlap sync Right Leg <- Torso                           0.0   cible <= 0.35
+  XX  overlap retard median Right Leg <- Torso                 -2.5   cible [1.0, 6.0] frames
+  XX  arrets simultanes                                        0.35   cible <= 0.3
+  XX  miroir quasi exact Right Arm/Left Arm                   0.844   cible <= 0.5
+  XX  correlation vitesses G/D Right Arm/Left Arm             0.993   cible <= 0.9
+  XX  miroir quasi exact Right Leg/Left Leg                     1.0   cible <= 0.5
+  XX  correlation vitesses G/D Right Leg/Left Leg               1.0   cible <= 0.9
+  XX  planarite Torso                                         0.998   cible <= 0.85
+  XX  planarite Head                                            1.0   cible <= 0.85
+  XX  boucle hover root_y purete freq                         0.985   cible <= 0.8
+  XX  boucle hover root_y CV intervalles                      0.009   cible >= 0.06
+  XX  glissement pied Right Leg                               0.751   cible <= 0.1
+  XX  glissement pied Left Leg                                0.754   cible <= 0.1
+  OK  discontinuites de vitesse hors snaps declares               0   cible == 0
+  XX  desequilibre (CdM hors appui)                           0.277   cible <= 0.1
+  XX  holds morts                                             0.051   cible <= 0.05

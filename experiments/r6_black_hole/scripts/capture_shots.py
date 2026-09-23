@@ -33,16 +33,19 @@ VFX = DATA["black_hole"]["vfx_events"]
 # (nom_fichier, instant en TEMPS DE POSE)
 SHOTS = [
     ("00-garde", 0.3),
-    ("01-crouch", KT["crouch_hold_t"]),
-    ("02-liftoff", KT["rise_t"] + 0.05),
-    ("03-hold-debris", KT["rise_t"] + (KT["hold_end_t"] - KT["rise_t"]) * 0.5),
-    ("04-flash-formation", VFX["disk_form"]["t0"] + 0.06),  # preuve du flash surexpose jour->nuit (voir README)
-    ("05-disk-forming", VFX["disk_form"]["t0"] + 0.3),
-    ("06-climax", KT["climax_t"]),
-    ("07-collapse", VFX["collapse"]["t0"] + 0.2),
-    ("08-landing", KT["land_t"] + 0.1),
-    ("09-recover", KT["recover_t"] + 0.3),
-    ("10-fondu-final", DATA["duration"] - 0.05),  # preuve du fondu au noir de cloture (voir README)
+    ("01-armement", KT["wind_t"]),                     # ref 12
+    ("02-accroupi", KT["crouch_hold_t"]),              # ref 13-14
+    ("03-jaillissement", KT["toe_off_t"]),             # decollage, jambes qui se deplient en l'air
+    ("04-lancer-bras", KT["rise_t"]),                  # ref 16-17
+    ("05-vol-en-V", 3.2),                              # ref 18-20
+    ("06-recroqueville", KT["curl_hold_t"]),           # ref 21-22
+    ("07-flash-ouverture", KT["burst_t"] + 0.03),      # ref 23 -- le geste declenche le flash
+    ("08-T-disque", KT["t_settle_t"] + 0.1),           # ref 24-25
+    ("09-climax-lutte", KT["climax_t"]),
+    ("10-implosion", KT["climax_t"] + (KT["land_t"] - KT["climax_t"]) * 0.45),
+    ("11-atterrissage", KT["land_t"] + 0.1),
+    ("12-coup-oeil", KT["recover_t"] + 0.5),
+    ("13-fondu-final", DATA["duration"] - 0.05),
 ]
 
 
@@ -61,7 +64,12 @@ def main():
             real_t = page.evaluate("(pt) => window.__poseToReal(pt)", pose_t)
             page.evaluate("(t) => { window.__setSimTime(t); window.__render(); }", real_t)
             path = os.path.join(OUT_DIR, f"{DATE}-black-hole-{name}.png")
-            page.screenshot(path=path)
+            # capture de l'ELEMENT (canvas 3D + surimpression 2D), pas de la
+            # fenetre : le canvas commence ~290 px sous le haut de la page,
+            # une capture de fenetre 1200x900 coupait le bas du cadre (le
+            # personnage paraissait rogne au climax alors que le spectateur
+            # le voit entier).
+            page.locator(".viewport-wrap").screenshot(path=path)
             print(f"  {name:16s} pose_t={pose_t:6.3f}  real_t={real_t:6.3f}  -> {path}")
 
         browser.close()

@@ -494,41 +494,128 @@ lévitation, VFX OK.
 10 captures existantes (00, 02, 03, 06, 09 changées visuellement ; 01
 transformée de illisible à lisible) recapturées et revues une par une.
 
+### Refonte : « pourquoi tout a l'air mécanique dans tes rendus ? » → cerveau d'animateur (2026-09-23)
+
+Retour direct, puis : *« go et sois vraiment minutieux dans ta construction,
+le projet derrière c'est un cerveau d'animateur Roblox »*. La réponse a été
+construite comme un outil réutilisable : **`experiments/_shared/animator_brain/`**
+(voir son README : principes → outils → mesures, conventions R6 prouvées,
+leçons des jambes rigides, recette). Ce prototype en est le premier client.
+
+**Diagnostic chiffré de la version précédente** : audit du mouvement, et plus
+seulement des images (`output/motion_audit_avant.*`), **4/25 critères**.
+Quatre défauts de fond qu'aucune capture fixe n'avait montrés :
+
+1. **Poses inversées** (`describe_pose`). Le crouch « plié vers l'avant »
+   penchait **70° en arrière**. Les « bras écartés » croisaient les mains
+   devant la poitrine. Climax, release et atterrissage penchaient en arrière.
+   Cause : la convention `Torso X+ = avant` n'avait jamais été vérifiée.
+   C'est l'inverse, prouvé par FK et par la decal `face` du rig
+   (Face=5 = Front = −Z).
+2. **Pieds qui glissent** : 2,96 studs pendant le crouch (bassin fixe en
+   x/z). `calibrate.py` ne mesurait que la hauteur des pieds.
+3. **Tout le corps clé à la même frame** : graphe « chaîne de pics », toutes
+   les articulations partent à la frame 30 et culminent ensemble.
+4. **Symétrie et métronome** : gauche = miroir exact de droite (84 % du temps
+   pour les bras, 100 % pour les jambes), colonne sur un seul axe (0,998),
+   vol en sinus pur (pureté 0,985).
+
+**Reconstruction** (`choreography.py` réécrit, `pipeline.py`, `audit_motion.py`,
+`export_roblox.py`) :
+
+- **Beats relus dans la référence, frame par frame** (planches 1-57) :
+  armement en torsion (12), accroupissement bras droit haut derrière (13-14),
+  bras lancés l'un **après** l'autre (16-17), vol en V (18-20),
+  **recroquevillement bras croisés** (21-22, absent de la version
+  précédente), **ouverture = flash** (23-25). Le flash du VFX
+  (`disk_form.t0`) est calé **pile** sur l'ouverture du corps (`BURST_T`) :
+  c'est le geste qui déclenche le flash.
+- **Poses au sol en IK** (`_grounded`) : profondeur sous le maximum
+  atteignable, pieds plantés à ~1e-9 stud, **équilibre obligatoire** (le
+  centre de masse doit rester au-dessus des appuis, erreur sinon). La
+  recherche en grille a montré que le crouch R6 équilibré se fait pieds côte
+  à côte, torse plié de 60 à 75° et bassin qui recule.
+- **Pistes par membre + chevauchement par phase** (`OVERLAP_RULES`) : qui
+  mène chaque geste (bassin au sol, bras gauche au lancer, bras à
+  l'ouverture, pieds à l'atterrissage) ; retards de 1 à 4 frames.
+- **Cycles organiques** (garde, vol, T, respiration) au lieu de sinus fixes ;
+  graine et fréquence propres à chaque membre.
+- **Ressorts différenciés** par membre. Torse et jambes en l'air seulement.
+- **Contraintes par échantillon** : `foot_lock_pass` à hauteur de bassin
+  préservée, `look_at_pass` pour le coup d'œil final par-dessus l'épaule
+  gauche.
+- **Climax repensé** : le vortex est DERRIÈRE lui (`BLACK_HOLE_CENTER`
+  z = +1,6, le commentaire d'origine disait « devant », même erreur de
+  repère). Le personnage **lutte** contre l'aspiration, penché en avant,
+  puis l'implosion le projette vers l'avant. La caméra est recalée sur ces
+  beats, avec les mêmes règles (azimut croissant, élévation en un seul arc).
+
+**Ce que la construction a révélé et corrigé**, chaque fois par la mesure,
+jamais à l'œil :
+
+- **Décollage R6** : une jambe rigide ne peut pas pousser jusqu'à
+  l'extension. La hanche décrit un arc, et l'IK près de l'extension devient
+  singulière (le bassin balaie latéralement en quelques frames). → Il **jaillit du crouch** à mi-poussée, et les
+  jambes se déplient en l'air, avec un relâchement progressif de l'angle IK
+  vers la courbe clé. La vitesse verticale du bassin est maintenant
+  **monotone** : 0,4 → 12,2 → 15,3 studs/s, puis décélère jusqu'à l'apogée
+  (mesuré à 60 Hz). Avant cette correction, il y avait une « double pompe » :
+  9,5 → 1 → 29 studs/s.
+- **Ressort démarré en plein mouvement à vitesse nulle** : cassure de
+  vitesse. → Il hérite de la vitesse de la cible (`anim_engine`).
+- **Torse qui traîne au sol** : le bassin faisait un aller-retour de
+  plusieurs dixièmes de stud au redressement. → Ressort du torse en l'air seulement, avec
+  retour progressif.
+- **Atterrissage** : un pied pas encore posé plaçait déjà le bassin (saut de
+  16 studs/s, puis 12,8 après un premier correctif). → Seuls les pieds porteurs placent le bassin, avec un
+  transfert de poids progressif sur 3 frames, et un pied qui arrive ne passe
+  jamais sous le sol.
+- **Regard vers une cible pile derrière** : bascule gauche/droite en un
+  échantillon (49× la vitesse normale de la tête). → Cône borné et hystérésis, cible derrière-gauche.
+
+**Résultat** (même code d'audit, `output/motion_audit_{avant,apres}.*`) :
+**4/25 → 23/23**. Tête +2,5 frames derrière le torse, bras +2,5 / +3,5 ;
+0,6 % du temps en miroir ; planarité du torse 0,83 ; glissement des pieds
+0,002 stud ; 0 % hors équilibre ; 0 discontinuité hors snaps déclarés
+(jaillissement, ouverture). `calibrate.py` (réécrit : **chaque**
+échantillon, hauteur **et** dérive horizontale des appuis) : écart max
+0,0001 stud, aucun clipping, VFX OK.
+
+**Export Roblox** : `output/black_hole_r6.rbxmx` (KeyframeSequence,
+248 clés, 30 Hz). Mouvement d'ensemble replié sur le RootJoint, translation =
+écart au repos (3,000 studs mesurés par FK). L'aller-retour par l'équation
+du moteur avec les C0/C1 réels (`resolve_rbxmx`) retrouve l'aperçu à
+**0,0001 stud** près.
+
+Capture : `capture_shots.py` capture maintenant l'**élément** canvas. Une
+capture de fenêtre 1200×900 coupait le bas du cadre (le personnage paraissait
+rogné au climax alors que le spectateur le voit entier).
+
 ## Vérification (captures)
 
-11 captures committées dans `captures/verification/`, toutes vérifiées
-par moi-même en ouvrant chaque image (jamais un rapport d'agent pris au
-mot, voir sections ci-dessus) :
+Captures committées dans `captures/verification/`, toutes ouvertes et
+relues une par une. Chaque capture montre le **canvas entier** (élément,
+pas la fenêtre) :
 
-- `2026-09-23-black-hole-00-garde.png` — attente vivante, personnage
-  centré, ciel bleu clair de jour (pas de mur), conforme aux frames
-  025/030/033 de la référence.
-- `2026-09-23-black-hole-01-crouch.png` — accroupissement, caméra basse
-  et proche (dramatisation), torse penché nettement visible, toujours
-  en plein jour.
-- `2026-09-23-black-hole-02-liftoff.png` — décollage, bras qui
-  commencent à s'écarter, séparation tête/torse visible.
-- `2026-09-23-black-hole-03-hold-debris.png` — lévitation soutenue,
-  bras écartés, une dizaine de fragments de sol clairement visibles en
-  train de flotter/tournoyer autour du personnage, ciel encore diurne.
-- `2026-09-23-black-hole-04-flash-formation.png` — instant du flash de
-  formation, overlay blanc cassé quasi plein cadre, silhouette du disque
-  naissant visible dessous — reproduit la frame 034 de la référence.
-- `2026-09-23-black-hole-05-disk-forming.png` — juste après le flash,
-  ciel déjà basculé côté nuit, disque en formation (halo doré, cœur noir
-  visible en son centre), débris et traînées convergeant.
-- `2026-09-23-black-hole-06-climax.png` — plan extrême sur le disque,
-  ambiance nocturne cosmique pleinement installée : cœur sphérique noir
-  net, anneau doré autour, traînées blanches en spirale, vignette qui
-  assombrit le fond — le plus proche du langage visuel de la référence.
-- `2026-09-23-black-hole-07-collapse.png` — effondrement, disque encore
-  large mais net (cœur + anneau + traînées bien lisibles), toujours nuit.
-- `2026-09-23-black-hole-08-landing.png` — atterrissage, pose
-  d'absorption de l'impact, vignette déjà retombée, ciel qui recommence
-  à basculer vers le jour.
-- `2026-09-23-black-hole-09-recover.png` — pose de clôture distincte
-  (essoufflement, bras asymétriques), ciel revenu diurne.
-- `2026-09-23-black-hole-10-fondu-final.png` — dernière image avant la
-  fin du clip, quasi entièrement noire (fondu de clôture délibéré).
+- `2026-09-23-black-hole-00-garde.png` : garde vivante, tête tournée, ciel de jour.
+- `2026-09-23-black-hole-01-armement.png` : torse qui plonge, bras droit qui part derrière (réf. 12).
+- `2026-09-23-black-hole-02-accroupi.png` : torse plié vers l'avant, bras droit haut derrière, pieds plantés (réf. 13-14).
+- `2026-09-23-black-hole-03-jaillissement.png` : il a quitté le sol, jambes qui se déplient, bras gauche qui mène.
+- `2026-09-23-black-hole-04-lancer-bras.png` : bras lancés, corps étiré (réf. 16-17).
+- `2026-09-23-black-hole-05-vol-en-V.png` : bras en V, jambes pendantes, débris qui montent (réf. 18-20).
+- `2026-09-23-black-hole-06-recroqueville.png` : bras croisés devant la poitrine, genoux montés (réf. 21-22).
+- `2026-09-23-black-hole-07-flash-ouverture.png` : le flash sur la silhouette qui s'ouvre (réf. 23).
+- `2026-09-23-black-hole-08-T-disque.png` : bras en T, découpé devant le disque qui naît derrière lui (réf. 24-25).
+- `2026-09-23-black-hole-09-climax-lutte.png` : il résiste, penché en avant, devant le vortex.
+- `2026-09-23-black-hole-10-implosion.png` : projeté vers l'avant par l'implosion.
+- `2026-09-23-black-hole-11-atterrissage.png` : amorti, bassin bas, bras ouverts pour l'équilibre.
+- `2026-09-23-black-hole-12-coup-oeil.png` : redressé, coup d'œil par-dessus l'épaule.
+- `2026-09-23-black-hole-13-fondu-final.png` : fondu au noir de clôture.
+- `2026-09-23-black-hole-cerveau-chaine-pics-avant-apres.png` : **preuve de mouvement**. Vitesse de
+  chaque articulation dans le temps, pics marqués. Avant : tout culmine ensemble. Après : cascade
+  bassin → jambes → torse → tête → bras.
+- `2026-09-23-black-hole-cerveau-profil-avant-apres.png` : **preuve de mouvement**. Profil en
+  pelures d'oignon avec trajectoires. Avant : tête qui part en arrière, mains en ligne droite
+  confondues (jumelles), pieds qui glissent. Après : arcs, mains décalées, pieds plantés.
 
 Publié : https://claude.ai/artifact/RN3Xb145T8ptNBHxSvQQRT

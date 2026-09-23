@@ -1,0 +1,422 @@
+{
+  "duration_s": 8.233,
+  "sample_hz": 60.0,
+  "overlap": {
+    "Torso <- root": {
+      "n": 6,
+      "median_frames": 2.0,
+      "mean_abs_frames": 3.42,
+      "sync_fraction": 0.0
+    },
+    "Head <- Torso": {
+      "n": 7,
+      "median_frames": 2.5,
+      "mean_abs_frames": 2.64,
+      "sync_fraction": 0.143
+    },
+    "Left Arm <- Torso": {
+      "n": 7,
+      "median_frames": 2.5,
+      "mean_abs_frames": 2.29,
+      "sync_fraction": 0.143
+    },
+    "Left Leg <- Torso": {
+      "n": 4,
+      "median_frames": 2.5,
+      "mean_abs_frames": 3.5,
+      "sync_fraction": 0.0
+    },
+    "Right Arm <- Torso": {
+      "n": 7,
+      "median_frames": 3.5,
+      "mean_abs_frames": 3.79,
+      "sync_fraction": 0.0
+    },
+    "Right Leg <- Torso": {
+      "n": 3,
+      "median_frames": 3.5,
+      "mean_abs_frames": 4.83,
+      "sync_fraction": 0.0
+    }
+  },
+  "stop_clusters": {
+    "stops": 39,
+    "clustered": 8,
+    "clustered_fraction": 0.205
+  },
+  "symmetry": {
+    "Right Arm/Left Arm": {
+      "mirror_dist_mean_studs": 0.811,
+      "mirror_near_fraction": 0.006,
+      "speed_corr": 0.751,
+      "peak_lag_LR": {
+        "n": 8,
+        "median_frames": -1.25,
+        "mean_abs_frames": 1.62,
+        "sync_fraction": 0.125
+      }
+    },
+    "Right Leg/Left Leg": {
+      "mirror_dist_mean_studs": 0.678,
+      "mirror_near_fraction": 0.01,
+      "speed_corr": 0.764,
+      "peak_lag_LR": {
+        "n": 5,
+        "median_frames": -2.0,
+        "mean_abs_frames": 2.1,
+        "sync_fraction": 0.0
+      }
+    }
+  },
+  "planarity": {
+    "Torso": {
+      "dominant_axis_share": 0.83,
+      "dominant_axis": [
+        -0.99,
+        0.06,
+        0.11
+      ]
+    },
+    "Head": {
+      "dominant_axis_share": 0.762,
+      "dominant_axis": [
+        -0.95,
+        -0.31,
+        0.08
+      ]
+    }
+  },
+  "loops": {
+    "idle": {
+      "root_y": {
+        "peaks": 1,
+        "dominant_cycles_in_window": 1,
+        "note": "fenetre < 3 cycles : purete non applicable"
+      },
+      "Right Arm speed": {
+        "peaks": 2,
+        "dominant_cycles_in_window": 2,
+        "note": "fenetre < 3 cycles : purete non applicable"
+      },
+      "Left Arm speed": {
+        "peaks": 1,
+        "dominant_cycles_in_window": 1,
+        "note": "fenetre < 3 cycles : purete non applicable"
+      }
+    },
+    "hover": {
+      "root_y": {
+        "peaks": 1,
+        "dominant_cycles_in_window": 1,
+        "note": "fenetre < 3 cycles : purete non applicable"
+      },
+      "Right Arm speed": {
+        "peaks": 1,
+        "dominant_cycles_in_window": 1,
+        "note": "fenetre < 3 cycles : purete non applicable"
+      },
+      "Left Arm speed": {
+        "peaks": 1,
+        "dominant_cycles_in_window": 1,
+        "note": "fenetre < 3 cycles : purete non applicable"
+      }
+    },
+    "idle_out": {
+      "root_y": {
+        "peaks": 0,
+        "dominant_cycles_in_window": 1,
+        "note": "fenetre < 3 cycles : purete non applicable"
+      },
+      "Right Arm speed": {
+        "peaks": 0,
+        "dominant_cycles_in_window": 1,
+        "note": "fenetre < 3 cycles : purete non applicable"
+      },
+      "Left Arm speed": {
+        "peaks": 2,
+        "dominant_cycles_in_window": 1,
+        "note": "fenetre < 3 cycles : purete non applicable"
+      }
+    }
+  },
+  "contacts": {
+    "Right Leg": {
+      "contacts": 2,
+      "worst_skate_studs": 0.001,
+      "min_height_studs": -0.001,
+      "runs": [
+        {
+          "t0": 0.0,
+          "t1": 1.85,
+          "skate_max_studs": 0.0
+        },
+        {
+          "t0": 6.917,
+          "t1": 8.233,
+          "skate_max_studs": 0.001
+        }
+      ]
+    },
+    "Left Leg": {
+      "contacts": 2,
+      "worst_skate_studs": 0.002,
+      "min_height_studs": -0.0,
+      "runs": [
+        {
+          "t0": 0.0,
+          "t1": 1.85,
+          "skate_max_studs": 0.0
+        },
+        {
+          "t0": 6.967,
+          "t1": 8.233,
+          "skate_max_studs": 0.002
+        }
+      ]
+    }
+  },
+  "balance": {
+    "grounded_samples": 195,
+    "outside_fraction": 0.0,
+    "worst_outside_studs": 0.223
+  },
+  "pops": {
+    "root (lin.)": {
+      "pops": [
+        [
+          4.917,
+          33
+        ],
+        [
+          4.95,
+          33
+        ]
+      ],
+      "fast_moves": [
+        [
+          1.867,
+          50
+        ]
+      ],
+      "worst_ratio": 4.23
+    },
+    "Torso": {
+      "pops": [
+        [
+          1.817,
+          33
+        ]
+      ],
+      "fast_moves": [
+        [
+          4.967,
+          83
+        ]
+      ],
+      "worst_ratio": 8.41
+    },
+    "Head": {
+      "pops": [],
+      "fast_moves": [
+        [
+          7.2,
+          50
+        ],
+        [
+          7.35,
+          67
+        ]
+      ],
+      "worst_ratio": 6.29
+    },
+    "Left Arm": {
+      "pops": [],
+      "fast_moves": [],
+      "worst_ratio": 3.96
+    },
+    "Left Leg": {
+      "pops": [],
+      "fast_moves": [
+        [
+          1.883,
+          67
+        ],
+        [
+          1.95,
+          50
+        ]
+      ],
+      "worst_ratio": 4.71
+    },
+    "Right Arm": {
+      "pops": [],
+      "fast_moves": [],
+      "worst_ratio": 3.82
+    },
+    "Right Leg": {
+      "pops": [],
+      "fast_moves": [
+        [
+          1.883,
+          67
+        ]
+      ],
+      "worst_ratio": 4.29
+    }
+  },
+  "frozen_fraction": 0.0,
+  "intended_snaps": [
+    [
+      1.7666666666666666,
+      1.8666666666666667
+    ],
+    [
+      4.866666666666667,
+      5.033333333333333
+    ]
+  ],
+  "verdict": [
+    {
+      "metric": "overlap sync Torso <- root",
+      "value": 0.0,
+      "target": "<= 0.35",
+      "ok": true
+    },
+    {
+      "metric": "overlap sync Head <- Torso",
+      "value": 0.143,
+      "target": "<= 0.35",
+      "ok": true
+    },
+    {
+      "metric": "overlap retard median Head <- Torso",
+      "value": 2.5,
+      "target": "[1.0, 4.0] frames",
+      "ok": true
+    },
+    {
+      "metric": "overlap sync Left Arm <- Torso",
+      "value": 0.143,
+      "target": "<= 0.35",
+      "ok": true
+    },
+    {
+      "metric": "overlap retard median Left Arm <- Torso",
+      "value": 2.5,
+      "target": "[1.0, 6.0] frames",
+      "ok": true
+    },
+    {
+      "metric": "overlap sync Left Leg <- Torso",
+      "value": 0.0,
+      "target": "<= 0.35",
+      "ok": true
+    },
+    {
+      "metric": "overlap retard median Left Leg <- Torso",
+      "value": 2.5,
+      "target": "[1.0, 6.0] frames",
+      "ok": true
+    },
+    {
+      "metric": "overlap sync Right Arm <- Torso",
+      "value": 0.0,
+      "target": "<= 0.35",
+      "ok": true
+    },
+    {
+      "metric": "overlap retard median Right Arm <- Torso",
+      "value": 3.5,
+      "target": "[1.0, 6.0] frames",
+      "ok": true
+    },
+    {
+      "metric": "overlap sync Right Leg <- Torso",
+      "value": 0.0,
+      "target": "<= 0.35",
+      "ok": true
+    },
+    {
+      "metric": "overlap retard median Right Leg <- Torso",
+      "value": 3.5,
+      "target": "[1.0, 6.0] frames",
+      "ok": true
+    },
+    {
+      "metric": "arrets simultanes",
+      "value": 0.205,
+      "target": "<= 0.3",
+      "ok": true
+    },
+    {
+      "metric": "miroir quasi exact Right Arm/Left Arm",
+      "value": 0.006,
+      "target": "<= 0.5",
+      "ok": true
+    },
+    {
+      "metric": "correlation vitesses G/D Right Arm/Left Arm",
+      "value": 0.751,
+      "target": "<= 0.9",
+      "ok": true
+    },
+    {
+      "metric": "miroir quasi exact Right Leg/Left Leg",
+      "value": 0.01,
+      "target": "<= 0.5",
+      "ok": true
+    },
+    {
+      "metric": "correlation vitesses G/D Right Leg/Left Leg",
+      "value": 0.764,
+      "target": "<= 0.9",
+      "ok": true
+    },
+    {
+      "metric": "planarite Torso",
+      "value": 0.83,
+      "target": "<= 0.85",
+      "ok": true
+    },
+    {
+      "metric": "planarite Head",
+      "value": 0.762,
+      "target": "<= 0.85",
+      "ok": true
+    },
+    {
+      "metric": "glissement pied Right Leg",
+      "value": 0.001,
+      "target": "<= 0.1",
+      "ok": true
+    },
+    {
+      "metric": "glissement pied Left Leg",
+      "value": 0.002,
+      "target": "<= 0.1",
+      "ok": true
+    },
+    {
+      "metric": "discontinuites de vitesse hors snaps declares",
+      "value": 0,
+      "target": "== 0",
+      "ok": true
+    },
+    {
+      "metric": "desequilibre (CdM hors appui)",
+      "value": 0.0,
+      "target": "<= 0.1",
+      "ok": true
+    },
+    {
+      "metric": "holds morts",
+      "value": 0.0,
+      "target": "<= 0.05",
+      "ok": true
+    }
+  ],
+  "score": {
+    "ok": 23,
+    "total": 23
+  }
+}

@@ -1,450 +1,515 @@
 """
-Identite : competence solo "Black Hole" -- pas de combo, pas de cible, un
-seul personnage qui s'accroupit (anticipation), se releve en levitation
-avec les bras largement ecartes (geste telekinesique), maintient la pose
-pendant que des fragments du sol sont arraches et convergent vers un
-point central (script separe, voir black_hole_track.py) jusqu'a former un
-disque d'accretion + un coeur noir, encaisse un pic de tension (la
-gravitation le tire vers l'avant), puis se pose au sol et se detend.
+Trou noir -- choregraphie du personnage, reconstruite avec le cerveau
+d'animateur (experiments/_shared/animator_brain, voir son README).
 
-Reference fournie par l'utilisateur (pas une demande texte -- une VRAIE
-capture video, 14.16s/60fps/888x1240, "Black Hole Ability", Roblox
-Studio, extraite frame par frame via ffmpeg, PAS juste survolee) :
-analyse complete au README ("Recherche"), resume ici pour justifier
-chaque choix de pose ci-dessous :
-  R1. Position de depart : personnage debout normal, bras le long du
-      corps (frame ~0.25s).
-  R2. Anticipation : accroupissement marque, torse plie vers l'avant,
-      camera tres basse/proche pour la dramatisation (frame ~3.25s).
-  R3. Relevement explosif + bras ECARTES A L'HORIZONTALE (pas levés au-
-      dessus de la tete -- un vrai T-pose lateral, style "telekinesie"),
-      le personnage DECOLLE du sol (frame ~5s/6.25s) ; des fragments du
-      sol/decor sont arraches et flottent autour de lui.
-  R4. Plan large : la camera s'eloigne, les fragments se regroupent en
-      amas au-dessus du sol (frame ~7.5s), le personnage hors cadre.
-  R5. Formation du trou noir : un anneau lumineux jaune/or (disque
-      d'accretion) apparait au centre de l'amas, coeur spherique NOIR au
-      milieu, fond de scene qui s'assombrit fortement (vignette quasi
-      totale), trainees blanches radiales qui spiralent VERS le disque
-      (frames ~8.75s a 11.75s -- le plus long segment de la reference).
-  R6. Fondu au noir final (fin de la capture, ~13.5-14s) -- coupe plutot
-      qu'une vraie resolution filmee ; la suite (retour au sol, sortie de
-      pose) est une decision de conception ASSUMEE de cette session, pas
-      lue dans la reference (voir README).
+Pourquoi une refonte complete (2026-09-23, retour "pourquoi tout a l'air
+mecanique dans tes rendus ?") -- audit chiffre de la version precedente
+(output/motion_audit_avant.*) : 7/30 criteres, et 4 defauts de fond que
+AUCUNE capture fixe ne montrait :
+  1. POSES INVERSEES. describe_pose() : le "crouch torse plie vers
+     l'avant" penchait le personnage 70 deg en ARRIERE ; les "bras ecartes
+     a l'horizontale" croisaient les mains devant la poitrine ; climax,
+     release, landing : penches en arriere au lieu d'en avant. Cause :
+     convention d'axes supposee (Torso X+ = avant) jamais verifiee --
+     c'est l'inverse (X+ = ARRIERE, prouve par poses.conventions_selftest).
+  2. PIEDS QUI GLISSENT : 2.96 studs pendant le crouch (bassin fixe en
+     x/z, jambes rigides pivotees a la main) -- calibrate.py ne mesurait
+     que la hauteur des pieds.
+  3. TOUT LE CORPS CLE A LA MEME FRAME : zero chevauchement, arrets
+     simultanes (graphe "chaine de pics").
+  4. SYMETRIE + METRONOME : gauche = miroir exact de droite, colonne sur
+     un seul axe, boucles en sinus pur (purete de frequence 0.99).
 
-Difference structurelle avec TOUS les prototypes precedents de ce depot
-(rock_kick, hit_combo, solar_smite, divine_orb...) : le personnage QUITTE
-LE SOL entierement pendant la levitation (R3-R5) -- jusqu'ici
-`calibrate.py` ne verifiait QUE des poses au sol. Ce prototype ajoute
-donc un 2e mode de verification (personnage explicitement AERIEN, pas de
-pied au sol attendu) plutot que d'elargir la tolerance jusqu'a ce que le
-check au sol se taise -- voir calibrate.py.
+Construction de cette version (chaque point -> un outil du cerveau) :
+  - poses cles relues EN MOTS (describe_pose) contre la reference ;
+  - poses au sol resolues en IK (plant_pose_at_height) : pieds plantes a
+    l'erreur ~1e-9 stud, equilibre verifie (centre de masse au-dessus des
+    appuis) ; passe foot_lock sur CHAQUE echantillon pendant les appuis ;
+  - pistes par membre + decalages de cles par phase (overlap, sens de la
+    chaine de pilotage de CHAQUE geste -- voir OVERLAP_RULES) ;
+  - cycles d'attente/vol organiques (organic_keys, graine par membre) ;
+  - ressorts de mouvement secondaire differencies par membre ;
+  - regard contraint (look_at_pass) pour le coup d'oeil final.
 
-Lecons du depot deja etablies, reappliquees sans nouveau retour :
-  - JAMAIS de hold plat sur une pose d'ATTENTE (garde initiale, retour
-    final) -- _idle_stance_span(). Le nouvel equivalent aerien
-    (_levitate_span()) applique le meme principe en vol : un hover
-    parfaitement immobile ne se lit pas comme une vraie levitation.
-  - Un vrai hold (coil) reste gele -- l'accroupissement (R2) et le pic de
-    tension (avant R6) sont de vrais holds, pas juste des poses de
-    passage.
-  - Placement des pieds verifie par cinematique directe
-    (grounded_root_y_balanced), jamais un offset Y constant, pour toutes
-    les phases AU SOL.
-  - Solveur de ressort ANALYTIQUE EXACT (anim_engine._spring_chase,
-    voir r6_solar_smite) pour le secondary motion -- pas d'integration
-    d'Euler.
+Beats tires de la reference (frames extraites, lues une par une) :
+  11      garde, sourire, tete legerement tournee
+  12      armement : torsion, un bras part en arriere, l'autre croise
+  13-14   accroupissement profond : torse plie, un bras haut derriere,
+          l'autre replie devant, tete rentree et inclinee
+  16-17   decollage : bras LANCES vers le haut l'un APRES l'autre (un
+          vertical au-dessus de la tete, l'autre en diagonale), corps
+          etire, tete en arriere
+  18-20   vol : bras en V, jambes pendantes ramenees ("assis dans le vide")
+  21-22   RECROQUEVILLEMENT EN L'AIR : bras croises devant la poitrine,
+          genoux montes, tete baissee (le beat que la version precedente
+          n'avait pas du tout)
+  23      FLASH -- le corps s'ouvre d'un coup
+  24-25   bras en T, jambes tendues, etincelles
+  -> ici le flash du VFX (disk_form.t0) est cale PILE sur l'ouverture du
+     corps (BURST_T) : c'est le geste qui declenche le flash, pas l'inverse.
+
+Repere : AVANT = -Z, DROITE = +X (decal "face" du rig sur Face=5 =
+Front). BLACK_HOLE_CENTER est a z=+1.6 = DERRIERE et au-dessus du
+personnage (le commentaire d'origine disait "devant" -- meme erreur de
+convention) ; conserve volontairement : camera de face, le personnage se
+decoupe devant le vortex (comme les frames 23-24 de la reference), et le
+climax devient une LUTTE lisible (aspire vers l'arriere, il resiste
+penche en avant) puis l'implosion le projette vers l'avant.
 """
 import math
+import os
+import sys
 
 import numpy as np
 
-from r6_rig import JOINTS, PART_SIZES, joint_for_part
+_HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(_HERE, "..", "..", "_shared"))
 
+import r6_rig  # noqa: E402
+from animator_brain import constraints as C  # noqa: E402
+from animator_brain import organic as O  # noqa: E402
+from animator_brain import tracks as TR  # noqa: E402
+from animator_brain.rig_math import Rig  # noqa: E402
+
+RIG = Rig.from_module(r6_rig)
+PARTS = list(r6_rig.PART_ORDER)
 REST = (0.0, 0.0, 0.0)
-SNAP = 1 / 30
 
 
 def _fr(n):
     return n / 30.0
 
 
-# ---------------------------------------------------------------------
-# Cinematique directe partagee (copiee -- convention du depot : jamais
-# d'import croise entre prototypes isoles).
-def _euler_xyz_matrix(rx_deg, ry_deg, rz_deg):
-    rx, ry, rz = math.radians(rx_deg), math.radians(ry_deg), math.radians(rz_deg)
-    cx, sx = math.cos(rx), math.sin(rx)
-    cy, sy = math.cos(ry), math.sin(ry)
-    cz, sz = math.cos(rz), math.sin(rz)
-    Rx = np.array([[1, 0, 0], [0, cx, -sx], [0, sx, cx]])
-    Ry = np.array([[cy, 0, sy], [0, 1, 0], [-sy, 0, cy]])
-    Rz = np.array([[cz, -sz, 0], [sz, cz, 0], [0, 0, 1]])
-    return Rx @ Ry @ Rz
-
-
-def grounded_root_y(torso_rot, leg_rot, leg_part, target_y=0.0):
-    joint = joint_for_part(leg_part)
-    c0 = np.array(JOINTS[joint]["C0"]["pos"])
-    c1 = np.array(JOINTS[joint]["C1"]["pos"])
-    r_torso = _euler_xyz_matrix(*torso_rot)
-    r_leg_local = _euler_xyz_matrix(*leg_rot)
-    leg_local_pos = c0 - r_leg_local @ c1
-    r_leg_world = r_torso @ r_leg_local
-    half = PART_SIZES[leg_part][1] / 2.0
-    tip_offset_y = (r_torso @ leg_local_pos + r_leg_world @ np.array([0.0, -half, 0.0]))[1]
-    return target_y - tip_offset_y
-
-
-def grounded_root_y_balanced(torso_rot, left_rot, right_rot, target_y=0.0):
-    y_left = grounded_root_y(torso_rot, left_rot, "Left Leg", target_y)
-    y_right = grounded_root_y(torso_rot, right_rot, "Right Leg", target_y)
-    return (y_left + y_right) / 2.0
-
-
-def lerp3(a, b, f):
-    return tuple(a[i] + f * (b[i] - a[i]) for i in range(3))
-
-
-def lerp_legs(a, b, f):
-    return {k: lerp3(a[k], b[k], f) for k in a}
-
-
-def _kf(time, root_pos=(0.0, 3.0, 0.0), HumanoidRootPart=REST, Torso=REST,
-        Head=REST, **legs_arms):
-    d = {"time": time, "root_pos": root_pos, "HumanoidRootPart": HumanoidRootPart,
-         "Torso": Torso, "Head": Head}
-    d.update(legs_arms)
-    return d
-
-
-# -- Attente vivante au sol (voir docstring de module) : jamais un hold plat.
-def _idle_stance_kf(t, root_pos, humanoid_root_part, base_torso, base_head, base_legs, base_arms, phase,
-                     amp_leg=3.0, amp_torso=2.0):
-    s, c = math.sin(phase), math.cos(phase)
-    legs = {
-        "Right Leg": (base_legs["Right Leg"][0], base_legs["Right Leg"][1], base_legs["Right Leg"][2] + amp_leg * s),
-        "Left Leg": (base_legs["Left Leg"][0], base_legs["Left Leg"][1], base_legs["Left Leg"][2] - amp_leg * s),
-    }
-    torso = (base_torso[0], base_torso[1] + amp_torso * c, base_torso[2])
-    root_y = grounded_root_y_balanced(torso, legs["Left Leg"], legs["Right Leg"])
-    x, _, z = root_pos
-    return _kf(t, root_pos=(x, root_y, z), HumanoidRootPart=humanoid_root_part,
-               Torso=torso, Head=base_head, **legs, **base_arms)
-
-
-def _idle_stance_span(t0, t1, root_pos, humanoid_root_part, base_torso, base_head, base_legs, base_arms,
-                       period=0.6, phase0=0.0, amp_leg=3.0, amp_torso=2.0):
-    kfs = []
-    half_period = period / 2.0
-    n = max(1, round((t1 - t0) / half_period))
-    for i in range(n + 1):
-        t = t0 + (t1 - t0) * i / n
-        phase = phase0 + (t - t0) / period * 2 * math.pi
-        a_leg, a_torso = (0.0, 0.0) if i in (0, n) else (amp_leg, amp_torso)
-        kfs.append(_idle_stance_kf(t, root_pos, humanoid_root_part, base_torso, base_head, base_legs, base_arms,
-                                    phase, a_leg, a_torso))
-    return kfs
-
-
-# -- Hover aerien (nouveau -- aucun prototype precedent n'a de phase ou
-# le personnage quitte reellement le sol) : meme principe que l'attente
-# vivante au sol (jamais un hold plat), mais le "sol de reference" pour
-# grounded_root_y_balanced est REMPLACE par LEVITATE_Y (le personnage
-# ne touche plus Y=0) et l'amplitude porte sur les BRAS/TORSE (le vent
-# de la gravitation qui les fait osciller), pas sur les jambes (elles
-# pendent, ballantes, pas d'appui a simuler).
-def _levitate_kf(t, root_pos, humanoid_root_part, base_torso, base_head, base_legs, base_arms, phase,
-                  levitate_y, amp_arm=4.0, amp_bob=0.12):
-    s, c = math.sin(phase), math.cos(phase)
-    arms = {
-        "Right Arm": (base_arms["Right Arm"][0], base_arms["Right Arm"][1], base_arms["Right Arm"][2] + amp_arm * s),
-        "Left Arm": (base_arms["Left Arm"][0], base_arms["Left Arm"][1], base_arms["Left Arm"][2] - amp_arm * s),
-    }
-    x, _, z = root_pos
-    root_y = levitate_y + amp_bob * c
-    return _kf(t, root_pos=(x, root_y, z), HumanoidRootPart=humanoid_root_part,
-               Torso=base_torso, Head=base_head, **base_legs, **arms)
-
-
-def _levitate_span(t0, t1, root_pos, humanoid_root_part, base_torso, base_head, base_legs, base_arms,
-                    levitate_y, period=0.9, phase0=0.0, amp_arm=4.0, amp_bob=0.12):
-    kfs = []
-    half_period = period / 2.0
-    n = max(1, round((t1 - t0) / half_period))
-    for i in range(n + 1):
-        t = t0 + (t1 - t0) * i / n
-        phase = phase0 + (t - t0) / period * 2 * math.pi
-        a_arm, a_bob = (0.0, 0.0) if i in (0, n) else (amp_arm, amp_bob)
-        kfs.append(_levitate_kf(t, root_pos, humanoid_root_part, base_torso, base_head, base_legs, base_arms,
-                                 phase, levitate_y, a_arm, a_bob))
-    return kfs
-
-
 # =======================================================================
-# Disposition : un seul personnage, centre (pas de mannequin -- meme
-# convention "fonctionne seul" que r6_rock_kick pour la sequence
-# principale, mais ici il n'y a litteralement personne a frapper : la
-# reference elle-meme ne montre qu'un seul personnage).
+# Chronologie. Les ancres historiques (RISE_T, HOLD_END_T, CLIMAX_T,
+# RELEASE_T, LAND_T...) sont INCHANGEES : black_hole_track.py (VFX), la
+# camera du lecteur et calibrate.py en dependent. Les nouveaux beats sont
+# inseres entre elles.
 # =======================================================================
-CHAR_X = 0.0
-CHAR_Z0 = 0.0
-
-_READY_TORSO = (0, 0, 0)
-_READY_HEAD = (0, 0, 0)
-_READY_LEGS = {"Right Leg": (0, 0, 4), "Left Leg": (0, 0, -4)}
-_READY_ARMS = {"Right Arm": (4, 0, -4), "Left Arm": (4, 0, 4)}
-
-# =======================================================================
-# Phase 0 -- debout normal, attente vivante (R1). Allongee suite a un
-# retour explicite ("manque de frame d'un debut" -- 0.6s ne laissait pas
-# le temps a un plan d'etablissement de se lire avant que tout s'enchaine,
-# voir aussi la caméra plus bas : elle glissait deja vers le crouch des
-# t=0, jamais un vrai plan fixe).
-# =======================================================================
-T0_END = _fr(30)  # 1.0s -- vrai plan d'etablissement tenu (etait 0.6s/18 frames)
-
-
-def phase0_idle():
-    return _idle_stance_span(0.0, T0_END, (CHAR_X, 0, CHAR_Z0), REST,
-                              _READY_TORSO, _READY_HEAD, _READY_LEGS, _READY_ARMS,
-                              period=0.6, phase0=0.0, amp_leg=3.0, amp_torso=2.0)
-
-
-_READY_ROOT_Y = grounded_root_y_balanced(_READY_TORSO, _READY_LEGS["Left Leg"], _READY_LEGS["Right Leg"])
-
-# =======================================================================
-# Phase CROUCH -- accroupissement marque, torse plie vers l'avant (R2).
-# Vrai hold au fond (CROUCH_HOLD_T) : l'anticipation doit se lire comme
-# un vrai gel, pas un passage.
-# =======================================================================
-CROUCH_T = T0_END + _fr(15)        # 0.5s -- descente lisible, pas un snap
-CROUCH_HOLD_T = CROUCH_T + _fr(9)  # hold bref (0.3s), assez pour se lire
-
-CROUCH_TORSO = (70, 0, 0)
-CROUCH_HEAD = (40, 0, 0)
-CROUCH_LEGS = {"Right Leg": (32, 0, 15), "Left Leg": (32, 0, -15)}
-# -- bras balayes en ARRIERE et legerement releves (comme un sprinter au
-# starting-block, PAS tucked contre le corps) : corrige suite a un retour
-# explicite ("manque d'exageration", revu contre la reference -- frame
-# ~3.25s montre les bras loin derriere le torse, pas replies pres du
-# corps comme la version precedente).
-CROUCH_ARMS = {"Right Arm": (-38, 0, -22), "Left Arm": (-38, 0, 22)}
-CROUCH_ROOT_Y = grounded_root_y_balanced(CROUCH_TORSO, CROUCH_LEGS["Left Leg"], CROUCH_LEGS["Right Leg"])
-
-
-def phase_crouch():
-    return [
-        _kf(CROUCH_T, root_pos=(CHAR_X, CROUCH_ROOT_Y, CHAR_Z0), Torso=CROUCH_TORSO, Head=CROUCH_HEAD,
-            **CROUCH_LEGS, **CROUCH_ARMS),
-        _kf(CROUCH_HOLD_T, root_pos=(CHAR_X, CROUCH_ROOT_Y, CHAR_Z0), Torso=CROUCH_TORSO, Head=CROUCH_HEAD,
-            **CROUCH_LEGS, **CROUCH_ARMS),
-    ]
-
-
-# =======================================================================
-# Phase RISE -- relevement EXPLOSIF, bras ecartes a l'horizontale style
-# telekinesie (R3, pas un lever au-dessus de la tete comme solar_smite --
-# geste different, delibere). Le personnage DECOLLE : LEVITATE_Y > 0,
-# mesure au-dessus du sol, pas un offset arbitraire -- calcule comme
-# l'ecart entre la pose CROUCH (au sol) et une hauteur de vol choisie.
-# =======================================================================
-RISE_T = CROUCH_HOLD_T + _fr(11)  # 0.37s -- release rapide, contraste avec le hold
-
-# -- clearance des pieds : PAS un offset choisi a la main sur root_pos.y
-# (piege trouve en verifiant : une valeur "qui semble haute" comme 3.2
-# peut correspondre a une clearance de pieds quasi NULLE selon l'angle
-# des jambes -- grounded_root_y_balanced(pose) donne deja la valeur de
-# root_pos.y qui pose les pieds PILE sur Y=0 pour CETTE pose ; la vraie
-# hauteur de vol est root_pos.y moins CETTE valeur, pas moins Y=0).
-# clearance choisie desroissante RISE > CLIMAX > RELEASE > LAND(=0) :
-# le personnage "descend" progressivement a mesure que le trou noir le
-# tire vers le bas, jusqu'a toucher terre a LAND_T.
-RISE_CLEARANCE = 2.4     # nette prise d'altitude, lisible a l'ecran (R3 : decollage franc)
-CLIMAX_CLEARANCE = 1.3   # deja tire vers le bas par la gravitation, mais encore clairement en l'air
-RELEASE_CLEARANCE = 0.5  # sur le point de toucher terre
-
-RISE_TORSO = (-22, 0, 0)
-RISE_HEAD = (-24, 0, 0)
-RISE_LEGS = {"Right Leg": (10, 0, 18), "Left Leg": (10, 0, -18)}
-# -- bras releves en angle (~30 deg au-dessus de l'horizontale, pas un T
-# plat) : corrige contre la reference (frame ~5-6.25s -- les bras
-# montent nettement au-dessus de l'horizontale, pas paralleles au sol).
-RISE_ARMS = {"Right Arm": (28, 0, -80), "Left Arm": (28, 0, 80)}
-LEVITATE_ROOT_Y = grounded_root_y_balanced(RISE_TORSO, RISE_LEGS["Left Leg"], RISE_LEGS["Right Leg"]) + RISE_CLEARANCE
-
-
-def phase_rise():
-    return [_kf(RISE_T, root_pos=(CHAR_X, LEVITATE_ROOT_Y, CHAR_Z0), Torso=RISE_TORSO, Head=RISE_HEAD,
-                **RISE_LEGS, **RISE_ARMS)]
-
-
-# =======================================================================
-# Phase HOLD -- levitation soutenue, bras ecartes, hover vivant (R3-R4 :
-# c'est pendant cette fenetre que les fragments se regroupent et que le
-# disque d'accretion se forme -- voir black_hole_track.py, synchronise
-# sur les memes instants). Duree la plus longue de la sequence,
-# deliberement (R5 : le segment le plus long de la reference).
-# =======================================================================
-HOLD_END_T = RISE_T + 3.4  # 3.4s de vol soutenu -- le temps que les debris convergent (voir black_hole_track.py)
-
-
-def phase_hold():
-    # [1:] : phase_rise() pose deja un keyframe identique a RISE_T, on
-    # evite le doublon (harmless pour Blender mais inutile).
-    return _levitate_span(RISE_T, HOLD_END_T, (CHAR_X, 0, CHAR_Z0), REST,
-                           RISE_TORSO, RISE_HEAD, RISE_LEGS, RISE_ARMS,
-                           levitate_y=LEVITATE_ROOT_Y, period=1.0, phase0=0.0, amp_arm=8.0, amp_bob=0.35)[1:]
-
-
-# =======================================================================
-# Phase CLIMAX -- pic de tension : le trou noir atteint sa pleine
-# intensite, la gravitation tire visiblement le personnage (bras qui se
-# resserrent, torse qui penche vers l'avant/le centre, tete baissee --
-# oppose au relachement grand-ouvert de RISE/HOLD, pour que le pic se
-# LISE comme un pic, pas une simple continuation).
-# =======================================================================
-CLIMAX_T = HOLD_END_T + _fr(20)  # 0.67s -- transition lente vers la tension, pas un snap (on VEUT que ça se lise comme un effort qui monte)
-
-CLIMAX_TORSO = (26, 0, 0)
-CLIMAX_HEAD = (18, 0, 0)
-CLIMAX_LEGS = {"Right Leg": (16, 0, 10), "Left Leg": (16, 0, -10)}
-CLIMAX_ARMS = {"Right Arm": (32, 0, -48), "Left Arm": (32, 0, 48)}
-CLIMAX_ROOT_Y = grounded_root_y_balanced(CLIMAX_TORSO, CLIMAX_LEGS["Left Leg"], CLIMAX_LEGS["Right Leg"]) + CLIMAX_CLEARANCE
-
-
-def phase_climax():
-    return [_kf(CLIMAX_T, root_pos=(CHAR_X, CLIMAX_ROOT_Y, CHAR_Z0), Torso=CLIMAX_TORSO, Head=CLIMAX_HEAD,
-                **CLIMAX_LEGS, **CLIMAX_ARMS)]
-
-
-# =======================================================================
-# Phase RELEASE -- le trou noir s'effondre (R6), dernier a-coup
-# gravitationnel avant relachement, puis DESCENTE (decision de
-# conception assumee -- la reference coupe avant de montrer une fin,
-# voir docstring de module) : le personnage revient au sol, absorbe
-# l'atterrissage (jambes flechies), puis retour a une attente vivante
-# identique a phase0_idle (boucle lisible).
-# =======================================================================
-RELEASE_T = CLIMAX_T + _fr(6)  # 0.2s -- l'a-coup final est rapide, presque un snap
-
-RELEASE_TORSO = (50, 0, 0)
-RELEASE_HEAD = (30, 0, 0)
-RELEASE_LEGS = {"Right Leg": (20, 0, 7), "Left Leg": (20, 0, -7)}
-RELEASE_ARMS = {"Right Arm": (44, 0, -20), "Left Arm": (44, 0, 20)}
-RELEASE_ROOT_Y = grounded_root_y_balanced(RELEASE_TORSO, RELEASE_LEGS["Left Leg"], RELEASE_LEGS["Right Leg"]) + RELEASE_CLEARANCE
-
-LAND_T = RELEASE_T + _fr(14)  # 0.47s de descente jusqu'au contact
-
-LAND_TORSO = (24, 0, 0)
-LAND_HEAD = (12, 0, 0)
-LAND_LEGS = {"Right Leg": (18, 0, 8), "Left Leg": (18, 0, -8)}  # jambes flechies, absorbent l'impact
-LAND_ARMS = {"Right Arm": (18, 0, -16), "Left Arm": (18, 0, 16)}
-LAND_ROOT_Y = grounded_root_y_balanced(LAND_TORSO, LAND_LEGS["Left Leg"], LAND_LEGS["Right Leg"])
-
-RECOVER_T = LAND_T + _fr(10)  # 0.33s -- se redresse
-
-# -- pose de cloture DISTINCTE de la garde initiale (etait quasi
-# identique -- retour explicite : "manque de frame ... d'une fin", pas
-# de plan de cloture qui se lise comme un vrai point final). Legerement
-# essouffle (torse encore penche, tete encore basse) ET asymetrique (bras
-# droit encore leve/tendu, echo de la main qui portait le trou noir ;
-# gauche deja retombe) -- communique "quelque chose vient de se passer",
-# pas un simple retour a zero comme si de rien n'etait.
-RECOVER_TORSO = (10, 0, 0)
-RECOVER_HEAD = (6, 0, 0)
-RECOVER_LEGS = {"Right Leg": (4, 0, 6), "Left Leg": (4, 0, -5)}
-RECOVER_ARMS = {"Right Arm": (16, 0, -14), "Left Arm": (5, 0, 5)}
-RECOVER_ROOT_Y = grounded_root_y_balanced(RECOVER_TORSO, RECOVER_LEGS["Left Leg"], RECOVER_LEGS["Right Leg"])
-
-
-def phase_release_land():
-    return [
-        _kf(RELEASE_T, root_pos=(CHAR_X, RELEASE_ROOT_Y, CHAR_Z0), Torso=RELEASE_TORSO, Head=RELEASE_HEAD,
-            **RELEASE_LEGS, **RELEASE_ARMS),
-        _kf(LAND_T, root_pos=(CHAR_X, LAND_ROOT_Y, CHAR_Z0), Torso=LAND_TORSO, Head=LAND_HEAD,
-            **LAND_LEGS, **LAND_ARMS),
-        _kf(RECOVER_T, root_pos=(CHAR_X, RECOVER_ROOT_Y, CHAR_Z0), Torso=RECOVER_TORSO, Head=RECOVER_HEAD,
-            **RECOVER_LEGS, **RECOVER_ARMS),
-    ]
-
-
-IDLE_OUT_END = RECOVER_T + _fr(30)  # 1s d'attente vivante finale, jamais un hold plat
-
-
-def phase_idle_out():
-    return _idle_stance_span(RECOVER_T, IDLE_OUT_END, (CHAR_X, 0, CHAR_Z0), REST,
-                              RECOVER_TORSO, RECOVER_HEAD, RECOVER_LEGS, RECOVER_ARMS,
-                              period=0.6, phase0=0.0, amp_leg=2.5, amp_torso=1.5)[1:]  # [1:] : evite un keyframe double a RECOVER_T
-
-
-def character_track():
-    keyframes = (phase0_idle() + phase_crouch() + phase_rise() + phase_hold()
-                 + phase_climax() + phase_release_land() + phase_idle_out())
-    phases = [
-        {"name": "garde", "t0": 0.0, "t1": CROUCH_T, "expected_reversals": {}},
-        {"name": "accroupissement", "t0": CROUCH_T, "t1": RISE_T, "expected_reversals": {}},
-        {"name": "levitation", "t0": RISE_T, "t1": CLIMAX_T, "expected_reversals": {}},
-        {"name": "climax_effondrement", "t0": CLIMAX_T, "t1": LAND_T, "expected_reversals": {}},
-        {"name": "atterrissage_attente", "t0": LAND_T, "t1": IDLE_OUT_END, "expected_reversals": {}},
-    ]
-    preview_times = [0.0, CROUCH_T, CROUCH_HOLD_T, RISE_T, HOLD_END_T, CLIMAX_T, RELEASE_T, LAND_T, RECOVER_T,
-                      IDLE_OUT_END]
-    engine_opts = {"handle_type": "AUTO_CLAMPED"}
-    return keyframes, phases, preview_times, engine_opts
-
-
+T0_END = _fr(30)                    # 1.000  fin du plan d'etablissement
+INHALE_T = T0_END + _fr(3)          # 1.100  contre-anticipation (se grandit avant de descendre)
+WIND_T = T0_END + _fr(9)            # 1.300  armement (torsion, bras qui partent)
+CROUCH_T = T0_END + _fr(15)         # 1.500  accroupissement atteint
+CROUCH_HOLD_T = CROUCH_T + _fr(9)   # 1.800  fin du hold (qui continue de se tasser)
+PUSH_T = CROUCH_HOLD_T + _fr(2)     # 1.867  mi-poussee (torse a moitie deroule)
+TOE_OFF_T = CROUCH_HOLD_T + _fr(4)  # 1.933  jambes tendues sous lui (deja en l'air, voir CONTACTS)
+RISE_T = CROUCH_HOLD_T + _fr(11)    # 2.167  extreme du lancer (corps etire, bras en l'air)
+V_T = RISE_T + _fr(10)              # 2.500  bras qui se posent en V
+HOLD_END_T = RISE_T + 3.4           # 5.567  debut de l'aspiration
+CLIMAX_T = HOLD_END_T + _fr(20)     # 6.233  lutte maximale
+RELEASE_T = CLIMAX_T + _fr(6)       # 6.433  implosion -> projete vers l'avant
+LAND_T = RELEASE_T + _fr(14)        # 6.900  contact au sol
+ABSORB_T = LAND_T + _fr(4)          # 7.033  amorti le plus bas
+RECOVER_T = LAND_T + _fr(10)        # 7.233  se redresse
+IDLE_OUT_END = RECOVER_T + _fr(30)  # 8.233
 TOTAL_DURATION = IDLE_OUT_END
 
-# =======================================================================
-# Fenetres AERIENNES -- design intent pour calibrate.py : entre RISE_T et
-# LAND_T le personnage est EXPLICITEMENT cense ne plus toucher le sol
-# (pas une anomalie a rattraper par une tolerance plus large -- voir
-# calibrate.py, nouveau mode de verification "aerien").
-# =======================================================================
+VFX_EVENTS = {
+    "debris_launch": {"t0": RISE_T, "t1": RISE_T + 0.8},
+    "debris_gather": {"t0": RISE_T + 0.8, "t1": HOLD_END_T},
+    "disk_form": {"t0": HOLD_END_T - 0.6, "t1": HOLD_END_T + 0.5},
+    "climax": {"t0": CLIMAX_T - 0.3, "t1": CLIMAX_T + 0.3},
+    "collapse": {"t0": RELEASE_T, "t1": LAND_T},  # borne a LAND_T (verifie par calibrate.py)
+}
+BURST_T = VFX_EVENTS["disk_form"]["t0"]  # 4.967 -- l'ouverture du corps EST le flash
+CURL_IN_T = BURST_T - _fr(17)            # 4.400  commence a se replier
+CURL_T = BURST_T - _fr(8)                # 4.700  recroqueville
+CURL_HOLD_T = BURST_T - _fr(2)           # 4.900  serre encore (hold vivant), puis explose
+T_SETTLE_T = BURST_T + _fr(7)            # 5.200  bras qui se posent en T
+
 AIRBORNE_WINDOW = {"t0": RISE_T, "t1": LAND_T}
 
 # =======================================================================
-# Timeline VFX -- ce que le disque d'accretion/coeur noir/debris doivent
-# faire, synchronise sur la chorégraphie (voir black_hole_track.py qui
-# consomme ces constantes -- rien n'est improvise cote VFX/viewer).
+# Appuis. Garde legerement large ("power stance") -- valeur tiree de la
+# recherche d'equilibre (voir README) : pieds cote a cote, un peu plus
+# ecartes que le repos, c'est la configuration ou un R6 a jambes rigides
+# peut s'accroupir profondement SANS glisser ET avec le centre de masse
+# au-dessus des pieds. Leger decalage avant/arriere (asymetrie).
 # =======================================================================
-VFX_EVENTS = {
-    "debris_launch": {"t0": RISE_T, "t1": RISE_T + 0.8},       # les fragments s'arrachent du sol
-    "debris_gather": {"t0": RISE_T + 0.8, "t1": HOLD_END_T},   # ils convergent vers le centre
-    "disk_form": {"t0": HOLD_END_T - 0.6, "t1": HOLD_END_T + 0.5},  # le disque/coeur apparaissent (chevauche legerement la fin du gather -- pas un pop instantane)
-    "climax": {"t0": CLIMAX_T - 0.3, "t1": CLIMAX_T + 0.3},
-    "collapse": {"t0": RELEASE_T, "t1": LAND_T},      # fondu au noir / consommation finale -- borne a LAND_T (pas RELEASE_T+constante) : le VFX doit finir PILE a l'atterrissage, jamais deborder dessus (verifie par calibrate.py)
+FEET_START = {"Right Leg": (0.77, 0.0, -0.03), "Left Leg": (-0.77, 0.0, 0.03)}
+# Atterrissage : projete vers l'avant par l'implosion, il retombe un peu
+# devant son point de depart, le pied droit legerement en avant.
+FEET_LAND = {"Right Leg": (0.74, 0.0, -0.52), "Left Leg": (-0.76, 0.0, -0.40)}
+_LG = {"Right Leg": (20.0, 0.0, 3.0), "Left Leg": (20.0, 0.0, -3.0)}
+
+CONTACTS = [
+    # DECOLLAGE R6 : les pieds quittent le sol a PUSH_T, jambes encore
+    # flechies -- le personnage JAILLIT du crouch et les jambes s'etendent
+    # EN L'AIR. Une jambe R6 est rigide (pas de genou) : pivotant sur un
+    # pied plante, la hanche decrit un ARC dont la vitesse verticale tombe
+    # a zero pres de la verticale (tout le mouvement devient horizontal).
+    # Garder les pieds au sol jusqu'a pleine extension imposait au bassin
+    # 0.55 stud de balayage horizontal en UNE frame (mesure, trace du
+    # solveur) ; une poussee verticale acceleree jusqu'a l'extension est
+    # geometriquement impossible sans genou. C'est aussi ce que montre la
+    # reference (frames 15-16 : deja en l'air, jambes qui trainent).
+    # blend_out=0 : a PUSH_T la pose cle est resolue par l'IK, la
+    # correction y est nulle -> aucune discontinuite.
+    {"leg": "Right Leg", "t0": 0.0, "t1": PUSH_T, "target": FEET_START["Right Leg"], "blend_out": 0.0,
+     "leg_release_blend": _fr(5)},
+    {"leg": "Left Leg", "t0": 0.0, "t1": PUSH_T, "target": FEET_START["Left Leg"], "blend_out": 0.0,
+     "leg_release_blend": _fr(4)},
+    {"leg": "Right Leg", "t0": LAND_T, "t1": IDLE_OUT_END + 1.0, "target": FEET_LAND["Right Leg"]},
+    {"leg": "Left Leg", "t0": LAND_T + _fr(3), "t1": IDLE_OUT_END + 1.0, "target": FEET_LAND["Left Leg"],
+     "blend_in": _fr(3)},
+]
+
+GROUNDED_REPORT = {}
+BALANCE_TOL = 0.08
+
+
+def _grounded(name, torso, depth, xz_guess, feet, upper, support=None):
+    """Pose au sol construite comme avec un rig a jambes IK :
+    - `depth` = de combien le bassin descend SOUS sa hauteur maximale
+      atteignable pour ce torse et ces appuis (0 = jambes tendues) --
+      calculee par pelvis_height_range, jamais une hauteur absolue devinee ;
+    - pieds plantes exactement (IK), bassin place par le solveur ;
+    - EQUILIBRE OBLIGATOIRE : centre de masse au-dessus des appuis a
+      BALANCE_TOL pres, sinon erreur (jamais une pose qui "tombe").
+    Toute violation leve une erreur -- jamais une pose silencieusement fausse.
+    NB torsion (Torso Y) volontairement faible au sol : en R6 le torse EST
+    le bassin (pas d'articulation de colonne) ; tordre le torse tord les
+    hanches, et avec les pieds plantes le bassin part en diagonale (mesure :
+    1.36 stud de derive laterale a -8 deg). L'asymetrie passe par les bras,
+    la tete et l'inclinaison laterale."""
+    rng = C.pelvis_height_range(RIG, torso, feet, step=0.01)
+    if rng is None:
+        raise ValueError(f"{name}: aucune hauteur de bassin atteignable pour torse={torso}")
+    pelvis_y = rng[1] - depth
+    root, legs, info = C.plant_pose_at_height(RIG, torso, pelvis_y, xz_guess, feet, _LG)
+    if not info["feasible"] or max(info["foot_error"].values()) > 1e-4:
+        raise ValueError(f"{name}: pose au sol infaisable : torse={torso} bassin={pelvis_y:.2f} ({info})")
+    rots = {"Torso": torso, **legs, **upper}
+    # `support` : appuis a considerer pour l'equilibre. Par defaut les pieds
+    # au sol. Une pose DYNAMIQUE (instant de contact d'un atterrissage :
+    # un seul pied pose, l'autre arrive 2 frames plus tard) declare
+    # explicitement la base d'appui qu'elle rejoint -- exception
+    # documentee, jamais un controle desactive en silence.
+    grounded_legs = support or [l for l in feet if feet[l][1] <= 0.01]
+    if support:
+        feet_eval = {l: (feet[l][0], 0.0, feet[l][2]) for l in feet}
+        _, legs_eval, _ = C.plant_pose_at_height(RIG, torso, pelvis_y, xz_guess, feet_eval, _LG)
+        margin = C.balance_margin(RIG, {"Torso": torso, **legs_eval, **upper}, root, grounded_legs)
+    else:
+        margin = C.balance_margin(RIG, rots, root, grounded_legs)
+    if margin is not None and margin > BALANCE_TOL:
+        raise ValueError(f"{name}: hors equilibre de {margin:.2f} stud (CdM hors des appuis)")
+    GROUNDED_REPORT[name] = {"pelvis_y": round(pelvis_y, 3), "pelvis_max": round(rng[1], 3),
+                             "root": tuple(round(v, 3) for v in root), "balance_margin": round(margin or 0.0, 3)}
+    return {"root_pos": root, **rots}
+
+
+# =======================================================================
+# POSES CLES -- chaque valeur relue avec describe_pose() (sortie dans le
+# README). Conventions : Torso/Head X- = vers l'avant/le bas ; bras X+ =
+# vers l'avant puis le haut ; Right Arm Z+ / Left Arm Z- = ecarte ;
+# Right Arm Z- / Left Arm Z+ = croise devant.
+# =======================================================================
+# -- ref 11 : garde vivante, tete un peu tournee, bras pas symetriques
+P_IDLE = _grounded("IDLE", (-3, 1.5, -2), 0.03, (0.0, 0.0), FEET_START,
+                   {"Head": (-2, 7, 3), "Right Arm": (4, 0, 5), "Left Arm": (-3, 0, -7)})
+# -- contre-anticipation : il se grandit, inspire, avant de plonger
+P_INHALE = _grounded("INHALE", (5, 1, -1), 0.0, (0.0, 0.0), FEET_START,
+                     {"Head": (9, 3, 2), "Right Arm": (9, 0, 11), "Left Arm": (5, 0, -13)})
+# -- ref 12 : armement -- bras droit part en arriere/haut, bras gauche
+# croise devant, tete qui s'incline, torse qui commence a plonger
+P_WIND = _grounded("WIND", (-32, -3, 3), 0.25, (0.0, 0.2), FEET_START,
+                   {"Head": (-10, -9, 14), "Right Arm": (-72, 0, 24), "Left Arm": (48, 0, 22)})
+# -- ref 13-14 : accroupissement profond, torse plie, bras droit HAUT
+# derriere, bras gauche replie devant, tete rentree et inclinee
+P_CROUCH = _grounded("CROUCH", (-64, 0, 4), 0.12, (0.0, 0.0), FEET_START,
+                     {"Head": (-14, -8, 18), "Right Arm": (-128, 0, 18), "Left Arm": (30, 0, 30)})
+# -- hold VIVANT : continue de se tasser (jamais un gel plat)
+P_CROUCH_HOLD = _grounded("CROUCH_HOLD", (-69, -2, 5), 0.16, (0.0, 0.0), FEET_START,
+                          {"Head": (-17, -9, 20), "Right Arm": (-136, 0, 20), "Left Arm": (24, 0, 34)})
+# -- mi-poussee (cle resolue par la meme IK que les autres) : sans elle, le
+# bassin cle montait "en ligne droite" pendant que le torse se deroulait --
+# or en R6 les hanches sont 1 stud SOUS le pivot du torse : deplier le
+# torse de -69 a -18 deg les fait descendre de 0.6 stud, l'IK devait
+# compenser en pleine poussee -> vitesse du bassin 9.5 -> 5.3 -> 8.4
+# studs/s (mesure : a-coup de 3 frames). Avec une cle intermediaire
+# coherente avec la geometrie, la poussee accelere d'un seul tenant.
+P_PUSH = _grounded("PUSH", (-44, 0, 3), 0.36, (0.0, 0.0), FEET_START,
+                   {"Head": (-12, -4, 12), "Right Arm": (-95, 0, 40), "Left Arm": (62, 0, 8)})
+# -- extension EN L'AIR (les pieds ont quitte le sol a PUSH_T, voir
+# CONTACTS) : jambes qui se deplient sous lui (X+ pour compenser le torse
+# encore penche : jambes quasi verticales dans le monde), le haut du corps
+# se deroule ; le bras GAUCHE mene le lancer (ref 16-17), le droit suit.
+# Le bassin CONTINUE sa trajectoire vers l'apogee (x/z interpoles
+# PUSH -> RISE) -- la version "jambes tendues AU SOL" de cette cle lui
+# imposait un detour horizontal (20 studs/s mesures).
+P_TOE_OFF = {"root_pos": (-0.23, 2.99, 0.39), "Torso": (-18, 2, 0),
+             "Head": (-4, 0, 4), "Right Arm": (-35, 0, 72), "Left Arm": (118, 0, -12),
+             "Right Leg": (14, 0, 3), "Left Leg": (17, 0, -3)}
+
+STAND_Y = 3.03                 # bassin jambes tendues, pieds au sol
+LEV_Y = STAND_Y + 2.4          # hauteur de vol (clearance ~2.4 studs, comme avant)
+
+# -- ref 16-17 : extreme du lancer -- corps ETIRE (poitrine ouverte, tete
+# en arriere), bras gauche vertical au-dessus de la tete, bras droit en
+# diagonale haute sur le cote, jambes pendantes serrees qui trainent
+P_RISE = {"root_pos": (0.0, LEV_Y + 0.25, 0.05), "Torso": (14, 14, -8), "Head": (22, -6, -6),
+          "Right Arm": (20, 0, 118), "Left Arm": (170, 0, -8),
+          "Right Leg": (-10, 0, -2), "Left Leg": (-6, 0, 3)}
+# -- ref 18-20 : bras en V (legerement asymetriques, un peu devant),
+# jambes ramenees vers l'avant ("assis dans le vide")
+P_V = {"root_pos": (0.0, LEV_Y, 0.0), "Torso": (5, 6, 4), "Head": (4, 3, -5),
+       "Right Arm": (18, 0, 128), "Left Arm": (12, 0, -121),
+       "Right Leg": (36, 0, 7), "Left Leg": (20, 0, -6)}
+# -- ref 21-22 : recroquevillement -- bras croises devant la poitrine,
+# genoux montes, dos rond, tete baissee
+P_CURL = {"root_pos": (0.0, LEV_Y - 0.15, 0.05), "Torso": (-22, 10, 5), "Head": (-20, 0, 5),
+          "Right Arm": (88, 0, -38), "Left Arm": (84, 0, 42),
+          "Right Leg": (58, 0, 6), "Left Leg": (64, 0, -4)}
+P_CURL_HOLD = {"root_pos": (0.0, LEV_Y - 0.25, 0.05), "Torso": (-27, 13, 6), "Head": (-24, 0, 6),
+               "Right Arm": (90, 0, -44), "Left Arm": (86, 0, 48),
+               "Right Leg": (64, 0, 6), "Left Leg": (70, 0, -4)}
+# -- ref 23-24 : OUVERTURE (= le flash) -- poitrine projetee, bras jetes
+# au-dela du T (un peu en arriere et au-dessus), jambes qui se detendent
+P_BURST = {"root_pos": (0.0, LEV_Y + 0.4, 0.1), "Torso": (16, -8, -4), "Head": (14, 0, 0),
+           "Right Arm": (-12, 0, 100), "Left Arm": (-14, 0, -97),
+           "Right Leg": (-6, 0, 9), "Left Leg": (-8, 0, -8)}
+# -- ref 25 : T pose tenue, tete inclinee (le sourire en coin), bras pas
+# parfaitement a la meme hauteur
+P_T = {"root_pos": (0.0, LEV_Y + 0.15, 0.05), "Torso": (4, -3, -5), "Head": (2, 5, 7),
+       "Right Arm": (0, 0, 88), "Left Arm": (2, 0, -93),
+       "Right Leg": (4, 0, 2), "Left Leg": (2, 0, -3)}
+# -- debut de l'aspiration (le vortex est DERRIERE-au-dessus) : il
+# commence a resister, bras qui reviennent devant
+P_PULL = {"root_pos": (0.0, LEV_Y - 0.1, 0.15), "Torso": (-8, 6, -3), "Head": (-8, -3, 2),
+          "Right Arm": (40, 0, 60), "Left Arm": (35, 0, -55),
+          "Right Leg": (-8, 0, 4), "Left Leg": (-4, 0, -5)}
+# -- CLIMAX : lutte -- penche en avant contre l'aspiration, bras jetes
+# devant en appui, jambes aspirees vers l'arriere, tete qui force
+P_CLIMAX = {"root_pos": (0.0, STAND_Y + 1.5, 0.45), "Torso": (-24, 14, -9), "Head": (-16, -8, 4),
+            "Right Arm": (68, 0, 22), "Left Arm": (58, 0, -34),
+            "Right Leg": (-34, 0, 6), "Left Leg": (-26, 0, -9)}
+# -- RELEASE : implosion, l'aspiration cesse d'un coup -> projete vers
+# l'avant ; le torse fouette, la tete et les bras restent en arriere
+# (ils suivront -- overlap), les jambes passent devant
+P_RELEASE = {"root_pos": (0.0, STAND_Y + 0.6, -0.2), "Torso": (-40, -12, 8), "Head": (10, 4, -3),
+             "Right Arm": (-55, 0, 45), "Left Arm": (-48, 0, -52),
+             "Right Leg": (24, 0, 5), "Left Leg": (30, 0, -6)}
+# -- LAND / ABSORB / RECOVER : au sol, IK sur les appuis d'atterrissage ;
+# bras ouverts devant pour l'equilibre, puis relachement, poids qui se
+# pose, bras droit encore un peu leve (echo du geste).
+# (pied gauche encore 5 cm en l'air a LAND_T : il se pose 3 frames apres
+# le droit, transfert de poids progressif -- un atterrissage n'est jamais
+# sur les deux pieds a la meme frame. 14 cm au premier essai : avec des
+# jambes rigides, le poser a hauteur de bassin fixe forcait 0.6 stud de
+# glissement lateral du bassin en 2 frames.)
+P_LAND = _grounded("LAND", (-35, 2, -3), 0.35, (0.0, 0.0),
+                   {"Right Leg": FEET_LAND["Right Leg"], "Left Leg": (-0.76, 0.05, -0.40)},
+                   {"Head": (-6, 4, 0), "Right Arm": (35, 0, 40), "Left Arm": (48, 0, -30)},
+                   support=["Right Leg", "Left Leg"])
+P_ABSORB = _grounded("ABSORB", (-42, 3, -4), 0.45, (0.0, 0.0), FEET_LAND,
+                     {"Head": (-10, 5, 2), "Right Arm": (22, 0, 30), "Left Arm": (30, 0, -22)})
+# (RECOVER encore 0.16 sous l'extension : il finit de se redresser PENDANT
+# la respiration jusqu'a P_END -- s'arreter net a 0.08 faisait stopper les
+# jambes IK en 2 frames, pres de l'extension l'IK amplifie toute
+# deceleration du bassin : discontinuite mesuree par l'audit.)
+P_RECOVER = _grounded("RECOVER", (-10, 2, 4), 0.16, (0.0, 0.0), FEET_LAND,
+                      {"Head": (-4, 10, -3), "Right Arm": (14, 0, 16), "Left Arm": (2, 0, -5)})
+P_END = _grounded("END", (-4, 1, 3), 0.03, (0.0, 0.0), FEET_LAND,
+                  {"Head": (-2, 12, -2), "Right Arm": (6, 0, 8), "Left Arm": (0, 0, -5)})
+
+KEY_POSES = [
+    (INHALE_T, P_INHALE), (WIND_T, P_WIND), (CROUCH_T, P_CROUCH), (CROUCH_HOLD_T, P_CROUCH_HOLD),
+    (PUSH_T, P_PUSH), (TOE_OFF_T, P_TOE_OFF), (RISE_T, P_RISE), (V_T, P_V),
+    (CURL_IN_T, None),  # fin du cycle de vol organique (valeur = fin du cycle)
+    (CURL_T, P_CURL), (CURL_HOLD_T, P_CURL_HOLD), (BURST_T, P_BURST), (T_SETTLE_T, P_T),
+    (HOLD_END_T, P_PULL), (CLIMAX_T, P_CLIMAX), (RELEASE_T, P_RELEASE),
+    (LAND_T, P_LAND), (ABSORB_T, P_ABSORB), (RECOVER_T, P_RECOVER),
+]
+
+# =======================================================================
+# Cycles organiques (moving holds) -- amplitudes en deg (studs pour la
+# racine), frequences en Hz. Chaque membre a SA frequence et SA graine :
+# jamais deux membres en phase, jamais un sinus pur.
+# =======================================================================
+IDLE_CYCLE = {
+    "root": [{"amp": 0.02, "freq": 0.21}, {"amp": 0.012, "freq": 0.33}, {"amp": 0.015, "freq": 0.17}],
+    "Torso": [{"amp": 1.4, "freq": 0.32}, {"amp": 1.6, "freq": 0.21}, {"amp": 1.0, "freq": 0.27}],
+    "Head": [{"amp": 2.0, "freq": 0.40}, {"amp": 3.0, "freq": 0.23}, {"amp": 1.5, "freq": 0.30}],
+    "Right Arm": [{"amp": 2.5, "freq": 0.35}, {"amp": 1.2, "freq": 0.47}, {"amp": 1.8, "freq": 0.58}],
+    "Left Arm": [{"amp": 2.2, "freq": 0.41}, None, {"amp": 1.8, "freq": 0.33}],
+}
+HOVER_CYCLE = {
+    "root": [{"amp": 0.07, "freq": 0.23}, {"amp": 0.22, "freq": 0.55}, {"amp": 0.08, "freq": 0.19}],
+    "Torso": [{"amp": 3.0, "freq": 0.50}, {"amp": 3.5, "freq": 0.31}, {"amp": 2.5, "freq": 0.43}],
+    "Head": [{"amp": 3.0, "freq": 0.47}, {"amp": 5.0, "freq": 0.26}, {"amp": 3.0, "freq": 0.38}],
+    "Right Arm": [{"amp": 6.0, "freq": 0.58}, None, {"amp": 7.0, "freq": 0.52}],
+    "Left Arm": [{"amp": 5.0, "freq": 0.63}, None, {"amp": 8.0, "freq": 0.49}],
+    "Right Leg": [{"amp": 7.0, "freq": 0.44}, None, {"amp": 3.0, "freq": 0.37}],
+    "Left Leg": [{"amp": 6.0, "freq": 0.51}, None, {"amp": 3.0, "freq": 0.41}],
+}
+T_CYCLE = {
+    "root": [None, {"amp": 0.06, "freq": 0.9}, None],
+    "Right Arm": [{"amp": 2.0, "freq": 1.1}, None, {"amp": 2.5, "freq": 0.95}],
+    "Left Arm": [{"amp": 2.0, "freq": 1.25}, None, {"amp": 2.0, "freq": 1.05}],
+    "Head": [{"amp": 1.5, "freq": 0.8}, {"amp": 2.0, "freq": 0.6}, None],
+}
+BREATH_CYCLE = {  # fin : essouffle -> respiration plus ample que la garde
+    "root": [{"amp": 0.02, "freq": 0.19}, {"amp": 0.03, "freq": 0.62}, {"amp": 0.02, "freq": 0.15}],
+    "Torso": [{"amp": 3.0, "freq": 0.62}, {"amp": 1.5, "freq": 0.2}, {"amp": 1.2, "freq": 0.28}],
+    "Head": [{"amp": 1.5, "freq": 0.62}, None, {"amp": 1.2, "freq": 0.3}],
+    "Right Arm": [{"amp": 2.0, "freq": 0.62}, None, {"amp": 1.5, "freq": 0.34}],
+    "Left Arm": [{"amp": 1.8, "freq": 0.66}, None, {"amp": 1.5, "freq": 0.29}],
 }
 
-# Point central du trou noir (monde) : au-dessus et legerement devant le
-# personnage en vol -- mesure depuis LEVITATE_ROOT_Y (pas une valeur
-# ecrite a la vue), pour que le disque reste coherent si LEVITATE_HEIGHT
-# change un jour.
-BLACK_HOLE_CENTER = np.array([CHAR_X, LEVITATE_ROOT_Y + 4.0, CHAR_Z0 + 1.6])
 
-# -- secondary motion (spring chase, solveur analytique exact -- voir
-# r6_solar_smite/anim_engine._spring_chase) : demarre a CROUCH_HOLD_T
-# (pas RISE_T) -- correction suite a un retour explicite ("le perso dans
-# la fluidite ces mouvement etc") : demarrer le ressort PILE a RISE_T
-# faisait que le relevement crouch->rise lui-meme (le mouvement le plus
-# spectaculaire de toute la sequence) restait une simple interpolation
-# Bezier target-a-target, sans depassement/rebond -- un "snap" propre
-# mais sans poids. En demarrant le ressort des le hold du crouch (cible
-# encore immobile, vitesse nulle), le relevement devient lui-meme
-# "chasse" par le ressort : la cible saute brusquement vers la pose de
-# vol, le ressort accuse un vrai retard + depassement + stabilisation
-# (l'"explosion" du decollage se voit dans le mouvement, pas seulement
-# dans le timing des keyframes) -- puis continue sans interruption
-# pendant toute la levitation/climax/effondrement (meme convention
-# qu'avant : jamais desactive une fois demarre).
-# -- damping_ratio abaisse (0.5/0.4 -> 0.32/0.3) suite au meme retour
-# ("manque d'exageration") : moins de damping = plus de depassement et
-# au moins un rebond visible avant stabilisation, au lieu d'un seul
-# aller-retour a peine perceptible.
+def _cycle_tracks(t0, t1, pose0, pose1, spec, seed, ramp_s=0.3):
+    """Pistes organiques entre deux poses (derive lineaire pose0 -> pose1
+    + cycle par membre). Les membres absents du spec restent sur une
+    interpolation simple pose0 -> pose1."""
+    out = {}
+    for i, part in enumerate(PARTS):
+        key = "root" if part == "HumanoidRootPart" else part
+        if part == "HumanoidRootPart":
+            continue
+        a = pose0.get(part, REST)
+        b = pose1.get(part, REST)
+        chans = spec.get(part)
+        if chans:
+            out[part] = O.organic_keys(t0, t1, a, chans, seed=seed + 17 * i, ramp_s=ramp_s, base_end=b)
+        else:
+            out[part] = [(t0, tuple(a)), (t1, tuple(b))]
+    ra, rb = pose0["root_pos"], pose1["root_pos"]
+    if spec.get("root"):
+        out[TR.ROOT_POS] = O.organic_keys(t0, t1, ra, spec["root"], seed=seed + 999, ramp_s=ramp_s, base_end=rb)
+    else:
+        out[TR.ROOT_POS] = [(t0, tuple(ra)), (t1, tuple(rb))]
+    out["HumanoidRootPart"] = [(t0, REST), (t1, REST)]
+    return out
+
+
+def _pose_tracks(t, pose):
+    out = {p: [(t, tuple(pose.get(p, REST)))] for p in PARTS if p != "HumanoidRootPart"}
+    out["HumanoidRootPart"] = [(t, REST)]
+    out[TR.ROOT_POS] = [(t, tuple(pose["root_pos"]))]
+    return out
+
+
+def _cat(*chunks):
+    out = {}
+    for ch_ in chunks:
+        for k, v in ch_.items():
+            out.setdefault(k, []).extend(v)
+    for k in out:
+        dedup = {}
+        for t, v in out[k]:
+            dedup[round(t, 6)] = (t, v)
+        out[k] = sorted(dedup.values(), key=lambda kv: kv[0])
+    return out
+
+
+# pose de fin du vol en V, juste avant de se replier (derive : les bras
+# commencent a descendre, le corps se tasse d'un rien -- anticipation du
+# recroquevillement)
+P_V_END = dict(P_V, **{"root_pos": (0.0, LEV_Y - 0.05, 0.02), "Torso": (0, 1, 1),
+                        "Right Arm": (30, 0, 112), "Left Arm": (26, 0, -106)})
+
+# =======================================================================
+# OVERLAP -- decalages de cles en frames (30 fps), par phase. Positif = en
+# retard sur le reste du corps. Le sens depend de QUI MENE le geste :
+#  - au sol / armement : le bassin mene (IK), le torse +1, la tete +2,
+#    le bras qui "traine" +3 ;
+#  - decollage : bassin/torse menent, bras GAUCHE mene le lancer (+1),
+#    bras droit +3, tete +3, jambes +3 (dernieres a quitter le sol) ;
+#  - ouverture (BURST) : ce sont les BRAS qui menent (l'energie sort par
+#    eux) : bras 0/+1, torse +1, tete +2, jambes +2 ;
+#  - aspiration/implosion : torse mene, tete +2, bras +2/+3, jambes +3
+#    (trainees par l'aspiration) ;
+#  - atterrissage : les PIEDS menent (contact), torse +1, tete +2, bras
+#    +3/+4 (ils continuent sur leur elan).
+# Les cycles organiques (garde, vol, T, respiration) ont deja leur propre
+# desynchronisation -> pas de decalage supplementaire.
+# =======================================================================
+OVERLAP_RULES = [
+    {"t0": T0_END - 0.01, "t1": CROUCH_HOLD_T - 0.001,
+     "frames": {"Torso": 1, "Head": 2, "Right Arm": 3, "Left Arm": 2}},
+    {"t0": CROUCH_HOLD_T - 0.001, "t1": V_T + 0.001,
+     "frames": {"Head": 3, "Left Arm": 1, "Right Arm": 3, "Right Leg": 3, "Left Leg": 2}},
+    {"t0": CURL_T - 0.001, "t1": CURL_HOLD_T + 0.001,
+     "frames": {"Head": 1, "Right Arm": 2, "Left Arm": 1, "Right Leg": 3, "Left Leg": 1}},
+    {"t0": BURST_T - 0.001, "t1": T_SETTLE_T + 0.001,
+     "frames": {"Torso": 1, "Head": 2, "Right Arm": 1, "Right Leg": 1, "Left Leg": 3}},
+    {"t0": HOLD_END_T - 0.001, "t1": LAND_T - 0.001,
+     "frames": {"Head": 2, "Right Arm": 3, "Left Arm": 2, "Right Leg": 4, "Left Leg": 2}},
+    {"t0": LAND_T - 0.001, "t1": RECOVER_T + 0.001,
+     "frames": {"Head": 2, "Right Arm": 4, "Left Arm": 3}},
+]
+
+
+def character_tracks():
+    """Pistes finales (apres decalages d'overlap) + journal des ajustements."""
+    chunks = [
+        _cycle_tracks(0.0, T0_END - _fr(3), P_IDLE, P_IDLE, IDLE_CYCLE, seed=11, ramp_s=0.25),
+        _cycle_tracks(V_T, CURL_IN_T, P_V, P_V_END, HOVER_CYCLE, seed=23, ramp_s=0.35),
+        _cycle_tracks(T_SETTLE_T, HOLD_END_T, P_T, P_T, T_CYCLE, seed=37, ramp_s=0.12),
+        _cycle_tracks(RECOVER_T, IDLE_OUT_END, P_RECOVER, P_END, BREATH_CYCLE, seed=41, ramp_s=0.3),
+    ]
+    for t, pose in KEY_POSES:
+        if pose is not None:
+            chunks.append(_pose_tracks(t, pose))
+    tracks = _cat(*chunks)
+    return TR.offset_tracks(tracks, OVERLAP_RULES)
+
+
+# =======================================================================
+# Mouvement secondaire (ressorts analytiques, anim_engine._spring_chase) --
+# differencies par membre (jamais deux bras identiques) : le bras droit,
+# plus "lache", depasse plus et plus longtemps. Jambes seulement a partir
+# du decollage (au sol elles sont tenues par l'IK des appuis).
+# =======================================================================
 SECONDARY_MOTION = {
-    "Torso": {"channels": (0, 1, 2), "stiffness": 180.0, "damping_ratio": 0.32, "t_min": CROUCH_HOLD_T},
-    "Head": {"channels": (0, 1, 2), "stiffness": 220.0, "damping_ratio": 0.32, "t_min": CROUCH_HOLD_T},
-    "Right Arm": {"channels": (0, 2), "stiffness": 150.0, "damping_ratio": 0.28, "t_min": CROUCH_HOLD_T},
-    "Left Arm": {"channels": (0, 2), "stiffness": 150.0, "damping_ratio": 0.28, "t_min": CROUCH_HOLD_T},
+    # Torse : ressort seulement une fois en l'air -- au sol il fait partie
+    # du systeme porteur (bassin + torse + jambes resolus ensemble par
+    # l'IK) ; un torse qui "traine" pendant la poussee forcait l'IK a
+    # tirer le bassin de 0.85 stud vers le bas au decollage (mesure).
+    "Torso": {"channels": (0, 1, 2), "stiffness": 320.0, "damping_ratio": 0.55, "t_min": TOE_OFF_T,
+              "t_max": LAND_T - _fr(6), "blend_out": _fr(6)},
+    "Head": {"channels": (0, 1, 2), "stiffness": 230.0, "damping_ratio": 0.42, "t_min": T0_END},
+    "Right Arm": {"channels": (0, 1, 2), "stiffness": 135.0, "damping_ratio": 0.30, "t_min": T0_END},
+    "Left Arm": {"channels": (0, 1, 2), "stiffness": 165.0, "damping_ratio": 0.36, "t_min": T0_END},
+    "Right Leg": {"channels": (0, 2), "stiffness": 110.0, "damping_ratio": 0.34, "t_min": TOE_OFF_T},
+    "Left Leg": {"channels": (0, 2), "stiffness": 125.0, "damping_ratio": 0.38, "t_min": TOE_OFF_T},
 }
+
+# Point central du trou noir : au-dessus et DERRIERE le personnage (z>0,
+# voir docstring de module sur le repere).
+BLACK_HOLE_CENTER = np.array([0.0, LEV_Y + 4.0, 1.6])
+
+# Regard : apres l'atterrissage, il se retourne a moitie vers l'endroit
+# ou etait le vortex (derriere lui) -- dernier beat d'acting.
+LOOK_WINDOWS = [
+    # cible derriere-GAUCHE (x<0 = sa gauche) : un coup d'oeil "par-dessus
+    # l'epaule" a un cote ; une cible pile derriere est ambigue (voir
+    # constraints.head_look_angles).
+    {"t0": RECOVER_T + _fr(4), "t1": IDLE_OUT_END + 1.0,
+     "target": tuple(BLACK_HOLE_CENTER + np.array([-3.5, -3.0, 0.0])), "weight": 0.8},
+]
+
+
+def post_local(local_samples):
+    """Contraintes appliquees sur les echantillons (voir anim_engine.sample) :
+    pieds plantes pendant les appuis, puis regard. Retourne le journal."""
+    log = C.foot_lock_pass(local_samples, RIG, CONTACTS, blend_s=_fr(2), release_eps=0.002)
+    C.look_at_pass(local_samples, RIG, LOOK_WINDOWS)
+    return log
+
+
+# Fenetres pour l'audit (audit_motion.py)
+AUDIT_LOOP_WINDOWS = {
+    "idle": (0.15, T0_END - _fr(4)),
+    "hover": (V_T + 0.3, CURL_IN_T - 0.05),
+    "idle_out": (RECOVER_T + 0.25, IDLE_OUT_END),
+}
+AUDIT_CHART_WINDOW = (T0_END - 0.1, V_T + 0.3)
+# jambes libres (ni appui, ni approche/decollage) : overlap et symetrie des
+# jambes mesures seulement ici (voir animator_brain.audit.overlap_report)
+AUDIT_FREE_LEG_WINDOWS = [(TOE_OFF_T + 0.1, LAND_T - 0.05)]
+# SNAPS VOULUS (declares, jamais deduits apres coup) : le jaillissement hors
+# du crouch et l'ouverture du corps au flash sont des snaps de 1-2 frames
+# par choix d'animation (impact) ; toute autre discontinuite est un defaut.
+AUDIT_INTENDED_SNAPS = [(CROUCH_HOLD_T - _fr(1), PUSH_T), (CURL_HOLD_T - _fr(1), BURST_T + _fr(2))]

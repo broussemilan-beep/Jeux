@@ -155,6 +155,48 @@ def apply_choreography(objs, keyframes, fps=30, handle_type="AUTO_CLAMPED", hand
     return last_frame
 
 
+def apply_tracks(objs, tracks, fps=30, handle_type="AUTO_CLAMPED", root_pos_key="__root_pos__"):
+    """Comme apply_choreography, mais chaque articulation a SES propres
+    instants de cles (format animator_brain.tracks) -- c'est ce qui permet
+    l'overlap : le bras peut culminer 3 frames apres le torse au lieu
+    d'etre cle au meme instant que tout le corps. Meme interpolation
+    Bezier/tangentes que apply_choreography."""
+    scene = bpy.context.scene
+    scene.render.fps = fps
+    scene.frame_start = 0
+    last_t = max(k[0] for keys in tracks.values() for k in keys)
+    scene.frame_end = int(round(last_t * fps)) + 1
+    for part, obj in objs.items():
+        obj.animation_data_clear()
+        obj.animation_data_create()
+        obj.animation_data.action = bpy.data.actions.new(name=f"{part}_action")
+    for part, obj in objs.items():
+        for t, rot in tracks.get(part, [(0.0, (0.0, 0.0, 0.0))]):
+            obj.rotation_euler = tuple(math.radians(a) for a in rot)
+            obj.keyframe_insert(data_path="rotation_euler", frame=t * fps)
+    root = objs.get("HumanoidRootPart")
+    if root is not None:
+        for t, pos in tracks.get(root_pos_key, []):
+            root.location = pos
+            root.keyframe_insert(data_path="location", frame=t * fps)
+    for part, obj in objs.items():
+        action = obj.animation_data.action if obj.animation_data else None
+        if not action:
+            continue
+        for layer in action.layers:
+            for strip in layer.strips:
+                for slot in action.slots:
+                    cb = strip.channelbag(slot)
+                    if cb is None:
+                        continue
+                    for fcurve in cb.fcurves:
+                        for kp in fcurve.keyframe_points:
+                            kp.interpolation = "BEZIER"
+                            kp.handle_left_type = handle_type
+                            kp.handle_right_type = handle_type
+    return scene.frame_end
+
+
 def _spring_chase(times, target, stiffness, damping_ratio, t_min=None):
     """Oscillateur amorti qui "poursuit" une courbe cible -- retard +
     depassement + stabilisation naturels, au lieu de suivre la courbe
@@ -196,7 +238,15 @@ def _spring_chase(times, target, stiffness, damping_ratio, t_min=None):
     f = stiffness ** 0.5
     d = damping_ratio
     pos = target[start_i]
+    # Vitesse initiale = celle de la cible a t_min (jamais 0) : un ressort
+    # qui demarre EN PLEIN mouvement avec une vitesse nulle freine net la
+    # courbe -> cassure de vitesse visible (mesure : "pop" 10x la norme sur
+    # le torse au decollage de r6_black_hole, animator_brain.audit.pops).
     vel = 0.0
+    if start_i > 0:
+        dt0 = times[start_i] - times[start_i - 1]
+        if dt0 > 0:
+            vel = (target[start_i] - target[start_i - 1]) / dt0
     out[start_i] = pos
     EPS = 1e-5
     for i in range(start_i + 1, n):
@@ -242,7 +292,7 @@ def _spring_chase(times, target, stiffness, damping_ratio, t_min=None):
     return out
 
 
-def sample(objs, duration_s, fps=30, sample_hz=60, secondary_motion=None):
+def sample(objs, duration_s, fps=30, sample_hz=60, secondary_motion=None, post_local=None):
     """Echantillonne (rx,ry,rz) [deg, 3 canaux INDEPENDANTS -- voir note de
     module] + location a sample_hz, en avancant la frame de la scene
     (evaluation reelle des F-curves Bezier de Blender). Retourne dict
@@ -283,12 +333,34 @@ def sample(objs, duration_s, fps=30, sample_hz=60, secondary_motion=None):
                 chased[ch] = _spring_chase(
                     times, target, cfg.get("stiffness", 140.0),
                     cfg.get("damping_ratio", 0.8), cfg.get("t_min"))
+                # t_max : fin de la fenetre du ressort, retour en douceur
+                # (smoothstep sur blend_out s) vers la courbe cle -- ex. torse
+                # ressort EN L'AIR seulement : au sol il fait partie du
+                # systeme porteur resolu par l'IK des pieds (un torse qui
+                # traine au sol forcait le bassin a faire un aller-retour de
+                # 0.8 stud au redressement -- mesure r6_black_hole).
+                t_max = cfg.get("t_max")
+                if t_max is not None:
+                    bo = max(1e-6, cfg.get("blend_out", 0.2))
+                    for i, t in enumerate(times):
+                        if t <= t_max:
+                            continue
+                        x = min(1.0, (t - t_max) / bo)
+                        w = x * x * (3 - 2 * x)
+                        chased[ch][i] = chased[ch][i] + w * (target[i] - chased[ch][i])
             for i in range(n):
                 t, rot, pos = local_samples[part][i]
                 rot = list(rot)
                 for ch in channels:
                     rot[ch] = chased[ch][i]
                 local_samples[part][i] = (t, tuple(rot), pos)
+
+    # post_local : passes de contraintes (pieds plantes, regard -- voir
+    # animator_brain.constraints) appliquees APRES les ressorts et AVANT la
+    # cinematique directe, donc rendu, mesures et export voient tous la
+    # meme courbe contrainte.
+    if post_local is not None:
+        post_local(local_samples)
 
     world_positions = _world_positions(local_samples, n)
     for part in objs:

@@ -63,3 +63,13 @@ parent_of = R.parse_prnt_chunk(chunks)                     # hierarchie
 res = R.parse_prop_extended(chunks, classes,
         {("Pose", "CFrame"): "cframe"})                    # CFrame/NumberSequence/...
 ```
+
+## `animator_brain/` — le cerveau d'animateur R6/Roblox
+
+Principes d'animation → outils de construction (pistes par membre et
+chevauchement, cycles organiques, IK des pieds plantés et équilibre, regard) →
+**audit chiffré du mouvement** (chevauchement, symétrie, planarité, boucles,
+glissement, équilibre, discontinuités). Il contient aussi les conventions
+d'axes R6 **prouvées** (`poses.conventions_selftest`) et les leçons propres
+aux jambes rigides du R6. Tout est dans `animator_brain/README.md` ; exemple
+complet : `experiments/r6_black_hole/`.

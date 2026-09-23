@@ -1,0 +1,24 @@
+Audit mouvement -- 8.233s @ 60.0 Hz -- 23/23 criteres OK
+  OK  overlap sync Torso <- root                                0.0   cible <= 0.35
+  OK  overlap sync Head <- Torso                              0.143   cible <= 0.35
+  OK  overlap retard median Head <- Torso                       2.5   cible [1.0, 4.0] frames
+  OK  overlap sync Left Arm <- Torso                          0.143   cible <= 0.35
+  OK  overlap retard median Left Arm <- Torso                   2.5   cible [1.0, 6.0] frames
+  OK  overlap sync Left Leg <- Torso                            0.0   cible <= 0.35
+  OK  overlap retard median Left Leg <- Torso                   2.5   cible [1.0, 6.0] frames
+  OK  overlap sync Right Arm <- Torso                           0.0   cible <= 0.35
+  OK  overlap retard median Right Arm <- Torso                  3.5   cible [1.0, 6.0] frames
+  OK  overlap sync Right Leg <- Torso                           0.0   cible <= 0.35
+  OK  overlap retard median Right Leg <- Torso                  3.5   cible [1.0, 6.0] frames
+  OK  arrets simultanes                                       0.205   cible <= 0.3
+  OK  miroir quasi exact Right Arm/Left Arm                   0.006   cible <= 0.5
+  OK  correlation vitesses G/D Right Arm/Left Arm             0.751   cible <= 0.9
+  OK  miroir quasi exact Right Leg/Left Leg                    0.01   cible <= 0.5
+  OK  correlation vitesses G/D Right Leg/Left Leg             0.764   cible <= 0.9
+  OK  planarite Torso                                          0.83   cible <= 0.85
+  OK  planarite Head                                          0.762   cible <= 0.85
+  OK  glissement pied Right Leg                               0.001   cible <= 0.1
+  OK  glissement pied Left Leg                                0.002   cible <= 0.1
+  OK  discontinuites de vitesse hors snaps declares               0   cible == 0
+  OK  desequilibre (CdM hors appui)                             0.0   cible <= 0.1
+  OK  holds morts                                               0.0   cible <= 0.05
