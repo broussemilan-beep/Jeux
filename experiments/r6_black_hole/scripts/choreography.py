@@ -196,10 +196,13 @@ _READY_LEGS = {"Right Leg": (0, 0, 4), "Left Leg": (0, 0, -4)}
 _READY_ARMS = {"Right Arm": (4, 0, -4), "Left Arm": (4, 0, 4)}
 
 # =======================================================================
-# Phase 0 -- debout normal, attente vivante (R1). Duree courte : la
-# reference ne s'attarde pas dessus avant l'accroupissement.
+# Phase 0 -- debout normal, attente vivante (R1). Allongee suite a un
+# retour explicite ("manque de frame d'un debut" -- 0.6s ne laissait pas
+# le temps a un plan d'etablissement de se lire avant que tout s'enchaine,
+# voir aussi la caméra plus bas : elle glissait deja vers le crouch des
+# t=0, jamais un vrai plan fixe).
 # =======================================================================
-T0_END = _fr(18)  # 0.6s
+T0_END = _fr(30)  # 1.0s -- vrai plan d'etablissement tenu (etait 0.6s/18 frames)
 
 
 def phase0_idle():
@@ -341,10 +344,17 @@ LAND_ROOT_Y = grounded_root_y_balanced(LAND_TORSO, LAND_LEGS["Left Leg"], LAND_L
 
 RECOVER_T = LAND_T + _fr(10)  # 0.33s -- se redresse
 
-RECOVER_TORSO = (4, 0, 0)
-RECOVER_HEAD = (2, 0, 0)
-RECOVER_LEGS = {"Right Leg": (2, 0, 5), "Left Leg": (2, 0, -5)}
-RECOVER_ARMS = {"Right Arm": (6, 0, -6), "Left Arm": (6, 0, 6)}
+# -- pose de cloture DISTINCTE de la garde initiale (etait quasi
+# identique -- retour explicite : "manque de frame ... d'une fin", pas
+# de plan de cloture qui se lise comme un vrai point final). Legerement
+# essouffle (torse encore penche, tete encore basse) ET asymetrique (bras
+# droit encore leve/tendu, echo de la main qui portait le trou noir ;
+# gauche deja retombe) -- communique "quelque chose vient de se passer",
+# pas un simple retour a zero comme si de rien n'etait.
+RECOVER_TORSO = (10, 0, 0)
+RECOVER_HEAD = (6, 0, 0)
+RECOVER_LEGS = {"Right Leg": (4, 0, 6), "Left Leg": (4, 0, -5)}
+RECOVER_ARMS = {"Right Arm": (16, 0, -14), "Left Arm": (5, 0, 5)}
 RECOVER_ROOT_Y = grounded_root_y_balanced(RECOVER_TORSO, RECOVER_LEGS["Left Leg"], RECOVER_LEGS["Right Leg"])
 
 

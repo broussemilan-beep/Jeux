@@ -41,6 +41,7 @@ SHOTS = [
     ("06-collapse", VFX["collapse"]["t0"] + 0.2),
     ("07-landing", KT["land_t"] + 0.1),
     ("08-recover", KT["recover_t"] + 0.3),
+    ("09-fondu-final", DATA["duration"] - 0.05),  # preuve du fondu au noir de cloture (voir README)
 ]
 
 

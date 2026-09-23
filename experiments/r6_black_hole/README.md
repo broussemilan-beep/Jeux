@@ -331,9 +331,43 @@ anomalie, clearances aériennes toujours correctes).
 
 Lecteur reconstruit, 9/9 captures recapturées et revues individuellement.
 
+### Suite : retour direct — « ça manque de frame d'un début et d'une fin » (2026-09-23)
+
+Sans texte cette fois, deux vidéos jointes (captures Roblox Studio,
+labels de faces des parts "FRONT"/R/L, comparaison "noob vs pro") —
+confirment indépendamment l'orientation caméra déjà corrigée
+(labels R/L visibles sur le rig, cohérents avec le calcul du round
+précédent) et le niveau de dynamisme attendu des poses. Question posée
+en retour (`AskUserQuestion`) sur ce que "début/fin" signifiait
+précisément est restée sans réponse directe — interprété et exécuté sur
+les 3 pistes proposées, plutôt que redemander une 2e fois :
+
+1. **Plan d'établissement réellement tenu.** Avant : `T0_END`=0.6s,
+   MAIS la caméra n'était jamais figée — elle glissait déjà en douceur
+   (élévation/distance) entre `t=0` et le crouch, aucun instant
+   vraiment immobile pour poser la scène. Corrigé : `T0_END` porté à
+   1.0s ET une clé caméra ajoutée à `t=T0_END` avec les mêmes valeurs
+   qu'à `t=0` (donc interpolation nulle sur toute la garde — vérifié :
+   `camKeyAt(t)` identique à 0.05/0.50/0.95s).
+2. **Pose de clôture distincte**, pas un simple retour à la garde
+   initiale comme si de rien n'était. `RECOVER_TORSO/HEAD/ARMS/LEGS`
+   redessinés : torse encore penché, tête encore basse (essoufflement),
+   bras ASYMÉTRIQUES (droit encore tendu/tendu — écho de la main qui
+   portait le trou noir ; gauche déjà retombé) — communique visuellement
+   "quelque chose vient de se passer" au lieu d'un reset silencieux.
+3. **Vrai fondu au noir de clôture** (`drawEndFade`, 0.9s, ease-in) —
+   la référence coupe au noir en plein pic, sans fin filmée (voir
+   section Recherche) ; ici c'est une clôture DÉLIBÉRÉE sur la pose de
+   repos tenue, même langage visuel (noir = fin) mais un usage différent
+   et assumé (jamais une coupure en pleine action). Nouvelle capture
+   dédiée (`09-fondu-final`) committée comme preuve, pas juste décrite.
+
+`calibrate.py` revalidé (durée totale 7.83s→8.23s, aucune anomalie).
+9 captures existantes recapturées + 1 nouvelle, toutes revues.
+
 ## Vérification (captures)
 
-9 captures committées dans `captures/verification/`, toutes vérifiées
+10 captures committées dans `captures/verification/`, toutes vérifiées
 par moi-même en ouvrant chaque image (jamais un rapport d'agent pris au
 mot, voir section ci-dessus) :
 
@@ -358,7 +392,9 @@ mot, voir section ci-dessus) :
 - `2026-09-23-black-hole-07-landing.png` — atterrissage, pose
   d'absorption de l'impact, vignette déjà retombée (retour à la scène
   normale).
-- `2026-09-23-black-hole-08-recover.png` — retour à une attente
-  vivante, boucle bouclée.
+- `2026-09-23-black-hole-08-recover.png` — pose de clôture distincte
+  (essoufflement, bras asymétriques), pas un simple retour à la garde.
+- `2026-09-23-black-hole-09-fondu-final.png` — dernière image avant la
+  fin du clip, quasi entièrement noire (fondu de clôture délibéré).
 
 Publié : https://claude.ai/artifact/RN3Xb145T8ptNBHxSvQQRT
