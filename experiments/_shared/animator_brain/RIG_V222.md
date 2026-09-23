@@ -98,6 +98,79 @@ Preuve : `captures/verification/2026-09-23-v222-rig-pilote-headless.png`.
 C'est une pose de **test**, rendue de face, de profil et de trois quarts
 (Cycles CPU, sans GPU ni écran), faces étiquetées visibles.
 
+## Tutoriel officiel (texte du post collé par Milan, 2026-09-23), recoupé
+
+Le texte du post DevForum a été collé par Milan (le site reste bloqué ici).
+Résumé, avec pour chaque point ce que le fichier et les mesures confirment.
+
+**Prérequis annoncés** : le plugin Blender Animations de Cautioned. L'export
+d'armes demande sa version 2.4.2 ou plus ; Blender 4.2 ou plus. L'auteur
+prévient que toutes les fonctions du plugin n'ont pas été testées.
+dillydog580 fournit la version 2.6.3 (GPL).
+
+**Fonctions annoncées** — toutes retrouvées dans le fichier :
+
+| fonction annoncée | dans le fichier | mesuré |
+|---|---|---|
+| IK + FK bras et jambes, mélange par curseur | réglage `IK/FK` (0 à 1) | oui |
+| Torso influence bras et jambes | réglage `Torso Influence` | câblage lu |
+| bascule IK/FK et Grab | réglages `IK/FK`, `Grab` | oui |
+| la tête suit un objet | `Head` `Track Object` → `LookToPoint` | oui |
+| points d'agrippement (« comme une poignée de porte ») | `*Arm_GrabPoint` + `Grab` | câblage lu |
+| rotation du torse où UpperTorso, Spine et LowerTorso contribuent chacun | voir sous le tableau | oui |
+| panneau intégré (réglages, raccourcis) | scripts `RigSettings` / `RigUtilities` / `RigSelector` | UI seulement |
+
+Rotation du torse, mesurée :
+
+- **Torse en IK** (défaut) : la **rotation** de `LowerTorso-FK` bascule tout
+  le haut du corps autour du bassin. La **translation** de
+  `UpperTorso-IKTarget` plie la poitrine. `Spine` est l'os de la chaîne, pas
+  un contrôle.
+- **Torse en FK** (`Torso` `IK/FK` = 0) : `Torso_FK` fait pivoter le torse
+  autour de **son propre centre** (le centre reste à z = 3,0). `LowerTorso-FK`
+  le fait pivoter autour du **bassin**.
+- `Torso_FK` n'a aucun effet en mode IK. La rotation d'`UpperTorso-IKTarget`
+  est ignorée dans les deux modes.
+
+**Armes et props qui changent de parent** (tuto) :
+
+1. Dans Studio, n'importe quel rig R6 (pas forcément celui fourni). Placer
+   l'arme sur un membre, torse et tête compris.
+2. Créer le joint avec RigEdit (Lite suffit). Rig en position (0, #, 0).
+3. Plugin Cautioned, onglet « Rigging », « Export Weapon / Accessory ».
+   Choisir le rig et l'arme (« Pick from Selection »), « Export Weapon »,
+   ce qui donne un `.obj`. Puis « Clean Meta Parts ».
+4. Dans Blender, panneau N, « Import New Rig (.obj) », et viser
+   **`InternalArmature`**, jamais `__PrimaryArmature`.
+5. Le plugin intégré fait le reste. C'est le handler de `RigEvents.py` lu
+   plus haut : il clone l'os d'arme dans `__PrimaryArmature`, lui donne une
+   forme et une couleur, et le clé.
+6. À l'export, le rig en jeu doit porter **la même arme**.
+
+**Accessoires** (tuto) :
+
+1. Rig identique dans Studio, à (0, 0, 0), jambes posées sur le sol.
+   Exporter tout le modèle en `.obj`.
+2. Dans Blender : File > Import > Wavefront, avec **« Split By Group »
+   activé**. Garder seulement les objets `Handle#`.
+3. Sélectionner les accessoires d'un membre, puis Utilities > Accessories >
+   « Attach Accessories », et choisir le membre. Côté code, c'est une
+   contrainte Child Of sur l'os (`RigUtilities.py`).
+4. Appliquer la texture du rig pour qu'il ressemble à celui de Studio.
+
+**Ce que ça veut dire ici** :
+
+- Les étapes **Studio** (joint RigEdit, export `.obj` de l'arme ou de
+  l'avatar) sont faites par Milan : pas de Studio dans ce sandbox.
+- Les étapes **Blender** (import sur `InternalArmature`, attache des
+  accessoires) sont faisables en `bpy` sans écran, à condition d'enregistrer
+  l'add-on Cautioned 2.6.3. Le handler d'armes est un script embarqué : on
+  l'exécute **après** audit, ou on reproduit ses 4 opérations.
+- L'export « as normal » du tuto passe par l'add-on Cautioned (`.rbxanim`,
+  importé dans Studio par le plugin Cautioned). C'est le chemin standard des
+  animateurs pro. Notre KeyframeSequence `.rbxmx` directe reste une
+  alternative, vérifiable par l'aller-retour moteur.
+
 ## Ce que montre le GIF d'exemple envoyé par Milan
 
 64 images × 50 ms = 3,2 s, dans Blender avec **deux** rigs V2.22 :
