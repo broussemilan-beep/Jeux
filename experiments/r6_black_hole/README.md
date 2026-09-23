@@ -262,4 +262,4 @@ mot, voir section ci-dessus) :
 - `2026-09-23-black-hole-08-recover.png` — retour à une attente
   vivante, boucle bouclée.
 
-Publié : _à publier (artifact)._
+Publié : https://claude.ai/artifact/RN3Xb145T8ptNBHxSvQQRT
