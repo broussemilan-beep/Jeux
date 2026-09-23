@@ -387,8 +387,16 @@ scene.add(buildStars(340));
 // silhouette entiere qui se fondait dans le fond cosmique sombre sur les
 // captures 00-garde/01-crouch/08-recover (trouve par capture, corrige
 // ici : jamais un defaut qu'on decrit sans le reparer).
+// -- biais Z de TOUTES les lumieres directionnelles inverse suite a la
+// correction de camera (voir CAM_KEYS plus bas : la camera est passee du
+// cote +Z -- le dos -- au cote -Z -- la face, retour utilisateur "vu de
+// dos alors que ca doit etre de face"). Ces lumieres etaient calees sur
+// l'ancienne position camera (+Z) -- gardees telles quelles, le
+// personnage aurait ete a contre-jour/sous-eclaire de face (verifie par
+// rendu direct : le rig restait presque noir sur fond cosmique depuis le
+// nouveau cote camera avant cette correction).
 const keyLight = new THREE.DirectionalLight(0xe4d6ff, 3.2);
-keyLight.position.set(-4, 12, 4);
+keyLight.position.set(-4, 12, -4);
 keyLight.castShadow = true;
 keyLight.shadow.mapSize.set(2048, 2048);
 keyLight.shadow.camera.left = -12; keyLight.shadow.camera.right = 12;
@@ -397,13 +405,13 @@ keyLight.shadow.camera.near = 1; keyLight.shadow.camera.far = 36;
 keyLight.shadow.bias = -0.0015;
 scene.add(keyLight);
 scene.add(keyLight.target);
-keyLight.target.position.set(0, 4, -2);
+keyLight.target.position.set(0, 4, 2);
 
 const fillLight = new THREE.HemisphereLight(0x6a5aa0, 0x1c1430, 1.0);
 scene.add(fillLight);
 
 const rimLight = new THREE.DirectionalLight(0x9a6cff, 0.6);
-rimLight.position.set(4, 6, -14);
+rimLight.position.set(4, 6, 14);
 scene.add(rimLight);
 
 // Fill frontal DEDIE au personnage (pas au decor) -- depuis a peu pres la
@@ -412,7 +420,7 @@ scene.add(rimLight);
 // l'orientation du personnage (contrairement a keyLight/fillLight seules,
 // qui eclairent surtout les surfaces horizontales -- voir note ci-dessus).
 const charFill = new THREE.DirectionalLight(0xd8ccff, 0.9);
-charFill.position.set(0, 6, 10);
+charFill.position.set(0, 6, -10);
 charFill.target.position.set(0, 4, 0);
 scene.add(charFill);
 scene.add(charFill.target);
@@ -443,7 +451,13 @@ scene.add(ground);
 const wallTex = loadTex("ruin_wall", 14, 2.4);
 const wallMat = new THREE.MeshStandardMaterial({ map: wallTex, roughness: 0.97, metalness: 0.0 });
 const wall = new THREE.Mesh(new THREE.PlaneGeometry(54, 10), wallMat);
-wall.position.set(0, 4.9, -19.5);
+// -- deplace du cote +Z (etait -19.5) ET retournee (rotation.y = PI,
+// sinon sa face texturee -- normale +Z par defaut -- pointerait a
+// l'oppose de la nouvelle camera, donc invisible, culling FrontSide par
+// defaut) : meme correction que les lumieres, pour que le mur reste
+// derriere le personnage vu du NOUVEAU cote camera (face, pas dos).
+wall.position.set(0, 4.9, 19.5);
+wall.rotation.y = Math.PI;
 wall.receiveShadow = true;
 scene.add(wall);
 
@@ -615,14 +629,32 @@ const MID_HOLD_T = KT.rise_t + (KT.hold_end_t - KT.rise_t) * 0.5;
 // pour le disque a 9.2 studs de diametre, voir note plus haut) -- ce
 // n'est pas un defaut, la distance porte la respiration du cadrage,
 // seuls l'azimut/l'elevation doivent rester un mouvement continu.
+// -- FACE, pas dos (correction suite a un retour explicite : "la camera
+// est vue de dos alors que c'est sense etre de face"). Verifie par
+// calcul, pas suppose : "Right Arm" est positionne a X MONDE POSITIF
+// (voir DATA.character_frames), et ce depot a deja etabli ailleurs
+// (r6_solar_smite : chaine cinematique, sens des rz de bras) que ce rig
+// avance/fait face vers -Z. Un personnage qui fait face a -Z a, de SON
+// propre point de vue, la main droite du cote +X (formule standard
+// main droite : droite = avant x haut = (0,0,-1) x (0,1,0) = (+1,0,0)).
+// Un observateur qui le regarde DE FACE (donc place plus loin en -Z que
+// le personnage, regardant vers +Z) voit alors cette main droite
+// apparaitre a SA GAUCHE a l'ecran (miroir standard, comme se regarder
+// dans un miroir) -- observateur.droite = regard x haut =
+// (0,0,1) x (0,1,0) = (-1,0,0), oppose a +X. cameraDir(az=0) place la
+// camera a target.z + dist (donc plus loin en +Z QUE le personnage,
+// pas moins) : c'est exactement le cote DOS. Toutes les valeurs
+// d'azimut ci-dessous sont donc decalees de +180 deg par rapport a la
+// version precedente (meme balayage continu, meme sens, juste vu de
+// l'autre cote).
 const CAM_KEYS = [
-  { t: 0.0,              az: -15, el: 12, dist: 9.5,  tw: 0.0  },
-  { t: KT.crouch_t,      az: -15, el: 5,  dist: 5.0,  tw: 0.0  },
-  { t: KT.crouch_hold_t, az: -15, el: 5,  dist: 5.0,  tw: 0.0  },
-  { t: KT.rise_t,        az: -6,  el: 15, dist: 8.5,  tw: 0.1  },
-  { t: MID_HOLD_T,       az: 12,  el: 21, dist: 11.0, tw: 0.5  },
-  { t: KT.hold_end_t,    az: 24,  el: 23, dist: 8.5,  tw: 0.75 },
-  { t: KT.climax_t,      az: 40,  el: 25, dist: 12.5, tw: 1.0  },
+  { t: 0.0,              az: 165, el: 12, dist: 9.5,  tw: 0.0  },
+  { t: KT.crouch_t,      az: 165, el: 5,  dist: 5.0,  tw: 0.0  },
+  { t: KT.crouch_hold_t, az: 165, el: 5,  dist: 5.0,  tw: 0.0  },
+  { t: KT.rise_t,        az: 174, el: 15, dist: 8.5,  tw: 0.1  },
+  { t: MID_HOLD_T,       az: 192, el: 21, dist: 11.0, tw: 0.5  },
+  { t: KT.hold_end_t,    az: 204, el: 23, dist: 8.5,  tw: 0.75 },
+  { t: KT.climax_t,      az: 220, el: 25, dist: 12.5, tw: 1.0  },
   // -- garder tw HAUT tout du long de la fenetre d'effondrement
   // (VFX_EVENTS.collapse, t0..t1) : sans cette cle intermediaire a
   // collapse.t0, tw retombait continument de 1.0 (climax_t) a 0.25
@@ -635,10 +667,10 @@ const CAM_KEYS = [
   // diametre max (9.2 studs, voir note ci-dessus). Azimut CONTINUE de
   // croitre (44, pas un retour vers 0) -- meme sens que depuis le
   // decollage.
-  { t: VFX.collapse.t0,  az: 44,  el: 19, dist: 12.5, tw: 0.92 },
-  { t: VFX.collapse.t1,  az: 48,  el: 15, dist: 8.5,  tw: 0.35 },
-  { t: KT.recover_t,     az: 52,  el: 12, dist: 9.5,  tw: 0.0  },
-  { t: KT.idle_out_end,  az: 52,  el: 12, dist: 9.5,  tw: 0.0  },
+  { t: VFX.collapse.t0,  az: 224, el: 19, dist: 12.5, tw: 0.92 },
+  { t: VFX.collapse.t1,  az: 228, el: 15, dist: 8.5,  tw: 0.35 },
+  { t: KT.recover_t,     az: 232, el: 12, dist: 9.5,  tw: 0.0  },
+  { t: KT.idle_out_end,  az: 232, el: 12, dist: 9.5,  tw: 0.0  },
 ];
 function camKeyAt(pt) {
   if (pt <= CAM_KEYS[0].t) return CAM_KEYS[0];

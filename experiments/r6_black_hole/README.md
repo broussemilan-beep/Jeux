@@ -277,6 +277,60 @@ Lecteur reconstruit, 8 des 9 captures recapturées (`01-crouch` identique
 — sa caméra n'a pas changé, vérifié par `git status` avant/après) et
 revues moi-même une à une.
 
+### Suite : retour direct — « pas assez animé, manque d'exagération » et « caméra vue de dos, sensé être de face » (2026-09-23)
+
+Deux nouveaux griefs, sans référence rejointe cette fois — la référence
+déjà analysée a été revue une seconde fois (frames 013/020 de
+`ScreenRecording_09-23-2026_15-52-25_1.mov`) pour recalibrer
+l'amplitude des poses.
+
+**Caméra vue de dos.** Vérifié par calcul, pas juste retourné à l'œil :
+`Right Arm` est positionnée à X MONDE POSITIF (donnée du rig), et ce
+dépôt a déjà établi ailleurs (`r6_solar_smite`, `LUNGE_Z` de plus en
+plus négatif pour avancer vers la cible) que ce rig avance/fait face
+vers **-Z**. Un personnage qui fait face à -Z a, de son propre point de
+vue, la main droite du côté **+X monde** (formule main droite :
+droite = avant × haut = (0,0,-1) × (0,1,0) = (+1,0,0)). `cameraDir(az=0)`
+place la caméra à `target.z + dist`, donc plus loin en **+Z** que le
+personnage — exactement le côté DOS. Confirmé de façon indépendante
+(pas seulement par cohérence de formule) : rendu direct avec le bras
+droit isolé en rouge et le gauche en vert dans une pose asymétrique —
+vu du côté -Z (nouveau réglage), le rouge (bras droit) apparaît à
+GAUCHE de l'écran, exactement le miroir attendu quand on fait face à
+quelqu'un (sa main droite apparaît à votre gauche) ; vu du côté +Z
+(ancien réglage), le rouge apparaît à DROITE — aucun effet miroir,
+confirmé vue de dos. Tous les azimuts de `CAM_KEYS` décalés de +180°
+(même balayage continu, même sens, juste vu de l'autre côté).
+Conséquence en chaîne, elle aussi corrigée : les lumières (`keyLight`,
+`rimLight`, `charFill`) et le mur de fond étaient calés sur l'ancien
+côté caméra — sans correction, le personnage aurait été sous-éclairé/à
+contre-jour vu de face (vérifié par rendu direct avant correction :
+silhouette presque noire sur fond cosmique), et le mur (toujours côté
+-Z, donc maintenant derrière la caméra) aurait disparu du cadre. Biais
+Z des lumières inversé, mur déplacé côté +Z et retourné
+(`rotation.y = PI`, sinon sa face texturée pointerait à l'opposé de la
+caméra).
+
+**Manque d'exagération.** Poses ré-comparées à la référence : le
+crouch réel a le torse quasi à l'horizontale (pas 58°, poussé à 70°) et
+surtout les bras balayés loin en ARRIÈRE et légèrement relevés (façon
+starting-block), pas repliés près du corps comme la version précédente
+— corrigé (`CROUCH_ARMS` : de `(12,-14)` à `(-38,-22)`, signe de `rx`
+inversé = balayé en arrière). Le lever a les bras clairement AU-DESSUS
+de l'horizontale (~30°), pas un T plat — corrigé (`rx` de 6 à 28) ainsi
+que l'arc-en-arrière du torse (-12° → -22°) et l'écartement des jambes
+(9° → 18°). Climax et release poussés dans la même proportion (torse
+16°→26° et 38°→50°, jambes et bras assortis). Le ressort de secondary
+motion lui-même resserré (`damping_ratio` 0.5/0.4 → 0.32/0.28) : plus
+de dépassement, au moins un rebond visible avant stabilisation, plutôt
+qu'un aller simple à peine perceptible. Le bob de la lévitation
+(oscillation bras/altitude pendant le hold) doublé en amplitude
+(`amp_arm` 4.5→8.0, `amp_bob` 0.15→0.35) pour un flottement plus
+vivant. `calibrate.py` revalidé après chaque changement (aucune
+anomalie, clearances aériennes toujours correctes).
+
+Lecteur reconstruit, 9/9 captures recapturées et revues individuellement.
+
 ## Vérification (captures)
 
 9 captures committées dans `captures/verification/`, toutes vérifiées

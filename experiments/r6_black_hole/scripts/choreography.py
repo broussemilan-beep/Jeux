@@ -218,10 +218,15 @@ _READY_ROOT_Y = grounded_root_y_balanced(_READY_TORSO, _READY_LEGS["Left Leg"], 
 CROUCH_T = T0_END + _fr(15)        # 0.5s -- descente lisible, pas un snap
 CROUCH_HOLD_T = CROUCH_T + _fr(9)  # hold bref (0.3s), assez pour se lire
 
-CROUCH_TORSO = (58, 0, 0)
-CROUCH_HEAD = (34, 0, 0)
-CROUCH_LEGS = {"Right Leg": (26, 0, 9), "Left Leg": (26, 0, -9)}
-CROUCH_ARMS = {"Right Arm": (12, 0, -14), "Left Arm": (12, 0, 14)}
+CROUCH_TORSO = (70, 0, 0)
+CROUCH_HEAD = (40, 0, 0)
+CROUCH_LEGS = {"Right Leg": (32, 0, 15), "Left Leg": (32, 0, -15)}
+# -- bras balayes en ARRIERE et legerement releves (comme un sprinter au
+# starting-block, PAS tucked contre le corps) : corrige suite a un retour
+# explicite ("manque d'exageration", revu contre la reference -- frame
+# ~3.25s montre les bras loin derriere le torse, pas replies pres du
+# corps comme la version precedente).
+CROUCH_ARMS = {"Right Arm": (-38, 0, -22), "Left Arm": (-38, 0, 22)}
 CROUCH_ROOT_Y = grounded_root_y_balanced(CROUCH_TORSO, CROUCH_LEGS["Left Leg"], CROUCH_LEGS["Right Leg"])
 
 
@@ -256,10 +261,13 @@ RISE_CLEARANCE = 2.4     # nette prise d'altitude, lisible a l'ecran (R3 : decol
 CLIMAX_CLEARANCE = 1.3   # deja tire vers le bas par la gravitation, mais encore clairement en l'air
 RELEASE_CLEARANCE = 0.5  # sur le point de toucher terre
 
-RISE_TORSO = (-12, 0, 0)
-RISE_HEAD = (-16, 0, 0)
-RISE_LEGS = {"Right Leg": (6, 0, 9), "Left Leg": (6, 0, -9)}
-RISE_ARMS = {"Right Arm": (6, 0, -86), "Left Arm": (6, 0, 86)}
+RISE_TORSO = (-22, 0, 0)
+RISE_HEAD = (-24, 0, 0)
+RISE_LEGS = {"Right Leg": (10, 0, 18), "Left Leg": (10, 0, -18)}
+# -- bras releves en angle (~30 deg au-dessus de l'horizontale, pas un T
+# plat) : corrige contre la reference (frame ~5-6.25s -- les bras
+# montent nettement au-dessus de l'horizontale, pas paralleles au sol).
+RISE_ARMS = {"Right Arm": (28, 0, -80), "Left Arm": (28, 0, 80)}
 LEVITATE_ROOT_Y = grounded_root_y_balanced(RISE_TORSO, RISE_LEGS["Left Leg"], RISE_LEGS["Right Leg"]) + RISE_CLEARANCE
 
 
@@ -283,7 +291,7 @@ def phase_hold():
     # evite le doublon (harmless pour Blender mais inutile).
     return _levitate_span(RISE_T, HOLD_END_T, (CHAR_X, 0, CHAR_Z0), REST,
                            RISE_TORSO, RISE_HEAD, RISE_LEGS, RISE_ARMS,
-                           levitate_y=LEVITATE_ROOT_Y, period=1.0, phase0=0.0, amp_arm=4.5, amp_bob=0.15)[1:]
+                           levitate_y=LEVITATE_ROOT_Y, period=1.0, phase0=0.0, amp_arm=8.0, amp_bob=0.35)[1:]
 
 
 # =======================================================================
@@ -295,10 +303,10 @@ def phase_hold():
 # =======================================================================
 CLIMAX_T = HOLD_END_T + _fr(20)  # 0.67s -- transition lente vers la tension, pas un snap (on VEUT que ça se lise comme un effort qui monte)
 
-CLIMAX_TORSO = (16, 0, 0)
-CLIMAX_HEAD = (10, 0, 0)
-CLIMAX_LEGS = {"Right Leg": (10, 0, 6), "Left Leg": (10, 0, -6)}
-CLIMAX_ARMS = {"Right Arm": (20, 0, -62), "Left Arm": (20, 0, 62)}
+CLIMAX_TORSO = (26, 0, 0)
+CLIMAX_HEAD = (18, 0, 0)
+CLIMAX_LEGS = {"Right Leg": (16, 0, 10), "Left Leg": (16, 0, -10)}
+CLIMAX_ARMS = {"Right Arm": (32, 0, -48), "Left Arm": (32, 0, 48)}
 CLIMAX_ROOT_Y = grounded_root_y_balanced(CLIMAX_TORSO, CLIMAX_LEGS["Left Leg"], CLIMAX_LEGS["Right Leg"]) + CLIMAX_CLEARANCE
 
 
@@ -317,10 +325,10 @@ def phase_climax():
 # =======================================================================
 RELEASE_T = CLIMAX_T + _fr(6)  # 0.2s -- l'a-coup final est rapide, presque un snap
 
-RELEASE_TORSO = (38, 0, 0)
-RELEASE_HEAD = (22, 0, 0)
-RELEASE_LEGS = {"Right Leg": (14, 0, 5), "Left Leg": (14, 0, -5)}
-RELEASE_ARMS = {"Right Arm": (34, 0, -30), "Left Arm": (34, 0, 30)}
+RELEASE_TORSO = (50, 0, 0)
+RELEASE_HEAD = (30, 0, 0)
+RELEASE_LEGS = {"Right Leg": (20, 0, 7), "Left Leg": (20, 0, -7)}
+RELEASE_ARMS = {"Right Arm": (44, 0, -20), "Left Arm": (44, 0, 20)}
 RELEASE_ROOT_Y = grounded_root_y_balanced(RELEASE_TORSO, RELEASE_LEGS["Left Leg"], RELEASE_LEGS["Right Leg"]) + RELEASE_CLEARANCE
 
 LAND_T = RELEASE_T + _fr(14)  # 0.47s de descente jusqu'au contact
@@ -420,9 +428,13 @@ BLACK_HOLE_CENTER = np.array([CHAR_X, LEVITATE_ROOT_Y + 4.0, CHAR_Z0 + 1.6])
 # dans le timing des keyframes) -- puis continue sans interruption
 # pendant toute la levitation/climax/effondrement (meme convention
 # qu'avant : jamais desactive une fois demarre).
+# -- damping_ratio abaisse (0.5/0.4 -> 0.32/0.3) suite au meme retour
+# ("manque d'exageration") : moins de damping = plus de depassement et
+# au moins un rebond visible avant stabilisation, au lieu d'un seul
+# aller-retour a peine perceptible.
 SECONDARY_MOTION = {
-    "Torso": {"channels": (0, 1, 2), "stiffness": 180.0, "damping_ratio": 0.5, "t_min": CROUCH_HOLD_T},
-    "Head": {"channels": (0, 1, 2), "stiffness": 220.0, "damping_ratio": 0.5, "t_min": CROUCH_HOLD_T},
-    "Right Arm": {"channels": (0, 2), "stiffness": 150.0, "damping_ratio": 0.4, "t_min": CROUCH_HOLD_T},
-    "Left Arm": {"channels": (0, 2), "stiffness": 150.0, "damping_ratio": 0.4, "t_min": CROUCH_HOLD_T},
+    "Torso": {"channels": (0, 1, 2), "stiffness": 180.0, "damping_ratio": 0.32, "t_min": CROUCH_HOLD_T},
+    "Head": {"channels": (0, 1, 2), "stiffness": 220.0, "damping_ratio": 0.32, "t_min": CROUCH_HOLD_T},
+    "Right Arm": {"channels": (0, 2), "stiffness": 150.0, "damping_ratio": 0.28, "t_min": CROUCH_HOLD_T},
+    "Left Arm": {"channels": (0, 2), "stiffness": 150.0, "damping_ratio": 0.28, "t_min": CROUCH_HOLD_T},
 }
