@@ -101,14 +101,24 @@ def decode_referents(buf, count):
 
 
 def decode_float32_array(buf, count):
-    """Les flottants passent par le MEME pipeline que les entiers, mais le
-    resultat est une REINTERPRETATION DES BITS en IEEE754, pas une
-    conversion de valeur -- verifie empiriquement : Humanoid.MaxHealth (1
-    flottant, octets bruts 0x85900000) zigzag-decode (sans cumsum) vers
-    l'entier 1120133120 = 0x42C80000 en bits = 100.0f pile (valeur par
-    defaut plausible)."""
-    return [struct.unpack("<f", struct.pack("<i", v))[0]
-            for v in decode_int32_array(buf, count)]
+    """Les flottants partagent la transposition des entiers, mais PAS le
+    zigzag : le format Roblox deplace le bit de signe en bit de poids
+    faible (rotation d'un bit), et la valeur se lit par rotation inverse
+    puis reinterpretation des bits en IEEE754.
+
+    Correction du 2026-09-23 : la version precedente appliquait le zigzag
+    des entiers. Pour un flottant POSITIF (bit faible a 0) zigzag et
+    rotation coincident -- d'ou la validation initiale sur
+    Humanoid.MaxHealth = 100.0 --, mais pour un NEGATIF le zigzag inverse
+    tous les bits au lieu de poser le signe : -1.0 se lisait -4.0 et -0.5
+    se lisait -8.0. Trouve en comparant les C0/C1 du rig Studio fourni avec
+    le rig V2.22 a ceux de RigR6.rbxmx (XML, sans ambiguite)."""
+    raw = untranspose_interleave(buf, count, 4)
+    out = []
+    for u in struct.unpack(f">{count}I", raw):
+        bits = (u >> 1) | ((u & 1) << 31)
+        out.append(struct.unpack("<f", struct.pack("<I", bits))[0])
+    return out
 
 
 # ---------------------------------------------------------------------
@@ -219,9 +229,8 @@ def decode_cframe_array(buf, n):
     (9 flottants LITTLE-endian sequentiels -- PAS le pipeline transpose+
     zigzag des tableaux, verifie empiriquement : orthonormalite ~4e-08
     avec ce layout contre ~1e51/garbage avec big-endian ou le bit-trick
-    zigzag). rot_id!=0 => rotation "speciale" (axes alignes, table de
-    correspondance NON geree ici -- rencontree seulement pour des
-    rotations identite dans les fichiers testes, ex. HumanoidRootPart)."""
+    zigzag). rot_id!=0 => rotation "speciale" alignee sur les axes, decodee par
+    special_rotation() (elle etait laissee a None avant le 2026-09-23)."""
     off = 0
     rot_ids, raw_mats = [], []
     for _ in range(n):
@@ -235,7 +244,23 @@ def decode_cframe_array(buf, n):
     xs = decode_float32_array(buf[off:], n); off += n * 4
     ys = decode_float32_array(buf[off:], n); off += n * 4
     zs = decode_float32_array(buf[off:], n); off += n * 4
-    return [((xs[i], ys[i], zs[i]), raw_mats[i], rot_ids[i]) for i in range(n)], off
+    mats = [raw_mats[i] if raw_mats[i] is not None else special_rotation(rot_ids[i]) for i in range(n)]
+    return [((xs[i], ys[i], zs[i]), mats[i], rot_ids[i]) for i in range(n)], off
+
+
+_AXES = ((1, 0, 0), (0, 1, 0), (0, 0, 1), (-1, 0, 0), (0, -1, 0), (0, 0, -1))
+
+
+def special_rotation(rot_id):
+    """Rotation "speciale" (alignee sur les axes) du format binaire : id-1
+    = 6*i + j, colonne X = _AXES[i], colonne Y = _AXES[j], Z = X x Y.
+    Retourne 9 flottants row-major (meme layout que la matrice brute).
+    Verifie le 2026-09-23 : les 12 C0/C1 du rig Studio fourni avec le rig
+    V2.22 (ids 0x0e, 0x15, 0x20) redonnent EXACTEMENT ceux de RigR6.rbxmx."""
+    k = rot_id - 1
+    x, y = _AXES[k // 6], _AXES[k % 6]
+    z = (x[1] * y[2] - x[2] * y[1], x[2] * y[0] - x[0] * y[2], x[0] * y[1] - x[1] * y[0])
+    return tuple(float(v) for row in zip(x, y, z) for v in row)
 
 
 def rotation_angle_deg(mat9):

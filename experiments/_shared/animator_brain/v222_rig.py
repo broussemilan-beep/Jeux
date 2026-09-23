@@ -163,3 +163,74 @@ def review_render(out_prefix, views=("front", "side"), res=520, samples=16, cent
         bpy.ops.render.render(write_still=True)
         out.append(S.render.filepath)
     return out
+
+
+def key_controls(frame, controls, interpolation="BEZIER"):
+    """Pose les controles (meme format que set_controls) ET les cle a la
+    frame donnee (location / rotation_quaternion seulement sur les canaux
+    fournis)."""
+    import bpy
+    set_controls(controls)
+    arm = bpy.data.objects[PRIMARY]
+    for name, ch in controls.items():
+        b = arm.pose.bones[name]
+        if "location" in ch:
+            b.keyframe_insert("location", frame=frame)
+        if "rotation_euler" in ch or "rotation_quaternion" in ch:
+            b.keyframe_insert("rotation_quaternion", frame=frame)
+    act = arm.animation_data.action if arm.animation_data else None
+    if act is not None:
+        for fc in _fcurves(act):
+            for kp in fc.keyframe_points:
+                if abs(kp.co[0] - frame) < 1e-6:
+                    kp.interpolation = interpolation
+
+
+def key_setting(frame, part, key, value):
+    """Cle un reglage du rig (ex. IK/FK, Grab) sur l'objet reglage."""
+    import bpy
+    set_setting(part, key, value)
+    bpy.data.objects[part].keyframe_insert(f'["{key}"]', frame=frame)
+
+
+def _fcurves(action):
+    try:
+        return [fc for layer in action.layers for strip in layer.strips
+                for bag in strip.channelbags for fc in bag.fcurves]
+    except AttributeError:
+        return list(action.fcurves)
+
+
+def bake_parts(frame_start, frame_end, step=1, hrp="fixed"):
+    """Cuit les 7 parts Roblox (InternalArmature) en CFrames MONDE, repere
+    ROBLOX, pour chaque frame : [(t, {part: (R 3x3, p 3)})].
+
+    Methode : delta de chaque os par rapport a SA pose de repos, applique a
+    la part Roblox au repos (rotation identite, centre standard). Ne depend
+    donc d'aucune convention d'axe des os Blender.
+    hrp="fixed" : HumanoidRootPart au repos (animation sur place, le
+    deplacement du corps passe par le RootJoint), comme en jeu."""
+    import bpy
+    import numpy as np
+    from mathutils import Vector
+    from .roblox_export import B2R, REST_CENTER, orthonormalize
+
+    S = bpy.context.scene
+    arm = bpy.data.objects[INTERNAL]
+    rest = {p: arm.matrix_world @ arm.data.bones[p].matrix_local for p in PARTS}
+    fps = S.render.fps / S.render.fps_base
+    out = []
+    for f in range(frame_start, frame_end + 1, step):
+        S.frame_set(f)
+        world = {}
+        for p in PARTS:
+            m = arm.matrix_world @ arm.pose.bones[p].matrix
+            d = m @ rest[p].inverted()
+            drot = np.array(d.to_3x3())
+            c0 = B2R.T @ np.array(REST_CENTER[p])
+            cb = np.array(d @ Vector(c0))
+            world[p] = (orthonormalize(B2R @ drot @ B2R.T), B2R @ cb)
+        if hrp == "fixed":
+            world["HumanoidRootPart"] = (np.eye(3), np.array(REST_CENTER["HumanoidRootPart"]))
+        out.append(((f - frame_start) / fps, world))
+    return out
