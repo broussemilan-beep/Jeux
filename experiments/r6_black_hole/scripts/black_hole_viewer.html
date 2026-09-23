@@ -595,14 +595,34 @@ const MID_HOLD_T = KT.rise_t + (KT.hold_end_t - KT.rise_t) * 0.5;
 // README) : sans ca, le climax/collapse.t0 (disque a 9.2 studs de
 // diametre) rendait un disque QUI DEBORDAIT DU CADRE (juste un rond noir
 // plein ecran, aucun anneau visible) a l'ancienne distance de 3.2-5.0.
+// -- SENS de la camera corrige suite a un retour explicite ("le sens de
+// camera... pas bon") : la version precedente changeait de direction
+// DEUX fois sans raison de mise en scene -- (1) l'azimut repartait de
+// +40 (climax) vers 0 (fin), inversant en plein milieu de
+// l'effondrement le sens de balayage qu'il tenait depuis le decollage,
+// et (2) l'elevation montait/descendait/remontait/redescendait
+// (12->5->22->8->18->12, 4 changements de sens) au lieu d'un seul arc.
+// Redessine en 2 mouvements propres, sans retour en arriere :
+//   - Azimut : UNE SEULE direction du debut a la fin (jamais decroissant
+//     apres le crouch) -- l'oeil suit un balayage continu, pas un
+//     pendule.
+//   - Elevation : UN SEUL arc (creuse au crouch pour le plan bas
+//     dramatique, remonte progressivement jusqu'au climax, puis
+//     redescend une seule fois vers le cadrage de repos) -- jamais plus
+//     d'un changement de sens.
+// Les DISTANCES, elles, doivent forcement varier de facon non monotone
+// (le crouch a besoin d'etre proche, le climax a besoin d'etre loin
+// pour le disque a 9.2 studs de diametre, voir note plus haut) -- ce
+// n'est pas un defaut, la distance porte la respiration du cadrage,
+// seuls l'azimut/l'elevation doivent rester un mouvement continu.
 const CAM_KEYS = [
-  { t: 0.0,              az: 0,   el: 12, dist: 9.5,  tw: 0.0  },
+  { t: 0.0,              az: -15, el: 12, dist: 9.5,  tw: 0.0  },
   { t: KT.crouch_t,      az: -15, el: 5,  dist: 5.0,  tw: 0.0  },
   { t: KT.crouch_hold_t, az: -15, el: 5,  dist: 5.0,  tw: 0.0  },
-  { t: KT.rise_t,        az: -8,  el: 16, dist: 8.5,  tw: 0.1  },
-  { t: MID_HOLD_T,       az: 15,  el: 22, dist: 11.0, tw: 0.5  },
-  { t: KT.hold_end_t,    az: 25,  el: 16, dist: 8.5,  tw: 0.75 },
-  { t: KT.climax_t,      az: 40,  el: 8,  dist: 12.5, tw: 1.0  },
+  { t: KT.rise_t,        az: -6,  el: 15, dist: 8.5,  tw: 0.1  },
+  { t: MID_HOLD_T,       az: 12,  el: 21, dist: 11.0, tw: 0.5  },
+  { t: KT.hold_end_t,    az: 24,  el: 23, dist: 8.5,  tw: 0.75 },
+  { t: KT.climax_t,      az: 40,  el: 25, dist: 12.5, tw: 1.0  },
   // -- garder tw HAUT tout du long de la fenetre d'effondrement
   // (VFX_EVENTS.collapse, t0..t1) : sans cette cle intermediaire a
   // collapse.t0, tw retombait continument de 1.0 (climax_t) a 0.25
@@ -612,11 +632,13 @@ const CAM_KEYS = [
   // Desormais la caméra ne recule vers le personnage QU'APRES
   // collapse.t1 (le disque/coeur ont deja fini de retomber a 0). Distance
   // 12.5 (pas 5.0) : au tout debut du collapse le disque est encore a son
-  // diametre max (9.2 studs, voir note ci-dessus).
-  { t: VFX.collapse.t0,  az: 32,  el: 18, dist: 12.5, tw: 0.92 },
-  { t: VFX.collapse.t1,  az: 14,  el: 14, dist: 8.5,  tw: 0.35 },
-  { t: KT.recover_t,     az: 0,   el: 12, dist: 9.5,  tw: 0.0  },
-  { t: KT.idle_out_end,  az: 0,   el: 12, dist: 9.5,  tw: 0.0  },
+  // diametre max (9.2 studs, voir note ci-dessus). Azimut CONTINUE de
+  // croitre (44, pas un retour vers 0) -- meme sens que depuis le
+  // decollage.
+  { t: VFX.collapse.t0,  az: 44,  el: 19, dist: 12.5, tw: 0.92 },
+  { t: VFX.collapse.t1,  az: 48,  el: 15, dist: 8.5,  tw: 0.35 },
+  { t: KT.recover_t,     az: 52,  el: 12, dist: 9.5,  tw: 0.0  },
+  { t: KT.idle_out_end,  az: 52,  el: 12, dist: 9.5,  tw: 0.0  },
 ];
 function camKeyAt(pt) {
   if (pt <= CAM_KEYS[0].t) return CAM_KEYS[0];

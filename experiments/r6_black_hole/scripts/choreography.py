@@ -406,13 +406,23 @@ VFX_EVENTS = {
 BLACK_HOLE_CENTER = np.array([CHAR_X, LEVITATE_ROOT_Y + 4.0, CHAR_Z0 + 1.6])
 
 # -- secondary motion (spring chase, solveur analytique exact -- voir
-# r6_solar_smite/anim_engine._spring_chase) : actif des la levitation
-# (RISE_T), pour que le "vent" du champ de gravitation fasse legerement
-# trembler bras/torse/tete tout du long -- jamais desactive ensuite
-# (meme convention que solar_smite pour le suivi apres impact).
+# r6_solar_smite/anim_engine._spring_chase) : demarre a CROUCH_HOLD_T
+# (pas RISE_T) -- correction suite a un retour explicite ("le perso dans
+# la fluidite ces mouvement etc") : demarrer le ressort PILE a RISE_T
+# faisait que le relevement crouch->rise lui-meme (le mouvement le plus
+# spectaculaire de toute la sequence) restait une simple interpolation
+# Bezier target-a-target, sans depassement/rebond -- un "snap" propre
+# mais sans poids. En demarrant le ressort des le hold du crouch (cible
+# encore immobile, vitesse nulle), le relevement devient lui-meme
+# "chasse" par le ressort : la cible saute brusquement vers la pose de
+# vol, le ressort accuse un vrai retard + depassement + stabilisation
+# (l'"explosion" du decollage se voit dans le mouvement, pas seulement
+# dans le timing des keyframes) -- puis continue sans interruption
+# pendant toute la levitation/climax/effondrement (meme convention
+# qu'avant : jamais desactive une fois demarre).
 SECONDARY_MOTION = {
-    "Torso": {"channels": (0, 1, 2), "stiffness": 180.0, "damping_ratio": 0.5, "t_min": RISE_T},
-    "Head": {"channels": (0, 1, 2), "stiffness": 220.0, "damping_ratio": 0.5, "t_min": RISE_T},
-    "Right Arm": {"channels": (0, 2), "stiffness": 150.0, "damping_ratio": 0.4, "t_min": RISE_T},
-    "Left Arm": {"channels": (0, 2), "stiffness": 150.0, "damping_ratio": 0.4, "t_min": RISE_T},
+    "Torso": {"channels": (0, 1, 2), "stiffness": 180.0, "damping_ratio": 0.5, "t_min": CROUCH_HOLD_T},
+    "Head": {"channels": (0, 1, 2), "stiffness": 220.0, "damping_ratio": 0.5, "t_min": CROUCH_HOLD_T},
+    "Right Arm": {"channels": (0, 2), "stiffness": 150.0, "damping_ratio": 0.4, "t_min": CROUCH_HOLD_T},
+    "Left Arm": {"channels": (0, 2), "stiffness": 150.0, "damping_ratio": 0.4, "t_min": CROUCH_HOLD_T},
 }

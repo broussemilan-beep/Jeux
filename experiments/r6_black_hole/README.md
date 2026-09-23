@@ -232,6 +232,51 @@ correctif de distance) : le halo 2D du disque qui lavait le cœur en
 olive au lieu du noir pur, l'éclairage insuffisant du personnage, et
 `tw` qui décrochait du disque pendant l'effondrement.
 
+### Suite : retour direct — « le sens de camera... pas bon », « le perso dans la fluidite » (2026-09-23)
+
+Retour de l'utilisateur après la première livraison du lecteur, sans
+nouvelle référence jointe cette fois : deux griefs distincts, tous les
+deux vérifiés puis corrigés à la source (pas juste retouchés à l'œil).
+
+**Sens de caméra.** Mesuré `camKeyAt(t)` sur toute la timeline (pas
+juste relu le code) : l'azimut ET l'élévation changeaient de sens
+plusieurs fois sans raison de mise en scène — l'azimut balayait vers la
+droite pendant tout le décollage/lévitation/climax (`-15° → +40°`) puis
+REPARTAIT en sens inverse vers `0°` pendant l'effondrement (un
+retournement en plein milieu de l'action) ; l'élévation, elle, montait/
+descendait/remontait/redescendait quatre fois. Corrigé en deux
+mouvements propres au lieu d'un pendule : l'azimut ne change JAMAIS de
+sens après le crouch (balayage continu jusqu'à la fin, `-15° → +52°`,
+vérifié : 0 inversion sur 53 échantillons à 0.15s d'intervalle) ;
+l'élévation ne fait plus qu'un seul arc (creux au crouch, montée
+continue jusqu'au climax, une seule descente finale — 2 inversions,
+le minimum topologique pour cette forme, contre 4 avant). Les
+DISTANCES restent volontairement non monotones (le crouch doit être
+proche, le climax loin pour cadrer le disque à 9.2 studs — voir section
+précédente) : ce n'est pas le même défaut, seul le sens angulaire
+comptait.
+
+**Fluidité du personnage.** Le relevement crouch→lévitation
+(`CROUCH_HOLD_T → RISE_T`, 0.367s) était une simple interpolation Bezier
+cible-à-cible : le ressort de secondary motion ne démarrait qu'à
+`RISE_T`, donc le mouvement le plus spectaculaire de la séquence
+(bascule de -58° à -12° de torse, bras qui giflent de repliés à
+écartés) n'avait aucun dépassement ni poids, juste un "snap" propre.
+Corrigé en démarrant le ressort dès `CROUCH_HOLD_T` (cible encore
+immobile, vitesse nulle à cet instant — aucun saut visible au point de
+départ, même garde-fou que partout ailleurs dans ce dépôt) : vérifié
+numériquement (`anim_engine.sample` avec/sans `secondary_motion`,
+comparés échantillon par échantillon) que le relevement dépasse
+maintenant sa cible de plusieurs degrés avant de s'y stabiliser en
+oscillant (torse : cible atteint -12°, le ressort descend jusqu'à
+-18.3° avant de remonter et se stabiliser — un vrai dépassement/
+rebond mesuré, pas juste espéré). `calibrate.py` revérifié après coup :
+aucune régression (mêmes clearances aériennes, 0 anomalie, VFX sain).
+
+Lecteur reconstruit, 8 des 9 captures recapturées (`01-crouch` identique
+— sa caméra n'a pas changé, vérifié par `git status` avant/après) et
+revues moi-même une à une.
+
 ## Vérification (captures)
 
 9 captures committées dans `captures/verification/`, toutes vérifiées
