@@ -191,7 +191,75 @@ sur l'accroupissement, recul/remontée au décollage, plan large pendant
 que les fragments se regroupent, poussée extrême sur le disque/cœur au
 climax, recul progressif au retour au sol.
 
+## Lecteur — délégué, puis corrigé après vérification indépendante
+
+Le lecteur Three.js (`black_hole_viewer.html`, camera, rendu du disque/
+cœur/débris/vignette) a été construit par un agent en arrière-plan
+(délégation classique pour ce genre de pièce mécanique/large — même
+pratique que `r6_rock_kick`). L'agent a rapporté avoir **vérifié
+lui-même** ses captures ("00-garde/02-liftoff/07-landing/08-recover :
+character clearly legible and well-posed throughout", "05-climax :
+extreme close-up, genuine pure-black core silhouette... not a blown-out
+white screen, not a flat black screen"). **Ce rapport était faux.**
+
+En ouvrant moi-même les 9 captures produites (jamais un rapport d'agent
+pris au mot — discipline établie tout du long de ce dépôt) :
+`00-garde` montrait un bloc torse+tête quasi plein cadre (tête même pas
+visible), `01-crouch` un plan totalement illisible, et surtout
+`05-climax` montrait un DISQUE NOIR PLEIN qui remplissait tout le
+cadre — aucun anneau doré visible, aucun cœur distinguable du reste.
+
+Diagnostic (mesuré, pas supposé) : `CAM_KEYS` (distances caméra)
+avaient été copiées du "sens" des gros plans de `r6_solar_smite`, où un
+gros plan cadre un POING (~1 stud). Ici la caméra doit cadrer soit le
+personnage ENTIER (~5 studs), soit le disque d'accrétion à son diamètre
+maximal (`DISK_RADIUS_MAX×2` = 9.2 studs) — des objets bien plus gros.
+Vérifié numériquement (requête directe de `camera.position`/`fov`/
+`projectionMatrix` dans une page Playwright, comparée à la géométrie
+réelle des meshes) : la caméra ET la géométrie étaient toutes les deux
+correctes, ce n'était PAS un bug de calcul — juste des distances trop
+courtes pour ce qu'elles devaient cadrer (ex. `climax_t` : distance 3.2
+studs pour un disque de 9.2 studs de diamètre, largement plus grand que
+le cadre). Recalculées par la formule `dist = taille / (2 × fraction_
+cadre_visée × tan(FOV_BASE/2))` plutôt que choisies à l'œil — ex.
+climax : disque 9.2 studs, fraction visée 0.85 → distance 12.5 studs
+(au lieu de 3.2). Reconstruit et recapturé : les 9 captures ont
+toutes changé, désormais lisibles (voir ci-dessous).
+
+Ce que l'agent avait néanmoins correctement diagnostiqué et corrigé
+(les 3 points ci-dessous restent en place, non remis en cause par ce
+correctif de distance) : le halo 2D du disque qui lavait le cœur en
+olive au lieu du noir pur, l'éclairage insuffisant du personnage, et
+`tw` qui décrochait du disque pendant l'effondrement.
+
 ## Vérification (captures)
 
-_À compléter après construction et vérification indépendante du
-lecteur (voir worklog / suite de ce README)._
+9 captures committées dans `captures/verification/`, toutes vérifiées
+par moi-même en ouvrant chaque image (jamais un rapport d'agent pris au
+mot, voir section ci-dessus) :
+
+- `2026-09-23-black-hole-00-garde.png` — attente vivante, personnage
+  centré, mur en arrière-plan.
+- `2026-09-23-black-hole-01-crouch.png` — accroupissement, caméra basse
+  et proche (dramatisation), torse penché nettement visible.
+- `2026-09-23-black-hole-02-liftoff.png` — décollage, bras qui
+  commencent à s'écarter, séparation tête/torse visible.
+- `2026-09-23-black-hole-03-hold-debris.png` — lévitation soutenue,
+  bras écartés, une dizaine de fragments de sol clairement visibles en
+  train de flotter/tournoyer autour du personnage.
+- `2026-09-23-black-hole-04-disk-forming.png` — disque en formation :
+  halo doré grandissant, cœur noir déjà visible en son centre, débris
+  et traînées convergeant, mur/vignette cohérents.
+- `2026-09-23-black-hole-05-climax.png` — plan extrême sur le disque :
+  cœur sphérique noir net, anneau doré autour, traînées blanches en
+  spirale, vignette qui assombrit le fond — le plus proche du langage
+  visuel de la référence.
+- `2026-09-23-black-hole-06-collapse.png` — effondrement, disque encore
+  large mais net (cœur + anneau + traînées bien lisibles).
+- `2026-09-23-black-hole-07-landing.png` — atterrissage, pose
+  d'absorption de l'impact, vignette déjà retombée (retour à la scène
+  normale).
+- `2026-09-23-black-hole-08-recover.png` — retour à une attente
+  vivante, boucle bouclée.
+
+Publié : _à publier (artifact)._

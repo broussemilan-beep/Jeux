@@ -1,0 +1,846 @@
+<title>Trou noir</title>
+<style>
+:root {
+  --bg: #050308; --panel: #120c1e; --panel-2: #1b1330; --ink: #ece6f7;
+  --sub: #a495c9; --grid: #2c2148; --rig: #cfc9dd;
+  --edge: #050308; --ghost: #4a3e6e; --accent: #f2a53c; --gold: #ffcf6b; --hold: #d98a2a; --impact: #c23eff;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f3efe4; --panel: #ffffff; --panel-2: #ece4d4; --ink: #221c2e;
+    --sub: #635a7c; --grid: #ddd2b8; --rig: #3a3350;
+    --edge: #221c2e; --ghost: #b6a8d8; --accent: #c1780f; --gold: #a9781c; --hold: #b3661a; --impact: #8a2ec2;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f3efe4; --panel: #ffffff; --panel-2: #ece4d4; --ink: #221c2e;
+  --sub: #635a7c; --grid: #ddd2b8; --rig: #3a3350;
+  --edge: #221c2e; --ghost: #b6a8d8; --accent: #c1780f; --gold: #a9781c; --hold: #b3661a; --impact: #8a2ec2;
+}
+body { background: var(--bg); color: var(--ink); font-family: "Iowan Old Style", "Georgia", serif; }
+.stage { max-width: 980px; margin: 0 auto; padding: 28px 20px 48px; }
+.eyebrow { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin: 0 0 6px; font-family: Oswald, sans-serif; }
+h1 { font-size: 30px; margin: 0 0 10px; }
+.sub { color: var(--sub); font-size: 14.5px; line-height: 1.55; max-width: 760px; margin: 0 0 20px; }
+.card { background: var(--panel); border: 1px solid var(--grid); border-radius: 14px; padding: 14px; }
+.viewport-wrap { position: relative; border-radius: 10px; overflow: hidden; background: #000; }
+canvas { display: block; width: 100%; height: auto; }
+#overlay { position: absolute; inset: 0; pointer-events: none; }
+.chip { position: absolute; top: 10px; font-family: Oswald, sans-serif; font-size: 12px; padding: 5px 10px; border-radius: 999px; background: rgba(0,0,0,0.45); color: #fff; letter-spacing: 0.03em; }
+.chip.left { left: 10px; } .chip.right { right: 10px; }
+.controls { padding-top: 12px; display: flex; flex-direction: column; gap: 10px; }
+.transport { display: flex; align-items: center; gap: 12px; }
+.play-btn { width: 40px; height: 40px; border-radius: 50%; border: none; background: var(--accent); color: #1b1330; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+.play-btn svg { width: 18px; height: 18px; }
+.scrub-col { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.phase-track { display: flex; height: 6px; border-radius: 4px; overflow: hidden; }
+.phase-seg { height: 100%; }
+.phase-seg[data-kind="calm"] { background: var(--ghost); }
+.phase-seg[data-kind="charge"] { background: var(--gold); }
+.phase-seg[data-kind="hold"] { background: var(--hold); }
+.phase-seg[data-kind="impact"] { background: var(--impact); }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+.row-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+.phase-label { font-family: Oswald, sans-serif; font-size: 13px; color: var(--sub); text-transform: uppercase; letter-spacing: 0.05em; }
+.phase-label b { color: var(--ink); }
+.btn-row { display: flex; gap: 4px; background: var(--panel-2); border-radius: 8px; padding: 3px; }
+.btn-row button { border: none; background: transparent; color: var(--sub); font-family: Oswald, sans-serif; font-size: 12px; padding: 5px 10px; border-radius: 6px; cursor: pointer; }
+.btn-row button.active { background: var(--accent); color: #1b1330; }
+.note { color: var(--sub); font-size: 13px; line-height: 1.6; max-width: 780px; margin-top: 16px; }
+.note strong { color: var(--ink); }
+</style>
+
+<div class="stage">
+  <p class="eyebrow">Prototype isolé · Roblox R6 · compétence solo · disque d'accrétion + coeur noir procéduraux</p>
+  <h1>Trou noir — accroupissement, lévitation, effondrement gravitationnel</h1>
+  <p class="sub">Un seul personnage : accroupissement marqué (anticipation), relevé explosif en lévitation avec les bras
+    écartés à l'horizontale (geste télékinésique, pas un lever au-dessus de la tête), des fragments du sol arrachés
+    qui orbitent en se resserrant vers un point central jusqu'à former un disque d'accrétion doré et un coeur
+    spherique pur noir, un pic de tension gravitationnelle, puis l'effondrement et l'atterrissage. Pose du personnage
+    résolue par le moteur d'animation (<code>choreography.character_track()</code>) ; tout le VFX (fragments/disque/
+    coeur/traînées/vignette) est un décor procédural indépendant recalculé ici à partir des mêmes formules que
+    <code>black_hole_track.py</code> — jamais une trajectoire pré-calculée rejouée telle quelle, jamais improvisé côté
+    lecteur.</p>
+
+  <div class="card">
+    <div class="viewport-wrap">
+      <canvas id="stage" width="1200" height="900"></canvas>
+      <canvas id="overlay" width="1200" height="900"></canvas>
+      <div class="chip left" id="shotChip">phase · <b id="phaseName">garde</b></div>
+      <div class="chip right" id="timecode">0.00s / 0.00s</div>
+    </div>
+
+    <div class="controls">
+      <div class="transport">
+        <button class="play-btn" id="playBtn" aria-label="Lecture / pause">
+          <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M8 5v14l11-7z"/></svg>
+          <svg id="pauseIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+        </button>
+        <div class="scrub-col">
+          <div class="phase-track" id="phaseTrack"></div>
+          <input type="range" id="scrub" min="0" max="1000" value="0" step="1" aria-label="Position dans la scène">
+        </div>
+      </div>
+      <div class="row-bottom">
+        <div class="phase-label">segment <b id="phaseName2">garde</b></div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap">
+          <div class="btn-row" id="speedRow">
+            <button data-speed="0.1">0.1×</button>
+            <button data-speed="0.25">0.25×</button>
+            <button data-speed="0.5">0.5×</button>
+            <button data-speed="1" class="active">1×</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="note"><strong>Fragments arrachés, pas nés en l'air</strong> : chaque fragment part d'une position au sol
+    dispersée en anneau irrégulier autour du personnage (<code>black_hole_track._DEBRIS_SPAWN</code>, seed fixe),
+    monte vers un point d'orbite (ease-out, "arraché"), puis orbite en spirale — angle ET rayon changent tous les
+    deux, vitesse angulaire qui AUGMENTE en approchant le centre (<code>debris_state()</code>, reimplémenté ici à
+    l'identique) — jusqu'à disparaître sous <code>CONSUME_RADIUS</code>. Échelonnement individuel
+    (<code>stagger</code>) pour que ça se lise comme 16 fragments indépendants, pas un seul amas synchrone.</p>
+  <p class="note"><strong>Vignette qui assombrit le FOND, jamais l'action</strong> : correction directe issue de
+    <code>experiments/_shared/vfx_craft_checklist.md</code> (« opacité plein écran qui cache l'action ») —
+    <code>drawVignette()</code> ci-dessous est un dégradé radial STRICTEMENT transparent au centre, qui ne noircit
+    que les bords, quel que soit <code>vignette_level(t)</code> (jusqu'à 0.75 pendant le hold, pic bref à
+    l'effondrement). Le disque/coeur/personnage restent lisibles par contraste — jamais un voile uniforme.</p>
+  <p class="note"><strong>Traînées qui spiralent VERS le disque</strong> : vocabulaire distinct des particules
+    aspirées en ligne droite de <code>r6_solar_smite</code> — ici <code>streak_state()</code> fait tourner l'angle
+    ET rétrécir le rayon simultanément (vraie spirale), rejouée en JS trait pour trait depuis les mêmes constantes
+    par traînée (<code>r0</code>/<code>angle0</code>/<code>speed</code>/<code>tilt</code>). Alpha qui monte vite puis
+    retombe en approchant le disque (jamais une apparition/disparition nette).</p>
+  <p class="note"><strong>Coeur toujours noir, quelle que soit la lumière de la scène</strong> : la sphère du coeur
+    utilise un matériau non-éclairé (<code>MeshBasicMaterial</code>), donc jamais teintée par la lumière chaude du
+    disque ou les projecteurs de scène — c'est le point : un vrai vide optique, pas juste une sphère sombre parmi
+    d'autres. Le disque (additif, transparent) est rendu APRÈS elle dans l'ordre de profondeur normal : la sphère
+    opaque l'occulte correctement au centre.</p>
+  <p class="note"><strong>Caméra : cadrage large qui se resserre en extrême gros plan au climax</strong> — pousse-in
+    dramatique et bas dès l'accroupissement (<code>CAM_KEYS</code>, distance divisée par ~2 par rapport à l'ouverture),
+    recul en plan large pendant que les fragments convergent (le personnage peut sortir du cadre, comme dans la
+    référence), puis cadrage EXTRÊME sur le disque/coeur au climax (<code>tw≈1</code> : la cible caméra bascule
+    presque entièrement sur <code>black_hole_center</code>, pas le torse) avec un petit coup de caméra
+    (<code>climaxKick()</code> — kick de FOV + secousse à décroissance rapide, pas un hitstop : il n'y a pas de coup
+    ici, seulement un pic de puissance).</p>
+  <p class="note"><strong>Rig et décor du lecteur</strong> : même rig R6 vérifié (dépôt Adonis, licence MIT — voir
+    <code>rig/PROVENANCE.md</code>) et mêmes textures de décor (<code>stone_ground</code>, <code>ruin_wall</code>)
+    que <code>r6_solar_smite</code> — ni le décor ni les textures n'existent dans un fichier de compétence livré,
+    c'est la mise en scène de CE lecteur. Le personnage n'a pas de cape/écharpe (voir amendement §1 du mandat).</p>
+</div>
+
+<script>__THREE_JS__</script>
+<script>
+const DATA = __SCENE_DATA__;
+const TEXTURES_B64 = __TEXTURES_B64__;
+const LEGS = new Set(["Right Leg", "Left Leg"]);
+const KT = DATA.key_times;
+const BH = DATA.black_hole;
+const VFX = BH.vfx_events;
+const DURATION = DATA.duration;
+
+const glCanvas = document.getElementById("stage");
+const overlay = document.getElementById("overlay");
+const octx = overlay.getContext("2d");
+const scrub = document.getElementById("scrub");
+const playBtn = document.getElementById("playBtn");
+const playIcon = document.getElementById("playIcon");
+const pauseIcon = document.getElementById("pauseIcon");
+const phaseNameEl = document.getElementById("phaseName");
+const phaseNameEl2 = document.getElementById("phaseName2");
+const timecodeEl = document.getElementById("timecode");
+const phaseTrack = document.getElementById("phaseTrack");
+
+// ---------------------------------------------------------------------
+// Pas de hitstop dans ce prototype (aucun coup, aucune cible) -- temps de
+// pose == temps reel, mais on expose quand meme poseTime()/poseToReal()
+// (identite) pour respecter l'API attendue par capture_shots.py, meme
+// convention que les autres lecteurs de ce depot.
+function poseTime(tReal) { return tReal; }
+function poseToReal(pt) { return pt; }
+const REAL_DURATION = DURATION;
+
+timecodeEl.textContent = "0.00s / " + REAL_DURATION.toFixed(2) + "s";
+
+// ---------------------------------------------------------------------
+// Segmentation de la scene -- 5 segments derives de key_times, memes noms
+// que choreography.character_track()["phases"] (pas dans le JSON, on les
+// recompose ici a la main a partir des memes bornes).
+const PHASES = [
+  { name: "garde", kind: "calm", t0: 0, t1: KT.crouch_t },
+  { name: "accroupissement", kind: "charge", t0: KT.crouch_t, t1: KT.rise_t },
+  { name: "lévitation", kind: "hold", t0: KT.rise_t, t1: KT.climax_t },
+  { name: "climax — effondrement", kind: "impact", t0: KT.climax_t, t1: KT.land_t },
+  { name: "atterrissage — attente", kind: "calm", t0: KT.land_t, t1: KT.idle_out_end },
+];
+function rebuildPhaseTrack() {
+  phaseTrack.innerHTML = "";
+  PHASES.forEach(p => {
+    const seg = document.createElement("div");
+    seg.className = "phase-seg";
+    seg.dataset.kind = p.kind;
+    seg.style.width = (Math.max(0, p.t1 - p.t0) / REAL_DURATION * 100) + "%";
+    phaseTrack.appendChild(seg);
+  });
+}
+rebuildPhaseTrack();
+function currentPhase(t) {
+  for (const p of PHASES) if (t >= p.t0 - 1e-6 && t < p.t1 - 1e-6) return p;
+  return PHASES[PHASES.length - 1];
+}
+
+// ---------------------------------------------------------------------
+// Echantillonnage personnage -- un seul rig (pas d'attaquant/mannequin).
+function frameAt(frames, t) {
+  const dt = 1 / DATA.fps;
+  const idx = Math.max(0, Math.min(frames.length - 2, Math.floor(t / dt)));
+  const f0 = frames[idx], f1 = frames[idx + 1];
+  const frac = Math.max(0, Math.min(1, (t - f0.t) / (f1.t - f0.t || 1)));
+  return { f0, f1, frac };
+}
+function slerpish(a, b, f) {
+  const m = a.map((v, i) => v + (b[i] - v) * f);
+  const c0 = [m[0], m[3], m[6]], c1 = [m[1], m[4], m[7]];
+  const n0 = Math.hypot(c0[0], c0[1], c0[2]) || 1;
+  const e0 = c0.map(v => v / n0);
+  const d = e0[0]*c1[0] + e0[1]*c1[1] + e0[2]*c1[2];
+  let e1 = c1.map((v, i) => v - d * e0[i]);
+  const n1 = Math.hypot(e1[0], e1[1], e1[2]) || 1;
+  e1 = e1.map(v => v / n1);
+  const e2 = [e0[1]*e1[2]-e0[2]*e1[1], e0[2]*e1[0]-e0[0]*e1[2], e0[0]*e1[1]-e0[1]*e1[0]];
+  return [e0[0], e1[0], e2[0], e0[1], e1[1], e2[1], e0[2], e1[2], e2[2]];
+}
+function sampleChar(frames, t) {
+  const { f0, f1, frac } = frameAt(frames, t);
+  const out = {};
+  for (const part of DATA.part_order) {
+    if (part === "HumanoidRootPart") continue;
+    const a = f0[part], b = f1[part];
+    out[part] = { p: a.p.map((v, i) => v + (b.p[i] - v) * frac), r: slerpish(a.r, b.r, frac) };
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------------
+// VFX du trou noir -- reimplementation JS PURE des fonctions de
+// black_hole_track.py (memes constantes/seuils lus depuis BH, jamais
+// redevines) : debris_state/disk_radius/core_radius/disk_opacity/
+// vignette_level/streak_state.
+function easeOut(f) { return 1.0 - (1.0 - f) * (1.0 - f); }
+function easeIn(f) { return f * f; }
+function clamp01(f) { return Math.max(0, Math.min(1, f)); }
+const CENTER = BH.black_hole_center;
+
+function debrisState(i, t) {
+  const d = BH.debris[i];
+  const launch = VFX.debris_launch, gather = VFX.debris_gather;
+  const stagger = d.stagger;
+  const tLaunch0 = launch.t0 + stagger * 0.5 * (launch.t1 - launch.t0);
+  const tLaunch1 = tLaunch0 + (launch.t1 - launch.t0) * 0.5;
+  const tGather1 = gather.t1 - (1.0 - stagger) * 0.6;
+  const spawn = d.spawn, orbitR0 = d.orbit_r, orbitY = d.orbit_y, angle0 = d.angle0, size = d.size;
+  if (t < tLaunch0) return { pos: spawn.slice(), scale: size, visible: true };
+  const orbitPoint0 = [CENTER[0] + orbitR0 * Math.cos(angle0), CENTER[1] + orbitY, CENTER[2] + orbitR0 * Math.sin(angle0)];
+  if (t < tLaunch1) {
+    const f = easeOut(clamp01((t - tLaunch0) / Math.max(1e-6, tLaunch1 - tLaunch0)));
+    const pos = [0, 1, 2].map(k => spawn[k] + f * (orbitPoint0[k] - spawn[k]));
+    return { pos, scale: size, visible: true };
+  }
+  if (t >= tGather1) return { pos: CENTER.slice(), scale: 0.0, visible: false };
+  const f = easeIn(clamp01((t - tLaunch1) / Math.max(1e-6, tGather1 - tLaunch1)));
+  const radius = orbitR0 + f * (BH.consume_radius - orbitR0);
+  const angle = angle0 + 5.5 * f + 3.0 * f * f;
+  const y = orbitY * (1.0 - 0.4 * f);
+  const pos = [CENTER[0] + radius * Math.cos(angle), CENTER[1] + y, CENTER[2] + radius * Math.sin(angle)];
+  const scale = size * (1.0 - 0.5 * f);
+  return { pos, scale, visible: true };
+}
+
+function diskRadius(t) {
+  const form = VFX.disk_form, collapse = VFX.collapse;
+  if (t < form.t0) return 0.0;
+  if (t < form.t1) return BH.disk_radius_max * easeOut(clamp01((t - form.t0) / (form.t1 - form.t0)));
+  if (t < collapse.t0) return BH.disk_radius_max;
+  if (t < collapse.t1) {
+    const f = clamp01((t - collapse.t0) / (collapse.t1 - collapse.t0));
+    return BH.disk_radius_max * (1.0 - easeIn(f));
+  }
+  return 0.0;
+}
+function coreRadius(t) {
+  const r = diskRadius(t);
+  return BH.core_radius_max * Math.min(1.0, r / BH.disk_radius_max);
+}
+function diskOpacity(t) {
+  const climax = VFX.climax;
+  const r = diskRadius(t);
+  if (r <= 0) return 0.0;
+  let base = Math.pow(Math.min(1.0, r / BH.disk_radius_max), 0.5);
+  if (t >= climax.t0 && t <= climax.t1 + 0.4) {
+    base = clamp01(base + 0.12 * Math.sin((t - climax.t0) * 18.0));
+  }
+  return base;
+}
+function vignetteLevel(t) {
+  const form = VFX.disk_form, collapse = VFX.collapse;
+  if (t < form.t0) return 0.0;
+  if (t < form.t1) return 0.75 * easeOut(clamp01((t - form.t0) / (form.t1 - form.t0)));
+  if (t < collapse.t0) return 0.75;
+  if (t < collapse.t1) {
+    const f = clamp01((t - collapse.t0) / (collapse.t1 - collapse.t0));
+    return 0.75 * (1.0 - f) + 1.0 * easeIn(f);
+  }
+  return 0.0;
+}
+// Au-dela de collapse.t1 (== land_t) : la reference video coupe au noir
+// avant cet instant -- la remontee de lumiere vers l'atterrissage est une
+// decision de mise en scene ASSUMEE de CE lecteur (voir docstring
+// black_hole_track.vignette_level(), jamais lue dans la reference).
+// vignette_level(collapse.t1) vaut deja 0.0 cote Python -- on clampe
+// simplement a 0 pour tout t > collapse.t1, par securite.
+function vignetteAt(t) {
+  if (t > VFX.collapse.t1) return 0.0;
+  return vignetteLevel(t);
+}
+
+function streakState(i, t) {
+  const s = BH.streaks[i];
+  const form = VFX.disk_form, collapse = VFX.collapse;
+  const t0 = form.t0, t1 = collapse.t1;
+  if (t < t0 || t > t1) return null;
+  const cycle = (t - t0) * s.speed;
+  const f = cycle - Math.floor(cycle);
+  const r = s.r0 * (1.0 - easeIn(f));
+  const angle = s.angle0 + 6.0 * f;
+  const y = s.tilt * (1.0 - f);
+  const pos = [CENTER[0] + r * Math.cos(angle), CENTER[1] + y, CENTER[2] + r * Math.sin(angle)];
+  return { pos, f };
+}
+
+// ---------------------------------------------------------------------
+// Scene Three.js -- meme structure que r6_solar_smite (dome de ciel,
+// lumiere directionnelle + remplissage hemispherique, sol/mur textures,
+// personnage en BoxGeometry par segment).
+const renderer = new THREE.WebGLRenderer({ canvas: glCanvas, antialias: true });
+renderer.setSize(1200, 900, false);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+if (renderer.outputColorSpace !== undefined) renderer.outputColorSpace = THREE.SRGBColorSpace;
+if (renderer.physicallyCorrectLights !== undefined) renderer.physicallyCorrectLights = true;
+if (renderer.toneMapping !== undefined) { renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05; }
+
+const scene = new THREE.Scene();
+const HORIZON_COLOR = 0x241634, ZENITH_COLOR = 0x030106;
+scene.background = new THREE.Color(ZENITH_COLOR);
+scene.fog = new THREE.Fog(HORIZON_COLOR, 12, 46);
+
+const FOV_BASE = 46;
+const camera = new THREE.PerspectiveCamera(FOV_BASE, 1200 / 900, 0.1, 220);
+
+function buildSkyDome() {
+  const geo = new THREE.SphereGeometry(160, 24, 16);
+  const pos = geo.attributes.position;
+  const colors = new Float32Array(pos.count * 3);
+  const horizon = new THREE.Color(HORIZON_COLOR), zenith = new THREE.Color(ZENITH_COLOR);
+  const tmp = new THREE.Color();
+  for (let i = 0; i < pos.count; i++) {
+    const y = pos.getY(i) / 160;
+    const f = Math.max(0, Math.min(1, (y + 0.05) * 1.05));
+    tmp.copy(horizon).lerp(zenith, f);
+    colors[i * 3] = tmp.r; colors[i * 3 + 1] = tmp.g; colors[i * 3 + 2] = tmp.b;
+  }
+  geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+  const mat = new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide, fog: false, depthWrite: false });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.renderOrder = -10;
+  return mesh;
+}
+scene.add(buildSkyDome());
+
+// Etoiles -- semees de facon deterministe (hash par index), purement
+// cosmetique (aucune source Python), simple couche d'atmosphere.
+function buildStars(n) {
+  const positions = new Float32Array(n * 3);
+  for (let i = 0; i < n; i++) {
+    const u = Math.sin(i * 12.9898) * 43758.5453 % 1;
+    const v = Math.sin(i * 78.233 + 1.7) * 12543.19 % 1;
+    const theta = Math.abs(u) * Math.PI * 2;
+    const phi = Math.acos(Math.max(-1, Math.min(1, Math.abs(v) * 2 - 1)));
+    const r = 140;
+    positions[i*3] = r * Math.sin(phi) * Math.cos(theta);
+    positions[i*3+1] = Math.abs(r * Math.cos(phi)) * 0.6 + 10;
+    positions[i*3+2] = r * Math.sin(phi) * Math.sin(theta);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  const mat = new THREE.PointsMaterial({ color: 0xfff4e0, size: 1.1, sizeAttenuation: false, transparent: true, opacity: 0.55, fog: false });
+  const pts = new THREE.Points(geo, mat);
+  pts.renderOrder = -9;
+  return pts;
+}
+scene.add(buildStars(340));
+
+// Lumieres -- intensites revues a la hausse par rapport a un premier jet :
+// le sol/mur (normales horizontales, tres exposees a fillLight) lisaient
+// bien des le debut, mais le rig (normales surtout VERTICALES, peu
+// exposees a une directionnelle venant d'en haut) restait illisible --
+// silhouette entiere qui se fondait dans le fond cosmique sombre sur les
+// captures 00-garde/01-crouch/08-recover (trouve par capture, corrige
+// ici : jamais un defaut qu'on decrit sans le reparer).
+const keyLight = new THREE.DirectionalLight(0xe4d6ff, 3.2);
+keyLight.position.set(-4, 12, 4);
+keyLight.castShadow = true;
+keyLight.shadow.mapSize.set(2048, 2048);
+keyLight.shadow.camera.left = -12; keyLight.shadow.camera.right = 12;
+keyLight.shadow.camera.top = 15; keyLight.shadow.camera.bottom = -3;
+keyLight.shadow.camera.near = 1; keyLight.shadow.camera.far = 36;
+keyLight.shadow.bias = -0.0015;
+scene.add(keyLight);
+scene.add(keyLight.target);
+keyLight.target.position.set(0, 4, -2);
+
+const fillLight = new THREE.HemisphereLight(0x6a5aa0, 0x1c1430, 1.0);
+scene.add(fillLight);
+
+const rimLight = new THREE.DirectionalLight(0x9a6cff, 0.6);
+rimLight.position.set(4, 6, -14);
+scene.add(rimLight);
+
+// Fill frontal DEDIE au personnage (pas au decor) -- depuis a peu pres la
+// direction camera, faible mais suffisant pour que les faces AVANT
+// (celles que la camera voit) du rig se detachent du fond quelle que soit
+// l'orientation du personnage (contrairement a keyLight/fillLight seules,
+// qui eclairent surtout les surfaces horizontales -- voir note ci-dessus).
+const charFill = new THREE.DirectionalLight(0xd8ccff, 0.9);
+charFill.position.set(0, 6, 10);
+charFill.target.position.set(0, 4, 0);
+scene.add(charFill);
+scene.add(charFill.target);
+
+// Lumiere reelle du disque -- eclaire vraiment le personnage/les debris
+// depuis black_hole_center, intensite pilotee par disk_opacity(t) (pas
+// seulement un halo 2D peint par-dessus, voir plus bas).
+const bhLight = new THREE.PointLight(0xffd9a0, 0, 26, 1.7);
+bhLight.position.set(CENTER[0], CENTER[1], CENTER[2]);
+scene.add(bhLight);
+
+const texLoader = new THREE.TextureLoader();
+function loadTex(name, repeatX, repeatY) {
+  const tex = texLoader.load("data:image/png;base64," + TEXTURES_B64[name]);
+  tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(repeatX, repeatY);
+  if (tex.colorSpace !== undefined) tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+const groundTex = loadTex("stone_ground", 22, 22);
+const groundMat = new THREE.MeshStandardMaterial({ map: groundTex, roughness: 0.92, metalness: 0.02 });
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), groundMat);
+ground.rotation.x = -Math.PI / 2;
+ground.position.set(0, 0, -6);
+ground.receiveShadow = true;
+scene.add(ground);
+
+const wallTex = loadTex("ruin_wall", 14, 2.4);
+const wallMat = new THREE.MeshStandardMaterial({ map: wallTex, roughness: 0.97, metalness: 0.0 });
+const wall = new THREE.Mesh(new THREE.PlaneGeometry(54, 10), wallMat);
+wall.position.set(0, 4.9, -19.5);
+wall.receiveShadow = true;
+scene.add(wall);
+
+function rgbToThreeColor(rgbArr) { return new THREE.Color(rgbArr[0] / 255, rgbArr[1] / 255, rgbArr[2] / 255); }
+function hexToRgb(hex) {
+  hex = hex.replace("#", "").trim();
+  const n = parseInt(hex, 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+function buildRigMeshes(rgb, roughness) {
+  const meshes = {};
+  for (const part of DATA.part_order) {
+    if (part === "HumanoidRootPart") continue;
+    const size = DATA.part_sizes[part];
+    const color = LEGS.has(part) ? rgb.clone().multiplyScalar(0.72) : rgb;
+    const mat = new THREE.MeshStandardMaterial({ color, roughness, metalness: 0.08 });
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(size[0], size[1], size[2]), mat);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    scene.add(mesh);
+    meshes[part] = mesh;
+  }
+  return meshes;
+}
+const rigMeshes = buildRigMeshes(rgbToThreeColor(hexToRgb(cssVar("--rig"))), 0.5);
+
+const _m4 = new THREE.Matrix4();
+function applyPoseToMesh(mesh, p, r) {
+  mesh.position.set(p[0], p[1], p[2]);
+  _m4.set(
+    r[0], r[1], r[2], 0,
+    r[3], r[4], r[5], 0,
+    r[6], r[7], r[8], 0,
+    0, 0, 0, 1,
+  );
+  mesh.quaternion.setFromRotationMatrix(_m4);
+}
+
+// ---------------------------------------------------------------------
+// Debris -- boites de tumbling, gris-pierre sombre, elongation par axe
+// derivee d'un hash sur l'index (purement cosmetique -- jamais une
+// source d'alea supplementaire qui pourrait desynchroniser de Python,
+// voir consigne). Rotation continue fonction DIRECTE de t (jamais
+// accumulee frame par frame -- doit rester correcte a n'importe quel
+// instant scrubbe/capture, pas seulement en lecture continue).
+function hash1(i, salt) {
+  const x = Math.sin(i * 127.1 + salt * 311.7) * 43758.5453;
+  return x - Math.floor(x);
+}
+const N_DEBRIS = BH.n_debris;
+const debrisMeshes = [];
+const debrisSpin = [];
+const debrisMat = new THREE.MeshStandardMaterial({ color: 0x554d46, roughness: 0.95, metalness: 0.02 });
+for (let i = 0; i < N_DEBRIS; i++) {
+  const ax = 0.55 + 0.55 * hash1(i, 1.3);
+  const ay = 0.45 + 0.55 * hash1(i, 2.7);
+  const az = 0.5 + 0.55 * hash1(i, 4.1);
+  const geo = new THREE.BoxGeometry(ax, ay, az);
+  const mat = debrisMat.clone();
+  mat.color = new THREE.Color().setHSL(0.08, 0.12, 0.22 + 0.1 * hash1(i, 9.9));
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.castShadow = true;
+  mesh.visible = false;
+  scene.add(mesh);
+  debrisMeshes.push(mesh);
+  debrisSpin.push({
+    x: (0.6 + 1.6 * hash1(i, 5.3)) * (hash1(i, 5.9) > 0.5 ? 1 : -1),
+    y: (0.6 + 1.6 * hash1(i, 6.3)) * (hash1(i, 6.9) > 0.5 ? 1 : -1),
+    z: (0.6 + 1.6 * hash1(i, 7.3)) * (hash1(i, 7.9) > 0.5 ? 1 : -1),
+    p0: hash1(i, 8.1) * Math.PI * 2, p1: hash1(i, 8.7) * Math.PI * 2, p2: hash1(i, 9.3) * Math.PI * 2,
+  });
+}
+
+// ---------------------------------------------------------------------
+// Disque d'accretion -- anneau vertex-colore (chaud au centre, dore au
+// bord), rayon interieur EXACTEMENT proportionnel a core_radius_max/
+// disk_radius_max (0.25 -- ni improvise ni ajuste a l'oeil, voir
+// black_hole_track.py : CORE_RADIUS_MAX=1.15, DISK_RADIUS_MAX=4.6) pour
+// que le bord interieur du disque colle toujours au bord du coeur noir,
+// quelle que soit l'echelle courante. Incline ~75 deg par rapport a
+// l'horizontale (mostly edge-on avec une legere ouverture, pas un plan
+// vu de dessus) -- une legere modulation angulaire (bandes) casse
+// l'uniformite et rend la rotation lente visible (variance, pas une
+// texture plate).
+const DISK_INNER_FRAC = BH.core_radius_max / BH.disk_radius_max;
+function buildDiskRing() {
+  const geo = new THREE.RingGeometry(DISK_INNER_FRAC, 1.0, 96, 1);
+  const pos = geo.attributes.position;
+  const colors = new Float32Array(pos.count * 3);
+  const hot = rgbToThreeColor(BH.colors.disk_hot), rim = rgbToThreeColor(BH.colors.disk_rim);
+  const tmp = new THREE.Color();
+  for (let i = 0; i < pos.count; i++) {
+    const x = pos.getX(i), y = pos.getY(i);
+    const r = Math.hypot(x, y);
+    const ang = Math.atan2(y, x);
+    const f = clamp01((r - DISK_INNER_FRAC) / (1.0 - DISK_INNER_FRAC));
+    tmp.copy(hot).lerp(rim, Math.pow(f, 0.7));
+    const band = 1.0 + 0.18 * Math.sin(ang * 5.0 + r * 3.0);
+    colors[i*3] = Math.min(1, tmp.r * band);
+    colors[i*3+1] = Math.min(1, tmp.g * band);
+    colors[i*3+2] = Math.min(1, tmp.b * band);
+  }
+  geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+  const mat = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, opacity: 0, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false });
+  return new THREE.Mesh(geo, mat);
+}
+const diskTilt = new THREE.Group();
+diskTilt.rotation.x = THREE.MathUtils.degToRad(-18); // ~72 deg depuis l'horizontale : mostly edge-on, legerement ouvert
+diskTilt.position.set(CENTER[0], CENTER[1], CENTER[2]);
+scene.add(diskTilt);
+const diskRing = buildDiskRing();
+diskTilt.add(diskRing);
+diskTilt.visible = false;
+
+// Coeur -- sphere pure noire, materiau NON eclaire (MeshBasicMaterial) :
+// jamais teintee par la lumiere de la scene/du disque, occulte le disque
+// normalement (opaque, depth-teste) puisqu'elle est rendue AVANT les
+// objets transparents dans l'ordre par defaut de Three.js.
+const coreMat = new THREE.MeshBasicMaterial({ color: rgbToThreeColor(BH.colors.core) });
+const coreMesh = new THREE.Mesh(new THREE.SphereGeometry(1, 28, 20), coreMat);
+coreMesh.position.set(CENTER[0], CENTER[1], CENTER[2]);
+coreMesh.visible = false;
+scene.add(coreMesh);
+
+// ---------------------------------------------------------------------
+// Camera -- CAM_KEYS en TEMPS DE POSE (identique au temps reel ici, pas
+// de hitstop). tw mele l'ancre "torse du personnage" vers
+// "black_hole_center" -- au climax (tw=1.0) le cadrage est presque
+// entierement sur le disque/coeur, personnage hors-sujet, comme la
+// reference video (R5 : plan extreme sur le disque, personnage hors
+// cadre).
+function cameraDir(az, el) {
+  return new THREE.Vector3(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el));
+}
+function smoothstep(e0, e1, x) { const t = Math.max(0, Math.min(1, (x - e0) / ((e1 - e0) || 1e-6))); return t * t * (3 - 2 * t); }
+function lerp(a, b, f) { return a + (b - a) * f; }
+
+const MID_HOLD_T = KT.rise_t + (KT.hold_end_t - KT.rise_t) * 0.5;
+// -- distances RECALCULEES par la formule d'angle (pas choisies a l'oeil
+// -- piege trouve en verifiant : les valeurs d'origine (3.2-7.0) etaient
+// copiees du "sens" des gros plans de r6_solar_smite, MAIS la-bas un gros
+// plan cadre un POING (~1 stud), ici il doit cadrer soit tout le
+// personnage (~5 studs de haut), soit le DISQUE COMPLET au diametre
+// maximal (DISK_RADIUS_MAX*2 = 9.2 studs) -- deux objets bien plus gros.
+// Formule : dist = taille / (2 * fraction_cadre_visee * tan(FOV_BASE/2)),
+// avec tan(23 deg) = 0.4245. Verifie par capture apres coup (voir
+// README) : sans ca, le climax/collapse.t0 (disque a 9.2 studs de
+// diametre) rendait un disque QUI DEBORDAIT DU CADRE (juste un rond noir
+// plein ecran, aucun anneau visible) a l'ancienne distance de 3.2-5.0.
+const CAM_KEYS = [
+  { t: 0.0,              az: 0,   el: 12, dist: 9.5,  tw: 0.0  },
+  { t: KT.crouch_t,      az: -15, el: 5,  dist: 5.0,  tw: 0.0  },
+  { t: KT.crouch_hold_t, az: -15, el: 5,  dist: 5.0,  tw: 0.0  },
+  { t: KT.rise_t,        az: -8,  el: 16, dist: 8.5,  tw: 0.1  },
+  { t: MID_HOLD_T,       az: 15,  el: 22, dist: 11.0, tw: 0.5  },
+  { t: KT.hold_end_t,    az: 25,  el: 16, dist: 8.5,  tw: 0.75 },
+  { t: KT.climax_t,      az: 40,  el: 8,  dist: 12.5, tw: 1.0  },
+  // -- garder tw HAUT tout du long de la fenetre d'effondrement
+  // (VFX_EVENTS.collapse, t0..t1) : sans cette cle intermediaire a
+  // collapse.t0, tw retombait continument de 1.0 (climax_t) a 0.25
+  // (collapse.t1) PENDANT le collapse lui-meme, donc la caméra
+  // decrochait du disque en train de s'effondrer -- black_hole_center
+  // sortait litteralement du cadre avant meme la fin de l'effondrement.
+  // Desormais la caméra ne recule vers le personnage QU'APRES
+  // collapse.t1 (le disque/coeur ont deja fini de retomber a 0). Distance
+  // 12.5 (pas 5.0) : au tout debut du collapse le disque est encore a son
+  // diametre max (9.2 studs, voir note ci-dessus).
+  { t: VFX.collapse.t0,  az: 32,  el: 18, dist: 12.5, tw: 0.92 },
+  { t: VFX.collapse.t1,  az: 14,  el: 14, dist: 8.5,  tw: 0.35 },
+  { t: KT.recover_t,     az: 0,   el: 12, dist: 9.5,  tw: 0.0  },
+  { t: KT.idle_out_end,  az: 0,   el: 12, dist: 9.5,  tw: 0.0  },
+];
+function camKeyAt(pt) {
+  if (pt <= CAM_KEYS[0].t) return CAM_KEYS[0];
+  for (let i = 0; i < CAM_KEYS.length - 1; i++) {
+    const a = CAM_KEYS[i], b = CAM_KEYS[i + 1];
+    if (pt >= a.t && pt <= b.t) {
+      const f = smoothstep(a.t, b.t, pt);
+      return { az: lerp(a.az, b.az, f), el: lerp(a.el, b.el, f), dist: lerp(a.dist, b.dist, f), tw: lerp(a.tw, b.tw, f) };
+    }
+  }
+  return CAM_KEYS[CAM_KEYS.length - 1];
+}
+function charAnchor(pose) { const p = pose["Torso"].p; return [p[0], p[1] + 0.15, p[2]]; }
+
+// Coup de camera au climax -- PAS un hitstop (aucun coup ici, seulement
+// un pic de puissance gravitationnelle) : kick de FOV bref + secousse a
+// decroissance rapide (exp), meme famille de formule que le shake du
+// finisher de r6_solar_smite mais amplitude/duree bien plus modestes
+// (c'est un frisson de puissance, pas un impact).
+const KICK_DUR = 0.28, KICK_TIMESCALE = 0.09;
+function climaxKick(t) {
+  const age = t - KT.climax_t;
+  if (age < 0 || age > KICK_DUR) return { fovDelta: 0, x: 0, y: 0, z: 0 };
+  const decay = Math.exp(-age / KICK_TIMESCALE);
+  const s = decay * Math.sin(2 * Math.PI * 20 * age);
+  return { fovDelta: -5 * decay, x: 0.05 * s, y: 0.04 * s, z: 0.03 * s };
+}
+
+const _camTargetV = new THREE.Vector3();
+function updateCamera(pt, pose) {
+  const k = camKeyAt(pt);
+  const az = k.az * Math.PI / 180, el = k.el * Math.PI / 180;
+  const dir = cameraDir(az, el);
+  const target = [0, 0, 0].map((_, i) => lerp(charAnchor(pose)[i], CENTER[i], k.tw));
+  const kick = climaxKick(pt);
+  camera.position.set(target[0] + dir.x * k.dist + kick.x, target[1] + dir.y * k.dist + kick.y, target[2] + dir.z * k.dist + kick.z);
+  _camTargetV.set(target[0], target[1], target[2]);
+  camera.lookAt(_camTargetV);
+  camera.fov = FOV_BASE + kick.fovDelta;
+  camera.updateProjectionMatrix();
+}
+
+// ---------------------------------------------------------------------
+// Surimpression 2D (traînées + halo du disque + vignette).
+const _projV = new THREE.Vector3();
+function worldToScreen(x, y, z) {
+  _projV.set(x, y, z).project(camera);
+  return { x: (_projV.x * 0.5 + 0.5) * overlay.width, y: (1 - (_projV.y * 0.5 + 0.5)) * overlay.height, behind: _projV.z > 1 };
+}
+function worldRadiusToPx(worldR, worldPos) {
+  const dx = worldPos[0] - camera.position.x, dy = worldPos[1] - camera.position.y, dz = worldPos[2] - camera.position.z;
+  const dist = Math.max(0.6, Math.hypot(dx, dy, dz));
+  const vFov = camera.fov * Math.PI / 180;
+  const pxPerUnit = (overlay.height / 2) / (Math.tan(vFov / 2) * dist);
+  return worldR * pxPerUnit;
+}
+
+const HOT = BH.colors.disk_hot, RIM = BH.colors.disk_rim, STREAK_C = BH.colors.streak;
+// Halo 2D du disque -- DOIT commencer hors du rayon du coeur (sinon le
+// glow additif peint par-dessus le noyau noir et le lave en gris/olive,
+// exactement l'erreur "additif substitut de forme" de la checklist --
+// trouve par capture (le coeur rendait bien (0,0,0) sur le canvas WebGL,
+// mais l'overlay 2D peignait dessus). Le degrade demarre a coreR*1.05
+// (transparent), pic vers le bord du disque, puis s'eteint au-dela.
+function drawDiskGlow(pt) {
+  const r = diskRadius(pt), op = diskOpacity(pt), cR = coreRadius(pt);
+  if (r <= 0.01 || op <= 0.01) return;
+  const s = worldToScreen(CENTER[0], CENTER[1], CENTER[2]);
+  if (s.behind) return;
+  const pxR = worldRadiusToPx(r, CENTER);
+  const corePx = worldRadiusToPx(cR, CENTER);
+  const innerStop = Math.max(corePx * 1.05, pxR * 0.2);
+  // Plafond en espace ECRAN (pas seulement en studs) -- meme precaution
+  // que r6_solar_smite/drawImpactStarburst : a tres courte distance
+  // camera (gros plan serre), un rayon purement mesure en studs peut
+  // depasser tout le cadre et laver l'image en aplat, masquant le
+  // disque/coeur au lieu de les souligner (trouve par capture, voir
+  // note sur CAM_KEYS.collapse ci-dessus -- meme symptome).
+  const outer = Math.min(pxR * 1.9, overlay.height * 1.1);
+  if (innerStop >= outer) return;
+  octx.save();
+  octx.globalCompositeOperation = "lighter";
+  const g = octx.createRadialGradient(s.x, s.y, innerStop, s.x, s.y, outer);
+  g.addColorStop(0, `rgba(${HOT[0]},${HOT[1]},${HOT[2]},0)`);
+  g.addColorStop(0.28, `rgba(${HOT[0]},${HOT[1]},${HOT[2]},${0.5 * op})`);
+  g.addColorStop(0.6, `rgba(${RIM[0]},${RIM[1]},${RIM[2]},${0.3 * op})`);
+  g.addColorStop(1, `rgba(${RIM[0]},${RIM[1]},${RIM[2]},0)`);
+  octx.fillStyle = g;
+  octx.beginPath(); octx.arc(s.x, s.y, outer, 0, Math.PI * 2); octx.fill();
+  octx.restore();
+}
+
+// Traînées -- direction tangente approximee par un point legerement
+// anterieur sur la MEME spirale (streak_state(i, t-dt)), pas une source
+// d'alea separee. Alpha monte vite puis retombe en approchant le disque
+// (f -> 1 = absorbe), jamais une apparition/disparition nette.
+function drawStreak(i, pt) {
+  const st = streakState(i, pt);
+  if (!st) return;
+  const back = streakState(i, Math.max(VFX.disk_form.t0, pt - 0.045));
+  const prevPos = back ? back.pos : st.pos;
+  const s1 = worldToScreen(st.pos[0], st.pos[1], st.pos[2]);
+  const s0 = worldToScreen(prevPos[0], prevPos[1], prevPos[2]);
+  if (s1.behind) return;
+  const envelope = Math.min(1, st.f / 0.12) * Math.pow(1 - st.f, 0.6);
+  if (envelope <= 0.02) return;
+  octx.save();
+  octx.globalCompositeOperation = "lighter";
+  const grad = octx.createLinearGradient(s0.x, s0.y, s1.x, s1.y);
+  grad.addColorStop(0, "rgba(255,255,255,0)");
+  grad.addColorStop(1, `rgba(${STREAK_C[0]},${STREAK_C[1]},${STREAK_C[2]},${0.85 * envelope})`);
+  octx.strokeStyle = grad;
+  octx.lineWidth = 1.4 + 2.2 * envelope;
+  octx.lineCap = "round";
+  octx.beginPath(); octx.moveTo(s0.x, s0.y); octx.lineTo(s1.x, s1.y); octx.stroke();
+  const headR = 1.6 + 1.8 * envelope;
+  const hg = octx.createRadialGradient(s1.x, s1.y, 0, s1.x, s1.y, headR * 2.2);
+  hg.addColorStop(0, `rgba(255,255,255,${0.8 * envelope})`);
+  hg.addColorStop(1, `rgba(${STREAK_C[0]},${STREAK_C[1]},${STREAK_C[2]},0)`);
+  octx.fillStyle = hg;
+  octx.beginPath(); octx.arc(s1.x, s1.y, headR * 2.2, 0, Math.PI * 2); octx.fill();
+  octx.restore();
+}
+
+// Vignette -- STRICTEMENT transparente au centre, n'assombrit QUE les
+// bords (voir experiments/_shared/vfx_craft_checklist.md : jamais un
+// rectangle plein ecran a opacite uniforme). Dessinee EN DERNIER, par
+// dessus le halo/les traînées, pour cadrer correctement toute la scene
+// composee -- jamais l'inverse.
+function drawVignette(level) {
+  if (level <= 0.003) return;
+  const cx = overlay.width / 2, cy = overlay.height / 2;
+  const maxR = Math.hypot(cx, cy);
+  const g = octx.createRadialGradient(cx, cy, maxR * 0.14, cx, cy, maxR * 1.05);
+  g.addColorStop(0, "rgba(0,0,0,0)");
+  g.addColorStop(0.5, `rgba(3,1,6,${0.20 * level})`);
+  g.addColorStop(1, `rgba(3,1,6,${0.92 * level})`);
+  octx.save();
+  octx.fillStyle = g;
+  octx.fillRect(0, 0, overlay.width, overlay.height);
+  octx.restore();
+}
+
+// ---------------------------------------------------------------------
+function render(tReal) {
+  const pt = poseTime(tReal);
+  const pose = sampleChar(DATA.character_frames, pt);
+
+  updateCamera(pt, pose);
+
+  for (const part of DATA.part_order) {
+    if (part === "HumanoidRootPart") continue;
+    applyPoseToMesh(rigMeshes[part], pose[part].p, pose[part].r);
+  }
+
+  // -- debris.
+  for (let i = 0; i < N_DEBRIS; i++) {
+    const { pos, scale, visible } = debrisState(i, pt);
+    const mesh = debrisMeshes[i];
+    mesh.visible = visible && scale > 0.001;
+    if (mesh.visible) {
+      mesh.position.set(pos[0], pos[1], pos[2]);
+      mesh.scale.setScalar(scale);
+      const sp = debrisSpin[i];
+      mesh.rotation.set(sp.x * pt + sp.p0, sp.y * pt + sp.p1, sp.z * pt + sp.p2);
+    }
+  }
+
+  // -- disque + coeur.
+  const dR = diskRadius(pt), dOp = diskOpacity(pt), cR = coreRadius(pt);
+  diskTilt.visible = dR > 0.01;
+  if (diskTilt.visible) {
+    diskRing.scale.setScalar(Math.max(0.001, dR));
+    diskRing.material.opacity = Math.min(1, dOp * 0.9);
+    diskRing.rotation.z = pt * 0.22; // rotation lente continue (vie du disque)
+  }
+  coreMesh.visible = cR > 0.01;
+  if (coreMesh.visible) coreMesh.scale.setScalar(cR);
+  bhLight.intensity = dOp > 0.01 ? 3.2 * dOp : 0;
+
+  renderer.render(scene, camera);
+
+  // -- surimpression 2D.
+  octx.clearRect(0, 0, overlay.width, overlay.height);
+  drawDiskGlow(pt);
+  if (pt >= VFX.disk_form.t0 && pt <= VFX.collapse.t1) {
+    for (let i = 0; i < BH.n_streaks; i++) drawStreak(i, pt);
+  }
+  drawVignette(vignetteAt(pt));
+
+  const phase = currentPhase(tReal);
+  phaseNameEl.textContent = phase.name;
+  phaseNameEl2.textContent = phase.name;
+  timecodeEl.textContent = tReal.toFixed(2) + "s / " + REAL_DURATION.toFixed(2) + "s";
+}
+
+let playing = true, speed = 1, simTime = 0, lastWall = null;
+function setPlaying(p) {
+  playing = p;
+  playIcon.style.display = p ? "none" : "block";
+  pauseIcon.style.display = p ? "block" : "none";
+}
+playBtn.addEventListener("click", () => setPlaying(!playing));
+scrub.addEventListener("input", () => { simTime = (scrub.value / 1000) * REAL_DURATION; render(simTime); });
+document.querySelectorAll("#speedRow button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll("#speedRow button").forEach(x => x.classList.remove("active"));
+  b.classList.add("active"); speed = parseFloat(b.dataset.speed);
+}));
+
+function loop(ts) {
+  if (lastWall === null) lastWall = ts;
+  const dt = Math.min(0.05, (ts - lastWall) / 1000);
+  lastWall = ts;
+  if (playing) {
+    simTime += dt * speed;
+    if (simTime > REAL_DURATION) simTime = 0;
+    scrub.value = Math.round((simTime / REAL_DURATION) * 1000);
+  }
+  render(simTime);
+  requestAnimationFrame(loop);
+}
+window.__render = () => render(simTime);
+window.__setPlaying = setPlaying;
+window.__setSimTime = (t) => { simTime = t; scrub.value = Math.round((simTime / REAL_DURATION) * 1000); };
+window.__poseToReal = poseToReal;
+requestAnimationFrame(loop);
+</script>
