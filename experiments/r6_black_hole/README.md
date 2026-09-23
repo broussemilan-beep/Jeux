@@ -422,6 +422,78 @@ testé, captures visuelles conformes.
 dédiée du flash, décalant les shots suivants de un cran) ; `calibrate.py`
 non concerné (aucun changement de chorégraphie/trajectoires ce round).
 
+### Suite : retour direct — « la qualité de ton animation n'est pas bonne » (2026-09-23)
+
+Consigne : creuser plus loin, spécifiquement sur la qualité de
+l'ANIMATION (pas le VFX/ciel déjà traité au round précédent). Relecture
+directe (jamais supposée) des captures `01-crouch`/`02-liftoff`/
+`03-hold-debris` existantes : **illisibles**. `01-crouch` ne montrait
+aucune silhouette humanoïde reconnaissable — juste de grands plans
+triangulaires violets/noirs remplissant l'écran bord à bord. `02-liftoff`
+et `03-hold-debris` cadraient si serré que la tête et les pieds sortaient
+du cadre, ne laissant voir qu'un torse tronqué. Le problème n'était donc
+pas la qualité des poses elles-mêmes mais le fait qu'elles étaient
+rendues **impossibles à juger** — ce qui explique le retour, même après
+plusieurs rounds de travail sur l'exagération des poses (#129).
+
+Root cause identifiée par mesure directe (AABB monde réelle du personnage
+à `crouch_hold_t`, calculée depuis `DATA.character_frames`, pas estimée à
+l'œil) :
+
+```
+Torso.p = [0, -0.0865, 0]   Head.p = [0, 0.0845, 1.41]   Left/Right Leg.p = [±0.78, -0.20, -2.01]
+AABB : extent = [4.23, 2.42, 5.24] studs  (X, Y, Z)
+```
+
+Le crouch exagéré (#129) penche le torse tellement vers l'avant que la
+tête se retrouve à z=+1.41 pendant que les jambes restent à z=-2.01 — une
+profondeur de 3.4 studs le long de l'axe caméra, jamais prise en compte
+par un `dist` choisi sur la seule hauteur (~5 studs) d'un personnage
+debout. Requête Playwright directe à `crouch_hold_t` : caméra à
+`(1.29, 0.50, -4.81)`, cible à `(0, 0.06, 0)` — la jambe la plus proche se
+retrouve à ~2.8 studs de la caméra (distorsion perspective sévère : jambe
+énorme, tête minuscule au loin), pas juste un cadrage trop serré. La
+cible elle-même (`charAnchor` = `Torso.p + [0,0.15,0]`, un pivot
+d'articulation, pas le centre visuel réel du corps) aggravait le
+problème.
+
+Corrigé dans `black_hole_viewer.html` — remplacement des `dist`
+choisis à l'œil par un calcul géométrique à partir de l'AABB réelle :
+
+1. `charAABB(pt)` — AABB monde de TOUS les parts (8 coins de chaque
+   boîte, transformés par la pose réelle à cet instant), pas une
+   supposition sur la hauteur du personnage debout.
+2. `charFitDist(pt, frac)` — distance nécessaire pour que la sphère
+   englobante de cette AABB (rayon = demi-diagonale, donc valable quel
+   que soit l'azimut de caméra) tienne dans `frac` du cadre vertical
+   (angle le plus serrant, aspect 1200/900 > 1).
+3. `charAnchor(pt)` — remplacé : centre de l'AABB réelle au lieu du pivot
+   du Torso (qui pouvait être excentré par rapport au corps entier à un
+   crouch fortement penché).
+4. `CAM_KEYS` : les clés centrées sur le personnage (`t=0`, `t0_end`,
+   `crouch_t`, `crouch_hold_t`, `rise_t`, `MID_HOLD_T`, `recover_t`,
+   `idle_out_end`) utilisent maintenant `charFitDist(t, frac)` — chaque
+   `frac` choisi pour préserver l'intention de mise en scène (0.55 pour
+   les plans d'établissement/repos, 0.68 pour le crouch dramatique bas,
+   0.62/0.58 pour décollage/lévitation). Les clés centrées sur le DISQUE
+   (`hold_end_t`, `climax_t`, `collapse.*`, tw≥0.75) gardent leur `dist`
+   choisi à la main sur le diamètre du disque — non concernées par ce
+   bug, non touchées.
+
+Résultat, revérifié directement (jamais supposé) : `01-crouch` montre
+maintenant une silhouette accroupie lisible en contre-plongée ;
+`02-liftoff` montre le corps entier (tête, bras qui s'écartent, jambes,
+pieds au sol avec ombre) ; `03-hold-debris` montre le corps entier sous
+les débris en orbite. `00-garde` légèrement reculé (toujours cadré
+entièrement) ; `06-climax`, `09-recover` revérifiés, inchangés/corrects.
+Aucune régression : `calibrate.py` revalidé (aucun changement de
+chorégraphie/trajectoires ce round, uniquement la caméra) — durée totale
+8.233s, aucune anomalie de placement au sol, aucun clipping en
+lévitation, VFX OK.
+
+10 captures existantes (00, 02, 03, 06, 09 changées visuellement ; 01
+transformée de illisible à lisible) recapturées et revues une par une.
+
 ## Vérification (captures)
 
 11 captures committées dans `captures/verification/`, toutes vérifiées

@@ -680,6 +680,53 @@ function cameraDir(az, el) {
 function smoothstep(e0, e1, x) { const t = Math.max(0, Math.min(1, (x - e0) / ((e1 - e0) || 1e-6))); return t * t * (3 - 2 * t); }
 function lerp(a, b, f) { return a + (b - a) * f; }
 
+// -- AABB monde du personnage a un instant donne (tous les parts, coins
+// des 8 sommets de chaque boite transformes par sa pose reelle -- PAS une
+// estimation a l'oeil de la "hauteur du personnage"). Necessaire car
+// retour direct ("qualite de l'animation pas bonne") a mene a re-verifier
+// les gros plans (crouch/hold) et a trouver qu'ils etaient illisibles :
+// la pose de crouch (exagérée au round precedent, voir README) penche le
+// torse tellement vers l'avant que la tete finit a z=+1.4 pendant que les
+// jambes restent a z=-2.0 -- 3.4 studs de PROFONDEUR le long de l'axe
+// camera, jamais pris en compte par un dist choisi sur la seule "hauteur"
+// (~5 studs) du personnage debout. A dist=5.0 (l'ancienne valeur), la
+// jambe la plus proche de la camera se retrouve a ~2.8 studs d'elle :
+// deformation perspective severe (jambe enorme, tete minuscule au loin),
+// pas juste un cadrage trop serre -- confirme par capture (voir README).
+function charAABB(pt) {
+  const pose = sampleChar(DATA.character_frames, pt);
+  const mins = [Infinity, Infinity, Infinity], maxs = [-Infinity, -Infinity, -Infinity];
+  for (const part of DATA.part_order) {
+    if (part === "HumanoidRootPart") continue;
+    const size = DATA.part_sizes[part];
+    const p = pose[part].p, r = pose[part].r;
+    const hx = size[0] / 2, hy = size[1] / 2, hz = size[2] / 2;
+    for (const sx of [-1, 1]) for (const sy of [-1, 1]) for (const sz of [-1, 1]) {
+      const lx = sx * hx, ly = sy * hy, lz = sz * hz;
+      const wx = p[0] + r[0] * lx + r[1] * ly + r[2] * lz;
+      const wy = p[1] + r[3] * lx + r[4] * ly + r[5] * lz;
+      const wz = p[2] + r[6] * lx + r[7] * ly + r[8] * lz;
+      mins[0] = Math.min(mins[0], wx); maxs[0] = Math.max(maxs[0], wx);
+      mins[1] = Math.min(mins[1], wy); maxs[1] = Math.max(maxs[1], wy);
+      mins[2] = Math.min(mins[2], wz); maxs[2] = Math.max(maxs[2], wz);
+    }
+  }
+  return { min: mins, max: maxs, center: [(mins[0] + maxs[0]) / 2, (mins[1] + maxs[1]) / 2, (mins[2] + maxs[2]) / 2] };
+}
+// dist necessaire pour que la SPHERE ENGLOBANTE de l'AABB (rayon = demi-
+// diagonale -- englobe donc la boite quel que soit l'azimut de camera,
+// jamais suppose alignee sur X ou Z) tienne dans `frac` du cadre vertical
+// (l'angle vertical est toujours le plus serrant ici, aspect 1200/900 >
+// 1 donc le FOV horizontal est plus large). Plancher a 3.0 (jamais plus
+// pres qu'un vrai gros plan pour eviter tout retour a la distorsion).
+const _halfVFov = (FOV_BASE * Math.PI / 180) / 2;
+function charFitDist(pt, frac) {
+  const box = charAABB(pt);
+  const ex = box.max[0] - box.min[0], ey = box.max[1] - box.min[1], ez = box.max[2] - box.min[2];
+  const R = 0.5 * Math.hypot(ex, ey, ez);
+  return Math.max(3.0, R / (frac * Math.tan(_halfVFov)));
+}
+
 const MID_HOLD_T = KT.rise_t + (KT.hold_end_t - KT.rise_t) * 0.5;
 // -- distances RECALCULEES par la formule d'angle (pas choisies a l'oeil
 // -- piege trouve en verifiant : les valeurs d'origine (3.2-7.0) etaient
@@ -692,6 +739,12 @@ const MID_HOLD_T = KT.rise_t + (KT.hold_end_t - KT.rise_t) * 0.5;
 // README) : sans ca, le climax/collapse.t0 (disque a 9.2 studs de
 // diametre) rendait un disque QUI DEBORDAIT DU CADRE (juste un rond noir
 // plein ecran, aucun anneau visible) a l'ancienne distance de 3.2-5.0.
+// -- Les cles CENTREES SUR LE PERSONNAGE (tw bas) utilisent maintenant
+// charFitDist(t, frac) -- calcule depuis l'AABB REELLE de la pose a cet
+// instant, jamais un dist choisi a l'oeil qui casse des qu'une pose
+// change (voir note charAABB ci-dessus). Seules climax/collapse (tw
+// haut, cadrage sur le DISQUE) gardent un dist choisi a la main sur le
+// diametre du disque -- pas concernees par ce bug.
 // -- SENS de la camera corrige suite a un retour explicite ("le sens de
 // camera... pas bon") : la version precedente changeait de direction
 // DEUX fois sans raison de mise en scene -- (1) l'azimut repartait de
@@ -731,17 +784,17 @@ const MID_HOLD_T = KT.rise_t + (KT.hold_end_t - KT.rise_t) * 0.5;
 // version precedente (meme balayage continu, meme sens, juste vu de
 // l'autre cote).
 const CAM_KEYS = [
-  { t: 0.0,              az: 165, el: 12, dist: 9.5,  tw: 0.0  },
+  { t: 0.0,              az: 165, el: 12, dist: charFitDist(0.0, 0.55),              tw: 0.0  },
   // -- plan d'etablissement VRAIMENT tenu (retour explicite : "manque de
   // frame d'un debut") : cle supplementaire aux memes valeurs qu'a t=0,
   // juste avant le crouch -- sans elle la camera glissait deja (el/dist)
   // des la premiere frame, aucun instant reellement figE pour poser la
   // scene avant que l'action commence.
-  { t: KT.t0_end,        az: 165, el: 12, dist: 9.5,  tw: 0.0  },
-  { t: KT.crouch_t,      az: 165, el: 5,  dist: 5.0,  tw: 0.0  },
-  { t: KT.crouch_hold_t, az: 165, el: 5,  dist: 5.0,  tw: 0.0  },
-  { t: KT.rise_t,        az: 174, el: 15, dist: 8.5,  tw: 0.1  },
-  { t: MID_HOLD_T,       az: 192, el: 21, dist: 11.0, tw: 0.5  },
+  { t: KT.t0_end,        az: 165, el: 12, dist: charFitDist(KT.t0_end, 0.55),        tw: 0.0  },
+  { t: KT.crouch_t,      az: 165, el: 5,  dist: charFitDist(KT.crouch_t, 0.68),      tw: 0.0  },
+  { t: KT.crouch_hold_t, az: 165, el: 5,  dist: charFitDist(KT.crouch_hold_t, 0.68), tw: 0.0  },
+  { t: KT.rise_t,        az: 174, el: 15, dist: charFitDist(KT.rise_t, 0.62),        tw: 0.1  },
+  { t: MID_HOLD_T,       az: 192, el: 21, dist: charFitDist(MID_HOLD_T, 0.58),       tw: 0.5  },
   { t: KT.hold_end_t,    az: 204, el: 23, dist: 8.5,  tw: 0.75 },
   { t: KT.climax_t,      az: 220, el: 25, dist: 12.5, tw: 1.0  },
   // -- garder tw HAUT tout du long de la fenetre d'effondrement
@@ -758,8 +811,8 @@ const CAM_KEYS = [
   // decollage.
   { t: VFX.collapse.t0,  az: 224, el: 19, dist: 12.5, tw: 0.92 },
   { t: VFX.collapse.t1,  az: 228, el: 15, dist: 8.5,  tw: 0.35 },
-  { t: KT.recover_t,     az: 232, el: 12, dist: 9.5,  tw: 0.0  },
-  { t: KT.idle_out_end,  az: 232, el: 12, dist: 9.5,  tw: 0.0  },
+  { t: KT.recover_t,     az: 232, el: 12, dist: charFitDist(KT.recover_t, 0.55),     tw: 0.0  },
+  { t: KT.idle_out_end,  az: 232, el: 12, dist: charFitDist(KT.idle_out_end, 0.55),  tw: 0.0  },
 ];
 function camKeyAt(pt) {
   if (pt <= CAM_KEYS[0].t) return CAM_KEYS[0];
@@ -772,7 +825,11 @@ function camKeyAt(pt) {
   }
   return CAM_KEYS[CAM_KEYS.length - 1];
 }
-function charAnchor(pose) { const p = pose["Torso"].p; return [p[0], p[1] + 0.15, p[2]]; }
+// -- cible camera = centre de l'AABB reelle (pas le seul pivot du Torso,
+// voir note charAABB ci-dessus) : a un crouch fortement penche, le pivot
+// du Torso peut etre excentre par rapport au VRAI centre visuel du corps
+// (tete+jambes comprises), ce qui decale le cadrage meme a bonne distance.
+function charAnchor(pt) { return charAABB(pt).center; }
 
 // Coup de camera au climax -- PAS un hitstop (aucun coup ici, seulement
 // un pic de puissance gravitationnelle) : kick de FOV bref + secousse a
@@ -793,7 +850,7 @@ function updateCamera(pt, pose) {
   const k = camKeyAt(pt);
   const az = k.az * Math.PI / 180, el = k.el * Math.PI / 180;
   const dir = cameraDir(az, el);
-  const target = [0, 0, 0].map((_, i) => lerp(charAnchor(pose)[i], CENTER[i], k.tw));
+  const target = [0, 0, 0].map((_, i) => lerp(charAnchor(pt)[i], CENTER[i], k.tw));
   const kick = climaxKick(pt);
   camera.position.set(target[0] + dir.x * k.dist + kick.x, target[1] + dir.y * k.dist + kick.y, target[2] + dir.z * k.dist + kick.z);
   _camTargetV.set(target[0], target[1], target[2]);
