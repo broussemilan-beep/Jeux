@@ -309,6 +309,56 @@ function vignetteAt(t) {
   return vignetteLevel(t);
 }
 
+// -- Ciel jour/nuit : PAS la meme courbe que vignetteLevel (qui reste
+// pilotee par black_hole_track.py, jamais retouchee ici -- decor pur
+// lecteur, comme CAM_KEYS/l'eclairage). La reference bascule dans le
+// sombre quasi INSTANTANEMENT a la formation du disque (4 frames a 4fps
+// entre "ciel bleu normal" et "scene assombrie", donc <0.25s) -- bien
+// plus rapide que les 1.1s d'ease-out de vignetteLevel, qui sert a autre
+// chose (assombrir les BORDS du cadre pendant tout le disque, pas a
+// teinter tout le CIEL). NIGHT_SNAP_DUR volontairement court (0.18s) --
+// un vrai "coup", pas un fondu. Remonte pendant l'atterrissage (l'
+// environnement se calme), le personnage lui-meme reste marque (pose de
+// cloture asymetrique, voir choreography.py) -- contraste voulu.
+const NIGHT_SNAP_DUR = 0.18, NIGHT_RECOVER_DUR = 0.6;
+function nightFactor(t) {
+  const form = VFX.disk_form, land = KT.land_t;
+  if (t < form.t0) return 0.0;
+  if (t < form.t0 + NIGHT_SNAP_DUR) return easeIn(clamp01((t - form.t0) / NIGHT_SNAP_DUR));
+  if (t < land) return 1.0;
+  if (t < land + NIGHT_RECOVER_DUR) return 1.0 - easeOut(clamp01((t - land) / NIGHT_RECOVER_DUR));
+  return 0.0;
+}
+
+// -- Flash de formation : la reference montre une frame franchement
+// SUREXPOSEE (blanc quasi plein cadre, silhouette du disque en noir) au
+// moment exact ou le disque nait -- pas un fondu progressif comme le
+// halo 2D existant (drawDiskGlow). Un plein-cadre uniforme est
+// normalement exactement ce que experiments/_shared/vfx_craft_checklist.md
+// met en garde ("jamais une opacite plein ecran qui cache l'action") --
+// mais ici ce n'est PAS un substitut paresseux a un vrai VFX (le disque/
+// coeur/debris/traînées existent deja, anticipation+burst+dissipate
+// couverts par ailleurs) : c'est un coup de lumiere UNIQUE, TRES bref
+// (0.22s, 1 seul instant du clip), directement mesure sur la reference,
+// exactement comme le flash plein ecran reserve au SEUL finisher dans
+// r6_solar_smite (jamais utilise pour un evenement mineur). Decroissance
+// rapide, additif par-dessus tout le reste.
+const FLASH_DUR = 0.22;
+function formFlashAlpha(t) {
+  const t0 = VFX.disk_form.t0;
+  const age = t - t0;
+  if (age < 0 || age > FLASH_DUR) return 0;
+  return Math.pow(1.0 - age / FLASH_DUR, 2.2);
+}
+function drawFormFlash(t) {
+  const a = formFlashAlpha(t);
+  if (a <= 0.003) return;
+  octx.save();
+  octx.fillStyle = `rgba(255,252,240,${a})`;
+  octx.fillRect(0, 0, overlay.width, overlay.height);
+  octx.restore();
+}
+
 function streakState(i, t) {
   const s = BH.streaks[i];
   const form = VFX.disk_form, collapse = VFX.collapse;
@@ -335,36 +385,66 @@ if (renderer.outputColorSpace !== undefined) renderer.outputColorSpace = THREE.S
 if (renderer.physicallyCorrectLights !== undefined) renderer.physicallyCorrectLights = true;
 if (renderer.toneMapping !== undefined) { renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05; }
 
+// -- Ciel DYNAMIQUE jour/nuit, pas un cosmos fixe (correction majeure
+// suite a un re-examen approfondi de la reference, demande explicite :
+// "analyse les refs et re-analyse ... pourquoi toujours pas au niveau").
+// Frames 30-33 de la reference (ScreenRecording...15-52-25, avant la
+// formation du disque) montrent un CIEL BLEU DE JOUR banal, ordinaire --
+// PAS un cosmos etoile. Le noir/sombre n'apparait que d'un coup, exactement
+// au moment ou le disque se forme (frame 34 : flash BLANC surexpose, pas
+// un fondu progressif), puis persiste jusqu'a l'effondrement. La version
+// precedente de ce lecteur demarrait deja sombre/cosmique des t=0 --
+// contresens structurel : ca supprime le CONTRASTE (banal -> dramatique)
+// qui fait justement la force du moment dans la reference. Corrige : ciel
+// bleu normal par defaut, bascule RAPIDE (pas graduelle) vers le sombre
+// pile a VFX.disk_form.t0, retour au bleu pendant l'atterrissage/attente.
+const DAY_HORIZON = 0xbfe3fb, DAY_ZENITH = 0x3d8fd6;
+const NIGHT_HORIZON = 0x241634, NIGHT_ZENITH = 0x030106;
+
 const scene = new THREE.Scene();
-const HORIZON_COLOR = 0x241634, ZENITH_COLOR = 0x030106;
-scene.background = new THREE.Color(ZENITH_COLOR);
-scene.fog = new THREE.Fog(HORIZON_COLOR, 12, 46);
+scene.background = new THREE.Color(DAY_ZENITH);
+scene.fog = new THREE.Fog(DAY_HORIZON, 12, 46);
 
 const FOV_BASE = 46;
 const camera = new THREE.PerspectiveCamera(FOV_BASE, 1200 / 900, 0.1, 220);
 
-function buildSkyDome() {
-  const geo = new THREE.SphereGeometry(160, 24, 16);
-  const pos = geo.attributes.position;
-  const colors = new Float32Array(pos.count * 3);
-  const horizon = new THREE.Color(HORIZON_COLOR), zenith = new THREE.Color(ZENITH_COLOR);
-  const tmp = new THREE.Color();
+const _skyGeo = new THREE.SphereGeometry(160, 24, 16);
+const _skyColors = new Float32Array(_skyGeo.attributes.position.count * 3);
+_skyGeo.setAttribute("color", new THREE.BufferAttribute(_skyColors, 3));
+const _skyMat = new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide, fog: false, depthWrite: false });
+const skyDome = new THREE.Mesh(_skyGeo, _skyMat);
+skyDome.renderOrder = -10;
+scene.add(skyDome);
+
+// -- deux objets Color DISTINCTS par lerp (source et cible) : reutiliser
+// le MEME objet comme recepteur ET argument de .lerp() l'ecrase avant que
+// .lerp() ne s'execute (piege trouve en verifiant -- le ciel restait
+// bloque sur les couleurs de nuit quel que soit nightF, jamais de jour).
+const _skyDayH = new THREE.Color(), _skyNightH = new THREE.Color();
+const _skyDayZ = new THREE.Color(), _skyNightZ = new THREE.Color();
+const _skyTmp = new THREE.Color();
+function updateSky(nightF) {
+  const horizon = _skyDayH.set(DAY_HORIZON).lerp(_skyNightH.set(NIGHT_HORIZON), nightF).clone();
+  const zenith = _skyDayZ.set(DAY_ZENITH).lerp(_skyNightZ.set(NIGHT_ZENITH), nightF).clone();
+  const pos = _skyGeo.attributes.position;
   for (let i = 0; i < pos.count; i++) {
     const y = pos.getY(i) / 160;
     const f = Math.max(0, Math.min(1, (y + 0.05) * 1.05));
-    tmp.copy(horizon).lerp(zenith, f);
-    colors[i * 3] = tmp.r; colors[i * 3 + 1] = tmp.g; colors[i * 3 + 2] = tmp.b;
+    _skyTmp.copy(horizon).lerp(zenith, f);
+    _skyColors[i * 3] = _skyTmp.r; _skyColors[i * 3 + 1] = _skyTmp.g; _skyColors[i * 3 + 2] = _skyTmp.b;
   }
-  geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
-  const mat = new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide, fog: false, depthWrite: false });
-  const mesh = new THREE.Mesh(geo, mat);
-  mesh.renderOrder = -10;
-  return mesh;
+  _skyGeo.attributes.color.needsUpdate = true;
+  scene.background.copy(zenith);
+  scene.fog.color.copy(horizon);
+  starPoints.material.opacity = 0.55 * nightF;
+  fillLight.color.copy(_fillDaySky.set(DAY_FILL_SKY).lerp(_fillNightSky.set(NIGHT_FILL_SKY), nightF));
+  fillLight.groundColor.copy(_fillDayGround.set(DAY_FILL_GROUND).lerp(_fillNightGround.set(NIGHT_FILL_GROUND), nightF));
 }
-scene.add(buildSkyDome());
 
 // Etoiles -- semees de facon deterministe (hash par index), purement
-// cosmetique (aucune source Python), simple couche d'atmosphere.
+// cosmetique (aucune source Python), simple couche d'atmosphere -- visibles
+// UNIQUEMENT cote nuit (opacite pilotee par updateSky ci-dessus, jamais en
+// plein jour ou elles n'auraient aucun sens).
 function buildStars(n) {
   const positions = new Float32Array(n * 3);
   for (let i = 0; i < n; i++) {
@@ -379,12 +459,13 @@ function buildStars(n) {
   }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-  const mat = new THREE.PointsMaterial({ color: 0xfff4e0, size: 1.1, sizeAttenuation: false, transparent: true, opacity: 0.55, fog: false });
+  const mat = new THREE.PointsMaterial({ color: 0xfff4e0, size: 1.1, sizeAttenuation: false, transparent: true, opacity: 0, fog: false });
   const pts = new THREE.Points(geo, mat);
   pts.renderOrder = -9;
   return pts;
 }
-scene.add(buildStars(340));
+const starPoints = buildStars(340);
+scene.add(starPoints);
 
 // Lumieres -- intensites revues a la hausse par rapport a un premier jet :
 // le sol/mur (normales horizontales, tres exposees a fillLight) lisaient
@@ -413,8 +494,15 @@ scene.add(keyLight);
 scene.add(keyLight.target);
 keyLight.target.position.set(0, 4, 2);
 
-const fillLight = new THREE.HemisphereLight(0x6a5aa0, 0x1c1430, 1.0);
+// -- couleurs du fillLight (ambiance hemispherique) elles aussi liees au
+// jour/nuit -- etaient fixees au ton sombre/violet, incoherent avec un
+// ciel de jour bleu normal (voir updateSky).
+const DAY_FILL_SKY = 0xbfe3fb, DAY_FILL_GROUND = 0x9c8f78;
+const NIGHT_FILL_SKY = 0x6a5aa0, NIGHT_FILL_GROUND = 0x1c1430;
+const fillLight = new THREE.HemisphereLight(DAY_FILL_SKY, DAY_FILL_GROUND, 1.0);
 scene.add(fillLight);
+const _fillDaySky = new THREE.Color(), _fillNightSky = new THREE.Color();
+const _fillDayGround = new THREE.Color(), _fillNightGround = new THREE.Color();
 
 const rimLight = new THREE.DirectionalLight(0x9a6cff, 0.6);
 rimLight.position.set(4, 6, 14);
@@ -454,18 +542,13 @@ ground.position.set(0, 0, -6);
 ground.receiveShadow = true;
 scene.add(ground);
 
-const wallTex = loadTex("ruin_wall", 14, 2.4);
-const wallMat = new THREE.MeshStandardMaterial({ map: wallTex, roughness: 0.97, metalness: 0.0 });
-const wall = new THREE.Mesh(new THREE.PlaneGeometry(54, 10), wallMat);
-// -- deplace du cote +Z (etait -19.5) ET retournee (rotation.y = PI,
-// sinon sa face texturee -- normale +Z par defaut -- pointerait a
-// l'oppose de la nouvelle camera, donc invisible, culling FrontSide par
-// defaut) : meme correction que les lumieres, pour que le mur reste
-// derriere le personnage vu du NOUVEAU cote camera (face, pas dos).
-wall.position.set(0, 4.9, 19.5);
-wall.rotation.y = Math.PI;
-wall.receiveShadow = true;
-scene.add(wall);
+// -- PAS de mur en arriere-plan (en supprime un ici) : re-examen de la
+// reference (analyse "pourquoi toujours pas au niveau") -- elle montre
+// un ciel ouvert banal + un sol grille, jamais de decor/mur derriere le
+// personnage pendant cette competence. Le mur ajoute au round precedent
+// etait une invention qui, combinee au ciel deja sombre, contribuait a
+// l'ambiance "toujours dramatique" au lieu du contraste jour->nuit reel
+// de la reference (voir updateSky ci-dessus).
 
 function rgbToThreeColor(rgbArr) { return new THREE.Color(rgbArr[0] / 255, rgbArr[1] / 255, rgbArr[2] / 255); }
 function hexToRgb(hex) {
@@ -886,6 +969,7 @@ function render(tReal) {
   coreMesh.visible = cR > 0.01;
   if (coreMesh.visible) coreMesh.scale.setScalar(cR);
   bhLight.intensity = dOp > 0.01 ? 3.2 * dOp : 0;
+  updateSky(nightFactor(pt));
 
   renderer.render(scene, camera);
 
@@ -896,6 +980,7 @@ function render(tReal) {
     for (let i = 0; i < BH.n_streaks; i++) drawStreak(i, pt);
   }
   drawVignette(vignetteAt(pt));
+  drawFormFlash(pt);
   drawEndFade(tReal);
 
   const phase = currentPhase(tReal);

@@ -36,12 +36,13 @@ SHOTS = [
     ("01-crouch", KT["crouch_hold_t"]),
     ("02-liftoff", KT["rise_t"] + 0.05),
     ("03-hold-debris", KT["rise_t"] + (KT["hold_end_t"] - KT["rise_t"]) * 0.5),
-    ("04-disk-forming", VFX["disk_form"]["t0"] + 0.3),
-    ("05-climax", KT["climax_t"]),
-    ("06-collapse", VFX["collapse"]["t0"] + 0.2),
-    ("07-landing", KT["land_t"] + 0.1),
-    ("08-recover", KT["recover_t"] + 0.3),
-    ("09-fondu-final", DATA["duration"] - 0.05),  # preuve du fondu au noir de cloture (voir README)
+    ("04-flash-formation", VFX["disk_form"]["t0"] + 0.06),  # preuve du flash surexpose jour->nuit (voir README)
+    ("05-disk-forming", VFX["disk_form"]["t0"] + 0.3),
+    ("06-climax", KT["climax_t"]),
+    ("07-collapse", VFX["collapse"]["t0"] + 0.2),
+    ("08-landing", KT["land_t"] + 0.1),
+    ("09-recover", KT["recover_t"] + 0.3),
+    ("10-fondu-final", DATA["duration"] - 0.05),  # preuve du fondu au noir de cloture (voir README)
 ]
 
 

@@ -365,36 +365,98 @@ les 3 pistes proposées, plutôt que redemander une 2e fois :
 `calibrate.py` revalidé (durée totale 7.83s→8.23s, aucune anomalie).
 9 captures existantes recapturées + 1 nouvelle, toutes revues.
 
+### Suite : retour direct — « analyse les refs et re-analyse, trouve pourquoi toujours pas au niveau » (2026-09-23)
+
+Consigne explicite de re-scruter les frames de référence, pas de
+re-décrire les fixes précédents. Extraction ffmpeg fine des frames
+025/030/033 (début/tenue/pré-formation) vs 034 (instant de formation) vs
+035/036 (post-formation) a révélé un écart structurel jamais identifié
+dans les rounds précédents, alors même qu'il sape TOUTES les corrections
+faites jusqu'ici :
+
+- **025/030/033** : ciel bleu clair Roblox ordinaire, plein jour, aucune
+  trace de noirceur cosmique — c'est la scène de mise en place normale,
+  pas une ambiance "trou noir" prématurée.
+- **034** : flash blanc surexposé (silhouette du disque en noir dessus),
+  l'instant exact de la formation — une rupture violente, pas une
+  transition douce.
+- **035/036** : bascule nette vers une scène sombre et lourde — c'est
+  SEULEMENT à partir d'ici que l'ambiance cosmique se justifie.
+
+Ma capture existante `00-garde` (t=0.3s) a été relue directement (pas
+supposée) : déjà violette/cosmique sombre dès la première image. Chaque
+round précédent avait corrigé caméra, poses, timing — sur un fond qui
+contredisait la référence depuis le premier frame, invisibilisant l'effort
+mis dans le reste.
+
+Corrigé dans `black_hole_viewer.html` :
+
+1. **Ciel jour/nuit dynamique** — dôme de ciel à dégradé (horizon/zénith)
+   avec deux jeux de couleurs (jour Roblox bleu clair / nuit cosmique
+   sombre), interpolés par `nightFactor(t)` : 0 pendant toute la garde et
+   la lévitation, montée rapide (`NIGHT_SNAP_DUR`=0.18s, ease-in) au
+   moment de `disk_form.t0`, tenue à 1 jusqu'à l'atterrissage, puis
+   redescente douce (`NIGHT_RECOVER_DUR`=0.6s) vers le jour. `HemisphereLight`
+   de remplissage (fillLight) suit la même interpolation (ciel/sol jour vs
+   nuit) pour que l'éclairage du personnage reste cohérent.
+2. **Flash de formation surexposé** — `drawFormFlash(t)`, overlay 2D blanc
+   cassé (`rgba(255,252,240,a)`), 0.22s, décroissance `pow(1-x, 2.2)`
+   (chute rapide, pas linéaire) déclenché exactement à `disk_form.t0` —
+   reproduit la rupture violente de la frame 034, pas une fondu progressif.
+3. **Retrait du mur** — la référence ne montre aucun mur, seulement le
+   ciel ouvert et le sol ; le `PlaneGeometry` de fond (`wall`, présent
+   depuis le tout premier viewer) a été supprimé entièrement.
+
+Bug rencontré et corrigé avant validation : aliasing sur `THREE.Color`
+(`.set(A).lerp(objA.set(B), f)` sur le MÊME objet Color pour les deux
+opérandes fait que `.set(B)` mute l'objet avant que `.lerp()` ne s'exécute
+dessus — résultat toujours figé sur B quelle que soit `f`). Détecté en
+interrogeant `scene.background.getHexString()` directement via Playwright
+à t=0.3s (attendu : bleu jour, obtenu : sombre) plutôt que de faire
+confiance à la relecture de code. Fixé en donnant un objet `THREE.Color`
+scratch dédié à chaque opérande de chaque lerp (jour ET nuit, jamais
+partagé). Reverifié après fix : `getHexString()` correct à chaque instant
+testé, captures visuelles conformes.
+
+`capture_shots.py` renuméroté (insertion de `04-flash-formation`, preuve
+dédiée du flash, décalant les shots suivants de un cran) ; `calibrate.py`
+non concerné (aucun changement de chorégraphie/trajectoires ce round).
+
 ## Vérification (captures)
 
-10 captures committées dans `captures/verification/`, toutes vérifiées
+11 captures committées dans `captures/verification/`, toutes vérifiées
 par moi-même en ouvrant chaque image (jamais un rapport d'agent pris au
-mot, voir section ci-dessus) :
+mot, voir sections ci-dessus) :
 
 - `2026-09-23-black-hole-00-garde.png` — attente vivante, personnage
-  centré, mur en arrière-plan.
+  centré, ciel bleu clair de jour (pas de mur), conforme aux frames
+  025/030/033 de la référence.
 - `2026-09-23-black-hole-01-crouch.png` — accroupissement, caméra basse
-  et proche (dramatisation), torse penché nettement visible.
+  et proche (dramatisation), torse penché nettement visible, toujours
+  en plein jour.
 - `2026-09-23-black-hole-02-liftoff.png` — décollage, bras qui
   commencent à s'écarter, séparation tête/torse visible.
 - `2026-09-23-black-hole-03-hold-debris.png` — lévitation soutenue,
   bras écartés, une dizaine de fragments de sol clairement visibles en
-  train de flotter/tournoyer autour du personnage.
-- `2026-09-23-black-hole-04-disk-forming.png` — disque en formation :
-  halo doré grandissant, cœur noir déjà visible en son centre, débris
-  et traînées convergeant, mur/vignette cohérents.
-- `2026-09-23-black-hole-05-climax.png` — plan extrême sur le disque :
-  cœur sphérique noir net, anneau doré autour, traînées blanches en
-  spirale, vignette qui assombrit le fond — le plus proche du langage
-  visuel de la référence.
-- `2026-09-23-black-hole-06-collapse.png` — effondrement, disque encore
-  large mais net (cœur + anneau + traînées bien lisibles).
-- `2026-09-23-black-hole-07-landing.png` — atterrissage, pose
-  d'absorption de l'impact, vignette déjà retombée (retour à la scène
-  normale).
-- `2026-09-23-black-hole-08-recover.png` — pose de clôture distincte
-  (essoufflement, bras asymétriques), pas un simple retour à la garde.
-- `2026-09-23-black-hole-09-fondu-final.png` — dernière image avant la
+  train de flotter/tournoyer autour du personnage, ciel encore diurne.
+- `2026-09-23-black-hole-04-flash-formation.png` — instant du flash de
+  formation, overlay blanc cassé quasi plein cadre, silhouette du disque
+  naissant visible dessous — reproduit la frame 034 de la référence.
+- `2026-09-23-black-hole-05-disk-forming.png` — juste après le flash,
+  ciel déjà basculé côté nuit, disque en formation (halo doré, cœur noir
+  visible en son centre), débris et traînées convergeant.
+- `2026-09-23-black-hole-06-climax.png` — plan extrême sur le disque,
+  ambiance nocturne cosmique pleinement installée : cœur sphérique noir
+  net, anneau doré autour, traînées blanches en spirale, vignette qui
+  assombrit le fond — le plus proche du langage visuel de la référence.
+- `2026-09-23-black-hole-07-collapse.png` — effondrement, disque encore
+  large mais net (cœur + anneau + traînées bien lisibles), toujours nuit.
+- `2026-09-23-black-hole-08-landing.png` — atterrissage, pose
+  d'absorption de l'impact, vignette déjà retombée, ciel qui recommence
+  à basculer vers le jour.
+- `2026-09-23-black-hole-09-recover.png` — pose de clôture distincte
+  (essoufflement, bras asymétriques), ciel revenu diurne.
+- `2026-09-23-black-hole-10-fondu-final.png` — dernière image avant la
   fin du clip, quasi entièrement noire (fondu de clôture délibéré).
 
 Publié : https://claude.ai/artifact/RN3Xb145T8ptNBHxSvQQRT
