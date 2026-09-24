@@ -3,6 +3,8 @@
 Ce modèle est tiré de la fiche « DEMI-DIEU, S1 Poing Scintillant » envoyée
 par Milan, puis complété par les études visuelles (lots 1 à 4).
 
+> Note (Milan, 2026-09-24) : Demi-Dieu n'est **pas** un coup à produire pour l'instant. Seul le **format** de sa fiche est retenu.
+
 Une fiche par coup, **avant** d'animer. Elle porte l'intention, le niveau du
 coup et la caméra dans laquelle il sera vu. C'est le « niveau intention » qui
 manquait (`ANGLES_MORTS.md` §6).
