@@ -1,0 +1,124 @@
+{
+ "ok": 10,
+ "total": 10,
+ "regles": [
+  {
+   "regle": "posture droite pendant les coups legers",
+   "ok": true,
+   "valeur": {
+    "max": 0.153,
+    "median": 0.039
+   },
+   "seuil": {
+    "max": 0.24,
+    "median": 0.123
+   },
+   "source": "corpus frappe_legere (affaissement_torse_studs) ; retour Milan 2026-09-24"
+  },
+  {
+   "regle": "escalade : hitstop",
+   "ok": true,
+   "valeur": [
+    0.03,
+    0.045,
+    0.06,
+    0.085
+   ],
+   "seuil": "dernier tiers >= 1.15 x premier tiers, aucune baisse > 10 %",
+   "source": "refs Black Flash / Serious Punch ; retour Milan 2026-09-24"
+  },
+  {
+   "regle": "escalade : recul de la victime (studs)",
+   "ok": true,
+   "valeur": [
+    0.283,
+    0.39,
+    0.571,
+    1.346
+   ],
+   "seuil": "dernier tiers >= 1.15 x premier tiers, aucune baisse > 10 %",
+   "source": "refs Black Flash / Serious Punch ; retour Milan 2026-09-24"
+  },
+  {
+   "regle": "escalade : secousse camera",
+   "ok": true,
+   "valeur": [
+    0.14,
+    0.22,
+    0.3,
+    0.42
+   ],
+   "seuil": "dernier tiers >= 1.15 x premier tiers, aucune baisse > 10 %",
+   "source": "refs Black Flash / Serious Punch ; retour Milan 2026-09-24"
+  },
+  {
+   "regle": "rafale : changement d'angle au moins toutes les 2 frappes",
+   "ok": true,
+   "valeur": 2,
+   "seuil": "<= 2 frappes par plan",
+   "source": "refs Black Flash ; LECONS.md 2"
+  },
+  {
+   "regle": "impact final visible avant les effets plein ecran",
+   "ok": true,
+   "valeur": 10,
+   "seuil": ">= 6 f a 60 i/s",
+   "source": "REFERENCES_VIDEO.md (Serious Punch) ; LECONS.md 3"
+  },
+  {
+   "regle": "plongee lisible (plan sans coupe)",
+   "ok": true,
+   "valeur": 30,
+   "seuil": ">= 20 f",
+   "source": "LECONS.md 3"
+  },
+  {
+   "regle": "epaules jamais haussees",
+   "ok": true,
+   "valeur": {
+    "max": -0.007,
+    "median": -0.607
+   },
+   "seuil": {
+    "max": 0.088,
+    "median": -0.539
+   },
+   "source": "corpus frappe_legere (decalage_epaule_vertical_studs) ; retour Milan 2026-09-24 (v2)"
+  },
+  {
+   "regle": "bras a l'horizontale ou en dessous au contact",
+   "ok": true,
+   "valeur": {
+    "elevation_deg": [
+     -15.0,
+     -20.1,
+     -29.8,
+     -24.9
+    ],
+    "poing_hauteur": [
+     3.18,
+     2.88,
+     2.5,
+     2.49
+    ]
+   },
+   "seuil": {
+    "elevation_deg": 5.1,
+    "poing_hauteur": 3.69
+   },
+   "source": "corpus frappe_legere (mecanique_frappe) ; refs Black Flash"
+  },
+  {
+   "regle": "transfert de poids sur les coups de puissance",
+   "ok": true,
+   "valeur": [
+    0.62,
+    0.63,
+    0.62,
+    0.68
+   ],
+   "seuil": ">= 0.33 stud sur les 4 derniers",
+   "source": "corpus frappe_lourde (mecanique_frappe.transfert_poids_studs) ; retour Milan 2026-09-24 (v2)"
+  }
+ ]
+}

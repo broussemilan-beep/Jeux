@@ -91,8 +91,10 @@ def camera_keys(aw, vw):
     add(50, mid(50) + [9.6, 3.0, 2.2], mid(50) + [0, -0.2, 0], 44)
     # plan B (coup 3, crochet) : contrechamp par-dessus l'epaule de la victime
     # (v2b : plein contrechamp bouche par le dos de la victime -> decale de cote)
-    add(52, Vt(52) + [6.0, 1.9, -4.2], mid(52) + [0, 0.1, 0], 44, "cut")
-    add(76, Vt(76) + [5.5, 1.7, -3.9], mid(76) + [0, 0.1, 0], 42)
+    # v3 : le crochet frappe le flanc de la victime cote -x : plan de profil
+    # depuis CE cote (sinon le dos de la victime cache l'impact)
+    add(52, mid(52) + [-10.8, 2.2, 1.2], mid(52) + [0, -0.3, 0], 46, "cut")
+    add(76, mid(76) + [-10.0, 2.0, 1.0], mid(76) + [0, -0.3, 0], 44)
     # plan C (coup 4 au corps, la victime decolle) : bas, cote gauche
     add(78, mid(78) + [-9.8, -1.7, 2.4], mid(78) + [0, 0.9, 0], 48, "cut")
     add(116, mid(116) + [-9.2, -1.5, 1.6], mid(116) + [0, 0.7, 0], 46)

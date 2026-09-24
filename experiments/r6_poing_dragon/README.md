@@ -205,3 +205,75 @@ trop haut ou trop près (garde collée, coups au visage). Et chaque coup
 avançait le pied avant avec le corps : au contact, le pied est encore en
 l'air. Preuve, en profil au contact : `scripts/profile_contact.py`, puis
 `captures/verification/2026-09-24-poing-dragon-v2-epaules-vs-pro.png`.
+
+## v3 (2026-09-24) : la rafale refaite après le retour sur la v2
+
+Seule la rafale (f0-108) change. L'aérien, l'impact et la révélation sont
+inchangés.
+
+**Les quatre coups, tous au corps** (réf. Black Flash) :
+
+| coup | cible | réaction de la victime |
+|---|---|---|
+| jab G | poitrine | le buste est repoussé |
+| direct D | plexus | elle se plie en avant |
+| crochet G | côtes | elle se plie de côté |
+| coup au corps D | foie | elle se plie autour du poing et décolle |
+
+**Comment chaque coup est construit** (`dragon_clip.py`) :
+- **Placement du corps** (`fitp`) : le corps se place d'après le point de
+  contact. Le pivot d'épaule est mis à 2,2 studs du point touché, bras sous
+  l'horizontale : à cette distance, l'IK du V2.22 **baisse** l'épaule au lieu
+  de la hausser (carte mesurée, `LECONS.md` 6).
+- **Appuis plantés** de l'armement à la récupération. Le torse recule
+  au-dessus du pied arrière à l'armement, puis passe devant le pied avant au
+  contact. Le pas se fait après le coup, pendant la récupération.
+- **Mains en arc** autour de l'épaule (`arm_point`) : l'IK interpole en ligne
+  droite, une main allant de derrière à devant traverserait le corps
+  (`LECONS.md` 9).
+- **Garde basse, bras tendus vers le bas**, comme les M1 du pack (mains vers 2 studs).
+- **Abaissement automatique du bassin** (`auto_low`) : seulement si un pied
+  planté n'atteint pas le sol, au plus 0,2 stud. Il s'arrête dès que baisser
+  n'aide plus.
+- **Solveur IK plus robuste** : il part de plusieurs points de départ. Sur une
+  pose, le contrôle d'un pied divergeait à 6 studs.
+
+**Règles : 10/10** (`output/regles_v3.json`), contre 7/10 pour la v2 avec les
+mêmes règles :
+
+| mesure | v2 | v3 | pros |
+|---|---|---|---|
+| épaule (médiane / max) | +0,69 / +1,29 | −0,61 / −0,01 | −0,59 à −0,92 / +0,04 |
+| poing au contact | 4,4 studs, bras +4-5° | 2,5-3,2 studs, bras −15 à −30° | 2,5-3,6, −20 à 0° |
+| transfert de poids | 0,16-0,39 | 0,62-0,68 | 0,33-0,92 |
+| affaissement (médiane) | 0,11 | 0,04 | ≤ 0,12 |
+| recul de la victime | 0,28 → 1,22 | 0,28 → 0,39 → 0,57 → 1,35 | — |
+
+**Autres contrôles**, tous inchangés en v2 comme en v3 :
+- contacts ≤ 0,05 stud ;
+- sens 9/9 ;
+- test Luau `SENS OK` ;
+- `PACKAGE OK` ;
+- écart de réduction 0,017 stud.
+
+Point le plus bas de l'attaquant : −0,08, au lieu de −0,14 en v2. Une pose
+intermédiaire a été ajoutée dans la descente vers la fente.
+
+**Caméra.** Le crochet frappe maintenant le flanc côté −x. Le plan B passe de
+profil, de ce côté, sinon le dos de la victime cachait l'impact. Vérifié aux
+frames 57-72.
+
+**Preuves** :
+- `captures/verification/2026-09-24-poing-dragon-v3-profil-contact.png` :
+  profil au contact des 4 coups, contre les M1 pro ;
+- `captures/verification/2026-09-24-poing-dragon-v2-vs-v3-rafale-profil.png` :
+  le lecteur, v2 contre v3, aux 4 contacts.
+
+**Honnêtement :**
+- La distance entre les torses reste d'environ 3 studs. Le vrai bout portant du
+  Black Flash obligerait à ramener la main près de l'épaule, et l'IK la hausse :
+  on retomberait sur le défaut de la v2.
+- Au contact, la jambe arrière est inclinée de 41 à 52°, et l'IK la décroche de
+  la hanche (jusqu'à 1,2 stud). Les pros font pareil sur leurs coups lourds
+  (downslam : jusqu'à 1,8 stud, 41°). Ça se lit comme une fente, mais c'est à
+  juger à l'œil.

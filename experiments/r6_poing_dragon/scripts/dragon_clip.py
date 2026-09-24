@@ -43,7 +43,8 @@ END_F = 526                 # 8,77 s
 # en force (jab, direct, crochet, coup au corps qui souleve), un pas a chaque
 # coup, ecarts 26/24/26 f puis une respiration avant l'uppercut.
 HITS = [  # (frame de contact, main, cible sur la victime)
-    (14, "L", "face"), (40, "R", "face"), (64, "L", "face"), (90, "R", "body"),
+    # v3 : tout dans le corps, a bout portant (refs Black Flash, LECONS.md 6)
+    (14, "L", "chest"), (40, "R", "plexus"), (64, "L", "ribs"), (90, "R", "body"),
 ]
 # escalade (rules.check_escalade) : hitstop, secousse, taille des effets
 HIT_HITSTOP = [0.03, 0.045, 0.06, 0.085]
@@ -139,7 +140,74 @@ def shoulder(world, side):
     return p + r @ np.array([0.0, 0.75, 0.0])
 
 
+def torso_pivot(world, side):
+    """Pivot d'epaule R6 (C0 du Motor6D : Torso * (+-1, 0,5, 0))."""
+    r, p = world["Torso"]
+    return p + r @ np.array([1.0 if side == "R" else -1.0, 0.5, 0.0])
+
+
+def arm_point(world, side, az, el, dist):
+    """v3 (LECONS.md 6) : point de main defini depuis le pivot d'epaule --
+    azimut (deg, + = vers la droite du perso, 0 = devant le torse, 180 =
+    derriere), elevation (deg, - = sous l'horizontale), distance (studs).
+    Sonde de l'IK du V2.22 (2026-09-24) : main a < 1,7 stud du pivot ->
+    l'IK HAUSSE l'epaule (+0,1 a +0,5) ; a 1,9-2,3 stud sous l'horizontale
+    -> il la BAISSE (-0,2 a -0,85), comme les M1 pro."""
+    f = world["Torso"][0] @ np.array([0.0, 0.0, -1.0])
+    fh = np.array([f[0], 0.0, f[2]])
+    fh /= np.linalg.norm(fh)
+    right = np.cross(fh, [0.0, 1.0, 0.0])
+    a, e = np.radians(az), np.radians(el)
+    d = np.cos(e) * (np.cos(a) * fh + np.sin(a) * right) + np.sin(e) * np.array([0.0, 1.0, 0.0])
+    return torso_pivot(world, side) + dist * d
+
+
+def robust_tip(rig, ctrl, part, v):
+    """Gauss-Newton du controle IK depuis plusieurs departs : sur certaines
+    poses il diverge (controle du pied parti a 6 studs, v3). Garde le
+    meilleur residu."""
+    best = None
+    for seed in ((0.0, 0.0, 0.0), (0.0, 0.3, 0.0), (0.0, -0.3, 0.0), (0.2, 0.0, 0.2), (-0.2, 0.0, 0.2)):
+        V.set_controls({ctrl: {"location": seed}}, rig=rig)
+        loc, r = V.solve_control_for_tip(ctrl, part, v, rig=rig, iters=25)
+        if best is None or r < best[1]:
+            best = (loc, r)
+        if r < 0.005:
+            break
+    V.set_controls({ctrl: {"location": best[0]}}, rig=rig)
+    return best
+
+
 def solve_pose(rig, p):
+    """v3 : `auto_low` -- si un pied n'atteint pas le sol (appui trop
+    etire pour une jambe R6 d'un bloc), baisse le bassin du strict
+    necessaire, et seulement de ca (LECONS.md 1)."""
+    if not p.get("auto_low"):
+        return _solve_pose_once(rig, p)
+    p = dict(p)
+    y0 = p["pelvis"][0][1]
+    best = None
+    for _ in range(6):
+        c, res = _solve_pose_once(rig, p)
+        planted = [f"feet.{side}" for side, (mode, _v) in p.get("feet", {}).items() if mode in ("g", "rg")]
+        miss = max([res.get(k, 0.0) for k in planted] + [0.0])
+        if best is None or miss < best[0] - 1e-4:
+            best = (miss, p["pelvis"])
+        else:
+            break                       # baisser n'aide plus (pied trop PRES, pas trop loin)
+        if miss < 0.012:
+            break
+        (x, y, z), rot = p["pelvis"]
+        if y - miss - 0.004 < y0 - 0.2:
+            break                       # jamais plus de 0,2 stud (LECONS.md 1)
+        p["pelvis"] = ((x, y - miss - 0.004, z), rot)
+    if best[1] is not p["pelvis"]:
+        p["pelvis"] = best[1]
+        c, res = _solve_pose_once(rig, p)
+    return c, res
+
+
+def _solve_pose_once(rig, p):
     """Passe 1 : pose le corps, resout pieds puis mains puis regard.
     `fit` = (cote, cible, decalage, masque) : translate le MasterControl pour
     que l'epaule tombe a cible + decalage (axes du masque seulement) -- le
@@ -155,6 +223,19 @@ def solve_pose(rig, p):
         loc = np.asarray(c["MasterControl"]["location"]) + delta   # attaquant : repere local = monde
         c["MasterControl"]["location"] = tuple(float(x) for x in loc)
         V.set_controls({"MasterControl": c["MasterControl"]}, rig=rig)
+    if "fitp" in p:
+        # v3 : le corps se place pour que le pivot d'epaule soit a `dist` du
+        # point de contact (IK qui BAISSE l'epaule), bras vers `az` (deg,
+        # repere monde, 0 = -Z) ; hauteur du corps inchangee
+        side, tgt, dist, az = p["fitp"]
+        tgt = np.asarray(tgt, float)
+        sh = torso_pivot(V.current_parts(rig), side)
+        hd = float(np.sqrt(max(dist ** 2 - (tgt[1] - sh[1]) ** 2, 0.04)))
+        a = np.radians(az)
+        want = tgt - hd * np.array([np.sin(a), 0.0, -np.cos(a)])
+        loc = np.asarray(c["MasterControl"]["location"]) + np.array([want[0] - sh[0], 0.0, want[2] - sh[2]])
+        c["MasterControl"]["location"] = tuple(float(x) for x in loc)
+        V.set_controls({"MasterControl": c["MasterControl"]}, rig=rig)
     if p.get("ground_root"):
         w = V.current_parts(rig)
         low = min(box_lowest(w, part) for part in SIZES)
@@ -166,6 +247,9 @@ def solve_pose(rig, p):
     for table, key in ((LEG, "feet"), (IK, "hands")):
         for s, (mode, v) in p.get(key, {}).items():
             ctrl, part = table[s]
+            if mode == "a":
+                v = arm_point(V.current_parts(rig), s, *v)
+                mode = "w"
             if mode in ("w", "rw", "g", "rg"):
                 if mode == "rw":
                     v = root + np.asarray(v)
@@ -174,8 +258,7 @@ def solve_pose(rig, p):
                     mode = "g"
                 if mode == "g":
                     v = np.array([v[0], FOOT_Y, v[1]])
-                V.set_controls({ctrl: {"location": (0.0, 0.0, 0.0)}}, rig=rig)
-                loc, r = V.solve_control_for_tip(ctrl, part, v, rig=rig, iters=25)
+                loc, r = robust_tip(rig, ctrl, part, v)
                 if mode == "g":
                     # une jambe R6 est UNE boite : inclinee, son coin passe sous
                     # le sol meme bout du pied pose -> on remonte la cible
@@ -187,7 +270,7 @@ def solve_pose(rig, p):
                         if abs(low) < 0.01:
                             break
                         v = v + np.array([0.0, -low, 0.0])
-                        loc, r = V.solve_control_for_tip(ctrl, part, v, rig=rig, iters=25)
+                        loc, r = robust_tip(rig, ctrl, part, v)
                     _low, loc, r, v = best
                     V.set_controls({ctrl: {"location": loc}}, rig=rig)
                     if _low > 0.05:
@@ -258,23 +341,31 @@ def victim_keys():
     # v2 : reactions calibrees sur le corpus (tete au pic en 1-2 f, torse ~27 deg,
     # bras peu agites, AUCUN affaissement) et qui MONTENT d'un coup a l'autre.
     # Les pieds restent plantes au pic puis rattrapent le corps (pas de glisse).
-    # H1 f14 : jab gauche, leger
+    # v3 : coups DANS LE CORPS (Black Flash) -> la victime se PLIE autour du
+    # poing (tangage -), au lieu de claquer la tete en arriere.
+    # H1 f14 : jab gauche a la poitrine : buste repousse, tete qui suit
     add(14, stand(0.0), "LINEAR")
-    add(15, stand(0.12, feet_back=0.0, head=(20, 14, 2), pelvis=((0, 0, 0), (8, 6, 0)), arms=((-8, 0, 0), (-6, 0, 0))))
-    add(26, stand(0.25, head=(4, 3, 0), pelvis=((0, 0, 0), (2, 1, 0))))
-    # H2 f40 : direct droit au visage, la tete part vers la gauche de l'attaquant
-    add(40, stand(0.25, head=(2, 1, 0)), "LINEAR")
-    add(42, stand(0.5, feet_back=0.25, head=(24, -36, 6), pelvis=((0, 0, 0), (14, -20, 4)), arms=((-18, 0, 0), (-10, 0, 0))))
-    add(53, stand(0.65, head=(6, -8, 0), pelvis=((0, 0, 0), (4, -5, 0))))
-    # H3 f64 : crochet gauche, la tete fouette, pas de recul
-    add(64, stand(0.65, head=(4, -4, 0)), "LINEAR")
-    add(66, stand(1.05, feet_back=0.65, head=(18, 55, -12), pelvis=((0, 0, 0), (10, 30, -8)), arms=((-10, 0, 0), (-30, 0, 20))))
-    add(78, stand(1.25, head=(8, 16, -4), pelvis=((0, 0, 0), (4, 10, -2))))
+    add(15, stand(0.14, feet_back=0.0, head=(14, 8, 0), pelvis=((0, 0, 0), (9, 5, 0)), arms=((-10, 0, 0), (-8, 0, 0))))
+    add(26, stand(0.25, head=(2, 2, 0), pelvis=((0, 0, 0), (2, 1, 0))))
+    # H2 f40 : direct droit au plexus : se plie en avant, souffle coupe
+    add(40, stand(0.25, head=(1, 1, 0)), "LINEAR")
+    add(42, stand(0.8, feet_back=0.3, head=(-16, -6, 0), pelvis=((0, 0, 0), (-24, -8, 0)), chest=(0, 0.2, 0),
+                  arms=((30, 0, -8), (26, 0, 8))))
+    add(53, stand(0.95, head=(-10, -4, 0), pelvis=((0, 0, 0), (-16, -5, 0)), chest=(0, 0.15, 0),
+                  arms=((24, 0, -6), (20, 0, 6))))
+    # H3 f64 : crochet gauche aux cotes : plie de cote, vers le coup
+    add(64, stand(0.95, head=(-8, -3, 0), pelvis=((0, 0, 0), (-14, -4, 0)), chest=(0, 0.12, 0),
+                  arms=((22, 0, -6), (18, 0, 6))), "LINEAR")
+    add(66, stand(1.3, feet_back=1.05, head=(-12, 16, -12), pelvis=((0, 0, 0), (-18, 14, -10)), chest=(0, 0.2, 0),
+                  arms=((10, 0, 0), (34, 0, 22))))
+    add(78, stand(1.55, head=(-8, 8, -6), pelvis=((0, 0, 0), (-14, 10, -7)), chest=(0, 0.15, 0),
+                  arms=((16, 0, 0), (24, 0, 10))))
     # H4 f90 : coup au corps montant -> plie autour du poing et DECOLLE
-    add(90, stand(1.25, head=(6, 10, 0), pelvis=((0, 0, 0), (3, 6, 0))), "LINEAR")
-    add(93, victim_pose(1.6, y=0.55, head=(-26, 0, 0), pelvis=((0, 0, 0), (-34, 0, 0)), chest=(0, 0.3, 0),
+    add(90, stand(1.55, head=(-6, 6, -3), pelvis=((0, 0, 0), (-12, 6, -4)), chest=(0, 0.12, 0),
+                  arms=((18, 0, 0), (20, 0, 6))), "LINEAR")
+    add(93, victim_pose(1.95, y=0.55, head=(-26, 0, 0), pelvis=((0, 0, 0), (-34, 0, 0)), chest=(0, 0.3, 0),
                         arms=((35, 0, 0), (30, 0, 0)), feet=AIR_LEGS))
-    add(104, victim_pose(2.15, y=1.3, head=(-16, 0, 0), pelvis=((0, 0, 0), (-24, 0, 0)), chest=(0, 0.2, 0),
+    add(104, victim_pose(2.4, y=1.3, head=(-16, 0, 0), pelvis=((0, 0, 0), (-24, 0, 0)), chest=(0, 0.2, 0),
                          arms=((40, 0, 0), (34, 0, 0)), feet=TUMBLE_LEGS))
     add(118, stand(2.6, head=(-16, 0, 0), pelvis=((0, -0.75, 0), (-24, 0, 4)), chest=(0, 0.25, 0),
                    arms=((22, 0, 0), (18, 0, 0))))
@@ -344,7 +435,7 @@ def a_stance(z, low=0.08, yaw=-18, lean=-8, look=None, hands=None, feet=None, ch
     return p
 
 
-def attacker_keys(vw):
+def attacker_keys(vw, rig):
     """vw : {frame: parts monde de la victime}. Les cibles de contact sont lues
     sur la victime cuite (contact exact, meme principe que le M1)."""
     def head(f):
@@ -359,73 +450,120 @@ def attacker_keys(vw):
             r, p = parts["Head"]
             return p + r @ np.array([0, -0.55, -0.55])
         r, p = parts["Torso"]
+        if kind == "plexus":
+            return p + r @ np.array([0, -0.1, -0.55])
+        if kind == "ribs":                                 # cotes cote droit de la victime (gauche de l'attaquant)
+            return p + r @ np.array([0.5, -0.3, -0.55])
         if kind == "body":
             return p + r @ np.array([0, -0.35, -0.52])
         return p + r @ np.array([0, 0.2, -0.55])         # "chest" : face avant du torse
 
     K = []
     add = lambda f, p, i="BEZIER": K.append((f, p, i))  # noqa: E731
-    # activation : garde, flash blanc
-    add(0, a_stance(0.0, look=head(0)))
-    # v2 : chaque coup part des CIBLES DU CORPUS (rules.design_targets) --
-    # torse affaisse <= 0,14 (max pro 0,22), balayage du torse ~90-120 deg,
-    # action ~10 f, bras arriere qui tire fort -- et MONTE en force (k).
-    # Un vrai PAS par coup : le pied avant se leve pendant l'armement et se
-    # replante juste avant le contact, le pied arriere rattrape apres.
-    zprev = 0.0
-    for i, (c, s, kind) in enumerate(HITS):
-        tgt = target(c, kind)
-        z = float(tgt[2]) + (2.3 if kind != "body" else 2.1)
-        k = min(1.0, HIT_SCALE[i] / HIT_SCALE[2])
-        base, dip = 0.08, (0.13 if kind != "body" else 0.15)
-        if s == "R":
-            wind_yaw, hit_yaw = -70 * k, 50 * k
-            chamber = ("w", (0.95, 3.0 - base, z + 0.35))
-            other_c = ("w", (-0.45, 3.45 - base, z - 1.2))
-            other_hit = ("w", (-0.95, 2.55, z + 0.95))
-        else:
-            wind_yaw, hit_yaw = 50 * k, -60 * k
-            chamber = ("w", (-0.95, 3.0 - base, z + 0.25))
-            other_c = ("w", (0.5, 3.35 - base, z - 0.85))
-            other_hit = ("w", (1.0, 2.55, z + 0.9))
-        o = "L" if s == "R" else "R"
-        mid = 0.4 * np.asarray(tgt) + 0.6 * np.asarray(chamber[1])
-        # R6 : pas de taille, les hanches tournent avec le torse. Les appuis
-        # PIVOTENT donc avec le bassin (60 %, pivot sur l'avant du pied) --
-        # sinon les jambes se croisent (pied arriere hors d'atteinte, v2a).
-        def rear(zz, yaw):
-            x, dz = _pivot(0.6, 0.35, 0.6 * yaw)
-            return ("g", (x, zz + dz))
+    # activation : garde (v3 : mains basses et loin du pivot -> epaules basses)
+    # v3 (retour de Milan sur la v2 : « bras trop hauts, accroupi, pas de
+    # transfert de poids » ; LECONS.md 6-7 ; refs Black Flash) :
+    # - coups DANS LE CORPS a bout portant (poitrine, plexus, cotes, foie),
+    #   la victime se plie ; poing 2,6-3,2 studs du sol (pro 2,5-3,6) ;
+    # - le corps se place d'apres le contact (fitp) : pivot d'epaule a
+    #   ~2,1 studs du point touche, bras sous l'horizontale -> l'IK baisse
+    #   l'epaule au lieu de la hausser ;
+    # - pieds PLANTES de l'armement a la recuperation ; le torse recule
+    #   au-dessus du pied arriere a l'armement puis passe devant le pied
+    #   avant au contact (transfert ~0,6 stud) ; le pas se fait APRES le
+    #   coup, pendant la recuperation, jamais pendant la frappe.
+    GUARD = lambda: {"L": ("a", (10, -54, 2.25)), "R": ("a", (-20, -62, 2.2))}  # noqa: E731
+    # le controle IK de la main est interpole EN LIGNE DROITE entre deux cles :
+    # de derriere a devant, il frolerait l'epaule (qui remonte). On passe
+    # donc par des cles en ARC autour du pivot (cote, bras bas).
+    side = lambda h, az, el=-60, d=2.1: ("a", (az if h == "R" else -az, el, d))  # noqa: E731
+    PLAN = {  # kind: (dist pivot->contact, azimut monde, lacet arme, lacet contact, penche contact, baisse)
+        "chest": (2.2, 12, 12, -32, -12, 0.0),
+        "plexus": (2.2, -12, -30, 38, -14, 0.0),
+        "ribs": (2.2, 24, 18, -44, -15, 0.02),
+        "body": (2.25, -8, -32, 32, -17, 0.06),
+    }
+    BACK, MID = 0.42, 0.15         # torse en retrait a l'armement / a mi-course (studs)
 
-        def front(zz, yaw, y=None):
-            x, dz = _pivot(-0.55, -0.45, 0.6 * yaw)
-            return ("w", (x, y, zz + dz)) if y is not None else ("g", (x, zz + dz))
-        zm = 0.5 * (zprev + z)
-        # armement qui claque puis se TIENT, pied avant qui se leve
-        if c - 12 > 2:
-            add(c - 12, a_stance(zprev + 0.05, low=base, yaw=wind_yaw * 0.85, lean=-6, look=head(c - 12),
-                                 hands={s: chamber, o: other_c}, feet=a_feet(zprev, pivot=0.6 * wind_yaw * 0.85)))
-        add(c - 8, a_stance(0.6 * zprev + 0.4 * z, low=base, yaw=wind_yaw, lean=-7, look=head(c - 8),
-                            hands={s: chamber, o: other_c}, feet={"L": front(zm, wind_yaw, 0.4), "R": rear(zm, wind_yaw)}))
-        # la main MENE, le pied se replante, le poids descend dans le coup
-        add(c - 4, a_stance(0.25 * zprev + 0.75 * z, low=base + 0.02, yaw=wind_yaw * 0.3 + hit_yaw * 0.25, lean=-11,
-                            look=head(c - 4), hands={s: ("w", tuple(mid)), o: other_c},
-                            feet={"L": front(z, wind_yaw * 0.3 + hit_yaw * 0.25), "R": rear(zm, wind_yaw * 0.3 + hit_yaw * 0.25)}))
-        # contact : l'autre bras tire fort en arriere (pro : bras arriere ~167 deg)
-        add(c, a_stance(z, low=dip, yaw=hit_yaw, lean=-14 * k, look=head(c),
-                        hands={s: ("w", tuple(tgt)), o: other_hit}, feet={"L": front(z, hit_yaw), "R": rear(zm, hit_yaw)}), "LINEAR")
-        tg2 = np.asarray(tgt) + (np.array([0, 0.05, 0.3]) if kind == "body" else np.array([0, 0, -0.1]))
-        add(c + 3, a_stance(z, low=dip, yaw=hit_yaw * 1.1, lean=-15 * k, look=head(c + 3),
-                            hands={s: ("w", tuple(tg2)), o: other_hit}, feet={"L": front(z, hit_yaw * 1.1), "R": rear(zm, hit_yaw * 1.1)}))
-        # le pied arriere rattrape, retour en garde droite
-        add(c + 9, a_stance(z, low=base, yaw=hit_yaw * 0.4, lean=-8, look=head(c + 9), feet=a_feet(z, pivot=0.6 * hit_yaw * 0.4)))
-        zprev = z
-    add(108, a_stance(zprev, low=base, yaw=-15, lean=-6, look=head(108), feet=a_feet(zprev)))
+    def presolve(pose):
+        """Racine du corps reellement obtenue (fitp resolu sur le rig)."""
+        c, _res = solve_pose(rig, pose)
+        return np.asarray(c["MasterControl"]["location"], float)
+
+    plans = []
+    for i, (c, s, kind) in enumerate(HITS):
+        dist, az, wind, yaw, lean, drop = PLAN[kind]
+        o = "L" if s == "R" else "R"
+        tgt = target(c, kind)
+        contact = {"root": ((0.0, 0.0, 0.0), (0, 0, 0)), "pelvis": ((0, -(0.03 + drop), 0), (lean, yaw, 0)),
+                   "chest": (0, 0.15, 0), "fitp": (s, tuple(tgt), dist, az), "look": head(c),
+                   "hands": {s: ("w", tuple(tgt)), o: ("a", (155 if o == "R" else -155, -50, 2.05))}}
+        croot = presolve(contact)
+        # appuis : pied avant (G) sous/juste derriere le bassin au contact, pied
+        # arriere (D) 0,8 derriere ; tournes de la moitie du lacet de contact
+        lx, lz = _pivot(-0.5, 0.12, 0.5 * yaw)
+        rx, rz = _pivot(0.55, 0.8, 0.5 * yaw)
+        feet = {"L": ("g", (croot[0] + lx, croot[2] + lz)), "R": ("g", (croot[0] + rx, croot[2] + rz))}
+        contact["feet"] = feet
+        contact["auto_low"] = True
+        plans.append((c, s, o, kind, tgt, croot, feet, contact, yaw, wind, lean, drop))
+
+    def body(root, low, yaw, lean, f, hands, feet, chest=(0, 0.1, 0)):
+        return {"root": (tuple(float(x) for x in root), (0, 0, 0)), "pelvis": ((0, -low, 0), (lean, yaw, 0)),
+                "chest": chest, "look": head(f), "hands": hands, "feet": feet, "auto_low": True}
+
+    back = lambda r, d: np.asarray(r) + np.array([0.0, 0.0, d])  # noqa: E731
+    c0, _s0, _o0, _k0, _t0, r0, feet0, *_r = plans[0]
+    add(0, body(back(r0, 0.3), 0.03, 0, -4, 0, GUARD(), feet0))
+    add(3, body(back(r0, 0.4), 0.03, 0.5 * plans[0][9], -1, 3, {"L": side("L", 85), "R": GUARD()["R"]}, feet0))
+    prev = None
+    for i, (c, s, o, kind, tgt, croot, feet, contact, yaw, wind, lean, drop) in enumerate(plans):
+        chamber = {s: side(s, 150, -64, 2.1), o: GUARD()[o]}
+        if prev is not None:
+            # le PAS, pendant la recuperation du coup precedent : pied avant
+            # leve a mi-chemin, puis pied arriere qui suit, reposes avant l'armement
+            pc, pfeet, proot = prev
+            (_m, (fx0, fz0)), (_m2, (fx1, fz1)) = pfeet["L"], feet["L"]
+            mid_root = 0.5 * (back(proot, 0.3) + back(croot, BACK))
+            add(c - 13, body(mid_root, 0.03, 0.5 * wind, -3, c - 13, {s: side(s, 80), o: GUARD()[o]},
+                             {"L": ("w", (0.5 * (fx0 + fx1), 0.32, 0.5 * (fz0 + fz1))), "R": pfeet["R"]}))
+            (_m, (bx0, bz0)), (_m2, (bx1, bz1)) = pfeet["R"], feet["R"]
+            add(c - 10, body(back(croot, BACK), 0.03, 0.85 * wind, 2, c - 10, chamber,
+                             {"L": feet["L"], "R": ("w", (0.5 * (bx0 + bx1), 0.5, 0.5 * (bz0 + bz1)))}))
+        # armement : torse au-dessus du pied arriere, TENU
+        add(c - 7, body(back(croot, BACK), 0.03, wind, 3, c - 7, chamber, feet))
+        # la hanche et le torse partent, la main suit en arc (cote puis devant)
+        add(c - 5, body(back(croot, 0.4), 0.03 + 0.3 * drop, 0.7 * wind + 0.3 * yaw, 0.2 * lean, c - 5,
+                        {s: side(s, 80, -62, 2.0), o: GUARD()[o]}, feet))
+        add(c - 3, body(back(croot, MID), 0.03 + 0.5 * drop, 0.35 * wind + 0.65 * yaw, 0.6 * lean, c - 3,
+                        {s: side(s, 20, -36, 2.05), o: side(o, 100, -58, 2.0)}, feet))
+        add(c, contact, "LINEAR")
+        # poussee : le poing accompagne la victime qui recule, le corps aussi
+        t3 = target(c + 3, kind)
+        push = np.clip(t3 - tgt, -0.18, 0.18)
+        push[1] = 0.0
+        # (le poing suit le CORPS, pas la victime : si elle recule plus loin
+        # que la poussee, le bras resterait tendu hors de portee -> epaule haussee)
+        add(c + 3, body(croot + push, 0.03 + drop, 1.1 * yaw, 1.1 * lean, c + 3,
+                        {s: ("w", tuple(tgt + push)), o: contact["hands"][o]}, feet))
+        # recuperation : torse revient entre les appuis, garde basse ; le bras
+        # arriere repasse par le cote
+        add(c + 6, body(back(croot, 0.15), 0.03 + 0.5 * drop, 0.7 * yaw, 0.5 * lean, c + 6,
+                        {s: side(s, 10, -42, 2.1), o: side(o, 90, -62, 2.0)}, feet))
+        add(c + 9, body(back(croot, 0.3), 0.03, 0.35 * yaw, -4, c + 9, GUARD(), feet))
+        prev = (c, feet, croot)
+    add(108, body(back(plans[-1][5], 0.3), 0.04, -12, -5, 108, GUARD(), plans[-1][6]))
 
     # ANTICIPATION 118-146 : fente tres basse, poing arme a la hanche, glisse
     zc = -2.0
     lunge_feet = lambda z: a_feet(z, lf=(-0.75, -1.35), rf=(0.95, 1.25))  # noqa: E731
-    add(118, a_stance(zc + 0.05, low=0.5, yaw=-20, lean=-12, look=head(118)))
+    add(118, a_stance(zc + 0.05, low=0.5, yaw=-20, lean=-12, look=head(118), hands=GUARD()))
+    # v3 : pose intermediaire -- le bassin descend de 0,85 pendant que les
+    # controles des pieds glissent en ligne droite : sans elle, le pied
+    # arriere passait 0,17 sous le sol (f122)
+    add(122, {"root": ((0.0, 0.0, zc - 0.08), (0, 0, 0)), "pelvis": ((0, -0.95, 0), (-19, -38, -3)), "chest": (0, 0.2, 0),
+              "feet": lunge_feet(zc - 0.1), "look": head(122),
+              "hands": {"R": ("w", (0.95, 2.0, zc + 0.0)), "L": ("w", (-0.55, 2.6, zc - 1.5))}})
     add(126, {"root": ((0.0, 0.0, zc - 0.2), (0, 0, 0)), "pelvis": ((0, -1.35, 0), (-24, -52, -4)), "chest": (0, 0.3, 0),
               "feet": lunge_feet(zc - 0.2), "look": head(126),
               "hands": {"R": ("w", (0.95, 1.55, zc + 0.05)), "L": ("w", (-0.55, 2.35, zc - 1.75))}})
@@ -545,7 +683,7 @@ def animate(a, b, keys_fn=None):
         key_pose(b, f, c, *interp_args(i))
     vw = bake_world(b, 0, END_F)
     solved = []
-    for f, p, i in attacker_keys(vw):
+    for f, p, i in attacker_keys(vw, a):
         c, res = solve_pose(a, p)
         solved.append((f, c, i))
         report["attaquant"].append((f, res))

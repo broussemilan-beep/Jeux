@@ -1,9 +1,9 @@
 """
-Planche de profil au contact : 2 M1 du pack pro contre nos 2 premiers coups.
+Planche de profil au contact : 2 M1 du pack pro contre nos coups de la rafale.
 Trait rouge = ecart entre le pivot d'epaule du torse et celui du bras
 (translation du Motor6D) ; cercle = poing. Sert de preuve a LECONS.md 6-7.
 
-Usage : python3 profile_contact.py <pack.rbxm> <sortie.png>
+Usage : python3 profile_contact.py <pack.rbxm> <sortie.png> [etiquette, ex. v3]
 """
 import sys, json, numpy as np
 import os
@@ -48,6 +48,7 @@ def draw(img, ox, w, title, hand, z0):
     d.text((ox + 10, 8), title, fill="black")
     d.text((ox + 10, 24), f"poing a {t[1]:.2f} stud du sol", fill="black")
 pack = sys.argv[1]
+TAG = sys.argv[3] if len(sys.argv) > 3 else ""
 pro = {}
 for s in C.load_rbxm_sequences(pack):
     if s["name"].endswith(("M1_1", "M1_3")):
@@ -56,11 +57,12 @@ for s in C.load_rbxm_sequences(pack):
         pro[s["name"]] = (wf[best[1]][1], best[2])
 aw, vw = ST.tracks()
 sc = json.load(open(os.path.join(HERE, "..", "output", "scene.json")))
-img = Image.new("RGB", (PW * 4, PH + 40), "white")
+n_hits = len(sc["hits"])
+img = Image.new("RGB", (PW * (2 + n_hits), PH + 40), "white")
 for k, (n, (w, h)) in enumerate(sorted(pro.items())):
     draw(img, k * PW, w, f"PRO {n}, au contact", h, w["Torso"][1][2])
-for k, (c, s_, kind) in enumerate(sc["hits"][:2]):
+for k, (c, s_, kind) in enumerate(sc["hits"]):
     w = aw[c]; h = "Right Arm" if s_ == "R" else "Left Arm"
-    draw(img, (k + 2) * PW, w, f"NOUS v2, coup f{c} ({kind}), au contact", h, w["Torso"][1][2])
-ImageDraw.Draw(img).text((10, PH + 12), "Profil, avant = droite. Trait rouge = epaule du torse -> epaule du bras : les pros la BAISSENT, la v2 la MONTE. Cercle = poing.", fill="black")
+    draw(img, (k + 2) * PW, w, f"NOUS {TAG}, coup f{c} ({kind}), au contact", h, w["Torso"][1][2])
+ImageDraw.Draw(img).text((10, PH + 12), "Profil, avant = droite. Trait rouge = epaule du torse -> epaule du bras : les pros la BAISSENT (descend). Cercle = poing.", fill="black")
 img.save(sys.argv[2])

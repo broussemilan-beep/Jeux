@@ -100,9 +100,33 @@ Le verdict final reste la revue de Milan, tracée dans `RETOURS.md`.
   - `rules.check_bras_au_contact` : élévation ≤ 5° au-dessus du max pro, poing
     ≤ 3,69 studs.
 - **À la conception** : viser la poitrine de la victime (ou sa tête **une fois
-  pliée**) et garder la cible de la main dans la sphère de rotation de l'épaule
-  (≤ 1,5 stud du pivot). Si l'IK doit tricher, qu'il baisse l'épaule, jamais
-  qu'il la monte.
+  pliée**). Si l'IK doit tricher, qu'il baisse l'épaule, jamais qu'il la monte.
+- **Carte de l'IK des bras du V2.22** (sonde du 2026-09-24, en v3). Elle corrige
+  ce que je supposais plus haut : garder la main **près** du pivot ne suffit pas.
+  L'IK se comporte comme un bras à deux segments :
+  - main à moins de 1,7 stud du pivot d'épaule (`Torso * (±1, 0,5, 0)`) :
+    l'épaule **monte** de 0,1 à 0,5 ;
+  - main à 1,9-2,3 studs **sous l'horizontale** : elle **descend** de 0,2 à
+    0,85, ce qu'on voit chez les pros ;
+  - au-delà d'environ 2,4 studs : hors de portée.
+
+  D'où, dans `r6_poing_dragon/scripts/dragon_clip.py` :
+  - `arm_point` : une main se pose en azimut, élévation et distance depuis le
+    pivot ;
+  - `fitp` : le corps se place pour que le pivot tombe à la bonne distance du
+    point de contact.
+
+## 9. Entre deux clés, le contrôle IK va en ligne droite
+
+- **Trouvé en v3, en regardant les frames entre les clés.**
+- **Effet** : une main qui passe de l'armement (derrière) au coup (devant) coupe
+  **à travers** le corps, et l'épaule remonte pendant 2-3 frames. Même chose
+  pour un pied qui glisse pendant que le bassin descend : il passe sous le sol.
+- **Règle de conception** : poser des clés **en arc** autour du pivot (côté,
+  bras bas), et une clé intermédiaire dès qu'un grand mouvement du bassin
+  croise un déplacement de pied.
+- **Mesuré** : `check_epaules` et le sol sont contrôlés sur **toutes** les frames,
+  pas seulement sur les clés.
 
 ## 7. Le transfert de poids : le torse passe au-dessus du pied avant
 

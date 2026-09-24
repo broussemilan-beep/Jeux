@@ -77,3 +77,29 @@ Preuve visuelle : `captures/verification/2026-09-24-poing-dragon-v1-vs-v2.png`.
   s'écartent pas pendant un M1. Nos pas écartent les jambes : une jambe R6 est
   une boîte, donc la hanche baisse. En plus, les épaules haussées tassent la
   silhouette : la tête paraît rentrée.
+
+## Poing du Dragon v3 (2026-09-24) : réponse au retour v2
+
+Pas encore revu par Milan. La rafale seulement ; le reste est inchangé
+(l'aérien, jugé bon deux fois).
+
+- **Règles** (`r6_poing_dragon/output/regles_v3.json`) : **10/10**.
+- **Mécanique du corps au contact** :
+
+  | mesure | v2 | v3 | pros |
+  |---|---|---|---|
+  | épaule, médiane | +0,69 | −0,61 | −0,59 à −0,92 |
+  | épaule, max | +1,29 | −0,01 | +0,04 |
+  | poing | 4,4 studs | 2,5-3,2 studs | 2,5-3,6 |
+  | bras | +4-5° | −15 à −30° | −20 à 0° |
+  | transfert | 0,16-0,39 | 0,62-0,68 | 0,33-0,92 |
+  | affaissement, médiane | 0,11 | 0,04 | ≤ 0,12 |
+
+- **Preuves** :
+  - `captures/verification/2026-09-24-poing-dragon-v3-profil-contact.png` ;
+  - `captures/verification/2026-09-24-poing-dragon-v2-vs-v3-rafale-profil.png`.
+- **Compromis assumé** : la distance entre les deux torses reste d'environ
+  3 studs, pas le vrai bout portant du Black Flash. Un bras R6 est un bloc de
+  2 studs : pour frapper plus près, il faut ramener la main à moins de 1,7 stud
+  de l'épaule, et l'IK la hausse (leçon 6). La proximité vient donc du corps
+  penché et de la victime qui se plie, pas de la distance.
