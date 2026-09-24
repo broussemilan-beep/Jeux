@@ -74,6 +74,12 @@ Le poids vient donc de ce qui entoure le choc :
 
 C'est l'inverse de notre hitstop, qui gèle **après** le contact.
 
+**Les cartes cachent un saut de pose.** Vérifié image par image sur
+l'impact de 3,15 s : la pose d'avant, en contact, et celle d'après, où le perso
+gris est déjà renvoyé en l'air, ne se suivent pas. Il n'y a aucun intermédiaire,
+ce sont les deux cartes qui masquent la coupure. On ne voit jamais le moment
+exact du choc, seulement le « avant » tenu et le « après » à pleine vitesse.
+
 **Chorégraphie.**
 - Échange à deux : les deux persos attaquent, esquivent, saisissent.
 - Corps entiers tournés à 90-180°, projections, un perso qui vole à
