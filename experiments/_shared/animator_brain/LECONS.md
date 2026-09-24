@@ -174,17 +174,26 @@ Le verdict final reste la revue de Milan, tracée dans `RETOURS.md`.
   frappe_lourde (`check_rules.py`). « Accroupi » reste un défaut pour les coups
   légers.
 
-## 11. Un coup droit voyage à plat (diagnostic, règle à venir)
+## 11. Un coup droit arme haut et voyage à plat
 
-- **Retour** : Milan, v3b (2026-09-24) : « les coups partent toujours du bas ».
+- **Retour** : Milan, v3b (2026-09-24) : « les coups partent toujours du bas,
+  le coup final ressemble à un enchaînement d'uppercuts et de coup droit ».
+  Il a ensuite envoyé 5 exemples (fiche dans `corpus/REFERENCES_VIDEO.md`) :
+  « pas parfaits, ne pas copier bêtement ; style manga, donc exagéré ».
 - **Mesure** (`fist_path.py`) :
-  - chez les pros, le poing arme **à hauteur d'épaule, en arrière**, puis
-    avance en ligne horizontale (montée ≤ 0,2 stud sur les 6 dernières frames) ;
-  - chez nous, il partait de la hanche et montait de 1,1 à 1,7 stud : un
-    uppercut.
-- **Ce que la carte de l'IK impose** : garder l'épaule basse ET armer haut
-  demande de vérifier, sur le rig, qu'une main armée **en arrière à hauteur
-  d'épaule** ne hausse pas l'épaule. C'est encore à sonder.
+  - pros : le poing arme **à hauteur d'épaule, en arrière**, puis avance en
+    ligne horizontale (montée ≤ 0,2 stud sur les 6 dernières frames) ;
+  - nous (v3b) : départ de la hanche, 1,3 à 1,8 sous l'épaule, puis montée de
+    1,1 à 1,7 stud en 6 f. C'est un uppercut.
+- **Ce que permet le rig** (sonde de l'IK, 2026-09-24), main à 1,9-2,1 studs
+  du pivot :
+
+  | armement | élévation | effet sur l'épaule |
+  |---|---|---|
+  | en arrière ou de côté | 0 à +15° | reste en place ou descend (+0,02 à −0,34) |
+  | à côté de la tête | +30 à +45° | monte de 0,3 à 0,5 |
+
+  L'armement haut est réservé à un coup lourd, en style manga.
 - **Règle à écrire avec la correction** : départ du poing ≥ −0,5 stud sous
-  l'épaule, montée ≤ 0,3 sur les 6 dernières frames. Pour un uppercut
-  volontaire, la catégorie est différente.
+  l'épaule, montée ≤ 0,3 sur les 6 dernières frames. Un uppercut voulu est
+  jugé dans sa propre catégorie.

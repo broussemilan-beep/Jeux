@@ -38,6 +38,33 @@ exacts (voir `PLAN.md`, section 5). Les durées sont données en frames à
 6. **Une palette par technique** : rouge/noir/blanc, or/blanc, feu.
    Monochrome blanc pour les combos de base.
 
+## Coups de poing : 5 exemples de Milan (24 sept.), après la v3b
+
+Envoyés après « les coups partent toujours du bas ». Milan précise : ce ne sont
+pas des références parfaites, **ne pas copier bêtement**. Tous les coups ne se
+ressemblent pas, et le style est **manga, donc volontairement exagéré**.
+
+| GIF | quoi | ce qu'on en tire |
+|---|---|---|
+| 1. Chapeau haut-de-forme (anim @LeftRight2601, VFX @MuichimeRBXL), 10 s | gros coup cinématique, puis destruction | à l'armement, le torse tourne jusqu'à **montrer le dos** à la cible et le poing est **tiré en arrière à hauteur d'épaule** ; il part en fente basse, **bras tendu à l'horizontale** ; planche manga radiale ; caméra derrière le poing |
+| 2. Coup type Serious Punch (TSB), 7 s | ultime | garde au repos, puis **poing armé près de la tête**, accroupi très bas, **poing tiré loin derrière** ; coup droit en gros plan vers la caméra ; planches manga, blanc, fumée |
+| 3. Mii Smash (vue hitbox), 8,7 s | coup de poing chargé | garde **poings hauts devant le visage** ; armement : corps tourné, poing arrière **à hauteur de tête**, bras avant tendu vers la cible ; coup : **fente très basse, bras horizontal à hauteur d'épaule**, l'autre poing reste en garde au visage ; extension **tenue longtemps** |
+| 4. Combo sur rig R6 (étiquettes FRONT), 3,2 s | combo varié | garde **bras vers l'avant, mains devant la poitrine** ; toupie dos à la cible, bras levé puis abattu, frappe au sol : **tous les coups ne sont pas des directs** |
+| 5. Double jab R6 (mains jaunes), 1,6 s | 2 jabs | repos bras écartés ; le bras passe **du côté à l'avant en restant à hauteur d'épaule** (arc horizontal), en **2 f** ; l'autre bras part en arrière (contre-rotation), buste penché, pied levé ; extension tenue ~3 f |
+
+**Principes communs** (à appliquer avec mesure, pas en copie) :
+1. **Le poing arme à hauteur d'épaule ou de tête, jamais à la hanche.** Ensuite
+   il voyage **à plat**, en ligne ou en arc horizontal, puis finit tendu à
+   l'horizontale. Pour frapper bas, c'est le corps qui descend (fente).
+2. **Le torse fait le travail, en exagéré** : torsion jusqu'à montrer le dos à
+   l'armement, déroulé complet au coup.
+3. **L'autre bras a un rôle** : il reste en garde au visage (coup chargé), il
+   vise la cible (armement), ou il part en arrière (contre-rotation du jab).
+4. **Le coup part vite (2-3 f), l'extension est tenue** plus longtemps qu'on
+   ne le croirait.
+5. **Variété** : jab, direct, crochet horizontal, coup de marteau vers le bas,
+   toupie. Une rafale de coups identiques se lit comme une mécanique.
+
 ## IMPACT HAVEN : mesures (24 sept.)
 
 Short Roblox « IMPACT HAVEN » (@mariigamesreal), envoyé par Milan comme
