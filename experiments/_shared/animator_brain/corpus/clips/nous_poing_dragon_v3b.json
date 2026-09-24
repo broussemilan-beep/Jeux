@@ -62,6 +62,15 @@
   "decalage_median_pct": 0.46,
   "decalage_p95_pct": 6.08
  },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 2.26,
+  "secondes_de_mouvement": 4.87,
+  "vitesse_sujet_p90": 5.492,
+  "pics": 35,
+  "part_des_pics_qui_montent": 0.2,
+  "deviation_trajectoire_mediane": 0.733,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
  "palette": [
   {
    "hex": "#817a6c",

@@ -128,6 +128,23 @@ main**. Le critique jugeait donc mes impressions, pas l'animation.
 Critique de la v4 après recalcul, défauts les plus lourds d'abord :
 **fluidité**, variété, coup chargé, tenue avant le choc.
 
+## Flux optique (`clip_analyzer`, bloc `mouvement`)
+
+Le flux Farneback est calculé entre images distinctes d'un même plan, le
+mouvement de caméra étant retiré par le flux médian. Il donne trois choses :
+- les arrêts par seconde ;
+- la direction des pics de vitesse ;
+- la déviation de la trajectoire du point le plus rapide.
+
+Validation sur vérité connue (`ANGLES_MORTS.md` §7) :
+- la **direction** est validée (part des pics qui montent : v1 0,46, v3b
+  0,39, v2 et v4 0,15) ;
+- les **arrêts en 2D** ne le sont pas, ils contredisent la 3D. Ils ne sont
+  pas utilisés pour juger.
+
+Voir aussi **`ANGLES_MORTS.md`** : la prise de recul du 2026-09-24. Le point 1
+porte sur le « coup final » : l'uppercut de f150 n'avait jamais été regardé.
+
 ## Le champ des références (Milan)
 
 - Roblox : TSB, JJS, Heroes Battlegrounds, animateurs indépendants.

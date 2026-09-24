@@ -193,6 +193,7 @@ def analyze(path, sheet_dir=None, label=None):
                      "decalage_p95_pct": round(float(np.percentile(s, 95) * 100), 2)}
     except ImportError:
         pass
+    mouvement = _motion(g, changed, card, [int(round(c * FPS)) for c in cuts])
     # --- palette (mosaique de 12 images)
     idx = np.linspace(0, n - 1, min(12, n)).astype(int)
     mosaic = Image.fromarray(np.concatenate([rgb[i] for i in idx], axis=1))
@@ -225,6 +226,7 @@ def analyze(path, sheet_dir=None, label=None):
                     "cartes": cards[:60], "profil_autour": profil},
         "coupes": {"nombre": len(cuts), "t_s": cuts[:40]},
         "camera": shake,
+        "mouvement": mouvement,
         "palette": palette,
         "interet_heuristique": {"score_100": interest, "termes": {k: round(v, 2) for k, v in terms.items()},
                                 "avertissement": "heuristique non calibree : a comparer aux notes de Milan"},
@@ -234,6 +236,104 @@ def analyze(path, sheet_dir=None, label=None):
         fiche["planche"] = _sheet(rgb, card, kind, impacts, os.path.join(
             sheet_dir, os.path.splitext(os.path.basename(label or path))[0] + ".png"))
     return fiche
+
+
+def _motion(g, changed, card, cut_frames):
+    """Flux optique (Farneback) entre IMAGES DISTINCTES consecutives d'un
+    meme plan, mouvement de camera retire (flux median). On suit la region
+    la plus rapide (3 % des pixels les plus rapides) :
+    - vitesse du sujet dans le temps -> arrets par seconde de mouvement
+      (l'equivalent video des « traits » de perception.py : un mouvement qui
+      s'arrete a chaque pose cle a beaucoup d'arrets) ;
+    - direction de chaque pic de vitesse (0 deg = droite, 90 = haut) ->
+      part des pics qui MONTENT (un coup qui « part d'en bas ») ;
+    - deviation de la trajectoire du point le plus rapide entre deux arrets
+      (arcs, bruite : le point le plus rapide saute d'un membre a l'autre).
+    Les unites sont en largeur d'image par seconde."""
+    try:
+        import cv2
+    except ImportError:
+        return None
+    n, H, W = g.shape
+    ms = 1000.0 / FPS
+    cut_set = set(cut_frames)
+    speed, ang, pos, t = [], [], [], []
+    prev = None
+    for i in range(n):
+        if card[i] or i in cut_set:
+            prev = None
+            speed.append(None)
+            continue
+        if not changed[i] and prev is not None:
+            continue
+        if prev is not None:
+            j = prev
+            fl = cv2.calcOpticalFlowFarneback(g[j].astype(np.uint8), g[i].astype(np.uint8), None,
+                                              0.5, 2, 9, 3, 5, 1.1, 0)
+            fl = fl - np.median(fl.reshape(-1, 2), axis=0)          # camera
+            mag = np.hypot(fl[..., 0], fl[..., 1])
+            thr = np.percentile(mag, 97)
+            m = mag >= max(thr, 1e-3)
+            dt = (i - j) * ms / 1000.0
+            v = float(mag[m].mean()) / W / dt
+            mx, my = fl[..., 0][m].mean(), fl[..., 1][m].mean()
+            ys, xs = np.nonzero(m)
+            speed.append(v)
+            ang.append(float(np.degrees(np.arctan2(-my, mx))))
+            pos.append((xs.mean() / W, ys.mean() / W))
+            t.append(i * ms / 1000.0)
+        prev = i
+    # series par plan (None = coupure)
+    segs, cur = [], []
+    k = 0
+    for v in speed:
+        if v is None:
+            if cur:
+                segs.append(cur)
+            cur = []
+        else:
+            cur.append(k)
+            k += 1
+    if cur:
+        segs.append(cur)
+    V = np.array([v for v in speed if v is not None])
+    if len(V) < 6:
+        return None
+    floor = 0.15 * np.percentile(V, 90)
+    stops, moving_s, devs, peaks_up, peaks = 0, 0.0, [], 0, 0
+    for sg in segs:
+        if len(sg) < 4:
+            continue
+        v = V[sg]
+        tt = np.array([t[q] for q in sg])
+        moving_s += float(np.sum(np.diff(tt)[v[1:] > floor]))
+        cut_at = [0]
+        for a in range(1, len(v) - 1):
+            win = tt[a]
+            lo = v[(tt >= win - 0.15) & (tt < win)].max(initial=0)
+            hi = v[(tt > win) & (tt <= win + 0.15)].max(initial=0)
+            if v[a] <= v[a - 1] and v[a] <= v[a + 1] and v[a] < 0.45 * min(lo, hi) and min(lo, hi) > floor:
+                stops += 1
+                cut_at.append(a)
+            if v[a] >= v[a - 1] and v[a] >= v[a + 1] and v[a] > 2 * floor:
+                peaks += 1
+                if 30 <= ang[sg[a]] <= 150:
+                    peaks_up += 1
+        cut_at.append(len(v) - 1)
+        for a, b in zip(cut_at, cut_at[1:]):
+            P = np.array([pos[q] for q in sg[a:b + 1]])
+            if len(P) >= 3:
+                ch = np.linalg.norm(P[-1] - P[0])
+                if ch > 0.05:
+                    u = (P[-1] - P[0]) / ch
+                    rel = P - P[0]
+                    devs.append(float(np.linalg.norm(rel - np.outer(rel @ u, u), axis=1).max() / ch))
+    return {"arrets_par_s_de_mouvement": round(stops / moving_s, 2) if moving_s > 0 else None,
+            "secondes_de_mouvement": round(moving_s, 2),
+            "vitesse_sujet_p90": round(float(np.percentile(V, 90)), 3),
+            "pics": peaks, "part_des_pics_qui_montent": round(peaks_up / peaks, 2) if peaks else None,
+            "deviation_trajectoire_mediane": round(float(np.median(devs)), 3) if devs else None,
+            "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"}
 
 
 def _sheet(rgb, card, kind, impacts, out, cols=8):
