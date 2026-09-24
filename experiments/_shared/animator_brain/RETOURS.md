@@ -149,4 +149,20 @@ v3b, voir plus bas. La rafale seulement ; le reste est inchangé
 - **Cause** : pour garder l'épaule basse (leçon 6), l'armement et la garde
   plaçaient la main bas et loin. La règle 6b mesure l'angle au contact, pas le
   chemin. Encore une mesure manquante (leçon 8).
-- **Pas encore corrigé** : on attend la référence de Milan.
+- **Référence de Milan** : 5 exemples (fiche dans `corpus/REFERENCES_VIDEO.md`),
+  « pas parfaits, ne pas copier bêtement ; style manga, donc exagéré ». Corrigé
+  en v4, voir plus bas.
+
+## Poing du Dragon v4 (2026-09-24) : réponse au retour v3b
+
+Pas encore revu par Milan.
+
+- **Règles** (`r6_poing_dragon/output/regles_v4.json`) : **13/13**.
+- **Trajectoire du poing** : montée de 0,00 sur les 0,1 s avant le contact, pour
+  les 4 coups (v3b : 1,1 à 1,7) ; hauteur moyenne −0,01 à +0,28 par rapport à
+  l'épaule (v3b : −0,58 à −0,73).
+- **Bras au contact** : −4,7 à −8,7°.
+- **Épaules des coups légers** : max +0,07, médiane −0,18. L'armement du coup
+  final monte à +0,26, dans la plage des coups lourds.
+- **Transfert** : 0,58 à 0,91.
+- **Preuve** : `captures/verification/2026-09-24-poing-dragon-v4-trajectoire-poing-vs-pro.png`.

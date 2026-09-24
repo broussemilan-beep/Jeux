@@ -131,7 +131,11 @@ def check_epaules(shoulder_y, category="frappe_legere", slack=0.05):
     import numpy as np
     y = np.asarray(shoulder_y, float)
     lim = corpus_value(category, "decalage_epaule_vertical_studs.haut_max", "max") + slack
-    lim_med = corpus_value(category, "decalage_epaule_vertical_studs.median", "max") + slack
+    # mediane : « pas haussee en moyenne » (<= 0 + marge), et plus la mediane
+    # pro (-0,59 sur les M1). Revise pour la v4 : la baisse pro vient de leur
+    # garde aux hanches ; les exemples de Milan veulent une garde devant la
+    # poitrine, qui met l'epaule du V2.22 autour de 0 (LECONS.md 11).
+    lim_med = max(corpus_value(category, "decalage_epaule_vertical_studs.median", "max"), 0.0) + slack
     med = float(np.median(y))
     return {"regle": "epaules jamais haussees", "ok": bool(y.max() <= lim and med <= lim_med),
             "valeur": {"max": round(float(y.max()), 3), "median": round(med, 3)},
@@ -183,6 +187,24 @@ def check_transfert_poids(transfers, category="frappe_lourde", n_power=1):
     return {"regle": "transfert de poids sur les coups de puissance", "ok": bool(min(power) >= lim),
             "valeur": [round(t, 2) for t in transfers], "seuil": f">= {round(lim, 2)} stud sur les {n_power} derniers",
             "source": f"corpus {category} (mecanique_frappe.transfert_poids_studs) ; retour Milan 2026-09-24 (v2)"}
+
+
+def check_trajectoire_poing(rises, heights, category="frappe_legere", slack=0.1):
+    """LECON 11 (retour de Milan sur la v3b, 2026-09-24 : « les coups partent
+    du bas, on dirait des uppercuts ») : un coup DROIT (jab, direct, crochet,
+    et meme un coup lance en fente) arme haut et voyage A PLAT. Sur les 0,1 s
+    avant le contact, relativement au pivot d'epaule :
+    - la montee du poing reste sous le max pro (M1 : 0 a 0,22 ; l'Uppercut du
+      pack, lui, monte de 1,45 -- c'est sa signature) ;
+    - la hauteur moyenne reste pres de l'epaule (M1 : -0,28 a +0,08).
+    rises / heights = une valeur par coup."""
+    lim_r = corpus_value(category, "mecanique_frappe.poing_montee_finale_studs", "max") + slack
+    lim_h = corpus_value(category, "mecanique_frappe.poing_hauteur_aller_vs_epaule", "min") - 2 * slack
+    ok = max(rises) <= lim_r and min(heights) >= lim_h
+    return {"regle": "coup droit : le poing voyage a plat (pas d'uppercut)", "ok": bool(ok),
+            "valeur": {"montee_0_1s": [round(r, 2) for r in rises], "hauteur_vs_epaule": [round(h, 2) for h in heights]},
+            "seuil": {"montee_0_1s": f"<= {round(lim_r, 2)}", "hauteur_vs_epaule": f">= {round(lim_h, 2)}"},
+            "source": f"corpus {category} (mecanique_frappe.poing_*) ; retour Milan v3b ; 5 exemples de Milan"}
 
 
 def report(checks):

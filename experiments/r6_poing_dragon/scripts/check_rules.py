@@ -54,9 +54,15 @@ def main(tag="courant"):
     checks.append(R.check_impact_visible(scene["impact_f"], min(overlays)))
     checks.append(R.check_plan_lisible(st["camera"], scene["strike_f"] - 22, scene["impact_f"]))
     # 4. mecanique du corps pendant la rafale (retour Milan sur la v2)
-    shoulders = [float(X.joint_transform(a, aw[f])[1][1]) for f in range(0, rafale_end)
-                 for a in ("Right Arm", "Left Arm")]
-    checks.append(R.check_epaules(shoulders))
+    sh = lambda f0, f1: [float(X.joint_transform(a, aw[f])[1][1]) for f in range(f0, f1)  # noqa: E731
+                         for a in ("Right Arm", "Left Arm")]
+    checks.append(R.check_epaules(sh(0, heavy0)))
+    if heavy0 < rafale_end:
+        # v4 : l'armement manga du coup final (poing derriere la tete) hausse
+        # l'epaule, comme l'Uppercut du pack (+0,74) -- standard coup lourd
+        c = R.check_epaules(sh(heavy0, rafale_end), "frappe_lourde")
+        c["regle"] += " (coup final, standard coup lourd)"
+        checks.append(c)
     elev, heights, transfer = [], [], []
     for c, side, _kind in scene["hits"]:
         hand = "Right Arm" if side == "R" else "Left Arm"
@@ -69,6 +75,16 @@ def main(tag="courant"):
                for f in range(max(0, c - 16), c + 1)]
         transfer.append(rel[-1] - min(rel))
     checks.append(R.check_bras_au_contact(elev, heights))
+    # 5. trajectoire du poing sur les 0,1 s (6 f) avant chaque contact
+    rises, hmeans = [], []
+    for c, side, _kind in scene["hits"]:
+        hand = "Right Arm" if side == "R" else "Left Arm"
+        r, p = aw[c]["Torso"]
+        py = float((p + r @ np.array([1.0 if side == "R" else -1.0, 0.5, 0.0]))[1])
+        hs = np.array([_tip(aw[f], hand)[1] - py for f in range(c - 6, c + 1)])
+        rises.append(float(hs[-1] - hs.min()))
+        hmeans.append(float(hs.mean()))
+    checks.append(R.check_trajectoire_poing(rises, hmeans))
     checks.append(R.check_transfert_poids(transfer, n_power=len(transfer)))
     rep = R.report(checks)
     json.dump(rep, open(os.path.join(OUT, f"regles_{tag}.json"), "w"), indent=1, ensure_ascii=False)

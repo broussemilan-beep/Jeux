@@ -761,7 +761,9 @@
     "bras_elevation_deg": -19.7,
     "portee_studs": 2.89,
     "transfert_poids_studs": 0.74,
-    "poing_hauteur_studs": 2.53
+    "poing_hauteur_studs": 2.53,
+    "poing_montee_finale_studs": 0.0,
+    "poing_hauteur_aller_vs_epaule": -0.28
    }
   },
   "audit": {
@@ -918,7 +920,9 @@
     "bras_elevation_deg": -4.0,
     "portee_studs": 3.34,
     "transfert_poids_studs": 0.0,
-    "poing_hauteur_studs": 3.44
+    "poing_hauteur_studs": 3.44,
+    "poing_montee_finale_studs": 0.22,
+    "poing_hauteur_aller_vs_epaule": -0.07
    }
   },
   "audit": {
@@ -1101,7 +1105,9 @@
     "bras_elevation_deg": -2.6,
     "portee_studs": 3.12,
     "transfert_poids_studs": 0.0,
-    "poing_hauteur_studs": 3.45
+    "poing_hauteur_studs": 3.45,
+    "poing_montee_finale_studs": 0.0,
+    "poing_hauteur_aller_vs_epaule": 0.03
    }
   },
   "audit": {
@@ -1258,7 +1264,9 @@
     "bras_elevation_deg": 0.1,
     "portee_studs": 2.98,
     "transfert_poids_studs": 0.02,
-    "poing_hauteur_studs": 3.59
+    "poing_hauteur_studs": 3.59,
+    "poing_montee_finale_studs": 0.07,
+    "poing_hauteur_aller_vs_epaule": 0.08
    }
   },
   "audit": {
@@ -1707,7 +1715,9 @@
     "bras_elevation_deg": -7.5,
     "portee_studs": 2.57,
     "transfert_poids_studs": 0.92,
-    "poing_hauteur_studs": 1.56
+    "poing_hauteur_studs": 1.56,
+    "poing_montee_finale_studs": 0.0,
+    "poing_hauteur_aller_vs_epaule": 1.58
    }
   },
   "audit": {
@@ -1912,7 +1922,9 @@
     "bras_elevation_deg": -42.0,
     "portee_studs": 1.8,
     "transfert_poids_studs": 0.84,
-    "poing_hauteur_studs": 1.7
+    "poing_hauteur_studs": 1.7,
+    "poing_montee_finale_studs": 0.0,
+    "poing_hauteur_aller_vs_epaule": -0.98
    }
   },
   "audit": {
@@ -2679,7 +2691,9 @@
     "bras_elevation_deg": 18.7,
     "portee_studs": 2.71,
     "transfert_poids_studs": 0.33,
-    "poing_hauteur_studs": 3.54
+    "poing_hauteur_studs": 3.54,
+    "poing_montee_finale_studs": 1.45,
+    "poing_hauteur_aller_vs_epaule": -0.69
    }
   },
   "audit": {

@@ -280,17 +280,17 @@
      "feet.L.sol": -0.057,
      "feet.L": 0.0,
      "feet.R": 0.0002,
-     "hands.L": 0.0007,
-     "hands.R": 0.0001
+     "hands.L": 0.0,
+     "hands.R": 0.0
     }
    ],
    [
     3,
     {
-     "feet.L": 0.0001,
-     "feet.R": 0.0002,
+     "feet.L": 0.0,
+     "feet.R": 0.0001,
      "hands.L": 0.0,
-     "hands.R": 0.0001
+     "hands.R": 0.0
     }
    ],
    [
@@ -299,7 +299,7 @@
      "feet.L": 0.0,
      "feet.R": 0.0001,
      "hands.L": 0.0,
-     "hands.R": 0.0001
+     "hands.R": 0.0
     }
    ],
    [
@@ -308,14 +308,14 @@
      "feet.L": 0.0001,
      "feet.R": 0.0002,
      "hands.L": 0.0,
-     "hands.R": 0.0001
+     "hands.R": 0.0
     }
    ],
    [
     11,
     {
-     "feet.L": 0.0,
-     "feet.R": 0.0005,
+     "feet.L": 0.0001,
+     "feet.R": 0.0004,
      "hands.L": 0.0,
      "hands.R": 0.0001
     }
@@ -326,7 +326,7 @@
      "feet.L": 0.0,
      "feet.R": 0.0,
      "hands.L": 0.0001,
-     "hands.R": 0.0003
+     "hands.R": 0.0001
     }
    ],
    [
@@ -335,61 +335,70 @@
      "feet.L": 0.0001,
      "feet.R": 0.0,
      "hands.L": 0.0001,
-     "hands.R": 0.0003
+     "hands.R": 0.0001
     }
    ],
    [
     20,
     {
+     "feet.L": 0.0001,
+     "feet.R": 0.0,
+     "hands.L": 0.001,
+     "hands.R": 0.0001
+    }
+   ],
+   [
+    22,
+    {
      "feet.L": 0.0,
      "feet.R": 0.0007,
+     "hands.L": 0.0,
+     "hands.R": 0.0316
+    }
+   ],
+   [
+    24,
+    {
+     "feet.L": 0.0,
+     "feet.R": 0.0003,
      "hands.L": 0.0,
      "hands.R": 0.0
     }
    ],
    [
-    23,
-    {
-     "feet.L": 0.0,
-     "feet.R": 0.0003,
-     "hands.L": 0.0007,
-     "hands.R": 0.0001
-    }
-   ],
-   [
     27,
     {
-     "feet.L": 0.0,
-     "feet.R": 0.0002,
-     "hands.R": 0.0,
-     "hands.L": 0.0006
+     "feet.L": 0.0001,
+     "feet.R": 0.0004,
+     "hands.R": 0.0231,
+     "hands.L": 0.0
     }
    ],
    [
     30,
     {
      "feet.L": 0.0,
-     "feet.R": 0.0002,
+     "feet.R": 0.0,
      "hands.R": 0.0,
-     "hands.L": 0.0001
+     "hands.L": 0.0268
     }
    ],
    [
     33,
     {
      "feet.L": 0.0,
-     "feet.R": 0.0001,
+     "feet.R": 0.0,
      "hands.R": 0.0,
-     "hands.L": 0.0001
+     "hands.L": 0.0282
     }
    ],
    [
     35,
     {
      "feet.L": 0.0,
-     "feet.R": 0.0,
-     "hands.R": 0.0,
-     "hands.L": 0.0005
+     "feet.R": 0.0001,
+     "hands.R": 0.0001,
+     "hands.L": 0.0208
     }
    ],
    [
@@ -398,7 +407,7 @@
      "feet.L": 0.0,
      "feet.R": 0.0001,
      "hands.R": 0.0,
-     "hands.L": 0.0001
+     "hands.L": 0.0
     }
    ],
    [
@@ -406,8 +415,8 @@
     {
      "feet.L": 0.0,
      "feet.R": 0.0001,
-     "hands.R": 0.0004,
-     "hands.L": 0.0001
+     "hands.R": 0.0002,
+     "hands.L": 0.0
     }
    ],
    [
@@ -415,12 +424,21 @@
     {
      "feet.L": 0.0,
      "feet.R": 0.0001,
-     "hands.R": 0.0002,
-     "hands.L": 0.0001
+     "hands.R": 0.0004,
+     "hands.L": 0.0
     }
    ],
    [
     46,
+    {
+     "feet.L": 0.0,
+     "feet.R": 0.0001,
+     "hands.R": 0.0044,
+     "hands.L": 0.0
+    }
+   ],
+   [
+    48,
     {
      "feet.L": 0.0,
      "feet.R": 0.0001,
@@ -429,12 +447,12 @@
     }
    ],
    [
-    49,
+    50,
     {
      "feet.L": 0.0,
      "feet.R": 0.0001,
-     "hands.L": 0.0007,
-     "hands.R": 0.0001
+     "hands.L": 0.0,
+     "hands.R": 0.0
     }
    ],
    [
@@ -442,27 +460,26 @@
     {
      "feet.L": 0.0,
      "feet.R": 0.0002,
-     "hands.L": 0.0,
-     "hands.R": 0.0001
+     "hands.L": 0.0236,
+     "hands.R": 0.0
     }
    ],
    [
     54,
     {
-     "feet.L.sol": -0.06,
-     "feet.L": 0.0,
-     "feet.R": 0.0002,
+     "feet.L": 0.0003,
+     "feet.R": 0.0001,
      "hands.L": 0.0,
-     "hands.R": 0.0001
+     "hands.R": 0.0
     }
    ],
    [
     57,
     {
-     "feet.L": 0.0,
-     "feet.R": 0.0002,
+     "feet.L": 0.0004,
+     "feet.R": 0.0007,
      "hands.L": 0.0,
-     "hands.R": 0.0001
+     "hands.R": 0.0
     }
    ],
    [
@@ -471,7 +488,7 @@
      "feet.L": 0.0001,
      "feet.R": 0.0001,
      "hands.L": 0.0,
-     "hands.R": 0.0001
+     "hands.R": 0.0
     }
    ],
    [
@@ -479,30 +496,39 @@
     {
      "feet.L": 0.0,
      "feet.R": 0.0002,
-     "hands.L": 0.0,
-     "hands.R": 0.0001
+     "hands.L": 0.0001,
+     "hands.R": 0.0
     }
    ],
    [
     64,
     {
      "feet.L": 0.0,
-     "feet.R": 0.0003,
-     "hands.L": 0.0001,
-     "hands.R": 0.0004
+     "feet.R": 0.0004,
+     "hands.L": 0.0,
+     "hands.R": 0.0
     }
    ],
    [
     67,
     {
      "feet.L": 0.0,
-     "feet.R": 0.0005,
+     "feet.R": 0.0006,
      "hands.L": 0.0,
-     "hands.R": 0.0004
+     "hands.R": 0.0
     }
    ],
    [
     70,
+    {
+     "feet.L": 0.0,
+     "feet.R": 0.0006,
+     "hands.L": 0.0,
+     "hands.R": 0.0
+    }
+   ],
+   [
+    72,
     {
      "feet.L": 0.0,
      "feet.R": 0.0002,
@@ -511,70 +537,43 @@
     }
    ],
    [
-    73,
+    74,
     {
      "feet.L": 0.0,
      "feet.R": 0.0002,
-     "hands.L": 0.0007,
-     "hands.R": 0.0001
+     "hands.L": 0.0,
+     "hands.R": 0.0
     }
    ],
    [
     77,
     {
-     "feet.L": 0.0002,
+     "feet.L": 0.0001,
      "feet.R": 0.0001,
-     "hands.R": 0.0,
-     "hands.L": 0.0004
+     "hands.R": 0.0238,
+     "hands.L": 0.0
     }
    ],
    [
     81,
     {
-     "feet.L": 0.0001,
+     "feet.L": 0.0852,
      "feet.R": 0.0,
      "hands.R": 0.0,
-     "hands.L": 0.0001
+     "hands.L": 0.0599
     }
    ],
    [
     85,
     {
-     "feet.L": 0.0,
-     "feet.R": 0.0,
-     "hands.R": 0.0001,
-     "hands.L": 0.0006
+     "feet.L": 0.0001,
+     "feet.R": 0.0001,
+     "hands.R": 0.0,
+     "hands.L": 0.0549
     }
    ],
    [
     88,
-    {
-     "feet.L": 0.0001,
-     "feet.R": 0.0002,
-     "hands.R": 0.0,
-     "hands.L": 0.0001
-    }
-   ],
-   [
-    90,
-    {
-     "feet.L": 0.0,
-     "feet.R": 0.0001,
-     "hands.R": 0.0003,
-     "hands.L": 0.0002
-    }
-   ],
-   [
-    93,
-    {
-     "feet.L": 0.0,
-     "feet.R": 0.0003,
-     "hands.R": 0.0001,
-     "hands.L": 0.0002
-    }
-   ],
-   [
-    96,
     {
      "feet.L": 0.0001,
      "feet.R": 0.0001,
@@ -583,12 +582,48 @@
     }
    ],
    [
-    99,
+    90,
+    {
+     "feet.L": 0.0,
+     "feet.R": 0.0001,
+     "hands.R": 0.0006,
+     "hands.L": 0.0
+    }
+   ],
+   [
+    93,
+    {
+     "feet.L": 0.0,
+     "feet.R": 0.0003,
+     "hands.R": 0.0003,
+     "hands.L": 0.0
+    }
+   ],
+   [
+    96,
+    {
+     "feet.L": 0.0,
+     "feet.R": 0.0003,
+     "hands.R": 0.0123,
+     "hands.L": 0.0
+    }
+   ],
+   [
+    98,
+    {
+     "feet.L": 0.0,
+     "feet.R": 0.0001,
+     "hands.R": 0.0,
+     "hands.L": 0.0
+    }
+   ],
+   [
+    100,
     {
      "feet.L": 0.0001,
      "feet.R": 0.0001,
-     "hands.L": 0.0007,
-     "hands.R": 0.0001
+     "hands.L": 0.0,
+     "hands.R": 0.0
     }
    ],
    [
@@ -596,8 +631,8 @@
     {
      "feet.L": 0.0001,
      "feet.R": 0.0001,
-     "hands.L": 0.0009,
-     "hands.R": 0.0001
+     "hands.L": 0.0,
+     "hands.R": 0.0
     }
    ],
    [
@@ -606,7 +641,7 @@
      "feet.L": 0.0,
      "feet.R": 0.0,
      "hands.L": 0.0,
-     "hands.R": 0.0006
+     "hands.R": 0.0
     }
    ],
    [

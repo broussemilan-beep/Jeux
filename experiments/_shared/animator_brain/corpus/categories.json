@@ -1129,10 +1129,22 @@
     "max": 0.1,
     "n": 4
    },
+   "timing.mecanique_frappe.poing_hauteur_aller_vs_epaule": {
+    "mediane": -0.02,
+    "min": -0.28,
+    "max": 0.08,
+    "n": 4
+   },
    "timing.mecanique_frappe.poing_hauteur_studs": {
     "mediane": 3.445,
     "min": 2.53,
     "max": 3.59,
+    "n": 4
+   },
+   "timing.mecanique_frappe.poing_montee_finale_studs": {
+    "mediane": 0.035,
+    "min": 0.0,
+    "max": 0.22,
     "n": 4
    },
    "timing.mecanique_frappe.portee_studs": {
@@ -1554,10 +1566,22 @@
     "max": 18.7,
     "n": 3
    },
+   "timing.mecanique_frappe.poing_hauteur_aller_vs_epaule": {
+    "mediane": -0.69,
+    "min": -0.98,
+    "max": 1.58,
+    "n": 3
+   },
    "timing.mecanique_frappe.poing_hauteur_studs": {
     "mediane": 1.7,
     "min": 1.56,
     "max": 3.54,
+    "n": 3
+   },
+   "timing.mecanique_frappe.poing_montee_finale_studs": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 1.45,
     "n": 3
    },
    "timing.mecanique_frappe.portee_studs": {

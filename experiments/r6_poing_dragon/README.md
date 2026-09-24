@@ -317,3 +317,40 @@ au contact, pour une médiane pro de −3°. Sur la référence « Pro » de Mil
 **Preuve** : `captures/verification/2026-09-24-poing-dragon-v3-vs-v3b-bras-horizontal.png`
 (lecteur en profil, v3 contre v3b, aux 4 contacts) et
 `captures/verification/2026-09-24-poing-dragon-v3b-profil-contact.png`.
+
+### v4 : le poing arme haut et voyage à plat (retour de Milan sur la v3b)
+
+Retour : « les coups partent toujours du bas, le coup final ressemble à des
+uppercuts et à un coup droit à la fois ». Mesuré (`scripts/fist_path.py`) : le
+poing partait de la hanche et montait de 1,1 à 1,7 stud dans les 0,1 s avant
+le contact. Chez les pros, il arme à hauteur d'épaule et avance à plat. Milan a
+envoyé 5 exemples : style manga, à ne pas copier bêtement (fiche dans
+`corpus/REFERENCES_VIDEO.md`).
+
+**Chaque coup a maintenant sa forme** :
+
+| coup | armement | trajet | autre bras |
+|---|---|---|---|
+| jab G | poing sur le côté, à hauteur d'épaule | court, de côté vers l'avant | part en arrière (contre-rotation) |
+| direct D | torse tourné presque dos à la cible, poing en arrière à hauteur d'épaule | arc horizontal | vise la cible, puis garde |
+| crochet G | poing sur le côté | arc horizontal | en garde |
+| final D | manga : poing derrière la tête, pied avant levé | fente avec pas d'entrée, bras à plat | vise, puis garde |
+
+- **Garde** : mains devant la poitrine.
+- **Extension** : tenue jusqu'à 6 f après le contact.
+- **Clés en arc** : de la garde à l'armement, la main passe par une clé sur le
+  côté, pour que l'IK ne traverse pas le corps.
+
+**Règles : 13/13** (`output/regles_v4.json`) :
+- nouvelle règle **trajectoire du poing** : montée de 0,00 pour les 4 coups
+  (v3b : 1,1-1,7), seuil 0,32 ;
+- l'armement manga du final est jugé au standard coup lourd, comme sa posture ;
+- la règle d'épaule exige « pas haussée en moyenne », et non plus la médiane
+  des M1 pro (voir `LECONS.md` 11).
+
+**Contrôles** : contacts 0,05 stud, sens 9/9, `SENS OK`, `PACKAGE OK`, sol
+≥ −0,12.
+
+**Preuve** : `captures/verification/2026-09-24-poing-dragon-v4-trajectoire-poing-vs-pro.png`
+(trajectoires) et `2026-09-24-poing-dragon-v4-armement-contact.png` (lecteur,
+armement et contact).

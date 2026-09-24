@@ -282,9 +282,19 @@ def strike_mechanics(clip, hand, fwd):
     elev = float(np.degrees(np.arctan2(d[1], np.hypot(d[0], d[2]))))
     feet = (clip.tip("Right Leg") + clip.tip("Left Leg")) / 2
     rel = np.einsum("ij,ij->i", torso - feet, fwd)     # + = torse devant les pieds
+    # Ajout du 2026-09-24 (retour de Milan sur la v3b : « les coups partent du
+    # bas ») : trajectoire du poing sur les 0,1 s qui precedent le contact,
+    # en hauteur relative au pivot d'epaule du contact. Un direct arme haut et
+    # voyage A PLAT ; un uppercut monte.
+    sx = 1.0 if hand == "Right Arm" else -1.0
+    pivot_y = float((torso[i] + clip.world_rot["Torso"][i] @ np.array([sx, 0.5, 0.0]))[1])
+    n = max(2, int(round(0.1 / clip.dt)))
+    h = tipp[max(0, i - n): i + 1, 1] - pivot_y
     return {"bras_elevation_deg": round(elev, 1), "portee_studs": round(float(reach[i]), 2),
             "transfert_poids_studs": round(float(rel[i] - rel[: i + 1].min()), 2),
-            "poing_hauteur_studs": round(float(tipp[i][1]), 2)}
+            "poing_hauteur_studs": round(float(tipp[i][1]), 2),
+            "poing_montee_finale_studs": round(float(h[-1] - h.min()), 2),
+            "poing_hauteur_aller_vs_epaule": round(float(h.mean()), 2)}
 
 
 def ignored_by_weight(seq, frac=0.9):

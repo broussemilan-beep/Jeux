@@ -194,6 +194,21 @@ Le verdict final reste la revue de Milan, tracée dans `RETOURS.md`.
   | à côté de la tête | +30 à +45° | monte de 0,3 à 0,5 |
 
   L'armement haut est réservé à un coup lourd, en style manga.
-- **Règle à écrire avec la correction** : départ du poing ≥ −0,5 stud sous
-  l'épaule, montée ≤ 0,3 sur les 6 dernières frames. Un uppercut voulu est
-  jugé dans sa propre catégorie.
+- **Règle** (`rules.check_trajectoire_poing`, mesures
+  `mecanique_frappe.poing_montee_finale_studs` et
+  `poing_hauteur_aller_vs_epaule` du corpus) : sur les 0,1 s avant le contact,
+  le poing monte au plus de 0,32 stud (M1 : 0 à 0,22 ; l'Uppercut du pack : 1,45)
+  et reste en moyenne à moins de 0,48 sous l'épaule. Un uppercut voulu relève
+  d'une autre catégorie.
+- **Appliqué en v4** (`dragon_clip.py`), chaque coup a sa forme :
+  - jab : bras qui vient du côté ;
+  - direct : poing armé en arrière pendant que l'autre bras vise ;
+  - crochet : arc horizontal ;
+  - final : armement manga derrière la tête, puis fente.
+
+  La garde est devant la poitrine et l'extension est tenue.
+- **Règle d'épaule révisée** : la médiane exigée n'est plus celle des M1 pro
+  (−0,59). Leur baisse vient d'une garde aux hanches. Avec la garde haute voulue
+  par Milan, l'épaule du V2.22 reste autour de 0. On exige donc « pas haussée en
+  moyenne » (≤ +0,05), et le max reste ≤ +0,09. L'armement manga du coup final
+  est jugé au standard coup lourd, comme sa posture.
