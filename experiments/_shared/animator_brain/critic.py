@@ -58,6 +58,9 @@ def load():
                     n["desaccords"].append((k, n["etat"][k], v))
                 n["etat"][k] = v
             n["parties_mesurees"] = a.get("parties", {})
+        # jugement visuel partie par partie (etude sur planches) : complete la mesure
+        for part, st in (n.get("parties_visuelles") or {}).items():
+            n.setdefault("parties_mesurees", {}).setdefault(part, {}).update(st)
     return hyp, notes
 
 
@@ -172,9 +175,13 @@ def reflect(write=True):
         if pos - neg >= 0.5:
             h["poids_note"] = round(h["poids_note"] + LR * (0.9 - h["poids_note"]), 3)
             verdict = "DISCRIMINE (vraie ou Milan aime, fausse ou il rejette) -> poids en hausse"
+        elif pos == 0 and neg == 0:
+            # jamais vraie nulle part : ce n'est pas une preuve d'inutilite,
+            # c'est un principe qu'on n'a jamais essaye -> aucun changement
+            verdict = "jamais essaye chez nous : pas de preuve, poids inchange (a tester)"
         elif abs(pos - neg) < 0.25:
             h["poids_note"] = round(h["poids_note"] + LR * (0.3 - h["poids_note"]), 3)
-            verdict = "ne discrimine pas (meme etat dans l'aime et le rejete) -> poids en baisse"
+            verdict = "ne discrimine pas (vraie dans l'aime ET le rejete) -> poids en baisse"
         else:
             verdict = "signal faible"
         lines.append(f"- {k} : vraie dans {pos:.0%} des parties aimees, {neg:.0%} des rejetees : {verdict}")

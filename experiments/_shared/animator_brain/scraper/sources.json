@@ -112,6 +112,18 @@
     "tags": "impact_frames",
     "pourquoi": "cartes d'impact"
    }
-  ]
+  ],
+  "_valeur": "etude visuelle 2026-09-24 : ~la moitie des posts « fighting animated » sont des clips musicaux ou hors combat -> valeur combat faible, Sakugabooru d'abord"
+ },
+ "roblox_aaa": {
+  "_etat": "2026-09-24 : aucune source Roblox video accessible depuis le sandbox",
+  "essaye": {
+   "youtube": "recherche OK ; video refusee aux IP de serveur (anti-bot), meme avec solveur EJS/npm et client web_embedded",
+   "reddit": "403 blocked (IP de serveur)",
+   "medal.tv / tenor / streamable / tiktok / twitch / x": "fermes par la politique reseau",
+   "roblox.com / assetdelivery / apis": "fermes par la politique reseau",
+   "danbooru roblox": "dessins de fans, pas de combat"
+  },
+  "meilleure_voie": "enregistrements d'ecran de Milan (TSB, Jujutsu Shenanigans / Zero...), passes dans scraper.py local ; ou ouverture de medal.tv (+ son CDN) dans les domaines autorises"
  }
 }
