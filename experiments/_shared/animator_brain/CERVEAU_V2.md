@@ -113,6 +113,18 @@ main**. Le critique jugeait donc mes impressions, pas l'animation.
   Réserve honnête : notre rafale enchaîne 4 coups en 1,3 s, un M1 pro est un
   seul coup en 0,65 s ; une partie de l'écart vient du tempo. Contre-épreuve
   à faire : les rafales des références vidéo, par flux optique.
+- **Correction de la correction (même jour, v5).** La mesure de fluidité,
+  en traits par seconde, est **faussée par le tempo**. Notre rafale donne un
+  coup toutes les 0,43 s, un M1 pro un coup en 0,65 s. En 3D, notre rafale
+  n'est **jamais figée** (0 % de temps immobile, contre 28 à 51 % pour les M1
+  pro). Les 37 % de temps figé de la vidéo viennent de la structure : gels
+  d'impact, temps suspendu, longue révélation.
+
+  Les poignées AUTO, essayées sur cette base, haussaient l'épaule (0,33
+  stud). La mesure est donc **retirée du jugement** (`ANGLES_MORTS.md` §7).
+  Le principe reste, à mesurer autrement : arrêts par coup, à tempo égal.
+  Leçon : même une mesure qui sépare l'aimé du rejeté peut mesurer autre
+  chose que ce qu'on croit.
 - **Variété.** Je la jugeais bonne en v2 et en v4. Mesurée, elle est de 1,94
   stud en v4 (0,7 en v1), contre 2,73 entre les 4 M1 pro : nos coups se
   ressemblent encore plus que des M1 entre eux.

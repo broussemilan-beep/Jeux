@@ -729,9 +729,9 @@
       for (let i = 0; i < 60; i++) g2.fillRect(r() * W - W * 0.2, r() * H, W * (0.3 + r() * 0.6), 1 + r() * 3);
       g2.restore();
     }
-    // flash blanc 2 f a l'uppercut et a la frappe en l'air
+    // flash blanc 2 f au coup charge et a la frappe en l'air
     for (const e of impacts) {
-      if (e.name !== "uppercut" && e.name !== "strike") continue;
+      if (e.name !== "coup_charge" && e.name !== "strike") continue;
       const age = tr - realTimeOf(e.frame);
       if (age >= 0 && age < 2 / 60) { g2.fillStyle = "rgba(255,248,230,0.75)"; g2.fillRect(0, 0, W, H); }
     }
@@ -782,7 +782,7 @@
   function setCam(m) { camMode = m; document.querySelectorAll(".cam").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.cam === m))); }
 
   // ------------------------------------------------------------ transport
-  const BEATS = [["Rafale", 0, 118, "#5b4a2a"], ["Anticipation", 118, 146, "#6b5326"], ["Uppercut", 146, 170, "#8a6420"], ["Envol", 170, 200, "#4a4f5e"],
+  const BEATS = [["Rafale", 0, 118, "#5b4a2a"], ["Charge", 118, 146, "#6b5326"], ["Coup chargé", 146, 170, "#8a6420"], ["Envol", 170, 200, "#4a4f5e"],
     ["Temps suspendu", 200, 256, "#a17a1f"], ["Plongée", 256, 288, "#b8861b"], ["Impact", 288, 334, "#e0e0e0"], ["Révélation", 334, 490, "#3a3d47"], ["Retour", 490, END, "#2b2e36"]];
   const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   let tr = reduce ? realTimeOf(230) : 0, playing = !reduce, speed = 1, last = performance.now();

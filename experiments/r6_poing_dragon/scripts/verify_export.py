@@ -2,7 +2,7 @@
 Verifie et exporte le Poing du Dragon (dragon_clip.py), en une passe :
 
 1. contacts : distance signee poing / boite de la partie visee a CHAQUE coup
-   (6 coups de la rafale, uppercut, frappe en l'air, ecrasement au sol), et
+   (4 coups de la rafale, coup charge (v5, ex-uppercut), frappe en l'air, ecrasement au sol), et
    penetration dans les 10 frames qui suivent ;
 2. sol : aucun coin de partie sous le sol (> 0,1 stud) ;
 3. tete jamais decalee (regle du corpus pro) ;
@@ -60,7 +60,7 @@ def lowest(world):
 
 def contact_checks(aw, vw):
     rows = []
-    events = [(c, s, k) for c, s, k in M.HITS] + [(M.UPPER_F, "R", "chin"), (M.STRIKE_F, "R", "chest"),
+    events = [(c, s, k) for c, s, k in M.HITS] + [(M.UPPER_F, "R", "chest"), (M.STRIKE_F, "R", "chest"),
                                                    (M.IMPACT_F, "R", "chest")]
     for c, s, kind in events:
         arm = "Right Arm" if s == "R" else "Left Arm"
@@ -160,7 +160,7 @@ def main(blend):
     for i, (c, s, kind) in enumerate(M.HITS):
         seg[f"coup{i + 1}_{s}_{kind}"] = ("frappe_legere",) + segment_verdict(att[c - 10:c + 15], "frappe_legere", True)
         seg[f"reaction{i + 1}"] = ("reaction",) + segment_verdict(vic[c:c + 15], "reaction", False)
-    seg["uppercut"] = ("frappe_lourde",) + segment_verdict(att[118:171], "frappe_lourde", True)
+    seg["coup_charge"] = ("frappe_lourde",) + segment_verdict(att[118:171], "frappe_lourde", True)
     seg["plongee_ecrasement"] = ("frappe_lourde",) + segment_verdict(att[240:300], "frappe_lourde", True)
     rep["verdicts"] = {k: {"categorie": v[0], "dans_la_plage": v[1], "total": v[2], "hors_plage": v[3]}
                        for k, v in seg.items()}

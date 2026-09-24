@@ -44,6 +44,12 @@ tourne, qui part droit.
 
 ## 2. La fluidité : le défaut mesuré qu'aucune règle ne voyait
 
+> **Correction du même jour (v5).** La mesure ci-dessous est faussée par le
+> tempo de la rafale. En 3D, notre rafale n'est jamais figée. Les poignées
+> AUTO, essayées, haussaient l'épaule. La mesure est retirée du jugement :
+> voir `CERVEAU_V2.md`. Le texte ci-dessous est gardé comme trace du
+> raisonnement.
+
 Nos coups s'arrêtent à chaque pose clé :
 
 | quoi | traits par seconde de mouvement |

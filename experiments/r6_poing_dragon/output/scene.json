@@ -24,7 +24,7 @@
    90
   ],
   [
-   "uppercut",
+   "coup_charge",
    150
   ],
   [
@@ -85,6 +85,8 @@
   ]
  ],
  "upper_f": 150,
+ "final_f": 150,
+ "final_side": "R",
  "white": [
   304,
   334
@@ -636,80 +638,100 @@
     }
    ],
    [
-    118,
+    113,
     {
-     "feet.L": 0.0,
-     "feet.R": 0.0,
+     "feet.L": 0.0001,
+     "feet.R": 0.0003,
      "hands.L": 0.0,
      "hands.R": 0.0
     }
    ],
    [
-    122,
+    117,
     {
-     "feet.L": 0.0007,
-     "feet.R": 0.0003,
-     "hands.R": 0.0001,
+     "feet.L": 0.0001,
+     "feet.R": 0.0001,
+     "hands.R": 0.0238,
      "hands.L": 0.0
+    }
+   ],
+   [
+    121,
+    {
+     "feet.L": 0.0001,
+     "feet.R": 0.0,
+     "hands.R": 0.0,
+     "hands.L": 0.0714
     }
    ],
    [
     126,
     {
-     "feet.L": 0.0003,
-     "feet.R": 0.0006,
-     "hands.R": 0.0001,
-     "hands.L": 0.0007
+     "feet.L": 0.0,
+     "feet.R": 0.0,
+     "hands.R": 0.0,
+     "hands.L": 0.0722
     }
    ],
    [
     144,
     {
-     "feet.L": 0.0002,
-     "feet.R": 0.0005,
-     "hands.R": 0.0001,
-     "hands.L": 0.0003
+     "feet.L": 0.0001,
+     "feet.R": 0.0,
+     "hands.R": 0.0,
+     "hands.L": 0.0726
     }
    ],
    [
     146,
     {
-     "feet.L": 0.0003,
-     "feet.R": 0.0007,
-     "hands.R": 0.0001,
-     "hands.L": 0.0006
+     "feet.L": 0.0,
+     "feet.R": 0.0001,
+     "hands.R": 0.0,
+     "hands.L": 0.0687
     }
    ],
    [
     148,
     {
-     "feet.L": 0.0006,
-     "feet.R": 0.0006,
+     "feet.L": 0.0,
+     "feet.R": 0.0001,
      "hands.R": 0.0,
-     "hands.L": 0.0003
+     "hands.L": 0.0
     }
    ],
    [
     150,
     {
-     "feet.L": 0.0001,
+     "feet.L": 0.0,
      "feet.R": 0.0001,
-     "hands.R": 0.0,
+     "hands.R": 0.0002,
      "hands.L": 0.0
     }
    ],
    [
-    157,
+    153,
     {
-     "hands.R": 0.12,
+     "feet.L": 0.0,
+     "feet.R": 0.0002,
+     "hands.R": 0.0001,
      "hands.L": 0.0
+    }
+   ],
+   [
+    158,
+    {
+     "feet.L": 0.0,
+     "feet.R": 0.0003,
+     "hands.R": 0.0058,
+     "hands.L": 0.0001
     }
    ],
    [
     162,
     {
-     "feet.L": 0.0001,
-     "feet.R": 0.0001,
+     "feet.L": 0.0,
+     "feet.R": 0.0002,
      "hands.R": 0.0,
      "hands.L": 0.0
     }
@@ -717,9 +739,9 @@
    [
     168,
     {
-     "feet.L": 0.0001,
-     "feet.R": 0.0001,
-     "hands.R": 0.0,
+     "feet.L": 0.0,
+     "feet.R": 0.0002,
+     "hands.R": 0.0001,
      "hands.L": 0.0
     }
    ],

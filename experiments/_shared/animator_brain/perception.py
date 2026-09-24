@@ -152,19 +152,29 @@ def load_production(kfseq_path, root=(np.eye(3), np.array([0.0, 3.0, 0.0])), end
     return out
 
 
+def final_strike(scene):
+    """Le « coup final » : depuis la prise de recul du 2026-09-24
+    (ANGLES_MORTS.md 1), c'est le coup de f150 (uppercut en v1-v4, coup charge
+    en v5), pas le 4e coup de la rafale."""
+    if "upper_f" in scene:
+        return scene["upper_f"], scene.get("final_side", "R")
+    c, s, _k = scene["hits"][-1]
+    return c, s
+
+
 def segments(scene):
     """Fenetres (frames) des parties d'une production, depuis scene.json."""
     hits = scene["hits"]
-    last = hits[-1][0]
-    return {"rafale": (max(0, hits[0][0] - 14), last - 13),
-            "final": (last - 45, last + 12),
+    fin, _s = final_strike(scene)
+    return {"rafale": (max(0, hits[0][0] - 14), hits[-1][0] + 12),
+            "final": (fin - 45, fin + 12),
             "aerien": (scene["upper_f"], scene["impact_f"] + 10)}
 
 
 def measure_production(world, scene):
     part = {"R": "Right Arm", "L": "Left Arm"}
     hits = [{"f": c, "type": k, **(approche(world, c, part[s]) or {})} for c, s, k in scene["hits"]]
-    c, s, _k = scene["hits"][-1]
+    c, s = final_strike(scene)
     seg = {name: arcs(world, lo, hi) for name, (lo, hi) in segments(scene).items()}
     return {"coups": hits, "charge_final": charge(world, c, part[s]), "arcs_par_partie": seg,
             "arcs_global": arcs(world)}

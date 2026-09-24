@@ -354,3 +354,48 @@ envoyé 5 exemples : style manga, à ne pas copier bêtement (fiche dans
 **Preuve** : `captures/verification/2026-09-24-poing-dragon-v4-trajectoire-poing-vs-pro.png`
 (trajectoires) et `2026-09-24-poing-dragon-v4-armement-contact.png` (lecteur,
 armement et contact).
+
+## v5 (2026-09-24) : le coup final devient un coup chargé
+
+Retour de Milan sur la v4 (6,7) : « au coup final, le coup part toujours d'en
+bas » ; piste : « le coup de Saitama, un coup qui se charge, avec le buste qui
+tourne ».
+
+**Ce qui avait été mal lu** (`../_shared/animator_brain/ANGLES_MORTS.md` §1).
+Les v3, v3b et v4 corrigeaient les 4 coups de la rafale, alors que le « coup
+final » était très probablement l'**uppercut de f150**. Il sortait d'une boule
+accroupie (torse à 1,4 stud de f125 à f146) et le poing montait de 4 studs.
+Aucune règle ne le regardait.
+
+**v5, f108-170.**
+
+| temps | v4 | v5 |
+|---|---|---|
+| 108-121 | glisse en fente très basse | 2 pas pour se replacer, appuis larges, genoux souples |
+| 121-146 | boule accroupie, poing à la hanche | **charge** : buste enroulé dos à la cible (132°), poing armé à hauteur d'épaule derrière, l'autre bras vise ; tenue vivante de 18 f (le buste continue de s'enrouler) ; aura et poing qui brillent |
+| 146-150 | l'uppercut se déplie de bas en haut | **départ en 4 f** : hanche, puis buste, puis bras, trajet à plat |
+| 150 | poing monte à 5,9 studs | contact à hauteur d'épaule, **montée du poing 0,00** ; extension tenue, l'autre bras tire en arrière |
+| après 150 | gel de 0,10 s | impact court (0,05 s) puis **explosion** : 2e souffle dans l'axe du coup, onde et gerbe au sol |
+| victime | lancée à la verticale | éjectée en diagonale (arrière puis haut), moins affaissée avant le coup |
+
+- **Caméra de la charge** : plan de profil à hauteur d'yeux. La contre-plongée
+  au ras du sol de la v4 faisait monter à l'écran n'importe quel coup.
+- **Lecteur** : les temps sont renommés « Charge » et « Coup chargé ».
+
+**Mesures (perception du cerveau).** Coup final : tenue de 13 f, départ en
+1 f, buste enroulé de 132°, poing qui monte de 0,00 dans les 6 f avant le
+contact (v4 : +1,48).
+
+**Contrôles.**
+- règles : 13/13 ;
+- contacts : 0,05 stud sur les 7 coups ;
+- sol : ≥ −0,115, comme en v4 ;
+- sens : 9/9, `SENS OK`, `PACKAGE OK`.
+
+**Essayé puis retiré.** Des poignées AUTO sur les clés, pour la fluidité.
+Elles haussaient l'épaule dans la rafale (0,33 stud) et la mesure qui les
+justifiait était faussée par le tempo (`CERVEAU_V2.md`, correction).
+L'outil reste dans `dragon_clip.py`, désactivé.
+
+**Preuve** :
+`captures/verification/2026-09-24-poing-dragon-v4-vs-v5-coup-final-profil.png`.

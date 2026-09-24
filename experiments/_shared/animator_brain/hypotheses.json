@@ -224,7 +224,7 @@
    "portee": [
     "tout"
    ],
-   "confiance_principe": 0.8,
+   "confiance_principe": 0.6,
    "poids_note": 0.731,
    "etalon_style": "universel",
    "sources": [
@@ -232,9 +232,10 @@
     "perception 2026-09-24 : M1 pro 4,2-5,7 traits/s ; notre aerien (aime par Milan) 3,5-4,2 ; notre rafale 8,8-11,9 (comme une reaction a un coup)",
     "auto-critique : cles IK avec ralenti a chaque cle -> arret a chaque cle",
     "synthese 2026-09-24 : temps fige (images immobiles >= 150 ms) sakuga 2 % [1-5], refs de Milan 14 %, nos versions 37 %",
-    "synthese finale 2026-09-24 : temps fige sakuga (plans de combat TV) 2 %, danbooru (animations de fans, boucles) 22 %, refs de Milan 14 %, nous 37 % -- au-dessus de tout"
+    "synthese finale 2026-09-24 : temps fige sakuga (plans de combat TV) 2 %, danbooru (animations de fans, boucles) 22 %, refs de Milan 14 %, nous 37 % -- au-dessus de tout",
+    "CORRECTION 2026-09-24 (v5) : la mesure « traits par seconde » est confondue avec le TEMPO (notre rafale : un coup toutes les 0,43 s, un M1 pro : 0,65 s) ; en 3D notre rafale n'est JAMAIS figee (0 % de temps immobile, M1 pro 28-51 %) ; les 37 % de temps fige de la video viennent de la structure (hitstops, temps suspendu, longue revelation). Mesure retiree du jugement (ANGLES_MORTS.md 7) ; le principe reste, a mesurer autrement (arrets par coup, a tempo egal)."
    ],
-   "mesure": "perception:traits par seconde de mouvement vs M1 pro",
+   "mesure": null,
    "poids_a_priori": 0.5
   },
   {

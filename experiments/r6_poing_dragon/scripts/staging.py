@@ -98,12 +98,17 @@ def camera_keys(aw, vw):
     # plan C (coup 4 au corps, la victime decolle) : bas, cote gauche
     add(78, mid(78) + [-9.8, -1.7, 2.4], mid(78) + [0, 0.9, 0], 48, "cut")
     add(116, mid(116) + [-9.2, -1.5, 1.6], mid(116) + [0, 0.7, 0], 46)
-    # 2. anticipation : COUPE, contre-plongee basse au ras du sol, pres de la fente
+    # 2. v5 COUP CHARGE : coupe de PROFIL a hauteur d'yeux (la contre-plongee
+    # au ras du sol de la v4 faisait « monter » tout coup a l'ecran), assez
+    # large pour lire l'enroulement du buste et le trajet A PLAT du poing ;
+    # lente poussee vers l'avant pendant la tenue (tension)
     a = A(132)
-    add(118, [a[0] + 9.6, 1.0, a[2] + 0.6], a + [0, 1.0, -2.0], 44, "cut")
-    add(146, [a[0] + 8.9, 0.9, a[2] + 0.3], a + [0, 0.9, -2.2], 42)
-    # 3. uppercut : la camera suit la victime qui monte
-    add(152, [a[0] + 9.0, 0.9, a[2] + 0.1], Vt(152) + [0, 0.5, 0], 50)
+    v = Vt(150)
+    m2 = (a + v) / 2
+    add(118, m2 + [10.5, 0.6, 1.6], m2 + [0, -0.2, 0], 44, "cut")
+    add(146, m2 + [8.6, 0.5, 1.2], m2 + [0, -0.2, 0], 40)
+    # 3. contact puis ejection : on recule en suivant la victime
+    add(152, m2 + [9.4, 0.8, 0.6], Vt(152) * 0.5 + m2 * 0.5 + [0, 0.2, 0], 48)
     add(172, [a[0] + 8.5, 1.8, a[2] - 2.4], mid(172) + [0, 1.0, 0], 56)
     add(196, mid(196) + [12.0, 1.0, 3.5], mid(196), 56)
     # 4. WHIP PAN (12 f) vers le plan large en plongee du temps suspendu
@@ -150,14 +155,26 @@ def events(aw, vw):
         ev(c, "body_flash", who="attaquant", color=FLASH, frames=2)
         ev(c, "impact", pos=v3(p), dir=v3(impact_dir(aw, c, s)), scale=SCENE["hit_scale"][i], color=GOLD,
            hitstop=SCENE["hit_hitstop"][i], shake=SCENE["hit_shake"][i], name=f"hit{i + 1}")
-    ev(122, "dust_trail", who="attaquant", frames=24)
-    ev(126, "aura", who="attaquant", frames=24, color=GOLD, intensity=0.6)
-    ev(126, "fist_glow", who="attaquant", side="R", frames=24, color=GOLD)
+    # v5 COUP CHARGE : aura et poing qui brillent PENDANT la tenue (la charge
+    # se voit), poussiere au depart, puis impact COURT et EXPLOSION juste apres
+    # (sakuga : explosion apres le choc 12/32 clips, tenue avant 2/32 ;
+    # corpus/refs/SYNTHESE.md) au lieu d'un gel long
+    ev(124, "aura", who="attaquant", frames=24, color=GOLD, intensity=0.7)
+    ev(124, "fist_glow", who="attaquant", side="R", frames=26, color=GOLD)
+    ev(146, "dust_trail", who="attaquant", frames=14)
     u = SCENE["upper_f"]
     p = tip(aw[u], "Right Arm")
+    d = impact_dir(aw, u, "R")
     ev(u, "body_flash", who="attaquant", color=FLASH, frames=3)
-    ev(u, "impact", pos=v3(p), dir=v3(impact_dir(aw, u, "R")), scale=1.35, color=GOLD, hitstop=0.1, shake=0.5,
-       name="uppercut")
+    ev(u, "impact", pos=v3(p), dir=v3(d), scale=1.6, color=GOLD, hitstop=0.05, shake=0.65, name="coup_charge")
+    # l'explosion : 2e souffle dans l'axe du coup, derriere la victime, et
+    # onde au sol sous le point d'impact
+    ev(u + 2, "impact", pos=v3(p + 1.6 * d), dir=v3(d), scale=1.9, color=WHITE, hitstop=0.0, shake=0.3,
+       name="coup_charge_souffle")
+    g = p.copy()
+    g[1] = 0.05
+    ev(u + 1, "ground_burst", pos=v3(g), color=GOLD, scale=1.4)
+    ev(u + 1, "dome", pos=v3(g), radius=5.0, frames=22, color=GOLD)
     ev(170, "ground_burst", pos=v3([aw[170]["Torso"][1][0], 0.05, aw[170]["Torso"][1][2]]), color=WHITE, scale=1.2)
     ev(196, "whip", frames=12)
     ev(200, "aura", who="attaquant", frames=56, color=GOLD, intensity=1.0)

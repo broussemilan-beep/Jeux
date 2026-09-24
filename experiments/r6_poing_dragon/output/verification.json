@@ -31,8 +31,8 @@
   {
    "frame": 150,
    "main": "R",
-   "cible": "Head",
-   "distance_au_contact": -0.07,
+   "cible": "Torso",
+   "distance_au_contact": 0.05,
    "penetration_max_apres": -0.0
   },
   {
@@ -58,13 +58,13 @@
  "aller_retour_max": 7.121239116308986e-15,
  "cles": {
   "attaquant": 259,
-  "victime": 134,
+  "victime": 136,
   "frames": 527
  },
- "ecart_max_reduction_studs": 0.017,
+ "ecart_max_reduction_studs": 0.018,
  "taille_fichiers_ko": [
   1659,
-  862
+  875
  ],
  "sens_roblox": {
   "attaquant_regarde_moins_z": true,
@@ -1835,14 +1835,23 @@
     ]
    ]
   },
-  "uppercut": {
+  "coup_charge": {
    "categorie": "frappe_lourde",
-   "dans_la_plage": 23,
+   "dans_la_plage": 27,
    "total": 49,
    "hors_plage": [
     [
+     "timing.energie.mediane_deg_s",
+     859.3,
+     [
+      1066.92,
+      1658.08,
+      1466.8
+     ]
+    ],
+    [
      "timing.energie.contraste_pic_sur_mediane",
-     5.91,
+     9.02,
      [
       2.1,
       5.36,
@@ -1851,7 +1860,7 @@
     ],
     [
      "timing.energie.fraction_quasi_tenue",
-     0.491,
+     0.566,
      [
       0.005,
       0.438,
@@ -1868,6 +1877,15 @@
      ]
     ],
     [
+     "timing.phases.action_f60",
+     5.0,
+     [
+      12.0,
+      50.0,
+      20.0
+     ]
+    ],
+    [
      "timing.phases.fraction_anticipation",
      0.5,
      [
@@ -1878,7 +1896,7 @@
     ],
     [
      "timing.membres.Torso.pic_a_s",
-     0.5,
+     0.467,
      [
       0.221,
       0.362,
@@ -1887,7 +1905,7 @@
     ],
     [
      "timing.membres.Head.vitesse_max_deg_s",
-     2084.1,
+     1914.8,
      [
       227.83,
       643.17,
@@ -1896,7 +1914,7 @@
     ],
     [
      "timing.membres.Head.pic_a_s",
-     0.5,
+     0.483,
      [
       0.04,
       0.477,
@@ -1905,7 +1923,7 @@
     ],
     [
      "timing.membres.Head.amplitude_vs_repos_deg",
-     107.3,
+     91.2,
      [
       17.04,
       64.26,
@@ -1914,7 +1932,7 @@
     ],
     [
      "timing.membres.Head.amplitude_vs_debut_deg",
-     83.4,
+     97.2,
      [
       17.04,
       64.26,
@@ -1923,7 +1941,7 @@
     ],
     [
      "timing.membres.Right Arm.vitesse_max_deg_s",
-     4449.1,
+     2871.2,
      [
       729.28,
       1999.22,
@@ -1932,7 +1950,7 @@
     ],
     [
      "timing.membres.Right Arm.pic_a_s",
-     0.7,
+     0.717,
      [
       0.054,
       0.342,
@@ -1941,7 +1959,7 @@
     ],
     [
      "timing.membres.Left Arm.vitesse_max_deg_s",
-     2032.1,
+     2961.8,
      [
       588.37,
       1433.43,
@@ -1950,7 +1968,7 @@
     ],
     [
      "timing.membres.Left Arm.pic_a_s",
-     0.067,
+     0.0,
      [
       0.123,
       0.737,
@@ -1959,7 +1977,7 @@
     ],
     [
      "timing.membres.Left Arm.amplitude_vs_repos_deg",
-     77.9,
+     93.0,
      [
       104.61,
       190.59,
@@ -1967,17 +1985,26 @@
      ]
     ],
     [
-     "timing.mains_vitesse_max_studs_s.Left Arm",
-     33.2,
+     "timing.membres.Left Arm.amplitude_vs_debut_deg",
+     85.2,
      [
-      39.17,
-      88.83,
-      70.3
+      104.61,
+      190.59,
+      117.9
+     ]
+    ],
+    [
+     "timing.mains_vitesse_max_studs_s.Right Arm",
+     146.1,
+     [
+      74.07,
+      93.03,
+      84.3
      ]
     ],
     [
      "timing.translation_articulation_max_studs.Left Arm",
-     1.701,
+     0.884,
      [
       0.992,
       1.535,
@@ -1985,26 +2012,8 @@
      ]
     ],
     [
-     "timing.deplacement_torse_studs.x",
-     0.52,
-     [
-      0.028,
-      0.402,
-      0.32
-     ]
-    ],
-    [
-     "timing.deplacement_torse_studs.y",
-     1.85,
-     [
-      0.854,
-      1.436,
-      1.26
-     ]
-    ],
-    [
      "timing.deplacement_torse_studs.z",
-     1.15,
+     1.27,
      [
       0.58,
       0.99,
@@ -2021,57 +2030,12 @@
      ]
     ],
     [
-     "timing.affaissement_torse_studs.max",
-     1.633,
+     "timing.mecanique_frappe.portee_studs",
+     3.11,
      [
-      0.593,
-      1.441,
-      1.265
-     ]
-    ],
-    [
-     "timing.affaissement_torse_studs.median",
-     1.073,
-     [
-      -0.014,
-      0.797,
-      0.569
-     ]
-    ],
-    [
-     "timing.decalage_epaule_vertical_studs.haut_max",
-     1.472,
-     [
-      0.258,
-      0.795,
-      0.511
-     ]
-    ],
-    [
-     "timing.decalage_epaule_vertical_studs.median",
-     0.671,
-     [
-      -0.269,
-      0.105,
-      -0.072
-     ]
-    ],
-    [
-     "timing.mecanique_frappe.transfert_poids_studs",
-     0.0,
-     [
-      0.246,
-      1.004,
-      0.84
-     ]
-    ],
-    [
-     "timing.mecanique_frappe.poing_montee_finale_studs",
-     1.48,
-     [
-      0.0,
-      1.45,
-      0.0
+      1.543,
+      2.967,
+      2.57
      ]
     ]
    ]
@@ -2146,7 +2110,7 @@
     ],
     [
      "timing.membres.Head.amplitude_vs_repos_deg",
-     75.8,
+     75.9,
      [
       17.04,
       64.26,
@@ -2155,7 +2119,7 @@
     ],
     [
      "timing.membres.Head.amplitude_vs_debut_deg",
-     118.9,
+     119.0,
      [
       17.04,
       64.26,

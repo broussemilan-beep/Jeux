@@ -17,8 +17,8 @@ from animator_brain import v222_rig as V  # noqa: E402
 RES = 260
 KEYS = [(0, "garde basse / activation"), (7, "H1 jab arme a hauteur d epaule"), (14, "H1 jab G, bras horizontal"), (15, "H1 reaction"),
         (31, "H2 arme : poing en arriere, l autre bras vise"), (40, "H2 direct D plexus"), (42, "H2 se plie"), (55, "H3 crochet arme sur le cote"), (64, "H3 crochet G cotes"),
-        (66, "H3 plie de cote"), (81, "H4 armement manga, pied avant leve"), (90, "H4 fente, poing au ventre"), (144, "fente tenue"),
-        (150, "UPPERCUT"), (200, "apex"), (250, "temps suspendu"), (278, "CONTACT en l'air"), (288, "ecrasement au sol"),
+        (66, "H3 plie de cote"), (81, "H4 armement manga, pied avant leve"), (90, "H4 fente, poing au ventre"), (126, "charge : buste enroule"), (144, "charge tenue"),
+        (148, "depart a plat"), (150, "COUP CHARGE"), (200, "apex"), (250, "temps suspendu"), (278, "CONTACT en l'air"), (288, "ecrasement au sol"),
         (334, "revelation"), (526, "fin")]
 
 

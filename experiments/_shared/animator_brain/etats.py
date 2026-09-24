@@ -125,9 +125,8 @@ def etat_version(prod, cfg, version, commit, hyp, E):
     dv = [seg[s]["deviation_mediane"] for s in ("rafale", "final") if seg[s]["deviation_mediane"] is not None]
     etat["arcs"] = min(dv) >= E["arcs_deviation_min"]
     preuve["arcs"] = f"deviation mediane rafale {seg['rafale']['deviation_mediane']} / final {seg['final']['deviation_mediane']} ; M1 pro >= {E['arcs_deviation_min']} (mediane {E['arcs_deviation_mediane']})"
-    tr = [seg[s]["traits_par_s_de_mouvement"] for s in ("rafale", "final")]
-    etat["fluidite"] = max(tr) <= E["traits_par_s_max"]
-    preuve["fluidite"] = f"traits par s de mouvement rafale {tr[0]} / final {tr[1]} / aerien {seg['aerien']['traits_par_s_de_mouvement']} ; M1 pro <= {E['traits_par_s_max']}"
+    # fluidite : mesure « traits par seconde » RETIREE du jugement le
+    # 2026-09-24 (v5) -- confondue avec le tempo de la rafale (hypotheses.json)
     ch = m["charge_final"]
     etat["coup_charge"] = ch["tenue_f"] >= E["tenue_charge_min_f"] and ch["depart_f"] <= E["depart_charge_max_f"]
     preuve["coup_charge"] = f"coup final : tenue {ch['tenue_f']} f, depart {ch['depart_f']} f, buste {ch['enroulement_buste_deg']} deg ; principe : tenue >= {E['tenue_charge_min_f']} f puis depart <= {E['depart_charge_max_f']} f"
@@ -146,7 +145,6 @@ def etat_version(prod, cfg, version, commit, hyp, E):
         preuve["contraste_de_temps"] = f"contraste d'energie {c} ; refs de Milan mediane {E['contraste_refs_mediane']}"
     # parties : les memes mesures, partie par partie (pour apprendre de ce que Milan AIME)
     parties = {s: {"arcs": v["deviation_mediane"] is not None and v["deviation_mediane"] >= E["arcs_deviation_min"],
-                   "fluidite": v["traits_par_s_de_mouvement"] is not None and v["traits_par_s_de_mouvement"] <= E["traits_par_s_max"],
                    "mesures": v} for s, v in seg.items()}
     return {"etat": etat, "preuve": preuve, "parties": parties, "mesures_coups": m["coups"],
             "charge_final": ch, "variete": var}

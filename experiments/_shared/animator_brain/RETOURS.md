@@ -189,3 +189,15 @@ cerveau, voir la fin de l'entrée.
 - **Leçon** : 4 versions de suite corrigent chacune la mesure du retour
   précédent (épaules, puis angle du bras, puis trajectoire), sans rendre le
   mouvement bon. On traite des symptômes un par un.
+
+## Poing du Dragon v5 (2026-09-24) : réponse au retour v4
+
+- **Retour v4 (6,7).** « Le bras ne part plus d'en bas mais ça ne change pas
+  la note ; au coup final, le coup part toujours d'en bas ; je verrais plus le
+  coup de Saitama. »
+- **Lecture v5.** Le « coup final » est l'uppercut de f150, pas la fente du
+  4e coup. C'est une question posée à Milan, pas encore confirmée ; « go »
+  sans réponse, donc décision prise sur les mesures (`ANGLES_MORTS.md` §1).
+- **Changement.** Coup chargé à plat (enroulement, tenue vivante, départ en
+  4 f, extension tenue), caméra à hauteur d'yeux, explosion après l'impact.
+- **Note de Milan** : à venir.

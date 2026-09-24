@@ -64,7 +64,7 @@ REVEAL_F = 334
 RISE_F = (490, 526)
 
 MARKERS = [("activation", 0)] + [(f"hit{i + 1}", f) for i, (f, _h, _t) in enumerate(HITS)] + [
-    ("uppercut", UPPER_F), ("takeoff", TAKEOFF_F), ("suspend", APEX_F), ("dive", SUSPEND_END_F),
+    ("coup_charge", UPPER_F), ("takeoff", TAKEOFF_F), ("suspend", APEX_F), ("dive", SUSPEND_END_F),
     ("strike", STRIKE_F), ("impact", IMPACT_F), ("manga", MANGA_F), ("white", WHITE_F[0]), ("reveal", REVEAL_F)]
 
 FOOT_Y = 0.065              # bout du pied (limb_tip) au repos, sol a y = 0
@@ -367,17 +367,20 @@ def victim_keys():
                         arms=((35, 0, 0), (30, 0, 0)), feet=AIR_LEGS))
     add(104, victim_pose(2.4, y=1.3, head=(-16, 0, 0), pelvis=((0, 0, 0), (-24, 0, 0)), chest=(0, 0.2, 0),
                          arms=((40, 0, 0), (34, 0, 0)), feet=TUMBLE_LEGS))
-    add(118, stand(2.6, head=(-16, 0, 0), pelvis=((0, -0.75, 0), (-24, 0, 4)), chest=(0, 0.25, 0),
+    # v5 : sonnee mais moins affaissee (-0,4 au lieu de -0,75) : le coup charge
+    # arrive a plat, a hauteur d'epaule
+    add(118, stand(2.6, head=(-16, 0, 0), pelvis=((0, -0.45, 0), (-24, 0, 4)), chest=(0, 0.25, 0),
                    arms=((22, 0, 0), (18, 0, 0))))
-    add(126, stand(2.6, head=(-15, 2, 0), pelvis=((0, -0.73, 0), (-22, 1, 5)), chest=(0, 0.24, 0),
+    add(126, stand(2.6, head=(-15, 2, 0), pelvis=((0, -0.42, 0), (-22, 1, 5)), chest=(0, 0.24, 0),
                    arms=((21, 0, 0), (17, 0, 0))))
     # sonnee, affaissee, pendant l'anticipation
-    add(146, stand(2.6, head=(-12, 4, 0), pelvis=((0, -0.7, 0), (-18, 3, 6)), chest=(0, 0.2, 0),
+    add(146, stand(2.6, head=(-12, 4, 0), pelvis=((0, -0.4, 0), (-18, 3, 6)), chest=(0, 0.2, 0),
                    arms=((18, 0, 0), (14, 0, 0))), "LINEAR")
-    # UPPERCUT f150 -> lancee en l'air, bascule en arriere
-    add(UPPER_F, stand(2.6, head=(-10, 4, 0), pelvis=((0, -0.7, 0), (-16, 3, 6)), arms=((18, 0, 0), (14, 0, 0))),
+    # v5 COUP CHARGE f150 (droit, a plat) -> ejectee en DIAGONALE (arriere
+    # puis haut), et non plus lancee a la verticale par un uppercut
+    add(UPPER_F, stand(2.6, head=(-10, 4, 0), pelvis=((0, -0.4, 0), (-16, 3, 6)), arms=((18, 0, 0), (14, 0, 0))),
         "LINEAR")
-    add(154, victim_pose(2.9, y=1.6, rootrot=(22, 0, 0), head=(48, 0, 0), pelvis=((0, 0, 0), (20, 0, 0)),
+    add(154, victim_pose(3.4, y=1.2, rootrot=(14, 0, 0), head=(40, 0, 0), pelvis=((0, 0, 0), (-20, 0, 0)),
                          arms=((-70, 0, 0), (-65, 0, 0)), feet=AIR_LEGS), ("QUAD", "EASE_OUT"))
     add(APEX_F, victim_pose(4.2, y=10.5, rootrot=(62, 0, 8), head=(24, 10, 0), pelvis=((0, 0, 0), (12, 0, 0)),
                             arms=((-95, 0, 25), (-85, 0, -30)), feet=TUMBLE_LEGS))
@@ -637,44 +640,67 @@ def attacker_keys(vw, rig):
         prev = (c, feet, croot)
     add(108, body(back(plans[-1][5], 0.3), 0.3, -12, -5, 108, GUARD(), plans[-1][6]))
 
-    # ANTICIPATION 118-146 : fente tres basse, poing arme a la hanche, glisse
-    zc = -2.0
-    lunge_feet = lambda z: a_feet(z, lf=(-0.75, -1.35), rf=(0.95, 1.25))  # noqa: E731
-    add(118, a_stance(zc + 0.05, low=0.5, yaw=-20, lean=-12, look=head(118), hands=GUARD()))
-    # v3 : pose intermediaire -- le bassin descend de 0,85 pendant que les
-    # controles des pieds glissent en ligne droite : sans elle, le pied
-    # arriere passait 0,17 sous le sol (f122)
-    add(122, {"root": ((0.0, 0.0, zc - 0.08), (0, 0, 0)), "pelvis": ((0, -0.95, 0), (-19, -38, -3)), "chest": (0, 0.2, 0),
-              "feet": lunge_feet(zc - 0.1), "look": head(122),
-              "hands": {"R": ("w", (0.95, 2.0, zc + 0.0)), "L": ("w", (-0.55, 2.6, zc - 1.5))}})
-    add(126, {"root": ((0.0, 0.0, zc - 0.2), (0, 0, 0)), "pelvis": ((0, -1.35, 0), (-24, -52, -4)), "chest": (0, 0.3, 0),
-              "feet": lunge_feet(zc - 0.2), "look": head(126),
-              "hands": {"R": ("w", (0.95, 1.55, zc + 0.05)), "L": ("w", (-0.55, 2.35, zc - 1.75))}})
-    add(144, {"root": ((0.0, 0.0, zc - 0.45), (0, 0, 0)), "pelvis": ((0, -1.42, 0), (-26, -58, -5)), "chest": (0, 0.32, 0),
-              "feet": lunge_feet(zc - 0.45), "look": head(144),
-              "hands": {"R": ("w", (1.0, 1.45, zc - 0.25)), "L": ("w", (-0.6, 2.3, zc - 2.0))}}, "LINEAR")
-    # UPPERCUT : snap 4 f, le corps se deplie de bas en haut
-    tgt = target(UPPER_F, "chin")
-    add(146, {"root": ((0.0, 0.0, zc - 0.5), (0, 0, 0)), "pelvis": ((0, -1.3, 0), (-22, -45, -4)), "chest": (0, 0.3, 0),
-              "feet": lunge_feet(zc - 0.45), "look": head(146),
-              "hands": {"R": ("w", (1.0, 1.55, zc - 0.4)), "L": ("w", (-0.65, 2.35, zc - 1.9))}})
-    add(148, {"root": ((0.0, 0.0, zc - 0.6), (0, 0, 0)), "pelvis": ((0, -0.9, 0), (-8, -8, 0)), "chest": (0, 0.2, 0),
-              "feet": lunge_feet(zc - 0.45), "look": head(148),
-              "hands": {"R": ("w", tuple(0.55 * tgt + 0.45 * np.array([1.0, 1.45, zc - 0.25]))),
-                        "L": ("w", (-0.8, 2.6, zc - 1.0))}})
-    add(UPPER_F, {"root": ((0.0, 0.0, zc - 0.7), (0, 0, 0)), "pelvis": ((0, -0.6, 0), (10, 28, 4)), "chest": (0, 0.0, 0),
-                  "feet": a_feet(zc - 0.6, lf=(-0.7, -0.95), rf=(0.85, 0.85)), "look": head(UPPER_F),
-                  "hands": {"R": ("w", tuple(tgt)), "L": ("w", (-0.95, 3.0, zc + 0.1))}}, "LINEAR")
-    # suite : sur la pointe des pieds, poing au ciel
-    add(157, {"root": ((0.0, 0.25, zc - 0.75), (0, 0, 0)), "pelvis": ((0, 0.0, 0), (16, 38, 6)), "chest": (0, -0.1, 0),
-              "feet": {"L": ("c", (0.0, 0.1, 0.1)), "R": ("c", (0.0, -0.2, 0.25))}, "look": head(UPPER_F) + np.array([0, 1.5, 0]),
-              "hands": {"R": ("w", (0.4, 6.4, zc - 1.3)), "L": ("w", (-1.1, 3.0, zc + 0.2))}})
+    # v5 COUP CHARGE f118-170 (piste Saitama de Milan ; cerveau v2 :
+    # ANGLES_MORTS.md 1, CERVEAU_V2.md). Remplace la boule accroupie
+    # (f125-146, torse a 1,4 stud) et l'uppercut qui montait de 4 studs : c'est
+    # ce que Milan voyait « partir d'en bas ». Ici :
+    # - on se replace en 2 pas, appuis larges, genoux souples (pas de boule) ;
+    # - ENROULEMENT : buste tourne dos a la cible, poing arme A HAUTEUR
+    #   D'EPAULE derriere, l'autre bras vise ; tenue VIVANTE de 18 f (le buste
+    #   continue de s'enrouler un peu : tension, pas gel) ;
+    # - DEPART en 4 f : hanche puis buste puis bras, trajet A PLAT ;
+    # - extension TENUE, l'autre bras tire en arriere (contre-rotation).
+    s_, o_ = "R", "L"
+    dist, az, wind, yaw, lean, low = 2.25, -8, -80, 45, -14, 0.3
+    probe = {"root": ((0.0, 0.0, 0.0), (0, 0, 0)), "pelvis": ((0, -low, 0), (lean, yaw, 0)), "chest": (0, 0.15, 0)}
+    solve_pose(rig, probe)
+    y_sh = float(torso_pivot(V.current_parts(rig), s_)[1])
+    tgt = target_h(UPPER_F, y_sh - 0.1)
+    contact = {"root": ((0.0, 0.0, 0.0), (0, 0, 0)), "pelvis": ((0, -low, 0), (lean, yaw, 0)), "chest": (0, 0.15, 0),
+               "fitp": (s_, tuple(tgt), dist, az), "look": head(UPPER_F),
+               "hands": {s_: ("w", tuple(tgt)), o_: FACE[o_]}}
+    croot = presolve(contact)
+    lx, lz = _pivot(-0.6, -0.55, 0.5 * yaw)
+    rx, rz = _pivot(0.65, 1.2, 0.5 * yaw)
+    cfeet = {"L": ("g", (croot[0] + lx, croot[2] + lz)), "R": ("g", (croot[0] + rx, croot[2] + rz))}
+    contact["feet"] = cfeet
+    contact["auto_low"] = True
+    aim = {o_: ("a", (wind, -12, 2.2))}
+    pr, pf = plans[-1][5], plans[-1][6]
+    (_m, (fx0, fz0)), (_m, (bx0, bz0)) = pf["L"], pf["R"]
+    (_m, (fx1, fz1)), (_m, (bx1, bz1)) = cfeet["L"], cfeet["R"]
+    # 2 pas pour se replacer (la victime a recule d'environ 1 stud)
+    add(113, body(0.5 * (back(pr, 0.3) + back(croot, 0.6)), 0.15, -10, -4, 113, GUARD(),
+                  {"L": ("w", (0.5 * (fx0 + fx1), 0.35, 0.5 * (fz0 + fz1))), "R": pf["R"]}))
+    add(117, body(back(croot, 0.6), 0.18, 0.3 * wind, -2, 117, {s_: side(s_, 75, -25, 2.15), o_: GUARD()[o_]},
+                  {"L": cfeet["L"], "R": ("w", (0.5 * (bx0 + bx1), 0.4, 0.5 * (bz0 + bz1)))}))
+    # enroulement : le poing passe par le cote (arc) puis derriere l'epaule
+    add(121, body(back(croot, 0.58), 0.24, 0.7 * wind, 2, 121, {s_: side(s_, 120, 3, 2.05), **aim}, cfeet))
+    add(126, body(back(croot, 0.6), 0.3, wind, 4, 126, {s_: side(s_, 150, 5, 2.0), **aim}, cfeet))
+    # tenue vivante : le buste continue de s'enrouler, le corps se ramasse un peu
+    add(144, body(back(croot, 0.66), 0.34, wind - 7, 5, 144, {s_: side(s_, 156, 6, 2.0), **aim}, cfeet))
+    # DEPART (4 f) : hanche et buste d'abord, le bras suit a plat
+    add(146, body(back(croot, 0.45), 0.33, 0.55 * wind + 0.45 * yaw, 0.3 * lean, 146,
+                  {s_: side(s_, 110, 3, 2.05), **aim}, cfeet))
+    add(148, body(back(croot, 0.15), 0.31, 0.15 * wind + 0.85 * yaw, 0.75 * lean, 148,
+                  {s_: side(s_, 35, -2, 2.2), o_: FACE[o_]}, cfeet))
+    add(UPPER_F, contact, "LINEAR")
+    # extension TENUE : le poing continue un peu devant, l'autre bras tire en arriere
+    fwd = tgt - (croot + np.array([0.0, float(tgt[1] - croot[1]), 0.0]))
+    fwd = fwd / max(1e-6, np.linalg.norm(fwd))
+    ext = tgt + 0.12 * fwd
+    add(153, body(croot + 0.12 * fwd, low, 1.1 * yaw, 1.1 * lean, 153,
+                  {s_: ("w", tuple(ext)), o_: side(o_, 120, -30, 2.1)}, cfeet))
+    add(158, body(croot + 0.12 * fwd, 0.9 * low, 1.05 * yaw, lean, 158,
+                  {s_: ("w", tuple(ext)), o_: side(o_, 115, -30, 2.1)}, cfeet))
+    zc = float(croot[2]) + 0.7
     # ACCROUPI de 8 f (reference : 8 f a 30 i/s) puis DECOLLAGE
-    add(162, {"root": ((0.0, 0.0, zc - 0.8), (0, 0, 0)), "pelvis": ((0, -0.85, 0), (-24, 0, 0)), "chest": (0, 0.3, 0),
-              "feet": a_feet(zc - 0.8, lf=(-0.6, -0.7), rf=(0.6, 0.6)), "look": head(162),
+    # v5 : on garde les appuis du coup charge (sinon le pied arriere glisse de 0,85 en 4 f)
+    add(162, {"root": ((float(croot[0]), 0.0, zc - 0.8), (0, 0, 0)), "pelvis": ((0, -0.85, 0), (-24, 0, 0)), "chest": (0, 0.3, 0),
+              "feet": cfeet, "look": head(162),
               "hands": {"R": ("w", (0.9, 1.5, zc - 0.1)), "L": ("w", (-0.9, 1.5, zc - 0.1))}})
-    add(TAKEOFF_F - 2, {"root": ((0.0, 0.0, zc - 0.8), (0, 0, 0)), "pelvis": ((0, -0.9, 0), (-26, 0, 0)), "chest": (0, 0.32, 0),
-                        "feet": a_feet(zc - 0.8, lf=(-0.6, -0.7), rf=(0.6, 0.6)), "look": head(TAKEOFF_F - 2),
+    add(TAKEOFF_F - 2, {"root": ((float(croot[0]), 0.0, zc - 0.8), (0, 0, 0)), "pelvis": ((0, -0.9, 0), (-26, 0, 0)), "chest": (0, 0.32, 0),
+                        "feet": cfeet, "look": head(TAKEOFF_F - 2),
                         "hands": {"R": ("w", (0.95, 1.45, zc + 0.1)), "L": ("w", (-0.95, 1.45, zc + 0.1))}}, "LINEAR")
     add(TAKEOFF_F + 4, {"root": ((0.0, 2.6, zc - 1.2), (0, 0, 0)), "pelvis": ((0, 0.0, 0), (8, 0, 0)), "chest": (0, 0, 0),
                         "feet": {"L": ("c", (0.0, -0.2, -0.05)), "R": ("c", (0.0, -0.3, -0.05))}, "look": head(TAKEOFF_F + 4),
@@ -751,6 +777,42 @@ def interp_args(i):
     return (i, None) if isinstance(i, str) else i
 
 
+# v5 (cerveau v2 : fluidite, ANGLES_MORTS.md 2) : Blender pose des poignees
+# AUTO_CLAMPED, qui aplatissent la tangente a chaque cle ou un canal change de
+# sens -> le membre s'arrete a chaque pose cle (rafale 9-12 traits/s contre 4-6
+# chez les pros). Poignees AUTO sur les BRAS, le TORSE et la tete ; les PIEDS
+# gardent AUTO_CLAMPED (un depassement ferait glisser un pied plante).
+# Seulement AVANT le decollage : l'aerien et la fin, que Milan aime et qui
+# sont deja fluides (3,5 traits/s), ne bougent pas (et y relacher les
+# poignees faisait passer le poing sous le sol pendant l'atterrissage).
+# DESACTIVE le 2026-09-24 : essaye sur la v5, il haussait l'epaule dans la
+# rafale (0,33 stud, la main depassait vers le pivot et l'IK montait
+# l'epaule) et la mesure de fluidite qui le justifiait s'est revelee
+# confondue avec le tempo (hypotheses.json, fluidite). Outil garde.
+RELAX_HANDLES = None
+RELAX_UNTIL_F = TAKEOFF_F
+# les cles qui ENCADRENT une tenue d'anticipation restent bridees : relachees,
+# la courbe depassait pendant la tenue du coup charge (jambe avant sous le sol)
+HOLD_KEYS = {126, 144}
+
+
+def relax_handles(rig, kind=RELAX_HANDLES, until=RELAX_UNTIL_F, keep=HOLD_KEYS):
+    if not kind:
+        return
+    arm = V._rig(rig).primary
+    act = arm.animation_data.action if arm.animation_data else None
+    if act is None:
+        return
+    for fc in V._fcurves(act):
+        if "Leg" in fc.data_path or "Foot" in fc.data_path:
+            continue
+        for kp in fc.keyframe_points:
+            if kp.interpolation == "BEZIER" and kp.co[0] < until and int(round(kp.co[0])) not in keep:
+                kp.handle_left_type = kind
+                kp.handle_right_type = kind
+        fc.update()
+
+
 def animate(a, b, keys_fn=None):
     import bpy
     S = bpy.context.scene
@@ -764,6 +826,7 @@ def animate(a, b, keys_fn=None):
         report["victime"].append((f, res))
     for f, c, i in solved:
         key_pose(b, f, c, *interp_args(i))
+    relax_handles(b)
     vw = bake_world(b, 0, END_F)
     solved = []
     for f, p, i in attacker_keys(vw, a):
@@ -772,6 +835,7 @@ def animate(a, b, keys_fn=None):
         report["attaquant"].append((f, res))
     for f, c, i in solved:
         key_pose(a, f, c, *interp_args(i))
+    relax_handles(a)
     aw = bake_world(a, 0, END_F)
     return aw, vw, report
 
@@ -787,7 +851,7 @@ def main(blend):
             if bad:
                 print(f"  {side} f{f}: {bad}")
     json.dump({"distance": D, "fps": FPS, "end_f": END_F, "markers": MARKERS, "impact_f": IMPACT_F,
-               "strike_f": STRIKE_F, "hits": HITS, "upper_f": UPPER_F, "white": WHITE_F, "reveal_f": REVEAL_F,
+               "strike_f": STRIKE_F, "hits": HITS, "upper_f": UPPER_F, "final_f": UPPER_F, "final_side": "R", "white": WHITE_F, "reveal_f": REVEAL_F,
                "manga_f": MANGA_F, "hit_hitstop": HIT_HITSTOP, "hit_shake": HIT_SHAKE, "hit_scale": HIT_SCALE,
                "residus": report}, open(os.path.join(OUT, "scene.json"), "w"), indent=1)
     return a, b, aw, vw
