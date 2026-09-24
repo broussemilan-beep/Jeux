@@ -416,7 +416,7 @@ hiérarchie des effets et raconte l'impact. Fiche écrite avant d'animer :
 | rafale : caméra | 3 plans ; h3 et h4 filmés de −x, le dos de l'attaquant cache le poing | un plan par coup, **toujours du côté +x** (aucun passage de l'autre côté de l'axe) : haut, bas 3/4 arrière, plongée, profil franc pour h4 ; lente poussée dans chaque plan |
 | rafale : effets | le même effet complet (étoile, halo, étincelles, fumée) et un flash du corps entier sur les 4 coups | **hiérarchie** : h1 à h3 = éclat 2 f et un anneau blanc, rien d'autre ; h4 = effet moyen, flash du corps et **fond de vitesse** 0,1 s |
 | charge | plan de profil large | **plan rapproché de profil**, tête et bras qui vise, la victime au bout du regard ; lente poussée |
-| f150 | impact de 0,05 s puis explosion | **impact raconté** : contact 3 f, **noir + étoile**, **3 cartes** tirées de notre pose (silhouette inversée, encre hachurée, grand X), **blanc** ; l'animation est gelée 0,43 s pendant la séquence, puis le blanc se dissout sur un **plan très large** de la conséquence ; l'explosion sort du blanc |
+| f150 | impact de 0,05 s puis explosion | **impact raconté** : contact 3 f, **noir + étoile**, **3 cartes** tirées de notre pose (silhouette inversée, encre hachurée, **gros plan du poing** qui perce le cadre), **blanc** ; l'animation est gelée 0,43 s pendant la séquence, le blanc reste plein 0,02 s de plus puis se dissout sur un **plan très large** de la conséquence ; l'explosion sort du blanc |
 | aérien | — | inchangé |
 
 **Nouveau dans le lecteur.**
@@ -446,6 +446,15 @@ noir / blanc / noir.
 - **poing vers la caméra au contact** : dans l'axe du coup, le corps de la
   victime est toujours entre l'objectif et le poing. Le principe vit dans la
   1re carte, pas dans la caméra 3D.
+
+**Corrigé en regardant la vidéo à 60 i/s.**
+- La 3e carte était d'abord un grand X, le même que celui des planches de
+  l'aérien : le X revenait deux fois, et le vrai final (f298) perdait sa
+  signature. Elle est remplacée par le gros plan du poing ; le X reste
+  réservé à l'aérien.
+- Au premier instant après le gel, une image du plan du contact passait
+  sous le fondu blanc. Le blanc est maintenant tenu 0,02 s après le gel,
+  le temps d'atteindre la coupe de f151 (même règle en Luau, testée).
 
 **Découverte, pas corrigée.** En caméra « Jeu », la victime reste cachée
 derrière l'attaquant pendant presque toute la rafale, et l'éclat des coups de

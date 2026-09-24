@@ -171,7 +171,7 @@ check(cartesEv ~= nil and charge ~= nil and cartesEv.frame == charge.frame, "car
 local total = 0
 for _, st in cartesEv.sequence do total += st[2] end
 check(math.abs(total - charge.hitstop) < 1e-3, "cartes : la sequence dure exactement le gel (" .. total .. " s)")
-for _, c in { { 0.02, "contact", 0 }, { 0.10, "noir", 0 }, { 0.18, "carte", 1 }, { 0.25, "carte", 2 }, { 0.32, "carte", 3 }, { 0.40, "blanc", 3 }, { 0.47, "fondu", 3 } } do
+for _, c in { { 0.02, "contact", 0 }, { 0.10, "noir", 0 }, { 0.18, "carte", 1 }, { 0.25, "carte", 2 }, { 0.32, "carte", 3 }, { 0.40, "blanc", 3 }, { 0.44, "blanc", 3 }, { 0.47, "fondu", 3 } } do
 	local ph = DragonFist.cartePhase(cartesEv, c[1])
 	check(ph ~= nil and ph.kind == c[2] and (c[3] == 0 or ph.i == c[3]), "cartes : a " .. c[1] .. " s -> " .. c[2] .. (c[3] > 0 and (" " .. c[3]) or ""))
 end

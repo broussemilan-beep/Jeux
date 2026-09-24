@@ -64907,6 +64907,11 @@ function DragonFist.cartePhase(ev, age: number)
 		end
 		t += d
 	end
+	local hold = ev.tenue_blanc or 0
+	if age &lt; t + hold then
+		return { kind = "blanc", i = ci, u = 1 }
+	end
+	t += hold
 	if age &lt; t + ev.fade then
 		return { kind = "fondu", i = ci, u = (age - t) / ev.fade }
 	end
@@ -65300,7 +65305,7 @@ return {
 					"blanc",
 					0.08,
 				},
-			}, fade = 0.15 },
+			}, fade = 0.15, tenue_blanc = 0.02 },
 		{ frame = 151, kind = "impact", pos = { 0.147, 2.875, -6.561 }, dir = { -0.021, -0.093, -0.995 }, scale = 1.9, color = "#fff6dc", hitstop = 0.0, shake = 0.3, name = "coup_charge_souffle", tier = 3 },
 		{ frame = 151, kind = "ground_burst", pos = { 0.18, 0.05, -4.968 }, color = "#ffc53d", scale = 1.4 },
 		{ frame = 151, kind = "dome", pos = { 0.18, 0.05, -4.968 }, radius = 5.0, frames = 22, color = "#ffc53d" },

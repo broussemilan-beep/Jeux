@@ -37,7 +37,7 @@ Règle : l'effet est proportionnel au coup, jamais le même partout.
   tableau :
   - noir 6 f avec une petite étoile ;
   - 3 cartes de 4 f : silhouette inversée de **notre** pose, encre
-    hachurée, grand X ;
+    hachurée, grand X (remplacé ensuite par un gros plan du poing, voir plus bas) ;
   - blanc qui se dissout ;
   - l'animation est gelée pendant la séquence.
 - **f278-288 (plongée et écrasement)** : inchangé. C'est le vrai final de la
@@ -74,6 +74,7 @@ Le plan ci-dessus a changé trois fois au contact de l'image. Chaque essai a
 | rafale : caméra d'épaule du côté du bras qui frappe (un côté puis l'autre) | le dos et la tête de l'attaquant cachent le contact ; changer de côté à chaque coup traverse l'axe 4 fois | **tout du côté +x** : de là, les coups des deux bras se lisent, le bras part devant le torse (planche v5 : h1 et h2 déjà lisibles de +x, h3 et h4 cachés de −x) |
 | charge : très gros plan de face sur le regard | une tête R6 au sourire fixe qui remplit l'écran : comique | **plan rapproché de profil** : le regard se lit par l'orientation de la tête, la victime au bout |
 | coup : poing vers la caméra | le corps de la victime bouche l'axe du coup | **profil moyen** qui montre le trajet à plat ; le poing vers le lecteur vit dans la 1re carte |
+| 3e carte : grand X | sur la vidéo, le même X que les planches de l'aérien : il revient deux fois, le vrai final perd sa signature | **gros plan du poing** qui perce le cadre (le principe « poing vers le lecteur » trouve sa place là) ; le X reste à l'aérien |
 | cartes 4 f chacune | 3 cartes × 4 f + noir 6 f + blanc = 0,43 s de gel | gardé ; le gel est exactement la durée de la séquence (test Luau) |
 
 **Découverte.** En caméra de jeu (verrouillage d'épaule), la rafale ne se lit

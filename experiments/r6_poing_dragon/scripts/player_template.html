@@ -721,6 +721,9 @@
       if (kind === "carte") ci++;
       t += d;
     }
+    const hold = ev.tenue_blanc || 0;
+    if (age < t + hold) return { kind: "blanc", i: ci, u: 1 };
+    t += hold;
     return age < t + ev.fade ? { kind: "fondu", u: (age - t) / ev.fade } : null;
   }
   let fistScreen = () => [fx.width / 2, fx.height / 2];

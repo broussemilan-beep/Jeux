@@ -639,6 +639,11 @@ function DragonFist.cartePhase(ev, age: number)
 		end
 		t += d
 	end
+	local hold = ev.tenue_blanc or 0
+	if age < t + hold then
+		return { kind = "blanc", i = ci, u = 1 }
+	end
+	t += hold
 	if age < t + ev.fade then
 		return { kind = "fondu", i = ci, u = (age - t) / ev.fade }
 	end

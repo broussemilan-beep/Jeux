@@ -194,7 +194,10 @@ def events(aw, vw):
     gel = round(sum(x[1] for x in seq), 3)
     ev(u, "body_flash", who="attaquant", color=FLASH, frames=3)
     ev(u, "impact", pos=v3(p), dir=v3(d), scale=1.6, color=GOLD, hitstop=gel, shake=0.65, name="coup_charge", tier=3)
-    ev(u, "cartes", sequence=seq, fade=0.15)
+    # tenue_blanc : le blanc reste plein 0,02 s APRES le gel, le temps que
+    # l'animation atteigne f151 et la coupe vers le plan large (vu a 60 i/s :
+    # sans elle, 1 image du plan du contact passait sous le fondu)
+    ev(u, "cartes", sequence=seq, fade=0.15, tenue_blanc=0.02)
     # l'explosion APRES le choc (sakuga 12/32 clips) : 2e souffle dans l'axe du
     # coup, derriere la victime, et onde au sol ; elle sort du blanc
     ev(u + 1, "impact", pos=v3(p + 1.6 * d), dir=v3(d), scale=1.9, color=WHITE, hitstop=0.0, shake=0.3,

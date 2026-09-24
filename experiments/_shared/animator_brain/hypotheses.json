@@ -272,12 +272,13 @@
    "etalon_style": "manga_ultime",
    "sources": [
     "corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~22 clips",
-    "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)"
+    "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)",
+    "v6 : deux sequences de cartes dans une technique (f150, f298) -> chacune son vocabulaire ; le X repete effacait la signature du final (vu sur la video v6 a 60 i/s)"
    ],
    "mesure": "fiche:cartes d'impact + jugement visuel",
    "categorie": "mise_en_scene",
    "quand": "le 1-2 plus gros impacts d'une technique (ultime, coup final)",
-   "contre_indication": "sur chaque coup d'une rafale : l'effet s'use et plus rien n'est fort ; dans les refs, les coups legers n'en ont pas"
+   "contre_indication": "sur chaque coup d'une rafale : l'effet s'use et plus rien n'est fort ; dans les refs, les coups legers n'en ont pas ; reutiliser la meme carte sur deux temps forts d'une meme technique (le final perd sa signature)"
   },
   {
    "id": "silence_noir",
@@ -359,7 +360,8 @@
     "corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~9 clips",
     "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)",
     "image de Milan 8965d689 (planche OPM) : LE coup de Saitama = poing vers le lecteur, plus gros que la tete ; Umamusume 3D : meme principe en temps reel",
-    "essais v6 vus a l'ecran (captures/verification/2026-09-24-poing-dragon-v6-essais-camera-rejetes.png) : 'poing vers la camera' dans l'axe du coup -> le corps de la victime est TOUJOURS entre l'objectif et le poing (contrechamp par-dessus son epaule : son dos remplit 60 % du cadre) ; le principe vit dans la carte d'impact (silhouette du poing), pas dans la camera 3D"
+    "essais v6 vus a l'ecran (captures/verification/2026-09-24-poing-dragon-v6-essais-camera-rejetes.png) : 'poing vers la camera' dans l'axe du coup -> le corps de la victime est TOUJOURS entre l'objectif et le poing (contrechamp par-dessus son epaule : son dos remplit 60 % du cadre) ; le principe vit dans la carte d'impact (silhouette du poing), pas dans la camera 3D",
+    "v6 : applique en 3e CARTE (poing et avant-bras x3,2 qui percent le cadre) apres echec en camera 3D ; au passage, le grand X prevu la faisait doublon avec les planches de l'aerien -> une carte ne se reutilise pas entre deux temps forts d'une meme technique"
    ],
    "mesure": "jugement visuel",
    "categorie": "mise_en_scene",
