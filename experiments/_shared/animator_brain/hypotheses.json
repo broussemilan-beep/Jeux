@@ -176,7 +176,7 @@
     "tout"
    ],
    "confiance_principe": 0.8,
-   "poids_note": 0.395,
+   "poids_note": 0.64,
    "sources": [
     "12 principes de l'animation (arcs)",
     "auto-critique v4 : controle IK interpole en ligne droite"
@@ -225,7 +225,7 @@
     "tout"
    ],
    "confiance_principe": 0.6,
-   "poids_note": 0.731,
+   "poids_note": 0.5,
    "etalon_style": "universel",
    "sources": [
     "12 principes de l'animation (follow-through, overlapping action)",
@@ -261,8 +261,8 @@
   "universel": "principe d'animation"
  },
  "_calibration": {
-  "a": 0.65,
-  "b": 6.662,
+  "a": 0.715,
+  "b": 6.669,
   "n_notes": 3,
   "doc": "note = b + a * score ; reapprise a chaque reflexion"
  }
