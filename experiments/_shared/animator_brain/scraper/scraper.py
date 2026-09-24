@@ -46,6 +46,7 @@ REFS = os.environ.get("REFS_DIR", os.path.join(BRAIN, "corpus", "refs"))
 INDEX = os.path.join(REFS, "index.jsonl")
 SHEETS = os.environ.get("REFS_SHEETS", "/tmp/refs_sheets")        # planches : locales, jamais committees
 UA = "animator-brain-research/0.1 (usage personnel, fiches derivees uniquement)"
+MAX_MB = 60
 VIDEO_EXT = {"mp4", "webm", "gif", "mov", "mkv"}
 IMAGE_EXT = {"jpg", "jpeg", "png", "webp"}
 
@@ -100,7 +101,7 @@ class Http:
     def json(self, url):
         return json.loads(self.get(url).decode("utf-8"))
 
-    def download(self, url, path, max_mb=40):
+    def download(self, url, path, max_mb=MAX_MB):
         data = self.get(url, timeout=120)
         if len(data) > max_mb * 1e6:
             raise ValueError(f"fichier trop gros ({len(data) / 1e6:.0f} Mo)")
@@ -160,6 +161,8 @@ def sakuga(http, requetes, max_par_requete=10, pages=1, dry=False):
                 cle = f"sakuga:{p['id']}"
                 if ext not in VIDEO_EXT or cle in seen:
                     continue
+                if (p.get("file_size") or 0) > MAX_MB * 1e6:      # trop gros : on ne le telecharge meme pas
+                    continue
                 meta = {"id": p["id"], "tags": p.get("tags", ""), "score": p.get("score"),
                         "source_oeuvre": p.get("source", ""), "url": f"{base}/post/show/{p['id']}",
                         "requete": rq["tags"], "pourquoi": rq["pourquoi"]}
@@ -178,6 +181,55 @@ def sakuga(http, requetes, max_par_requete=10, pages=1, dry=False):
                     print(f"  saute {cle} : {e}")
                 finally:
                     shutil.rmtree(tmp, ignore_errors=True)
+    return done
+
+
+# ------------------------------------------------------------------ danbooru (clips animes)
+
+def danbooru(http, requetes, max_par_requete=10, dry=False):
+    """Posts animes de Danbooru. Le filtre rating:g (general) est IMPOSE ici,
+    quelle que soit la requete : aucun contenu adulte n'entre dans le corpus."""
+    seen = index_load()
+    base = "https://danbooru.donmai.us"
+    done = []
+    for rq in requetes:
+        tags = " ".join(t for t in rq["tags"].split() if not t.startswith("rating:"))
+        # un visiteur anonyme a droit a 2 etiquettes (rating: est gratuit,
+        # order: ne l'est pas) : on trie par score de notre cote
+        tags = " ".join(t for t in tags.split() if not t.startswith("order:"))
+        tags = f"{tags} animated rating:g"
+        posts = []
+        for page in (1, 2):
+            posts += http.json(f"{base}/posts.json?" + urllib.parse.urlencode({"tags": tags, "limit": 100, "page": page}))
+        posts.sort(key=lambda p: -(p.get("score") or 0))
+        n = 0
+        for p in posts:
+            if n >= max_par_requete:
+                break
+            ext = (p.get("file_ext") or "").lower()
+            cle = f"danbooru:{p.get('id')}"
+            if p.get("rating") != "g" or ext not in VIDEO_EXT or cle in seen or not p.get("file_url"):
+                continue
+            if (p.get("file_size") or 0) > MAX_MB * 1e6:
+                continue
+            meta = {"id": p["id"], "tags": p.get("tag_string", ""), "score": p.get("score"),
+                    "source_oeuvre": p.get("tag_string_copyright", ""), "artiste": p.get("tag_string_artist", ""),
+                    "url": f"{base}/posts/{p['id']}", "requete": rq["tags"], "pourquoi": rq["pourquoi"]}
+            if dry:
+                done.append(meta)
+                n += 1
+                continue
+            tmp = tempfile.mkdtemp()
+            try:
+                f = http.download(p["file_url"], os.path.join(tmp, f"{p['id']}.{ext}"))
+                _analyse_et_range(f, "danbooru", cle, meta)
+                seen[cle] = True
+                done.append(meta)
+                n += 1
+            except Exception as e:  # noqa: BLE001
+                print(f"  saute {cle} : {e}")
+            finally:
+                shutil.rmtree(tmp, ignore_errors=True)
     return done
 
 
@@ -299,27 +351,25 @@ def local(paths, source="milan"):
 
 def classement(top=15):
     """Classe les fiches pour MA revue (le jugement des poses se fait a
-    l'oeil) : score de la source normalise + interet mesure. Tant que le
-    critique n'a pas appris sur les choix de Milan, c'est un tri, pas un
-    verdict de qualite."""
+    l'oeil) par le score de la source, normalise par source. L'« interet »
+    heuristique de clip_analyzer n'entre PLUS dans le classement : confronte
+    aux premiers vrais clips (2026-09-24), il donnait 74/100 a notre v1 et
+    45-51 a des plans de Yutaka Nakamura -- il recompense les tenues et le
+    rythme d'impacts, pas la qualite. Il reste affiche pour information."""
     rows = [r for r in index_load().values()]
     if not rows:
         return []
     by_src = {}
     for r in rows:
         by_src.setdefault(r["source"], []).append(r.get("score_source") or 0)
-    ranked = []
-    for r in rows:
-        s = by_src[r["source"]]
-        rel = (r.get("score_source") or 0) / max(1, max(s))
-        ranked.append((0.6 * rel + 0.4 * (r["interet"] or 0) / 100, r))
+    ranked = [((r.get("score_source") or 0) / max(1, max(by_src[r["source"]])), r) for r in rows]
     ranked.sort(key=lambda x: -x[0])
     return [(round(v, 3), r) for v, r in ranked[:top]]
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["acces", "sakuga", "youtube", "images", "local", "classement"])
+    ap.add_argument("cmd", choices=["acces", "sakuga", "danbooru", "youtube", "images", "local", "classement"])
     ap.add_argument("paths", nargs="*")
     ap.add_argument("--max", type=int, default=10)
     ap.add_argument("--requete")
@@ -338,6 +388,9 @@ def main():
         rq = [r for r in src["sakugabooru"]["requetes"] if not a.requete or r["tags"] == a.requete]
         for m in sakuga(Http(), rq, a.max, dry=a.dry):
             print(f"  + sakuga {m['id']} score {m['score']} ({m['requete']})")
+    elif a.cmd == "danbooru":
+        for m in danbooru(Http(), src["danbooru"]["requetes"], a.max, dry=a.dry):
+            print(f"  + danbooru {m['id']} score {m['score']} ({m['requete']})")
     elif a.cmd == "youtube":
         for m in youtube(src["youtube"]["requetes"], a.max, src["youtube"]["extrait_s"], dry=a.dry):
             print(f"  + youtube {m['id']} {m.get('titre')}")

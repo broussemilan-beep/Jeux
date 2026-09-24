@@ -137,13 +137,14 @@
    "portee": [
     "impact"
    ],
-   "confiance_principe": 0.4,
+   "confiance_principe": 0.3,
    "poids_note": 0.64,
    "sources": [
     "IMPACT HAVEN (mesure)",
     "coup chapeau LeftRight2601 (mesure)",
     "Milan v1 : manque de puissance (piste)",
-    "fiches des refs (2026-09-24) : 3 refs sur 9 avec cartes d'impact le montrent (coup chapeau, serious punch 2, IMPACT HAVEN) ; Black Flash, Rewind Clock, Serious Punch TSB non -> depend du style, pas universel"
+    "fiches des refs (2026-09-24) : 3 refs sur 9 avec cartes d'impact le montrent (coup chapeau, serious punch 2, IMPACT HAVEN) ; Black Flash, Rewind Clock, Serious Punch TSB non -> depend du style, pas universel",
+    "sakugabooru (2026-09-24, fighting impact_frames, 1ers clips) : 0 sur 4 clips avec impacts (Nakamura, OPM, MHA, One Piece) -> 3 refs sur 13 au total : effet de style, pas principe"
    ],
    "mesure": "fiche:impacts.profil_autour.tenue_avant_choc",
    "etalon_style": "manga_ultime",
