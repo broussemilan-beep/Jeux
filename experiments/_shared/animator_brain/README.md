@@ -195,3 +195,15 @@ l'air seulement. Preuves (même fenêtre, même échelle) :
   l'organicité est garantie par construction (`organic_keys`), pas mesurée.
 - `pops` distingue discontinuité et geste vif par la **largeur** du pic
   d'accélération. Un geste très court voulu doit être déclaré.
+
+## Corpus et verdict calibré (2026-09-24)
+
+`corpus.py` lit de vraies animations Roblox (`.rbxm`), `taxonomy.py` les range
+par catégorie, `build_corpus.py` produit les distributions
+(`corpus/categories.json`), et `audit.calibrated_verdict()` compare une
+animation à la plage pro de sa catégorie.
+
+Premier constat : les 19 animations du pack premium échouent aux seuils fixes
+de `TARGETS` (7 à 14 critères sur 21-22). Ces seuils ne valent que pour la
+catégorie « cinématique » ; les sections 4 et 5 de ce README ont été mesurées
+avec eux. Détail et écart chiffré de nos coups : `corpus/README.md`.

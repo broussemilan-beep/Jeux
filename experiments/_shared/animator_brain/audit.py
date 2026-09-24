@@ -465,6 +465,11 @@ def frozen_fraction(clip, sig, ang_eps=3.0, lin_eps=0.05, windows=None):
 # ---------------------------------------------------------------------
 TARGETS = {
     # (description, fonction de verdict sur la valeur) -- voir README
+    # ATTENTION (2026-09-24) : seuils NON calibres, ecrits pour la cinematique
+    # du trou noir. Le corpus pro (build_corpus.py) les contredit pour le
+    # combat de jeu : tete synchrone ou en avance du torse, torse et tete sur
+    # un axe dominant (planarite ~0,96), pics souvent synchrones. Pour une
+    # categorie du corpus, utiliser calibrated_verdict().
     "overlap_sync_fraction_max": 0.35,   # au plus ~1/3 des pics enfants pile synchrones du parent
     "overlap_head_lag_frames": (1.0, 4.0),
     "overlap_limb_lag_frames": (1.0, 6.0),
@@ -584,3 +589,38 @@ def format_report(report):
 def save_json(report, path):
     with open(path, "w") as f:
         json.dump(report, f, indent=2, ensure_ascii=False)
+
+
+# ---------------------------------------------------------------------
+# Verdict CALIBRE par categorie (corpus/categories.json, build_corpus.py)
+
+def calibrated_verdict(report_or_values, category, stats=None, slack=0.1):
+    """Compare chaque mesure a la plage [min, max] des animations PRO de la
+    meme categorie, elargie de `slack` x |mediane|. Remplace les seuils
+    fixes de TARGETS pour toute categorie du corpus : le 2026-09-24, les 19
+    animations du pack premium ont echoue a TARGETS (7 a 14 criteres sur 21-22),
+    preuve que ces seuils, ecrits pour une cinematique « organique »,
+    ne valent pas pour du combat de jeu. Retourne [(mesure, valeur, plage,
+    statut)] avec statut "dans_la_plage" / "hors_plage" / "fragile" (moins
+    de taxonomy.MIN_EXAMPLES exemples)."""
+    import json
+    import os
+    if stats is None:
+        stats = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "corpus", "categories.json")))
+    cat = stats.get(category)
+    if cat is None:
+        return [("categorie", category, "absente du corpus", "fragile")]
+    if isinstance(report_or_values, dict) and "verdict" in report_or_values:
+        values = {"audit." + r["metric"]: r["value"] for r in report_or_values["verdict"]}
+    else:
+        values = report_or_values
+    rows = []
+    for k, v in values.items():
+        ref = cat["mesures"].get(k)
+        if ref is None or not isinstance(v, (int, float)):
+            continue
+        pad = slack * abs(ref["mediane"])
+        lo, hi = ref["min"] - pad, ref["max"] + pad
+        status = "fragile" if cat["fragile"] else ("dans_la_plage" if lo <= v <= hi else "hors_plage")
+        rows.append((k, v, (round(lo, 3), round(hi, 3), ref["mediane"]), status))
+    return rows

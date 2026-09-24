@@ -1,0 +1,1196 @@
+[
+ {
+  "source": "nos_protos",
+  "nom": "r6_hit_combo/attaquant",
+  "categorie": "cinematique",
+  "timing": {
+   "duree_s": 2.85,
+   "n_frames": 87,
+   "boucle": false,
+   "parts_ignorees_poids_nul": [],
+   "energie": {
+    "pic_deg_s": 3854.0,
+    "mediane_deg_s": 323.1,
+    "contraste_pic_sur_mediane": 11.93,
+    "fraction_quasi_tenue": 0.563,
+    "fraction_rapide": 0.092
+   },
+   "poses_cles_par_s": 3.16,
+   "mouvements": [
+    {
+     "debut_f60": 0.0,
+     "fin_f60": 32.0,
+     "fin_active_f60": 32.0,
+     "main_vers_avant_max_studs_s": 41.0,
+     "pic_energie_rel": 0.27,
+     "main_max_studs_s": 44.0,
+     "ordre_des_pics": [
+      [
+       "Head",
+       30.0
+      ],
+      [
+       "Left Arm",
+       30.0
+      ],
+      [
+       "Torso",
+       30.0
+      ]
+     ]
+    },
+    {
+     "debut_f60": 32.0,
+     "fin_f60": 60.0,
+     "fin_active_f60": 50.0,
+     "main_vers_avant_max_studs_s": 5.4,
+     "pic_energie_rel": 0.31,
+     "main_max_studs_s": 20.3,
+     "ordre_des_pics": [
+      [
+       "Left Arm",
+       0.0
+      ],
+      [
+       "Right Arm",
+       8.0
+      ],
+      [
+       "Head",
+       14.0
+      ],
+      [
+       "Torso",
+       14.0
+      ],
+      [
+       "Right Leg",
+       28.0
+      ]
+     ]
+    },
+    {
+     "debut_f60": 60.0,
+     "fin_f60": 68.0,
+     "fin_active_f60": 66.0,
+     "main_vers_avant_max_studs_s": 38.4,
+     "pic_energie_rel": 1.0,
+     "main_max_studs_s": 43.9,
+     "ordre_des_pics": [
+      [
+       "Head",
+       4.0
+      ],
+      [
+       "Left Arm",
+       4.0
+      ],
+      [
+       "Left Leg",
+       4.0
+      ],
+      [
+       "Right Leg",
+       4.0
+      ],
+      [
+       "Torso",
+       4.0
+      ],
+      [
+       "Right Arm",
+       6.0
+      ]
+     ]
+    },
+    {
+     "debut_f60": 68.0,
+     "fin_f60": 102.0,
+     "fin_active_f60": 84.0,
+     "main_vers_avant_max_studs_s": 19.3,
+     "pic_energie_rel": 0.63,
+     "main_max_studs_s": 25.0,
+     "ordre_des_pics": [
+      [
+       "Right Arm",
+       0.0
+      ],
+      [
+       "Left Arm",
+       4.0
+      ],
+      [
+       "Left Leg",
+       4.0
+      ],
+      [
+       "Right Leg",
+       4.0
+      ],
+      [
+       "Head",
+       6.0
+      ],
+      [
+       "Torso",
+       6.0
+      ]
+     ]
+    },
+    {
+     "debut_f60": 102.0,
+     "fin_f60": 110.0,
+     "fin_active_f60": 108.0,
+     "main_vers_avant_max_studs_s": 27.3,
+     "pic_energie_rel": 0.94,
+     "main_max_studs_s": 35.0,
+     "ordre_des_pics": [
+      [
+       "Head",
+       4.0
+      ],
+      [
+       "Left Leg",
+       4.0
+      ],
+      [
+       "Right Leg",
+       4.0
+      ],
+      [
+       "Torso",
+       4.0
+      ],
+      [
+       "Left Arm",
+       6.0
+      ]
+     ]
+    },
+    {
+     "debut_f60": 110.0,
+     "fin_f60": 122.0,
+     "fin_active_f60": 122.0,
+     "main_vers_avant_max_studs_s": 9.5,
+     "pic_energie_rel": 0.5,
+     "main_max_studs_s": 31.1,
+     "ordre_des_pics": [
+      [
+       "Left Arm",
+       0.0
+      ],
+      [
+       "Head",
+       12.0
+      ]
+     ]
+    },
+    {
+     "debut_f60": 122.0,
+     "fin_f60": 171.0,
+     "fin_active_f60": 160.0,
+     "main_vers_avant_max_studs_s": 17.1,
+     "pic_energie_rel": 0.24,
+     "main_max_studs_s": 19.0,
+     "ordre_des_pics": [
+      [
+       "Head",
+       4.0
+      ],
+      [
+       "Left Arm",
+       6.0
+      ],
+      [
+       "Torso",
+       6.0
+      ]
+     ]
+    }
+   ],
+   "phases": {
+    "anticipation_f60": 60.0,
+    "action_f60": 6.0,
+    "recuperation_ou_tenue_f60": 105.0,
+    "fraction_anticipation": 0.351,
+    "fraction_recuperation": 0.614,
+    "qui_mene_l_action": [
+     "Head",
+     "Left Arm",
+     "Left Leg",
+     "Right Leg",
+     "Torso",
+     "Right Arm"
+    ]
+   },
+   "membres": {
+    "Torso": {
+     "vitesse_max_deg_s": 892.7,
+     "pic_a_s": 1.767,
+     "amplitude_vs_repos_deg": 57.7,
+     "amplitude_vs_debut_deg": 57.6
+    },
+    "Head": {
+     "vitesse_max_deg_s": 461.0,
+     "pic_a_s": 1.767,
+     "amplitude_vs_repos_deg": 30.2,
+     "amplitude_vs_debut_deg": 28.8
+    },
+    "Right Arm": {
+     "vitesse_max_deg_s": 1768.6,
+     "pic_a_s": 1.1,
+     "amplitude_vs_repos_deg": 90.1,
+     "amplitude_vs_debut_deg": 147.1
+    },
+    "Left Arm": {
+     "vitesse_max_deg_s": 1691.8,
+     "pic_a_s": 1.8,
+     "amplitude_vs_repos_deg": 119.4,
+     "amplitude_vs_debut_deg": 90.6
+    },
+    "Right Leg": {
+     "vitesse_max_deg_s": 354.3,
+     "pic_a_s": 1.067,
+     "amplitude_vs_repos_deg": 30.5,
+     "amplitude_vs_debut_deg": 21.9
+    },
+    "Left Leg": {
+     "vitesse_max_deg_s": 264.7,
+     "pic_a_s": 1.767,
+     "amplitude_vs_repos_deg": 26.0,
+     "amplitude_vs_debut_deg": 19.3
+    }
+   },
+   "mains_vitesse_max_studs_s": {
+    "Right Arm": 43.9,
+    "Left Arm": 44.0
+   },
+   "deplacement_torse_studs": {
+    "x": 0.0,
+    "y": 0.23,
+    "z": 5.75
+   },
+   "torse_vitesse_max_studs_s": 35.6
+  },
+  "audit": {
+   "overlap sync Head <- Torso": 0.833,
+   "overlap retard median Head <- Torso": 0.0,
+   "overlap sync Left Arm <- Torso": 0.333,
+   "overlap retard median Left Arm <- Torso": -2.5,
+   "overlap sync Left Leg <- Torso": 0.25,
+   "overlap retard median Left Leg <- Torso": -0.5,
+   "overlap sync Right Arm <- Torso": 0.0,
+   "overlap retard median Right Arm <- Torso": -1.0,
+   "overlap sync Right Leg <- Torso": 0.5,
+   "overlap retard median Right Leg <- Torso": 0.0,
+   "arrets simultanes": 0.833,
+   "miroir quasi exact Right Arm/Left Arm": 0.08,
+   "correlation vitesses G/D Right Arm/Left Arm": 0.171,
+   "miroir quasi exact Right Leg/Left Leg": 0.322,
+   "correlation vitesses G/D Right Leg/Left Leg": 0.721,
+   "planarite Torso": 0.943,
+   "planarite Head": 0.962,
+   "glissement pied Right Leg": 0.0,
+   "glissement pied Left Leg": 0.0,
+   "discontinuites de vitesse hors snaps declares": 4,
+   "holds morts": 0.161
+  },
+  "audit_ok": {
+   "ok": 9,
+   "total": 21
+  }
+ },
+ {
+  "source": "nos_protos",
+  "nom": "r6_hit_combo/mannequin",
+  "categorie": "cinematique",
+  "timing": {
+   "duree_s": 2.85,
+   "n_frames": 87,
+   "boucle": false,
+   "parts_ignorees_poids_nul": [],
+   "energie": {
+    "pic_deg_s": 2360.1,
+    "mediane_deg_s": 97.4,
+    "contraste_pic_sur_mediane": 24.23,
+    "fraction_quasi_tenue": 0.69,
+    "fraction_rapide": 0.138
+   },
+   "poses_cles_par_s": 3.16,
+   "mouvements": [
+    {
+     "debut_f60": 0.0,
+     "fin_f60": 60.0,
+     "fin_active_f60": 30.0,
+     "main_vers_avant_max_studs_s": 1.5,
+     "pic_energie_rel": 0.47,
+     "main_max_studs_s": 8.0,
+     "ordre_des_pics": [
+      [
+       "Left Arm",
+       28.0
+      ],
+      [
+       "Right Leg",
+       28.0
+      ],
+      [
+       "Head",
+       32.0
+      ],
+      [
+       "Right Arm",
+       32.0
+      ],
+      [
+       "Torso",
+       32.0
+      ]
+     ]
+    },
+    {
+     "debut_f60": 60.0,
+     "fin_f60": 96.0,
+     "fin_active_f60": 66.0,
+     "main_vers_avant_max_studs_s": 5.6,
+     "pic_energie_rel": 1.0,
+     "main_max_studs_s": 15.1,
+     "ordre_des_pics": [
+      [
+       "Left Leg",
+       4.0
+      ],
+      [
+       "Right Arm",
+       4.0
+      ],
+      [
+       "Right Leg",
+       4.0
+      ],
+      [
+       "Left Arm",
+       8.0
+      ],
+      [
+       "Head",
+       12.0
+      ],
+      [
+       "Torso",
+       12.0
+      ]
+     ]
+    },
+    {
+     "debut_f60": 96.0,
+     "fin_f60": 126.0,
+     "fin_active_f60": 118.0,
+     "main_vers_avant_max_studs_s": 15.5,
+     "pic_energie_rel": 0.58,
+     "main_max_studs_s": 17.5,
+     "ordre_des_pics": [
+      [
+       "Left Arm",
+       10.0
+      ],
+      [
+       "Left Leg",
+       10.0
+      ],
+      [
+       "Right Arm",
+       10.0
+      ],
+      [
+       "Right Leg",
+       10.0
+      ],
+      [
+       "Head",
+       18.0
+      ],
+      [
+       "Torso",
+       20.0
+      ]
+     ]
+    },
+    {
+     "debut_f60": 126.0,
+     "fin_f60": 171.0,
+     "fin_active_f60": 154.0,
+     "main_vers_avant_max_studs_s": 4.1,
+     "pic_energie_rel": 0.66,
+     "main_max_studs_s": 11.8,
+     "ordre_des_pics": [
+      [
+       "Left Arm",
+       16.0
+      ],
+      [
+       "Left Leg",
+       16.0
+      ],
+      [
+       "Right Arm",
+       16.0
+      ],
+      [
+       "Right Leg",
+       16.0
+      ],
+      [
+       "Head",
+       18.0
+      ],
+      [
+       "Torso",
+       22.0
+      ]
+     ]
+    }
+   ],
+   "phases": {
+    "anticipation_f60": 60.0,
+    "action_f60": 6.0,
+    "recuperation_ou_tenue_f60": 105.0,
+    "fraction_anticipation": 0.351,
+    "fraction_recuperation": 0.614,
+    "qui_mene_l_action": [
+     "Left Leg",
+     "Right Arm",
+     "Right Leg",
+     "Left Arm",
+     "Head",
+     "Torso"
+    ]
+   },
+   "membres": {
+    "Torso": {
+     "vitesse_max_deg_s": 245.0,
+     "pic_a_s": 1.933,
+     "amplitude_vs_repos_deg": 180.0,
+     "amplitude_vs_debut_deg": 53.2
+    },
+    "Head": {
+     "vitesse_max_deg_s": 381.3,
+     "pic_a_s": 1.9,
+     "amplitude_vs_repos_deg": 71.9,
+     "amplitude_vs_debut_deg": 71.9
+    },
+    "Right Arm": {
+     "vitesse_max_deg_s": 938.4,
+     "pic_a_s": 1.067,
+     "amplitude_vs_repos_deg": 155.5,
+     "amplitude_vs_debut_deg": 150.7
+    },
+    "Left Arm": {
+     "vitesse_max_deg_s": 957.8,
+     "pic_a_s": 1.133,
+     "amplitude_vs_repos_deg": 158.0,
+     "amplitude_vs_debut_deg": 153.2
+    },
+    "Right Leg": {
+     "vitesse_max_deg_s": 130.0,
+     "pic_a_s": 1.067,
+     "amplitude_vs_repos_deg": 28.2,
+     "amplitude_vs_debut_deg": 26.2
+    },
+    "Left Leg": {
+     "vitesse_max_deg_s": 197.0,
+     "pic_a_s": 1.767,
+     "amplitude_vs_repos_deg": 23.4,
+     "amplitude_vs_debut_deg": 20.6
+    }
+   },
+   "mains_vitesse_max_studs_s": {
+    "Right Arm": 15.1,
+    "Left Arm": 17.5
+   },
+   "deplacement_torse_studs": {
+    "x": 0.0,
+    "y": 0.41,
+    "z": 3.0
+   },
+   "torse_vitesse_max_studs_s": 8.7
+  },
+  "audit": {
+   "overlap sync Head <- Torso": 0.4,
+   "overlap retard median Head <- Torso": 0.0,
+   "overlap sync Left Arm <- Torso": 0.0,
+   "overlap retard median Left Arm <- Torso": -2.0,
+   "overlap sync Left Leg <- Torso": 0.0,
+   "overlap retard median Left Leg <- Torso": -3.0,
+   "overlap sync Right Arm <- Torso": 0.2,
+   "overlap retard median Right Arm <- Torso": -3.0,
+   "overlap sync Right Leg <- Torso": 0.0,
+   "overlap retard median Right Leg <- Torso": -3.0,
+   "arrets simultanes": 0.235,
+   "miroir quasi exact Right Arm/Left Arm": 0.253,
+   "correlation vitesses G/D Right Arm/Left Arm": 1.0,
+   "miroir quasi exact Right Leg/Left Leg": 0.172,
+   "correlation vitesses G/D Right Leg/Left Leg": 0.884,
+   "planarite Torso": 0.607,
+   "planarite Head": 0.618,
+   "glissement pied Right Leg": 0.0,
+   "glissement pied Left Leg": 0.0,
+   "discontinuites de vitesse hors snaps declares": 16,
+   "holds morts": 0.161
+  },
+  "audit_ok": {
+   "ok": 12,
+   "total": 21
+  }
+ },
+ {
+  "source": "nos_protos",
+  "nom": "r6_directional_punch/attaquant",
+  "categorie": "cinematique",
+  "timing": {
+   "duree_s": 3.05,
+   "n_frames": 93,
+   "boucle": false,
+   "parts_ignorees_poids_nul": [],
+   "energie": {
+    "pic_deg_s": 2920.5,
+    "mediane_deg_s": 176.4,
+    "contraste_pic_sur_mediane": 16.55,
+    "fraction_quasi_tenue": 0.763,
+    "fraction_rapide": 0.054
+   },
+   "poses_cles_par_s": 2.3,
+   "mouvements": [
+    {
+     "debut_f60": 0.0,
+     "fin_f60": 142.0,
+     "fin_active_f60": 132.0,
+     "main_vers_avant_max_studs_s": 49.6,
+     "pic_energie_rel": 1.0,
+     "main_max_studs_s": 52.4,
+     "ordre_des_pics": [
+      [
+       "Head",
+       126.0
+      ],
+      [
+       "Torso",
+       126.0
+      ],
+      [
+       "Left Arm",
+       128.0
+      ],
+      [
+       "Left Leg",
+       128.0
+      ],
+      [
+       "Right Leg",
+       128.0
+      ],
+      [
+       "Right Arm",
+       130.0
+      ]
+     ]
+    },
+    {
+     "debut_f60": 142.0,
+     "fin_f60": 183.0,
+     "fin_active_f60": 174.0,
+     "main_vers_avant_max_studs_s": 8.0,
+     "pic_energie_rel": 0.29,
+     "main_max_studs_s": 18.8,
+     "ordre_des_pics": [
+      [
+       "Head",
+       4.0
+      ],
+      [
+       "Right Arm",
+       8.0
+      ],
+      [
+       "Torso",
+       10.0
+      ],
+      [
+       "Left Leg",
+       28.0
+      ]
+     ]
+    }
+   ],
+   "phases": {
+    "anticipation_f60": 0.0,
+    "action_f60": 132.0,
+    "recuperation_ou_tenue_f60": 51.0,
+    "fraction_anticipation": 0.0,
+    "fraction_recuperation": 0.279,
+    "qui_mene_l_action": [
+     "Head",
+     "Torso",
+     "Left Arm",
+     "Left Leg",
+     "Right Leg",
+     "Right Arm"
+    ]
+   },
+   "membres": {
+    "Torso": {
+     "vitesse_max_deg_s": 474.6,
+     "pic_a_s": 2.1,
+     "amplitude_vs_repos_deg": 54.2,
+     "amplitude_vs_debut_deg": 54.7
+    },
+    "Head": {
+     "vitesse_max_deg_s": 218.5,
+     "pic_a_s": 2.1,
+     "amplitude_vs_repos_deg": 25.5,
+     "amplitude_vs_debut_deg": 28.9
+    },
+    "Right Arm": {
+     "vitesse_max_deg_s": 1772.5,
+     "pic_a_s": 2.167,
+     "amplitude_vs_repos_deg": 98.6,
+     "amplitude_vs_debut_deg": 120.0
+    },
+    "Left Arm": {
+     "vitesse_max_deg_s": 480.5,
+     "pic_a_s": 2.133,
+     "amplitude_vs_repos_deg": 62.9,
+     "amplitude_vs_debut_deg": 63.1
+    },
+    "Right Leg": {
+     "vitesse_max_deg_s": 236.1,
+     "pic_a_s": 2.133,
+     "amplitude_vs_repos_deg": 25.0,
+     "amplitude_vs_debut_deg": 22.3
+    },
+    "Left Leg": {
+     "vitesse_max_deg_s": 72.0,
+     "pic_a_s": 2.833,
+     "amplitude_vs_repos_deg": 27.1,
+     "amplitude_vs_debut_deg": 22.0
+    }
+   },
+   "mains_vitesse_max_studs_s": {
+    "Right Arm": 52.4,
+    "Left Arm": 22.3
+   },
+   "deplacement_torse_studs": {
+    "x": 0.0,
+    "y": 0.18,
+    "z": 4.05
+   },
+   "torse_vitesse_max_studs_s": 26.1
+  },
+  "audit": {
+   "overlap sync Head <- Torso": 0.5,
+   "overlap retard median Head <- Torso": -1.5,
+   "overlap sync Left Arm <- Torso": 0.0,
+   "overlap retard median Left Arm <- Torso": -5.5,
+   "overlap sync Left Leg <- Torso": 0.0,
+   "overlap retard median Left Leg <- Torso": 5.0,
+   "overlap sync Right Arm <- Torso": 0.0,
+   "overlap retard median Right Arm <- Torso": 0.5,
+   "overlap sync Right Leg <- Torso": 0.0,
+   "overlap retard median Right Leg <- Torso": 5.0,
+   "arrets simultanes": 0.0,
+   "miroir quasi exact Right Arm/Left Arm": 0.215,
+   "correlation vitesses G/D Right Arm/Left Arm": 0.608,
+   "miroir quasi exact Right Leg/Left Leg": 0.0,
+   "correlation vitesses G/D Right Leg/Left Leg": 0.591,
+   "planarite Torso": 0.887,
+   "planarite Head": 0.789,
+   "glissement pied Right Leg": 0.0,
+   "glissement pied Left Leg": 0.0,
+   "discontinuites de vitesse hors snaps declares": 2,
+   "holds morts": 0.108
+  },
+  "audit_ok": {
+   "ok": 14,
+   "total": 21
+  }
+ },
+ {
+  "source": "nos_protos",
+  "nom": "r6_directional_punch/mannequin",
+  "categorie": "cinematique",
+  "timing": {
+   "duree_s": 3.05,
+   "n_frames": 93,
+   "boucle": false,
+   "parts_ignorees_poids_nul": [],
+   "energie": {
+    "pic_deg_s": 4058.8,
+    "mediane_deg_s": 0.0,
+    "contraste_pic_sur_mediane": 4058782858416.7,
+    "fraction_quasi_tenue": 0.871,
+    "fraction_rapide": 0.032
+   },
+   "poses_cles_par_s": 0.98,
+   "mouvements": [
+    {
+     "debut_f60": 0.0,
+     "fin_f60": 183.0,
+     "fin_active_f60": 132.0,
+     "main_vers_avant_max_studs_s": 6.5,
+     "pic_energie_rel": 1.0,
+     "main_max_studs_s": 21.2,
+     "ordre_des_pics": [
+      [
+       "Head",
+       130.0
+      ],
+      [
+       "Left Arm",
+       130.0
+      ],
+      [
+       "Left Leg",
+       130.0
+      ],
+      [
+       "Right Arm",
+       130.0
+      ],
+      [
+       "Right Leg",
+       130.0
+      ],
+      [
+       "Torso",
+       134.0
+      ]
+     ]
+    }
+   ],
+   "phases": {
+    "anticipation_f60": 0.0,
+    "action_f60": 132.0,
+    "recuperation_ou_tenue_f60": 51.0,
+    "fraction_anticipation": 0.0,
+    "fraction_recuperation": 0.279,
+    "qui_mene_l_action": [
+     "Head",
+     "Left Arm",
+     "Left Leg",
+     "Right Arm",
+     "Right Leg",
+     "Torso"
+    ]
+   },
+   "membres": {
+    "Torso": {
+     "vitesse_max_deg_s": 331.5,
+     "pic_a_s": 2.233,
+     "amplitude_vs_repos_deg": 180.0,
+     "amplitude_vs_debut_deg": 33.0
+    },
+    "Head": {
+     "vitesse_max_deg_s": 392.5,
+     "pic_a_s": 2.167,
+     "amplitude_vs_repos_deg": 39.2,
+     "amplitude_vs_debut_deg": 39.2
+    },
+    "Right Arm": {
+     "vitesse_max_deg_s": 1486.6,
+     "pic_a_s": 2.167,
+     "amplitude_vs_repos_deg": 153.5,
+     "amplitude_vs_debut_deg": 148.7
+    },
+    "Left Arm": {
+     "vitesse_max_deg_s": 1506.7,
+     "pic_a_s": 2.167,
+     "amplitude_vs_repos_deg": 155.5,
+     "amplitude_vs_debut_deg": 150.7
+    },
+    "Right Leg": {
+     "vitesse_max_deg_s": 193.0,
+     "pic_a_s": 2.167,
+     "amplitude_vs_repos_deg": 20.6,
+     "amplitude_vs_debut_deg": 19.3
+    },
+    "Left Leg": {
+     "vitesse_max_deg_s": 148.6,
+     "pic_a_s": 2.167,
+     "amplitude_vs_repos_deg": 17.2,
+     "amplitude_vs_debut_deg": 14.9
+    }
+   },
+   "mains_vitesse_max_studs_s": {
+    "Right Arm": 21.2,
+    "Left Arm": 14.1
+   },
+   "deplacement_torse_studs": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 1.9
+   },
+   "torse_vitesse_max_studs_s": 6.2
+  },
+  "audit": {
+   "overlap sync Head <- Torso": 0.0,
+   "overlap retard median Head <- Torso": -1.0,
+   "overlap sync Left Arm <- Torso": 0.0,
+   "overlap retard median Left Arm <- Torso": -2.5,
+   "overlap sync Left Leg <- Torso": 0.0,
+   "overlap retard median Left Leg <- Torso": -2.5,
+   "overlap sync Right Arm <- Torso": 0.0,
+   "overlap retard median Right Arm <- Torso": -2.5,
+   "overlap sync Right Leg <- Torso": 0.0,
+   "overlap retard median Right Leg <- Torso": -2.5,
+   "arrets simultanes": 0.833,
+   "miroir quasi exact Right Arm/Left Arm": 0.72,
+   "correlation vitesses G/D Right Arm/Left Arm": 1.0,
+   "miroir quasi exact Right Leg/Left Leg": 0.72,
+   "correlation vitesses G/D Right Leg/Left Leg": 0.96,
+   "planarite Torso": 0.998,
+   "planarite Head": 0.998,
+   "glissement pied Right Leg": 0.0,
+   "glissement pied Left Leg": 0.0,
+   "discontinuites de vitesse hors snaps declares": 12,
+   "holds morts": 0.699
+  },
+  "audit_ok": {
+   "ok": 7,
+   "total": 21
+  }
+ },
+ {
+  "source": "nos_protos",
+  "nom": "r6_black_hole",
+  "categorie": "cinematique",
+  "timing": {
+   "duree_s": 8.233,
+   "n_frames": 248,
+   "boucle": false,
+   "parts_ignorees_poids_nul": [],
+   "energie": {
+    "pic_deg_s": 4007.8,
+    "mediane_deg_s": 348.6,
+    "contraste_pic_sur_mediane": 11.5,
+    "fraction_quasi_tenue": 0.601,
+    "fraction_rapide": 0.052
+   },
+   "poses_cles_par_s": 2.55,
+   "mouvements": [
+    {
+     "debut_f60": 0.0,
+     "fin_f60": 108.0,
+     "fin_active_f60": 106.0,
+     "main_vers_avant_max_studs_s": 13.4,
+     "pic_energie_rel": 0.38,
+     "main_max_studs_s": 15.7,
+     "ordre_des_pics": [
+      [
+       "Left Leg",
+       74.0
+      ],
+      [
+       "Right Leg",
+       74.0
+      ],
+      [
+       "Torso",
+       78.0
+      ],
+      [
+       "Head",
+       84.0
+      ],
+      [
+       "Left Arm",
+       84.0
+      ],
+      [
+       "Right Arm",
+       90.0
+      ]
+     ]
+    },
+    {
+     "debut_f60": 108.0,
+     "fin_f60": 140.0,
+     "fin_active_f60": 140.0,
+     "main_vers_avant_max_studs_s": 15.6,
+     "pic_energie_rel": 0.7,
+     "main_max_studs_s": 37.5,
+     "ordre_des_pics": [
+      [
+       "Torso",
+       6.0
+      ],
+      [
+       "Left Arm",
+       14.0
+      ],
+      [
+       "Left Leg",
+       14.0
+      ],
+      [
+       "Head",
+       20.0
+      ],
+      [
+       "Right Arm",
+       20.0
+      ],
+      [
+       "Right Leg",
+       20.0
+      ]
+     ]
+    },
+    {
+     "debut_f60": 140.0,
+     "fin_f60": 264.0,
+     "fin_active_f60": 172.0,
+     "main_vers_avant_max_studs_s": 11.0,
+     "pic_energie_rel": 0.49,
+     "main_max_studs_s": 17.8,
+     "ordre_des_pics": [
+      [
+       "Right Arm",
+       6.0
+      ],
+      [
+       "Left Arm",
+       8.0
+      ],
+      [
+       "Left Leg",
+       8.0
+      ],
+      [
+       "Head",
+       10.0
+      ],
+      [
+       "Right Leg",
+       12.0
+      ]
+     ]
+    },
+    {
+     "debut_f60": 264.0,
+     "fin_f60": 294.0,
+     "fin_active_f60": 294.0,
+     "main_vers_avant_max_studs_s": 12.5,
+     "pic_energie_rel": 0.49,
+     "main_max_studs_s": 20.8,
+     "ordre_des_pics": [
+      [
+       "Torso",
+       16.0
+      ],
+      [
+       "Head",
+       18.0
+      ],
+      [
+       "Left Arm",
+       18.0
+      ],
+      [
+       "Left Leg",
+       20.0
+      ],
+      [
+       "Right Arm",
+       20.0
+      ]
+     ]
+    },
+    {
+     "debut_f60": 294.0,
+     "fin_f60": 334.0,
+     "fin_active_f60": 328.0,
+     "main_vers_avant_max_studs_s": 11.1,
+     "pic_energie_rel": 1.0,
+     "main_max_studs_s": 32.1,
+     "ordre_des_pics": [
+      [
+       "Torso",
+       8.0
+      ],
+      [
+       "Head",
+       10.0
+      ],
+      [
+       "Left Arm",
+       10.0
+      ],
+      [
+       "Right Arm",
+       12.0
+      ],
+      [
+       "Left Leg",
+       14.0
+      ],
+      [
+       "Right Leg",
+       14.0
+      ]
+     ]
+    },
+    {
+     "debut_f60": 376.0,
+     "fin_f60": 424.0,
+     "fin_active_f60": 424.0,
+     "main_vers_avant_max_studs_s": 5.6,
+     "pic_energie_rel": 0.55,
+     "main_max_studs_s": 12.6,
+     "ordre_des_pics": [
+      [
+       "Torso",
+       10.0
+      ],
+      [
+       "Head",
+       14.0
+      ],
+      [
+       "Left Arm",
+       16.0
+      ],
+      [
+       "Right Arm",
+       18.0
+      ],
+      [
+       "Left Leg",
+       20.0
+      ],
+      [
+       "Right Leg",
+       24.0
+      ]
+     ]
+    },
+    {
+     "debut_f60": 424.0,
+     "fin_f60": 494.0,
+     "fin_active_f60": 442.0,
+     "main_vers_avant_max_studs_s": 2.1,
+     "pic_energie_rel": 0.39,
+     "main_max_studs_s": 8.7,
+     "ordre_des_pics": [
+      [
+       "Left Leg",
+       6.0
+      ],
+      [
+       "Right Leg",
+       6.0
+      ],
+      [
+       "Torso",
+       6.0
+      ],
+      [
+       "Head",
+       12.0
+      ]
+     ]
+    }
+   ],
+   "phases": {
+    "anticipation_f60": 294.0,
+    "action_f60": 34.0,
+    "recuperation_ou_tenue_f60": 166.0,
+    "fraction_anticipation": 0.595,
+    "fraction_recuperation": 0.336,
+    "qui_mene_l_action": [
+     "Torso",
+     "Head",
+     "Left Arm",
+     "Right Arm",
+     "Left Leg",
+     "Right Leg"
+    ]
+   },
+   "membres": {
+    "Torso": {
+     "vitesse_max_deg_s": 429.6,
+     "pic_a_s": 1.9,
+     "amplitude_vs_repos_deg": 69.3,
+     "amplitude_vs_debut_deg": 66.4
+    },
+    "Head": {
+     "vitesse_max_deg_s": 466.3,
+     "pic_a_s": 7.267,
+     "amplitude_vs_repos_deg": 64.3,
+     "amplitude_vs_debut_deg": 60.1
+    },
+    "Right Arm": {
+     "vitesse_max_deg_s": 1428.2,
+     "pic_a_s": 5.1,
+     "amplitude_vs_repos_deg": 156.6,
+     "amplitude_vs_debut_deg": 160.4
+    },
+    "Left Arm": {
+     "vitesse_max_deg_s": 1403.5,
+     "pic_a_s": 5.067,
+     "amplitude_vs_repos_deg": 178.3,
+     "amplitude_vs_debut_deg": 179.8
+    },
+    "Right Leg": {
+     "vitesse_max_deg_s": 544.1,
+     "pic_a_s": 2.133,
+     "amplitude_vs_repos_deg": 94.6,
+     "amplitude_vs_debut_deg": 80.6
+    },
+    "Left Leg": {
+     "vitesse_max_deg_s": 515.4,
+     "pic_a_s": 5.133,
+     "amplitude_vs_repos_deg": 95.9,
+     "amplitude_vs_debut_deg": 83.8
+    }
+   },
+   "mains_vitesse_max_studs_s": {
+    "Right Arm": 32.1,
+    "Left Arm": 37.5
+   },
+   "deplacement_torse_studs": {
+    "x": 1.15,
+    "y": 3.67,
+    "z": 1.1
+   },
+   "torse_vitesse_max_studs_s": 15.0
+  },
+  "audit": {
+   "overlap sync Head <- Torso": 0.0,
+   "overlap retard median Head <- Torso": 2.5,
+   "overlap sync Left Arm <- Torso": 0.0,
+   "overlap retard median Left Arm <- Torso": 2.0,
+   "overlap sync Left Leg <- Torso": 0.167,
+   "overlap retard median Left Leg <- Torso": 2.5,
+   "overlap sync Right Arm <- Torso": 0.0,
+   "overlap retard median Right Arm <- Torso": 3.0,
+   "overlap sync Right Leg <- Torso": 0.4,
+   "overlap retard median Right Leg <- Torso": 0.0,
+   "arrets simultanes": 0.167,
+   "miroir quasi exact Right Arm/Left Arm": 0.0,
+   "correlation vitesses G/D Right Arm/Left Arm": 0.767,
+   "miroir quasi exact Right Leg/Left Leg": 0.246,
+   "correlation vitesses G/D Right Leg/Left Leg": 0.796,
+   "planarite Torso": 0.829,
+   "planarite Head": 0.762,
+   "glissement pied Right Leg": 0.001,
+   "glissement pied Left Leg": 0.002,
+   "discontinuites de vitesse hors snaps declares": 1,
+   "desequilibre (CdM hors appui)": 0.0,
+   "holds morts": 0.0
+  },
+  "audit_ok": {
+   "ok": 19,
+   "total": 22
+  }
+ }
+]
