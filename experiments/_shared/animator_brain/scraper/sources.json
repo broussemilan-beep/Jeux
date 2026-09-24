@@ -1,0 +1,40 @@
+{
+ "_doc": "Champ des references (Milan, 2026-09-24) : Roblox, anime, manga, webtoon, animation occidentale et independante, jeux de combat, bases du metier. Chaque requete dit POURQUOI on la fait (besoin) ou si c'est de la curiosite (qualite d'animation pure) : le scrapeur ne cherche pas que ce dont on a besoin.",
+ "sakugabooru": {
+  "domaine": "www.sakugabooru.com",
+  "requetes": [
+   {"tags": "fighting impact_frames", "pourquoi": "impacts de combat (cartes d'impact, tenue avant le choc)"},
+   {"tags": "fighting smears", "pourquoi": "smears : comment l'anime triche le mouvement rapide"},
+   {"tags": "fighting effects", "pourquoi": "combat + effets (VFX dessines)"},
+   {"tags": "one_punch_man fighting", "pourquoi": "Serious Punch, coup charge (piste Saitama de Milan)"},
+   {"tags": "jujutsu_kaisen fighting", "pourquoi": "Black Flash, reference de TSB/JJS"},
+   {"tags": "mob_psycho_100 fighting", "pourquoi": "exageration extreme, lignes d'action"},
+   {"tags": "hajime_no_ippo", "pourquoi": "boxe credible : garde, jab, transfert de poids"},
+   {"tags": "dragon_ball fighting", "pourquoi": "combats aeriens, rafales"},
+   {"tags": "western", "pourquoi": "animation occidentale (Arcane, Avatar...)"},
+   {"tags": "fighting order:score", "pourquoi": "curiosite : les combats les mieux notes, quel qu'en soit le sujet"},
+   {"tags": "animated order:score", "pourquoi": "curiosite : le meilleur de l'animation, toutes categories"}
+  ]
+ },
+ "youtube": {
+  "domaine": "www.youtube.com",
+  "requetes": [
+   {"q": "roblox battlegrounds animation showcase", "pourquoi": "Roblox : animations de TSB/JJS et leurs animateurs"},
+   {"q": "roblox moon animator fight animation", "pourquoi": "Roblox : animateurs independants"},
+   {"q": "alan becker animation vs animator fight", "pourquoi": "animation independante lisible en silhouette"},
+   {"q": "sakuga fight compilation", "pourquoi": "anime"},
+   {"q": "street fighter frame data explained startup active recovery", "pourquoi": "jeux de combat : timing"}
+  ],
+  "par_requete": 5, "extrait_s": 40
+ },
+ "gallery_dl": {
+  "_doc": "images (poses, cases) : pas de mesure de mouvement, fiche = metadonnees + planche locale pour jugement des poses",
+  "urls": [
+   {"url": "https://danbooru.donmai.us/posts?tags=punching+rating:g", "pourquoi": "poses de coup de poing dessinees"},
+   {"url": "https://danbooru.donmai.us/posts?tags=fighting_stance+rating:g", "pourquoi": "gardes"},
+   {"url": "https://www.reddit.com/r/Sakuga/top/?t=year", "pourquoi": "anime : selection de la communaute"},
+   {"url": "https://www.reddit.com/r/robloxgamedev/search?q=animation&restrict_sr=1", "pourquoi": "Roblox"}
+  ],
+  "max_par_url": 30
+ }
+}
