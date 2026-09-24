@@ -309,3 +309,38 @@ Notes brutes dans `ETUDE_NOTES_BRUTES.md` (« LOT 3 »).
 **À vérifier sur notre travail, avant de toucher quoi que ce soit.** Une
 planche de la v5 vue depuis une caméra de jeu (de dos, à distance de
 joueur), pour juger si nos coups s'y lisent.
+
+## Lot 4 : 4 refs revues en entier et la fiche « DEMI-DIEU »
+
+Les 4 vidéos (Black Flash, Rewind Clock, Stagnant Rage, Black Hole) étaient
+déjà dans le corpus. Mais la première étude ne regardait que 3 moments par
+clip. Revues **du début à la fin**, elles montrent ce que les moments isolés
+cachaient : **la structure**.
+
+1. **Un ultime se construit en actes.**
+   - **Black Flash :** caméra de jeu avec de petits effets (2,2 s), puis
+     cinématique (2,6 s, cartes entre des plans collés et penchés), puis
+     **ralenti tenu 1,4 s** sur la victime.
+   - **Rewind Clock :** jeu, puis **signature** (anneau d'horloge tenu 1 s),
+     puis le monde disparaît (fond blanc 2 s), puis les « radios » du crâne
+     (1,2 s), puis retour à la caméra de jeu.
+   - **Black Hole :** calme, anticipation, envol, geste (mains jointes),
+     trou noir (3 s), **noir total 1 s**, puis retour au calme debout.
+2. **La signature visuelle.** Chaque technique a son motif, qu'on reconnaît
+   et qui annonce ce qui vient.
+3. **Les variantes de jeu.** Stagnant Rage existe en version proche et
+   lointaine, toute en caméra de jeu, sans cinématique : c'est une
+   compétence, pas un ultime.
+
+**La fiche Demi-Dieu** est un format de production : intention en une
+phrase, 8 poses clés avec leurs frames (~1 s à 30 i/s), test de silhouette,
+vues de référence, timing « lent → rapide → impact → stabilisation ».
+
+- **Adoptée** comme modèle dans `corpus/FICHE_COUP_MODELE.md`, qui manquait
+  au projet.
+- **Critique :**
+  - elle ne prévoit pas de **vue de dos**, alors que c'est la caméra du
+    joueur en battleground ;
+  - les silhouettes de la charge et du lancement sont presque identiques ;
+  - l'image semble générée (texte abîmé), donc les poses sont à vérifier
+    sur le vrai R6, dont les bras sont d'un seul bloc.

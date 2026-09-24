@@ -49,6 +49,8 @@
 - hierarchie_effets : vraie dans 100% des parties aimees, 0% des rejetees : DISCRIMINE (vraie ou Milan aime, fausse ou il rejette) -> poids en hausse
 - armement_frappe_retour : vraie dans 100% des parties aimees, 100% des rejetees : ne discrimine pas (vraie dans l'aime ET le rejete) -> poids en baisse
 - trace_persistante : vraie dans 100% des parties aimees, 0% des rejetees : DISCRIMINE (vraie ou Milan aime, fausse ou il rejette) -> poids en hausse
+- structure_en_actes : vraie dans 100% des parties aimees, 0% des rejetees : DISCRIMINE (vraie ou Milan aime, fausse ou il rejette) -> poids en hausse
+- ralenti_consequence : vraie dans 100% des parties aimees, 0% des rejetees : DISCRIMINE (vraie ou Milan aime, fausse ou il rejette) -> poids en hausse
 
 ## Jamais mesurees (angle mort du cerveau)
 - fluidite : Le mouvement enchaine : un membre ne s'arrete pas a chaque pose cle (chevauchement, suivi), il repart avant d'etre a l'arret.
@@ -57,6 +59,9 @@
 - rafale_en_masse : Une rafale tres rapide se montre comme une MASSE de poings-smears continue (on lit le rythme et le volume), pas coup par coup.
 - trace_persistante : L'impact laisse une trace qui reste : tache ou cratere au sol, anneau qui se dissipe, fumee ; et on TIENT sur la consequence (~1 s).
 - contact_prolonge : Une saisie ou une projection garde les corps en contact (on soulève, on retourne, on plaque) : la victime est manipulee, pas seulement frappee.
+- structure_en_actes : Un ultime se construit en actes : jeu (petits effets) -> signature visuelle de la technique -> cinematique (cartes, blanc, monde qui disparait) -> consequence TENUE (souvent au ralenti) -> retour au calme / a la camera de jeu.
+- signature_visuelle : Chaque technique a un motif qui lui appartient (horloge, trou noir, eclair rouge) montre AVANT ou pendant : on sait ce qui arrive et on la reconnait.
+- ralenti_consequence : Apres le pic, on tient la consequence au ralenti ou en plan fixe (1-2 s) : c'est la derniere note.
 
 ## Echelle calibree sur 4 notes : note = 7.33 + 1.29 x score
 
@@ -77,6 +82,8 @@
 - fond_remplace        poids_note 0.64 (confiance principe 0.60)
 - torsion_tronc        poids_note 0.64 (confiance principe 0.65)
 - trace_persistante    poids_note 0.64 (confiance principe 0.70)
+- structure_en_actes   poids_note 0.64 (confiance principe 0.75)
+- ralenti_consequence  poids_note 0.64 (confiance principe 0.60)
 - posture_droite       poids_note 0.58 (confiance principe 0.70)
 - escalade             poids_note 0.58 (confiance principe 0.60)
 - impact_visible       poids_note 0.58 (confiance principe 0.70)
@@ -89,6 +96,7 @@
 - camera_jeu_vs_cinematique poids_note 0.50 (confiance principe 0.80)
 - rafale_en_masse      poids_note 0.50 (confiance principe 0.60)
 - contact_prolonge     poids_note 0.50 (confiance principe 0.50)
+- signature_visuelle   poids_note 0.50 (confiance principe 0.65)
 - armement_frappe_retour poids_note 0.43 (confiance principe 0.80)
 - epaules_basses       poids_note 0.40 (confiance principe 0.50)
 - bras_horizontal      poids_note 0.40 (confiance principe 0.80)

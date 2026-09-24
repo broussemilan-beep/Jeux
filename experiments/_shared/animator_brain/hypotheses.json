@@ -214,7 +214,8 @@
     "IMPACT HAVEN : cartes silhouette",
     "test de silhouette v2 (manga)",
     "corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : tous les bons clips separent les silhouettes ; noob vs pro (epee) ; NOUS : rafale et coup final se chevauchent en plan moyen (bras cache contre la victime, poing arme cache derriere le corps)",
-    "lot 2 : la rotation du torse et la separation des persos dependent de l'ANGLE de camera ; les pros verifient sous deux vues (cote + dessus)"
+    "lot 2 : la rotation du torse et la separation des persos dependent de l'ANGLE de camera ; les pros verifient sous deux vues (cote + dessus)",
+    "fiche DEMI-DIEU (Milan) : « si on enleve toute la couleur, le coup doit rester impressionnant » ; silhouettes de profil -- a completer de DOS (camera du joueur)"
    ],
    "mesure": "jugement visuel",
    "etalon_style": "universel",
@@ -650,6 +651,63 @@
    "categorie": "mise_en_scene",
    "quand": "prises, projections",
    "contre_indication": "coups de poing a distance"
+  },
+  {
+   "id": "structure_en_actes",
+   "enonce": "Un ultime se construit en actes : jeu (petits effets) -> signature visuelle de la technique -> cinematique (cartes, blanc, monde qui disparait) -> consequence TENUE (souvent au ralenti) -> retour au calme / a la camera de jeu.",
+   "portee": [
+    "finisher",
+    "impact"
+   ],
+   "confiance_principe": 0.75,
+   "poids_note": 0.64,
+   "poids_a_priori": 0.5,
+   "etalon_style": "manga_ultime",
+   "sources": [
+    "lot 4 revu en entier : Black Flash (jeu 2,2 s -> cinematique 2,6 s -> ralenti 1,4 s), Rewind Clock (signature horloge 1 s, monde blanc 2 s, radios 1,2 s, retour), Black Hole (calme -> anticipation -> geste -> trou noir 3 s -> noir 1 s -> calme)"
+   ],
+   "mesure": "jugement visuel",
+   "categorie": "mise_en_scene",
+   "quand": "ultimes / techniques completes",
+   "contre_indication": "coups isoles (M1, S1) : un seul acte"
+  },
+  {
+   "id": "signature_visuelle",
+   "enonce": "Chaque technique a un motif qui lui appartient (horloge, trou noir, eclair rouge) montre AVANT ou pendant : on sait ce qui arrive et on la reconnait.",
+   "portee": [
+    "finisher",
+    "impact"
+   ],
+   "confiance_principe": 0.65,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "manga_ultime",
+   "sources": [
+    "Rewind Clock (anneau d'horloge tenu 1 s), Black Hole (disque dore), Black Flash (eclairs rouges/noirs)"
+   ],
+   "mesure": "jugement visuel",
+   "categorie": "mise_en_scene",
+   "quand": "ultimes, competences signees",
+   "contre_indication": "effets generiques qui pourraient appartenir a n'importe quelle technique"
+  },
+  {
+   "id": "ralenti_consequence",
+   "enonce": "Apres le pic, on tient la consequence au ralenti ou en plan fixe (1-2 s) : c'est la derniere note.",
+   "portee": [
+    "finisher",
+    "impact"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.64,
+   "poids_a_priori": 0.5,
+   "etalon_style": "manga_ultime",
+   "sources": [
+    "Black Flash (ralenti 1,4 s sur la victime), Mythra (1,1 s), Stagnant Rage (fumee 2,5 s)"
+   ],
+   "mesure": "jugement visuel",
+   "categorie": "mise_en_scene",
+   "quand": "finisher",
+   "contre_indication": "coups de rafale : casserait le rythme"
   }
  ],
  "_styles": {

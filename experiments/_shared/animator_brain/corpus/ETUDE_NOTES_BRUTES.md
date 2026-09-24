@@ -235,3 +235,25 @@
 ## aafdc91d (perso orange, camera de jeu tres lointaine)
 - Coup 1 : petit eclat blanc + fumee. Coup 2 (1,2 s) : gros eclat blanc a eclats + gerbe rouge + anneaux qui s'elargissent.
 - La victime est envoyee TRES haut : un point minuscule qui monte pendant 1,5 s (2,1-3,6 s). La consequence se lit a l'echelle, meme en camera de jeu.
+
+# LOT 4 (Milan) -- 4 videos deja etudiees, REVUES EN ENTIER (sequence complete, plus seulement 3 moments) + fiche « DEMI-DIEU S1 »
+
+## Black Flash (6,2 s) -- structure complete
+- 0-2,2 s : combat en CAMERA DE JEU large ; chaque coup = petites etincelles rouges ; deja une carte N/B isolee a 0,6 s, des smears noirs a 1,2-1,4 s.
+- 2,4 s : eclair blanc/rouge -> CINEMATIQUE : camera collee sur la victime (jaune), smear rouge (2,6-3,2 s) -> cartes (3,4-3,6 : inversee N/B, croix dessinee) -> tres gros plan penche (3,8-4,0) -> cartes blanches a taches d'encre noire (4,2-4,6).
+- 4,8-6,2 s : RALENTI en gros plan sur la victime ensanglantee, camera qui pousse lentement, TENU 1,4 s. La consequence est la note finale.
+## Rewind Clock (9,8 s)
+- 0-1,6 s camera de jeu ; 1,8-2,2 grosse explosion ; 2,8-3,8 s : ANNEAU D'HORLOGE dore tenu ~1 s = la SIGNATURE visuelle de la technique (on sait ce qui arrive).
+- 4,4 BLANC -> 5,0-7,0 s : le MONDE DISPARAIT (fond blanc, persos isoles) pendant 2 s de coups ; 7,2-8,4 s : cartes « radio » crane (rouge / negatif / magenta-jaune / vert) ~1,2 s ; 8,6 rayon horizontal ; 8,8-9,8 retour camera de jeu, debris.
+## Stagnant Rage (deux variantes : proche 0-4,2 s, lointaine 4,4-9,8 s)
+- Aucune cinematique : tout en camera de jeu. Proche : explosion immediate, dome, puis ~2,5 s de fumee avec le perso minuscule. Lointaine : ruee, explosion plein ecran, champ de feu ~2 s, 2e explosion, braises.
+- Une meme technique a DEUX variantes selon la distance (logique de jeu).
+## Black Hole Ability (14 s) -- la ref de notre r6_black_hole
+- 0-2,5 s immobile en camera de jeu ; 2,7-3,4 camera proche, il se ramasse en regardant en haut (anticipation) ; 3,6 camera aux pieds, vent ; saut vu d'en bas ; 4,2 carte blanche a silhouettes noires ; 4,4-5,5 en l'air bras ouverts, debris qui montent, puis MAINS JOINTES (le geste) ; 5,67 carte inversee a etoiles ; 6,3-8,0 panoramique vers le ciel, debris minuscules qui tournent ; 8,2-8,4 sombre + carte ; 8,6-11,5 trou noir (disque dore) qui aspire ~3 s ; 11,7-12,6 FONDU AU NOIR 1 s (silence) ; 12,8-13,4 retour camera de jeu : il est debout, calme.
+- Construction en actes : calme -> anticipation -> envol -> geste -> signature (trou noir) -> silence -> calme.
+
+## Fiche « DEMI-DIEU -- S1 POING SCINTILLANT » (image, guide de poses)
+- Format de production : phrase d'intention (« Un seul coup. Une lumiere qui ecrase tout. »), objectif, style, 8 poses cles avec plages de frames (30 i/s, ~1 s), silhouettes de profil, 3 vues de la pose d'impact, details R6, timing « SLOW -> FAST -> HIT -> SETTLE ».
+- Timing a 30 i/s : neutre 0 / anticipation 1-6 / charge 7-10 / lancement 11-14 / IMPACT 15-16 / suivi 17-22 / retour 23-28 / fin 29-30.
+- 3 regles d'or : l'action se comprend en silhouette ; chaque pose sert l'action ; l'amplitude prime sur le realisme. « Si on enleve toute la couleur, le coup doit rester impressionnant. » « Pas de VFX (pour ce test). »
+- Critique : image tres probablement generee (texte abime : « naturelle naturelle », « Pas de dioigts », silhouettes numerotees 1,2,3,2,5... ; poses a verifier sur le vrai R6, bras d'un seul bloc, sans coude) ; silhouettes 3 (charge) et 4 (lancement) presque identiques -> contraste faible entre les deux ; vues de reference face / 3/4 / cote mais PAS DE DOS alors que « exploitable en battleground » = camera du joueur de dos (lot 3) ; pas de victime ni de reaction ; neutre = fin (boucle jouable, bon point).
