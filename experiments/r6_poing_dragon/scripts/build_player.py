@@ -15,7 +15,7 @@ import sys
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(HERE, "..", "output")
+OUT = os.environ.get("DRAGON_OUT") or os.path.join(HERE, "..", "output")  # DRAGON_OUT : variante A/B
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(HERE, "..", "..", "_shared"))
 

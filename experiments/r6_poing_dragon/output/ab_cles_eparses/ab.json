@@ -1,0 +1,49 @@
+{
+ "fenetre": [
+  108,
+  170
+ ],
+ "cles_main": [
+  108,
+  113,
+  117,
+  121,
+  126,
+  144,
+  146,
+  148,
+  150,
+  153,
+  158,
+  162,
+  168
+ ],
+ "cles_dans_fenetre": {
+  "A": 43,
+  "B": 12
+ },
+ "A": {
+  "plateau": 0.51,
+  "arrivee": 0.65,
+  "phase_rapide_f": 4,
+  "pointe": 194.8,
+  "contact_f": 148
+ },
+ "B": {
+  "plateau": 0.79,
+  "arrivee": 1.0,
+  "phase_rapide_f": 4,
+  "pointe": 165.6,
+  "contact_f": 148
+ },
+ "contact_B_poing_f150": [
+  0.18,
+  3.023,
+  -4.968
+ ],
+ "contact_A_poing_f150": [
+  0.18,
+  3.023,
+  -4.968
+ ]
+}
