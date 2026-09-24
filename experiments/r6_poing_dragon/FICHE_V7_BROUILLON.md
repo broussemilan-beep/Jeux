@@ -41,6 +41,7 @@ vidéo (zips de Milan), puis le go de Milan. Objectif : 8/10 minimum.
 | charge f118-146 | croix symétrique, torse droit | **C comprimé** (croquis) ; tenue vivante gardée | anime (tame, compression), TSB Stoic Bomb (charge compacte) |
 | coup f146-158 | torse vertical, bras seul | **ligne jetée** 30-38° (croquis) ; 1 image de dépassement puis retour | anime (Mattesi, Cartwright), TSB compétences |
 | rafale h4 f78-104 | 4e poing | à décider avec Milan : **coup de pied ou genou** pour fermer le combo, corps qui bascule | TSB M4 = coup de pied ; variété (`variete_coups` faux depuis v4) |
+| _(note h4)_ | | croquis « coup de pied » au labo : 3 essais non concluants (sans IK, la jambe d'appui et le bassin ne tiennent pas). Référence TSB M4 f15 : de côté, torse penché ~45° loin de la jambe, bras rentrés, jambe d'appui verticale. À croquer dans le rig V2.22 (jambes en IK) si Milan retient l'option. | le labo sert aux torses et aux bras, pas aux jambes en appui |
 | export | chaque image cuite | **poses clés seules** (~15/s) en Linear | TSB ; neutre visuellement ici, mais fidèle |
 | caméra ciné | v6 | **un cran moins** (durées de gros plans, secousses) | retour Milan « un peu trop abusé » |
 | aérien | aimé | **inchangé** | ne pas casser ce qui marche |
