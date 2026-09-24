@@ -1,0 +1,197 @@
+{
+ "_doc": "Cerveau v2 (CERVEAU_V2.md) : des HYPOTHESES, pas des regles. confiance_principe = a quel point c'est vrai en animation (sources). poids_note = a quel point ca fait bouger la note de Milan (appris par critic.reflect, jamais tape a la main). Les paroles de Milan entrent comme des pistes, avec leur source.",
+ "hypotheses": [
+  {
+   "id": "posture_droite",
+   "enonce": "Pendant des coups legers, le corps reste debout ; on ne s'accroupit que pour armer un coup lourd ou atterrir.",
+   "portee": [
+    "coup_leger"
+   ],
+   "confiance_principe": 0.7,
+   "poids_note": 0.601,
+   "sources": [
+    "Milan v1 : il est accroupi",
+    "corpus frappe_legere (affaissement)"
+   ],
+   "mesure": "regles:posture droite pendant les coups legers"
+  },
+  {
+   "id": "escalade",
+   "enonce": "Une rafale monte en intensite (hitstop, recul, secousse, taille des effets).",
+   "portee": [
+    "rafale"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.601,
+   "sources": [
+    "Milan v1 : l'enchainement",
+    "Black Flash 15/10/7/7/10 f"
+   ],
+   "mesure": "regles:escalade : hitstop"
+  },
+  {
+   "id": "impact_visible",
+   "enonce": "Le plus gros impact reste a l'ecran avant tout effet plein ecran.",
+   "portee": [
+    "finisher"
+   ],
+   "confiance_principe": 0.7,
+   "poids_note": 0.601,
+   "sources": [
+    "auto-critique v1 validee par Milan",
+    "Serious Punch 24 f dans la fumee"
+   ],
+   "mesure": "regles:impact final visible avant les effets plein ecran"
+  },
+  {
+   "id": "variete_coups",
+   "enonce": "Une rafale varie les formes de coups (jab, direct, crochet, marteau, toupie).",
+   "portee": [
+    "rafale"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.601,
+   "sources": [
+    "5 exemples de Milan (combo R6)",
+    "IMPACT HAVEN"
+   ],
+   "mesure": null
+  },
+  {
+   "id": "epaules_basses",
+   "enonce": "Les epaules ne se haussent pas pendant les coups legers.",
+   "portee": [
+    "coup_leger"
+   ],
+   "confiance_principe": 0.5,
+   "poids_note": 0.327,
+   "sources": [
+    "Milan v2 : bras trop hauts (interpretation)",
+    "corpus M1"
+   ],
+   "mesure": "regles:epaules jamais haussees"
+  },
+  {
+   "id": "bras_horizontal",
+   "enonce": "Au contact d'un coup droit, le bras est quasi horizontal ; pour frapper bas, le corps descend.",
+   "portee": [
+    "coup_droit"
+   ],
+   "confiance_principe": 0.8,
+   "poids_note": 0.327,
+   "sources": [
+    "Milan v3 : coups vers le bas",
+    "ref Pro 17-52-55",
+    "corpus M1 mediane -3 deg"
+   ],
+   "mesure": "regles:bras quasi horizontal au contact"
+  },
+  {
+   "id": "poing_a_plat",
+   "enonce": "Un coup droit arme a hauteur d'epaule et voyage a plat (pas d'uppercut deguise).",
+   "portee": [
+    "coup_droit"
+   ],
+   "confiance_principe": 0.8,
+   "poids_note": 0.5,
+   "sources": [
+    "Milan v3b : les coups partent du bas",
+    "5 exemples de Milan",
+    "corpus : M1 montee <= 0,22, Uppercut 1,45"
+   ],
+   "mesure": "regles:coup droit : le poing voyage a plat (pas d'uppercut)"
+  },
+  {
+   "id": "transfert_poids",
+   "enonce": "Le torse passe au-dessus du pied avant entre l'armement et le contact.",
+   "portee": [
+    "coup_droit"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.327,
+   "sources": [
+    "Milan v2 : pas en transfert de poids",
+    "corpus frappe_lourde"
+   ],
+   "mesure": "regles:transfert de poids sur les coups de puissance"
+  },
+  {
+   "id": "tenue_avant_choc",
+   "enonce": "Le mouvement freine juste AVANT le choc, puis explose juste apres (le flash cache le saut de pose). C'est l'inverse d'un hitstop qui gele apres.",
+   "portee": [
+    "impact"
+   ],
+   "confiance_principe": 0.5,
+   "poids_note": 0.731,
+   "sources": [
+    "IMPACT HAVEN (mesure)",
+    "coup chapeau LeftRight2601 (mesure)",
+    "Milan v1 : manque de puissance (piste)"
+   ],
+   "mesure": "fiche:impacts.profil_autour.tenue_avant_choc"
+  },
+  {
+   "id": "coup_charge",
+   "enonce": "Un coup final se CHARGE : buste enroule, corps ramasse, tenue immobile sous tension, puis depart en 2-3 f et extension tenue.",
+   "portee": [
+    "finisher"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.731,
+   "sources": [
+    "Milan v4 : je verrais plus le coup de Saitama (piste)",
+    "Serious Punch : garde tenue 32 f",
+    "Mii smash : extension tenue"
+   ],
+   "mesure": null
+  },
+  {
+   "id": "arcs",
+   "enonce": "Les membres voyagent en arcs (rotation autour des articulations), jamais en ligne droite mecanique.",
+   "portee": [
+    "tout"
+   ],
+   "confiance_principe": 0.8,
+   "poids_note": 0.731,
+   "sources": [
+    "12 principes de l'animation (arcs)",
+    "auto-critique v4 : controle IK interpole en ligne droite"
+   ],
+   "mesure": null
+  },
+  {
+   "id": "contraste_de_temps",
+   "enonce": "Tenue longue, action en 2-3 f, tenue longue sur le resultat.",
+   "portee": [
+    "tout"
+   ],
+   "confiance_principe": 0.7,
+   "poids_note": 0.5,
+   "sources": [
+    "REFERENCES_VIDEO principe 1",
+    "pro vs noob"
+   ],
+   "mesure": "fiche:energie.contraste_p95_sur_mediane"
+  },
+  {
+   "id": "silhouette_lisible",
+   "enonce": "Chaque pose cle se lit en silhouette (ligne d'action claire, membres detaches du corps).",
+   "portee": [
+    "tout"
+   ],
+   "confiance_principe": 0.8,
+   "poids_note": 0.5,
+   "sources": [
+    "IMPACT HAVEN : cartes silhouette",
+    "test de silhouette v2 (manga)"
+   ],
+   "mesure": null
+  }
+ ],
+ "_calibration": {
+  "a": 0.577,
+  "b": 6.625,
+  "n_notes": 3,
+  "doc": "note = b + a * score ; reapprise a chaque reflexion"
+ }
+}

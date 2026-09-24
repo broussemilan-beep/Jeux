@@ -1,0 +1,133 @@
+{
+ "clip": "ref_15-52-25",
+ "sha1_16": "66053ffdf40a7241",
+ "duree_s": 14.17,
+ "resolution": [
+  888,
+  1240
+ ],
+ "zone_analysee": [
+  0,
+  0,
+  160,
+  118
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 33.3,
+  "lecture": "en 2 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 6,
+  "part_du_temps": 0.211,
+  "plus_longue_ms": 750
+ },
+ "energie": {
+  "mediane": 9.73,
+  "pic_p95": 44.45,
+  "contraste_p95_sur_mediane": 4.57,
+  "part_rapide": 0.038
+ },
+ "impacts": {
+  "nombre": 5,
+  "par_seconde": 0.35,
+  "ecart_median_s": 1.667,
+  "cartes": [
+   {
+    "t_s": 5.6,
+    "type": "silhouette",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 5.7,
+    "type": "silhouette",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 8.233,
+    "type": "silhouette",
+    "duree_ms": 100
+   },
+   {
+    "t_s": 8.4,
+    "type": "silhouette",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 8.633,
+    "type": "silhouette",
+    "duree_ms": 700
+   },
+   {
+    "t_s": 9.5,
+    "type": "silhouette",
+    "duree_ms": 1933
+   },
+   {
+    "t_s": 11.967,
+    "type": "noir",
+    "duree_ms": 800
+   }
+  ],
+  "profil_autour": {
+   "approche": 2.79,
+   "0,1 s avant": 19.62,
+   "0,1 s apres": 7.7,
+   "tenue_avant_choc": false,
+   "explosion_apres": false
+  }
+ },
+ "coupes": {
+  "nombre": 9,
+  "t_s": [
+   3.617,
+   4.183,
+   5.533,
+   5.767,
+   8.167,
+   8.2,
+   8.333,
+   8.567,
+   12.767
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.91,
+  "decalage_p95_pct": 22.92
+ },
+ "palette": [
+  {
+   "hex": "#848da9",
+   "part": 0.276
+  },
+  {
+   "hex": "#11131b",
+   "part": 0.229
+  },
+  {
+   "hex": "#5f7298",
+   "part": 0.158
+  },
+  {
+   "hex": "#7dbbdd",
+   "part": 0.138
+  },
+  {
+   "hex": "#bad2da",
+   "part": 0.117
+  },
+  {
+   "hex": "#6393c1",
+   "part": 0.082
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 69,
+  "termes": {
+   "contraste_de_temps": 0.88,
+   "tenues_presentes": 0.7,
+   "impacts_rythmes": 0.24
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/sheets/ref_15-52-25.png"
+}

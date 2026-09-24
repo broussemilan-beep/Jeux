@@ -1,0 +1,81 @@
+{
+ "clip": "exemple_blender_combat",
+ "sha1_16": "9f071ea001df3cca",
+ "duree_s": 3.2,
+ "resolution": [
+  1034,
+  620
+ ],
+ "zone_analysee": [
+  12,
+  19,
+  160,
+  81
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 2,
+  "part_du_temps": 0.25,
+  "plus_longue_ms": 650
+ },
+ "energie": {
+  "mediane": 8.47,
+  "pic_p95": 12.65,
+  "contraste_p95_sur_mediane": 1.49,
+  "part_rapide": 0.448
+ },
+ "impacts": {
+  "nombre": 0,
+  "par_seconde": 0.0,
+  "ecart_median_s": null,
+  "cartes": [],
+  "profil_autour": null
+ },
+ "coupes": {
+  "nombre": 0,
+  "t_s": []
+ },
+ "camera": {
+  "decalage_median_pct": 0.34,
+  "decalage_p95_pct": 0.76
+ },
+ "palette": [
+  {
+   "hex": "#3f3f42",
+   "part": 0.616
+  },
+  {
+   "hex": "#84af73",
+   "part": 0.131
+  },
+  {
+   "hex": "#807370",
+   "part": 0.124
+  },
+  {
+   "hex": "#4a4444",
+   "part": 0.078
+  },
+  {
+   "hex": "#3d454b",
+   "part": 0.032
+  },
+  {
+   "hex": "#4c3f40",
+   "part": 0.019
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 29,
+  "termes": {
+   "contraste_de_temps": 0.0,
+   "tenues_presentes": 0.83,
+   "impacts_rythmes": 0.0
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/sheets/exemple_blender_combat.png"
+}
