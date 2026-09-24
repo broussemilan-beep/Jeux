@@ -172,6 +172,13 @@
     "Right Arm": 0.3,
     "Left Arm": 0.3
    },
+   "translation_articulation_max_studs": {
+    "Head": 0.0,
+    "Right Arm": 0.039,
+    "Left Arm": 0.033,
+    "Right Leg": 0.138,
+    "Left Leg": 0.141
+   },
    "deplacement_torse_studs": {
     "x": 0.0,
     "y": 0.03,
@@ -346,6 +353,13 @@
    "mains_vitesse_max_studs_s": {
     "Right Arm": 37.4,
     "Left Arm": 37.4
+   },
+   "translation_articulation_max_studs": {
+    "Head": 0.0,
+    "Right Arm": 0.951,
+    "Left Arm": 0.951,
+    "Right Leg": 1.564,
+    "Left Leg": 1.565
    },
    "deplacement_torse_studs": {
     "x": 0.03,
@@ -522,6 +536,13 @@
     "Right Arm": 7.9,
     "Left Arm": 7.9
    },
+   "translation_articulation_max_studs": {
+    "Head": 0.0,
+    "Right Arm": 0.402,
+    "Left Arm": 0.402,
+    "Right Leg": 0.839,
+    "Left Leg": 0.839
+   },
    "deplacement_torse_studs": {
     "x": 0.0,
     "y": 0.15,
@@ -685,6 +706,11 @@
     "Right Arm": 83.2,
     "Left Arm": 69.2
    },
+   "translation_articulation_max_studs": {
+    "Head": 0.0,
+    "Right Arm": 1.618,
+    "Left Arm": 1.327
+   },
    "deplacement_torse_studs": {
     "x": 0.25,
     "y": 0.19,
@@ -820,6 +846,11 @@
    "mains_vitesse_max_studs_s": {
     "Right Arm": 78.3,
     "Left Arm": 65.1
+   },
+   "translation_articulation_max_studs": {
+    "Head": 0.0,
+    "Right Arm": 1.443,
+    "Left Arm": 1.381
    },
    "deplacement_torse_studs": {
     "x": 0.13,
@@ -983,6 +1014,11 @@
     "Right Arm": 18.3,
     "Left Arm": 64.6
    },
+   "translation_articulation_max_studs": {
+    "Head": 0.0,
+    "Right Arm": 1.618,
+    "Left Arm": 1.209
+   },
    "deplacement_torse_studs": {
     "x": 0.06,
     "y": 0.08,
@@ -1118,6 +1154,11 @@
    "mains_vitesse_max_studs_s": {
     "Right Arm": 58.4,
     "Left Arm": 84.8
+   },
+   "translation_articulation_max_studs": {
+    "Head": 0.0,
+    "Right Arm": 1.718,
+    "Left Arm": 1.313
    },
    "deplacement_torse_studs": {
     "x": 0.26,
@@ -1307,6 +1348,13 @@
    "mains_vitesse_max_studs_s": {
     "Right Arm": 56.0,
     "Left Arm": 60.5
+   },
+   "translation_articulation_max_studs": {
+    "Head": 0.0,
+    "Right Arm": 0.958,
+    "Left Arm": 0.791,
+    "Right Leg": 0.902,
+    "Left Leg": 1.083
    },
    "deplacement_torse_studs": {
     "x": 0.03,
@@ -1528,6 +1576,13 @@
     "Right Arm": 84.3,
     "Left Arm": 81.8
    },
+   "translation_articulation_max_studs": {
+    "Head": 0.0,
+    "Right Arm": 1.059,
+    "Left Arm": 1.263,
+    "Right Leg": 1.686,
+    "Left Leg": 1.599
+   },
    "deplacement_torse_studs": {
     "x": 0.06,
     "y": 1.26,
@@ -1710,6 +1765,13 @@
     "Right Arm": 84.6,
     "Left Arm": 70.3
    },
+   "translation_articulation_max_studs": {
+    "Head": 0.0,
+    "Right Arm": 0.798,
+    "Left Arm": 1.118,
+    "Right Leg": 1.804,
+    "Left Leg": 1.69
+   },
    "deplacement_torse_studs": {
     "x": 0.32,
     "y": 1.31,
@@ -1887,6 +1949,13 @@
    "mains_vitesse_max_studs_s": {
     "Right Arm": 82.3,
     "Left Arm": 87.6
+   },
+   "translation_articulation_max_studs": {
+    "Head": 0.0,
+    "Right Arm": 1.248,
+    "Left Arm": 1.025,
+    "Right Leg": 1.527,
+    "Left Leg": 1.281
    },
    "deplacement_torse_studs": {
     "x": 0.12,
@@ -2078,6 +2147,13 @@
     "Right Arm": 19.7,
     "Left Arm": 23.5
    },
+   "translation_articulation_max_studs": {
+    "Head": 0.0,
+    "Right Arm": 0.918,
+    "Left Arm": 0.664,
+    "Right Leg": 0.666,
+    "Left Leg": 0.694
+   },
    "deplacement_torse_studs": {
     "x": 0.92,
     "y": 0.21,
@@ -2268,6 +2344,13 @@
     "Right Arm": 23.5,
     "Left Arm": 19.7
    },
+   "translation_articulation_max_studs": {
+    "Head": 0.0,
+    "Right Arm": 0.664,
+    "Left Arm": 0.918,
+    "Right Leg": 0.694,
+    "Left Leg": 0.666
+   },
    "deplacement_torse_studs": {
     "x": 0.92,
     "y": 0.21,
@@ -2404,6 +2487,11 @@
    "mains_vitesse_max_studs_s": {
     "Right Arm": 82.5,
     "Left Arm": 46.2
+   },
+   "translation_articulation_max_studs": {
+    "Head": 0.0,
+    "Right Arm": 1.61,
+    "Left Arm": 1.409
    },
    "deplacement_torse_studs": {
     "x": 0.37,
@@ -2542,6 +2630,11 @@
     "Right Arm": 9.5,
     "Left Arm": 27.1
    },
+   "translation_articulation_max_studs": {
+    "Head": 0.0,
+    "Right Arm": 0.037,
+    "Left Arm": 0.038
+   },
    "deplacement_torse_studs": {
     "x": 0.03,
     "y": 0.04,
@@ -2667,6 +2760,11 @@
    "mains_vitesse_max_studs_s": {
     "Right Arm": 31.1,
     "Left Arm": 17.7
+   },
+   "translation_articulation_max_studs": {
+    "Head": 0.0,
+    "Right Arm": 0.037,
+    "Left Arm": 0.038
    },
    "deplacement_torse_studs": {
     "x": 0.0,
@@ -2826,6 +2924,11 @@
     "Right Arm": 11.8,
     "Left Arm": 14.0
    },
+   "translation_articulation_max_studs": {
+    "Head": 0.0,
+    "Right Arm": 0.037,
+    "Left Arm": 0.038
+   },
    "deplacement_torse_studs": {
     "x": 0.0,
     "y": 0.0,
@@ -2939,6 +3042,10 @@
    "mains_vitesse_max_studs_s": {
     "Right Arm": 6.3,
     "Left Arm": 5.0
+   },
+   "translation_articulation_max_studs": {
+    "Right Arm": 1.152,
+    "Left Arm": 1.215
    },
    "deplacement_torse_studs": {
     "x": 0.0,
@@ -3068,6 +3175,10 @@
    "mains_vitesse_max_studs_s": {
     "Right Arm": 0.0,
     "Left Arm": 0.0
+   },
+   "translation_articulation_max_studs": {
+    "Right Arm": 1.146,
+    "Left Arm": 1.207
    },
    "deplacement_torse_studs": {
     "x": 0.0,

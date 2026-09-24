@@ -366,6 +366,36 @@
     "min": 0.0,
     "max": 0.1,
     "n": 2
+   },
+   "timing.translation_articulation_max_studs.Head": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 1
+   },
+   "timing.translation_articulation_max_studs.Left Arm": {
+    "mediane": 0.62,
+    "min": 0.033,
+    "max": 1.207,
+    "n": 2
+   },
+   "timing.translation_articulation_max_studs.Left Leg": {
+    "mediane": 0.141,
+    "min": 0.141,
+    "max": 0.141,
+    "n": 1
+   },
+   "timing.translation_articulation_max_studs.Right Arm": {
+    "mediane": 0.592,
+    "min": 0.039,
+    "max": 1.146,
+    "n": 2
+   },
+   "timing.translation_articulation_max_studs.Right Leg": {
+    "mediane": 0.138,
+    "min": 0.138,
+    "max": 0.138,
+    "n": 1
    }
   }
  },
@@ -768,6 +798,36 @@
     "min": 2.9,
     "max": 13.9,
     "n": 4
+   },
+   "timing.translation_articulation_max_studs.Head": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 4
+   },
+   "timing.translation_articulation_max_studs.Left Arm": {
+    "mediane": 0.855,
+    "min": 0.664,
+    "max": 1.025,
+    "n": 4
+   },
+   "timing.translation_articulation_max_studs.Left Leg": {
+    "mediane": 0.888,
+    "min": 0.666,
+    "max": 1.281,
+    "n": 4
+   },
+   "timing.translation_articulation_max_studs.Right Arm": {
+    "mediane": 0.938,
+    "min": 0.664,
+    "max": 1.248,
+    "n": 4
+   },
+   "timing.translation_articulation_max_studs.Right Leg": {
+    "mediane": 0.798,
+    "min": 0.666,
+    "max": 1.527,
+    "n": 4
    }
   }
  },
@@ -1115,6 +1175,24 @@
     "mediane": 7.35,
     "min": 4.8,
     "max": 8.6,
+    "n": 4
+   },
+   "timing.translation_articulation_max_studs.Head": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 4
+   },
+   "timing.translation_articulation_max_studs.Left Arm": {
+    "mediane": 1.32,
+    "min": 1.209,
+    "max": 1.381,
+    "n": 4
+   },
+   "timing.translation_articulation_max_studs.Right Arm": {
+    "mediane": 1.618,
+    "min": 1.443,
+    "max": 1.718,
     "n": 4
    }
   }
@@ -1517,6 +1595,36 @@
     "min": 10.5,
     "max": 12.7,
     "n": 3
+   },
+   "timing.translation_articulation_max_studs.Head": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 3
+   },
+   "timing.translation_articulation_max_studs.Left Arm": {
+    "mediane": 1.263,
+    "min": 1.118,
+    "max": 1.409,
+    "n": 3
+   },
+   "timing.translation_articulation_max_studs.Left Leg": {
+    "mediane": 1.644,
+    "min": 1.599,
+    "max": 1.69,
+    "n": 2
+   },
+   "timing.translation_articulation_max_studs.Right Arm": {
+    "mediane": 1.059,
+    "min": 0.798,
+    "max": 1.61,
+    "n": 3
+   },
+   "timing.translation_articulation_max_studs.Right Leg": {
+    "mediane": 1.745,
+    "min": 1.686,
+    "max": 1.804,
+    "n": 2
    }
   }
  },
@@ -1741,6 +1849,18 @@
     "mediane": 0.0,
     "min": 0.0,
     "max": 0.0,
+    "n": 1
+   },
+   "timing.translation_articulation_max_studs.Left Arm": {
+    "mediane": 1.215,
+    "min": 1.215,
+    "max": 1.215,
+    "n": 1
+   },
+   "timing.translation_articulation_max_studs.Right Arm": {
+    "mediane": 1.152,
+    "min": 1.152,
+    "max": 1.152,
     "n": 1
    }
   }
@@ -2112,6 +2232,36 @@
     "min": 1.2,
     "max": 2.9,
     "n": 2
+   },
+   "timing.translation_articulation_max_studs.Head": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 2
+   },
+   "timing.translation_articulation_max_studs.Left Arm": {
+    "mediane": 0.676,
+    "min": 0.402,
+    "max": 0.951,
+    "n": 2
+   },
+   "timing.translation_articulation_max_studs.Left Leg": {
+    "mediane": 1.202,
+    "min": 0.839,
+    "max": 1.565,
+    "n": 2
+   },
+   "timing.translation_articulation_max_studs.Right Arm": {
+    "mediane": 0.676,
+    "min": 0.402,
+    "max": 0.951,
+    "n": 2
+   },
+   "timing.translation_articulation_max_studs.Right Leg": {
+    "mediane": 1.202,
+    "min": 0.839,
+    "max": 1.564,
+    "n": 2
    }
   }
  },
@@ -2458,6 +2608,24 @@
     "mediane": 0.0,
     "min": 0.0,
     "max": 0.9,
+    "n": 3
+   },
+   "timing.translation_articulation_max_studs.Head": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 3
+   },
+   "timing.translation_articulation_max_studs.Left Arm": {
+    "mediane": 0.038,
+    "min": 0.038,
+    "max": 0.038,
+    "n": 3
+   },
+   "timing.translation_articulation_max_studs.Right Arm": {
+    "mediane": 0.037,
+    "min": 0.037,
+    "max": 0.037,
     "n": 3
    }
   }

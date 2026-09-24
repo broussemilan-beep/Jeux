@@ -222,3 +222,24 @@ l'agrippement tenu par `Grab` et `*Arm_GrabPoint`. Le rig est conçu pour ça.
 
 Preuve visuelle : `captures/verification/2026-09-23-v222-deux-rigs-scene.png`
 (pose de **test**, pas une animation).
+
+## Pièges trouvés en animant le premier clip (2026-09-24, `r6_m1_v222`)
+
+- **Cler après un rafraîchissement enregistre l'ancienne valeur.** Le
+  rafraîchissement réévalue l'action existante et écrase la pose. Seule la
+  1re clé était juste, et le clip cuit était statique ; l'auto-test d'export
+  passait quand même, puisqu'un clip immobile réussit l'aller-retour.
+  - Corrigé : `key_controls` clé immédiatement.
+  - Durci : l'auto-test exige que le clip bouge et passe par les valeurs
+    clées.
+- **`Torso Influence = 0` sur un bras détache aussi l'ÉPAULE** (contraintes
+  `NoTorsoInfluence` sur `*Shoulder`) : bras mesuré à 1,73 stud du torse. Pour
+  viser un point du monde, garder 1 et résoudre la position du contrôle IK
+  (`solve_control_for_tip`).
+- **En IK, le membre rigide suit l'avant-bras virtuel**, donc il se décale de
+  l'épaule (~0,7 stud même chaîne tendue) : c'est le faux coude du rig. Le
+  pack pro fait pareil, bras jusqu'à 1,7 stud dans un M1. C'est un style, pas
+  un bug ; la tête, elle, ne se décale jamais.
+- **Torse en FK** (`Torso` `IK/FK` = 0) : `Torso_FK` pivote sur le centre du
+  torse, sans le déplacer. C'est le bon mode pour une réaction de victime, qui
+  chez le pro ne déplace pas le torse.

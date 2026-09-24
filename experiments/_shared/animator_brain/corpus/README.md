@@ -138,3 +138,20 @@ salve.
 - Premier **clip de jeu** (étape 3 de `PLAN.md`) : un M1 et la réaction de
   la victime, sur deux rigs V2.22, jugés par `calibrated_verdict` et
   non plus par `TARGETS`.
+
+## Ajout du 2026-09-24 : les membres se décalent chez les pros
+
+Mesure `translation_articulation_max_studs` (translation des Motor6D hors
+RootJoint) :
+
+| animations | translation max |
+|---|---|
+| bras des M1 | 1,2 à 1,7 stud |
+| jambes des downslams | 1,6 à 1,8 stud |
+| course | bras 0,95, jambes 1,56 |
+| réactions | ~0,04 |
+| **tête, partout** | **0** |
+
+C'est le faux coude du rig IK V2.22 (`RIG_V222.md`). Règle du cerveau :
+**tête toujours attachée** ; membres jugés sur la plage de leur catégorie,
+plus sur une règle « rotation pure ».

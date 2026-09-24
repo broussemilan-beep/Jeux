@@ -158,10 +158,7 @@ def place(rig, location=(0.0, 0.0, 0.0), yaw_deg=0.0):
     bpy.context.view_layer.update()
 
 
-def set_controls(controls, rig=None):
-    """controls = {bone: {"location": (x,y,z), "rotation_euler": (deg,deg,deg)
-    ou "rotation_quaternion": (w,x,y,z)}} -- en espace local du controle."""
-    import bpy
+def _apply_controls(controls, rig=None):
     from mathutils import Euler
     pb = _rig(rig).primary.pose.bones
     for name, ch in controls.items():
@@ -174,6 +171,16 @@ def set_controls(controls, rig=None):
         if "rotation_quaternion" in ch:
             b.rotation_mode = "QUATERNION"
             b.rotation_quaternion = ch["rotation_quaternion"]
+
+
+def set_controls(controls, rig=None):
+    """controls = {bone: {"location": (x,y,z), "rotation_euler": (deg,deg,deg)
+    ou "rotation_quaternion": (w,x,y,z)}} -- en espace local du controle.
+    ATTENTION : si le rig est deja anime, le prochain rafraichissement de la
+    scene reevalue l'action et ecrase cette pose -- pour animer, utiliser
+    key_controls()."""
+    import bpy
+    _apply_controls(controls, rig)
     bpy.context.view_layer.update()
 
 
@@ -238,6 +245,16 @@ def review_render(out_prefix, views=("front", "side"), res=520, samples=16, cent
     for o in bpy.data.objects:
         if o.type in ("ARMATURE", "EMPTY"):
             o.hide_render = True
+    if "ReviewGround" not in bpy.data.objects:
+        # sol a z = 0 : sans lui, impossible de juger un appui sur une revue
+        me = bpy.data.meshes.new("ReviewGround")
+        me.from_pydata([(-30, -30, 0), (30, -30, 0), (30, 30, 0), (-30, 30, 0)], [], [(0, 1, 2, 3)])
+        g = bpy.data.objects.new("ReviewGround", me)
+        mat = bpy.data.materials.new("ReviewGroundMat")
+        mat.use_nodes = True
+        mat.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (0.42, 0.42, 0.44, 1.0)
+        me.materials.append(mat)
+        S.collection.objects.link(g)
     if "ReviewSun" not in bpy.data.objects:
         sun = bpy.data.objects.new("ReviewSun", bpy.data.lights.new("ReviewSun", "SUN"))
         sun.data.energy = 3.0
@@ -252,7 +269,10 @@ def review_render(out_prefix, views=("front", "side"), res=520, samples=16, cent
     S.camera = cam
     tx, ty = target
     pos = {"front": (tx, ty + dist, center_z), "side": (tx + dist, ty, center_z), "back": (tx, ty - dist, center_z),
-           "three_quarter": (tx + dist * 0.7, ty + dist * 0.7, center_z + 2.0)}
+           "three_quarter": (tx + dist * 0.7, ty + dist * 0.7, center_z + 2.0),
+           # camera de jeu : derriere l'epaule droite de l'attaquant (face a +Y),
+           # assez decalee pour que l'attaquant ne masque pas la cible
+           "gameplay": (tx + dist * 0.8, ty - dist * 0.55, center_z + dist * 0.3)}
     out = []
     for v in views:
         cam.location = Vector(pos[v])
@@ -263,11 +283,16 @@ def review_render(out_prefix, views=("front", "side"), res=520, samples=16, cent
     return out
 
 
-def key_controls(frame, controls, interpolation="BEZIER", rig=None):
-    """Pose les controles (meme format que set_controls) ET les cle a la
-    frame donnee (location / rotation_quaternion seulement sur les canaux
-    fournis)."""
-    set_controls(controls, rig=rig)
+def key_controls(frame, controls, interpolation="BEZIER", rig=None, easing=None):
+    """Pose les controles et les cle a la frame donnee.
+
+    Piege corrige le 2026-09-24 : poser -> rafraichir la scene -> cler
+    enregistrait l'ANCIENNE valeur, car le rafraichissement reevalue l'action
+    existante (a la frame courante) et ecrase la pose qu'on vient d'ecrire. Seule
+    la 1re cle etait juste, et le clip cuit etait statique. On cle donc
+    IMMEDIATEMENT apres avoir ecrit les valeurs, et on ne rafraichit qu'ensuite."""
+    import bpy
+    _apply_controls(controls, rig)
     arm = _rig(rig).primary
     for name, ch in controls.items():
         b = arm.pose.bones[name]
@@ -281,12 +306,17 @@ def key_controls(frame, controls, interpolation="BEZIER", rig=None):
             for kp in fc.keyframe_points:
                 if abs(kp.co[0] - frame) < 1e-6:
                     kp.interpolation = interpolation
+                    if easing is not None:
+                        kp.easing = easing
+    bpy.context.view_layer.update()
 
 
 def key_setting(frame, part, key, value, rig=None):
     """Cle un reglage du rig (ex. IK/FK, Grab) sur l'objet reglage."""
+    r = _rig(rig)
+    r.holders[part][key] = value
+    r.holders[part].keyframe_insert(f'["{key}"]', frame=frame)
     set_setting(part, key, value, rig=rig)
-    _rig(rig).holders[part].keyframe_insert(f'["{key}"]', frame=frame)
 
 
 def _fcurves(action):
@@ -297,13 +327,74 @@ def _fcurves(action):
         return list(action.fcurves)
 
 
+def current_parts(rig=None):
+    """CFrames monde (repere Roblox) des 7 parts dans l'etat COURANT de la
+    scene, sans changer de frame. Methode : delta de chaque os par rapport a
+    SA pose de repos, applique a la part Roblox au repos (rotation identite,
+    centre standard) -- ne depend d'aucune convention d'axe des os Blender."""
+    import numpy as np
+    from mathutils import Vector
+    from .roblox_export import B2R, REST_CENTER, orthonormalize
+    arm = _rig(rig).internal
+    world = {}
+    for p in PARTS:
+        rest = arm.matrix_world @ arm.data.bones[p].matrix_local
+        d = (arm.matrix_world @ arm.pose.bones[p].matrix) @ rest.inverted()
+        c0 = B2R.T @ np.array(REST_CENTER[p])
+        world[p] = (orthonormalize(B2R @ np.array(d.to_3x3()) @ B2R.T), B2R @ np.array(d @ Vector(c0)))
+    return world
+
+
+def limb_tip(world, part):
+    """Bout d'un membre (centre de la face du bas), repere Roblox."""
+    import numpy as np
+    r, p = world[part]
+    return p + r @ np.array([0.0, -1.0, 0.0])
+
+
+def solve_control_for_tip(ctrl, part, target_roblox, rig=None, iters=12, tol=1e-3):
+    """Trouve la translation du controle IK `ctrl` qui amene le bout du
+    membre `part` au point voulu (repere Roblox), par Gauss-Newton avec
+    jacobienne en differences finies -- independant des contraintes du rig.
+    Point hors d'atteinte : converge vers le point atteignable le plus
+    proche (le membre pointe vers la cible). A appeler AVANT d'animer le rig
+    (sinon le rafraichissement reevalue l'action et ecrase la pose).
+    Retourne (location, residu en studs)."""
+    import bpy
+    import numpy as np
+    pb = _rig(rig).primary.pose.bones[ctrl]
+    target = np.asarray(target_roblox, float)
+    loc = np.array(pb.location, float)
+
+    def tip_at(l):
+        pb.location = tuple(l)
+        bpy.context.view_layer.update()
+        return limb_tip(current_parts(rig), part)
+
+    cur = tip_at(loc)
+    for _ in range(iters):
+        err = target - cur
+        if np.linalg.norm(err) < tol:
+            break
+        J = np.zeros((3, 3))
+        for k in range(3):
+            dl = np.zeros(3)
+            dl[k] = 0.05
+            J[:, k] = (tip_at(loc + dl) - cur) / 0.05
+        step = np.linalg.solve(J.T @ J + 1e-3 * np.eye(3), J.T @ err)
+        n = np.linalg.norm(step)
+        if n > 1.5:
+            step *= 1.5 / n
+        loc = loc + step
+        cur = tip_at(loc)
+    return tuple(loc), float(np.linalg.norm(target - cur))
+
+
 def bake_parts(frame_start, frame_end, step=1, hrp="rig", rig=None):
     """Cuit les 7 parts Roblox (InternalArmature) en CFrames MONDE, repere
     ROBLOX, pour chaque frame : [(t, {part: (R 3x3, p 3)})].
 
-    Methode : delta de chaque os par rapport a SA pose de repos, applique a
-    la part Roblox au repos (rotation identite, centre standard). Ne depend
-    donc d'aucune convention d'axe des os Blender.
+    Voir current_parts() pour la methode.
     hrp="rig" (defaut) : HumanoidRootPart = celui du rig, qui suit l'OBJET
     __PrimaryArmature (placement du personnage, voir place()) et pas
     MasterControl : tout mouvement anime passe donc par le RootJoint, comme
@@ -311,24 +402,14 @@ def bake_parts(frame_start, frame_end, step=1, hrp="rig", rig=None):
     hrp="fixed" : HumanoidRootPart force au repos a l'origine."""
     import bpy
     import numpy as np
-    from mathutils import Vector
-    from .roblox_export import B2R, REST_CENTER, orthonormalize
+    from .roblox_export import REST_CENTER
 
     S = bpy.context.scene
-    arm = _rig(rig).internal
-    rest = {p: arm.matrix_world @ arm.data.bones[p].matrix_local for p in PARTS}
     fps = S.render.fps / S.render.fps_base
     out = []
     for f in range(frame_start, frame_end + 1, step):
         S.frame_set(f)
-        world = {}
-        for p in PARTS:
-            m = arm.matrix_world @ arm.pose.bones[p].matrix
-            d = m @ rest[p].inverted()
-            drot = np.array(d.to_3x3())
-            c0 = B2R.T @ np.array(REST_CENTER[p])
-            cb = np.array(d @ Vector(c0))
-            world[p] = (orthonormalize(B2R @ drot @ B2R.T), B2R @ cb)
+        world = current_parts(rig)
         if hrp == "fixed":
             world["HumanoidRootPart"] = (np.eye(3), np.array(REST_CENTER["HumanoidRootPart"]))
         out.append(((f - frame_start) / fps, world))

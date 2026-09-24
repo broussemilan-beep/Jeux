@@ -104,9 +104,11 @@ def _cframe(parent, name, pos, m):
             ET.SubElement(el, f"R{i}{k}").text = repr(float(m[i][k]))
 
 
-def write_kfseq(frames, out_path, name, loop=False, priority=3, markers=()):
+def write_kfseq(frames, out_path, name, loop=False, priority=3, markers=(), zero_weight=()):
     """frames : [(t, world)] ; markers : [(t, "nom", "valeur")] -> KeyframeMarker
-    sous le Keyframe le plus proche (utilises en jeu par GetMarkerReachedSignal)."""
+    sous le Keyframe le plus proche (utilises en jeu par GetMarkerReachedSignal).
+    zero_weight : parts ecrites avec Weight = 0 (une autre animation les mene
+    en jeu -- ex. jambes d'un M1, comme dans le pack pro, corpus/README.md)."""
     ref = [0]
 
     def nref():
@@ -137,7 +139,7 @@ def write_kfseq(frames, out_path, name, loop=False, priority=3, markers=()):
             ET.SubElement(pp, "string", {"name": "Name"}).text = part
             ET.SubElement(pp, "token", {"name": "EasingDirection"}).text = "0"
             ET.SubElement(pp, "token", {"name": "EasingStyle"}).text = "1"  # Linear
-            ET.SubElement(pp, "float", {"name": "Weight"}).text = "1"
+            ET.SubElement(pp, "float", {"name": "Weight"}).text = "0" if part in zero_weight else "1"
             if part == "HumanoidRootPart":
                 rt, pt = np.eye(3), np.zeros(3)
             else:

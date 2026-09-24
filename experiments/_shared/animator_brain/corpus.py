@@ -180,11 +180,15 @@ def timing_profile(world_frames, loop=False, ignore_parts=(), strike=False):
     hand_sp = {h: _smooth(np.linalg.norm(np.gradient(clip.tip(h), dt, axis=0), axis=1)) for h in ("Right Arm", "Left Arm")}
     hand = np.maximum(hand_sp["Right Arm"], hand_sp["Left Arm"])
     # vitesse de la main VERS L'AVANT du personnage (-Z du HumanoidRootPart) :
-    # un armement eloigne aussi la main du torse, mais vers l'arriere
-    fwd = [clip.world_rot["HumanoidRootPart"][i] @ np.array([0.0, 0.0, -1.0]) for i in range(n)]
-    fwd = np.array(fwd)
-    ext = np.maximum.reduce([_smooth(np.einsum("ij,ij->i", np.gradient(clip.tip(h), dt, axis=0), fwd))
-                             for h in ("Right Arm", "Left Arm")])
+    # un armement eloigne aussi la main du torse, mais vers l'arriere. On ne
+    # regarde que la main QUI FRAPPE (celle qui va le plus loin devant le
+    # torse) : l'autre main peut elle aussi partir vers l'avant pendant
+    # l'armement (bras de visee) et tromper la detection (vu sur notre M1).
+    fwd = np.array([clip.world_rot["HumanoidRootPart"][i] @ np.array([0.0, 0.0, -1.0]) for i in range(n)])
+    torso_p = clip.world_pos["Torso"]
+    reach = {h: float(np.max(np.einsum("ij,ij->i", clip.tip(h) - torso_p, fwd))) for h in ("Right Arm", "Left Arm")}
+    punch = max(reach, key=reach.get)
+    ext = _smooth(np.einsum("ij,ij->i", np.gradient(clip.tip(punch), dt, axis=0), fwd))
     moves = []
     for a, b in zip(cut[:-1], cut[1:]):
         if b - a < 2:
@@ -201,6 +205,7 @@ def timing_profile(world_frames, loop=False, ignore_parts=(), strike=False):
                       "pic_energie_rel": round(epk / pk, 2), "main_max_studs_s": round(float(hand[seg].max()), 1),
                       "ordre_des_pics": [(p, round((tp - t[a]) * 60, 1)) for tp, p in order]})
     out["mouvements"] = moves
+    out["main_qui_frappe"] = punch
     if not loop and moves:
         # l'ACTION = le mouvement ou la main va le plus vite (le coup),
         # sinon celui de plus forte energie
@@ -228,6 +233,11 @@ def timing_profile(world_frames, loop=False, ignore_parts=(), strike=False):
                              "amplitude_vs_repos_deg": round(float(amp_rest), 1),
                              "amplitude_vs_debut_deg": round(float(amp_run), 1)}
     out["mains_vitesse_max_studs_s"] = {h: round(float(v.max()), 1) for h, v in hand_sp.items()}
+    # translation des Motor6D (hors RootJoint) : les pros DECALENT les membres
+    # (faux coude du rig IK) -- la tete, jamais (mesure du pack, 2026-09-24)
+    out["translation_articulation_max_studs"] = {
+        p: round(max(float(np.linalg.norm(X.joint_transform(p, w)[1])) for _t, w in world_frames), 3)
+        for p in limbs if p != "Torso"}
     tp = clip.world_pos["Torso"]
     out["deplacement_torse_studs"] = {"x": round(float(np.ptp(tp[:, 0])), 2), "y": round(float(np.ptp(tp[:, 1])), 2),
                                      "z": round(float(np.ptp(tp[:, 2])), 2)}

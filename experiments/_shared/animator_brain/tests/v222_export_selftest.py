@@ -61,6 +61,18 @@ def main(blend, out):
                         "LeftArm_FK": {"rotation_euler": (0, 0, 0)},
                         "LeftLeg-IK": {"location": (0, 0, 0)}})
     frames = V.bake_parts(0, 36)
+    # garde-fou : l'animation cuite doit BOUGER et passer par les valeurs
+    # clees (un clip statique passerait tous les autres tests trivialement)
+    def yaw_pitch(r):
+        f = r @ np.array([0.0, 0.0, -1.0])
+        return np.degrees(np.arctan2(-f[0], -f[2])), np.degrees(np.arcsin(np.clip(f[1], -1, 1)))
+    y12, p12 = yaw_pitch(frames[12][1]["Torso"][0])
+    y20, p20 = yaw_pitch(frames[20][1]["Torso"][0])
+    motion = max(np.linalg.norm(frames[i][1][p][1] - frames[0][1][p][1]) for i in range(37) for p in X.PART_ORDER)
+    print(f"torse cuit : f12 lacet {y12:.1f} (cle -25) ; f20 lacet {y20:.1f} (cle 30) ; deplacement max {motion:.2f} stud")
+    # tolerance 5 deg : tangage et roulis cles en meme temps decalent un peu
+    # le lacet MESURE du vecteur avant (composition des angles)
+    moving = abs(y12 - (-25)) < 5 and abs(y20 - 30) < 5 and motion > 0.5
     X.write_kfseq(frames, out, "V222_Selftest", markers=[(20 / 60, "hit", "right_hand")])
     rt = X.roundtrip_error(out, frames)
     print("aller-retour (pos studs, angle deg) :", {k: (round(a, 6), round(b, 5)) for k, (a, b) in rt.items()})
@@ -78,7 +90,7 @@ def main(blend, out):
             pred = (r @ (v0 - c).T).T + pos
             worst = max(worst, float(np.abs(pred - cur[p]).max()))
     print(f"sommets reels vs fichier : ecart max {worst:.6f} stud sur 37 frames x 6 parts")
-    ok = max(a for a, _b in rt.values()) < 1e-3 and worst < 0.01
+    ok = max(a for a, _b in rt.values()) < 1e-3 and worst < 0.01 and moving
     print("CHAINE V2.22 -> ROBLOX OK" if ok else "CHAINE KO")
     return ok
 
