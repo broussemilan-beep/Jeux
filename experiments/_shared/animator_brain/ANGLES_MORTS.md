@@ -81,6 +81,19 @@ l'interpolation de l'Animator, ni la caméra, ni les VFX, ni le rendu R6.
 Un test de 5 minutes avec `PoingDuDragon.rbxmx` dirait si la note porte sur
 l'animation ou sur l'aperçu.
 
+**Trouvé le 2026-09-24 (doc officielle Roblox, `PoseEasingStyle.yaml`).**
+Tous nos exports écrivaient `EasingStyle = 1` en le croyant « Linear ». Or
+1 = **Constant** (0 = Linear). En jeu, chaque pose restait figée jusqu'à la
+clé suivante puis sautait. Le Poing du Dragon a des trous de 8 à 12 f dans
+l'aérien et de 36 f à la fin : il aurait saccadé dans Studio, alors que le
+lecteur HTML (qui interpole toujours en linéaire) ne pouvait pas le montrer.
+- **Corrigé** : 11 exporteurs, 30 fichiers `.rbxmx`.
+- **Garde-fou** : `verify_export.py` échoue désormais si une pose n'est pas en
+  Linear.
+- **Leçon** : un test qui relit nos propres fichiers avec notre propre
+  hypothèse ne prouve rien sur le moteur. Toute propriété écrite pour Roblox
+  se vérifie contre la doc officielle.
+
 ## 4. Les notes ne suffisent pas à apprendre
 
 - Il y a 3 notes pour 15 hypothèses : le problème est sous-déterminé, et la

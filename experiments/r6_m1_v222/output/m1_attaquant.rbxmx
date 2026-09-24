@@ -15,7 +15,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -36,7 +36,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>-2.930988785010413e-14</X>
@@ -57,7 +57,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>8.04322384216627e-09</X>
@@ -79,7 +79,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-0.0006021271634155841</X>
@@ -101,7 +101,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.186220629309083e-05</X>
@@ -123,7 +123,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-4.172302651419261e-07</X>
@@ -145,7 +145,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.038208649256892e-05</X>
@@ -175,7 +175,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -196,7 +196,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>0.00044016074389219284</X>
@@ -217,7 +217,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>1.3765807281573839e-07</X>
@@ -239,7 +239,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.020276978546023512</X>
@@ -261,7 +261,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.179424088357567e-05</X>
@@ -283,7 +283,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-0.08702561918433165</X>
@@ -305,7 +305,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.022931626072e-05</X>
@@ -335,7 +335,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -356,7 +356,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>-0.006639290601015091</X>
@@ -377,7 +377,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>4.1628143527400185e-07</X>
@@ -399,7 +399,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.21789564885953572</X>
@@ -421,7 +421,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.190954927535325e-05</X>
@@ -443,7 +443,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-0.18719641446328744</X>
@@ -465,7 +465,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.043553748957901e-05</X>
@@ -495,7 +495,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -516,7 +516,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>-0.01721608266234398</X>
@@ -537,7 +537,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>5.34712639249646e-07</X>
@@ -559,7 +559,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.3331299541716609</X>
@@ -581,7 +581,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.185022880876578e-05</X>
@@ -603,7 +603,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.13861910896879498</X>
@@ -625,7 +625,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.043381576652322e-05</X>
@@ -655,7 +655,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -676,7 +676,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>-0.02217736840248108</X>
@@ -697,7 +697,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>5.806338058689242e-07</X>
@@ -719,7 +719,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.2973193626742987</X>
@@ -741,7 +741,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.193155965285649e-05</X>
@@ -763,7 +763,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.27960368385835943</X>
@@ -785,7 +785,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.044278471787392e-05</X>
@@ -815,7 +815,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -836,7 +836,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>-0.025699272751808167</X>
@@ -857,7 +857,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>5.645533520115542e-07</X>
@@ -879,7 +879,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.2616307633834949</X>
@@ -901,7 +901,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.192044896362239e-05</X>
@@ -923,7 +923,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.36876059092353375</X>
@@ -945,7 +945,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.048409295185837e-05</X>
@@ -975,7 +975,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -996,7 +996,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>-0.02755919098854065</X>
@@ -1017,7 +1017,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>6.309596903980585e-07</X>
@@ -1039,7 +1039,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.22946487712172475</X>
@@ -1061,7 +1061,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.187432879792585e-05</X>
@@ -1083,7 +1083,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.39153098898784133</X>
@@ -1105,7 +1105,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.038798475757563e-05</X>
@@ -1135,7 +1135,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -1156,7 +1156,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>-0.028145574033260345</X>
@@ -1177,7 +1177,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>5.830117377342292e-07</X>
@@ -1199,7 +1199,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.20426269746445083</X>
@@ -1221,7 +1221,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.195203923705777e-05</X>
@@ -1243,7 +1243,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.35259797442454033</X>
@@ -1265,7 +1265,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.047136712399113e-05</X>
@@ -1295,7 +1295,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -1316,7 +1316,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>-0.028028927743434906</X>
@@ -1337,7 +1337,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>5.090484818670582e-07</X>
@@ -1359,7 +1359,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.189096787466145</X>
@@ -1381,7 +1381,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.189283221295493e-05</X>
@@ -1403,7 +1403,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.2702045193477929</X>
@@ -1425,7 +1425,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.03923194501188e-05</X>
@@ -1455,7 +1455,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -1476,7 +1476,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>-0.027732744812965393</X>
@@ -1497,7 +1497,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>5.597773322374433e-07</X>
@@ -1519,7 +1519,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.18286921792072514</X>
@@ -1541,7 +1541,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.186456108201333e-05</X>
@@ -1563,7 +1563,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.1708501277766828</X>
@@ -1585,7 +1585,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.061437726868809e-05</X>
@@ -1615,7 +1615,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -1636,7 +1636,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>-0.027599357068538666</X>
@@ -1657,7 +1657,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>5.225371678130308e-07</X>
@@ -1679,7 +1679,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.1836029178007455</X>
@@ -1701,7 +1701,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.196949060200373e-05</X>
@@ -1723,7 +1723,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.0993668349353688</X>
@@ -1745,7 +1745,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.044187183351597e-05</X>
@@ -1781,7 +1781,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -1802,7 +1802,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>-0.03939087688922882</X>
@@ -1823,7 +1823,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>6.097992156645082e-07</X>
@@ -1845,7 +1845,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.2107397058878267</X>
@@ -1867,7 +1867,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.193022947451212e-05</X>
@@ -1889,7 +1889,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.10583095316790492</X>
@@ -1911,7 +1911,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.047857868531007e-05</X>
@@ -1941,7 +1941,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -1962,7 +1962,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>-0.06178772449493408</X>
@@ -1983,7 +1983,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>6.321075634030393e-07</X>
@@ -2005,7 +2005,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.21232762120833015</X>
@@ -2027,7 +2027,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.18474347431671e-05</X>
@@ -2049,7 +2049,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.3313209799148239</X>
@@ -2071,7 +2071,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.045605727013256e-05</X>
@@ -2101,7 +2101,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -2122,7 +2122,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>-0.07562537491321564</X>
@@ -2143,7 +2143,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>4.778355844475835e-07</X>
@@ -2165,7 +2165,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.15446422114475986</X>
@@ -2187,7 +2187,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.198132437798543e-05</X>
@@ -2209,7 +2209,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.4786236548623335</X>
@@ -2231,7 +2231,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.052308337307298e-05</X>
@@ -2261,7 +2261,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -2282,7 +2282,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>-0.06995368003845215</X>
@@ -2303,7 +2303,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>3.0467714347975905e-07</X>
@@ -2325,7 +2325,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.005593500845543609</X>
@@ -2347,7 +2347,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.206127801146322e-05</X>
@@ -2369,7 +2369,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.5269415907911466</X>
@@ -2391,7 +2391,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.055887860121565e-05</X>
@@ -2421,7 +2421,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -2442,7 +2442,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>-0.031978875398635864</X>
@@ -2463,7 +2463,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>1.1591552808234984e-07</X>
@@ -2485,7 +2485,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-0.020357348724073243</X>
@@ -2507,7 +2507,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.187383390970913e-05</X>
@@ -2529,7 +2529,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.5649274576722527</X>
@@ -2551,7 +2551,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.033419234850122e-05</X>
@@ -2581,7 +2581,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -2602,7 +2602,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>0.027001164853572845</X>
@@ -2623,7 +2623,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-1.2380251537824627e-07</X>
@@ -2645,7 +2645,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.21568036920835332</X>
@@ -2667,7 +2667,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.179045596201027e-05</X>
@@ -2689,7 +2689,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.5590862276795954</X>
@@ -2711,7 +2711,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.0286687519860975e-05</X>
@@ -2741,7 +2741,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -2762,7 +2762,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>0.07182711362838745</X>
@@ -2783,7 +2783,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-4.055387975779312e-07</X>
@@ -2805,7 +2805,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.2982927019079732</X>
@@ -2827,7 +2827,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.187640368124359e-05</X>
@@ -2849,7 +2849,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>1.0414068365132243</X>
@@ -2871,7 +2871,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.050271302111219e-05</X>
@@ -2907,7 +2907,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -2928,7 +2928,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>0.0937093049287796</X>
@@ -2949,7 +2949,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-4.236310823177436e-07</X>
@@ -2971,7 +2971,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.2761199934449785</X>
@@ -2993,7 +2993,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.168938011544278e-05</X>
@@ -3015,7 +3015,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.9710659232723018</X>
@@ -3037,7 +3037,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.04287728622138e-05</X>
@@ -3067,7 +3067,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -3088,7 +3088,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>0.11509829759597778</X>
@@ -3109,7 +3109,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-4.2246490428166084e-07</X>
@@ -3131,7 +3131,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.23375125532780233</X>
@@ -3153,7 +3153,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.164904361727341e-05</X>
@@ -3175,7 +3175,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.9146167186361267</X>
@@ -3197,7 +3197,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.042272401283409e-05</X>
@@ -3227,7 +3227,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -3248,7 +3248,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>0.14807209372520447</X>
@@ -3269,7 +3269,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-5.138097740331471e-07</X>
@@ -3291,7 +3291,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.19503085508002682</X>
@@ -3313,7 +3313,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.173571876971762e-05</X>
@@ -3335,7 +3335,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.7895409180788003</X>
@@ -3357,7 +3357,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.042376298427769e-05</X>
@@ -3387,7 +3387,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -3408,7 +3408,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>0.16723427176475525</X>
@@ -3429,7 +3429,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-5.0677575157837e-07</X>
@@ -3451,7 +3451,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.17511196268435567</X>
@@ -3473,7 +3473,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.173512063661901e-05</X>
@@ -3495,7 +3495,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.725633155296254</X>
@@ -3517,7 +3517,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.03816533512541e-05</X>
@@ -3553,7 +3553,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -3574,7 +3574,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>0.16883763670921326</X>
@@ -3595,7 +3595,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-4.996178910518512e-07</X>
@@ -3617,7 +3617,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.16846605025860317</X>
@@ -3639,7 +3639,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.16413262898019e-05</X>
@@ -3661,7 +3661,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.6852766255612035</X>
@@ -3683,7 +3683,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.052154227764809e-05</X>
@@ -3713,7 +3713,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -3734,7 +3734,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>0.169572651386261</X>
@@ -3755,7 +3755,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-4.825881995823567e-07</X>
@@ -3777,7 +3777,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.1639361215675364</X>
@@ -3799,7 +3799,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.164044311784966e-05</X>
@@ -3821,7 +3821,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.6165829355747401</X>
@@ -3843,7 +3843,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.0423042854734886e-05</X>
@@ -3873,7 +3873,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -3894,7 +3894,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>0.16958603262901306</X>
@@ -3915,7 +3915,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-4.4427966500171223e-07</X>
@@ -3937,7 +3937,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.16161390052269525</X>
@@ -3959,7 +3959,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.181260193222071e-05</X>
@@ -3981,7 +3981,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.5180776047824479</X>
@@ -4003,7 +4003,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.0484550952315373e-05</X>
@@ -4033,7 +4033,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -4054,7 +4054,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>0.16902625560760498</X>
@@ -4075,7 +4075,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-4.885554365854916e-07</X>
@@ -4097,7 +4097,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.16107033250459696</X>
@@ -4119,7 +4119,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.187584904113197e-05</X>
@@ -4141,7 +4141,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.39215004447869317</X>
@@ -4163,7 +4163,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.0647552642769647e-05</X>
@@ -4193,7 +4193,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -4214,7 +4214,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>0.1680421233177185</X>
@@ -4235,7 +4235,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-5.362582801426985e-07</X>
@@ -4257,7 +4257,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.16204644380902708</X>
@@ -4279,7 +4279,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.17335719003409e-05</X>
@@ -4301,7 +4301,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.24979054091297526</X>
@@ -4323,7 +4323,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.022938894973627e-05</X>
@@ -4353,7 +4353,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -4374,7 +4374,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>0.16678154468536377</X>
@@ -4395,7 +4395,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-3.630402397869492e-07</X>
@@ -4417,7 +4417,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.16424176529514914</X>
@@ -4439,7 +4439,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.187401127144554e-05</X>
@@ -4461,7 +4461,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.1099265371749375</X>
@@ -4483,7 +4483,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.0482364351557276e-05</X>
@@ -4513,7 +4513,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -4534,7 +4534,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>0.1653919517993927</X>
@@ -4555,7 +4555,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-4.808953219664902e-07</X>
@@ -4577,7 +4577,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.1673315505520737</X>
@@ -4599,7 +4599,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.177116875136224e-05</X>
@@ -4621,7 +4621,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-0.009593221756488357</X>
@@ -4643,7 +4643,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.042807924421743e-05</X>
@@ -4673,7 +4673,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -4694,7 +4694,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>0.1640181541442871</X>
@@ -4715,7 +4715,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-4.796728300879294e-07</X>
@@ -4737,7 +4737,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.17098735132201798</X>
@@ -4759,7 +4759,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.161295236895015e-05</X>
@@ -4781,7 +4781,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-0.10075466915428483</X>
@@ -4803,7 +4803,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.0275177390039496e-05</X>
@@ -4833,7 +4833,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -4854,7 +4854,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>0.16280293464660645</X>
@@ -4875,7 +4875,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-5.59615451319051e-07</X>
@@ -4897,7 +4897,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.17505439561312522</X>
@@ -4919,7 +4919,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.162248149049754e-05</X>
@@ -4941,7 +4941,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-0.1651691530067244</X>
@@ -4963,7 +4963,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.031427804861848e-05</X>
@@ -4993,7 +4993,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -5014,7 +5014,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>0.16188651323318481</X>
@@ -5035,7 +5035,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-4.1187784074331324e-07</X>
@@ -5057,7 +5057,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.17927009726844115</X>
@@ -5079,7 +5079,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.178640678417002e-05</X>
@@ -5101,7 +5101,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-0.20857609681791955</X>
@@ -5123,7 +5123,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.0363479415828074e-05</X>
@@ -5153,7 +5153,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -5174,7 +5174,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>0.16140589118003845</X>
@@ -5195,7 +5195,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-4.808315407014985e-07</X>
@@ -5217,7 +5217,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.18324831532373284</X>
@@ -5239,7 +5239,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.166869325791025e-05</X>
@@ -5261,7 +5261,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-0.23655415875882213</X>
@@ -5283,7 +5283,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.0199657271866585e-05</X>
@@ -5313,7 +5313,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -5334,7 +5334,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>0.16149500012397766</X>
@@ -5355,7 +5355,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-3.3751827512029653e-07</X>
@@ -5377,7 +5377,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.18682079529368764</X>
@@ -5399,7 +5399,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.178236783216384e-05</X>
@@ -5421,7 +5421,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-0.25282492775346066</X>
@@ -5443,7 +5443,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.028375145924412e-05</X>
@@ -5473,7 +5473,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -5494,7 +5494,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>0.16299238801002502</X>
@@ -5515,7 +5515,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-3.396948495409946e-07</X>
@@ -5537,7 +5537,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.19012788929364327</X>
@@ -5559,7 +5559,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.167867349629597e-05</X>
@@ -5581,7 +5581,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-0.26165052309480175</X>
@@ -5603,7 +5603,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.0398211552453156e-05</X>
@@ -5633,7 +5633,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -5654,7 +5654,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>0.16608202457427979</X>
@@ -5675,7 +5675,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-5.097435111234283e-07</X>
@@ -5697,7 +5697,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.19319340933889995</X>
@@ -5719,7 +5719,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.174576683540267e-05</X>
@@ -5741,7 +5741,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-0.2666826573193761</X>
@@ -5763,7 +5763,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.0149643286579995e-05</X>
@@ -5793,7 +5793,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -5814,7 +5814,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>0.1699216365814209</X>
@@ -5835,7 +5835,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-4.4715714295207043e-07</X>
@@ -5857,7 +5857,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.1958278375091001</X>
@@ -5879,7 +5879,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.19727733483233e-05</X>
@@ -5901,7 +5901,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-0.2681061499914499</X>
@@ -5923,7 +5923,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.05165341367808e-05</X>
@@ -5953,7 +5953,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -5974,7 +5974,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>0.17368048429489136</X>
@@ -5995,7 +5995,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-5.771364472023643e-07</X>
@@ -6017,7 +6017,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.19805467180272174</X>
@@ -6039,7 +6039,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.183260055508955e-05</X>
@@ -6061,7 +6061,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-0.26552667446900324</X>
@@ -6083,7 +6083,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.0386583099377704e-05</X>
@@ -6113,7 +6113,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -6134,7 +6134,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>0.17653685808181763</X>
@@ -6155,7 +6155,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-4.2529326670787126e-07</X>
@@ -6177,7 +6177,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.19949777488375098</X>
@@ -6199,7 +6199,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.189801024755748e-05</X>
@@ -6221,7 +6221,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-0.2598722219248921</X>
@@ -6243,7 +6243,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.043986687200796e-05</X>
@@ -6273,7 +6273,7 @@
         <Properties>
           <string name="Name">HumanoidRootPart</string>
           <token name="EasingDirection">0</token>
-          <token name="EasingStyle">1</token>
+          <token name="EasingStyle">0</token>
           <float name="Weight">1</float>
           <CoordinateFrame name="CFrame">
             <X>0.0</X>
@@ -6294,7 +6294,7 @@
           <Properties>
             <string name="Name">Torso</string>
             <token name="EasingDirection">0</token>
-            <token name="EasingStyle">1</token>
+            <token name="EasingStyle">0</token>
             <float name="Weight">1</float>
             <CoordinateFrame name="CFrame">
               <X>0.1776721179485321</X>
@@ -6315,7 +6315,7 @@
             <Properties>
               <string name="Name">Head</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-5.083824662216463e-07</X>
@@ -6337,7 +6337,7 @@
             <Properties>
               <string name="Name">Left Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>0.20001635026790637</X>
@@ -6359,7 +6359,7 @@
             <Properties>
               <string name="Name">Left Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>-6.173363519515473e-05</X>
@@ -6381,7 +6381,7 @@
             <Properties>
               <string name="Name">Right Arm</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">1</float>
               <CoordinateFrame name="CFrame">
                 <X>-0.25629610006940995</X>
@@ -6403,7 +6403,7 @@
             <Properties>
               <string name="Name">Right Leg</string>
               <token name="EasingDirection">0</token>
-              <token name="EasingStyle">1</token>
+              <token name="EasingStyle">0</token>
               <float name="Weight">0</float>
               <CoordinateFrame name="CFrame">
                 <X>4.0368831763060165e-05</X>

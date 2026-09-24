@@ -75,7 +75,9 @@
   "attaquant_au_dessus_a_l_apex": true,
   "poing_vers_le_bas_au_contact_air": true,
   "victime_ejectee_loin_devant": true,
-  "victime_couchee_a_la_fin": true
+  "victime_couchee_a_la_fin": true,
+  "interpolation_lineaire_attaquant": true,
+  "interpolation_lineaire_victime": true
  },
  "verdicts": {
   "coup1_L_chest": {

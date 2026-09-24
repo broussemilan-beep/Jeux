@@ -187,7 +187,7 @@ def write_kfseq(frames, out_path, name, loop=False, priority=3, markers=(), zero
             pp = ET.SubElement(it, "Properties")
             ET.SubElement(pp, "string", {"name": "Name"}).text = part
             ET.SubElement(pp, "token", {"name": "EasingDirection"}).text = "0"
-            ET.SubElement(pp, "token", {"name": "EasingStyle"}).text = "1"  # Linear
+            ET.SubElement(pp, "token", {"name": "EasingStyle"}).text = "0"  # Enum.PoseEasingStyle.Linear = 0 (1 = Constant : en jeu, pose figee puis saut ; bug corrige le 2026-09-24)
             ET.SubElement(pp, "float", {"name": "Weight"}).text = "0" if part in zero_weight else "1"
             if part == "HumanoidRootPart":
                 rt, pt = np.eye(3), np.zeros(3)

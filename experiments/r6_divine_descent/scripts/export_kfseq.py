@@ -140,7 +140,7 @@ def build_pose_tree(keyframe_item, part, samples, sample_index, parent_xml=None,
     props = ET.SubElement(item, "Properties")
     ET.SubElement(props, "string", {"name": "Name"}).text = part
     ET.SubElement(props, "token", {"name": "EasingDirection"}).text = "0"
-    ET.SubElement(props, "token", {"name": "EasingStyle"}).text = "1"  # Linear
+    ET.SubElement(props, "token", {"name": "EasingStyle"}).text = "0"  # Enum.PoseEasingStyle.Linear = 0 (1 = Constant : en jeu, pose figee puis saut ; bug corrige le 2026-09-24)
     ET.SubElement(props, "float", {"name": "Weight"}).text = "1"
     matrix, world_pos = to_joint_frame(part, rot_parent_frame, trans_parent_frame)
     _cframe_element(props, "CFrame", world_pos, matrix)

@@ -152,6 +152,14 @@ def main(blend):
         "victime_ejectee_loin_devant": bool(wv(M.END_F)["Torso"][1][2] < -15.0),
         "victime_couchee_a_la_fin": bool(abs(look(wv(M.END_F))[1]) > 0.9),
     }
+    # interpolation : chaque Pose en Linear (Enum.PoseEasingStyle.Linear = 0).
+    # 1 = Constant : en jeu, pose figee puis saut a la cle suivante. Tous nos
+    # exports l'ont ete jusqu'au 2026-09-24 sans qu'aucun controle le voie (le
+    # lecteur HTML interpole lineairement quoi qu'il arrive).
+    import re as _re
+    for nom in ("dragon_attaquant.rbxmx", "dragon_victime.rbxmx"):
+        styles = set(_re.findall(r'<token name="EasingStyle">(\d+)</token>', open(os.path.join(M.OUT, nom)).read()))
+        sens[f"interpolation_lineaire_{nom.split('_')[1].split('.')[0]}"] = styles == {"0"}
     rep["sens_roblox"] = sens
     if not all(sens.values()):
         raise SystemExit(f"SENS FAUX : {sens}")
