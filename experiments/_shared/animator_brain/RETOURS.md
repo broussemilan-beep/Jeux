@@ -219,5 +219,22 @@ cerveau, voir la fin de l'entrée.
   R6 sans expression), poing vers la caméra (victime dans l'axe), caméra
   d'épaule (dos qui cache). Découverte : la rafale ne se lit pas en caméra de
   jeu.
-- **Note de Milan** : à venir.
+- **Note de Milan : 7** (prédite 7,8 ; lecture prudente 7,3). « Ça rend
+  assez bien en caméra jeu ; en cinéma, peut-être un peu trop abusé, mais
+  léger. L'animation reste toujours le bémol : il manque un cap par rapport à
+  ce que je veux et nos refs. » Caméra jeu ou cinéma : au cas par cas selon
+  la technique, parfois un mélange.
+- **Ce que le cerveau en tire.**
+  - La mise en scène a fait monter la note (6,8 → 7) : ses poids passent de
+    0,50 à 0,65. La cinématique est à doser un peu moins fort.
+  - **Contradiction à ne pas mal lire.** Les règles mécaniques mesurées
+    (bras horizontal, arcs, coup chargé…) perdent du poids (0,40), parce
+    qu'elles sont vraies depuis la v4 sans que la note bouge. Ça ne veut pas
+    dire que l'animation compte peu : Milan dit l'inverse. Ça veut dire que
+    **nos mesures d'animation ne mesurent pas le « cap »**. Elles vérifient
+    la conformité à un pack de M1 réalistes (`ANGLES_MORTS.md` §5 : aucun
+    étalon 3D « manga ultime »), pas ce qui sépare nos poses de celles des
+    refs.
+  - Prochain pas : nommer ce cap sur l'image (nos poses clés contre celles
+    des refs, même moment, même grille) avant de toucher à une clé.
 

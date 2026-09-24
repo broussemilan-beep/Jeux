@@ -5,27 +5,21 @@
 - v2 : predit 6.5, Milan 6.7 (ecart -0.2)
 - v4 : predit 6.9, Milan 6.7 (ecart +0.2)
 - v5 : predit 7.1, Milan 6.8 (ecart +0.3)
+- v6 : predit 7.9, Milan 7.0 (ecart +0.9)
 
 ## Ce qui a change entre deux versions notees
 - v1 -> v2 : note 6.0 -> 6.7 (+0.7) ; corrigees : posture_droite, escalade, impact_visible ; perdues : aucune
 - v2 -> v4 : note 6.7 -> 6.7 (+0.0) ; corrigees : epaules_basses, bras_horizontal, transfert_poids ; perdues : aucune
 - v4 -> v5 : note 6.7 -> 6.8 (+0.1) ; corrigees : coup_charge, arcs ; perdues : aucune
+- v5 -> v6 : note 6.8 -> 7.0 (+0.2) ; corrigees : silhouette_lisible, cartes_impact, silence_noir, blanc_total, poing_gros_plan, contraste_echelle, fond_remplace, camera_vivante, hierarchie_effets ; perdues : aucune
 
 ## Suspects (toujours faux sur toutes les versions notees, note bloquee)
 - **variete_coups** : Une rafale varie les formes de coups (jab, direct, crochet, marteau, toupie). (sources : 5 exemples de Milan (combo R6); IMPACT HAVEN)
-- **cartes_impact** : Au choc, l'image 3D est remplacee par 2-8 cartes graphiques de 2-4 f (silhouette inversee, encre hachuree, negatif, posterise, couleur plate, cible/croix). (sources : corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~22 clips; refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...))
-- **silence_noir** : Juste avant/apres l'explosion : ecran NOIR 2-10 f (souvent une petite etoile) -- le silence avant le boum. (sources : corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~14 clips; refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...))
-- **blanc_total** : Blanc total 2-15 f au pic (souvent en alternance blanc/noir de 4 f, ou blanc qui se dissout en fumee). (sources : corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~12 clips; refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...))
-- **regard_intention** : Avant que le coup parte : tres gros plan visage/yeux tenu 16-30 f (l'intention ; la charge se lit dans le regard). (sources : corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~10 clips; refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...))
-- **poing_gros_plan** : Le poing/bras remplit l'ecran (raccourci, souvent vers la camera) 12-16 f ; pendant la charge, camera collee au bras. (sources : corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~9 clips; refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...); image de Milan 8965d689 (planche OPM) : LE coup de Saitama = poing vers le lecteur, plus gros que la tete ; Umamusume 3D : meme principe en temps reel)
-- **contraste_echelle** : Coupes entre perso minuscule (plan tres large) et tres gros plan ; contact en gros plan puis consequence en plan tres lointain. (sources : corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~9 clips; refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...); lot 3 : aafdc91d (victime envoyee en point minuscule dans le ciel, camera de jeu), boxeur (tunnel, le mannequin part au loin))
-- **fond_remplace** : A l'impact, le decor est remplace par des lignes de vitesse, une couleur plate ou un fond flou. (sources : corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~6 clips; refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...))
-- **camera_vivante** : La camera participe : fouet vers le ciel, rotation/cadre penche, zoom eclair, poussee jusque dans le corps. (sources : corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~7 clips; refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...))
+- **regard_intention** : Avant que le coup parte : tres gros plan visage/yeux tenu 16-30 f (l'intention ; la charge se lit dans le regard). (sources : corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~10 clips; refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...); essais v6 vus a l'ecran (captures/verification/2026-09-24-poing-dragon-v6-essais-camera-rejetes.png) : le gros plan de face d'une tete R6 montre un sourire fixe -> comique, zero tension ; le regard s'est lu par l'ORIENTATION de la tete en plan rapproche de profil, la cible au bout du regard)
 - **torsion_tronc** : La puissance vient du TRONC qui s'enroule puis se deroule (vu de dos/trois-quarts, 120-150 deg), poses extremes ; garde basse et large normale. (sources : corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~7 clips; refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...); lot 2 : pro vs noob Blender (BACK -> FRONT, ~180 deg), cross punch (dos a la camera a l'armement), tuto firytwig « surtout les hanches » ; MESURE : nous 98-137 deg sur les coups de puissance, M1 pro 109-162 -> la rotation existe, c'est la CAMERA de cote qui l'ecrase (la vue de dessus du 6a0095ed la montre))
 - **smear_graphique** : Une trainee/smear porte la vitesse ; la trajectoire du coup reste dessinee a l'ecran quelques frames. (sources : corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~5 clips; refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...))
 - **victime_deformee** : La victime reagit fort : se plie autour du poing, joue ecrasee, tete qui part. (sources : corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~4 clips; refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...))
 - **ellipse_impact** : On n'a pas besoin de montrer le coup : les cartes, le blanc ou une coupe racontent l'impact, et on revient sur le visage ou la consequence. (sources : First time fighting a dummy (lot 2), Serious Punch TSB, OPM (le coup final = un trait dans le noir))
-- **hierarchie_effets** : L'effet est proportionnel au coup : petits coups = petites lignes de vitesse 2-3 f ; gros coup = couches successives (etoile au contact 1 f -> anneaux le long du bras 2 f -> croissant de souffle 2-3 f). (sources : punch practice (lot 2), cross punch (lot 2), refs Black Flash / TSB; lot 3 : M1 de nuit (449345ad : eclat 1 f + anneau, un peu plus gros sur les coups 3-4), aafdc91d (coup 1 petit, coup 2 gros + rouge + anneaux))
 
 ## Ou la mesure contredit le jugement manuel (etats.py)
 - v2 variete_coups : jugement True -> mesure False
@@ -57,41 +51,37 @@
 - mouvement_secondaire : Ce qui pend suit en retard et se stabilise apres (queue, oreilles, cheveux, vetements) : ca vend le poids et la vitesse.
 - camera_jeu_vs_cinematique : En jeu, M1 et competences se jouent dans la camera du JOUEUR (souvent de dos) et doivent s'y lire ; seul l'ultime coupe en cinematique (cartes, gros plans, angles) puis REVIENT a la camera de jeu.
 - rafale_en_masse : Une rafale tres rapide se montre comme une MASSE de poings-smears continue (on lit le rythme et le volume), pas coup par coup.
-- trace_persistante : L'impact laisse une trace qui reste : tache ou cratere au sol, anneau qui se dissipe, fumee ; et on TIENT sur la consequence (~1 s).
 - contact_prolonge : Une saisie ou une projection garde les corps en contact (on soulève, on retourne, on plaque) : la victime est manipulee, pas seulement frappee.
-- structure_en_actes : Un ultime se construit en actes : jeu (petits effets) -> signature visuelle de la technique -> cinematique (cartes, blanc, monde qui disparait) -> consequence TENUE (souvent au ralenti) -> retour au calme / a la camera de jeu.
-- signature_visuelle : Chaque technique a un motif qui lui appartient (horloge, trou noir, eclair rouge) montre AVANT ou pendant : on sait ce qui arrive et on la reconnait.
-- ralenti_consequence : Apres le pic, on tient la consequence au ralenti ou en plan fixe (1-2 s) : c'est la derniere note.
 
-## Echelle calibree sur 4 notes : note = 7.33 + 1.29 x score
+## Echelle calibree sur 5 notes : note = 6.87 + 0.62 x score
 
 ## Poids appris (ce qui fait bouger la note de Milan)
-- cartes_impact        poids_note 0.73 (confiance principe 0.85)
-- blanc_total          poids_note 0.73 (confiance principe 0.75)
-- contraste_echelle    poids_note 0.73 (confiance principe 0.70)
-- camera_vivante       poids_note 0.73 (confiance principe 0.65)
-- smear_graphique      poids_note 0.73 (confiance principe 0.55)
-- victime_deformee     poids_note 0.73 (confiance principe 0.50)
-- ellipse_impact       poids_note 0.73 (confiance principe 0.60)
-- hierarchie_effets    poids_note 0.73 (confiance principe 0.85)
-- variete_coups        poids_note 0.64 (confiance principe 0.60)
-- silhouette_lisible   poids_note 0.64 (confiance principe 0.80)
-- silence_noir         poids_note 0.64 (confiance principe 0.80)
-- regard_intention     poids_note 0.64 (confiance principe 0.75)
-- poing_gros_plan      poids_note 0.64 (confiance principe 0.80)
-- fond_remplace        poids_note 0.64 (confiance principe 0.60)
-- torsion_tronc        poids_note 0.64 (confiance principe 0.65)
+- silhouette_lisible   poids_note 0.65 (confiance principe 0.80)
+- cartes_impact        poids_note 0.65 (confiance principe 0.85)
+- blanc_total          poids_note 0.65 (confiance principe 0.75)
+- contraste_echelle    poids_note 0.65 (confiance principe 0.70)
+- camera_vivante       poids_note 0.65 (confiance principe 0.65)
+- hierarchie_effets    poids_note 0.65 (confiance principe 0.85)
+- smear_graphique      poids_note 0.64 (confiance principe 0.55)
+- victime_deformee     poids_note 0.64 (confiance principe 0.50)
+- ellipse_impact       poids_note 0.64 (confiance principe 0.60)
 - trace_persistante    poids_note 0.64 (confiance principe 0.70)
 - structure_en_actes   poids_note 0.64 (confiance principe 0.75)
 - ralenti_consequence  poids_note 0.64 (confiance principe 0.60)
 - posture_droite       poids_note 0.58 (confiance principe 0.70)
 - escalade             poids_note 0.58 (confiance principe 0.60)
 - impact_visible       poids_note 0.58 (confiance principe 0.70)
+- silence_noir         poids_note 0.51 (confiance principe 0.80)
+- poing_gros_plan      poids_note 0.51 (confiance principe 0.80)
+- fond_remplace        poids_note 0.51 (confiance principe 0.60)
+- variete_coups        poids_note 0.50 (confiance principe 0.60)
 - poing_a_plat         poids_note 0.50 (confiance principe 0.80)
 - tenue_avant_choc     poids_note 0.50 (confiance principe 0.25)
 - contraste_de_temps   poids_note 0.50 (confiance principe 0.70)
 - fluidite             poids_note 0.50 (confiance principe 0.60)
 - explosion_apres      poids_note 0.50 (confiance principe 0.50)
+- regard_intention     poids_note 0.50 (confiance principe 0.75)
+- torsion_tronc        poids_note 0.50 (confiance principe 0.65)
 - mouvement_secondaire poids_note 0.50 (confiance principe 0.60)
 - camera_jeu_vs_cinematique poids_note 0.50 (confiance principe 0.80)
 - rafale_en_masse      poids_note 0.50 (confiance principe 0.60)
@@ -105,7 +95,8 @@
 - arcs                 poids_note 0.40 (confiance principe 0.80)
 
 ## Predictions apres apprentissage
-- v1 : predit 6.1, Milan 6.0
-- v2 : predit 6.4, Milan 6.7
-- v4 : predit 6.8, Milan 6.7
-- v5 : predit 6.8, Milan 6.8
+- v1 : predit 6.3, Milan 6.0
+- v2 : predit 6.5, Milan 6.7
+- v4 : predit 6.6, Milan 6.7
+- v5 : predit 6.7, Milan 6.8
+- v6 : predit 7.1, Milan 7.0

@@ -56,7 +56,7 @@
     "rafale"
    ],
    "confiance_principe": 0.6,
-   "poids_note": 0.64,
+   "poids_note": 0.5,
    "sources": [
     "5 exemples de Milan (combo R6)",
     "IMPACT HAVEN"
@@ -209,7 +209,7 @@
     "tout"
    ],
    "confiance_principe": 0.8,
-   "poids_note": 0.64,
+   "poids_note": 0.645,
    "sources": [
     "IMPACT HAVEN : cartes silhouette",
     "test de silhouette v2 (manga)",
@@ -267,7 +267,7 @@
     "rafale"
    ],
    "confiance_principe": 0.85,
-   "poids_note": 0.731,
+   "poids_note": 0.645,
    "poids_a_priori": 0.5,
    "etalon_style": "manga_ultime",
    "sources": [
@@ -289,7 +289,7 @@
     "rafale"
    ],
    "confiance_principe": 0.8,
-   "poids_note": 0.64,
+   "poids_note": 0.508,
    "poids_a_priori": 0.5,
    "etalon_style": "manga_ultime",
    "sources": [
@@ -310,7 +310,7 @@
     "rafale"
    ],
    "confiance_principe": 0.75,
-   "poids_note": 0.731,
+   "poids_note": 0.645,
    "poids_a_priori": 0.5,
    "etalon_style": "manga_ultime",
    "sources": [
@@ -331,7 +331,7 @@
     "rafale"
    ],
    "confiance_principe": 0.75,
-   "poids_note": 0.64,
+   "poids_note": 0.5,
    "poids_a_priori": 0.5,
    "etalon_style": "manga_ultime",
    "sources": [
@@ -353,7 +353,7 @@
     "rafale"
    ],
    "confiance_principe": 0.8,
-   "poids_note": 0.64,
+   "poids_note": 0.508,
    "poids_a_priori": 0.5,
    "etalon_style": "manga_ultime",
    "sources": [
@@ -377,7 +377,7 @@
     "rafale"
    ],
    "confiance_principe": 0.7,
-   "poids_note": 0.731,
+   "poids_note": 0.645,
    "poids_a_priori": 0.5,
    "etalon_style": "manga_ultime",
    "sources": [
@@ -399,7 +399,7 @@
     "rafale"
    ],
    "confiance_principe": 0.6,
-   "poids_note": 0.64,
+   "poids_note": 0.508,
    "poids_a_priori": 0.5,
    "etalon_style": "manga_ultime",
    "sources": [
@@ -421,7 +421,7 @@
     "rafale"
    ],
    "confiance_principe": 0.65,
-   "poids_note": 0.731,
+   "poids_note": 0.645,
    "poids_a_priori": 0.5,
    "etalon_style": "manga_ultime",
    "sources": [
@@ -442,7 +442,7 @@
     "rafale"
    ],
    "confiance_principe": 0.65,
-   "poids_note": 0.64,
+   "poids_note": 0.5,
    "poids_a_priori": 0.5,
    "etalon_style": "manga_ultime",
    "sources": [
@@ -464,7 +464,7 @@
     "rafale"
    ],
    "confiance_principe": 0.55,
-   "poids_note": 0.731,
+   "poids_note": 0.64,
    "poids_a_priori": 0.5,
    "etalon_style": "manga_ultime",
    "sources": [
@@ -485,7 +485,7 @@
     "rafale"
    ],
    "confiance_principe": 0.5,
-   "poids_note": 0.731,
+   "poids_note": 0.64,
    "poids_a_priori": 0.5,
    "etalon_style": "manga_ultime",
    "sources": [
@@ -506,7 +506,7 @@
     "rafale"
    ],
    "confiance_principe": 0.6,
-   "poids_note": 0.731,
+   "poids_note": 0.64,
    "poids_a_priori": 0.5,
    "etalon_style": "universel",
    "sources": [
@@ -526,7 +526,7 @@
     "rafale"
    ],
    "confiance_principe": 0.85,
-   "poids_note": 0.731,
+   "poids_note": 0.645,
    "poids_a_priori": 0.5,
    "etalon_style": "universel",
    "sources": [
@@ -593,11 +593,12 @@
    "etalon_style": "universel",
    "sources": [
     "lot 3 : boxeur (jeu de dos -> blanc -> cinematique -> retour de dos), gatling, M1 de nuit, Mythra (camera fixe) ; Serious Punch TSB",
-    "mode Jeu du lecteur v6, shift-lock Roblox (decalage 1,75 stud a droite, FOV 70) : la victime est CACHEE derriere l'attaquant pendant presque toute la rafale ; l'eclat de base (tier 1) est masque par son corps. Question ouverte : en camera de jeu, la lecture d'un M1 vient d'effets qui DEBORDENT la silhouette et d'une reaction qui SORT du masque (captures/verification/2026-09-24-poing-dragon-v6-camera-de-jeu-shift-lock.png)"
+    "mode Jeu du lecteur v6, shift-lock Roblox (decalage 1,75 stud a droite, FOV 70) : la victime est CACHEE derriere l'attaquant pendant presque toute la rafale ; l'eclat de base (tier 1) est masque par son corps. Question ouverte : en camera de jeu, la lecture d'un M1 vient d'effets qui DEBORDENT la silhouette et d'une reaction qui SORT du masque (captures/verification/2026-09-24-poing-dragon-v6-camera-de-jeu-shift-lock.png)",
+    "note v6 (7/10) : Milan trouve que la technique « rend assez bien en camera jeu » ; la cinematique v6 « peut-etre un peu trop abusee, mais leger »"
    ],
    "mesure": "jugement visuel",
    "categorie": "mise_en_scene",
-   "quand": "ultime = cinematique ; M1 / competences = camera du joueur",
+   "quand": "decision Milan (v6) : au cas par cas selon la technique, jeu, cinematique ou un melange des deux ; a choisir technique par technique",
    "contre_indication": "donner une cinematique a un coup ordinaire ; animer un coup qui ne se lit que de profil"
   },
   {
@@ -725,9 +726,9 @@
  },
  "_regle_d_usage": "Retour de Milan (2026-09-24) : ce qu'on decouvre doit etre bien utilise, pas applique n'importe comment. Une hypothese vraie en animation n'est pas une case a cocher : chacune porte QUAND elle sert et QUAND elle nuit. Le critique juge l'usage au bon moment (hierarchie des temps forts, escalade, contraste), jamais la simple presence.",
  "_calibration": {
-  "a": 1.289,
-  "b": 7.334,
-  "n_notes": 4,
+  "a": 0.624,
+  "b": 6.87,
+  "n_notes": 5,
   "doc": "note = b + a * score ; reapprise a chaque reflexion"
  }
 }
