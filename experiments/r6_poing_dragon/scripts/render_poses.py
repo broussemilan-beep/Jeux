@@ -15,11 +15,11 @@ import dragon_clip as M  # noqa: E402
 from animator_brain import v222_rig as V  # noqa: E402
 
 RES = 260
-KEYS = [(0, "garde / activation"), (3, "H1 armement tenu"), (10, "H1 contact (direct D)"), (13, "H1 reaction"),
-        (43, "H2 crochet G, reaction"), (63, "H3 au corps, plie"), (77, "H4 la tete remonte"), (91, "H5 menton, decolle"),
-        (111, "H6 juggle"), (144, "fente tenue"), (150, "UPPERCUT"), (157, "poing au ciel"),
-        (168, "accroupi, saut"), (200, "apex"), (250, "temps suspendu"), (266, "bascule"), (278, "CONTACT en l'air"),
-        (288, "ecrasement au sol"), (322, "revelation"), (526, "fin")]
+KEYS = [(0, "garde droite / activation"), (4, "H1 arme (pied avant leve)"), (14, "H1 jab G"), (15, "H1 reaction"),
+        (32, "H2 arme, torse enroule"), (40, "H2 direct D"), (42, "H2 reaction"), (58, "H3 arme"), (64, "H3 crochet G"),
+        (66, "H3 reaction (tete fouette)"), (90, "H4 au corps"), (93, "H4 la victime decolle"), (144, "fente tenue"),
+        (150, "UPPERCUT"), (200, "apex"), (250, "temps suspendu"), (278, "CONTACT en l'air"), (288, "ecrasement au sol"),
+        (334, "revelation"), (526, "fin")]
 
 
 def main(blend, out_name="dragon_poses_cles.png", keys=KEYS, views=("side", "three_quarter")):

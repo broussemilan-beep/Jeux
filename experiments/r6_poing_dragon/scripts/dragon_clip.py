@@ -39,23 +39,32 @@ D = 3.3                     # distance initiale victime (studs), le long de -Z
 END_F = 526                 # 8,77 s
 
 # beats (frames) -- voir SCENE_POING_DU_DRAGON.md
+# v2 (retour de Milan : enchainement, puissance) : 4 coups VARIES qui MONTENT
+# en force (jab, direct, crochet, coup au corps qui souleve), un pas a chaque
+# coup, ecarts 26/24/26 f puis une respiration avant l'uppercut.
 HITS = [  # (frame de contact, main, cible sur la victime)
-    (10, "R", "face"), (40, "L", "face"), (60, "R", "body"),
-    (74, "L", "face"), (88, "R", "chin"), (108, "L", "body"),
+    (14, "L", "face"), (40, "R", "face"), (64, "L", "face"), (90, "R", "body"),
 ]
+# escalade (rules.check_escalade) : hitstop, secousse, taille des effets
+HIT_HITSTOP = [0.03, 0.045, 0.06, 0.085]
+HIT_SHAKE = [0.14, 0.22, 0.3, 0.42]
+HIT_SCALE = [0.6, 0.78, 0.95, 1.15]
 UPPER_F = 150               # uppercut
 TAKEOFF_F = 170
 APEX_F = 200
 SUSPEND_END_F = 256
 STRIKE_F = 278              # le poing touche la victime en l'air
 IMPACT_F = 288              # ecrasement au sol : impact frames
-WHITE_F = (294, 322)        # ecran blanc puis brouillard
-REVEAL_F = 322
+# v2 (LECONS.md 3) : l'impact au sol reste VISIBLE 10 f (+ hitstop) avant
+# les planches manga (298-304), puis blanc et brouillard
+MANGA_F = 298
+WHITE_F = (304, 334)        # ecran blanc puis brouillard
+REVEAL_F = 334
 RISE_F = (490, 526)
 
 MARKERS = [("activation", 0)] + [(f"hit{i + 1}", f) for i, (f, _h, _t) in enumerate(HITS)] + [
     ("uppercut", UPPER_F), ("takeoff", TAKEOFF_F), ("suspend", APEX_F), ("dive", SUSPEND_END_F),
-    ("strike", STRIKE_F), ("impact", IMPACT_F), ("white", WHITE_F[0]), ("reveal", REVEAL_F)]
+    ("strike", STRIKE_F), ("impact", IMPACT_F), ("manga", MANGA_F), ("white", WHITE_F[0]), ("reveal", REVEAL_F)]
 
 FOOT_Y = 0.065              # bout du pied (limb_tip) au repos, sol a y = 0
 
@@ -221,7 +230,7 @@ def v_stand_feet(back, spread=0.5):
     return {"R": ("g", (pr[0], pr[2])), "L": ("g", (pl[0], pl[2]))}
 
 
-def victim_pose(back, y=0.0, rootrot=(0, 0, 0), pelvis=((0, -0.12, 0), (0, 0, 0)), chest=(0, 0, 0),
+def victim_pose(back, y=0.0, rootrot=(0, 0, 0), pelvis=((0, -0.02, 0), (0, 0, 0)), chest=(0, 0, 0),
                 head=(0, 0, 0), arms=((8, 0, 0), (8, 0, 0)), feet=None, ground=False):
     """feet=None -> pieds plantes sous le corps ; sinon dict brut.
     ground=True -> corps pose au sol (couche)."""
@@ -243,39 +252,34 @@ def victim_keys():
     decolle, le 6e juggle, l'uppercut lance haut."""
     K = []
     add = lambda f, p, i="BEZIER": K.append((f, p, i))  # noqa: E731
-    stand = lambda back, **kw: victim_pose(back, **kw)  # noqa: E731
+    def stand(back, feet_back=None, **kw):
+        return victim_pose(back, feet=(v_stand_feet(feet_back) if feet_back is not None else None), **kw)
     add(0, stand(0.0))
-    # H1 f10 : direct du droit au visage -> tete vers la gauche de l'attaquant
-    add(10, stand(0.0), "LINEAR")
-    add(13, stand(0.22, head=(24, -32, 6), pelvis=((0, -0.2, 0), (20, -16, 5)), arms=((-20, 0, 0), (-12, 0, 0))))
-    add(24, stand(0.3, head=(6, -8, 0), pelvis=((0, -0.18, 0), (4, -4, 0))))
-    # H2 f40 : crochet gauche au visage -> tete vers la droite
-    add(40, stand(0.3, head=(2, -2, 0)), "LINEAR")
-    add(43, stand(0.55, head=(18, 38, -8), pelvis=((0, -0.22, 0), (17, 22, -6)), arms=((-9, 0, 0), (-22, 0, 0))))
-    add(54, stand(0.62, head=(4, 10, 0), pelvis=((0, -0.2, 0), (3, 4, 0))))
-    # H3 f60 : corps -> se plie en avant, genoux qui cedent
-    add(60, stand(0.62, head=(2, 6, 0)), "LINEAR")
-    add(63, stand(1.1, head=(-22, 0, 0), pelvis=((0, -0.55, 0), (-32, 0, 0)), chest=(0, 0.25, 0),
-                  arms=((30, 0, 0), (26, 0, 0))))
-    add(72, stand(1.12, head=(-14, 0, 0), pelvis=((0, -0.5, 0), (-22, 0, 0)), chest=(0, 0.2, 0),
-                  arms=((30, 0, 0), (30, 0, 0))))
-    # H4 f74 : direct gauche -> la tete remonte d'un coup
-    add(74, stand(1.12, head=(-12, 0, 0), pelvis=((0, -0.5, 0), (-20, 0, 0)), arms=((28, 0, 0), (28, 0, 0))), "LINEAR")
-    add(77, stand(1.35, head=(34, 6, 0), pelvis=((0, -0.3, 0), (14, 0, 0)), arms=((-15, 0, 0), (-18, 0, 0))))
-    add(86, stand(1.4, head=(10, 2, 0), pelvis=((0, -0.25, 0), (2, 0, 0))))
-    # H5 f88 : coup montant au menton -> decolle
-    add(88, stand(1.4, head=(8, 0, 0)), "LINEAR")
-    add(91, victim_pose(1.6, y=0.55, head=(42, 0, 0), pelvis=((0, 0, 0), (22, 0, 0)), arms=((-60, 0, 0), (-55, 0, 0)),
-                        feet=AIR_LEGS))
-    add(100, victim_pose(1.85, y=1.15, head=(26, 0, 0), pelvis=((0, 0, 0), (16, 0, 0)), arms=((-40, 0, 0), (-45, 0, 0)),
-                         feet=AIR_LEGS))
-    # H6 f108 : au corps en l'air (juggle)
-    add(108, victim_pose(1.95, y=1.2, head=(18, 0, 0), pelvis=((0, 0, 0), (10, 0, 0)), arms=((-30, 0, 0), (-35, 0, 0)),
-                         feet=AIR_LEGS), "LINEAR")
-    add(111, victim_pose(2.45, y=1.4, head=(-24, 0, 0), pelvis=((0, 0, 0), (-32, 0, 0)), chest=(0, 0.3, 0),
-                         arms=((50, 0, 0), (45, 0, 0)), feet=TUMBLE_LEGS))
-    add(126, stand(2.6, head=(-16, 0, 0), pelvis=((0, -0.75, 0), (-24, 0, 4)), chest=(0, 0.25, 0),
-                   arms=((22, 0, 0), (18, 0, 0))), "BEZIER")
+    # v2 : reactions calibrees sur le corpus (tete au pic en 1-2 f, torse ~27 deg,
+    # bras peu agites, AUCUN affaissement) et qui MONTENT d'un coup a l'autre.
+    # Les pieds restent plantes au pic puis rattrapent le corps (pas de glisse).
+    # H1 f14 : jab gauche, leger
+    add(14, stand(0.0), "LINEAR")
+    add(15, stand(0.12, feet_back=0.0, head=(20, 14, 2), pelvis=((0, 0, 0), (8, 6, 0)), arms=((-8, 0, 0), (-6, 0, 0))))
+    add(26, stand(0.25, head=(4, 3, 0), pelvis=((0, 0, 0), (2, 1, 0))))
+    # H2 f40 : direct droit au visage, la tete part vers la gauche de l'attaquant
+    add(40, stand(0.25, head=(2, 1, 0)), "LINEAR")
+    add(42, stand(0.5, feet_back=0.25, head=(24, -36, 6), pelvis=((0, 0, 0), (14, -20, 4)), arms=((-18, 0, 0), (-10, 0, 0))))
+    add(53, stand(0.65, head=(6, -8, 0), pelvis=((0, 0, 0), (4, -5, 0))))
+    # H3 f64 : crochet gauche, la tete fouette, pas de recul
+    add(64, stand(0.65, head=(4, -4, 0)), "LINEAR")
+    add(66, stand(1.05, feet_back=0.65, head=(18, 55, -12), pelvis=((0, 0, 0), (10, 30, -8)), arms=((-10, 0, 0), (-30, 0, 20))))
+    add(78, stand(1.25, head=(8, 16, -4), pelvis=((0, 0, 0), (4, 10, -2))))
+    # H4 f90 : coup au corps montant -> plie autour du poing et DECOLLE
+    add(90, stand(1.25, head=(6, 10, 0), pelvis=((0, 0, 0), (3, 6, 0))), "LINEAR")
+    add(93, victim_pose(1.6, y=0.55, head=(-26, 0, 0), pelvis=((0, 0, 0), (-34, 0, 0)), chest=(0, 0.3, 0),
+                        arms=((35, 0, 0), (30, 0, 0)), feet=AIR_LEGS))
+    add(104, victim_pose(2.15, y=1.3, head=(-16, 0, 0), pelvis=((0, 0, 0), (-24, 0, 0)), chest=(0, 0.2, 0),
+                         arms=((40, 0, 0), (34, 0, 0)), feet=TUMBLE_LEGS))
+    add(118, stand(2.6, head=(-16, 0, 0), pelvis=((0, -0.75, 0), (-24, 0, 4)), chest=(0, 0.25, 0),
+                   arms=((22, 0, 0), (18, 0, 0))))
+    add(126, stand(2.6, head=(-15, 2, 0), pelvis=((0, -0.73, 0), (-22, 1, 5)), chest=(0, 0.24, 0),
+                   arms=((21, 0, 0), (17, 0, 0))))
     # sonnee, affaissee, pendant l'anticipation
     add(146, stand(2.6, head=(-12, 4, 0), pelvis=((0, -0.7, 0), (-18, 3, 6)), chest=(0, 0.2, 0),
                    arms=((18, 0, 0), (14, 0, 0))), "LINEAR")
@@ -296,15 +300,17 @@ def victim_keys():
                          chest=(0, 0.4, 0), arms=((-40, 0, 20), (-40, 0, -20)), feet=TUMBLE_LEGS), "LINEAR")
     add(IMPACT_F, victim_pose(4.5, y=LIE_Y + 0.05, rootrot=(90, 0, 0), head=(-18, 0, 0), pelvis=((0, 0, 0), (-18, 0, 0)),
                               chest=(0, 0.25, 0), arms=((-80, 0, 40), (-80, 0, -40)), feet=LIE_LEGS, ground=True))
+    add(298, victim_pose(4.5, y=LIE_Y + 0.05, rootrot=(90, 0, 0), head=(-14, 0, 0), pelvis=((0, 0, 0), (-12, 0, 0)),
+                         chest=(0, 0.2, 0), arms=((-85, 0, 45), (-85, 0, -45)), feet=LIE_LEGS, ground=True))
     # dans le blanc : rebond et ejection au loin (degage des 291 : le poing
     # de l'attaquant descend au sol derriere elle)
-    add(291, victim_pose(5.0, y=LIE_Y + 0.9, rootrot=(98, 0, 6), head=(-6, 0, 0), arms=((-95, 0, 40), (-95, 0, -40)),
+    add(301, victim_pose(5.0, y=LIE_Y + 0.9, rootrot=(98, 0, 6), head=(-6, 0, 0), arms=((-95, 0, 40), (-95, 0, -40)),
                          feet=TUMBLE_LEGS))
-    add(298, victim_pose(8.0, y=LIE_Y + 2.6, rootrot=(128, 0, 20), head=(20, 0, 0), arms=((-120, 0, 40), (-110, 0, -50)),
+    add(310, victim_pose(8.0, y=LIE_Y + 2.6, rootrot=(128, 0, 20), head=(20, 0, 0), arms=((-120, 0, 40), (-110, 0, -50)),
                          feet=TUMBLE_LEGS))
-    add(314, victim_pose(15.2, y=LIE_Y + 0.05, rootrot=(90, 0, 6), head=(0, 28, 0), pelvis=((0, 0, 0), (-4, 0, 6)),
+    add(326, victim_pose(15.2, y=LIE_Y + 0.05, rootrot=(90, 0, 6), head=(0, 28, 0), pelvis=((0, 0, 0), (-4, 0, 6)),
                          arms=((-150, 0, 50), (-20, 0, -60)), feet=LIE_LEGS, ground=True))
-    add(322, victim_pose(15.6, y=LIE_Y, rootrot=(90, 0, 4), head=(0, 32, 0), pelvis=((0, 0, 0), (-2, 0, 5)),
+    add(334, victim_pose(15.6, y=LIE_Y, rootrot=(90, 0, 4), head=(0, 32, 0), pelvis=((0, 0, 0), (-2, 0, 5)),
                          arms=((-155, 0, 52), (-18, 0, -62)), feet=LIE_LEGS, ground=True))
     add(END_F, victim_pose(15.6, y=LIE_Y, rootrot=(90, 0, 4), head=(0, 34, 0), pelvis=((0, 0, 0), (-2, 0, 5)),
                            arms=((-155, 0, 52), (-18, 0, -62)), feet=LIE_LEGS, ground=True))
@@ -314,12 +320,22 @@ def victim_keys():
 # ---------------------------------------------------------------------
 # ATTAQUANT (origine, regarde -Z). z negatif = en avant.
 
-def a_feet(z, lf=(-0.62, -0.85), rf=(0.72, 0.6)):
-    """pieds plantes : gauche devant, droit derriere (garde orthodoxe)."""
-    return {"L": ("g", (lf[0], z + lf[1])), "R": ("g", (rf[0], z + rf[1]))}
+def _pivot(x, dz, yaw_deg):
+    """offset (x, dz) tourne de yaw autour du bassin (lacet + = a gauche)."""
+    t = np.radians(yaw_deg)
+    return x * np.cos(t) + dz * np.sin(t), -x * np.sin(t) + dz * np.cos(t)
 
 
-def a_stance(z, low=0.45, yaw=-18, lean=-10, look=None, hands=None, feet=None, chest=(0, 0.1, 0)):
+def a_feet(z, lf=(-0.55, -0.45), rf=(0.6, 0.35), pivot=0.0):
+    """pieds plantes : gauche devant, droit derriere (garde orthodoxe).
+    v2 : appui SERRE -- une jambe R6 droite (2 studs) ecartee de d abaisse la
+    hanche de 2 - sqrt(4 - d^2) : ecarter a 0,85 devant / 0,6 derriere
+    obligeait a s'accroupir (v1). Pieds presque sous les hanches, comme les pros."""
+    (lx, lz), (rx, rz) = _pivot(*lf, pivot), _pivot(*rf, pivot)
+    return {"L": ("g", (lx, z + lz)), "R": ("g", (rx, z + rz))}
+
+
+def a_stance(z, low=0.08, yaw=-18, lean=-8, look=None, hands=None, feet=None, chest=(0, 0.1, 0)):
     p = {"root": ((0.0, 0.0, z), (0, 0, 0)), "pelvis": ((0, -low, 0), (lean, yaw, 0)), "chest": chest,
          "feet": feet or a_feet(z)}
     p["hands"] = hands or {"L": ("w", (-0.45, 3.45 - low, z - 1.35)), "R": ("w", (0.5, 3.2 - low, z - 0.85))}
@@ -351,45 +367,60 @@ def attacker_keys(vw):
     add = lambda f, p, i="BEZIER": K.append((f, p, i))  # noqa: E731
     # activation : garde, flash blanc
     add(0, a_stance(0.0, look=head(0)))
+    # v2 : chaque coup part des CIBLES DU CORPUS (rules.design_targets) --
+    # torse affaisse <= 0,14 (max pro 0,22), balayage du torse ~90-120 deg,
+    # action ~10 f, bras arriere qui tire fort -- et MONTE en force (k).
+    # Un vrai PAS par coup : le pied avant se leve pendant l'armement et se
+    # replante juste avant le contact, le pied arriere rattrape apres.
+    zprev = 0.0
     for i, (c, s, kind) in enumerate(HITS):
         tgt = target(c, kind)
-        z = float(tgt[2]) + (2.25 if kind != "body" else 2.05)
-        lowc = 0.55 if kind != "chin" else 0.35
+        z = float(tgt[2]) + (2.3 if kind != "body" else 2.1)
+        k = min(1.0, HIT_SCALE[i] / HIT_SCALE[2])
+        base, dip = 0.08, (0.13 if kind != "body" else 0.15)
         if s == "R":
-            wind_yaw, hit_yaw = -55, 45
-            chamber = ("w", (0.95, 3.05 - lowc, z + 0.3))
-            other_c = ("w", (-0.45, 3.4 - lowc, z - 1.1))
-            other_hit = ("w", (-0.85, 3.1 - lowc, z + 0.7))
+            wind_yaw, hit_yaw = -70 * k, 50 * k
+            chamber = ("w", (0.95, 3.0 - base, z + 0.35))
+            other_c = ("w", (-0.45, 3.45 - base, z - 1.2))
+            other_hit = ("w", (-0.95, 2.55, z + 0.95))
         else:
-            wind_yaw, hit_yaw = 35, -45
-            chamber = ("w", (-0.95, 3.05 - lowc, z + 0.2))
-            other_c = ("w", (0.5, 3.3 - lowc, z - 0.8))
-            other_hit = ("w", (0.9, 3.1 - lowc, z + 0.65))
+            wind_yaw, hit_yaw = 50 * k, -60 * k
+            chamber = ("w", (-0.95, 3.0 - base, z + 0.25))
+            other_c = ("w", (0.5, 3.35 - base, z - 0.85))
+            other_hit = ("w", (1.0, 2.55, z + 0.9))
         o = "L" if s == "R" else "R"
-        mid = 0.45 * np.asarray(tgt) + 0.55 * np.asarray(chamber[1])
-        # verdict corpus v1 : coups trop secs (bras 4 200 deg/s contre 2 100
-        # max chez le pro, action 6 f contre 8-19) et torse trop peu tourne
-        # (43 deg contre 67-131) -> armement a c-10, tenu, action de 7 f
-        # armement qui claque puis se TIENT (la main recule, le torse s'enroule)
-        if c - 10 > 0:
-            add(c - 10, a_stance(z + 0.1, low=lowc - 0.05, yaw=wind_yaw * 0.85, lean=-6, look=head(c - 10),
-                                 hands={s: chamber, o: other_c}))
-        add(c - 7, a_stance(z + 0.12, low=lowc - 0.02, yaw=wind_yaw, lean=-7, look=head(c - 7),
-                            hands={s: chamber, o: other_c}))
-        # la main MENE (deja a mi-trajet quand le torse commence a peine)
-        add(c - 3, a_stance(z, low=lowc, yaw=wind_yaw * 0.35 + hit_yaw * 0.65 * 0.4, lean=-12, look=head(c - 3),
-                            hands={s: ("w", tuple(mid)), o: other_c}))
-        # contact : l'autre bras tire en arriere
-        add(c, a_stance(z - 0.05, low=lowc + 0.05, yaw=hit_yaw, lean=-16, look=head(c),
-                        hands={s: ("w", tuple(tgt)), o: other_hit}), "LINEAR")
-        # suite : 2 f sur la cible (la victime recule), puis retour en garde
-        # au corps, la victime se plie VERS le poing : on le retire
+        mid = 0.4 * np.asarray(tgt) + 0.6 * np.asarray(chamber[1])
+        # R6 : pas de taille, les hanches tournent avec le torse. Les appuis
+        # PIVOTENT donc avec le bassin (60 %, pivot sur l'avant du pied) --
+        # sinon les jambes se croisent (pied arriere hors d'atteinte, v2a).
+        def rear(zz, yaw):
+            x, dz = _pivot(0.6, 0.35, 0.6 * yaw)
+            return ("g", (x, zz + dz))
+
+        def front(zz, yaw, y=None):
+            x, dz = _pivot(-0.55, -0.45, 0.6 * yaw)
+            return ("w", (x, y, zz + dz)) if y is not None else ("g", (x, zz + dz))
+        zm = 0.5 * (zprev + z)
+        # armement qui claque puis se TIENT, pied avant qui se leve
+        if c - 12 > 2:
+            add(c - 12, a_stance(zprev + 0.05, low=base, yaw=wind_yaw * 0.85, lean=-6, look=head(c - 12),
+                                 hands={s: chamber, o: other_c}, feet=a_feet(zprev, pivot=0.6 * wind_yaw * 0.85)))
+        add(c - 8, a_stance(0.6 * zprev + 0.4 * z, low=base, yaw=wind_yaw, lean=-7, look=head(c - 8),
+                            hands={s: chamber, o: other_c}, feet={"L": front(zm, wind_yaw, 0.4), "R": rear(zm, wind_yaw)}))
+        # la main MENE, le pied se replante, le poids descend dans le coup
+        add(c - 4, a_stance(0.25 * zprev + 0.75 * z, low=base + 0.02, yaw=wind_yaw * 0.3 + hit_yaw * 0.25, lean=-11,
+                            look=head(c - 4), hands={s: ("w", tuple(mid)), o: other_c},
+                            feet={"L": front(z, wind_yaw * 0.3 + hit_yaw * 0.25), "R": rear(zm, wind_yaw * 0.3 + hit_yaw * 0.25)}))
+        # contact : l'autre bras tire fort en arriere (pro : bras arriere ~167 deg)
+        add(c, a_stance(z, low=dip, yaw=hit_yaw, lean=-14 * k, look=head(c),
+                        hands={s: ("w", tuple(tgt)), o: other_hit}, feet={"L": front(z, hit_yaw), "R": rear(zm, hit_yaw)}), "LINEAR")
         tg2 = np.asarray(tgt) + (np.array([0, 0.05, 0.3]) if kind == "body" else np.array([0, 0, -0.1]))
-        add(c + 2, a_stance(z - 0.05, low=lowc + 0.05, yaw=hit_yaw + 6, lean=-17, look=head(c + 2),
-                            hands={s: ("w", tuple(tg2)), o: other_hit}))
-        nxt = HITS[i + 1][0] - 10 if i + 1 < len(HITS) else 118
-        if nxt - (c + 2) > 10:
-            add(c + 9, a_stance(z - 0.1, low=0.5, yaw=hit_yaw * 0.4 - 10, lean=-11, look=head(c + 9)))
+        add(c + 3, a_stance(z, low=dip, yaw=hit_yaw * 1.1, lean=-15 * k, look=head(c + 3),
+                            hands={s: ("w", tuple(tg2)), o: other_hit}, feet={"L": front(z, hit_yaw * 1.1), "R": rear(zm, hit_yaw * 1.1)}))
+        # le pied arriere rattrape, retour en garde droite
+        add(c + 9, a_stance(z, low=base, yaw=hit_yaw * 0.4, lean=-8, look=head(c + 9), feet=a_feet(z, pivot=0.6 * hit_yaw * 0.4)))
+        zprev = z
+    add(108, a_stance(zprev, low=base, yaw=-15, lean=-6, look=head(108), feet=a_feet(zprev)))
 
     # ANTICIPATION 118-146 : fente tres basse, poing arme a la hanche, glisse
     zc = -2.0
@@ -466,11 +497,12 @@ def attacker_keys(vw):
         "root": ((0.0, 0.0, zc2), (0, 0, 0)), "pelvis": ((0, -low, 0), (lean, 12, 0)), "chest": (0, 0.35, 0),
         "fit": ("R", (tg[0], fist_y, tg[2]), (0.55, 1.35, 0.75), (1, 0, 1)),
         "feet": {"L": ("rg", (-0.75, -0.95)), "R": ("rg", (0.75, 1.85))},
-        "look": (tg[0], 0.4, tg[2] - 1.0) if f <= 296 else vw[f]["Head"][1],
+        "look": (tg[0], 0.4, tg[2] - 1.0) if f <= 306 else vw[f]["Head"][1],
         "hands": {"R": ("w", (tg[0], fist_y, tg[2])), "L": ("rw", (-1.7, 2.0 - (low - 1.1), -0.1))}}
     add(IMPACT_F, land(IMPACT_F, 0.95, tg[1]), "LINEAR")
-    add(291, land(291, 0.98, float(target(291, "chest")[1])))
-    add(296, land(296, 1.02, 0.3))
+    add(298, land(298, 0.98, float(target(298, "chest")[1])))
+    add(301, land(301, 0.99, float(target(301, "chest")[1])))
+    add(306, land(306, 1.02, 0.3))
     add(REVEAL_F, land(REVEAL_F, 1.0, 0.3))
     add(400, land(400, 0.94, 0.3, lean=-28))
     add(RISE_F[0], land(RISE_F[0], 1.0, 0.3))
@@ -535,6 +567,7 @@ def main(blend):
                 print(f"  {side} f{f}: {bad}")
     json.dump({"distance": D, "fps": FPS, "end_f": END_F, "markers": MARKERS, "impact_f": IMPACT_F,
                "strike_f": STRIKE_F, "hits": HITS, "upper_f": UPPER_F, "white": WHITE_F, "reveal_f": REVEAL_F,
+               "manga_f": MANGA_F, "hit_hitstop": HIT_HITSTOP, "hit_shake": HIT_SHAKE, "hit_scale": HIT_SCALE,
                "residus": report}, open(os.path.join(OUT, "scene.json"), "w"), indent=1)
     return a, b, aw, vw
 

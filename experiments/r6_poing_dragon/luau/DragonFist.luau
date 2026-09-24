@@ -516,6 +516,43 @@ local function crater(ctx, ev)
 	ctx.leftovers(model)
 end
 
+-- DOME : onde de choc en demi-sphere + mur de poussiere au ras du sol (v2 :
+-- l'impact final se VOIT avant les planches manga, LECONS.md 3)
+local function dome(ctx, ev)
+	local pos = DragonFist.toWorld(ctx.start, ev.pos)
+	local dur = ev.frames / 60
+	local ball = Instance.new("Part")
+	ball.Shape = Enum.PartType.Ball
+	ball.Anchored, ball.CanCollide, ball.CanQuery, ball.CanTouch = true, false, false, false
+	ball.CastShadow = false
+	ball.Material = Enum.Material.ForceField
+	ball.Color = color3(ev.color)
+	ball.Transparency = 0.2
+	ball.Size = Vector3.new(1, 1, 1)
+	ball.CFrame = CFrame.new(pos)
+	ball.Parent = ctx.fx
+	TweenService:Create(ball, TweenInfo.new(dur, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
+		Size = Vector3.new(ev.radius * 2, ev.radius * 1.6, ev.radius * 2),
+		Transparency = 1,
+	}):Play()
+	Debris:AddItem(ball, dur + 0.1)
+	local holder, att = holderAt(CFrame.new(pos + Vector3.new(0, 0.6, 0)), ctx.fx)
+	emitter(att, {
+		Texture = TEX.smoke,
+		Color = ColorSequence.new(Color3.fromRGB(189, 179, 163)),
+		EmissionDirection = Enum.NormalId.Top,
+		SpreadAngle = Vector2.new(88, 88),
+		Speed = NumberRange.new(28, 40),
+		Drag = 3.5,
+		Lifetime = NumberRange.new(2.5, 3.5),
+		Size = seq({ { 0, 2.2 }, { 1, 5 } }),
+		Transparency = seq({ { 0, 0.3 }, { 1, 1 } }),
+		Acceleration = Vector3.new(0, -2, 0),
+	}, 36)
+	emitAll(holder)
+	ctx.leftovers(holder)
+end
+
 local function smokeCloud(ctx, ev)
 	local pos = DragonFist.toWorld(ctx.start, ev.pos)
 	local holder, att = holderAt(CFrame.new(pos + Vector3.new(0, 1, 0)), ctx.fx)
@@ -696,6 +733,7 @@ function DragonFist.play(attacker: Model, victim: Model, animations: Folder, dat
 		smoke_cloud = smokeCloud,
 		embers = embers,
 		dust_trail = dustTrail,
+		dome = dome,
 	}
 	local mangaEv, whiteEv
 	for _, e in data.EVENTS do

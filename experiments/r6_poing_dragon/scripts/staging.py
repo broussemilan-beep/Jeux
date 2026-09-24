@@ -85,10 +85,17 @@ def camera_keys(aw, vw):
     K = []
     add = lambda f, eye, look, fov, mode="smooth": K.append((f, v3(eye), v3(look), fov, mode))  # noqa: E731
     # 1. rafale : plan moyen 3/4 avant-droit, qui accompagne le recul
-    # v2 (revue du lecteur) : plans trop serres en v1, personnages coupes -> recul ~45 %
+    # v2 (retour de Milan, LECONS.md 2) : un angle different toutes les 2 frappes
+    # plan A (coups 1-2) : moyen 3/4 avant-droit
     add(0, mid(0) + [10.5, 3.4, 3.0], mid(0) + [0, -0.2, 0], 46, "cut")
-    add(60, mid(60) + [10.0, 3.0, 2.2], mid(60) + [0, -0.3, 0], 45)
-    add(112, mid(112) + [9.5, 2.8, 1.5], mid(112) + [0, -0.2, 0], 44)
+    add(50, mid(50) + [9.6, 3.0, 2.2], mid(50) + [0, -0.2, 0], 44)
+    # plan B (coup 3, crochet) : contrechamp par-dessus l'epaule de la victime
+    # (v2b : plein contrechamp bouche par le dos de la victime -> decale de cote)
+    add(52, Vt(52) + [6.0, 1.9, -4.2], mid(52) + [0, 0.1, 0], 44, "cut")
+    add(76, Vt(76) + [5.5, 1.7, -3.9], mid(76) + [0, 0.1, 0], 42)
+    # plan C (coup 4 au corps, la victime decolle) : bas, cote gauche
+    add(78, mid(78) + [-9.8, -1.7, 2.4], mid(78) + [0, 0.9, 0], 48, "cut")
+    add(116, mid(116) + [-9.2, -1.5, 1.6], mid(116) + [0, 0.7, 0], 46)
     # 2. anticipation : COUPE, contre-plongee basse au ras du sol, pres de la fente
     a = A(132)
     add(118, [a[0] + 9.6, 1.0, a[2] + 0.6], a + [0, 1.0, -2.0], 44, "cut")
@@ -107,11 +114,14 @@ def camera_keys(aw, vw):
     add(SCENE["strike_f"], c + [3.6, 1.0, 3.2], c, 42)
     imp = tip(aw[SCENE["impact_f"]], "Right Arm")
     add(SCENE["impact_f"], imp + [6.0, 2.6, 5.0], imp + [0, 0.6, 0], 46)
+    # v2 (LECONS.md 3) : on RESTE sur l'impact 10 f, en reculant pour voir
+    # l'onde de choc et les pics sortir du sol
+    add(SCENE["manga_f"], imp + [9.0, 4.6, 7.6], imp + [0, 0.4, 0], 52)
     # 6. revelation (derriere l'ecran blanc) : de dos, un peu haut, cratere
     #    au premier plan, victime au loin
     r0 = A(SCENE["reveal_f"])
     far = Vt(END)
-    add(304, r0 + [3.2, 4.4, 10.5], (r0 + far) / 2 + [0, -1.2, 0], 52, "cut")
+    add(SCENE["white"][0] + 10, r0 + [3.2, 4.4, 10.5], (r0 + far) / 2 + [0, -1.2, 0], 52, "cut")
     add(490, r0 + [2.7, 3.9, 9.0], (r0 + far) / 2 + [0, -1.0, 0], 50)
     add(END, r0 + [2.6, 4.0, 8.8], (r0 + far) / 2 + [0, -0.8, 0], 50)
     return K
@@ -132,18 +142,19 @@ def events(aw, vw):
     ev = lambda f, kind, **kw: E.append(dict(frame=f, kind=kind, **kw))  # noqa: E731
     ev(0, "body_flash", who="attaquant", color=WHITE, frames=4)
     ev(0, "ground_burst", pos=v3([0, 0.05, 0]), color=GOLD, scale=0.8)
+    # v2 : escalade (rules.check_escalade) -- hitstop, secousse et taille montent
     for i, (c, s, kind) in enumerate(HITS):
         p = tip(aw[c], "Right Arm" if s == "R" else "Left Arm")
         ev(c, "body_flash", who="attaquant", color=FLASH, frames=2)
-        ev(c, "impact", pos=v3(p), dir=v3(impact_dir(aw, c, s)), scale=0.7 + 0.08 * i, color=GOLD,
-           hitstop=0.05, shake=0.18 + 0.03 * i, name=f"hit{i + 1}")
+        ev(c, "impact", pos=v3(p), dir=v3(impact_dir(aw, c, s)), scale=SCENE["hit_scale"][i], color=GOLD,
+           hitstop=SCENE["hit_hitstop"][i], shake=SCENE["hit_shake"][i], name=f"hit{i + 1}")
     ev(122, "dust_trail", who="attaquant", frames=24)
     ev(126, "aura", who="attaquant", frames=24, color=GOLD, intensity=0.6)
     ev(126, "fist_glow", who="attaquant", side="R", frames=24, color=GOLD)
     u = SCENE["upper_f"]
     p = tip(aw[u], "Right Arm")
     ev(u, "body_flash", who="attaquant", color=FLASH, frames=3)
-    ev(u, "impact", pos=v3(p), dir=v3(impact_dir(aw, u, "R")), scale=1.35, color=GOLD, hitstop=0.08, shake=0.45,
+    ev(u, "impact", pos=v3(p), dir=v3(impact_dir(aw, u, "R")), scale=1.35, color=GOLD, hitstop=0.1, shake=0.5,
        name="uppercut")
     ev(170, "ground_burst", pos=v3([aw[170]["Torso"][1][0], 0.05, aw[170]["Torso"][1][2]]), color=WHITE, scale=1.2)
     ev(196, "whip", frames=12)
@@ -153,16 +164,19 @@ def events(aw, vw):
     sf = SCENE["strike_f"]
     p = tip(aw[sf], "Right Arm")
     ev(sf, "body_flash", who="attaquant", color=FLASH, frames=3)
-    ev(sf, "impact", pos=v3(p), dir=v3(impact_dir(aw, sf, "R")), scale=1.6, color=GOLD, hitstop=0.12, shake=0.6,
+    ev(sf, "impact", pos=v3(p), dir=v3(impact_dir(aw, sf, "R")), scale=1.6, color=GOLD, hitstop=0.13, shake=0.6,
        name="strike")
     imf = SCENE["impact_f"]
     ground = tip(aw[imf], "Right Arm")
     ground[1] = 0.0
-    ev(imf, "manga", frames=[imf, imf + 2, imf + 4, imf + 6])
-    ev(imf + 6, "white", frames=[imf + 6, SCENE["white"][0] + 12, SCENE["white"][1]])
+    mf, wf = SCENE["manga_f"], SCENE["white"]
+    ev(mf, "manga", frames=[mf, mf + 2, mf + 4, mf + 6])
+    ev(wf[0], "white", frames=[wf[0], wf[0] + 12, wf[1]])
     ev(imf, "crater", pos=v3(ground), radius=7.5, spikes=34, seed=11)
-    ev(imf, "impact", pos=v3(ground + [0, 0.6, 0]), dir=[0, -1, 0], scale=2.4, color=GOLD, hitstop=0.0, shake=1.0,
+    # l'impact au sol se VOIT : gel de 0,16 s puis onde de choc en dome
+    ev(imf, "impact", pos=v3(ground + [0, 0.6, 0]), dir=[0, -1, 0], scale=2.4, color=GOLD, hitstop=0.16, shake=1.0,
        name="impact")
+    ev(imf, "dome", pos=v3(ground), radius=11.0, frames=40, color=GOLD)
     ev(imf, "smoke_cloud", pos=v3(ground), radius=9.0, frames=END - imf, color="#7d7468")
     ev(imf, "embers", pos=v3(ground), frames=END - imf, color=GOLD_DEEP)
     return E

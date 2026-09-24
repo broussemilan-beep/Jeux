@@ -36,3 +36,19 @@ note inventée.
   - hitstop constant ;
   - un seul angle de caméra pour 6 frappes ;
   - impact final visible 0 f.
+
+## Poing du Dragon v2 (2026-09-24) : réponse au retour v1
+
+Pas encore revu par Milan.
+
+Règles (`r6_poing_dragon/output/regles_v2.json`) : **7/7**, contre 3/7 en v1.
+- posture : affaissement max 0,19, médian 0,11 (seuils 0,24 / 0,12) ;
+- escalade du hitstop : 0,03 → 0,085 ;
+- recul de la victime : 0,28 → 1,22 stud ;
+- secousse : 0,14 → 0,42 ;
+- caméra : 2 frappes par plan au maximum ;
+- impact visible 10 f ;
+- plongée : 30 f sans coupe.
+
+Preuve visuelle : `captures/verification/2026-09-24-poing-dragon-v1-vs-v2.png`.
+

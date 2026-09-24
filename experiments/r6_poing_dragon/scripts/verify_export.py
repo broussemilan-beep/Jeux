@@ -143,7 +143,7 @@ def main(blend):
     sens = {
         "attaquant_regarde_moins_z": bool(look(wa(0))[2] < -0.9),
         "victime_face_a_l_attaquant": bool(look(wv(0))[2] > 0.9),
-        "poing_H1_devant": bool(V.limb_tip(wa(h1), "Right Arm")[2] < -1.5),
+        "poing_H1_devant": bool(V.limb_tip(wa(h1), "Right Arm" if M.HITS[0][1] == "R" else "Left Arm")[2] < -1.5),
         "victime_recule_vers_moins_z": bool(wv(126)["Torso"][1][2] < wv(0)["Torso"][1][2] - 2.0),
         "victime_en_l_air_a_l_apex": bool(wv(M.APEX_F)["Torso"][1][1] > 9.0),
         "attaquant_au_dessus_a_l_apex": bool(wa(M.APEX_F)["Torso"][1][1] > wv(M.APEX_F)["Torso"][1][1] + 2.0),

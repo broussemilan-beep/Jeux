@@ -545,6 +545,42 @@
       }
     });
   }
+  // DOME : onde de choc en demi-sphere + mur de poussiere au ras du sol
+  // (v2 : l'impact final se VOIT avant les planches manga, LECONS.md 3)
+  function makeDome(ev) {
+    const P = new THREE.Vector3(...ev.pos), t0 = () => realTimeOf(ev.frame);
+    const dome = new THREE.Mesh(new THREE.SphereGeometry(1, 40, 20, 0, Math.PI * 2, 0, Math.PI / 2),
+      new THREE.MeshBasicMaterial({ color: col(ev.color), transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }));
+    dome.position.copy(P); fxRoot.add(dome);
+    const shell = new THREE.Mesh(new THREE.SphereGeometry(1, 40, 20, 0, Math.PI * 2, 0, Math.PI / 2),
+      new THREE.MeshBasicMaterial({ color: col(PAL.white), transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.BackSide, wireframe: false }));
+    shell.position.copy(P); fxRoot.add(shell);
+    const ring = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), addMat(TX.ring, PAL.white, 1));
+    ring.rotation.x = -Math.PI / 2; ring.position.copy(P).setY(0.08); fxRoot.add(ring);
+    seed = 404; const wall = [];
+    for (let i = 0; i < 36; i++) { const sp = new THREE.Sprite(spriteMat(TX.smoke, "#bdb3a3", false)); fxRoot.add(sp); wall.push({ sp, a: i / 36 * Math.PI * 2 + rnd() * 0.15, h: 0.6 + rnd() * 1.6, s: 2.2 + rnd() * 2 }); }
+    on((tr) => {
+      const age = tr - t0(), vis = useFx && age >= 0;
+      const u = age / (ev.frames / 60);
+      dome.visible = shell.visible = vis && u < 1;
+      if (dome.visible) {
+        const r = ev.radius * ease(u * 1.3);
+        dome.scale.set(r, r * 0.8, r); shell.scale.set(r * 1.02, r * 0.82, r * 1.02);
+        dome.material.opacity = 0.45 * (1 - u); shell.material.opacity = 0.7 * (1 - u) * (1 - u);
+      }
+      const ru = age / 0.5;
+      ring.visible = vis && ru < 1;
+      if (ring.visible) { ring.scale.setScalar(2 + ev.radius * 2.6 * ease(ru)); ring.material.opacity = 0.9 * (1 - ru); }
+      for (const k of wall) {
+        k.sp.visible = vis && age < 3.5;
+        if (!k.sp.visible) continue;
+        const r = ev.radius * 0.9 * (1 - Math.exp(-3.5 * age));
+        k.sp.position.set(P.x + Math.cos(k.a) * r, k.h * Math.min(1, age * 3), P.z + Math.sin(k.a) * r);
+        k.sp.scale.setScalar(k.s * (0.6 + 0.8 * Math.min(1, age)));
+        k.sp.material.opacity = 0.7 * Math.min(1, age / 0.05) * Math.max(0, 1 - age / 3.5);
+      }
+    });
+  }
   function makeSmokeCloud(ev) {
     const P = new THREE.Vector3(...ev.pos), t0 = () => realTimeOf(ev.frame), ks = [];
     seed = 77;
@@ -606,6 +642,7 @@
     else if (ev.kind === "dragon") makeDragon(ev);
     else if (ev.kind === "crater") makeCrater(ev);
     else if (ev.kind === "smoke_cloud") makeSmokeCloud(ev);
+    else if (ev.kind === "dome") makeDome(ev);
     else if (ev.kind === "embers") makeEmbers(ev);
     else if (ev.kind === "dust_trail") makeDustTrail(ev);
   }
@@ -746,7 +783,7 @@
 
   // ------------------------------------------------------------ transport
   const BEATS = [["Rafale", 0, 118, "#5b4a2a"], ["Anticipation", 118, 146, "#6b5326"], ["Uppercut", 146, 170, "#8a6420"], ["Envol", 170, 200, "#4a4f5e"],
-    ["Temps suspendu", 200, 256, "#a17a1f"], ["Plongée", 256, 288, "#b8861b"], ["Impact", 288, 322, "#e0e0e0"], ["Révélation", 322, 490, "#3a3d47"], ["Retour", 490, END, "#2b2e36"]];
+    ["Temps suspendu", 200, 256, "#a17a1f"], ["Plongée", 256, 288, "#b8861b"], ["Impact", 288, 334, "#e0e0e0"], ["Révélation", 334, 490, "#3a3d47"], ["Retour", 490, END, "#2b2e36"]];
   const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   let tr = reduce ? realTimeOf(230) : 0, playing = !reduce, speed = 1, last = performance.now();
   const hud = document.getElementById("hud"), scrub = document.getElementById("scrub"), head = document.getElementById("playhead"), playBtn = document.getElementById("play");

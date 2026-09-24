@@ -139,3 +139,50 @@ python3 scripts/render_poses.py $BL   # planche de revue des poses clés
   en 2 frames, elles ne remplacent pas un dessin à la main.
 - **Victime à la fin** : replacée debout là où elle gît (l'animation s'arrête). Un
   ragdoll serait la suite logique.
+
+## v2 (2026-09-24) : après le retour de Milan (6/10)
+
+Retour : « problèmes sur l'enchaînement, ça manque de puissance, il est
+accroupi ». Détail dans `../_shared/animator_brain/RETOURS.md`.
+
+**Ce qui a changé côté cerveau.** Ces changements valent pour toutes les
+productions, pas seulement celle-ci :
+- **Nouvelle mesure `affaissement_torse_studs`** (corpus reconstruit). C'est la
+  hauteur absolue du torse sous la position debout ; l'ancienne mesure ne
+  voyait que la variation pendant le clip.
+- **Règles `rules.py`, avec leur source (`LECONS.md`)** :
+  - posture ;
+  - escalade de la rafale ;
+  - un angle de caméra au moins toutes les 2 frappes ;
+  - impact final visible ;
+  - plongée lisible.
+- **Les poses partent des cibles du corpus** (`rules.design_targets`), au lieu
+  d'être tapées de tête puis jugées après coup.
+
+**Ce qui a changé dans la technique :**
+
+| | v1 | v2 |
+|---|---|---|
+| rafale | 6 coups identiques | 4 coups qui montent : jab G, direct D, crochet G, coup au corps qui soulève |
+| posture | bassin −0,5 stud en permanence | debout : affaissement médian 0,11 stud (pro ≤ 0,12) |
+| appuis | pieds écartés, qui glissent | pieds sous les hanches, un vrai pas par coup (le pied avant se lève puis se replante), appuis qui pivotent avec le bassin |
+| hitstop | 0,05 s partout | 0,03 → 0,045 → 0,06 → 0,085, puis uppercut 0,10, frappe 0,13, impact 0,16 |
+| recul de la victime | — | 0,28 → 0,47 → 0,67 → 1,22 stud |
+| caméra de la rafale | 1 plan fixe | 3 plans : trois-quarts, contrechamp de côté, plan bas |
+| impact final | caché : coupe sur les planches dans la frame du contact | visible 10 f + gel de 0,16 s : onde de choc en dôme, mur de poussière, pics qui sortent, puis seulement les planches |
+| règles apprises | 3/7 | **7/7** |
+
+**Deux problèmes trouvés en route, et leur cause :**
+- **Appui trop écarté.** Une jambe R6 droite (2 studs) écartée de *d* abaisse la
+  hanche de 2 − √(4 − d²) : l'appui large de la v1 *obligeait* à s'accroupir.
+- **Pas de taille en R6.** Tourner le torse de 85° avec les pieds cloués croise
+  les jambes. Les appuis pivotent donc avec le bassin (60 %), comme un boxeur
+  sur l'avant du pied.
+
+**Inchangé** : toute la partie aérienne, que Milan a jugée bonne. Contacts ≤ 0,07
+stud sans pénétration, sens 9/9, package relu, test Luau OK.
+
+**Honnêtement.** Les règles prouvent que les défauts signalés sont corrigés.
+Elles ne prouvent pas que ça frappe fort, c'est à Milan d'en juger. Le verdict
+calibré des coups légers bouge peu (18-27/40), parce qu'une rafale reste plus
+serrée qu'un M1 isolé.
