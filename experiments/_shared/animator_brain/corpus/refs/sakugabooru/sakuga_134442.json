@@ -1,0 +1,119 @@
+{
+ "clip": "sakugabooru_sakuga_134442",
+ "sha1_16": "75ea2cf7e647d443",
+ "duree_s": 27.07,
+ "resolution": [
+  852,
+  480
+ ],
+ "zone_analysee": [
+  6,
+  0,
+  147,
+  68
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 3,
+  "part_du_temps": 0.046,
+  "plus_longue_ms": 833
+ },
+ "energie": {
+  "mediane": 14.02,
+  "pic_p95": 54.94,
+  "contraste_p95_sur_mediane": 3.92,
+  "part_rapide": 0.05
+ },
+ "impacts": {
+  "nombre": 1,
+  "par_seconde": 0.04,
+  "ecart_median_s": null,
+  "cartes": [
+   {
+    "t_s": 22.1,
+    "type": "noir",
+    "duree_ms": 1250
+   }
+  ],
+  "profil_autour": {
+   "approche": 1.69,
+   "0,1 s avant": 1.09,
+   "0,1 s apres": 16.11,
+   "tenue_avant_choc": false,
+   "explosion_apres": true
+  }
+ },
+ "coupes": {
+  "nombre": 6,
+  "t_s": [
+   8.517,
+   8.683,
+   8.8,
+   16.133,
+   19.983,
+   23.4
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.61,
+  "decalage_p95_pct": 15.64
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 3.73,
+  "secondes_de_mouvement": 15.55,
+  "vitesse_sujet_p90": 3.074,
+  "pics": 150,
+  "part_des_pics_qui_montent": 0.25,
+  "deviation_trajectoire_mediane": 0.904,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#03142a",
+   "part": 0.249
+  },
+  {
+   "hex": "#11253f",
+   "part": 0.243
+  },
+  {
+   "hex": "#134566",
+   "part": 0.141
+  },
+  {
+   "hex": "#92bfc3",
+   "part": 0.135
+  },
+  {
+   "hex": "#324c67",
+   "part": 0.12
+  },
+  {
+   "hex": "#458198",
+   "part": 0.112
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 37,
+  "termes": {
+   "contraste_de_temps": 0.69,
+   "tenues_presentes": 0.15,
+   "impacts_rythmes": 0.02
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_134442.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 134442,
+  "tags": "3d_background animated background_animation cgi debris effects falling fighting jujutsu_kaisen jujutsu_kaisen_series keiichiro_watanabe running smears smoke wind",
+  "score": 2749,
+  "source_oeuvre": "#02",
+  "url": "https://www.sakugabooru.com/post/show/134442",
+  "requete": "jujutsu_kaisen fighting",
+  "pourquoi": "Black Flash, reference de TSB/JJS"
+ }
+}

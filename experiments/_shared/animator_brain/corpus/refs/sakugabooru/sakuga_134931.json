@@ -1,0 +1,109 @@
+{
+ "clip": "sakugabooru_sakuga_134931",
+ "sha1_16": "ef3a8708411ab25b",
+ "duree_s": 53.55,
+ "resolution": [
+  640,
+  480
+ ],
+ "zone_analysee": [
+  0,
+  0,
+  160,
+  120
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 2,
+  "part_du_temps": 0.012,
+  "plus_longue_ms": 500
+ },
+ "energie": {
+  "mediane": 10.55,
+  "pic_p95": 31.57,
+  "contraste_p95_sur_mediane": 2.99,
+  "part_rapide": 0.082
+ },
+ "impacts": {
+  "nombre": 0,
+  "par_seconde": 0.0,
+  "ecart_median_s": null,
+  "cartes": [],
+  "profil_autour": null
+ },
+ "coupes": {
+  "nombre": 8,
+  "t_s": [
+   2.5,
+   11.3,
+   12.6,
+   14.383,
+   15.6,
+   20.267,
+   33.117,
+   35.783
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.24,
+  "decalage_p95_pct": 11.24
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 3.94,
+  "secondes_de_mouvement": 42.4,
+  "vitesse_sujet_p90": 3.042,
+  "pics": 351,
+  "part_des_pics_qui_montent": 0.27,
+  "deviation_trajectoire_mediane": 0.89,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#442b25",
+   "part": 0.202
+  },
+  {
+   "hex": "#a08d80",
+   "part": 0.195
+  },
+  {
+   "hex": "#b6ada5",
+   "part": 0.17
+  },
+  {
+   "hex": "#8a6556",
+   "part": 0.166
+  },
+  {
+   "hex": "#605b56",
+   "part": 0.154
+  },
+  {
+   "hex": "#c8c9be",
+   "part": 0.112
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 21,
+  "termes": {
+   "contraste_de_temps": 0.43,
+   "tenues_presentes": 0.04,
+   "impacts_rythmes": 0.0
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_134931.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 134931,
+  "tags": "animated effects fighting hajime_no_ippo hajime_no_ippo:_the_fighting! smears sports takeshi_koike",
+  "score": 1003,
+  "source_oeuvre": "#20 (DVD)",
+  "url": "https://www.sakugabooru.com/post/show/134931",
+  "requete": "hajime_no_ippo",
+  "pourquoi": "boxe credible : garde, jab, transfert de poids"
+ }
+}

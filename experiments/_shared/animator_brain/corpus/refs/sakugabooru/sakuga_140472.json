@@ -1,0 +1,124 @@
+{
+ "clip": "sakugabooru_sakuga_140472",
+ "sha1_16": "670deb22a01ce441",
+ "duree_s": 49.22,
+ "resolution": [
+  852,
+  480
+ ],
+ "zone_analysee": [
+  27,
+  6,
+  160,
+  81
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 46,
+  "part_du_temps": 0.228,
+  "plus_longue_ms": 2750
+ },
+ "energie": {
+  "mediane": 10.61,
+  "pic_p95": 53.45,
+  "contraste_p95_sur_mediane": 5.04,
+  "part_rapide": 0.052
+ },
+ "impacts": {
+  "nombre": 2,
+  "par_seconde": 0.04,
+  "ecart_median_s": 9.684,
+  "cartes": [
+   {
+    "t_s": 37.783,
+    "type": "noir",
+    "duree_ms": 167
+   },
+   {
+    "t_s": 47.467,
+    "type": "noir",
+    "duree_ms": 167
+   }
+  ],
+  "profil_autour": {
+   "approche": 3.97,
+   "0,1 s avant": 3.12,
+   "0,1 s apres": 1.23,
+   "tenue_avant_choc": false,
+   "explosion_apres": false
+  }
+ },
+ "coupes": {
+  "nombre": 6,
+  "t_s": [
+   17.483,
+   18.433,
+   26.783,
+   28.4,
+   31.15,
+   40.7
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.65,
+  "decalage_p95_pct": 17.67
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 8.34,
+  "secondes_de_mouvement": 21.33,
+  "vitesse_sujet_p90": 2.77,
+  "pics": 240,
+  "part_des_pics_qui_montent": 0.33,
+  "deviation_trajectoire_mediane": 0.715,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#0a0b18",
+   "part": 0.261
+  },
+  {
+   "hex": "#273543",
+   "part": 0.226
+  },
+  {
+   "hex": "#95abaa",
+   "part": 0.145
+  },
+  {
+   "hex": "#4a6772",
+   "part": 0.135
+  },
+  {
+   "hex": "#74858a",
+   "part": 0.119
+  },
+  {
+   "hex": "#c1d0ce",
+   "part": 0.116
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 72,
+  "termes": {
+   "contraste_de_temps": 1.0,
+   "tenues_presentes": 0.76,
+   "impacts_rythmes": 0.03
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_140472.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 140472,
+  "tags": "animated effects fabric fighting hair jujutsu_kaisen jujutsu_kaisen_series liquid smears vercreek wind",
+  "score": 2374,
+  "source_oeuvre": "#13 (SB/ED/AD: Hironori Tanaka)",
+  "url": "https://www.sakugabooru.com/post/show/140472",
+  "requete": "jujutsu_kaisen fighting",
+  "pourquoi": "Black Flash, reference de TSB/JJS"
+ }
+}

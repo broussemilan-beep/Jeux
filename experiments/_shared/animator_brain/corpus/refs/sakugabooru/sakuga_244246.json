@@ -1,0 +1,221 @@
+{
+ "clip": "sakugabooru_sakuga_244246",
+ "sha1_16": "250265ecda065801",
+ "duree_s": 55.77,
+ "resolution": [
+  852,
+  480
+ ],
+ "zone_analysee": [
+  13,
+  8,
+  135,
+  89
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 29,
+  "part_du_temps": 0.186,
+  "plus_longue_ms": 1333
+ },
+ "energie": {
+  "mediane": 5.42,
+  "pic_p95": 47.71,
+  "contraste_p95_sur_mediane": 8.8,
+  "part_rapide": 0.025
+ },
+ "impacts": {
+  "nombre": 14,
+  "par_seconde": 0.25,
+  "ecart_median_s": 2.466,
+  "cartes": [
+   {
+    "t_s": 1.55,
+    "type": "noir",
+    "duree_ms": 750
+   },
+   {
+    "t_s": 3.3,
+    "type": "blanc",
+    "duree_ms": 200
+   },
+   {
+    "t_s": 3.633,
+    "type": "blanc",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 6.75,
+    "type": "silhouette",
+    "duree_ms": 1717
+   },
+   {
+    "t_s": 10.517,
+    "type": "noir",
+    "duree_ms": 1200
+   },
+   {
+    "t_s": 11.767,
+    "type": "noir",
+    "duree_ms": 250
+   },
+   {
+    "t_s": 25.367,
+    "type": "silhouette",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 25.567,
+    "type": "silhouette",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 26.317,
+    "type": "silhouette",
+    "duree_ms": 333
+   },
+   {
+    "t_s": 26.733,
+    "type": "silhouette",
+    "duree_ms": 167
+   },
+   {
+    "t_s": 27.317,
+    "type": "noir",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 29.783,
+    "type": "noir",
+    "duree_ms": 367
+   },
+   {
+    "t_s": 32.533,
+    "type": "noir",
+    "duree_ms": 583
+   },
+   {
+    "t_s": 36.583,
+    "type": "noir",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 36.667,
+    "type": "noir",
+    "duree_ms": 1417
+   },
+   {
+    "t_s": 38.2,
+    "type": "silhouette",
+    "duree_ms": 250
+   },
+   {
+    "t_s": 38.617,
+    "type": "silhouette",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 41.167,
+    "type": "silhouette",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 41.25,
+    "type": "silhouette",
+    "duree_ms": 500
+   }
+  ],
+  "profil_autour": {
+   "approche": 0.24,
+   "0,1 s avant": 1.57,
+   "0,1 s apres": 5.62,
+   "tenue_avant_choc": false,
+   "explosion_apres": true
+  }
+ },
+ "coupes": {
+  "nombre": 18,
+  "t_s": [
+   1.467,
+   2.3,
+   3.083,
+   3.167,
+   3.25,
+   3.5,
+   3.583,
+   4.3,
+   4.333,
+   4.383,
+   4.55,
+   4.633,
+   15.3,
+   27.483,
+   41.833,
+   41.967,
+   42.0,
+   50.967
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.62,
+  "decalage_p95_pct": 14.44
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 2.45,
+  "secondes_de_mouvement": 23.27,
+  "vitesse_sujet_p90": 2.221,
+  "pics": 108,
+  "part_des_pics_qui_montent": 0.36,
+  "deviation_trajectoire_mediane": 0.897,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#080609",
+   "part": 0.235
+  },
+  {
+   "hex": "#1b0508",
+   "part": 0.225
+  },
+  {
+   "hex": "#630a0c",
+   "part": 0.161
+  },
+  {
+   "hex": "#d4c4c8",
+   "part": 0.136
+  },
+  {
+   "hex": "#5e262a",
+   "part": 0.128
+  },
+  {
+   "hex": "#846f7b",
+   "part": 0.115
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 70,
+  "termes": {
+   "contraste_de_temps": 1.0,
+   "tenues_presentes": 0.62,
+   "impacts_rythmes": 0.17
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_244246.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 244246,
+  "tags": "animated cgi character_acting debris effects fabric fighting hair hironori_tanaka jujutsu_kaisen jujutsu_kaisen_series kouki_fujimoto liquid ren_onodera smears",
+  "score": 2317,
+  "source_oeuvre": "#13 (SB/ED/AD: Hironori Tanaka) (BD)",
+  "url": "https://www.sakugabooru.com/post/show/244246",
+  "requete": "jujutsu_kaisen fighting",
+  "pourquoi": "Black Flash, reference de TSB/JJS"
+ }
+}

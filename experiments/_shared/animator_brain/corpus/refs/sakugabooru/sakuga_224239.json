@@ -1,0 +1,137 @@
+{
+ "clip": "sakugabooru_sakuga_224239",
+ "sha1_16": "8620796cb71b5703",
+ "duree_s": 51.63,
+ "resolution": [
+  852,
+  480
+ ],
+ "zone_analysee": [
+  17,
+  11,
+  151,
+  84
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 33.3,
+  "lecture": "en 2 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 5,
+  "part_du_temps": 0.022,
+  "plus_longue_ms": 400
+ },
+ "energie": {
+  "mediane": 11.46,
+  "pic_p95": 30.89,
+  "contraste_p95_sur_mediane": 2.69,
+  "part_rapide": 0.044
+ },
+ "impacts": {
+  "nombre": 5,
+  "par_seconde": 0.1,
+  "ecart_median_s": 3.6,
+  "cartes": [
+   {
+    "t_s": 29.233,
+    "type": "noir",
+    "duree_ms": 333
+   },
+   {
+    "t_s": 33.717,
+    "type": "noir",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 33.883,
+    "type": "noir",
+    "duree_ms": 2233
+   },
+   {
+    "t_s": 36.433,
+    "type": "noir",
+    "duree_ms": 333
+   },
+   {
+    "t_s": 47.883,
+    "type": "noir",
+    "duree_ms": 233
+   },
+   {
+    "t_s": 50.2,
+    "type": "noir",
+    "duree_ms": 233
+   }
+  ],
+  "profil_autour": {
+   "approche": 5.98,
+   "0,1 s avant": 0.62,
+   "0,1 s apres": 0.61,
+   "tenue_avant_choc": true,
+   "explosion_apres": false
+  }
+ },
+ "coupes": {
+  "nombre": 0,
+  "t_s": []
+ },
+ "camera": {
+  "decalage_median_pct": 1.12,
+  "decalage_p95_pct": 14.29
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 5.98,
+  "secondes_de_mouvement": 37.97,
+  "vitesse_sujet_p90": 3.475,
+  "pics": 384,
+  "part_des_pics_qui_montent": 0.3,
+  "deviation_trajectoire_mediane": 0.993,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#0e1f2b",
+   "part": 0.23
+  },
+  {
+   "hex": "#03151e",
+   "part": 0.216
+  },
+  {
+   "hex": "#304257",
+   "part": 0.177
+  },
+  {
+   "hex": "#1c333e",
+   "part": 0.172
+  },
+  {
+   "hex": "#646e89",
+   "part": 0.11
+  },
+  {
+   "hex": "#20223b",
+   "part": 0.095
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 19,
+  "termes": {
+   "contraste_de_temps": 0.34,
+   "tenues_presentes": 0.07,
+   "impacts_rythmes": 0.06
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_224239.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 224239,
+  "tags": "3d_background animated cgi eastern effects fabric fighting hair hitori_no_shita_the_outcast_3 hitori_no_shita_the_outcast_series liquid rotation running smears weilin_zhang wind",
+  "score": 3616,
+  "source_oeuvre": "#02",
+  "url": "https://www.sakugabooru.com/post/show/224239",
+  "requete": "fighting effects",
+  "pourquoi": "combat + effets (VFX dessines)"
+ }
+}

@@ -138,6 +138,8 @@ def etat_version(prod, cfg, version, commit, hyp, E):
         pa = fiche["impacts"].get("profil_autour") or {}
         if "tenue_avant_choc" in pa:
             etat["tenue_avant_choc"] = bool(pa["tenue_avant_choc"])
+            etat["explosion_apres"] = bool(pa.get("explosion_apres"))
+            preuve["explosion_apres"] = f"fiche video : profil {pa}"
             preuve["tenue_avant_choc"] = f"fiche video : {fiche['impacts']['nombre']} carte(s) d'impact, profil {pa}"
         c = fiche["energie"]["contraste_p95_sur_mediane"]
         etat["contraste_de_temps"] = c >= E["contraste_refs_mediane"]
