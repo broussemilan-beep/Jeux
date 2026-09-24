@@ -84,31 +84,46 @@ def camera_keys(aw, vw):
     mid = lambda f: (A(f) + Vt(f)) / 2  # noqa: E731
     K = []
     add = lambda f, eye, look, fov, mode="smooth": K.append((f, v3(eye), v3(look), fov, mode))  # noqa: E731
-    # 1. rafale : plan moyen 3/4 avant-droit, qui accompagne le recul
-    # v2 (retour de Milan, LECONS.md 2) : un angle different toutes les 2 frappes
-    # plan A (coups 1-2) : moyen 3/4 avant-droit
-    add(0, mid(0) + [10.5, 3.4, 3.0], mid(0) + [0, -0.2, 0], 46, "cut")
-    add(50, mid(50) + [9.6, 3.0, 2.2], mid(50) + [0, -0.2, 0], 44)
-    # plan B (coup 3, crochet) : contrechamp par-dessus l'epaule de la victime
-    # (v2b : plein contrechamp bouche par le dos de la victime -> decale de cote)
-    # v3 : le crochet frappe le flanc de la victime cote -x : plan de profil
-    # depuis CE cote (sinon le dos de la victime cache l'impact)
-    add(52, mid(52) + [-10.8, 2.2, 1.2], mid(52) + [0, -0.3, 0], 46, "cut")
-    add(76, mid(76) + [-10.0, 2.0, 1.0], mid(76) + [0, -0.3, 0], 44)
-    # plan C (coup 4 au corps, la victime decolle) : bas, cote gauche
-    add(78, mid(78) + [-9.8, -1.7, 2.4], mid(78) + [0, 0.9, 0], 48, "cut")
-    add(116, mid(116) + [-9.2, -1.5, 1.6], mid(116) + [0, 0.7, 0], 46)
-    # 2. v5 COUP CHARGE : coupe de PROFIL a hauteur d'yeux (la contre-plongee
-    # au ras du sol de la v4 faisait « monter » tout coup a l'ecran), assez
-    # large pour lire l'enroulement du buste et le trajet A PLAT du poing ;
-    # lente poussee vers l'avant pendant la tenue (tension)
+    # 1. v6 RAFALE : TOUJOURS du cote +x (bras droit), jamais de passage de
+    # l'autre cote de l'axe. Verifie a l'ecran (captures v5 et essais v6) :
+    # de +x, les coups des DEUX bras se lisent (le bras part devant le torse) ;
+    # de -x (v5 h3/h4) ou de dos (essai v6 « camera d'epaule »), le dos de
+    # l'attaquant cache le poing. Camera vivante : un plan par coup, hauteur
+    # et distance differentes, lente poussee dans chaque plan.
+    add(0, mid(14) + [10.5, 3.0, 3.0], mid(14) + [0, -0.2, 0], 46, "cut")
+    add(26, mid(26) + [9.6, 2.7, 2.6], mid(26) + [0, -0.2, 0], 44)
+    add(28, mid(40) + [8.6, 1.3, 4.0], mid(40) + [0, 0.0, 0], 44, "cut")          # bas, 3/4 arriere
+    add(50, mid(50) + [8.0, 1.2, 3.6], mid(50) + [0, 0.0, 0], 42)
+    add(52, mid(64) + [9.2, 4.6, 1.4], mid(64) + [0, -0.4, 0], 44, "cut")         # plongee
+    add(76, mid(76) + [8.6, 4.2, 1.2], mid(76) + [0, -0.4, 0], 42)
+    # h4 (fente qui ferme la rafale, coup moyen) : profil franc, tenu sur les
+    # deux pas de la charge
+    add(78, mid(90) + [11.5, 1.2, 1.4], mid(90) + [0, -0.2, 0], 42, "cut")
+    add(116, mid(116) + [10.4, 1.0, 1.0], mid(116) + [0, -0.2, 0], 42)
+    # 2. v6 CHARGE : plan SERRE de profil, tete et epaules, la victime au bout
+    # du regard (espace devant le visage). Le gros plan de face est ecarte : le
+    # visage R6 a un sourire fixe, il ne porte aucune tension (essai v6 vu a
+    # l'ecran). Le regard se lit par l'orientation de la tete. Lente poussee.
+    h = lambda f: aw[f]["Head"][1]  # noqa: E731
+    def regard(f):
+        t = h(f) * 0.6 + Vt(f) * 0.4
+        t[1] = h(f)[1] - 1.2
+        return t
+    add(126, h(126) + [7.6, -0.5, 1.0], regard(126), 44, "cut")
+    add(145, h(145) + [6.5, -0.5, 0.8], regard(145), 42)
+    # 3. COUP CHARGE : coupe sur l'action au depart (f146), profil moyen qui
+    # montre le trajet A PLAT du poing ; gele au contact sous les cartes.
+    # (Essai v6 « poing vers la camera » ecarte : dans l'axe du coup, le corps
+    # de la victime est toujours entre l'objectif et le poing.)
     a = A(132)
-    v = Vt(150)
-    m2 = (a + v) / 2
-    add(118, m2 + [10.5, 0.6, 1.6], m2 + [0, -0.2, 0], 44, "cut")
-    add(146, m2 + [8.6, 0.5, 1.2], m2 + [0, -0.2, 0], 40)
-    # 3. contact puis ejection : on recule en suivant la victime
-    add(152, m2 + [9.4, 0.8, 0.6], Vt(152) * 0.5 + m2 * 0.5 + [0, 0.2, 0], 48)
+    m2 = (a + Vt(150)) / 2
+    add(146, m2 + [8.8, 0.6, 1.0], m2 + [0, -0.1, 0], 40, "cut")
+    add(150, m2 + [8.2, 0.5, 0.9], m2 + [0, -0.1, 0], 38)
+    # la consequence en TRES large (le coup a decide du combat), puis retour
+    # sur l'attaquant pour l'envol
+    add(151, mid(151) + [26.0, 6.0, 6.0], mid(151) + [0, 2.0, -1.0], 42, "cut")
+    add(165, mid(165) + [24.0, 6.0, 5.0], mid(165) + [0, 3.0, -1.0], 42)
+    add(166, [a[0] + 9.0, 1.2, a[2] - 1.0], A(166) + [0, 1.6, -0.8], 54, "cut")
     add(172, [a[0] + 8.5, 1.8, a[2] - 2.4], mid(172) + [0, 1.0, 0], 56)
     add(196, mid(196) + [12.0, 1.0, 3.5], mid(196), 56)
     # 4. WHIP PAN (12 f) vers le plan large en plongee du temps suspendu
@@ -150,27 +165,40 @@ def events(aw, vw):
     ev(0, "body_flash", who="attaquant", color=WHITE, frames=4)
     ev(0, "ground_burst", pos=v3([0, 0.05, 0]), color=GOLD, scale=0.8)
     # v2 : escalade (rules.check_escalade) -- hitstop, secousse et taille montent
+    # v6 HIERARCHIE (ETUDE_VISUELLE.md) : l'effet est proportionnel au coup.
+    # tier 1 = coup de base : eclat d'une image + un anneau, rien d'autre ;
+    # tier 2 = coup moyen : + halo, etincelles, flash du corps, fond de vitesse
+    tiers = [1, 1, 1, 2]
     for i, (c, s, kind) in enumerate(HITS):
         p = tip(aw[c], "Right Arm" if s == "R" else "Left Arm")
-        ev(c, "body_flash", who="attaquant", color=FLASH, frames=2)
+        if tiers[i] >= 2:
+            ev(c, "body_flash", who="attaquant", color=FLASH, frames=2)
+            ev(c, "vitesse", duration=0.1)
         ev(c, "impact", pos=v3(p), dir=v3(impact_dir(aw, c, s)), scale=SCENE["hit_scale"][i], color=GOLD,
-           hitstop=SCENE["hit_hitstop"][i], shake=SCENE["hit_shake"][i], name=f"hit{i + 1}")
+           hitstop=SCENE["hit_hitstop"][i], shake=SCENE["hit_shake"][i], name=f"hit{i + 1}", tier=tiers[i])
     # v5 COUP CHARGE : aura et poing qui brillent PENDANT la tenue (la charge
-    # se voit), poussiere au depart, puis impact COURT et EXPLOSION juste apres
-    # (sakuga : explosion apres le choc 12/32 clips, tenue avant 2/32 ;
-    # corpus/refs/SYNTHESE.md) au lieu d'un gel long
+    # se voit), poussiere au depart
     ev(124, "aura", who="attaquant", frames=24, color=GOLD, intensity=0.7)
     ev(124, "fist_glow", who="attaquant", side="R", frames=26, color=GOLD)
     ev(146, "dust_trail", who="attaquant", frames=14)
     u = SCENE["upper_f"]
     p = tip(aw[u], "Right Arm")
     d = impact_dir(aw, u, "R")
+    # v6 IMPACT RACONTE (cartes d'impact, 24 refs sur 93) : le contact se voit
+    # 3 f, puis noir + etoile, 3 cartes tirees de NOTRE pose, blanc ; l'animation
+    # est gelee pendant toute la sequence (hitstop = sa duree), le blanc se
+    # dissout sur la consequence. Plus courte que la sequence de l'aerien
+    # (l'escalade garde f288 au-dessus).
+    seq = [["contact", 0.05], ["noir", 0.10], ["carte", 0.067], ["carte", 0.067], ["carte", 0.067],
+           ["blanc", 0.08]]
+    gel = round(sum(x[1] for x in seq), 3)
     ev(u, "body_flash", who="attaquant", color=FLASH, frames=3)
-    ev(u, "impact", pos=v3(p), dir=v3(d), scale=1.6, color=GOLD, hitstop=0.05, shake=0.65, name="coup_charge")
-    # l'explosion : 2e souffle dans l'axe du coup, derriere la victime, et
-    # onde au sol sous le point d'impact
-    ev(u + 2, "impact", pos=v3(p + 1.6 * d), dir=v3(d), scale=1.9, color=WHITE, hitstop=0.0, shake=0.3,
-       name="coup_charge_souffle")
+    ev(u, "impact", pos=v3(p), dir=v3(d), scale=1.6, color=GOLD, hitstop=gel, shake=0.65, name="coup_charge", tier=3)
+    ev(u, "cartes", sequence=seq, fade=0.15)
+    # l'explosion APRES le choc (sakuga 12/32 clips) : 2e souffle dans l'axe du
+    # coup, derriere la victime, et onde au sol ; elle sort du blanc
+    ev(u + 1, "impact", pos=v3(p + 1.6 * d), dir=v3(d), scale=1.9, color=WHITE, hitstop=0.0, shake=0.3,
+       name="coup_charge_souffle", tier=3)
     g = p.copy()
     g[1] = 0.05
     ev(u + 1, "ground_burst", pos=v3(g), color=GOLD, scale=1.4)
@@ -184,7 +212,7 @@ def events(aw, vw):
     p = tip(aw[sf], "Right Arm")
     ev(sf, "body_flash", who="attaquant", color=FLASH, frames=3)
     ev(sf, "impact", pos=v3(p), dir=v3(impact_dir(aw, sf, "R")), scale=1.6, color=GOLD, hitstop=0.13, shake=0.6,
-       name="strike")
+       name="strike", tier=3)
     imf = SCENE["impact_f"]
     ground = tip(aw[imf], "Right Arm")
     ground[1] = 0.0
@@ -194,7 +222,7 @@ def events(aw, vw):
     ev(imf, "crater", pos=v3(ground), radius=7.5, spikes=34, seed=11)
     # l'impact au sol se VOIT : gel de 0,16 s puis onde de choc en dome
     ev(imf, "impact", pos=v3(ground + [0, 0.6, 0]), dir=[0, -1, 0], scale=2.4, color=GOLD, hitstop=0.16, shake=1.0,
-       name="impact")
+       name="impact", tier=3)
     ev(imf, "dome", pos=v3(ground), radius=11.0, frames=40, color=GOLD)
     ev(imf, "smoke_cloud", pos=v3(ground), radius=9.0, frames=END - imf, color="#7d7468")
     ev(imf, "embers", pos=v3(ground), frames=END - imf, color=GOLD_DEEP)

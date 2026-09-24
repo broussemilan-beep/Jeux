@@ -215,7 +215,8 @@
     "test de silhouette v2 (manga)",
     "corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : tous les bons clips separent les silhouettes ; noob vs pro (epee) ; NOUS : rafale et coup final se chevauchent en plan moyen (bras cache contre la victime, poing arme cache derriere le corps)",
     "lot 2 : la rotation du torse et la separation des persos dependent de l'ANGLE de camera ; les pros verifient sous deux vues (cote + dessus)",
-    "fiche DEMI-DIEU (Milan) : « si on enleve toute la couleur, le coup doit rester impressionnant » ; silhouettes de profil -- a completer de DOS (camera du joueur)"
+    "fiche DEMI-DIEU (Milan) : « si on enleve toute la couleur, le coup doit rester impressionnant » ; silhouettes de profil -- a completer de DOS (camera du joueur)",
+    "v6 (planche v5 contre v6) : la lisibilite depend du COTE de la camera, pas du bras qui frappe : de +x les coups des deux bras se lisent (le bras part devant le torse), de -x ou de dos le torse de l'attaquant cache le poing ; ne pas traverser l'axe a chaque coup"
    ],
    "mesure": "jugement visuel",
    "etalon_style": "universel",
@@ -334,12 +335,13 @@
    "etalon_style": "manga_ultime",
    "sources": [
     "corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~10 clips",
-    "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)"
+    "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)",
+    "essais v6 vus a l'ecran (captures/verification/2026-09-24-poing-dragon-v6-essais-camera-rejetes.png) : le gros plan de face d'une tete R6 montre un sourire fixe -> comique, zero tension ; le regard s'est lu par l'ORIENTATION de la tete en plan rapproche de profil, la cible au bout du regard"
    ],
    "mesure": "jugement visuel",
    "categorie": "mise_en_scene",
    "quand": "avant un coup qui compte (charge, finisher), quand le spectateur doit sentir la decision",
-   "contre_indication": "dans une rafale rapide : casse le rythme"
+   "contre_indication": "dans une rafale rapide : casse le rythme ; visage sans expression (tete R6 par defaut) : jamais de face en tres gros plan, lire le regard par l'orientation de la tete (profil, cible dans le cadre)"
   },
   {
    "id": "poing_gros_plan",
@@ -356,12 +358,13 @@
    "sources": [
     "corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~9 clips",
     "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)",
-    "image de Milan 8965d689 (planche OPM) : LE coup de Saitama = poing vers le lecteur, plus gros que la tete ; Umamusume 3D : meme principe en temps reel"
+    "image de Milan 8965d689 (planche OPM) : LE coup de Saitama = poing vers le lecteur, plus gros que la tete ; Umamusume 3D : meme principe en temps reel",
+    "essais v6 vus a l'ecran (captures/verification/2026-09-24-poing-dragon-v6-essais-camera-rejetes.png) : 'poing vers la camera' dans l'axe du coup -> le corps de la victime est TOUJOURS entre l'objectif et le poing (contrechamp par-dessus son epaule : son dos remplit 60 % du cadre) ; le principe vit dans la carte d'impact (silhouette du poing), pas dans la camera 3D"
    ],
    "mesure": "jugement visuel",
    "categorie": "mise_en_scene",
    "quand": "charge ou impact du coup principal",
-   "contre_indication": "sur des coups secondaires : dilue"
+   "contre_indication": "sur des coups secondaires : dilue ; en 3D quand le coup touche une cible pleine face : l'axe du coup est bouche par la victime -> le mettre dans une carte 2D ou filmer le poing PENDANT la charge, pas au contact"
   },
   {
    "id": "contraste_echelle",
@@ -399,7 +402,8 @@
    "etalon_style": "manga_ultime",
    "sources": [
     "corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~6 clips",
-    "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)"
+    "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)",
+    "v6 : a h4, lignes de concentration a la peripherie + voile sombre (le centre reste lisible) ; approximation : le decor n'est pas vraiment remplace derriere les corps (limite ScreenGui Roblox)"
    ],
    "mesure": "jugement visuel",
    "categorie": "mise_en_scene",
@@ -525,7 +529,8 @@
    "etalon_style": "universel",
    "sources": [
     "punch practice (lot 2), cross punch (lot 2), refs Black Flash / TSB",
-    "lot 3 : M1 de nuit (449345ad : eclat 1 f + anneau, un peu plus gros sur les coups 3-4), aafdc91d (coup 1 petit, coup 2 gros + rouge + anneaux)"
+    "lot 3 : M1 de nuit (449345ad : eclat 1 f + anneau, un peu plus gros sur les coups 3-4), aafdc91d (coup 1 petit, coup 2 gros + rouge + anneaux)",
+    "v6 : tier 1 (eclat 2 f + anneau blanc) lisible en camera cinema, INVISIBLE en camera de jeu de dos : la hierarchie doit etre jugee dans la camera ou le coup sera vu"
    ],
    "mesure": "jugement visuel",
    "categorie": "mise_en_scene",
@@ -585,7 +590,8 @@
    "poids_a_priori": 0.5,
    "etalon_style": "universel",
    "sources": [
-    "lot 3 : boxeur (jeu de dos -> blanc -> cinematique -> retour de dos), gatling, M1 de nuit, Mythra (camera fixe) ; Serious Punch TSB"
+    "lot 3 : boxeur (jeu de dos -> blanc -> cinematique -> retour de dos), gatling, M1 de nuit, Mythra (camera fixe) ; Serious Punch TSB",
+    "mode Jeu du lecteur v6, shift-lock Roblox (decalage 1,75 stud a droite, FOV 70) : la victime est CACHEE derriere l'attaquant pendant presque toute la rafale ; l'eclat de base (tier 1) est masque par son corps. Question ouverte : en camera de jeu, la lecture d'un M1 vient d'effets qui DEBORDENT la silhouette et d'une reaction qui SORT du masque (captures/verification/2026-09-24-poing-dragon-v6-camera-de-jeu-shift-lock.png)"
    ],
    "mesure": "jugement visuel",
    "categorie": "mise_en_scene",

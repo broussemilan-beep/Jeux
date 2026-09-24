@@ -201,3 +201,23 @@ cerveau, voir la fin de l'entrée.
 - **Changement.** Coup chargé à plat (enroulement, tenue vivante, départ en
   4 f, extension tenue), caméra à hauteur d'yeux, explosion après l'impact.
 - **Note de Milan** : à venir.
+
+## Poing du Dragon v6 (2026-09-24) : réponse au retour v5
+
+- **Retour v5 (6,8).** « C'est toujours pas bon, je vois pas trop de
+  différence avec la v4. »
+- **Lecture.** Même diagnostic du critique et de l'étude visuelle (93 refs) :
+  les poses sont au niveau, la mise en scène du sol n'a jamais changé. La
+  partie aimée (l'aérien) applique la grammaire des refs ; la rafale et le
+  coup chargé non.
+- **Changement.** Caméra de la rafale du côté qui montre les coups, hiérarchie
+  des effets, charge en plan rapproché, impact raconté à f150 (noir, étoile,
+  3 cartes, blanc, plan très large). Aucune pose touchée
+  (`r6_poing_dragon/FICHE_V6.md`).
+- **Appris en le faisant.** 3 principes écartés sur ce cas précis, avec leur
+  contre-indication écrite dans `hypotheses.json` : regard de face (visage
+  R6 sans expression), poing vers la caméra (victime dans l'axe), caméra
+  d'épaule (dos qui cache). Découverte : la rafale ne se lit pas en caméra de
+  jeu.
+- **Note de Milan** : à venir.
+

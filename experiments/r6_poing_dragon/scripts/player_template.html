@@ -92,6 +92,7 @@
         <button type="button" class="cam" data-cam="cinema" aria-pressed="true">Cinéma</button>
         <button type="button" class="cam" data-cam="libre" aria-pressed="false">Libre</button>
         <button type="button" class="cam" data-cam="profil" aria-pressed="false">Profil</button>
+        <button type="button" class="cam" data-cam="jeu" aria-pressed="false">Jeu</button>
       </div>
       <div class="group" role="group" aria-label="Couches">
         <span class="label">Afficher</span>
@@ -307,7 +308,9 @@
     const ring2 = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), addMat(TX.ring, PAL.white, 1)); fxRoot.add(ring2);
     ring2.quaternion.copy(ring.quaternion);
     seed = 1000 + ev.frame;
-    const nSp = Math.round(10 + 10 * s), sparks = [];
+    // v6 hierarchie : tier 1 (coup de base) = eclat 2 f + un anneau ; tier 2 = sans fumee ; 3 = complet
+    const tier = ev.tier || 3;
+    const nSp = tier >= 2 ? Math.round(10 + 10 * s) : 0, sparks = [];
     for (let i = 0; i < nSp; i++) {
       const th = (ev.dir[1] < -0.9 ? 80 : 42) * Math.PI / 180 * Math.sqrt(rnd()), ph = rnd() * Math.PI * 2;
       const v = d.clone().multiplyScalar(Math.cos(th)).addScaledVector(p1, Math.sin(th) * Math.cos(ph)).addScaledVector(p2, Math.sin(th) * Math.sin(ph));
@@ -317,7 +320,7 @@
       sparks.push({ m, v: v.normalize(), v0: (45 + 50 * rnd()) * Math.min(1.6, s), life: 0.18 + 0.25 * rnd() });
     }
     const puffs = [];
-    for (let i = 0; i < Math.round(4 + 5 * s); i++) {
+    for (let i = 0; i < (tier >= 3 ? Math.round(4 + 5 * s) : 0); i++) {
       const a = rnd() * Math.PI * 2;
       const v = p1.clone().multiplyScalar(Math.cos(a)).addScaledVector(p2, Math.sin(a)).addScaledVector(d, 0.4 * rnd());
       const sp = new THREE.Sprite(spriteMat(TX.smoke, "#d9d2c3", false)); fxRoot.add(sp);
@@ -326,8 +329,8 @@
     on((tr, fa, sa, sv, cam) => {
       const age = tr - t0(), vis = useFx && age >= 0;
       // flash : 0,1 s (mediane corpus 0,10 s)
-      const fl = age / 0.1;
-      flash.visible = glow.visible = vis && fl < 1;
+      const fl = age / (tier === 1 ? 2 / 60 : 0.1);
+      flash.visible = vis && fl < 1; glow.visible = flash.visible && tier >= 2;
       if (flash.visible) {
         const k = fl < 0.2 ? fl / 0.2 : 1 - (fl - 0.2) / 0.8;
         flash.scale.setScalar(4.2 * s * (0.6 + 0.4 * k)); flash.material.opacity = k; flash.position.copy(P);
@@ -337,7 +340,7 @@
       // onde : 0,4 s, taille max ~12 studs x scale/2
       for (const [r, dur, max, op] of [[ring, 0.32, 5.5 * s, 0.9], [ring2, 0.2, 3.2 * s, 1.0]]) {
         const ra = age / dur;
-        r.visible = vis && ra < 1;
+        r.visible = vis && ra < 1 && (tier >= 2 || r === ring2);
         if (r.visible) { const e = ease(ra); r.scale.setScalar(0.4 + max * e); r.material.opacity = op * (1 - ra) * (1 - ra); r.position.copy(P).addScaledVector(d, 0.25); }
       }
       // etincelles : vitesse ~75 studs/s, drag 5 (freinage exponentiel), etirees le long de la vitesse
@@ -673,7 +676,14 @@
     let eye, look, fov;
     const mid = sa[IDX.Torso].pos.clone().add(sv[IDX.Torso].pos).multiplyScalar(0.5);
     if (camMode === "cinema") ({ eye, look, fov } = cinema(fa));
-    else {
+    else if (camMode === "jeu") {
+      // v6 camera de JEU (battleground) : derriere l'attaquant en verrouillage
+      // d'epaule (shift-lock Roblox : decalage de 1,75 stud a droite), a
+      // distance de joueur, fixe dans le repere du lancement (le joueur ne
+      // tourne pas sa camera pendant une technique), FOV Roblox par defaut 70
+      const a = sa[IDX.Torso].pos, sx = 0.3 * a.x + 1.75;
+      eye = new THREE.Vector3(sx, Math.max(4.5, a.y + 1.8), a.z + 10); look = new THREE.Vector3(sx, a.y + 0.2, a.z - 4); fov = 70;
+    } else {
       look = fa > 300 ? sa[IDX.Torso].pos.clone().lerp(sv[IDX.Torso].pos, 0.35) : mid;
       const th = camMode === "profil" ? Math.PI / 2 : orbit.th, ph = camMode === "profil" ? 1.35 : orbit.ph;
       eye = look.clone().add(new THREE.Vector3(Math.sin(ph) * Math.sin(th), Math.cos(ph), Math.sin(ph) * Math.cos(th)).multiplyScalar(orbit.r));
@@ -700,6 +710,20 @@
   // ------------------------------------------------------------ couche ecran (2D)
   const manga = D.manga.map((src) => { const im = new Image(); im.src = src; return im; });
   const mangaEv = E.find((e) => e.kind === "manga"), whiteEv = E.find((e) => e.kind === "white");
+  const cartes = (D.cartes || []).map((src) => { const im = new Image(); im.src = src; return im; });
+  const cartesEv = E.find((e) => e.kind === "cartes"), vitesseEv = E.filter((e) => e.kind === "vitesse");
+  // phase de la sequence de cartes a l'age reel `age` (s) ; null hors sequence
+  function cartePhase(ev, age) {
+    if (age < 0) return null;
+    let t = 0, ci = 0;
+    for (const [kind, d] of ev.sequence) {
+      if (age < t + d) return { kind, i: ci, u: (age - t) / d };
+      if (kind === "carte") ci++;
+      t += d;
+    }
+    return age < t + ev.fade ? { kind: "fondu", u: (age - t) / ev.fade } : null;
+  }
+  let fistScreen = () => [fx.width / 2, fx.height / 2];
   function drawScreen(tr, fa, sa) {
     const W = fx.width, H = fx.height;
     g2.clearRect(0, 0, W, H);
@@ -708,6 +732,7 @@
     if (camMode === "cinema") { g2.fillStyle = "#000"; const b = H * 0.07; g2.fillRect(0, 0, W, b); g2.fillRect(0, H - b, W, b); }
     // teinte doree du temps suspendu + lignes de vitesse
     const tp = sa[IDX.Torso].pos.clone().project(camera), cx = (tp.x + 1) / 2 * W, cy = (1 - tp.y) / 2 * H;
+    fistScreen = () => { const q = tipOf(sa, "Right Arm").project(camera); return [(q.x + 1) / 2 * W, (1 - q.y) / 2 * H]; };
     if (fa >= 196 && fa < 290) {
       const inS = fa < 256, k = inS ? Math.min(1, (fa - 196) / 12) : 1;
       g2.fillStyle = `rgba(255, 190, 60, ${0.10 * k})`; g2.fillRect(0, 0, W, H);
@@ -729,11 +754,47 @@
       for (let i = 0; i < 60; i++) g2.fillRect(r() * W - W * 0.2, r() * H, W * (0.3 + r() * 0.6), 1 + r() * 3);
       g2.restore();
     }
-    // flash blanc 2 f au coup charge et a la frappe en l'air
+    // flash blanc 2 f a la frappe en l'air (v6 : le coup charge a sa propre sequence de cartes)
     for (const e of impacts) {
-      if (e.name !== "coup_charge" && e.name !== "strike") continue;
+      if (e.name !== "strike") continue;
       const age = tr - realTimeOf(e.frame);
       if (age >= 0 && age < 2 / 60) { g2.fillStyle = "rgba(255,248,230,0.75)"; g2.fillRect(0, 0, W, H); }
+    }
+    // v6 fond de vitesse (coup moyen) : lignes de concentration a la peripherie,
+    // le centre (les deux corps) reste lisible
+    for (const e of vitesseEv) {
+      const age = tr - realTimeOf(e.frame);
+      if (age < 0 || age >= e.duration) continue;
+      const k = 1 - age / e.duration;
+      let s = e.frame * 7 + 1; const r = () => ((s = (s * 16807 + 5) % 2147483647) - 1) / 2147483646;
+      g2.save(); g2.fillStyle = `rgba(20,16,10,${0.35 * k})`; g2.fillRect(0, 0, W, H);
+      g2.globalAlpha = 0.85 * k; g2.fillStyle = "#fff8e6";
+      const R1 = Math.hypot(W, H) * 0.75;
+      for (let i = 0; i < 70; i++) {
+        const a = r() * Math.PI * 2, R0 = Math.hypot(W, H) * (0.2 + 0.12 * r()), w = 1.5 + r() * 4;
+        g2.beginPath(); g2.moveTo(cx + Math.cos(a) * R0, cy + Math.sin(a) * R0);
+        g2.lineTo(cx + Math.cos(a + 0.005 * w) * R1, cy + Math.sin(a + 0.005 * w) * R1); g2.lineTo(cx + Math.cos(a - 0.005 * w) * R1, cy + Math.sin(a - 0.005 * w) * R1); g2.fill();
+      }
+      g2.restore();
+    }
+    // v6 impact raconte (f150) : contact 3 f, noir + etoile, 3 cartes, blanc qui se dissout
+    if (cartesEv) {
+      const age = tr - realTimeOf(cartesEv.frame), ph = cartePhase(cartesEv, age);
+      if (ph) {
+        if (ph.kind === "noir") {
+          g2.fillStyle = "#000"; g2.fillRect(0, 0, W, H);
+          const fp = fistScreen(), R = H * (0.1 + 0.16 * ph.u);
+          g2.save(); g2.translate(fp[0], fp[1]); g2.rotate(0.3); g2.fillStyle = "#fff";
+          g2.beginPath();
+          for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4, rr = i % 2 ? R * 0.18 : R; g2.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); }
+          g2.fill(); g2.restore();
+        } else if (ph.kind === "carte") {
+          const im = cartes[ph.i];
+          if (im && im.complete) { const s = Math.max(W / im.width, H / im.height); g2.drawImage(im, (W - im.width * s) / 2, (H - im.height * s) / 2, im.width * s, im.height * s); }
+        } else if (ph.kind === "blanc" || ph.kind === "fondu") {
+          g2.fillStyle = `rgba(255,253,246,${ph.kind === "blanc" ? 1 : 1 - ph.u})`; g2.fillRect(0, 0, W, H);
+        }
+      }
     }
     // planches manga : 3 x 2 frames
     if (mangaEv && fa >= mangaEv.frames[0] && fa < mangaEv.frames[3]) {

@@ -74,6 +74,7 @@ def main():
         "markers": staging["markers"],
         "sizes": X.RIG["part_sizes"],
         "manga": [data_uri(os.path.join(OUT, f"manga_{i}.png")) for i in (1, 2, 3)],
+        "cartes": [data_uri(os.path.join(OUT, f"carte_{i}.png")) for i in (1, 2, 3)],
         "verif": {"cles": ver["cles"], "aller_retour": ver["aller_retour_max"],
                   "sens": all(ver["sens_roblox"].values()), "reduction": ver["ecart_max_reduction_studs"]},
     }

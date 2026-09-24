@@ -399,3 +399,60 @@ L'outil reste dans `dragon_clip.py`, désactivé.
 
 **Preuve** :
 `captures/verification/2026-09-24-poing-dragon-v4-vs-v5-coup-final-profil.png`.
+
+## v6 (2026-09-24) : la mise en scène du sol
+
+Retour de Milan sur la v5 (6,8) : « je vois pas trop de différence avec la
+v4 ». Le cerveau a mesuré que le bras, le rythme du poing et la rotation du
+torse sont déjà au niveau des coups de base pros. Ce qui retient la note,
+c'est la **mise en scène** de la rafale et du coup chargé, restée la même
+depuis la v1. La partie aérienne, que Milan aime, applique déjà la grammaire
+des refs. **La v6 ne touche à aucune pose** : elle change la caméra, la
+hiérarchie des effets et raconte l'impact. Fiche écrite avant d'animer :
+`FICHE_V6.md`.
+
+| temps | v5 | v6 |
+|---|---|---|
+| rafale : caméra | 3 plans ; h3 et h4 filmés de −x, le dos de l'attaquant cache le poing | un plan par coup, **toujours du côté +x** (aucun passage de l'autre côté de l'axe) : haut, bas 3/4 arrière, plongée, profil franc pour h4 ; lente poussée dans chaque plan |
+| rafale : effets | le même effet complet (étoile, halo, étincelles, fumée) et un flash du corps entier sur les 4 coups | **hiérarchie** : h1 à h3 = éclat 2 f et un anneau blanc, rien d'autre ; h4 = effet moyen, flash du corps et **fond de vitesse** 0,1 s |
+| charge | plan de profil large | **plan rapproché de profil**, tête et bras qui vise, la victime au bout du regard ; lente poussée |
+| f150 | impact de 0,05 s puis explosion | **impact raconté** : contact 3 f, **noir + étoile**, **3 cartes** tirées de notre pose (silhouette inversée, encre hachurée, grand X), **blanc** ; l'animation est gelée 0,43 s pendant la séquence, puis le blanc se dissout sur un **plan très large** de la conséquence ; l'explosion sort du blanc |
+| aérien | — | inchangé |
+
+**Nouveau dans le lecteur.**
+- Bouton caméra **« Jeu »** : caméra d'un joueur de battleground, derrière
+  l'attaquant en verrouillage d'épaule (décalage de 1,75 stud à droite, FOV
+  70).
+- Les cartes (`output/carte_1..3.png`) sont générées depuis la pose de f150
+  par `scripts/build_cartes.py`.
+
+**Module Roblox.** Même séquence en Luau (`DragonFist.cartePhase`, identique
+à celle du lecteur), fond de vitesse en `ScreenGui`, hiérarchie des impacts
+par `tier`. Nouvel emplacement `CONFIG.CARTE_IDS` ; sans images, repli
+noir / blanc / noir.
+
+**Contrôles.**
+- règles : 13/13 ;
+- contacts : 0,05 stud sur les 7 coups ; poses identiques à la v5 (exports
+  inchangés) ;
+- sens : `SENS OK`, dont 11 nouveaux tests de la séquence de cartes (durée =
+  gel, phase juste à chaque âge) et de la hiérarchie ; `PACKAGE OK`.
+
+**Essayé puis écarté**, chaque fois vu à l'écran
+(`captures/verification/2026-09-24-poing-dragon-v6-essais-camera-rejetes.png`) :
+- **caméra d'épaule pour la rafale** : le dos de l'attaquant cache le coup ;
+- **très gros plan de face sur le regard** : le visage R6 a un sourire fixe,
+  c'est comique, pas tendu ;
+- **poing vers la caméra au contact** : dans l'axe du coup, le corps de la
+  victime est toujours entre l'objectif et le poing. Le principe vit dans la
+  1re carte, pas dans la caméra 3D.
+
+**Découverte, pas corrigée.** En caméra « Jeu », la victime reste cachée
+derrière l'attaquant pendant presque toute la rafale, et l'éclat des coups de
+base est masqué par son corps. Le lanceur voit la caméra ciné ; ce sont les
+**autres joueurs** qui liraient mal la rafale. Question pour Milan.
+
+**Preuves** :
+- `captures/verification/2026-09-24-poing-dragon-v5-vs-v6-rafale-cote-du-bras.png` ;
+- `captures/verification/2026-09-24-poing-dragon-v6-charge-et-impact-raconte.png` ;
+- `captures/verification/2026-09-24-poing-dragon-v6-camera-de-jeu-shift-lock.png`.

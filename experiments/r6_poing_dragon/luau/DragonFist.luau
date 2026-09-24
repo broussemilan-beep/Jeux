@@ -37,6 +37,9 @@ DragonFist.CONFIG = {
 	-- dans Studio (Asset Manager). Vides : repli sur des images plein ecran
 	-- noires/blanches, la technique fonctionne quand meme.
 	MANGA_IDS = { "", "", "" },
+	-- v6 : IDs des 3 cartes d'impact du coup charge (output/carte_1..3.png).
+	-- Vides : repli noir / blanc / noir, la sequence garde son rythme.
+	CARTE_IDS = { "", "", "" },
 	CAMERA = true, -- camera cinematique pour le joueur qui lance la technique
 	SCREEN_FX = true, -- barres, lignes de vitesse, manga, ecran blanc
 	CLEANUP_TIME = 6, -- s : duree de vie du cratere et des debris apres la fin
@@ -227,12 +230,16 @@ local function impact(ctx, ev)
 	local s = ev.scale
 	local holder, att = holderAt(CFrame.lookAt(pos, pos + dir), ctx.fx)
 	local col = color3(ev.color)
-	-- flash : 0,1 s (mediane corpus 0,10 s)
+	-- v6 hierarchie : tier 1 (coup de base) = eclat 2 f + un anneau blanc ;
+	-- tier 2 = sans fumee ; tier 3 = complet
+	local tier = ev.tier or 3
+	-- flash : 0,1 s (mediane corpus 0,10 s) ; 2 f pour un coup de base
+	local flashLife = if tier == 1 then 2 / 60 else 0.09
 	emitter(att, {
 		Color = ColorSequence.new(cfg.WHITE, col),
 		LightEmission = 1,
 		Brightness = 6,
-		Lifetime = NumberRange.new(0.08, 0.1),
+		Lifetime = NumberRange.new(flashLife, flashLife),
 		Speed = NumberRange.new(0),
 		Size = seq({ { 0, 1.2 * s }, { 0.2, 4.2 * s }, { 1, 0 } }),
 		Rotation = NumberRange.new(0, 360),
@@ -252,7 +259,7 @@ local function impact(ctx, ev)
 		Size = seq({ { 0, 0.3 * math.min(1.4, s) }, { 1, 0 } }),
 		Squash = seq({ { 0, 2.2 }, { 1, 1 } }),
 		ZOffset = 1,
-	}, math.floor(10 + 10 * s))
+	}, if tier >= 2 then math.floor(10 + 10 * s) else 0)
 	-- fumee : 1 s, drag 5,4 (la couche qui manquait a nos M1)
 	emitter(att, {
 		Texture = TEX.smoke,
@@ -267,10 +274,11 @@ local function impact(ctx, ev)
 		Transparency = seq({ { 0, 0.45 }, { 1, 1 } }),
 		Rotation = NumberRange.new(0, 360),
 		RotSpeed = NumberRange.new(-30, 30),
-	}, math.floor(4 + 5 * s))
+	}, if tier >= 3 then math.floor(4 + 5 * s) else 0)
 	emitAll(holder)
-	-- onde : anneau perpendiculaire au coup, 0,32 s
-	for _, r in { { 0.32, 5.5 * s, 0.1 }, { 0.2, 3.2 * s, 0 } } do
+	-- onde : anneau perpendiculaire au coup, 0,32 s (tier 1 : l'anneau blanc seul)
+	local rings = if tier >= 2 then { { 0.32, 5.5 * s, 0.1 }, { 0.2, 3.2 * s, 0 } } else { { 0.2, 3.2 * s, 0 } }
+	for _, r in rings do
 		local ring = Instance.new("Part")
 		ring.Shape = Enum.PartType.Cylinder
 		ring.Anchored = true
@@ -614,6 +622,29 @@ end
 
 -- ------------------------------------------------------------------ effets ecran
 
+-- Phase de la sequence de cartes a l'age reel `age` (s) : { kind, i, u } ou
+-- nil hors sequence. Meme regle que le lecteur HTML (cartePhase).
+function DragonFist.cartePhase(ev, age: number)
+	if age < 0 then
+		return nil
+	end
+	local t, ci = 0, 0
+	for _, step in ev.sequence do
+		local kind, d = step[1], step[2]
+		if kind == "carte" then
+			ci += 1
+		end
+		if age < t + d then
+			return { kind = kind, i = ci, u = (age - t) / d }
+		end
+		t += d
+	end
+	if age < t + ev.fade then
+		return { kind = "fondu", i = ci, u = (age - t) / ev.fade }
+	end
+	return nil
+end
+
 local function screen(ctx)
 	local player = Players.LocalPlayer
 	if not player or not DragonFist.CONFIG.SCREEN_FX then
@@ -655,8 +686,58 @@ local function screen(ctx)
 	manga.Visible = false
 	manga.ZIndex = 6
 	manga.Parent = gui
+	-- v6 fond de vitesse : lignes de concentration a la peripherie (le centre
+	-- reste lisible), voile sombre
+	local vitesse = frame("Vitesse", Color3.fromRGB(20, 16, 10), 3)
+	local rng = Random.new(90)
+	for _ = 1, 48 do
+		local a = rng:NextNumber(0, math.pi * 2)
+		local r0 = rng:NextNumber(0.32, 0.5)
+		local line = Instance.new("Frame")
+		line.BorderSizePixel = 0
+		line.BackgroundColor3 = Color3.fromRGB(255, 248, 230)
+		-- une Frame tourne autour de son CENTRE : on place le centre du trait
+		-- a mi-longueur (unites : hauteur d'ecran, 16:9)
+		local d = r0 + 0.35
+		line.AnchorPoint = Vector2.new(0.5, 0.5)
+		line.Size = UDim2.new(0.4, 0, 0, rng:NextInteger(2, 6))
+		line.Position = UDim2.fromScale(0.5 + math.cos(a) * d * 9 / 16, 0.5 + math.sin(a) * d)
+		line.Rotation = math.deg(a)
+		line.ZIndex = 3
+		line.Parent = vitesse
+	end
+	vitesse.Visible = false
+	-- v6 cartes d'impact : noir + etoile, 3 cartes (ImageLabel), puis le blanc
+	local cartes = Instance.new("ImageLabel")
+	cartes.Name = "Cartes"
+	cartes.Size = UDim2.fromScale(1, 1)
+	cartes.BackgroundColor3 = Color3.new(0, 0, 0)
+	cartes.BorderSizePixel = 0
+	cartes.ScaleType = Enum.ScaleType.Crop
+	cartes.Visible = false
+	cartes.ZIndex = 6
+	cartes.Parent = gui
+	local star = Instance.new("Frame")
+	star.Name = "Etoile"
+	star.BackgroundTransparency = 1
+	star.AnchorPoint = Vector2.new(0.5, 0.5)
+	star.Position = UDim2.fromScale(0.5, 0.5)
+	star.SizeConstraint = Enum.SizeConstraint.RelativeYY
+	star.ZIndex = 7
+	star.Parent = cartes
+	for _, rot in { 0, 90 } do
+		local blade = Instance.new("Frame")
+		blade.BorderSizePixel = 0
+		blade.BackgroundColor3 = Color3.new(1, 1, 1)
+		blade.AnchorPoint = Vector2.new(0.5, 0.5)
+		blade.Position = UDim2.fromScale(0.5, 0.5)
+		blade.Size = UDim2.fromScale(1, 0.08)
+		blade.Rotation = rot + 17
+		blade.ZIndex = 7
+		blade.Parent = star
+	end
 	table.insert(ctx.cleanup, gui)
-	return { gui = gui, tint = tint, white = white, manga = manga }
+	return { gui = gui, tint = tint, white = white, manga = manga, vitesse = vitesse, cartes = cartes, star = star }
 end
 
 -- ------------------------------------------------------------------ lecture
@@ -743,6 +824,15 @@ function DragonFist.play(attacker: Model, victim: Model, animations: Folder, dat
 			whiteEv = e
 		end
 	end
+	-- v6 : sequences d'ecran en TEMPS REEL (elles jouent pendant le hitstop,
+	-- l'animation etant gelee) : on note l'instant de declenchement
+	local screenT0 = {}
+	handlers.vitesse = function(_, ev)
+		screenT0.vitesse = { t0 = os.clock(), ev = ev }
+	end
+	handlers.cartes = function(_, ev)
+		screenT0.cartes = { t0 = os.clock(), ev = ev }
+	end
 
 	local stepName = "DragonFist_" .. tostring(os.clock())
 	local done = false
@@ -796,12 +886,34 @@ function DragonFist.play(attacker: Model, victim: Model, animations: Folder, dat
 			else
 				scr.manga.Visible = false
 			end
+			local whiteT = 1
 			if whiteEv and f >= whiteEv.frames[1] and f < whiteEv.frames[3] then
 				local a, b, c = whiteEv.frames[1], whiteEv.frames[2], whiteEv.frames[3]
-				scr.white.BackgroundTransparency = if f < b then 0 else (f - b) / (c - b)
-			else
-				scr.white.BackgroundTransparency = 1
+				whiteT = if f < b then 0 else (f - b) / (c - b)
 			end
+			local vs = screenT0.vitesse
+			local vage = if vs then os.clock() - vs.t0 else math.huge
+			scr.vitesse.Visible = vage < (if vs then vs.ev.duration else 0)
+			if scr.vitesse.Visible then
+				scr.vitesse.BackgroundTransparency = 1 - 0.35 * (1 - vage / vs.ev.duration)
+			end
+			local ph = if screenT0.cartes then DragonFist.cartePhase(screenT0.cartes.ev, os.clock() - screenT0.cartes.t0) else nil
+			scr.cartes.Visible = ph ~= nil and (ph.kind == "noir" or ph.kind == "carte")
+			if ph and ph.kind == "noir" then
+				scr.cartes.Image = ""
+				scr.cartes.BackgroundColor3 = Color3.new(0, 0, 0)
+				scr.star.Visible = true
+				scr.star.Size = UDim2.fromScale(0.2 + 0.32 * ph.u, 0.2 + 0.32 * ph.u)
+			elseif ph and ph.kind == "carte" then
+				scr.star.Visible = false
+				scr.cartes.Image = cfg.CARTE_IDS[ph.i]
+				scr.cartes.BackgroundColor3 = if ph.i == 2 then Color3.new(1, 1, 1) else Color3.new(0, 0, 0)
+			elseif ph and ph.kind == "blanc" then
+				whiteT = 0
+			elseif ph and ph.kind == "fondu" then
+				whiteT = math.min(whiteT, ph.u)
+			end
+			scr.white.BackgroundTransparency = whiteT
 		end
 	end)
 

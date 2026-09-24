@@ -157,4 +157,25 @@ check(dot(fv.Position - att2.Position, att2.LookVector) > 15, "fin : victime rep
 near(fv.LookVector, att2.LookVector * -1, 1e-6, "fin : victime toujours tournee vers l'attaquant")
 check(math.abs(fa.Position.Y - att2.Position.Y) < 1e-6, "fin : hauteur de hanche conservee")
 
+-- 7. v6 impact raconte : la sequence de cartes (meme regle que le lecteur)
+-- tient EXACTEMENT dans le gel du coup charge, et chaque age tombe dans la
+-- bonne phase ; hierarchie : les coups de base sont en tier 1
+local cartesEv, charge
+local tiers = {}
+for _, e in DATA.EVENTS do
+	if e.kind == "cartes" then cartesEv = e end
+	if e.kind == "impact" and e.name == "coup_charge" then charge = e end
+	if e.kind == "impact" and string.sub(e.name, 1, 3) == "hit" then table.insert(tiers, e.tier) end
+end
+check(cartesEv ~= nil and charge ~= nil and cartesEv.frame == charge.frame, "cartes : declenchees a la frame du coup charge")
+local total = 0
+for _, st in cartesEv.sequence do total += st[2] end
+check(math.abs(total - charge.hitstop) < 1e-3, "cartes : la sequence dure exactement le gel (" .. total .. " s)")
+for _, c in { { 0.02, "contact", 0 }, { 0.10, "noir", 0 }, { 0.18, "carte", 1 }, { 0.25, "carte", 2 }, { 0.32, "carte", 3 }, { 0.40, "blanc", 3 }, { 0.47, "fondu", 3 } } do
+	local ph = DragonFist.cartePhase(cartesEv, c[1])
+	check(ph ~= nil and ph.kind == c[2] and (c[3] == 0 or ph.i == c[3]), "cartes : a " .. c[1] .. " s -> " .. c[2] .. (c[3] > 0 and (" " .. c[3]) or ""))
+end
+check(DragonFist.cartePhase(cartesEv, 0.7) == nil and DragonFist.cartePhase(cartesEv, -0.01) == nil, "cartes : rien hors sequence")
+check(#tiers == 4 and tiers[1] == 1 and tiers[2] == 1 and tiers[3] == 1 and tiers[4] == 2, "hierarchie : coups de base tier 1, fente h4 tier 2")
+
 print(fails == 0 and "SENS OK" or ("SENS FAUX : " .. fails .. " echec(s)"))
