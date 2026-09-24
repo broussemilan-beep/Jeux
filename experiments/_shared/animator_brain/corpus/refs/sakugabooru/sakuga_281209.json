@@ -1,0 +1,169 @@
+{
+ "clip": "sakugabooru_sakuga_281209",
+ "sha1_16": "51a7d91fe75168cc",
+ "duree_s": 30.82,
+ "resolution": [
+  854,
+  480
+ ],
+ "zone_analysee": [
+  0,
+  0,
+  160,
+  90
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 0,
+  "part_du_temps": 0.0,
+  "plus_longue_ms": 0
+ },
+ "energie": {
+  "mediane": 14.18,
+  "pic_p95": 75.22,
+  "contraste_p95_sur_mediane": 5.31,
+  "part_rapide": 0.017
+ },
+ "impacts": {
+  "nombre": 7,
+  "par_seconde": 0.23,
+  "ecart_median_s": 1.425,
+  "cartes": [
+   {
+    "t_s": 9.3,
+    "type": "silhouette",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 9.883,
+    "type": "blanc",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 23.017,
+    "type": "blanc",
+    "duree_ms": 133
+   },
+   {
+    "t_s": 23.817,
+    "type": "noir",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 24.1,
+    "type": "silhouette",
+    "duree_ms": 250
+   },
+   {
+    "t_s": 24.433,
+    "type": "silhouette",
+    "duree_ms": 250
+   },
+   {
+    "t_s": 26.15,
+    "type": "noir",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 29.033,
+    "type": "silhouette",
+    "duree_ms": 83
+   }
+  ],
+  "profil_autour": {
+   "approche": 12.64,
+   "0,1 s avant": 11.53,
+   "0,1 s apres": 7.33,
+   "tenue_avant_choc": false,
+   "explosion_apres": false
+  }
+ },
+ "coupes": {
+  "nombre": 21,
+  "t_s": [
+   0.25,
+   0.3,
+   9.217,
+   9.85,
+   9.967,
+   13.55,
+   13.633,
+   13.883,
+   13.933,
+   15.933,
+   19.933,
+   22.767,
+   23.433,
+   23.567,
+   23.6,
+   23.683,
+   23.767,
+   24.017,
+   25.15,
+   26.2,
+   29.117
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.42,
+  "decalage_p95_pct": 21.99
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 8.41,
+  "secondes_de_mouvement": 17.37,
+  "vitesse_sujet_p90": 7.587,
+  "pics": 158,
+  "part_des_pics_qui_montent": 0.2,
+  "deviation_trajectoire_mediane": 0.779,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#633837",
+   "part": 0.225
+  },
+  {
+   "hex": "#998e84",
+   "part": 0.206
+  },
+  {
+   "hex": "#d8e8ed",
+   "part": 0.171
+  },
+  {
+   "hex": "#a6cbdc",
+   "part": 0.137
+  },
+  {
+   "hex": "#f2f6e9",
+   "part": 0.131
+  },
+  {
+   "hex": "#f3d797",
+   "part": 0.131
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 48,
+  "termes": {
+   "contraste_de_temps": 1.0,
+   "tenues_presentes": 0.0,
+   "impacts_rythmes": 0.15
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_281209.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 281209,
+  "tags": "animated background_animation debris effects fabric fighting fire hair ice impact_frames lightning my_hero_academia my_hero_academia_series smears smoke sparks yutaka_nakamura yutapon_cubes",
+  "score": 4843,
+  "source_oeuvre": "#023 (S2 #10) (BD) ",
+  "url": "https://www.sakugabooru.com/post/show/281209",
+  "requete": "fighting impact_frames",
+  "pourquoi": "impacts de combat (cartes d'impact, tenue avant le choc)"
+ }
+}

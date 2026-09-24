@@ -1,0 +1,181 @@
+{
+ "clip": "sakugabooru_sakuga_106678",
+ "sha1_16": "1f0a8876c1d92935",
+ "duree_s": 66.4,
+ "resolution": [
+  854,
+  480
+ ],
+ "zone_analysee": [
+  25,
+  5,
+  139,
+  90
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 7,
+  "part_du_temps": 0.023,
+  "plus_longue_ms": 333
+ },
+ "energie": {
+  "mediane": 16.17,
+  "pic_p95": 74.42,
+  "contraste_p95_sur_mediane": 4.6,
+  "part_rapide": 0.019
+ },
+ "impacts": {
+  "nombre": 9,
+  "par_seconde": 0.14,
+  "ecart_median_s": 5.733,
+  "cartes": [
+   {
+    "t_s": 5.05,
+    "type": "noir",
+    "duree_ms": 167
+   },
+   {
+    "t_s": 10.633,
+    "type": "blanc",
+    "duree_ms": 217
+   },
+   {
+    "t_s": 16.517,
+    "type": "blanc",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 19.483,
+    "type": "silhouette",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 23.1,
+    "type": "silhouette",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 31.733,
+    "type": "silhouette",
+    "duree_ms": 250
+   },
+   {
+    "t_s": 38.367,
+    "type": "silhouette",
+    "duree_ms": 133
+   },
+   {
+    "t_s": 42.25,
+    "type": "blanc",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 51.517,
+    "type": "noir",
+    "duree_ms": 167
+   }
+  ],
+  "profil_autour": {
+   "approche": 4.03,
+   "0,1 s avant": 3.28,
+   "0,1 s apres": 4.66,
+   "tenue_avant_choc": false,
+   "explosion_apres": false
+  }
+ },
+ "coupes": {
+  "nombre": 28,
+  "t_s": [
+   0.917,
+   4.05,
+   6.25,
+   13.383,
+   14.217,
+   15.183,
+   15.717,
+   16.433,
+   22.85,
+   23.233,
+   23.267,
+   23.35,
+   28.95,
+   30.817,
+   31.45,
+   32.2,
+   39.833,
+   42.217,
+   48.383,
+   49.167,
+   50.517,
+   50.933,
+   51.267,
+   52.717,
+   52.767,
+   55.017,
+   60.4,
+   61.767
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.67,
+  "decalage_p95_pct": 15.42
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 6.41,
+  "secondes_de_mouvement": 43.35,
+  "vitesse_sujet_p90": 4.449,
+  "pics": 431,
+  "part_des_pics_qui_montent": 0.28,
+  "deviation_trajectoire_mediane": 0.902,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#1d131d",
+   "part": 0.208
+  },
+  {
+   "hex": "#372531",
+   "part": 0.185
+  },
+  {
+   "hex": "#552f4c",
+   "part": 0.172
+  },
+  {
+   "hex": "#725276",
+   "part": 0.168
+  },
+  {
+   "hex": "#f9f2e1",
+   "part": 0.157
+  },
+  {
+   "hex": "#cfa9b4",
+   "part": 0.111
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 44,
+  "termes": {
+   "contraste_de_temps": 0.89,
+   "tenues_presentes": 0.08,
+   "impacts_rythmes": 0.09
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_106678.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 106678,
+  "tags": "animated background_animation boruto:_naruto_next_generations chengxi_huang debris effects fabric fighting fire lightning naruto smears smoke sparks tilfinning weilin_zhang wind",
+  "score": 3969,
+  "source_oeuvre": "#065 (BD)",
+  "url": "https://www.sakugabooru.com/post/show/106678",
+  "requete": "fighting effects",
+  "pourquoi": "combat + effets (VFX dessines)"
+ }
+}

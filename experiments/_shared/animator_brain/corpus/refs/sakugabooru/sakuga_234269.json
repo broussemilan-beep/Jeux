@@ -1,0 +1,245 @@
+{
+ "clip": "sakugabooru_sakuga_234269",
+ "sha1_16": "df65e2689daa9482",
+ "duree_s": 66.1,
+ "resolution": [
+  854,
+  480
+ ],
+ "zone_analysee": [
+  0,
+  0,
+  157,
+  78
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 2,
+  "part_du_temps": 0.022,
+  "plus_longue_ms": 1133
+ },
+ "energie": {
+  "mediane": 19.46,
+  "pic_p95": 79.23,
+  "contraste_p95_sur_mediane": 4.07,
+  "part_rapide": 0.032
+ },
+ "impacts": {
+  "nombre": 13,
+  "par_seconde": 0.2,
+  "ecart_median_s": 1.4,
+  "cartes": [
+   {
+    "t_s": 13.517,
+    "type": "silhouette",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 13.633,
+    "type": "noir",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 13.717,
+    "type": "noir",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 14.467,
+    "type": "noir",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 14.6,
+    "type": "noir",
+    "duree_ms": 167
+   },
+   {
+    "t_s": 15.6,
+    "type": "silhouette",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 17.433,
+    "type": "blanc",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 30.733,
+    "type": "silhouette",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 31.283,
+    "type": "silhouette",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 31.367,
+    "type": "silhouette",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 31.483,
+    "type": "noir",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 31.567,
+    "type": "noir",
+    "duree_ms": 633
+   },
+   {
+    "t_s": 32.95,
+    "type": "noir",
+    "duree_ms": 117
+   },
+   {
+    "t_s": 33.867,
+    "type": "silhouette",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 33.95,
+    "type": "silhouette",
+    "duree_ms": 133
+   },
+   {
+    "t_s": 34.117,
+    "type": "noir",
+    "duree_ms": 167
+   },
+   {
+    "t_s": 35.0,
+    "type": "noir",
+    "duree_ms": 500
+   },
+   {
+    "t_s": 46.083,
+    "type": "noir",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 50.133,
+    "type": "silhouette",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 54.85,
+    "type": "noir",
+    "duree_ms": 167
+   },
+   {
+    "t_s": 55.217,
+    "type": "noir",
+    "duree_ms": 50
+   }
+  ],
+  "profil_autour": {
+   "approche": 4.61,
+   "0,1 s avant": 4.29,
+   "0,1 s apres": 9.85,
+   "tenue_avant_choc": false,
+   "explosion_apres": true
+  }
+ },
+ "coupes": {
+  "nombre": 32,
+  "t_s": [
+   6.883,
+   8.433,
+   13.683,
+   14.767,
+   16.983,
+   17.483,
+   17.567,
+   19.317,
+   21.983,
+   25.15,
+   26.95,
+   34.667,
+   36.0,
+   36.333,
+   36.367,
+   36.533,
+   44.167,
+   46.583,
+   47.8,
+   48.05,
+   49.3,
+   49.55,
+   50.05,
+   50.883,
+   50.967,
+   53.55,
+   53.633,
+   54.767,
+   55.017,
+   55.267,
+   56.6,
+   59.35
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.57,
+  "decalage_p95_pct": 22.24
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 5.91,
+  "secondes_de_mouvement": 43.12,
+  "vitesse_sujet_p90": 4.561,
+  "pics": 373,
+  "part_des_pics_qui_montent": 0.29,
+  "deviation_trajectoire_mediane": 0.727,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#1c182a",
+   "part": 0.242
+  },
+  {
+   "hex": "#ddecb1",
+   "part": 0.189
+  },
+  {
+   "hex": "#c2b19c",
+   "part": 0.161
+  },
+  {
+   "hex": "#8a575f",
+   "part": 0.154
+  },
+  {
+   "hex": "#732030",
+   "part": 0.13
+  },
+  {
+   "hex": "#f8f9c4",
+   "part": 0.124
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 38,
+  "termes": {
+   "contraste_de_temps": 0.73,
+   "tenues_presentes": 0.07,
+   "impacts_rythmes": 0.13
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_234269.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 234269,
+  "tags": "animated background_animation beams black_and_white character_acting creatures debris effects explosions fighting fire flying one_piece rotation smears smoke sparks weilin_zhang wind",
+  "score": 4027,
+  "source_oeuvre": "#1071 (NC) ",
+  "url": "https://www.sakugabooru.com/post/show/234269",
+  "requete": "fighting smears",
+  "pourquoi": "smears : comment l'anime triche le mouvement rapide"
+ }
+}

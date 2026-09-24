@@ -1,0 +1,103 @@
+{
+ "clip": "sakugabooru_sakuga_150800",
+ "sha1_16": "817902e9712d2932",
+ "duree_s": 8.22,
+ "resolution": [
+  854,
+  480
+ ],
+ "zone_analysee": [
+  0,
+  0,
+  146,
+  78
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 0,
+  "part_du_temps": 0.0,
+  "plus_longue_ms": 0
+ },
+ "energie": {
+  "mediane": 14.22,
+  "pic_p95": 55.49,
+  "contraste_p95_sur_mediane": 3.9,
+  "part_rapide": 0.073
+ },
+ "impacts": {
+  "nombre": 0,
+  "par_seconde": 0.0,
+  "ecart_median_s": null,
+  "cartes": [],
+  "profil_autour": null
+ },
+ "coupes": {
+  "nombre": 2,
+  "t_s": [
+   5.967,
+   7.133
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.77,
+  "decalage_p95_pct": 26.29
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 8.81,
+  "secondes_de_mouvement": 5.45,
+  "vitesse_sujet_p90": 8.322,
+  "pics": 51,
+  "part_des_pics_qui_montent": 0.43,
+  "deviation_trajectoire_mediane": 0.537,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#2f3446",
+   "part": 0.275
+  },
+  {
+   "hex": "#18191f",
+   "part": 0.216
+  },
+  {
+   "hex": "#2f2733",
+   "part": 0.157
+  },
+  {
+   "hex": "#a06f81",
+   "part": 0.131
+  },
+  {
+   "hex": "#d5a5b1",
+   "part": 0.13
+  },
+  {
+   "hex": "#453e4f",
+   "part": 0.092
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 31,
+  "termes": {
+   "contraste_de_temps": 0.69,
+   "tenues_presentes": 0.0,
+   "impacts_rythmes": 0.0
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_150800.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 150800,
+  "tags": "animated effects fabric falling fighting hair itano_circus masahiro_sato smears soul_eater soul_eater_series yutaka_nakamura",
+  "score": 4190,
+  "source_oeuvre": "NCOP2 (NC)",
+  "url": "https://www.sakugabooru.com/post/show/150800",
+  "requete": "fighting smears",
+  "pourquoi": "smears : comment l'anime triche le mouvement rapide"
+ }
+}

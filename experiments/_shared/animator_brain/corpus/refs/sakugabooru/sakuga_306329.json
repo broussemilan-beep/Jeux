@@ -1,0 +1,248 @@
+{
+ "clip": "sakugabooru_sakuga_306329",
+ "sha1_16": "de943f7e90b3875b",
+ "duree_s": 148.6,
+ "resolution": [
+  854,
+  480
+ ],
+ "zone_analysee": [
+  0,
+  45,
+  160,
+  90
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 21,
+  "part_du_temps": 0.198,
+  "plus_longue_ms": 6500
+ },
+ "energie": {
+  "mediane": 8.05,
+  "pic_p95": 38.53,
+  "contraste_p95_sur_mediane": 4.78,
+  "part_rapide": 0.009
+ },
+ "impacts": {
+  "nombre": 18,
+  "par_seconde": 0.12,
+  "ecart_median_s": 3.933,
+  "cartes": [
+   {
+    "t_s": 19.817,
+    "type": "noir",
+    "duree_ms": 1000
+   },
+   {
+    "t_s": 24.183,
+    "type": "silhouette",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 24.4,
+    "type": "noir",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 24.767,
+    "type": "noir",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 25.533,
+    "type": "silhouette",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 26.45,
+    "type": "silhouette",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 28.483,
+    "type": "noir",
+    "duree_ms": 250
+   },
+   {
+    "t_s": 85.167,
+    "type": "noir",
+    "duree_ms": 1250
+   },
+   {
+    "t_s": 94.683,
+    "type": "noir",
+    "duree_ms": 533
+   },
+   {
+    "t_s": 95.433,
+    "type": "blanc",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 105.4,
+    "type": "noir",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 105.767,
+    "type": "noir",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 114.117,
+    "type": "noir",
+    "duree_ms": 1000
+   },
+   {
+    "t_s": 128.0,
+    "type": "noir",
+    "duree_ms": 417
+   },
+   {
+    "t_s": 128.467,
+    "type": "noir",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 128.55,
+    "type": "noir",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 132.8,
+    "type": "noir",
+    "duree_ms": 283
+   },
+   {
+    "t_s": 136.933,
+    "type": "noir",
+    "duree_ms": 117
+   },
+   {
+    "t_s": 137.967,
+    "type": "noir",
+    "duree_ms": 167
+   },
+   {
+    "t_s": 141.9,
+    "type": "blanc",
+    "duree_ms": 33
+   }
+  ],
+  "profil_autour": {
+   "approche": 2.83,
+   "0,1 s avant": 2.51,
+   "0,1 s apres": 2.64,
+   "tenue_avant_choc": false,
+   "explosion_apres": false
+  }
+ },
+ "coupes": {
+  "nombre": 56,
+  "t_s": [
+   5.167,
+   8.767,
+   12.767,
+   12.8,
+   12.883,
+   15.433,
+   20.817,
+   24.233,
+   24.35,
+   26.367,
+   26.983,
+   27.033,
+   28.233,
+   28.4,
+   28.733,
+   35.033,
+   39.533,
+   47.55,
+   54.05,
+   57.35,
+   62.233,
+   65.733,
+   78.0,
+   78.95,
+   80.117,
+   82.117,
+   94.017,
+   95.217,
+   95.267,
+   95.383,
+   103.6,
+   105.433,
+   105.817,
+   105.85,
+   105.933,
+   106.733,
+   108.483,
+   111.95,
+   113.033,
+   115.533
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.73,
+  "decalage_p95_pct": 13.74
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 6.11,
+  "secondes_de_mouvement": 72.32,
+  "vitesse_sujet_p90": 1.994,
+  "pics": 689,
+  "part_des_pics_qui_montent": 0.27,
+  "deviation_trajectoire_mediane": 0.531,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#1a181b",
+   "part": 0.226
+  },
+  {
+   "hex": "#8a8f9c",
+   "part": 0.213
+  },
+  {
+   "hex": "#42403f",
+   "part": 0.163
+  },
+  {
+   "hex": "#2e2d31",
+   "part": 0.148
+  },
+  {
+   "hex": "#707279",
+   "part": 0.132
+  },
+  {
+   "hex": "#a7acb9",
+   "part": 0.119
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 67,
+  "termes": {
+   "contraste_de_temps": 0.94,
+   "tenues_presentes": 0.66,
+   "impacts_rythmes": 0.08
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_306329.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 306329,
+  "tags": "3d_background animals animated background_animation cgi character_acting creatures debris effects fabric fighting hair ice liquid rotation running smears smoke sparks sword_of_the_stranger yutaka_nakamura yutapon_cubes",
+  "score": 4074,
+  "source_oeuvre": "BD ",
+  "url": "https://www.sakugabooru.com/post/show/306329",
+  "requete": "fighting smears",
+  "pourquoi": "smears : comment l'anime triche le mouvement rapide"
+ }
+}
