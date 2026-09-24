@@ -272,7 +272,9 @@
     "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)"
    ],
    "mesure": "fiche:cartes d'impact + jugement visuel",
-   "categorie": "mise_en_scene"
+   "categorie": "mise_en_scene",
+   "quand": "le 1-2 plus gros impacts d'une technique (ultime, coup final)",
+   "contre_indication": "sur chaque coup d'une rafale : l'effet s'use et plus rien n'est fort ; dans les refs, les coups legers n'en ont pas"
   },
   {
    "id": "silence_noir",
@@ -291,7 +293,9 @@
     "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)"
    ],
    "mesure": "fiche:cartes noir + jugement visuel",
-   "categorie": "mise_en_scene"
+   "categorie": "mise_en_scene",
+   "quand": "juste avant LE boum principal, une fois",
+   "contre_indication": "repete a chaque coup il devient un clignotement ; sans explosion derriere il ne veut rien dire"
   },
   {
    "id": "blanc_total",
@@ -310,7 +314,9 @@
     "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)"
    ],
    "mesure": "fiche:cartes blanc + jugement visuel",
-   "categorie": "mise_en_scene"
+   "categorie": "mise_en_scene",
+   "quand": "au pic de la technique, pour cacher un saut de pose ou un changement de lieu",
+   "contre_indication": "trop long il ecrase tout ; en alternance rapide seulement sur les impacts majeurs"
   },
   {
    "id": "regard_intention",
@@ -329,7 +335,9 @@
     "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)"
    ],
    "mesure": "jugement visuel",
-   "categorie": "mise_en_scene"
+   "categorie": "mise_en_scene",
+   "quand": "avant un coup qui compte (charge, finisher), quand le spectateur doit sentir la decision",
+   "contre_indication": "dans une rafale rapide : casse le rythme"
   },
   {
    "id": "poing_gros_plan",
@@ -348,7 +356,9 @@
     "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)"
    ],
    "mesure": "jugement visuel",
-   "categorie": "mise_en_scene"
+   "categorie": "mise_en_scene",
+   "quand": "charge ou impact du coup principal",
+   "contre_indication": "sur des coups secondaires : dilue"
   },
   {
    "id": "contraste_echelle",
@@ -367,7 +377,9 @@
     "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)"
    ],
    "mesure": "jugement visuel",
-   "categorie": "mise_en_scene"
+   "categorie": "mise_en_scene",
+   "quand": "pour faire sentir la consequence (le coup envoie loin, detruit)",
+   "contre_indication": "si rien ne se passe a grande echelle, le plan large est vide"
   },
   {
    "id": "fond_remplace",
@@ -386,7 +398,9 @@
     "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)"
    ],
    "mesure": "jugement visuel",
-   "categorie": "mise_en_scene"
+   "categorie": "mise_en_scene",
+   "quand": "impacts forts de la rafale ou du final, pour isoler le choc",
+   "contre_indication": "en permanence : on perd l'espace"
   },
   {
    "id": "camera_vivante",
@@ -405,7 +419,9 @@
     "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)"
    ],
    "mesure": "jugement visuel",
-   "categorie": "mise_en_scene"
+   "categorie": "mise_en_scene",
+   "quand": "quand elle raconte (fouet = envol, penche = desequilibre)",
+   "contre_indication": "bouger sans raison fatigue et brouille la lecture"
   },
   {
    "id": "torsion_tronc",
@@ -424,7 +440,9 @@
     "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)"
    ],
    "mesure": "jugement visuel",
-   "categorie": "mise_en_scene"
+   "categorie": "mise_en_scene",
+   "quand": "coups de puissance ; la garde reste basse et large",
+   "contre_indication": "coups legers (jab) : rotation courte, sinon tout pese pareil"
   },
   {
    "id": "smear_graphique",
@@ -443,7 +461,9 @@
     "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)"
    ],
    "mesure": "jugement visuel",
-   "categorie": "mise_en_scene"
+   "categorie": "mise_en_scene",
+   "quand": "vitesse extreme sur 1-4 f",
+   "contre_indication": "trop long ou trop frequent : bouillie"
   },
   {
    "id": "victime_deformee",
@@ -462,7 +482,9 @@
     "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)"
    ],
    "mesure": "jugement visuel",
-   "categorie": "mise_en_scene"
+   "categorie": "mise_en_scene",
+   "quand": "gros impacts",
+   "contre_indication": "sur tout : plus d'escalade possible"
   }
  ],
  "_styles": {
@@ -475,5 +497,6 @@
   "b": 7.316,
   "n_notes": 4,
   "doc": "note = b + a * score ; reapprise a chaque reflexion"
- }
+ },
+ "_regle_d_usage": "Retour de Milan (2026-09-24) : ce qu'on decouvre doit etre bien utilise, pas applique n'importe comment. Une hypothese vraie en animation n'est pas une case a cocher : chacune porte QUAND elle sert et QUAND elle nuit. Le critique juge l'usage au bon moment (hierarchie des temps forts, escalade, contraste), jamais la simple presence."
 }

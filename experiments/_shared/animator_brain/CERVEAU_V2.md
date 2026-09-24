@@ -157,6 +157,14 @@ Validation sur vérité connue (`ANGLES_MORTS.md` §7) :
 Voir aussi **`ANGLES_MORTS.md`** : la prise de recul du 2026-09-24. Le point 1
 porte sur le « coup final » : l'uppercut de f150 n'avait jamais été regardé.
 
+## Regle d'usage (retour de Milan, 2026-09-24)
+
+« Ce que tu decouvres doit etre bien utilise et en apprendre, pas l'appliquer n'importe comment : ca nourrit le cerveau, le jugement et la critique. »
+
+- Chaque principe de mise en scene porte `quand` (le bon moment) et `contre_indication` (ce qui le tue) dans `hypotheses.json`.
+- Les refs le montrent : les cartes, le noir et le blanc sont reserves aux 1-2 plus gros impacts ; les coups legers d'une rafale n'en ont pas. L'effet vaut par le CONTRASTE avec ce qui l'entoure.
+- Le critique doit juger l'usage au bon endroit (hierarchie des temps forts, escalade), pas la presence : un principe mal place compte comme un defaut.
+
 ## Le champ des références (Milan)
 
 - Roblox : TSB, JJS, Heroes Battlegrounds, animateurs indépendants.
