@@ -717,6 +717,161 @@
    "categorie": "mise_en_scene",
    "quand": "finisher",
    "contre_indication": "coups de rafale : casserait le rythme"
+  },
+  {
+   "id": "ligne_epaules",
+   "enonce": "Coup droit : a l'extension, le bras qui frappe PROLONGE la ligne des epaules (torse tourne presque de profil) ; pied arriere, torse et bras forment une seule droite. C'est « l'epaule dans le coup ».",
+   "portee": [
+    "coup_droit",
+    "finisher"
+   ],
+   "confiance_principe": 0.8,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "categorie": "pose",
+   "mesure": "perception: pose_impact (bras_epaules_deg, torse_detourne_deg) contre M1 pro",
+   "sources": [
+    "corpus/TUTOS_ANIMATION.md (recherche 2026-09-24 : DevForum Roblox, 31 sources ; ArcSys GGXrd 4Gamer, Cartwright GDC 2014, Mattesi FORCE ; extraits sakugabooru mesures)",
+    "pack pro battleground (4 M1) : bras/epaules 18-28 deg, torse detourne 67-75 deg au contact ; NOUS v6 : 46-72 et 32-48 (captures/verification/2026-09-24-cerveau-ligne-epaules-pro-vs-nous.png)",
+    "Motomura (ArcSys) : mettre ou non l'epaule dans le coup change « j'ai mis de la force » / « j'ai frappe leger »",
+    "Mattesi FORCE : extension = une seule droite du pied arriere au poing",
+    "DevForum Shift4D : tourner le torse encore plus"
+   ],
+   "quand": "direct, cross, coup charge, tout coup droit qui doit peser",
+   "contre_indication": "uppercut et crochet (pro uppercut : 94 deg, normal) ; jab de garde tres rapide ou l'on veut montrer la vitesse plutot que la force"
+  },
+  {
+   "id": "bras_libre_ramene",
+   "enonce": "Au contact, le bras qui ne frappe pas est RAMENE (contre la poitrine ou tire en arriere, en opposition), jamais tendu vers l'avant avec l'autre.",
+   "portee": [
+    "coup_droit",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.75,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "categorie": "pose",
+   "mesure": "perception: pose_impact (bras_libre) contre M1 pro",
+   "sources": [
+    "corpus/TUTOS_ANIMATION.md (recherche 2026-09-24 : DevForum Roblox, 31 sources ; ArcSys GGXrd 4Gamer, Cartwright GDC 2014, Mattesi FORCE ; extraits sakugabooru mesures)",
+    "pack pro (4 M1) : produit scalaire des deux bras -0,1 a 0,3 ; NOUS v6 : 0,9 (les deux bras tendus vers l'avant)",
+    "anime (Deku, MHA) : bras opposes sur une meme ligne au contact",
+    "DevForum TrulySmoosh : le bras libre garde la tete ou charge le coup suivant"
+   ],
+   "quand": "toute pose de contact",
+   "contre_indication": "coup a deux mains ; garde volontairement ouverte (provocation)"
+  },
+  {
+   "id": "bras_avant_bras",
+   "enonce": "Le bras R6 entier joue l'AVANT-BRAS humain : on le translate (on accepte de decoller l'epaule du torse) pour que le poing suive le trajet d'un vrai poing.",
+   "portee": [
+    "coup_droit",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.7,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "categorie": "pose",
+   "mesure": "perception: pose_impact (translation_bras) contre M1 pro",
+   "sources": [
+    "corpus/TUTOS_ANIMATION.md (recherche 2026-09-24 : DevForum Roblox, 31 sources ; ArcSys GGXrd 4Gamer, Cartwright GDC 2014, Mattesi FORCE ; extraits sakugabooru mesures)",
+    "DevForum fungi3432 (fil S2) : « move the whole arm according to the position of a real person's forearm… accept disconnecting the shoulder »",
+    "pack pro : translation d'epaule AU CONTACT 0,58-0,92 stud (NOUS 0,96 : pas d'ecart au contact) ; mediane sur tout le clip 1,25-1,6 car la GARDE pro tient les bras translates devant (Block Idle 1,15) -- l'ecart eventuel est dans la garde et l'armement, pas au contact",
+    "ArcSys : le scale d'os est impossible en R6, la translation est le substitut"
+   ],
+   "quand": "poses ou la reference a un coude plie (garde, crochet, armement) et extension d'un coup droit",
+   "contre_indication": "poses TENUES vues en jeu : un membre loin du torse parait tombe -> l'orienter vers l'epaule (DevForum AvailableFunds, catlinn64)"
+  },
+  {
+   "id": "compression_extension",
+   "enonce": "Anticipation = COMPRESSION en C (corps enroule et bas, tete rentree derriere l'epaule, poing arme derriere le plan du corps) ; extension = une droite hors d'equilibre. Le coup anime montre deux poses extremes, le trajet passe en 1-2 f.",
+   "portee": [
+    "coup_droit",
+    "finisher"
+   ],
+   "confiance_principe": 0.7,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "manga_ultime",
+   "categorie": "pose",
+   "mesure": "jugement visuel",
+   "sources": [
+    "corpus/TUTOS_ANIMATION.md (recherche 2026-09-24 : DevForum Roblox, 31 sources ; ArcSys GGXrd 4Gamer, Cartwright GDC 2014, Mattesi FORCE ; extraits sakugabooru mesures)",
+    "JJK #19 (sakugabooru, mesure image par image) : poing arme a la hanche puis corps ramasse, tete rentree, en 3",
+    "Cartwright : anticipation, smear, pose principale, retour ; meme 1 image d'anticipation suffit"
+   ],
+   "quand": "coup qui compte (charge, finisher, fin de combo)",
+   "contre_indication": "M1 rapides en jeu (la compression longue ralentit le gameplay)"
+  },
+  {
+   "id": "depassement_1f",
+   "enonce": "Une image de DEPASSEMENT au-dela de la pose d'extension (ou du corps hors de sa pose finale dans le sens du coup), puis retour : l'arret n'est jamais mort.",
+   "portee": [
+    "coup_droit",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.7,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "categorie": "animation",
+   "mesure": "jugement visuel",
+   "sources": [
+    "corpus/TUTOS_ANIMATION.md (recherche 2026-09-24 : DevForum Roblox, 31 sources ; ArcSys GGXrd 4Gamer, Cartwright GDC 2014, Mattesi FORCE ; extraits sakugabooru mesures)",
+    "Cartwright GDC 2014 : « one frame of an attack overshooting its final key frame helps give it impact »",
+    "DevForum vipkute0057 : une frame hors de la position finale dans le sens du mouvement",
+    "DevForum Bovious, LucensCat : mains qui s'arretent comme si elles perdaient leur elan = robotique"
+   ],
+   "quand": "extension de chaque coup",
+   "contre_indication": "pose tenue sous hitstop (le depassement vient apres le gel)"
+  },
+  {
+   "id": "recuperation_effort",
+   "enonce": "Apres un gros coup, la recuperation montre l'EFFORT (recul, reprise d'appui, poids) ; le retour a la garde est lent et ne ressemble pas a un second coup.",
+   "portee": [
+    "finisher",
+    "coup_droit"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "categorie": "animation",
+   "mesure": "jugement visuel",
+   "sources": [
+    "corpus/TUTOS_ANIMATION.md (recherche 2026-09-24 : DevForum Roblox, 31 sources ; ArcSys GGXrd 4Gamer, Cartwright GDC 2014, Mattesi FORCE ; extraits sakugabooru mesures)",
+    "DevForum realknife : il recupere comme s'il avait utilise le moins de force possible",
+    "DevForum Dyzody : retour a la garde qui ressemble a un deuxieme coup"
+   ],
+   "quand": "apres un coup lourd ou un finisher",
+   "contre_indication": "entre deux M1 enchaines (le temps mort casse le combo)"
+  },
+  {
+   "id": "poses_tenues_limitees",
+   "enonce": "Animation LIMITEE : sur les attaques, poses tenues de durees irregulieres (1 a 5 f a 60 i/s) sans interpolation ; seules les trajectoires (saut, vol, dash) restent lisses.",
+   "portee": [
+    "impact",
+    "finisher"
+   ],
+   "confiance_principe": 0.5,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "manga_ultime",
+   "categorie": "animation",
+   "mesure": "jugement visuel",
+   "sources": [
+    "corpus/TUTOS_ANIMATION.md (recherche 2026-09-24 : DevForum Roblox, 31 sources ; ArcSys GGXrd 4Gamer, Cartwright GDC 2014, Mattesi FORCE ; extraits sakugabooru mesures)",
+    "ArcSys GGXrd (4Gamer) : « we don't rely on interpolation », durees par pose « 2F, 3F, 5F, 1F… » ; lisser puis sauter des images = « 3D qui rame »",
+    "Roblox : easing Constant par pose (Enum.PoseEasingStyle.Constant = 1)"
+   ],
+   "quand": "a essayer en A/B sur un temps fort, jamais partout d'emblee",
+   "contre_indication": "Milan juge le rythme bon (v6) : ne pas casser ce qui marche sans A/B ; jamais sur la locomotion ni les trajectoires"
   }
  ],
  "_styles": {
@@ -726,8 +881,8 @@
  },
  "_regle_d_usage": "Retour de Milan (2026-09-24) : ce qu'on decouvre doit etre bien utilise, pas applique n'importe comment. Une hypothese vraie en animation n'est pas une case a cocher : chacune porte QUAND elle sert et QUAND elle nuit. Le critique juge l'usage au bon moment (hierarchie des temps forts, escalade, contraste), jamais la simple presence.",
  "_calibration": {
-  "a": 0.624,
-  "b": 6.87,
+  "a": 0.733,
+  "b": 6.885,
   "n_notes": 5,
   "doc": "note = b + a * score ; reapprise a chaque reflexion"
  }

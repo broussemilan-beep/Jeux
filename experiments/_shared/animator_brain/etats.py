@@ -55,6 +55,8 @@ def pro_reference(pack=None):
                     e.update({"contact_f": c, "main": h, "approche": P.approche(w, c, h), "charge": P.charge(w, c, h)})
                     if "M1" in s["name"]:
                         m1.append((w, c, h))
+            if "M1" in s["name"] and "contact_f" in e:
+                e["pose_impact"] = P.pose_impact(w, e["contact_f"], e["main"])
             ref["clips"][s["name"]] = e
         shapes = []
         for w, c, h in m1:
@@ -73,7 +75,7 @@ def etalons(pro):
     rates = [v["arcs"]["traits_par_s_de_mouvement"] for v in m1.values() if v["arcs"]["traits_par_s_de_mouvement"]]
     refs = [json.load(open(f)) for f in glob.glob(os.path.join(CLIPS, "*.json")) if not os.path.basename(f).startswith("nous_")]
     contr = [r["energie"]["contraste_p95_sur_mediane"] for r in refs]
-    return {
+    E = {
         "arcs_deviation_min": round(min(devs), 3),
         "arcs_deviation_mediane": round(float(np.median(devs)), 3),
         # mediane des M1 + 30 % : M1_3 (9,6) commence deja en extension, ce n'est
@@ -82,8 +84,16 @@ def etalons(pro):
         "variete_min": pro.get("variete_m1"),
         "contraste_refs_mediane": round(float(np.median(contr)), 2),
         "tenue_charge_min_f": 12, "depart_charge_max_f": 6,     # principe (Serious Punch : garde tenue 32 f) -- provisoire
-        "doc": "arcs/traits/variete : pack pro M1 ; contraste : fiches des refs de Milan ; charge : principe, provisoire",
+        "doc": "arcs/traits/variete : pack pro M1 ; contraste : fiches des refs de Milan ; charge : principe, provisoire ; anatomie R6 (pose_impact) : M1 pro + marge",
     }
+    pi = [v["pose_impact"] for v in m1.values() if "pose_impact" in v]
+    if pi:
+        # marge : 10 deg / 0,2 stud / 0,2 autour de la plage pro (4 M1)
+        E["bras_epaules_max_deg"] = round(max(x["bras_epaules_deg"] for x in pi) + 10, 1)
+        E["torse_detourne_min_deg"] = round(min(x["torse_detourne_deg"] for x in pi) - 10, 1)
+        E["bras_libre_max"] = round(max(x["bras_libre"] for x in pi) + 0.2, 2)
+        E["translation_bras_min"] = round(min(x["translation_bras"] for x in pi) - 0.2, 2)
+    return E
 
 
 # ------------------------------------------------------------------ une version
@@ -143,6 +153,20 @@ def etat_version(prod, cfg, version, commit, hyp, E):
         c = fiche["energie"]["contraste_p95_sur_mediane"]
         etat["contraste_de_temps"] = c >= E["contraste_refs_mediane"]
         preuve["contraste_de_temps"] = f"contraste d'energie {c} ; refs de Milan mediane {E['contraste_refs_mediane']}"
+    # anatomie R6 au contact des coups droits (rafale + coup final au sol)
+    if "bras_epaules_max_deg" in E:
+        part = {"R": "Right Arm", "L": "Left Arm"}
+        coups = [(c, part[s_]) for c, s_, _k in sc["hits"]]
+        if sc.get("final_f"):
+            coups.append((sc["final_f"], part[sc.get("final_side", "R")]))
+        pi = [P.pose_impact(world, c, h) for c, h in coups]
+        med = {k: float(np.median([x[k] for x in pi])) for k in pi[0]}
+        etat["ligne_epaules"] = med["bras_epaules_deg"] <= E["bras_epaules_max_deg"] and med["torse_detourne_deg"] >= E["torse_detourne_min_deg"]
+        preuve["ligne_epaules"] = f"mediane bras/epaules {med['bras_epaules_deg']:.0f} deg (pro <= {E['bras_epaules_max_deg']}), torse detourne {med['torse_detourne_deg']:.0f} deg (pro >= {E['torse_detourne_min_deg']})"
+        etat["bras_libre_ramene"] = med["bras_libre"] <= E["bras_libre_max"]
+        preuve["bras_libre_ramene"] = f"mediane bras libre / bras qui frappe {med['bras_libre']:.2f} (pro <= {E['bras_libre_max']})"
+        etat["bras_avant_bras"] = med["translation_bras"] >= E["translation_bras_min"]
+        preuve["bras_avant_bras"] = f"mediane translation d'epaule au contact {med['translation_bras']:.2f} stud (pro >= {E['translation_bras_min']})"
     # parties : les memes mesures, partie par partie (pour apprendre de ce que Milan AIME)
     parties = {s: {"arcs": v["deviation_mediane"] is not None and v["deviation_mediane"] >= E["arcs_deviation_min"],
                    "mesures": v} for s, v in seg.items()}

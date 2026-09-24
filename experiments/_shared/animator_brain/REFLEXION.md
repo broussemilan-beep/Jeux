@@ -1,15 +1,15 @@
 # Reflexion du critique
 
 ## Predictions contre notes de Milan (poids avant apprentissage)
-- v1 : predit 6.2, Milan 6.0 (ecart +0.2)
+- v1 : predit 6.4, Milan 6.0 (ecart +0.4)
 - v2 : predit 6.5, Milan 6.7 (ecart -0.2)
-- v4 : predit 6.9, Milan 6.7 (ecart +0.2)
-- v5 : predit 7.1, Milan 6.8 (ecart +0.3)
-- v6 : predit 7.9, Milan 7.0 (ecart +0.9)
+- v4 : predit 6.7, Milan 6.7 (ecart +0.0)
+- v5 : predit 6.7, Milan 6.8 (ecart -0.1)
+- v6 : predit 7.1, Milan 7.0 (ecart +0.1)
 
 ## Ce qui a change entre deux versions notees
 - v1 -> v2 : note 6.0 -> 6.7 (+0.7) ; corrigees : posture_droite, escalade, impact_visible ; perdues : aucune
-- v2 -> v4 : note 6.7 -> 6.7 (+0.0) ; corrigees : epaules_basses, bras_horizontal, transfert_poids ; perdues : aucune
+- v2 -> v4 : note 6.7 -> 6.7 (+0.0) ; corrigees : epaules_basses, bras_horizontal, transfert_poids ; perdues : bras_libre_ramene
 - v4 -> v5 : note 6.7 -> 6.8 (+0.1) ; corrigees : coup_charge, arcs ; perdues : aucune
 - v5 -> v6 : note 6.8 -> 7.0 (+0.2) ; corrigees : silhouette_lisible, cartes_impact, silence_noir, blanc_total, poing_gros_plan, contraste_echelle, fond_remplace, camera_vivante, hierarchie_effets ; perdues : aucune
 
@@ -20,6 +20,7 @@
 - **smear_graphique** : Une trainee/smear porte la vitesse ; la trajectoire du coup reste dessinee a l'ecran quelques frames. (sources : corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~5 clips; refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...))
 - **victime_deformee** : La victime reagit fort : se plie autour du poing, joue ecrasee, tete qui part. (sources : corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~4 clips; refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...))
 - **ellipse_impact** : On n'a pas besoin de montrer le coup : les cartes, le blanc ou une coupe racontent l'impact, et on revient sur le visage ou la consequence. (sources : First time fighting a dummy (lot 2), Serious Punch TSB, OPM (le coup final = un trait dans le noir))
+- **ligne_epaules** : Coup droit : a l'extension, le bras qui frappe PROLONGE la ligne des epaules (torse tourne presque de profil) ; pied arriere, torse et bras forment une seule droite. C'est « l'epaule dans le coup ». (sources : corpus/TUTOS_ANIMATION.md (recherche 2026-09-24 : DevForum Roblox, 31 sources ; ArcSys GGXrd 4Gamer, Cartwright GDC 2014, Mattesi FORCE ; extraits sakugabooru mesures); pack pro battleground (4 M1) : bras/epaules 18-28 deg, torse detourne 67-75 deg au contact ; NOUS v6 : 46-72 et 32-48 (captures/verification/2026-09-24-cerveau-ligne-epaules-pro-vs-nous.png); Motomura (ArcSys) : mettre ou non l'epaule dans le coup change « j'ai mis de la force » / « j'ai frappe leger »; Mattesi FORCE : extension = une seule droite du pied arriere au poing; DevForum Shift4D : tourner le torse encore plus)
 
 ## Ou la mesure contredit le jugement manuel (etats.py)
 - v2 variete_coups : jugement True -> mesure False
@@ -52,8 +53,12 @@
 - camera_jeu_vs_cinematique : En jeu, M1 et competences se jouent dans la camera du JOUEUR (souvent de dos) et doivent s'y lire ; seul l'ultime coupe en cinematique (cartes, gros plans, angles) puis REVIENT a la camera de jeu.
 - rafale_en_masse : Une rafale tres rapide se montre comme une MASSE de poings-smears continue (on lit le rythme et le volume), pas coup par coup.
 - contact_prolonge : Une saisie ou une projection garde les corps en contact (on soulève, on retourne, on plaque) : la victime est manipulee, pas seulement frappee.
+- compression_extension : Anticipation = COMPRESSION en C (corps enroule et bas, tete rentree derriere l'epaule, poing arme derriere le plan du corps) ; extension = une droite hors d'equilibre. Le coup anime montre deux poses extremes, le trajet passe en 1-2 f.
+- depassement_1f : Une image de DEPASSEMENT au-dela de la pose d'extension (ou du corps hors de sa pose finale dans le sens du coup), puis retour : l'arret n'est jamais mort.
+- recuperation_effort : Apres un gros coup, la recuperation montre l'EFFORT (recul, reprise d'appui, poids) ; le retour a la garde est lent et ne ressemble pas a un second coup.
+- poses_tenues_limitees : Animation LIMITEE : sur les attaques, poses tenues de durees irregulieres (1 a 5 f a 60 i/s) sans interpolation ; seules les trajectoires (saut, vol, dash) restent lisses.
 
-## Echelle calibree sur 5 notes : note = 6.87 + 0.62 x score
+## Echelle calibree sur 5 notes : note = 6.89 + 0.73 x score
 
 ## Poids appris (ce qui fait bouger la note de Milan)
 - silhouette_lisible   poids_note 0.65 (confiance principe 0.80)
@@ -87,6 +92,13 @@
 - rafale_en_masse      poids_note 0.50 (confiance principe 0.60)
 - contact_prolonge     poids_note 0.50 (confiance principe 0.50)
 - signature_visuelle   poids_note 0.50 (confiance principe 0.65)
+- ligne_epaules        poids_note 0.50 (confiance principe 0.80)
+- bras_libre_ramene    poids_note 0.50 (confiance principe 0.75)
+- bras_avant_bras      poids_note 0.50 (confiance principe 0.70)
+- compression_extension poids_note 0.50 (confiance principe 0.70)
+- depassement_1f       poids_note 0.50 (confiance principe 0.70)
+- recuperation_effort  poids_note 0.50 (confiance principe 0.60)
+- poses_tenues_limitees poids_note 0.50 (confiance principe 0.50)
 - armement_frappe_retour poids_note 0.43 (confiance principe 0.80)
 - epaules_basses       poids_note 0.40 (confiance principe 0.50)
 - bras_horizontal      poids_note 0.40 (confiance principe 0.80)

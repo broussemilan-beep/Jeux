@@ -43,6 +43,12 @@
     "tenue_f": 0,
     "enroulement_buste_deg": 74.9,
     "depart_f": 2
+   },
+   "pose_impact": {
+    "bras_epaules_deg": 25.3,
+    "torse_detourne_deg": 79.4,
+    "bras_libre": 0.31,
+    "translation_bras": 0.6
    }
   },
   "[2] M1_2": {
@@ -63,6 +69,12 @@
     "tenue_f": 0,
     "enroulement_buste_deg": 134.4,
     "depart_f": 7
+   },
+   "pose_impact": {
+    "bras_epaules_deg": 17.5,
+    "torse_detourne_deg": 75.0,
+    "bras_libre": 0.03,
+    "translation_bras": 0.92
    }
   },
   "[2] M1_3": {
@@ -91,6 +103,12 @@
     "tenue_f": 0,
     "enroulement_buste_deg": 155.0,
     "depart_f": 1
+   },
+   "pose_impact": {
+    "bras_epaules_deg": 28.3,
+    "torse_detourne_deg": 71.9,
+    "bras_libre": 0.2,
+    "translation_bras": 0.58
    }
   },
   "[3] Backdash": {

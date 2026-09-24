@@ -202,3 +202,36 @@ def variete(world, hits):
     n = min(len(s) for s in shapes)
     d = [float(np.sqrt(((a[:n] - b[:n]) ** 2).sum(1).mean())) for i, a in enumerate(shapes) for b in shapes[i + 1:]]
     return round(float(np.median(d)), 3) if d else None
+
+
+def pose_impact(world, c, part):
+    """Anatomie R6 au contact d'un coup droit (etude des tutos, 2026-09-24,
+    corpus/TUTOS_ANIMATION.md) :
+    - bras_epaules_deg : angle entre le bras qui frappe (epaule -> poing) et la
+      ligne des epaules cote bras ; 0 = le bras PROLONGE les epaules (torse de
+      profil, une seule droite). M1 pro : 18-28 ; nous v6 : 46-72.
+    - torse_detourne_deg : lacet du torse par rapport a la direction du coup.
+      M1 pro : 67-75 ; nous : 32-48.
+    - bras_libre : produit scalaire des directions des deux bras ; ~1 = le bras
+      libre est tendu vers l'avant lui aussi, ~0 ramene contre le corps. M1
+      pro : -0,1 a 0,3 ; nous : 0,9.
+    - translation_bras : translation du Motor6D d'epaule (bras « decolle »,
+      le bras R6 joue l'avant-bras). M1 pro AU CONTACT : 0,58-0,92 ; nous :
+      0,96 -> pas un ecart (les 1,25-1,6 pro sont la mediane du clip, garde
+      comprise : c'est la GARDE pro qui tient les bras translates devant)."""
+    from animator_brain import roblox_export as X
+    other = "Left Arm" if part == "Right Arm" else "Right Arm"
+    w = world[c]
+    rT = w["Torso"][0]
+    arm = w[part][0] @ np.array([0.0, -1.0, 0.0])
+    free = w[other][0] @ np.array([0.0, -1.0, 0.0])
+    sh = rT @ np.array([1.0 if part == "Right Arm" else -1.0, 0.0, 0.0])
+    d = tip(w, part) - w["Torso"][1]
+    d[1] = 0.0
+    fwd = rT @ np.array([0.0, 0.0, -1.0])
+    fwd[1] = 0.0
+    cosang = float(np.clip(fwd @ d / (np.linalg.norm(fwd) * np.linalg.norm(d) + 1e-9), -1, 1))
+    return {"bras_epaules_deg": round(float(np.degrees(np.arccos(np.clip(arm @ sh, -1, 1)))), 1),
+            "torse_detourne_deg": round(float(np.degrees(np.arccos(cosang))), 1),
+            "bras_libre": round(float(arm @ free), 2),
+            "translation_bras": round(float(np.linalg.norm(X.joint_transform(part, w)[1])), 2)}
