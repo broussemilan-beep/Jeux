@@ -237,6 +237,38 @@ def pose_impact(world, c, part):
             "translation_bras": round(float(np.linalg.norm(X.joint_transform(part, w)[1])), 2)}
 
 
+def silhouette(w):
+    """Lecture d'une pose (tutos vidéo, 2026-09-24, corpus/TUTOS_ANIMATION.md §8).
+    - bascule_deg : inclinaison du torse par rapport à la verticale.
+    - bras_vertical_max : |composante verticale| la plus forte des deux bras
+      (0 = les deux à l'horizontale).
+    - bras_dehors : min des deux bras de leur projection vers l'extérieur de
+      leur propre côté (1 = bras écartés en croix ; < 0 = croisés devant).
+    - croix : torse droit (< 10°) + deux bras à l'horizontale (< 0,35) + écartés
+      (> 0,5). C'est le ✗ « boring sameside posing / looks like a stickman »
+      de la planche de Xoaterz. Les bras CROISÉS devant la poitrine (TSB Stoic
+      Bomb) ne sont pas une croix : c'était un faux positif sans bras_dehors.
+      Mesuré sur les 13 animations TSB : 0 % des images chez l'attaquant
+      (Ultimate1 0,2 %)."""
+    rT = w["Torso"][0]
+    x = rT @ np.array([1.0, 0.0, 0.0])
+    a = w["Right Arm"][0] @ np.array([0.0, -1.0, 0.0])
+    b = w["Left Arm"][0] @ np.array([0.0, -1.0, 0.0])
+    bascule = float(np.degrees(np.arccos(np.clip((rT @ np.array([0.0, 1.0, 0.0]))[1], -1, 1))))
+    vert = float(max(abs(a[1]), abs(b[1])))
+    dehors = float(min(a @ x, -(b @ x)))
+    return {"bascule_deg": round(bascule, 1), "bras_vertical_max": round(vert, 2), "bras_dehors": round(dehors, 2),
+            "croix": bool(bascule < 10 and vert < 0.35 and dehors > 0.5)}
+
+
+def torsion(world, charge_lo, charge_hi, contact):
+    """Rotation du torse (lacet, degrés) entre la charge (médiane de la fenêtre)
+    et le contact. Tutos R6 : ~90 à 180° sur un coup qui compte."""
+    y = [yaw_deg(world, i) for i in range(max(0, charge_lo), min(len(world), charge_hi))]
+    d = yaw_deg(world, contact) - float(np.median(y))
+    return round(abs((d + 180) % 360 - 180), 1)
+
+
 def profil_frappe(world, c, part, n=12):
     """Forme du profil de vitesse du poing jusqu'au contact (fichier TSB
     officiel, 2026-09-24). TSB M1-M4 : lente derive (~15-20 studs/s) puis le

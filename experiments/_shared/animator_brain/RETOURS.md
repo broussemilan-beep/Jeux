@@ -238,3 +238,22 @@ cerveau, voir la fin de l'entrée.
   - Prochain pas : nommer ce cap sur l'image (nos poses clés contre celles
     des refs, même moment, même grille) avant de toucher à une clé.
 
+
+- **2026-09-24, après l'étude des tutos vidéo** (Milan : « es-que tu as bien
+  appris ? » ; « je veux pas de coup de pied »).
+  - **Décision de design : aucun coup de pied** dans le Poing du Dragon.
+    Uniquement des poings. L'option h4 « coup de pied » (TSB M4) est
+    abandonnée.
+  - **Ce que « appris » veut dire ici** : deux règles des tutos sont devenues
+    des MESURES (`perception.silhouette`, `perception.torsion`, branchées
+    dans `etats.py`), étalonnées sur TSB.
+    - **Croix** : 0 % des images chez l'attaquant TSB (13 animations), 93 %
+      pendant notre charge v6. La règle est confirmée par la mesure.
+    - **Torsion charge → contact** : 130° en v6. **Mon jugement à l'œil
+      (« pas de torsion ») était FAUX.** La mesure l'a corrigé : le défaut du
+      contact v6 est ailleurs (bascule 20°, bras libre tendu vers l'avant
+      avec l'autre).
+    - **Faux positif corrigé** : les bras CROISÉS devant (TSB Stoic Bomb)
+      comptaient comme une croix. Il manquait la condition « chaque bras part
+      vers l'extérieur ». Vu sur la planche, corrigé.
+    - Preuve : `captures/verification/2026-09-24-cerveau-detecteur-croix-v6-tsb-v7.png`.

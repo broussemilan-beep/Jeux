@@ -958,10 +958,10 @@
    "poids_a_priori": 0.5,
    "etalon_style": "roblox_smooth",
    "categorie": "pose",
-   "mesure": "jugement visuel ; mesurable (lacet du torse charge→contact via perception) quand on le branchera",
+   "mesure": "perception.torsion (lacet du torse charge -> contact), seuil 90° (tutos R6, principe)",
    "sources": [
     "vidéos tutos envoyées par Milan (zips 2026-09-24, étude visuelle image par image ; corpus/tutos/rapport_video_*.md) : tuto punch Blender (~90° détourné à la charge, ~180° de pivot au contact) ; uppercut Moon Animator (torse de profil ~90° au départ) ; boxe (smears) : épaule rentrée",
-    "NOUS v6 : charge = croix symétrique torse droit, contact = torse vertical, bras seul (experiments/r6_poing_dragon/FICHE_V7.md)"
+    "NOUS v6 MESURÉ (perception.torsion) : 130° de la charge (lacet -85°) au contact (+45°) -> déjà vrai ; mon jugement à l'œil disait faux. Ce qui manque au contact v6 est ailleurs : bascule 20° (compétences TSB >= 44) et bras libre tendu vers l'avant avec l'autre (écart entre les bras 28°)"
    ],
    "quand": "coup chargé, compétence, finisher",
    "contre_indication": "M1 enchaînés (lisibilité et vitesse d'enchaînement) ; ne pas tourner la face du personnage hors caméra au moment où le visage doit se lire"
@@ -998,10 +998,10 @@
    "poids_a_priori": 0.5,
    "etalon_style": "roblox_smooth",
    "categorie": "pose",
-   "mesure": "jugement visuel ; mesurable : symétrie gauche/droite des bras + lacet du torse vers la caméra sur les poses clés",
+   "mesure": "perception.silhouette (croix = torse < 10° + deux bras horizontaux < 0,35 + écartés > 0,5) sur la charge du coup final ; étalon TSB attaquant : 0 % des images (max 0,2 %)",
    "sources": [
     "vidéos tutos envoyées par Milan (zips 2026-09-24) : vlog DeHapy, critique de l'animateur Xoaterz (planche ✗/✓ lisible, 2023 ; corpus/tutos/rapport_video_critique_poses.md) : ✗ « boring sameside posing / looks like a stickman » = bras tendus à l'horizontale, torse vertical de face ; ✓ « is interesting / doesn't look like a stickman / akin to The Serious Punch » = torse 3/4 penché, bras armé derrière, genou levé",
-    "NOUS v6 : la charge est EXACTEMENT la croix ✗ (experiments/r6_poing_dragon/FICHE_V7.md, captures/verification/2026-09-24-croquis-v7-charge-contact-vs-v6.png)",
+    "NOUS v6 MESURÉ : 93 % des images de la charge (f118-146) en croix ; TSB attaquant 0 % sur 13 animations (Stoic Bomb : bras CROISÉS devant, pas une croix, faux positif corrigé) ; la charge v6 est la croix ✗ (experiments/r6_poing_dragon/FICHE_V7.md, captures/verification/2026-09-24-croquis-v7-charge-contact-vs-v6.png)",
     "tuto punch Blender : charge asymétrique torse détourné ~90°"
    ],
    "quand": "toute pose clé tenue ou lue (charge, pic, pose de fin)",

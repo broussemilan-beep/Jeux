@@ -45,9 +45,12 @@ def leg(a, back=False, x=0.05):
 
 def charge():
     # rotations MONDE : lacet puis tangage vers la cible (-Z) => Rx(-a) @ Ry(lacet)
-    return L.pose(Rx(-12) @ Ry(-85), Rx(-15) @ Ry(-35),
+    # bascule 25° + bras avant replié bas et vers l'intérieur : silhouette compacte.
+    # Avec 12° et un bras avant tendu, le croquis ne sortait de la « croix » que
+    # de justesse (seuil de bascule : 10°).
+    return L.pose(Rx(-25) @ Ry(-85), Rx(-15) @ Ry(-35),
                   aim((0.25, 0.55, 0.8)),     # poing armé haut derrière l'épaule
-                  aim((0.1, -0.15, -1)),      # bras avant qui vise la cible
+                  aim((-0.35, -0.55, -0.75)), # bras avant replié, qui vise bas
                   aim((0.05, -1, 0.1)),       # jambe d'appui verticale
                   aim((-0.1, -0.45, -0.9)))   # genou levé vers la cible
 

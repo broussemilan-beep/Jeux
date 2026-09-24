@@ -24,8 +24,8 @@ rejettent.
 
 | | v6 | ce que montrent les sources |
 |---|---|---|
-| **charge** | croix : torse vertical et de face, bras de chaque côté | ✗ exact de la planche de Xoaterz : « boring sameside posing / looks like a stickman ». Le ✓ « akin to The Serious Punch (TSB) » a le torse de 3/4 penché, le bras armé derrière l'épaule et le genou levé. Même chose dans le tuto punch (torse ~90° détourné) et l'uppercut Moon (torse de profil). |
-| **contact** | torse vertical, seul le bras part | Tuto punch : torse pivoté ~180° depuis la charge, penché ~45°, bras décollé vers l'avant. Coup de boxe (anime) : épaule rentrée, tête qui plonge. Compétences TSB : le corps bascule de 44 à 97°. |
+| **charge** | croix : torse droit (bascule 0-1°), les deux bras à l'horizontale, écartés. **Mesuré : 93 % des images de la charge en croix ; attaquant TSB : 0 % sur 13 animations.** | ✗ exact de la planche de Xoaterz : « boring sameside posing / looks like a stickman ». Le ✓ « akin to The Serious Punch (TSB) » a le torse de 3/4 penché, le bras armé derrière l'épaule et le genou levé. Même chose dans le tuto punch (torse ~90° détourné) et l'uppercut Moon (torse de profil). |
+| **contact** | torse penché de seulement 20°, et le **bras libre part vers l'avant avec l'autre** (écart entre les deux bras : 28°). La torsion, elle, est déjà là : **130° mesurés** de la charge au contact. | Tuto punch : torse pivoté ~180° depuis la charge, penché ~45°, bras décollé vers l'avant. Coup de boxe (anime) : épaule rentrée, tête qui plonge. Compétences TSB : le corps bascule de 44 à 97°. |
 | **tenue** | pose tenue | Uppercut Moon : la tenue n'est **jamais figée** (petits cercles qui ralentissent). |
 | **frappe** | rampe cuite image par image | Linear, clés espacées ; la frappe tient en **2 images** entre deux clés (uppercut, punch). |
 
@@ -42,9 +42,15 @@ Ce que les sources confirment de la v6 (on n'y touche pas) :
 (script : `scripts/croquis_v7.py`), sur trois vues : profil, 3/4 face et
 caméra de jeu.
 
-- **Charge v7** : torse détourné ~85° de la cible, légèrement penché. Poing
-  armé HAUT derrière l'épaule, bras avant qui vise, genou levé.
-  Silhouette compacte et asymétrique.
+- **Charge v7** : torse détourné ~85° de la cible (la v6 l'est déjà) et
+  penché de 25°. Poing armé HAUT derrière l'épaule, bras avant replié qui
+  vise bas, genou levé. Silhouette compacte et asymétrique.
+  - Le détecteur de croix dit « non » sur ce croquis, et « oui » sur 93 % de
+    la charge v6.
+  - Une 1re version, penchée de 12° avec le bras avant tendu, ne sortait de
+    la croix que de justesse. Elle a été corrigée.
+  - **Risque** : en caméra de jeu (de dos), une charge de profil est étroite.
+    On vérifiera la lisibilité sur la vraie capture du rig.
 - **Contact v7 E, « ligne jetée »** : lacet +70°, soit ~155° de rotation
   depuis la charge. Torse penché de 40° vers la cible, bras horizontal, bras
   libre ramené à la hanche. La jambe arrière prolonge le torse et traîne en
@@ -69,17 +75,16 @@ hanche, ou bras tiré vers l'extérieur hors de la silhouette.
 | temps | changement | règle du cerveau |
 |---|---|---|
 | charge f118-146 | croix → **charge « Serious Punch »** (croquis). La **tête regarde la cible**. Tenue vivante : petits cercles, amplitude décroissante. | `silhouette_non_croix`, `compression_extension`, `regard_intention`, `tenue_vivante` |
-| coup f146-150 | **frappe en 2 images** entre deux clés, avec une clé intermédiaire sur le seul bras qui frappe. **Torsion de ~155°** de la charge au contact. | `frappe_lineaire`, `torsion_charge_contact` |
-| contact f150 + hitstop | **ligne jetée E** (ou G). 1 image de dépassement puis retour. Le gel du hitstop reste un gel (c'est le signal). | `ligne_epaules` (coups qui comptent), `depassement_1f`, `bascule_competence` |
+| coup f146-150 | **frappe en 2 images** entre deux clés, avec une clé intermédiaire sur le seul bras qui frappe. On garde la torsion (130° en v6, ~155° sur le croquis). | `frappe_lineaire`, `torsion_charge_contact` (déjà vraie) |
+| contact f150 + hitstop | **ligne jetée E** (ou G) : bascule 20° → 40°, **bras libre ramené** (v6 : tendu avec l'autre). 1 image de dépassement puis retour. Le gel du hitstop reste un gel (c'est le signal). | `ligne_epaules` (coups qui comptent), `depassement_1f`, `bascule_competence` |
 | après le coup | **retour avec effort** (reprise d'appui), puis tenue vivante et non figée | `recuperation_effort`, `tenue_vivante` |
-| rafale h1-h4 | **inchangée** dans ses timings. Les M1 TSB ne suivent pas la ligne d'épaules. On retouche seulement si une pose tombe dans la croix ✗. Coup de pied en h4 : à décider avec Milan (voir plus bas). | contre-indications `ligne_epaules`, `torsion_charge_contact` |
+| rafale h1-h4 | **inchangée**, **que des poings** (décision de Milan : pas de coup de pied). Les M1 TSB ne suivent pas la ligne d'épaules. On retouche seulement si une pose tombe dans la croix ✗. | contre-indications `ligne_epaules`, `torsion_charge_contact` |
 | export | poses clés seules (~15/s) en Linear | `frappe_lineaire` (TSB) |
 | caméra ciné | **un cran moins** : gros plans plus courts, secousses réduites | retour Milan |
 | aérien, VFX, cartes, rythme | **inchangés** | ne pas casser ce qui marche |
 
-**Option h4, coup de pied** (TSB M4). C'est un choix de design : Milan
-décide. S'il est retenu, on le croque dans le rig V2.22, jambes en IK. Le
-labo à blocs rigides ne tient pas une jambe d'appui.
+**Décision de Milan (2026-09-24) : pas de coup de pied.** La technique reste
+uniquement aux poings.
 
 ## Méthode d'exécution (après le go)
 

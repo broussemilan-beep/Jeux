@@ -87,7 +87,8 @@ def tsb_reference(path=None):
             e = {"cles": len(t), "duree_s": round(float(t[-1] / 60), 2),
                  "cles_par_s": round(float(len(t) / max(t[-1] / 60, 1e-6)), 1),
                  "ecart_median_f": round(float(np.median(np.diff(t))), 1) if len(t) > 1 else None,
-                 "bascule_torse_p90": round(float(np.percentile(tilt, 90)), 1)}
+                 "bascule_torse_p90": round(float(np.percentile(tilt, 90)), 1),
+                 "croix_frac": round(float(np.mean([P.silhouette(x)["croix"] for x in w])), 3)}
             if s["name"] in ("M1", "M2", "M3", "M4"):
                 h = max(("Right Arm", "Left Arm"), key=lambda h: max((P.tip(x, h) - x["Torso"][1]) @ np.array([0, 0, -1.0]) for x in w))
                 c = P.strike_frame(w, h)
@@ -129,7 +130,10 @@ def etalons(pro):
         sk = [v["bascule_torse_p90"] for k, v in tsb["clips"].items()
               if not k.startswith("M") and "Victim" not in k and "Ultimate" not in k]
         E["bascule_competence_min"] = round(float(np.percentile(sk, 25)), 1)
-        E["doc_tsb"] = "plateau : M1-M4 TSB - 0,07 ; bascule : 1er quartile des competences TSB (p90 de la bascule du torse)"
+        cx = [v["croix_frac"] for k, v in tsb["clips"].items() if "Victim" not in k and "croix_frac" in v]
+        if cx:
+            E["croix_max"] = round(max(cx) + 0.05, 3)
+        E["doc_tsb"] = "croix : part max d'images en croix chez l'attaquant TSB + 5 points ; plateau : M1-M4 TSB - 0,07 ; bascule : 1er quartile des competences TSB (p90 de la bascule du torse)"
     return E
 
 
@@ -223,6 +227,16 @@ def etat_version(prod, cfg, version, commit, hyp, E):
             b90 = float(np.percentile(tilt, 90))
             etat["bascule_competence"] = b90 >= E["bascule_competence_min"]
             preuve["bascule_competence"] = f"coup final (f{ff - 42}-{ff + 20}) : bascule du torse p90 {b90:.0f} deg ; competences TSB >= {E['bascule_competence_min']}"
+    # tutos video (2026-09-24) : croix de face pendant la charge du coup final, torsion charge -> contact
+    ff = sc.get("final_f")
+    if ff:
+        cr = [P.silhouette(world[i])["croix"] for i in range(max(0, ff - 32), min(len(world), ff - 3))]
+        frac = float(np.mean(cr)) if cr else 0.0
+        etat["silhouette_non_croix"] = frac <= E.get("croix_max", 0.05)
+        preuve["silhouette_non_croix"] = f"charge du coup final (f{ff - 32}-{ff - 4}) : {frac * 100:.0f} % des images en croix ; TSB attaquant <= {E.get('croix_max', 0.05) * 100:.0f} %"
+        tr = P.torsion(world, ff - 32, ff - 3, ff)
+        etat["torsion_charge_contact"] = tr >= 90
+        preuve["torsion_charge_contact"] = f"lacet du torse charge -> contact f{ff} : {tr:.0f} deg ; tutos R6 >= 90"
     # parties : les memes mesures, partie par partie (pour apprendre de ce que Milan AIME)
     parties = {s: {"arcs": v["deviation_mediane"] is not None and v["deviation_mediane"] >= E["arcs_deviation_min"],
                    "mesures": v} for s, v in seg.items()}

@@ -14,7 +14,8 @@
   "translation_bras_min": 0.38,
   "plateau_min": 0.85,
   "bascule_competence_min": 43.6,
-  "doc_tsb": "plateau : M1-M4 TSB - 0,07 ; bascule : 1er quartile des competences TSB (p90 de la bascule du torse)"
+  "croix_max": 0.052,
+  "doc_tsb": "croix : part max d'images en croix chez l'attaquant TSB + 5 points ; plateau : M1-M4 TSB - 0,07 ; bascule : 1er quartile des competences TSB (p90 de la bascule du torse)"
  },
  "v1": {
   "etat": {
@@ -549,7 +550,9 @@
    "bras_libre_ramene": false,
    "bras_avant_bras": true,
    "frappe_lineaire": false,
-   "bascule_competence": false
+   "bascule_competence": false,
+   "silhouette_non_croix": false,
+   "torsion_charge_contact": true
   },
   "preuve": {
    "posture_droite": "regles_v5.json : posture droite pendant les coups legers ok ; posture droite pendant les coups legers (fente du coup final, standard coup lourd) ok",
@@ -566,7 +569,9 @@
    "bras_libre_ramene": "mediane bras libre / bras qui frappe 0.89 (pro <= 0.51)",
    "bras_avant_bras": "mediane translation d'epaule au contact 0.96 stud (pro >= 0.38)",
    "frappe_lineaire": "plateau de vitesse du poing (min/max phase rapide) mediane 0.64 [0.77, 0.75, 0.6, 0.64, 0.51] ; TSB M1-M4 >= 0.85",
-   "bascule_competence": "coup final (f108-170) : bascule du torse p90 35 deg ; competences TSB >= 43.6"
+   "bascule_competence": "coup final (f108-170) : bascule du torse p90 35 deg ; competences TSB >= 43.6",
+   "silhouette_non_croix": "charge du coup final (f118-146) : 93 % des images en croix ; TSB attaquant <= 5 %",
+   "torsion_charge_contact": "lacet du torse charge -> contact f150 : 128 deg ; tutos R6 >= 90"
   },
   "parties": {
    "rafale": {
@@ -650,7 +655,9 @@
    "bras_libre_ramene": false,
    "bras_avant_bras": true,
    "frappe_lineaire": false,
-   "bascule_competence": false
+   "bascule_competence": false,
+   "silhouette_non_croix": false,
+   "torsion_charge_contact": true
   },
   "preuve": {
    "posture_droite": "regles_v6.json : posture droite pendant les coups legers ok ; posture droite pendant les coups legers (fente du coup final, standard coup lourd) ok",
@@ -667,7 +674,9 @@
    "bras_libre_ramene": "mediane bras libre / bras qui frappe 0.89 (pro <= 0.51)",
    "bras_avant_bras": "mediane translation d'epaule au contact 0.96 stud (pro >= 0.38)",
    "frappe_lineaire": "plateau de vitesse du poing (min/max phase rapide) mediane 0.64 [0.77, 0.75, 0.6, 0.64, 0.51] ; TSB M1-M4 >= 0.85",
-   "bascule_competence": "coup final (f108-170) : bascule du torse p90 35 deg ; competences TSB >= 43.6"
+   "bascule_competence": "coup final (f108-170) : bascule du torse p90 35 deg ; competences TSB >= 43.6",
+   "silhouette_non_croix": "charge du coup final (f118-146) : 93 % des images en croix ; TSB attaquant <= 5 %",
+   "torsion_charge_contact": "lacet du torse charge -> contact f150 : 128 deg ; tutos R6 >= 90"
   },
   "parties": {
    "rafale": {
