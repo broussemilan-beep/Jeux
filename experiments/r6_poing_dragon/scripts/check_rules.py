@@ -31,9 +31,16 @@ def main(tag="courant"):
     aw, vw = ST.tracks()
     hits = [h[0] for h in scene["hits"]]
     rafale_end = hits[-1] + 12
-    # 1. posture pendant la rafale (frames au sol)
-    ty = [aw[f]["Torso"][1][1] for f in range(0, rafale_end)]
+    # 1. posture pendant la rafale (frames au sol). v3b : le dernier coup est
+    # une FENTE (coup lourd, ref « Pro » de Milan) -- jugee comme frappe_lourde,
+    # les coups legers avant elle restent jauges au standard frappe_legere
+    heavy0 = hits[-1] - 13 if scene["hits"][-1][2] == "body" else rafale_end
+    ty = [aw[f]["Torso"][1][1] for f in range(0, heavy0)]
     checks = [R.check_affaissement(ty, "frappe_legere")]
+    if heavy0 < rafale_end:
+        c = R.check_affaissement([aw[f]["Torso"][1][1] for f in range(heavy0, rafale_end)], "frappe_lourde")
+        c["regle"] += " (fente du coup final, standard coup lourd)"
+        checks.append(c)
     # 2. escalade : hitstop, recul de la victime (torse, 12 f apres le contact), secousse
     impacts = {e["frame"]: e for e in st["events"] if e["kind"] == "impact"}
     hs = [impacts[h]["hitstop"] for h in hits if h in impacts]

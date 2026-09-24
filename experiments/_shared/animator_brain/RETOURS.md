@@ -80,7 +80,8 @@ Preuve visuelle : `captures/verification/2026-09-24-poing-dragon-v1-vs-v2.png`.
 
 ## Poing du Dragon v3 (2026-09-24) : réponse au retour v2
 
-Pas encore revu par Milan. La rafale seulement ; le reste est inchangé
+Revu par Milan : « tu donnes des coups vers le bas » (pas de note). Corrigé en
+v3b, voir plus bas. La rafale seulement ; le reste est inchangé
 (l'aérien, jugé bon deux fois).
 
 - **Règles** (`r6_poing_dragon/output/regles_v3.json`) : **10/10**.
@@ -103,3 +104,26 @@ Pas encore revu par Milan. La rafale seulement ; le reste est inchangé
   2 studs : pour frapper plus près, il faut ramener la main à moins de 1,7 stud
   de l'épaule, et l'IK la hausse (leçon 6). La proximité vient donc du corps
   penché et de la victime qui se plie, pas de la distance.
+
+### Retour de Milan sur la v3, et la v3b
+
+- **Retour**, texto : « y'a un problème, tu donnes des coups vers le bas ».
+  Exemples fournis :
+  - sa référence « Pro » (vidéo 17-52-55) ;
+  - un GIF de combat sous Blender (rig V2.22) ;
+  - le Serious Punch.
+
+  Ses mots : « c'est même pas encore parfait sur les vidéos, mais tu vas
+  comprendre le concept ».
+- **Mon analyse, confirmée par les chiffres** : bras de −15 à −30° au contact,
+  pour une médiane pro de −3°. Sur sa référence, le bras reste horizontal et
+  c'est le corps qui descend en fente. Leçon 10.
+- **v3b** (`r6_poing_dragon/output/regles_v3b.json`) : **11/11**.
+  - Bras à −5 à −7° au contact, médiane −5,9°.
+  - Poing à 3,2-3,3 studs sur les trois premiers coups, 2,7 sur le coup final
+    en fente.
+  - Épaules : médiane −0,62, max −0,02.
+  - Transfert de poids : 0,59 à 0,84.
+  - Affaissement des coups légers : médiane 0,05. La fente du coup final est
+    jugée comme coup lourd : médiane 0,39, pour un seuil de 0,83.
+- **Preuve** : `captures/verification/2026-09-24-poing-dragon-v3-vs-v3b-bras-horizontal.png`.

@@ -139,16 +139,23 @@ def check_epaules(shoulder_y, category="frappe_legere", slack=0.05):
             "source": f"corpus {category} (decalage_epaule_vertical_studs) ; retour Milan 2026-09-24 (v2)"}
 
 
-def check_bras_au_contact(elevations_deg, fist_heights=None, category="frappe_legere", slack=5.0):
-    """LECON 6b : au contact d'un coup de poing leger, le bras est a
-    l'horizontale ou en dessous (pro : -20 a 0 deg, poing a hauteur de
-    poitrine 2,5-3,6). Viser la tete bras leve = coup « tape a l'oeil » sans
-    poids. elevations_deg = angle epaule->poing au-dessus de l'horizontale,
-    un par coup."""
-    lim = corpus_value(category, "mecanique_frappe.bras_elevation_deg", "max") + slack
-    ok = max(elevations_deg) <= lim
-    val = {"elevation_deg": [round(e, 1) for e in elevations_deg]}
-    seuil = {"elevation_deg": round(lim, 1)}
+def check_bras_au_contact(elevations_deg, fist_heights=None, category="frappe_legere", slack=5.0, median_tol=10.0):
+    """LECON 6b : au contact d'un coup de poing leger, le bras est quasi
+    HORIZONTAL (pro : -20 a 0 deg, mediane -3 ; poing a hauteur de poitrine
+    2,5-3,6). Deux ecarts vus par Milan :
+    - v2 : bras leve vers la tete (plafond : max pro + 5 deg, poing <= max pro) ;
+    - v3 : bras qui plonge vers le bas, -15 a -30 deg (« tu donnes des coups
+      vers le bas ») -> plancher (min pro - 5 deg) et mediane de la rafale a
+      +-10 deg de la mediane pro. Pour frapper bas, c'est le corps qui descend.
+    elevations_deg = angle epaule->poing au-dessus de l'horizontale, un par coup."""
+    import numpy as np
+    hi = corpus_value(category, "mecanique_frappe.bras_elevation_deg", "max") + slack
+    lo = corpus_value(category, "mecanique_frappe.bras_elevation_deg", "min") - slack
+    med_pro = corpus_value(category, "mecanique_frappe.bras_elevation_deg", "mediane")
+    med = float(np.median(elevations_deg))
+    ok = max(elevations_deg) <= hi and min(elevations_deg) >= lo and abs(med - med_pro) <= median_tol
+    val = {"elevation_deg": [round(e, 1) for e in elevations_deg], "mediane_deg": round(med, 1)}
+    seuil = {"elevation_deg": [round(lo, 1), round(hi, 1)], "mediane_deg": f"{round(med_pro, 1)} +- {median_tol}"}
     if fist_heights is not None:
         # hauteur absolue du poing (sol = 0) : un bras horizontal sur une
         # epaule haussee reste trop haut -- l'angle seul ne le voit pas
@@ -156,9 +163,9 @@ def check_bras_au_contact(elevations_deg, fist_heights=None, category="frappe_le
         ok = ok and max(fist_heights) <= lim_h
         val["poing_hauteur"] = [round(h, 2) for h in fist_heights]
         seuil["poing_hauteur"] = round(lim_h, 2)
-    return {"regle": "bras a l'horizontale ou en dessous au contact", "ok": bool(ok),
+    return {"regle": "bras quasi horizontal au contact", "ok": bool(ok),
             "valeur": val, "seuil": seuil,
-            "source": f"corpus {category} (mecanique_frappe) ; refs Black Flash"}
+            "source": f"corpus {category} (mecanique_frappe) ; retours Milan v2 (trop haut) et v3 (vers le bas)"}
 
 
 def check_transfert_poids(transfers, category="frappe_lourde", n_power=1):

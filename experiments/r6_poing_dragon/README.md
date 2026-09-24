@@ -277,3 +277,43 @@ frames 57-72.
   la hanche (jusqu'à 1,2 stud). Les pros font pareil sur leurs coups lourds
   (downslam : jusqu'à 1,8 stud, 41°). Ça se lit comme une fente, mais c'est à
   juger à l'œil.
+
+### v3b : bras horizontal, le corps descend (retour de Milan sur la v3)
+
+Retour : « tu donnes des coups vers le bas ». C'était vrai : bras de −15 à −30°
+au contact, pour une médiane pro de −3°. Sur la référence « Pro » de Milan
+(vidéo 17-52-55, image à 4,25 s), le bras est **horizontal** et c'est le
+**corps** qui descend en fente.
+
+- **Cible prise à hauteur d'épaule** : `target_h` cherche sur le torse de la
+  victime le point à la hauteur du pivot d'épaule de l'attaquant, 0,1 stud
+  plus bas.
+- **Coups 1 à 3** : debout, bras horizontal, poing à 3,2-3,3 studs.
+- **Coup 4 (au corps)** : pas d'entrée. Le pied avant se lève pendant
+  l'armement et se pose en fente large juste avant le contact. Le bassin
+  descend de 0,6, bras horizontal dans le ventre, poing à 2,7 studs.
+- **Poussée** : si la victime se plie vers le poing, le poing recule avec sa
+  surface, et le corps avec lui, pour que l'épaule ne remonte pas.
+
+**Règles : 11/11** (`output/regles_v3b.json`).
+- **Règle des bras** : elle a maintenant un plancher, et la médiane de la
+  rafale doit rester à ±10° de la médiane pro.
+- **Règle de posture** : la fente finale est jugée au standard frappe_lourde,
+  les coups légers au standard frappe_legere.
+
+| | v3 | v3b | pros |
+|---|---|---|---|
+| bras au contact | −15 à −30° | −5 à −7° (médiane −5,9) | −20 à 0° (médiane −3) |
+| poing au contact | 2,5-3,2 studs | 3,2-3,3, puis 2,7 (fente) | 2,5-3,6 |
+| épaule (médiane / max) | −0,61 / −0,01 | −0,62 / −0,02 | −0,59 à −0,92 / +0,04 |
+| transfert de poids | 0,62-0,68 | 0,59-0,84 | 0,33-0,92 |
+
+**Contrôles** :
+- contacts 0,05 stud, 0,005 de pénétration au plus ;
+- sens 9/9 ;
+- `SENS OK` ;
+- `PACKAGE OK`.
+
+**Preuve** : `captures/verification/2026-09-24-poing-dragon-v3-vs-v3b-bras-horizontal.png`
+(lecteur en profil, v3 contre v3b, aux 4 contacts) et
+`captures/verification/2026-09-24-poing-dragon-v3b-profil-contact.png`.

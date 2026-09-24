@@ -152,3 +152,24 @@ Le verdict final reste la revue de Milan, tracée dans `RETOURS.md`.
   hauteur d'épaule, la hauteur du bras au contact et le transfert de poids.
   L'ajouter au corpus d'abord (ce que font les pros), puis en faire une règle.
 - La note de Milan reste le verdict (voir leçon 5).
+
+## 10. On règle la hauteur du coup avec le corps, pas avec l'angle du bras
+
+- **Retour** : Milan, Poing du Dragon v3 (2026-09-24) : « tu donnes des coups
+  vers le bas ». Exemples fournis : sa référence « Pro » (vidéo 17-52-55, image
+  à 4,25 s), un GIF Blender et le Serious Punch.
+- **Cause** : pour corriger la v2 (bras trop hauts), j'ai visé bas sur la victime
+  (plexus, côtes, foie) sans bouger le corps. Le bras plongeait de −15 à −30°.
+  La règle 6b n'avait qu'un plafond, elle ne pouvait pas voir ce défaut.
+- **Ce que montre la référence** :
+  - au contact, le bras est **horizontal**, droit dans la cible ;
+  - pour frapper bas, le perso descend en **grande fente** : pied avant qui
+    entre, jambe arrière tendue, torse de profil ;
+  - corpus : médiane −3°, de −20 à 0°.
+- **Règle** : `rules.check_bras_au_contact` a maintenant un plancher (min pro
+  −5°) et vérifie que la médiane de la rafale est à ±10° de la médiane pro.
+- **À la conception** : la cible se prend sur la victime **à la hauteur de
+  l'épaule** (`target_h` dans `dragon_clip.py`). Pour un coup plus bas, on
+  baisse le bassin par une fente, ce qui en fait un coup lourd, jugé au standard
+  frappe_lourde (`check_rules.py`). « Accroupi » reste un défaut pour les coups
+  légers.

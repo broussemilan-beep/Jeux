@@ -477,13 +477,27 @@ def attacker_keys(vw, rig):
     # de derriere a devant, il frolerait l'epaule (qui remonte). On passe
     # donc par des cles en ARC autour du pivot (cote, bras bas).
     side = lambda h, az, el=-60, d=2.1: ("a", (az if h == "R" else -az, el, d))  # noqa: E731
-    PLAN = {  # kind: (dist pivot->contact, azimut monde, lacet arme, lacet contact, penche contact, baisse)
-        "chest": (2.2, 12, 12, -32, -12, 0.0),
-        "plexus": (2.2, -12, -30, 38, -14, 0.0),
-        "ribs": (2.2, 24, 18, -44, -15, 0.02),
-        "body": (2.25, -8, -32, 32, -17, 0.06),
+    # v3b (retour de Milan sur la v3 : « tu donnes des coups vers le bas » ;
+    # sa reference « Pro », 17-52-55, t = 4,25 s) : au contact le bras est
+    # HORIZONTAL (pro : mediane -3 deg). Pour frapper plus bas, c'est le CORPS
+    # qui descend (fente, pied avant qui avance), jamais le bras qui plonge.
+    # La cible est donc prise sur la victime A LA HAUTEUR DE L'EPAULE.
+    PLAN = {  # kind: (dist pivot->contact, azimut monde, lacet arme, lacet contact, penche contact, bassin, x local cible)
+        "chest": (2.3, 12, 12, -32, -10, 0.03, 0.0),
+        "plexus": (2.3, -12, -30, 38, -12, 0.12, 0.0),
+        "ribs": (2.3, 24, 18, -44, -12, 0.12, 0.5),
+        "body": (2.28, -8, -32, 40, -16, 0.62, 0.0),     # fente profonde, comme la ref Pro
     }
     BACK, MID = 0.42, 0.15         # torse en retrait a l'armement / a mi-course (studs)
+
+    def target_h(f, y, xl=0.0):
+        """Point de la face avant du torse de la victime a la hauteur monde y
+        (borne au torse : si l'epaule est trop haute, le point est plus haut
+        que la cible voulue et le corps doit descendre)."""
+        r, p = vw[f]["Torso"]
+        t = (y - p[1] - r[1, 0] * xl - r[1, 2] * -0.55) / max(r[1, 1], 0.3)
+        t = float(np.clip(t, -0.85, 0.85))
+        return p + r @ np.array([xl, t, -0.55])
 
     def presolve(pose):
         """Racine du corps reellement obtenue (fitp resolu sur le rig)."""
@@ -492,21 +506,31 @@ def attacker_keys(vw, rig):
 
     plans = []
     for i, (c, s, kind) in enumerate(HITS):
-        dist, az, wind, yaw, lean, drop = PLAN[kind]
+        dist, az, wind, yaw, lean, low, xl = PLAN[kind]
         o = "L" if s == "R" else "R"
-        tgt = target(c, kind)
-        contact = {"root": ((0.0, 0.0, 0.0), (0, 0, 0)), "pelvis": ((0, -(0.03 + drop), 0), (lean, yaw, 0)),
+        # hauteur du pivot d'epaule dans la posture de contact -> cible a cette
+        # hauteur (bras a -2 a -3 deg, comme les pros)
+        probe = {"root": ((0.0, 0.0, 0.0), (0, 0, 0)), "pelvis": ((0, -low, 0), (lean, yaw, 0)), "chest": (0, 0.15, 0)}
+        solve_pose(rig, probe)
+        y_sh = float(torso_pivot(V.current_parts(rig), s)[1])
+        tgt = target_h(c, y_sh - 0.1, xl)
+        contact = {"root": ((0.0, 0.0, 0.0), (0, 0, 0)), "pelvis": ((0, -low, 0), (lean, yaw, 0)),
                    "chest": (0, 0.15, 0), "fitp": (s, tuple(tgt), dist, az), "look": head(c),
-                   "hands": {s: ("w", tuple(tgt)), o: ("a", (155 if o == "R" else -155, -50, 2.05))}}
+                   "hands": {s: ("w", tuple(tgt)), o: ("a", (155 if o == "R" else -155, -30, 2.2))}}
         croot = presolve(contact)
         # appuis : pied avant (G) sous/juste derriere le bassin au contact, pied
-        # arriere (D) 0,8 derriere ; tournes de la moitie du lacet de contact
-        lx, lz = _pivot(-0.5, 0.12, 0.5 * yaw)
-        rx, rz = _pivot(0.55, 0.8, 0.5 * yaw)
+        # arriere (D) 0,8 derriere ; tournes de la moitie du lacet de contact.
+        # Fente (coup au corps) : appuis larges, pied avant DEVANT le bassin
+        if kind == "body":
+            lx, lz = _pivot(-0.6, -0.7, 0.5 * yaw)
+            rx, rz = _pivot(0.6, 1.3, 0.5 * yaw)
+        else:
+            lx, lz = _pivot(-0.5, 0.12, 0.5 * yaw)
+            rx, rz = _pivot(0.55, 0.8, 0.5 * yaw)
         feet = {"L": ("g", (croot[0] + lx, croot[2] + lz)), "R": ("g", (croot[0] + rx, croot[2] + rz))}
         contact["feet"] = feet
         contact["auto_low"] = True
-        plans.append((c, s, o, kind, tgt, croot, feet, contact, yaw, wind, lean, drop))
+        plans.append((c, s, o, kind, tgt, croot, feet, contact, yaw, wind, lean, low))
 
     def body(root, low, yaw, lean, f, hands, feet, chest=(0, 0.1, 0)):
         return {"root": (tuple(float(x) for x in root), (0, 0, 0)), "pelvis": ((0, -low, 0), (lean, yaw, 0)),
@@ -517,26 +541,45 @@ def attacker_keys(vw, rig):
     add(0, body(back(r0, 0.3), 0.03, 0, -4, 0, GUARD(), feet0))
     add(3, body(back(r0, 0.4), 0.03, 0.5 * plans[0][9], -1, 3, {"L": side("L", 85), "R": GUARD()["R"]}, feet0))
     prev = None
-    for i, (c, s, o, kind, tgt, croot, feet, contact, yaw, wind, lean, drop) in enumerate(plans):
+    for i, (c, s, o, kind, tgt, croot, feet, contact, yaw, wind, lean, low) in enumerate(plans):
+        lunge = kind == "body"
         chamber = {s: side(s, 150, -64, 2.1), o: GUARD()[o]}
+        # fente : le pied avant part en l'air pendant l'armement et se pose
+        # juste avant le contact (pas d'entree, ref Pro 3,75 -> 4,25 s)
+        (_m, (fx1, fz1)) = feet["L"]
         if prev is not None:
-            # le PAS, pendant la recuperation du coup precedent : pied avant
-            # leve a mi-chemin, puis pied arriere qui suit, reposes avant l'armement
             pc, pfeet, proot = prev
-            (_m, (fx0, fz0)), (_m2, (fx1, fz1)) = pfeet["L"], feet["L"]
-            mid_root = 0.5 * (back(proot, 0.3) + back(croot, BACK))
-            add(c - 13, body(mid_root, 0.03, 0.5 * wind, -3, c - 13, {s: side(s, 80), o: GUARD()[o]},
-                             {"L": ("w", (0.5 * (fx0 + fx1), 0.32, 0.5 * (fz0 + fz1))), "R": pfeet["R"]}))
+            (_m, (fx0, fz0)) = pfeet["L"]
             (_m, (bx0, bz0)), (_m2, (bx1, bz1)) = pfeet["R"], feet["R"]
-            add(c - 10, body(back(croot, BACK), 0.03, 0.85 * wind, 2, c - 10, chamber,
-                             {"L": feet["L"], "R": ("w", (0.5 * (bx0 + bx1), 0.5, 0.5 * (bz0 + bz1)))}))
-        # armement : torse au-dessus du pied arriere, TENU
-        add(c - 7, body(back(croot, BACK), 0.03, wind, 3, c - 7, chamber, feet))
-        # la hanche et le torse partent, la main suit en arc (cote puis devant)
-        add(c - 5, body(back(croot, 0.4), 0.03 + 0.3 * drop, 0.7 * wind + 0.3 * yaw, 0.2 * lean, c - 5,
-                        {s: side(s, 80, -62, 2.0), o: GUARD()[o]}, feet))
-        add(c - 3, body(back(croot, MID), 0.03 + 0.5 * drop, 0.35 * wind + 0.65 * yaw, 0.6 * lean, c - 3,
-                        {s: side(s, 20, -36, 2.05), o: side(o, 100, -58, 2.0)}, feet))
+        if lunge:
+            # pied arriere d'abord (pendant la recuperation), puis armement sur
+            # le pied arriere, pied avant leve
+            add(c - 13, body(back(croot, 0.9), 0.1, 0.5 * wind, -2, c - 13, {s: side(s, 80), o: GUARD()[o]},
+                             {"L": pfeet["L"], "R": ("w", (0.5 * (bx0 + bx1), 0.45, 0.5 * (bz0 + bz1)))}))
+            lifted = {"L": ("w", (0.5 * (fx0 + fx1), 0.4, 0.5 * (fz0 + fz1))), "R": feet["R"]}
+            add(c - 9, body(back(croot, 0.95), 0.25, wind, 3, c - 9, chamber,
+                            {"L": ("w", (0.7 * fx0 + 0.3 * fx1, 0.3, 0.7 * fz0 + 0.3 * fz1)), "R": feet["R"]}))
+            add(c - 5, body(back(croot, 0.6), 0.38, 0.7 * wind + 0.3 * yaw, 0.2 * lean, c - 5,
+                            {s: side(s, 80, -40, 2.1), o: GUARD()[o]}, lifted))
+            add(c - 2, body(back(croot, 0.15), 0.5, 0.25 * wind + 0.75 * yaw, 0.7 * lean, c - 2,
+                            {s: side(s, 12, -12, 2.2), o: side(o, 100, -40, 2.1)}, feet))
+        else:
+            if prev is not None:
+                # le PAS, pendant la recuperation du coup precedent : pied avant
+                # leve a mi-chemin, puis pied arriere qui suit, reposes avant l'armement
+                mid_root = 0.5 * (back(proot, 0.3) + back(croot, BACK))
+                add(c - 13, body(mid_root, 0.03, 0.5 * wind, -3, c - 13, {s: side(s, 80), o: GUARD()[o]},
+                                 {"L": ("w", (0.5 * (fx0 + fx1), 0.32, 0.5 * (fz0 + fz1))), "R": pfeet["R"]}))
+                add(c - 10, body(back(croot, BACK), 0.03, 0.85 * wind, 2, c - 10, chamber,
+                                 {"L": feet["L"], "R": ("w", (0.5 * (bx0 + bx1), 0.5, 0.5 * (bz0 + bz1)))}))
+            # armement : torse au-dessus du pied arriere, TENU
+            add(c - 7, body(back(croot, BACK), 0.03, wind, 3, c - 7, chamber, feet))
+            # la hanche et le torse partent, la main suit en arc (cote puis devant),
+            # et finit a L'HORIZONTALE
+            add(c - 5, body(back(croot, 0.4), 0.5 * low, 0.7 * wind + 0.3 * yaw, 0.2 * lean, c - 5,
+                            {s: side(s, 80, -50, 2.05), o: GUARD()[o]}, feet))
+            add(c - 3, body(back(croot, MID), 0.8 * low, 0.35 * wind + 0.65 * yaw, 0.6 * lean, c - 3,
+                            {s: side(s, 20, -14, 2.2), o: side(o, 100, -45, 2.1)}, feet))
         add(c, contact, "LINEAR")
         # poussee : le poing accompagne la victime qui recule, le corps aussi
         t3 = target(c + 3, kind)
@@ -544,15 +587,25 @@ def attacker_keys(vw, rig):
         push[1] = 0.0
         # (le poing suit le CORPS, pas la victime : si elle recule plus loin
         # que la poussee, le bras resterait tendu hors de portee -> epaule haussee)
-        add(c + 3, body(croot + push, 0.03 + drop, 1.1 * yaw, 1.1 * lean, c + 3,
-                        {s: ("w", tuple(tgt + push)), o: contact["hands"][o]}, feet))
+        # et si la victime se plie VERS le poing (plexus), le poing recule
+        # avec sa surface au lieu d'y entrer
+        fist3 = tgt + push
+        surf3 = target_h(c + 3, float(tgt[1]), PLAN[kind][6])
+        if surf3[2] > fist3[2] - 0.02:
+            # ... et le corps recule d'autant : bras a la meme distance de
+            # l'epaule (sinon main trop pres -> l'IK hausse l'epaule)
+            fist3 = surf3 + np.array([0.0, 0.0, 0.04])
+            push = fist3 - tgt
+            push[1] = 0.0
+        add(c + 3, body(croot + push, low, 1.1 * yaw, 1.1 * lean, c + 3,
+                        {s: ("w", tuple(fist3)), o: contact["hands"][o]}, feet))
         # recuperation : torse revient entre les appuis, garde basse ; le bras
         # arriere repasse par le cote
-        add(c + 6, body(back(croot, 0.15), 0.03 + 0.5 * drop, 0.7 * yaw, 0.5 * lean, c + 6,
-                        {s: side(s, 10, -42, 2.1), o: side(o, 90, -62, 2.0)}, feet))
-        add(c + 9, body(back(croot, 0.3), 0.03, 0.35 * yaw, -4, c + 9, GUARD(), feet))
+        add(c + 6, body(back(croot, 0.15), 0.8 * low, 0.7 * yaw, 0.5 * lean, c + 6,
+                        {s: side(s, 10, -35, 2.15), o: side(o, 90, -55, 2.05)}, feet))
+        add(c + 9, body(back(croot, 0.3), max(0.03, 0.5 * low), 0.35 * yaw, -4, c + 9, GUARD(), feet))
         prev = (c, feet, croot)
-    add(108, body(back(plans[-1][5], 0.3), 0.04, -12, -5, 108, GUARD(), plans[-1][6]))
+    add(108, body(back(plans[-1][5], 0.3), 0.3, -12, -5, 108, GUARD(), plans[-1][6]))
 
     # ANTICIPATION 118-146 : fente tres basse, poing arme a la hanche, glisse
     zc = -2.0
