@@ -154,3 +154,23 @@ droite** hors d'équilibre, du pied arrière au poing, torse compris.
    « accroupi » (retour de Milan sur v1-v2).
 3. Garder la règle « M1 sans jambes » pour de futurs M1. Le Poing du Dragon
    est une technique complète, jambes animées.
+
+## 6. A/B « clés éparses » sur notre coup chargé : résultat
+
+- **Variante B** : mêmes poses. Sur f108-170, l'export ne garde que les 12
+  poses clés posées à la main, au lieu de 43 clés cuites, et Roblox relie en
+  Linear. Script : `r6_poing_dragon/scripts/ab_cles_eparses.py` ; sortie :
+  `output/ab_cles_eparses/`.
+- **Mesure** : plateau de vitesse du poing 0,51 → 0,79 ; arrivée au contact
+  0,65 → 1,0 ; contact identique ; sol −0,113.
+- **Vu à l'écran** (caméra cinéma et profil, 109 images chacune ;
+  `captures/verification/2026-09-24-ab-cles-eparses-coup-charge-a-vs-b.png`) :
+  la différence est **presque invisible**. Au départ du coup, nos clés sont
+  déjà espacées de 2 f (146, 148, 150) : la façon de les relier compte peu.
+- **Jugement.** L'export en clés éparses est fidèle à TSB et ne coûte rien.
+  On le garde pour la refonte, mais **ce n'est pas lui qui fera la note** sur
+  ce coup. Le levier est dans les **poses** (§4 ter : croix symétrique, torse
+  vertical). La mesure « plateau » décrit bien TSB, mais son écart visible
+  dépend de l'espacement des clés : c'est une conséquence, pas une cause à
+  corriger seule. On n'a pas demandé à Milan de juger un A/B invisible.
+

@@ -883,7 +883,7 @@
     "coup_droit",
     "finisher"
    ],
-   "confiance_principe": 0.75,
+   "confiance_principe": 0.55,
    "poids_note": 0.5,
    "poids_a_priori": 0.5,
    "etalon_style": "tsb_m1",
@@ -892,7 +892,8 @@
    "sources": [
     "animations TSB officielles (fichier fourni par Milan, 13 animations ; mesures derivees dans corpus/perception_tsb.json) : 3 425 poses sur 3 492 en Linear, 12-18 cles/s sur toutes les animations faites a la main (une pose ~toutes les 4 f a 60 i/s) ; M1 : 8 cles en 0,43 s ; plateau de vitesse du poing 0,92-1,0 (NOUS v1-v6 : 0,51-0,77 : rampe en triangle sur 2-3 images, pointe unique) ; captures/verification/2026-09-24-cerveau-profil-frappe-tsb-vs-nous.png",
     "GGXrd (ArcSys) : 15 poses/s ; « lisser a 60 i/s puis sauter des images = 3D qui rame » ; l'oeil repere la 3D a la fluidite uniforme des courbes",
-    "DevForum GolgiToad : moins de cles, laisser le moteur aller de A a B, rapprocher les cles, c'est un coup"
+    "DevForum GolgiToad : moins de cles, laisser le moteur aller de A a B, rapprocher les cles, c'est un coup",
+    "A/B sur notre coup charge (2026-09-24) : cles eparses -> plateau 0,51->0,79 mais difference PRESQUE INVISIBLE a l'ecran (nos cles de depart deja a 2 f d'ecart) ; la mesure decrit TSB, elle ne suffit pas a elle seule a changer la lecture : le levier est la pose"
    ],
    "quand": "coups (M1, competences) : poses cles choisies a la main, ~toutes les 3-5 f, Linear entre elles",
    "contre_indication": "trajectoires du corps entier (saut, vol, dash) qui restent lisses ; nos exports cuits image par image depuis des courbes Bezier produisent la cloche -> il faut exporter les poses cles, pas le bake"
