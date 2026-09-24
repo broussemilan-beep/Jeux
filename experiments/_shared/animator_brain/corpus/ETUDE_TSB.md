@@ -123,6 +123,25 @@ non versionné) :
 le corps entier qui bascule. C'est une piste de refonte pour notre h4, à
 proposer à Milan, pas une règle.
 
+## 4 ter. Nos poses du coup chargé à la même grille (jugement visuel)
+
+Nos 13 poses clés f108-168 ont été rendues avec le même fil de fer que TSB
+(scratchpad, `nous_charge.png`).
+- **Charge (f121-f144).** Les deux bras sont écartés à l'horizontale de part
+  et d'autre et le torse reste **vertical**. La silhouette est une **croix
+  symétrique**, rigide. Rien n'est comprimé : ni torse enroulé vers le bas,
+  ni tête rentrée, ni poing armé bas derrière le corps.
+- **Contact (f150).** Le torse est encore **vertical** : seul le bras part,
+  le corps ne s'engage pas.
+- **À côté**, TSB (Collateral Ruin, M4, Swift Sweep) : le torse penche
+  (44-97° au 90e centile), les angles sont francs et asymétriques, le corps
+  va dans le coup.
+
+**Lecture.** C'est très probablement la « touche manga » qui manque selon
+Milan sur ce coup. On retrouve deux règles de l'anime (`TUTOS_ANIMATION.md`
+§4) : la **compression en C** pendant la charge, puis l'**extension en une
+droite** hors d'équilibre, du pied arrière au poing, torse compris.
+
 ## 5. Ce que ça change pour nous
 
 1. **Le levier n°1 est notre chaîne d'export, pas nos poses.** Nous
