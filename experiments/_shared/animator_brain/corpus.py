@@ -248,7 +248,43 @@ def timing_profile(world_frames, loop=False, ignore_parts=(), strike=False):
     # VARIATION pendant le clip : un perso accroupi des la frame 0 y passait.
     sag = np.maximum(0.0, 3.0 - tp[:, 1])
     out["affaissement_torse_studs"] = {"max": round(float(sag.max()), 3), "median": round(float(np.median(sag)), 3)}
+    # Ajout du 2026-09-24 (retour de Milan sur la v2 : « les bras sont trop
+    # hauts, il n'est pas en transfert de poids »). Decalage VERTICAL des
+    # epaules (translation du Motor6D, axe haut du torse) : les pros baissent
+    # l'epaule (jusqu'a -1,3 stud sur les M1), jamais ne la montent (max
+    # +0,04) ; un haussement d'epaule se lit comme des bras trop hauts.
+    sh_y = [float(X.joint_transform(a, w)[1][1]) for _t, w in world_frames for a in ("Right Arm", "Left Arm")
+            if a in limbs]
+    if sh_y:
+        out["decalage_epaule_vertical_studs"] = {"haut_max": round(max(sh_y), 3), "bas_max": round(min(sh_y), 3),
+                                                 "median": round(float(np.median(sh_y)), 3)}
+    if strike:
+        out["mecanique_frappe"] = strike_mechanics(clip, punch, fwd)
     return out
+
+
+def strike_mechanics(clip, hand, fwd):
+    """Mecanique du corps au contact (frame ou la main qui frappe est le plus
+    loin devant le torse) :
+    - bras_elevation_deg : angle epaule->poing au-dessus (+) / sous (-) de
+      l'horizontale ;
+    - portee_studs : poing devant le torse ;
+    - transfert_poids_studs : de combien le torse avance PAR RAPPORT AUX
+      PIEDS entre la position la plus reculee (armement) et le contact. Si le
+      pied avance avec le torse, le transfert reste nul : c'est le torse qui
+      doit passer au-dessus du pied avant."""
+    torso = clip.world_pos["Torso"]
+    tipp = clip.tip(hand)
+    reach = np.einsum("ij,ij->i", tipp - torso, fwd)
+    i = int(np.argmax(reach))
+    center = clip.world_pos[hand][i]
+    d = tipp[i] - center
+    elev = float(np.degrees(np.arctan2(d[1], np.hypot(d[0], d[2]))))
+    feet = (clip.tip("Right Leg") + clip.tip("Left Leg")) / 2
+    rel = np.einsum("ij,ij->i", torso - feet, fwd)     # + = torse devant les pieds
+    return {"bras_elevation_deg": round(elev, 1), "portee_studs": round(float(reach[i]), 2),
+            "transfert_poids_studs": round(float(rel[i] - rel[: i + 1].min()), 2),
+            "poing_hauteur_studs": round(float(tipp[i][1]), 2)}
 
 
 def ignored_by_weight(seq, frac=0.9):

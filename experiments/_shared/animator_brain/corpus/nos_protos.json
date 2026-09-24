@@ -282,6 +282,11 @@
    "affaissement_torse_studs": {
     "max": 0.0,
     "median": 0.0
+   },
+   "decalage_epaule_vertical_studs": {
+    "haut_max": 0.0,
+    "bas_max": -0.0,
+    "median": 0.0
    }
   },
   "audit": {
@@ -537,6 +542,11 @@
    "affaissement_torse_studs": {
     "max": 0.0,
     "median": 0.0
+   },
+   "decalage_epaule_vertical_studs": {
+    "haut_max": 0.0,
+    "bas_max": -0.0,
+    "median": 0.0
    }
   },
   "audit": {
@@ -720,6 +730,11 @@
    "affaissement_torse_studs": {
     "max": 0.0,
     "median": 0.0
+   },
+   "decalage_epaule_vertical_studs": {
+    "haut_max": 0.0,
+    "bas_max": -0.0,
+    "median": 0.0
    }
   },
   "audit": {
@@ -876,6 +891,11 @@
    "torse_vitesse_max_studs_s": 6.2,
    "affaissement_torse_studs": {
     "max": 0.0,
+    "median": 0.0
+   },
+   "decalage_epaule_vertical_studs": {
+    "haut_max": 0.0,
+    "bas_max": -0.0,
     "median": 0.0
    }
   },
@@ -1221,6 +1241,11 @@
    "torse_vitesse_max_studs_s": 15.0,
    "affaissement_torse_studs": {
     "max": 0.84,
+    "median": 0.0
+   },
+   "decalage_epaule_vertical_studs": {
+    "haut_max": 0.0,
+    "bas_max": -0.0,
     "median": 0.0
    }
   },

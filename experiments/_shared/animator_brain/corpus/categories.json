@@ -151,6 +151,24 @@
     "max": 0.047,
     "n": 2
    },
+   "timing.decalage_epaule_vertical_studs.bas_max": {
+    "mediane": -0.139,
+    "min": -0.244,
+    "max": -0.033,
+    "n": 2
+   },
+   "timing.decalage_epaule_vertical_studs.haut_max": {
+    "mediane": -0.056,
+    "min": -0.15,
+    "max": 0.037,
+    "n": 2
+   },
+   "timing.decalage_epaule_vertical_studs.median": {
+    "mediane": -0.097,
+    "min": -0.198,
+    "max": 0.005,
+    "n": 2
+   },
    "timing.deplacement_torse_studs.x": {
     "mediane": 0.0,
     "min": 0.0,
@@ -563,6 +581,24 @@
     "mediane": 0.091,
     "min": 0.0,
     "max": 0.382,
+    "n": 4
+   },
+   "timing.decalage_epaule_vertical_studs.bas_max": {
+    "mediane": -0.417,
+    "min": -0.922,
+    "max": -0.385,
+    "n": 4
+   },
+   "timing.decalage_epaule_vertical_studs.haut_max": {
+    "mediane": 0.087,
+    "min": 0.038,
+    "max": 0.839,
+    "n": 4
+   },
+   "timing.decalage_epaule_vertical_studs.median": {
+    "mediane": -0.038,
+    "min": -0.095,
+    "max": 0.124,
     "n": 4
    },
    "timing.deplacement_torse_studs.x": {
@@ -1003,6 +1039,24 @@
     "max": 0.094,
     "n": 4
    },
+   "timing.decalage_epaule_vertical_studs.bas_max": {
+    "mediane": -1.283,
+    "min": -1.326,
+    "max": -1.145,
+    "n": 4
+   },
+   "timing.decalage_epaule_vertical_studs.haut_max": {
+    "mediane": -0.174,
+    "min": -0.233,
+    "max": 0.038,
+    "n": 4
+   },
+   "timing.decalage_epaule_vertical_studs.median": {
+    "mediane": -0.872,
+    "min": -0.916,
+    "max": -0.589,
+    "n": 4
+   },
    "timing.deplacement_torse_studs.x": {
     "mediane": 0.19,
     "min": 0.06,
@@ -1067,6 +1121,30 @@
     "mediane": 68.35,
     "min": 18.3,
     "max": 83.2,
+    "n": 4
+   },
+   "timing.mecanique_frappe.bras_elevation_deg": {
+    "mediane": -3.3,
+    "min": -19.7,
+    "max": 0.1,
+    "n": 4
+   },
+   "timing.mecanique_frappe.poing_hauteur_studs": {
+    "mediane": 3.445,
+    "min": 2.53,
+    "max": 3.59,
+    "n": 4
+   },
+   "timing.mecanique_frappe.portee_studs": {
+    "mediane": 3.05,
+    "min": 2.89,
+    "max": 3.34,
+    "n": 4
+   },
+   "timing.mecanique_frappe.transfert_poids_studs": {
+    "mediane": 0.01,
+    "min": 0.0,
+    "max": 0.74,
     "n": 4
    },
    "timing.membres.Head.amplitude_vs_debut_deg": {
@@ -1386,6 +1464,24 @@
     "max": 0.74,
     "n": 3
    },
+   "timing.decalage_epaule_vertical_studs.bas_max": {
+    "mediane": -0.707,
+    "min": -0.816,
+    "max": -0.121,
+    "n": 3
+   },
+   "timing.decalage_epaule_vertical_studs.haut_max": {
+    "mediane": 0.511,
+    "min": 0.309,
+    "max": 0.744,
+    "n": 3
+   },
+   "timing.decalage_epaule_vertical_studs.median": {
+    "mediane": -0.072,
+    "min": -0.262,
+    "max": 0.098,
+    "n": 3
+   },
    "timing.deplacement_torse_studs.x": {
     "mediane": 0.32,
     "min": 0.06,
@@ -1450,6 +1546,30 @@
     "mediane": 84.3,
     "min": 82.5,
     "max": 84.6,
+    "n": 3
+   },
+   "timing.mecanique_frappe.bras_elevation_deg": {
+    "mediane": -7.5,
+    "min": -42.0,
+    "max": 18.7,
+    "n": 3
+   },
+   "timing.mecanique_frappe.poing_hauteur_studs": {
+    "mediane": 1.7,
+    "min": 1.56,
+    "max": 3.54,
+    "n": 3
+   },
+   "timing.mecanique_frappe.portee_studs": {
+    "mediane": 2.57,
+    "min": 1.8,
+    "max": 2.71,
+    "n": 3
+   },
+   "timing.mecanique_frappe.transfert_poids_studs": {
+    "mediane": 0.84,
+    "min": 0.33,
+    "max": 0.92,
     "n": 3
    },
    "timing.membres.Head.amplitude_vs_debut_deg": {
@@ -1747,6 +1867,24 @@
     "mediane": 0.0,
     "min": 0.0,
     "max": 0.0,
+    "n": 1
+   },
+   "timing.decalage_epaule_vertical_studs.bas_max": {
+    "mediane": -0.244,
+    "min": -0.244,
+    "max": -0.244,
+    "n": 1
+   },
+   "timing.decalage_epaule_vertical_studs.haut_max": {
+    "mediane": -0.15,
+    "min": -0.15,
+    "max": -0.15,
+    "n": 1
+   },
+   "timing.decalage_epaule_vertical_studs.median": {
+    "mediane": -0.198,
+    "min": -0.198,
+    "max": -0.198,
     "n": 1
    },
    "timing.deplacement_torse_studs.x": {
@@ -2075,6 +2213,24 @@
     "mediane": 0.226,
     "min": 0.102,
     "max": 0.351,
+    "n": 2
+   },
+   "timing.decalage_epaule_vertical_studs.bas_max": {
+    "mediane": -0.165,
+    "min": -0.176,
+    "max": -0.155,
+    "n": 2
+   },
+   "timing.decalage_epaule_vertical_studs.haut_max": {
+    "mediane": -0.045,
+    "min": -0.105,
+    "max": 0.015,
+    "n": 2
+   },
+   "timing.decalage_epaule_vertical_studs.median": {
+    "mediane": -0.103,
+    "min": -0.137,
+    "max": -0.068,
     "n": 2
    },
    "timing.deplacement_torse_studs.x": {
@@ -2482,6 +2638,24 @@
     "mediane": 0.0,
     "min": 0.0,
     "max": 0.028,
+    "n": 3
+   },
+   "timing.decalage_epaule_vertical_studs.bas_max": {
+    "mediane": 0.035,
+    "min": 0.03,
+    "max": 0.035,
+    "n": 3
+   },
+   "timing.decalage_epaule_vertical_studs.haut_max": {
+    "mediane": 0.038,
+    "min": 0.038,
+    "max": 0.038,
+    "n": 3
+   },
+   "timing.decalage_epaule_vertical_studs.median": {
+    "mediane": 0.037,
+    "min": 0.036,
+    "max": 0.037,
     "n": 3
    },
    "timing.deplacement_torse_studs.x": {

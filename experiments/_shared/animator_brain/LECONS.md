@@ -74,3 +74,57 @@ mesurée, c'est dit ici.
 Le cerveau sait dire qu'un coup est techniquement propre, pas qu'il frappe
 fort. Les règles 2 et 3 en sont des approximations (escalade, temps d'écran).
 Le verdict final reste la revue de Milan, tracée dans `RETOURS.md`.
+
+## 6. Les épaules ne montent jamais ; on frappe à hauteur de poitrine
+
+- **Retour** : Milan, Poing du Dragon v2 (2026-09-24) : « les bras sont trop
+  hauts ». Note 6,7/10.
+- **Cause mesurée** :
+  - l'IK des bras du rig V2.22 **translate** l'épaule quand la cible de la main
+    est hors de portée de rotation ;
+  - nos cibles de coup visaient le visage (poing à 4,4 studs du sol) et la garde
+    était trop près du corps ;
+  - résultat : l'épaule remonte de 0,69 stud en médiane pendant toute la rafale
+    (jusqu'à 1,29), garde comprise. Le perso a l'air crispé, les bras en l'air.
+- **Ce que font les pros** (nouvelle mesure `decalage_epaule_vertical_studs`,
+  corpus reconstruit) :
+  - M1 : l'épaule **descend**, médiane −0,59 à −0,92 stud, et ne monte jamais
+    au-dessus de +0,04. Baisser l'épaule donne du poids au coup ;
+  - au contact : bras entre −20° et 0° sous l'horizontale, poing à 2,5-3,6 studs
+    (poitrine), mesure `mecanique_frappe` ;
+  - Black Flash (vidéo de Milan) : coups courts dans le corps, à bout portant.
+    La victime se plie, donc même un coup « au visage » arrive bas.
+- **Règles** :
+  - `rules.check_epaules` : décalage max ≤ max pro + 0,05, médiane ≤ médiane
+    pro max + 0,05 ;
+  - `rules.check_bras_au_contact` : élévation ≤ 5° au-dessus du max pro, poing
+    ≤ 3,69 studs.
+- **À la conception** : viser la poitrine de la victime (ou sa tête **une fois
+  pliée**) et garder la cible de la main dans la sphère de rotation de l'épaule
+  (≤ 1,5 stud du pivot). Si l'IK doit tricher, qu'il baisse l'épaule, jamais
+  qu'il la monte.
+
+## 7. Le transfert de poids : le torse passe au-dessus du pied avant
+
+- **Retour** : Milan, v2 : « pas en transfert de poids ».
+- **Cause** : en v2, chaque coup avance le pied avant **avec** le corps. Le torse
+  ne bouge donc que de 0,16 à 0,21 stud par rapport aux pieds (0,39 sur le coup
+  au corps). Ça se lit comme un pas, pas comme une poussée.
+- **Pros** (`mecanique_frappe.transfert_poids_studs`) :
+  - frappe lourde : 0,33 à 0,92, médiane 0,84 ;
+  - M1_1, le seul M1 qui anime le torse : 0,74 ;
+  - les autres M1 laissent le script du jeu pousser le perso.
+- **Règle** : `rules.check_transfert_poids`, ≥ 0,33 sur chaque coup d'une rafale
+  de cinématique (l'animation y porte tout le corps).
+- **À la conception** : armer en reculant le torse au-dessus du pied arrière,
+  puis au contact le projeter devant le pied avant, pieds plantés. Le pas
+  éventuel vient avant l'armement, pas pendant le coup.
+
+## 8. Des règles au vert ne veulent pas dire un corps juste
+
+- **Constat** : la v2 passait 7/7 et Milan a vu en une lecture trois défauts de
+  placement du corps qu'aucune règle ne mesurait.
+- **Leçon** : pour chaque retour, chercher quelle **mesure** manquait. Ici, la
+  hauteur d'épaule, la hauteur du bras au contact et le transfert de poids.
+  L'ajouter au corpus d'abord (ce que font les pros), puis en faire une règle.
+- La note de Milan reste le verdict (voir leçon 5).

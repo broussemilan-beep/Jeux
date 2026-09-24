@@ -186,3 +186,22 @@ stud sans pénétration, sens 9/9, package relu, test Luau OK.
 Elles ne prouvent pas que ça frappe fort, c'est à Milan d'en juger. Le verdict
 calibré des coups légers bouge peu (18-27/40), parce qu'une rafale reste plus
 serrée qu'un M1 isolé.
+
+### Retour de Milan sur la v2 : 6,7/10
+
+« Les bras sont trop hauts, il est accroupi et pas en transfert de poids. »
+Les trois défauts sont **mesurés** : ils sont devenus les règles 6 et 7 du
+cerveau (`../_shared/animator_brain/LECONS.md`). `scripts/check_rules.py`
+passe maintenant 10 règles ; la v2 en passe **7/10** (`output/regles_v2.json`).
+
+| mesure pendant la rafale | v2 | pros (pack) |
+|---|---|---|
+| décalage vertical de l'épaule | médiane +0,69, max +1,29 | médiane −0,59 à −0,92, max +0,04 |
+| poing au contact | 4,4 studs du sol, bras +4-5° | 2,5-3,6, bras −20 à 0° |
+| transfert de poids (torse au-dessus du pied avant) | 0,16-0,39 stud | frappe lourde 0,33-0,92 ; M1_1 0,74 |
+
+Cause : l'IK des bras du V2.22 **translate** l'épaule quand la main vise
+trop haut ou trop près (garde collée, coups au visage). Et chaque coup
+avançait le pied avant avec le corps : au contact, le pied est encore en
+l'air. Preuve, en profil au contact : `scripts/profile_contact.py`, puis
+`captures/verification/2026-09-24-poing-dragon-v2-epaules-vs-pro.png`.

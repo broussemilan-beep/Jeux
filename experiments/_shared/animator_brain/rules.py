@@ -121,6 +121,63 @@ def check_variete_camera(camera_keys, hit_frames, every=2):
             "valeur": worst, "seuil": f"<= {every} frappes par plan", "source": "refs Black Flash ; LECONS.md 2"}
 
 
+def check_epaules(shoulder_y, category="frappe_legere", slack=0.05):
+    """LECON 6 (retour de Milan sur la v2, 2026-09-24, « les bras sont trop
+    hauts ») : les pros BAISSENT l'epaule pour frapper (mediane -0,59 a
+    -0,92 stud sur les M1), ils ne la montent jamais (max +0,04). Un
+    haussement d'epaule se lit comme des bras trop hauts et un corps crispe.
+    shoulder_y = decalages verticaux des Motor6D d'epaule (axe haut du torse),
+    toutes frames et les deux bras."""
+    import numpy as np
+    y = np.asarray(shoulder_y, float)
+    lim = corpus_value(category, "decalage_epaule_vertical_studs.haut_max", "max") + slack
+    lim_med = corpus_value(category, "decalage_epaule_vertical_studs.median", "max") + slack
+    med = float(np.median(y))
+    return {"regle": "epaules jamais haussees", "ok": bool(y.max() <= lim and med <= lim_med),
+            "valeur": {"max": round(float(y.max()), 3), "median": round(med, 3)},
+            "seuil": {"max": round(lim, 3), "median": round(lim_med, 3)},
+            "source": f"corpus {category} (decalage_epaule_vertical_studs) ; retour Milan 2026-09-24 (v2)"}
+
+
+def check_bras_au_contact(elevations_deg, fist_heights=None, category="frappe_legere", slack=5.0):
+    """LECON 6b : au contact d'un coup de poing leger, le bras est a
+    l'horizontale ou en dessous (pro : -20 a 0 deg, poing a hauteur de
+    poitrine 2,5-3,6). Viser la tete bras leve = coup « tape a l'oeil » sans
+    poids. elevations_deg = angle epaule->poing au-dessus de l'horizontale,
+    un par coup."""
+    lim = corpus_value(category, "mecanique_frappe.bras_elevation_deg", "max") + slack
+    ok = max(elevations_deg) <= lim
+    val = {"elevation_deg": [round(e, 1) for e in elevations_deg]}
+    seuil = {"elevation_deg": round(lim, 1)}
+    if fist_heights is not None:
+        # hauteur absolue du poing (sol = 0) : un bras horizontal sur une
+        # epaule haussee reste trop haut -- l'angle seul ne le voit pas
+        lim_h = corpus_value(category, "mecanique_frappe.poing_hauteur_studs", "max") + 0.1
+        ok = ok and max(fist_heights) <= lim_h
+        val["poing_hauteur"] = [round(h, 2) for h in fist_heights]
+        seuil["poing_hauteur"] = round(lim_h, 2)
+    return {"regle": "bras a l'horizontale ou en dessous au contact", "ok": bool(ok),
+            "valeur": val, "seuil": seuil,
+            "source": f"corpus {category} (mecanique_frappe) ; refs Black Flash"}
+
+
+def check_transfert_poids(transfers, category="frappe_lourde", n_power=1):
+    """LECON 7 (retour de Milan sur la v2 : « pas en transfert de poids ») :
+    un coup qui doit peser fait passer le TORSE au-dessus du pied avant entre
+    l'armement et le contact (pro frappe_lourde : 0,33 a 0,92 stud, mediane
+    0,84). Avancer le pied AVEC le torse ne compte pas. Les M1 legers du pack
+    n'animent pas les jambes et laissent le jeu pousser le perso par script ;
+    le seul qui anime le torse (M1_1) transfere 0,74. Dans une cinematique,
+    l'animation porte TOUT le corps : la reference est donc le min de la
+    frappe lourde, exige sur les `n_power` derniers coups (tous, par defaut
+    dans une rafale)."""
+    lim = corpus_value(category, "mecanique_frappe.transfert_poids_studs", "min")
+    power = transfers[-n_power:]
+    return {"regle": "transfert de poids sur les coups de puissance", "ok": bool(min(power) >= lim),
+            "valeur": [round(t, 2) for t in transfers], "seuil": f">= {round(lim, 2)} stud sur les {n_power} derniers",
+            "source": f"corpus {category} (mecanique_frappe.transfert_poids_studs) ; retour Milan 2026-09-24 (v2)"}
+
+
 def report(checks):
     ok = sum(1 for c in checks if c["ok"])
     return {"ok": ok, "total": len(checks), "regles": checks}

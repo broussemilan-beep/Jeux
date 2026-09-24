@@ -189,6 +189,11 @@
    "affaissement_torse_studs": {
     "max": 0.064,
     "median": 0.047
+   },
+   "decalage_epaule_vertical_studs": {
+    "haut_max": 0.037,
+    "bas_max": -0.033,
+    "median": 0.005
    }
   },
   "audit": {
@@ -376,6 +381,11 @@
    "affaissement_torse_studs": {
     "max": 0.426,
     "median": 0.351
+   },
+   "decalage_epaule_vertical_studs": {
+    "haut_max": 0.015,
+    "bas_max": -0.155,
+    "median": -0.068
    }
   },
   "audit": {
@@ -563,6 +573,11 @@
    "affaissement_torse_studs": {
     "max": 0.169,
     "median": 0.102
+   },
+   "decalage_epaule_vertical_studs": {
+    "haut_max": -0.105,
+    "bas_max": -0.176,
+    "median": -0.137
    }
   },
   "audit": {
@@ -736,6 +751,17 @@
    "affaissement_torse_studs": {
     "max": 0.129,
     "median": 0.0
+   },
+   "decalage_epaule_vertical_studs": {
+    "haut_max": 0.038,
+    "bas_max": -1.283,
+    "median": -0.906
+   },
+   "mecanique_frappe": {
+    "bras_elevation_deg": -19.7,
+    "portee_studs": 2.89,
+    "transfert_poids_studs": 0.74,
+    "poing_hauteur_studs": 2.53
    }
   },
   "audit": {
@@ -882,6 +908,17 @@
    "affaissement_torse_studs": {
     "max": 0.218,
     "median": 0.084
+   },
+   "decalage_epaule_vertical_studs": {
+    "haut_max": -0.2,
+    "bas_max": -1.145,
+    "median": -0.838
+   },
+   "mecanique_frappe": {
+    "bras_elevation_deg": -4.0,
+    "portee_studs": 3.34,
+    "transfert_poids_studs": 0.0,
+    "poing_hauteur_studs": 3.44
    }
   },
   "audit": {
@@ -1054,6 +1091,17 @@
    "affaissement_torse_studs": {
     "max": 0.144,
     "median": 0.094
+   },
+   "decalage_epaule_vertical_studs": {
+    "haut_max": -0.233,
+    "bas_max": -1.326,
+    "median": -0.916
+   },
+   "mecanique_frappe": {
+    "bras_elevation_deg": -2.6,
+    "portee_studs": 3.12,
+    "transfert_poids_studs": 0.0,
+    "poing_hauteur_studs": 3.45
    }
   },
   "audit": {
@@ -1200,6 +1248,17 @@
    "affaissement_torse_studs": {
     "max": 0.12,
     "median": 0.035
+   },
+   "decalage_epaule_vertical_studs": {
+    "haut_max": -0.149,
+    "bas_max": -1.283,
+    "median": -0.589
+   },
+   "mecanique_frappe": {
+    "bras_elevation_deg": 0.1,
+    "portee_studs": 2.98,
+    "transfert_poids_studs": 0.02,
+    "poing_hauteur_studs": 3.59
    }
   },
   "audit": {
@@ -1401,6 +1460,11 @@
    "affaissement_torse_studs": {
     "max": 0.72,
     "median": 0.0
+   },
+   "decalage_epaule_vertical_studs": {
+    "haut_max": 0.839,
+    "bas_max": -0.449,
+    "median": 0.124
    }
   },
   "audit": {
@@ -1633,6 +1697,17 @@
    "affaissement_torse_studs": {
     "max": 1.265,
     "median": 0.74
+   },
+   "decalage_epaule_vertical_studs": {
+    "haut_max": 0.511,
+    "bas_max": -0.121,
+    "median": 0.098
+   },
+   "mecanique_frappe": {
+    "bras_elevation_deg": -7.5,
+    "portee_studs": 2.57,
+    "transfert_poids_studs": 0.92,
+    "poing_hauteur_studs": 1.56
    }
   },
   "audit": {
@@ -1827,6 +1902,17 @@
    "affaissement_torse_studs": {
     "max": 1.314,
     "median": 0.569
+   },
+   "decalage_epaule_vertical_studs": {
+    "haut_max": 0.309,
+    "bas_max": -0.816,
+    "median": -0.072
+   },
+   "mecanique_frappe": {
+    "bras_elevation_deg": -42.0,
+    "portee_studs": 1.8,
+    "transfert_poids_studs": 0.84,
+    "poing_hauteur_studs": 1.7
    }
   },
   "audit": {
@@ -2017,6 +2103,11 @@
    "affaissement_torse_studs": {
     "max": 0.756,
     "median": 0.382
+   },
+   "decalage_epaule_vertical_studs": {
+    "haut_max": 0.136,
+    "bas_max": -0.922,
+    "median": 0.019
    }
   },
   "audit": {
@@ -2219,6 +2310,11 @@
    "affaissement_torse_studs": {
     "max": 0.207,
     "median": 0.091
+   },
+   "decalage_epaule_vertical_studs": {
+    "haut_max": 0.038,
+    "bas_max": -0.385,
+    "median": -0.095
    }
   },
   "audit": {
@@ -2421,6 +2517,11 @@
    "affaissement_torse_studs": {
     "max": 0.207,
     "median": 0.091
+   },
+   "decalage_epaule_vertical_studs": {
+    "haut_max": 0.038,
+    "bas_max": -0.385,
+    "median": -0.095
    }
   },
   "audit": {
@@ -2568,6 +2669,17 @@
    "affaissement_torse_studs": {
     "max": 0.719,
     "median": 0.043
+   },
+   "decalage_epaule_vertical_studs": {
+    "haut_max": 0.744,
+    "bas_max": -0.707,
+    "median": -0.262
+   },
+   "mecanique_frappe": {
+    "bras_elevation_deg": 18.7,
+    "portee_studs": 2.71,
+    "transfert_poids_studs": 0.33,
+    "poing_hauteur_studs": 3.54
    }
   },
   "audit": {
@@ -2715,6 +2827,11 @@
    "affaissement_torse_studs": {
     "max": 0.039,
     "median": 0.028
+   },
+   "decalage_epaule_vertical_studs": {
+    "haut_max": 0.038,
+    "bas_max": 0.035,
+    "median": 0.037
    }
   },
   "audit": {
@@ -2851,6 +2968,11 @@
    "affaissement_torse_studs": {
     "max": 0.0,
     "median": 0.0
+   },
+   "decalage_epaule_vertical_studs": {
+    "haut_max": 0.038,
+    "bas_max": 0.03,
+    "median": 0.036
    }
   },
   "audit": {
@@ -3019,6 +3141,11 @@
    "affaissement_torse_studs": {
     "max": 0.0,
     "median": 0.0
+   },
+   "decalage_epaule_vertical_studs": {
+    "haut_max": 0.038,
+    "bas_max": 0.035,
+    "median": 0.037
    }
   },
   "audit": {
@@ -3142,6 +3269,11 @@
    "affaissement_torse_studs": {
     "max": 0.0,
     "median": 0.0
+   },
+   "decalage_epaule_vertical_studs": {
+    "haut_max": -0.15,
+    "bas_max": -0.244,
+    "median": -0.198
    }
   },
   "audit": {
@@ -3280,6 +3412,11 @@
    "affaissement_torse_studs": {
     "max": 0.0,
     "median": 0.0
+   },
+   "decalage_epaule_vertical_studs": {
+    "haut_max": -0.15,
+    "bas_max": -0.244,
+    "median": -0.198
    }
   },
   "audit": {
