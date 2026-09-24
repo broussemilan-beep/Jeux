@@ -14,7 +14,7 @@ Ce qui n'est pas mesurable reste « jugement » (etat manuel de la note),
 et le rapport dit quand la mesure CONTREDIT le jugement manuel.
 
 Sortie : etats_auto.json  {version: {etat, preuve, parties}}.
-Usage : python3 etats.py [pack_pro.rbxm]
+Usage : python3 etats.py [pack_pro.rbxm] [tsb.rbxm]
 """
 import glob
 import json
@@ -69,6 +69,34 @@ def pro_reference(pack=None):
     return json.load(open(PRO))
 
 
+TSB = os.path.join(HERE, "corpus", "perception_tsb.json")
+
+
+def tsb_reference(path=None):
+    """Mesures derivees des animations TSB officielles (fichier fourni par
+    Milan le 2026-09-24, jamais versionne) : profil de frappe des M1,
+    bascule du torse des competences, densite de cles."""
+    if path and os.path.exists(path):
+        from animator_brain import corpus as C
+        ref = {"source": "TSB (animations officielles, fichier de Milan)", "clips": {}}
+        for s in C.load_rbxm_sequences(path):
+            t = np.array([x[0] for x in s["frames"]]) * 60
+            w = [x[1] for x in C.resample_linear(s["frames"])]
+            up = [x["Torso"][0] @ np.array([0, 1.0, 0]) for x in w]
+            tilt = [float(np.degrees(np.arccos(np.clip(u[1], -1, 1)))) for u in up]
+            e = {"cles": len(t), "duree_s": round(float(t[-1] / 60), 2),
+                 "cles_par_s": round(float(len(t) / max(t[-1] / 60, 1e-6)), 1),
+                 "ecart_median_f": round(float(np.median(np.diff(t))), 1) if len(t) > 1 else None,
+                 "bascule_torse_p90": round(float(np.percentile(tilt, 90)), 1)}
+            if s["name"] in ("M1", "M2", "M3", "M4"):
+                h = max(("Right Arm", "Left Arm"), key=lambda h: max((P.tip(x, h) - x["Torso"][1]) @ np.array([0, 0, -1.0]) for x in w))
+                c = P.strike_frame(w, h)
+                e.update({"contact_f": c, "main": h, "profil_frappe": P.profil_frappe(w, c, h), "pose_impact": P.pose_impact(w, c, h)})
+            ref["clips"][s["name"]] = e
+        json.dump(ref, open(TSB, "w"), indent=1, ensure_ascii=False)
+    return json.load(open(TSB)) if os.path.exists(TSB) else None
+
+
 def etalons(pro):
     m1 = {k: v for k, v in pro["clips"].items() if "M1" in k}
     devs = [v["arcs"]["deviation_mediane"] for v in m1.values() if v["arcs"]["deviation_mediane"]]
@@ -93,6 +121,15 @@ def etalons(pro):
         E["torse_detourne_min_deg"] = round(min(x["torse_detourne_deg"] for x in pi) - 10, 1)
         E["bras_libre_max"] = round(max(x["bras_libre"] for x in pi) + 0.2, 2)
         E["translation_bras_min"] = round(min(x["translation_bras"] for x in pi) - 0.2, 2)
+    tsb = tsb_reference()
+    if tsb:
+        m = [v for k, v in tsb["clips"].items() if k.startswith("M") and v.get("profil_frappe")]
+        E["plateau_min"] = round(min(v["profil_frappe"]["plateau"] for v in m) - 0.07, 2)
+        # competences faites a la main (hors M1-M4, hors ultime cinematique sobre, hors victime et cuits image par image)
+        sk = [v["bascule_torse_p90"] for k, v in tsb["clips"].items()
+              if not k.startswith("M") and "Victim" not in k and "Ultimate" not in k]
+        E["bascule_competence_min"] = round(float(np.percentile(sk, 25)), 1)
+        E["doc_tsb"] = "plateau : M1-M4 TSB - 0,07 ; bascule : 1er quartile des competences TSB (p90 de la bascule du torse)"
     return E
 
 
@@ -167,6 +204,25 @@ def etat_version(prod, cfg, version, commit, hyp, E):
         preuve["bras_libre_ramene"] = f"mediane bras libre / bras qui frappe {med['bras_libre']:.2f} (pro <= {E['bras_libre_max']})"
         etat["bras_avant_bras"] = med["translation_bras"] >= E["translation_bras_min"]
         preuve["bras_avant_bras"] = f"mediane translation d'epaule au contact {med['translation_bras']:.2f} stud (pro >= {E['translation_bras_min']})"
+    # TSB : vitesse constante du poing entre deux cles (cles eparses en Linear)
+    if "plateau_min" in E:
+        part = {"R": "Right Arm", "L": "Left Arm"}
+        coups = [(c, part[s_]) for c, s_, _k in sc["hits"]]
+        if sc.get("final_f"):
+            coups.append((sc["final_f"], part[sc.get("final_side", "R")]))
+        pf = [P.profil_frappe(world, c, h) for c, h in coups]
+        pl = [x["plateau"] for x in pf if x]
+    if "plateau_min" in E and pl:
+        etat["frappe_lineaire"] = float(np.median(pl)) >= E["plateau_min"]
+        preuve["frappe_lineaire"] = f"plateau de vitesse du poing (min/max phase rapide) mediane {np.median(pl):.2f} {pl} ; TSB M1-M4 >= {E['plateau_min']}"
+    if "bascule_competence_min" in E:
+        ff = sc.get("final_f")
+        if ff:
+            tilt = [float(np.degrees(np.arccos(np.clip((world[i]["Torso"][0] @ np.array([0, 1.0, 0]))[1], -1, 1))))
+                    for i in range(max(0, ff - 42), min(len(world), ff + 20))]
+            b90 = float(np.percentile(tilt, 90))
+            etat["bascule_competence"] = b90 >= E["bascule_competence_min"]
+            preuve["bascule_competence"] = f"coup final (f{ff - 42}-{ff + 20}) : bascule du torse p90 {b90:.0f} deg ; competences TSB >= {E['bascule_competence_min']}"
     # parties : les memes mesures, partie par partie (pour apprendre de ce que Milan AIME)
     parties = {s: {"arcs": v["deviation_mediane"] is not None and v["deviation_mediane"] >= E["arcs_deviation_min"],
                    "mesures": v} for s, v in seg.items()}
@@ -174,8 +230,9 @@ def etat_version(prod, cfg, version, commit, hyp, E):
             "charge_final": ch, "variete": var}
 
 
-def main(pack=None):
+def main(pack=None, tsb=None):
     hyp = json.load(open(os.path.join(HERE, "hypotheses.json")))
+    tsb_reference(tsb)
     pro = pro_reference(pack)
     E = etalons(pro)
     prods = json.load(open(os.path.join(HERE, "productions.json")))
@@ -200,4 +257,4 @@ def main(pack=None):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1] if len(sys.argv) > 1 else None)
+    main(sys.argv[1] if len(sys.argv) > 1 else None, sys.argv[2] if len(sys.argv) > 2 else None)

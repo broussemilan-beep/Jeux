@@ -11,7 +11,10 @@
   "bras_epaules_max_deg": 38.3,
   "torse_detourne_min_deg": 61.9,
   "bras_libre_max": 0.51,
-  "translation_bras_min": 0.38
+  "translation_bras_min": 0.38,
+  "plateau_min": 0.85,
+  "bascule_competence_min": 43.6,
+  "doc_tsb": "plateau : M1-M4 TSB - 0,07 ; bascule : 1er quartile des competences TSB (p90 de la bascule du torse)"
  },
  "v1": {
   "etat": {
@@ -26,7 +29,8 @@
    "contraste_de_temps": true,
    "ligne_epaules": false,
    "bras_libre_ramene": true,
-   "bras_avant_bras": true
+   "bras_avant_bras": true,
+   "frappe_lineaire": false
   },
   "preuve": {
    "posture_droite": "regles_v1.json : posture droite pendant les coups legers NON",
@@ -40,7 +44,8 @@
    "contraste_de_temps": "contraste d'energie 5.22 ; refs de Milan mediane 4.17",
    "ligne_epaules": "mediane bras/epaules 46 deg (pro <= 38.3), torse detourne 51 deg (pro >= 61.9)",
    "bras_libre_ramene": "mediane bras libre / bras qui frappe -0.20 (pro <= 0.51)",
-   "bras_avant_bras": "mediane translation d'epaule au contact 0.70 stud (pro >= 0.38)"
+   "bras_avant_bras": "mediane translation d'epaule au contact 0.70 stud (pro >= 0.38)",
+   "frappe_lineaire": "plateau de vitesse du poing (min/max phase rapide) mediane 0.62 [0.62, 0.59, 0.62, 0.65, 0.54] ; TSB M1-M4 >= 0.85"
   },
   "parties": {
    "rafale": {
@@ -137,7 +142,8 @@
    "contraste_de_temps": true,
    "ligne_epaules": false,
    "bras_libre_ramene": true,
-   "bras_avant_bras": true
+   "bras_avant_bras": true,
+   "frappe_lineaire": false
   },
   "preuve": {
    "posture_droite": "regles_v2.json : posture droite pendant les coups legers ok",
@@ -153,7 +159,8 @@
    "contraste_de_temps": "contraste d'energie 5.1 ; refs de Milan mediane 4.17",
    "ligne_epaules": "mediane bras/epaules 62 deg (pro <= 38.3), torse detourne 51 deg (pro >= 61.9)",
    "bras_libre_ramene": "mediane bras libre / bras qui frappe -0.11 (pro <= 0.51)",
-   "bras_avant_bras": "mediane translation d'epaule au contact 0.54 stud (pro >= 0.38)"
+   "bras_avant_bras": "mediane translation d'epaule au contact 0.54 stud (pro >= 0.38)",
+   "frappe_lineaire": "plateau de vitesse du poing (min/max phase rapide) mediane 0.56 [0.67, 0.53, 0.56] ; TSB M1-M4 >= 0.85"
   },
   "parties": {
    "rafale": {
@@ -233,7 +240,8 @@
    "variete_coups": false,
    "ligne_epaules": false,
    "bras_libre_ramene": true,
-   "bras_avant_bras": true
+   "bras_avant_bras": true,
+   "frappe_lineaire": false
   },
   "preuve": {
    "posture_droite": "regles_v3.json : posture droite pendant les coups legers ok",
@@ -246,7 +254,8 @@
    "variete_coups": "distance mediane entre formes de coups 0.556 studs ; M1 pro entre eux 2.734",
    "ligne_epaules": "mediane bras/epaules 64 deg (pro <= 38.3), torse detourne 40 deg (pro >= 61.9)",
    "bras_libre_ramene": "mediane bras libre / bras qui frappe -0.26 (pro <= 0.51)",
-   "bras_avant_bras": "mediane translation d'epaule au contact 0.83 stud (pro >= 0.38)"
+   "bras_avant_bras": "mediane translation d'epaule au contact 0.83 stud (pro >= 0.38)",
+   "frappe_lineaire": "plateau de vitesse du poing (min/max phase rapide) mediane 0.52 [0.58, 0.52, 0.51, 0.52] ; TSB M1-M4 >= 0.85"
   },
   "parties": {
    "rafale": {
@@ -331,7 +340,8 @@
    "contraste_de_temps": true,
    "ligne_epaules": false,
    "bras_libre_ramene": true,
-   "bras_avant_bras": true
+   "bras_avant_bras": true,
+   "frappe_lineaire": false
   },
   "preuve": {
    "posture_droite": "regles_v3b.json : posture droite pendant les coups legers ok ; posture droite pendant les coups legers (fente du coup final, standard coup lourd) ok",
@@ -349,7 +359,8 @@
    "contraste_de_temps": "contraste d'energie 4.5 ; refs de Milan mediane 4.17",
    "ligne_epaules": "mediane bras/epaules 60 deg (pro <= 38.3), torse detourne 40 deg (pro >= 61.9)",
    "bras_libre_ramene": "mediane bras libre / bras qui frappe -0.81 (pro <= 0.51)",
-   "bras_avant_bras": "mediane translation d'epaule au contact 0.97 stud (pro >= 0.38)"
+   "bras_avant_bras": "mediane translation d'epaule au contact 0.97 stud (pro >= 0.38)",
+   "frappe_lineaire": "plateau de vitesse du poing (min/max phase rapide) mediane 0.76 [0.75, 0.76, 0.77, 0.53] ; TSB M1-M4 >= 0.85"
   },
   "parties": {
    "rafale": {
@@ -434,7 +445,8 @@
    "contraste_de_temps": true,
    "ligne_epaules": false,
    "bras_libre_ramene": false,
-   "bras_avant_bras": true
+   "bras_avant_bras": true,
+   "frappe_lineaire": false
   },
   "preuve": {
    "posture_droite": "regles_v4.json : posture droite pendant les coups legers ok ; posture droite pendant les coups legers (fente du coup final, standard coup lourd) ok",
@@ -452,7 +464,8 @@
    "contraste_de_temps": "contraste d'energie 4.34 ; refs de Milan mediane 4.17",
    "ligne_epaules": "mediane bras/epaules 59 deg (pro <= 38.3), torse detourne 41 deg (pro >= 61.9)",
    "bras_libre_ramene": "mediane bras libre / bras qui frappe 0.91 (pro <= 0.51)",
-   "bras_avant_bras": "mediane translation d'epaule au contact 0.97 stud (pro >= 0.38)"
+   "bras_avant_bras": "mediane translation d'epaule au contact 0.97 stud (pro >= 0.38)",
+   "frappe_lineaire": "plateau de vitesse du poing (min/max phase rapide) mediane 0.70 [0.77, 0.75, 0.6, 0.64] ; TSB M1-M4 >= 0.85"
   },
   "parties": {
    "rafale": {
@@ -534,7 +547,9 @@
    "variete_coups": false,
    "ligne_epaules": false,
    "bras_libre_ramene": false,
-   "bras_avant_bras": true
+   "bras_avant_bras": true,
+   "frappe_lineaire": false,
+   "bascule_competence": false
   },
   "preuve": {
    "posture_droite": "regles_v5.json : posture droite pendant les coups legers ok ; posture droite pendant les coups legers (fente du coup final, standard coup lourd) ok",
@@ -549,7 +564,9 @@
    "variete_coups": "distance mediane entre formes de coups 1.942 studs ; M1 pro entre eux 2.734",
    "ligne_epaules": "mediane bras/epaules 55 deg (pro <= 38.3), torse detourne 44 deg (pro >= 61.9)",
    "bras_libre_ramene": "mediane bras libre / bras qui frappe 0.89 (pro <= 0.51)",
-   "bras_avant_bras": "mediane translation d'epaule au contact 0.96 stud (pro >= 0.38)"
+   "bras_avant_bras": "mediane translation d'epaule au contact 0.96 stud (pro >= 0.38)",
+   "frappe_lineaire": "plateau de vitesse du poing (min/max phase rapide) mediane 0.64 [0.77, 0.75, 0.6, 0.64, 0.51] ; TSB M1-M4 >= 0.85",
+   "bascule_competence": "coup final (f108-170) : bascule du torse p90 35 deg ; competences TSB >= 43.6"
   },
   "parties": {
    "rafale": {
@@ -631,7 +648,9 @@
    "variete_coups": false,
    "ligne_epaules": false,
    "bras_libre_ramene": false,
-   "bras_avant_bras": true
+   "bras_avant_bras": true,
+   "frappe_lineaire": false,
+   "bascule_competence": false
   },
   "preuve": {
    "posture_droite": "regles_v6.json : posture droite pendant les coups legers ok ; posture droite pendant les coups legers (fente du coup final, standard coup lourd) ok",
@@ -646,7 +665,9 @@
    "variete_coups": "distance mediane entre formes de coups 1.942 studs ; M1 pro entre eux 2.734",
    "ligne_epaules": "mediane bras/epaules 55 deg (pro <= 38.3), torse detourne 44 deg (pro >= 61.9)",
    "bras_libre_ramene": "mediane bras libre / bras qui frappe 0.89 (pro <= 0.51)",
-   "bras_avant_bras": "mediane translation d'epaule au contact 0.96 stud (pro >= 0.38)"
+   "bras_avant_bras": "mediane translation d'epaule au contact 0.96 stud (pro >= 0.38)",
+   "frappe_lineaire": "plateau de vitesse du poing (min/max phase rapide) mediane 0.64 [0.77, 0.75, 0.6, 0.64, 0.51] ; TSB M1-M4 >= 0.85",
+   "bascule_competence": "coup final (f108-170) : bascule du torse p90 35 deg ; competences TSB >= 43.6"
   },
   "parties": {
    "rafale": {

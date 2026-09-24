@@ -725,10 +725,10 @@
     "coup_droit",
     "finisher"
    ],
-   "confiance_principe": 0.8,
+   "confiance_principe": 0.4,
    "poids_note": 0.5,
    "poids_a_priori": 0.5,
-   "etalon_style": "universel",
+   "etalon_style": "pack_m1",
    "categorie": "pose",
    "mesure": "perception: pose_impact (bras_epaules_deg, torse_detourne_deg) contre M1 pro",
    "sources": [
@@ -736,10 +736,11 @@
     "pack pro battleground (4 M1) : bras/epaules 18-28 deg, torse detourne 67-75 deg au contact ; NOUS v6 : 46-72 et 32-48 (captures/verification/2026-09-24-cerveau-ligne-epaules-pro-vs-nous.png)",
     "Motomura (ArcSys) : mettre ou non l'epaule dans le coup change « j'ai mis de la force » / « j'ai frappe leger »",
     "Mattesi FORCE : extension = une seule droite du pied arriere au poing",
-    "DevForum Shift4D : tourner le torse encore plus"
+    "DevForum Shift4D : tourner le torse encore plus",
+    "animations TSB officielles (fichier fourni par Milan, 13 animations ; mesures derivees dans corpus/perception_tsb.json) : les M1 TSB NE le font PAS (bras/epaules 61-78 deg, torse detourne 23-62 deg, bras libre 0,26-0,79) -- plus proches de nous que du pack. Regle ramenee a une hypothese de style « pack », pas une regle TSB."
    ],
    "quand": "direct, cross, coup charge, tout coup droit qui doit peser",
-   "contre_indication": "uppercut et crochet (pro uppercut : 94 deg, normal) ; jab de garde tres rapide ou l'on veut montrer la vitesse plutot que la force"
+   "contre_indication": "uppercut et crochet (pro uppercut : 94 deg, normal) ; jab de garde tres rapide ou l'on veut montrer la vitesse plutot que la force ; M1 style TSB (la cible de Milan) : non observe dans les vrais M1 TSB"
   },
   {
    "id": "bras_libre_ramene",
@@ -749,20 +750,21 @@
     "finisher",
     "rafale"
    ],
-   "confiance_principe": 0.75,
+   "confiance_principe": 0.4,
    "poids_note": 0.5,
    "poids_a_priori": 0.5,
-   "etalon_style": "universel",
+   "etalon_style": "pack_m1",
    "categorie": "pose",
    "mesure": "perception: pose_impact (bras_libre) contre M1 pro",
    "sources": [
     "corpus/TUTOS_ANIMATION.md (recherche 2026-09-24 : DevForum Roblox, 31 sources ; ArcSys GGXrd 4Gamer, Cartwright GDC 2014, Mattesi FORCE ; extraits sakugabooru mesures)",
     "pack pro (4 M1) : produit scalaire des deux bras -0,1 a 0,3 ; NOUS v6 : 0,9 (les deux bras tendus vers l'avant)",
     "anime (Deku, MHA) : bras opposes sur une meme ligne au contact",
-    "DevForum TrulySmoosh : le bras libre garde la tete ou charge le coup suivant"
+    "DevForum TrulySmoosh : le bras libre garde la tete ou charge le coup suivant",
+    "animations TSB officielles (fichier fourni par Milan, 13 animations ; mesures derivees dans corpus/perception_tsb.json) : les M1 TSB NE le font PAS (bras/epaules 61-78 deg, torse detourne 23-62 deg, bras libre 0,26-0,79) -- plus proches de nous que du pack. Regle ramenee a une hypothese de style « pack », pas une regle TSB."
    ],
    "quand": "toute pose de contact",
-   "contre_indication": "coup a deux mains ; garde volontairement ouverte (provocation)"
+   "contre_indication": "coup a deux mains ; garde volontairement ouverte (provocation) ; M1 style TSB (la cible de Milan) : non observe dans les vrais M1 TSB"
   },
   {
    "id": "bras_avant_bras",
@@ -872,6 +874,47 @@
    ],
    "quand": "a essayer en A/B sur un temps fort, jamais partout d'emblee",
    "contre_indication": "Milan juge le rythme bon (v6) : ne pas casser ce qui marche sans A/B ; jamais sur la locomotion ni les trajectoires"
+  },
+  {
+   "id": "frappe_lineaire",
+   "enonce": "Le poing PASSE a pleine vitesse en 1 image et file en palier (vitesse constante 2-3 images) jusqu'au contact : cles eparses (~15/s) en Linear. Pas de rampe d'acceleration lissee en triangle.",
+   "portee": [
+    "coup_leger",
+    "coup_droit",
+    "finisher"
+   ],
+   "confiance_principe": 0.75,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "tsb_m1",
+   "categorie": "animation",
+   "mesure": "perception: profil_frappe (plateau) contre TSB M1-M4",
+   "sources": [
+    "animations TSB officielles (fichier fourni par Milan, 13 animations ; mesures derivees dans corpus/perception_tsb.json) : 3 425 poses sur 3 492 en Linear, 12-18 cles/s sur toutes les animations faites a la main (une pose ~toutes les 4 f a 60 i/s) ; M1 : 8 cles en 0,43 s ; plateau de vitesse du poing 0,92-1,0 (NOUS v1-v6 : 0,51-0,77 : rampe en triangle sur 2-3 images, pointe unique) ; captures/verification/2026-09-24-cerveau-profil-frappe-tsb-vs-nous.png",
+    "GGXrd (ArcSys) : 15 poses/s ; « lisser a 60 i/s puis sauter des images = 3D qui rame » ; l'oeil repere la 3D a la fluidite uniforme des courbes",
+    "DevForum GolgiToad : moins de cles, laisser le moteur aller de A a B, rapprocher les cles, c'est un coup"
+   ],
+   "quand": "coups (M1, competences) : poses cles choisies a la main, ~toutes les 3-5 f, Linear entre elles",
+   "contre_indication": "trajectoires du corps entier (saut, vol, dash) qui restent lisses ; nos exports cuits image par image depuis des courbes Bezier produisent la cloche -> il faut exporter les poses cles, pas le bake"
+  },
+  {
+   "id": "bascule_competence",
+   "enonce": "Sur une competence ou un finisher, le corps entier BASCULE fort (torse penche 45-100 deg : plongeon, vrille, fente couchee) ; seuls les M1 et l'ultime cinematique restent droits.",
+   "portee": [
+    "finisher",
+    "impact"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "tsb_m1",
+   "categorie": "pose",
+   "mesure": "perception: bascule du torse p90 autour du coup final contre competences TSB",
+   "sources": [
+    "animations TSB officielles (fichier fourni par Milan, 13 animations ; mesures derivees dans corpus/perception_tsb.json) : bascule du torse p90 Collateral Ruin 70, Swift Sweep 97, WallCombo 50, Swift Sweep (Fail) 44, M4 32, Stoic Bomb 32 (max 158, plongeon) ; Ultimate1 7 (sobre, la mise en scene fait le travail) ; NOUS : rafale 17, charge + coup 35, aerien 69"
+   ],
+   "quand": "competences et finishers au sol",
+   "contre_indication": "M1 (rester lisible et enchainable) ; ultime cinematique ou la camera et les VFX portent (Ultimate1 TSB : 7 deg) ; ne pas confondre avec s'accroupir (retour Milan v1-v2)"
   }
  ],
  "_styles": {
@@ -881,8 +924,8 @@
  },
  "_regle_d_usage": "Retour de Milan (2026-09-24) : ce qu'on decouvre doit etre bien utilise, pas applique n'importe comment. Une hypothese vraie en animation n'est pas une case a cocher : chacune porte QUAND elle sert et QUAND elle nuit. Le critique juge l'usage au bon moment (hierarchie des temps forts, escalade, contraste), jamais la simple presence.",
  "_calibration": {
-  "a": 0.733,
-  "b": 6.885,
+  "a": 0.739,
+  "b": 6.905,
   "n_notes": 5,
   "doc": "note = b + a * score ; reapprise a chaque reflexion"
  }

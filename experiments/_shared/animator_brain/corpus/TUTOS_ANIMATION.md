@@ -33,7 +33,14 @@ Aucune image protégée n'est commitée.
 à la clé suivante. C'est corrigé partout, avec un garde-fou dans
 `verify_export.py` (`ANGLES_MORTS.md`, §3).
 
-## 2. « L'autre anatomie » : trois critères mesurés sur les coups droits
+> **Correction (même jour, fichier TSB officiel, `ETUDE_TSB.md`).** Les
+> critères ci-dessous viennent du **pack** battleground. Les vrais M1 TSB ne
+> les suivent pas : TSB est plus proche de nous que du pack. L'écart
+> principal mesuré avec TSB est ailleurs : la **forme de la frappe** (clés
+> éparses en Linear, palier de vitesse), et la **bascule du corps** sur les
+> compétences. Le tableau est gardé comme trace.
+
+## 2. « L'autre anatomie » : trois critères mesurés sur les coups droits (étalon pack)
 
 Mesures au contact, comparées aux 4 M1 du pack pro. Le code est
 `perception.pose_impact`, l'état est calculé par `etats.py`. Image de preuve :

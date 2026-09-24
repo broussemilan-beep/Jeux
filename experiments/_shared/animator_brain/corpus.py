@@ -79,6 +79,38 @@ def resolve_world(frames, root=(np.eye(3), np.array([0.0, 3.0, 0.0]))):
     return [(t, X.solve(p, root=root)) for t, p in frames]
 
 
+def resample_linear(frames, fps=60, root=(np.eye(3), np.array([0.0, 3.0, 0.0]))):
+    """Clés ÉPARSES (chaque part n'a de Pose qu'aux clés où elle bouge, comme
+    dans les animations TSB) -> CFrames monde échantillonnées à `fps`, par
+    interpolation LINÉAIRE par part entre ses propres clés (EasingStyle
+    Linear : lerp de la position, slerp de la rotation, comme l'Animator).
+    Avant la 1re clé / après la dernière : tenue. Part jamais posée : identité.
+    Retourne [(t, world)]."""
+    tracks = {}
+    for t, poses in frames:
+        for part, (rt, pt) in poses.items():
+            tracks.setdefault(part, []).append((t, rt, pt))
+    end = frames[-1][0] if frames else 0.0
+    out = []
+    for i in range(int(round(end * fps)) + 1):
+        t = i / fps
+        T = {}
+        for part, ks in tracks.items():
+            j = 0
+            while j + 1 < len(ks) and ks[j + 1][0] <= t:
+                j += 1
+            if j + 1 < len(ks) and ks[j][0] <= t:
+                t0, r0, p0 = ks[j]
+                t1, r1, p1 = ks[j + 1]
+                u = (t - t0) / (t1 - t0) if t1 > t0 else 1.0
+                T[part] = (X._slerp_rot(r0, r1, u), p0 + (p1 - p0) * u)
+            else:
+                k = ks[j] if ks[j][0] <= t else ks[0]
+                T[part] = (k[1], k[2])
+        out.append((t, X.solve(T, root=root)))
+    return out
+
+
 def euler_xyz_deg(r):
     """Inverse de rig_math.euler_xyz_matrix (Rx @ Ry @ Rz, degres)."""
     b = np.arcsin(np.clip(r[0, 2], -1.0, 1.0))

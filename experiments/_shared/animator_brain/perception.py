@@ -235,3 +235,32 @@ def pose_impact(world, c, part):
             "torse_detourne_deg": round(float(np.degrees(np.arccos(cosang))), 1),
             "bras_libre": round(float(arm @ free), 2),
             "translation_bras": round(float(np.linalg.norm(X.joint_transform(part, w)[1])), 2)}
+
+
+def profil_frappe(world, c, part, n=12):
+    """Forme du profil de vitesse du poing jusqu'au contact (fichier TSB
+    officiel, 2026-09-24). TSB M1-M4 : lente derive (~15-20 studs/s) puis le
+    poing PASSE a pleine vitesse en 1 image et y reste en palier 2-3 images
+    (cles eparses en Linear). Nous v1-v6 : rampe en triangle sur 2-3 images,
+    pointe unique (courbes Bezier cuites image par image).
+    Le contact est pris a la 1re image ou le poing atteint 97 % de son
+    extension vers l'avant (sinon on tombe 1 image trop tard, sur une derive).
+    - plateau : vitesse mini / maxi pendant la phase rapide (>= 50 % de la
+      pointe) ; 1 = vitesse constante, rectangle.
+    - arrivee : vitesse de la derniere image avant le contact / pointe."""
+    lo = max(0, c - n)
+    fwd = np.array([0.0, 0.0, -1.0])
+    ext = np.array([(tip(world[i], part) - world[i]["Torso"][1]) @ (world[i]["Torso"][0] @ fwd) for i in range(lo, c + 1)])
+    c2 = lo + int(np.argmax(ext >= ext.min() + 0.97 * (ext.max() - ext.min())))
+    pts = np.array([tip(world[i], part) for i in range(lo, c2 + 1)])
+    v = np.linalg.norm(np.diff(pts, axis=0), axis=1) * 60.0
+    if len(v) < 2 or v.max() <= 0:
+        return None
+    pk = float(v.max())
+    j = len(v) - 1
+    while j > 0 and v[j - 1] >= 0.5 * pk:
+        j -= 1
+    fast = v[j:]
+    fast = fast[fast >= 0.5 * pk] if (fast >= 0.5 * pk).any() else fast
+    return {"plateau": round(float(fast.min() / fast.max()), 2), "arrivee": round(float(v[-1] / pk), 2),
+            "phase_rapide_f": int(len(v) - j), "pointe": round(pk, 1), "contact_f": c2}
