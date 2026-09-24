@@ -1,0 +1,437 @@
+<title>M1 Direct du droit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    color-scheme: dark;
+    --ground: #14161b;
+    --panel: #1c2028;
+    --line: #2d3340;
+    --text: #e4e8ef;
+    --muted: #8c94a4;
+    --attack: #4d86e8;
+    --impact: #ffb547;
+    --hold: #3b4252;
+    --display: "Chakra Petch", "Segoe UI", system-ui, sans-serif;
+    --body: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  }
+  html, body { background: var(--ground); color: var(--text); }
+  body { font-family: var(--body); font-size: 15px; line-height: 1.5; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding-inline: 16px; padding-block: 20px 32px; display: grid; gap: 14px; }
+  header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 18px; }
+  h1 { font-family: var(--display); font-weight: 700; font-size: clamp(22px, 3.2vw, 30px); letter-spacing: 0.02em; margin: 0; text-wrap: balance; }
+  h1 span { color: var(--attack); }
+  .sub { color: var(--muted); font-size: 13.5px; margin: 0; }
+  .stage { position: relative; width: 100%; aspect-ratio: 16 / 10; max-height: 68vh; background: #0f1115; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; touch-action: none; }
+  .stage canvas { display: block; width: 100%; height: 100%; cursor: grab; }
+  .stage canvas:active { cursor: grabbing; }
+  .hud { position: absolute; left: 12px; top: 10px; font-family: var(--mono); font-size: 12.5px; color: var(--text); background: rgba(15, 17, 21, 0.72); padding: 6px 9px; border-radius: 6px; pointer-events: none; font-variant-numeric: tabular-nums; }
+  .hud .phase { font-family: var(--display); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+  .hud .hit { color: var(--impact); }
+  .hint { position: absolute; right: 12px; bottom: 10px; font-size: 12px; color: var(--muted); background: rgba(15, 17, 21, 0.6); padding: 3px 8px; border-radius: 5px; pointer-events: none; }
+  .transport { display: grid; gap: 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+  .group { display: flex; align-items: center; gap: 6px; }
+  .label { font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  button { font-family: var(--body); font-size: 13.5px; color: var(--text); background: #262b35; border: 1px solid var(--line); border-radius: 7px; padding: 6px 11px; cursor: pointer; }
+  button:hover { border-color: #465063; }
+  button:focus-visible, input:focus-visible { outline: 2px solid var(--attack); outline-offset: 2px; }
+  button[aria-pressed="true"] { background: var(--attack); border-color: var(--attack); color: #0b1220; font-weight: 500; }
+  #play { min-width: 92px; font-weight: 500; }
+  .timeline { position: relative; height: 44px; }
+  .bands { position: absolute; inset: 0 0 20px 0; display: flex; border-radius: 5px; overflow: hidden; }
+  .band { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #cfd5df; white-space: nowrap; overflow: hidden; }
+  .band.armement { background: #2b3a57; }
+  .band.coup { background: #3f5b93; }
+  .band.hitstop { background: repeating-linear-gradient(135deg, #5a4520 0 4px, #3a2e19 4px 8px); color: var(--impact); }
+  .band.tenue { background: var(--hold); }
+  .band.fin { background: #232833; }
+  .marks { position: absolute; left: 0; right: 0; bottom: 0; height: 20px; }
+  .mark { position: absolute; bottom: 0; transform: translateX(-50%); font-family: var(--mono); font-size: 10.5px; color: var(--muted); white-space: nowrap; }
+  .mark::before { content: ""; position: absolute; left: 50%; bottom: 14px; width: 1px; height: 30px; background: currentColor; opacity: 0.7; }
+  .mark.hitmark { color: var(--impact); }
+  #scrub { position: absolute; inset: 0 0 20px 0; width: 100%; margin: 0; opacity: 0; cursor: pointer; }
+  .head { position: absolute; top: -3px; bottom: 17px; width: 2px; background: #fff; box-shadow: 0 0 6px rgba(255,255,255,0.6); pointer-events: none; }
+  .notes { display: grid; gap: 6px; color: var(--muted); font-size: 13.5px; max-width: 75ch; }
+  .notes p { margin: 0; }
+  .notes b { color: var(--text); font-weight: 500; }
+  .legend { display: inline-flex; align-items: center; gap: 6px; }
+  .sw { width: 11px; height: 11px; border-radius: 2px; display: inline-block; }
+  @media (max-width: 560px) { .hint { display: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>M1 <span>Direct du droit</span></h1>
+    <p class="sub">Rig R6 · 60 fps · attaquant 0,65 s · réaction 0,22 s · données des fichiers .rbxmx exportés</p>
+  </header>
+
+  <div class="stage" id="stage">
+    <canvas id="view" aria-label="Scène 3D : l'attaquant frappe la victime"></canvas>
+    <div class="hud" id="hud"></div>
+    <div class="hint">glisser : tourner · molette / pincer : zoom</div>
+  </div>
+
+  <div class="transport">
+    <div class="row">
+      <button id="play" type="button">Pause</button>
+      <div class="group">
+        <button id="prev" type="button" aria-label="Frame précédente">◀ 1 f</button>
+        <button id="next" type="button" aria-label="Frame suivante">1 f ▶</button>
+      </div>
+      <div class="group" role="group" aria-label="Vitesse">
+        <span class="label">Vitesse</span>
+        <button type="button" class="speed" data-speed="1" aria-pressed="true">1×</button>
+        <button type="button" class="speed" data-speed="0.5" aria-pressed="false">0,5×</button>
+        <button type="button" class="speed" data-speed="0.25" aria-pressed="false">0,25×</button>
+        <button type="button" class="speed" data-speed="0.1" aria-pressed="false">0,1×</button>
+      </div>
+    </div>
+    <div class="timeline" id="timeline">
+      <div class="bands" id="bands"></div>
+      <div class="marks" id="marks"></div>
+      <input id="scrub" type="range" min="0" max="1000" value="0" aria-label="Position dans le clip">
+      <div class="head" id="playhead"></div>
+    </div>
+    <div class="row">
+      <div class="group" role="group" aria-label="Caméra">
+        <span class="label">Caméra</span>
+        <button type="button" class="cam" data-cam="jeu" aria-pressed="true">Jeu</button>
+        <button type="button" class="cam" data-cam="profil" aria-pressed="false">Profil</button>
+        <button type="button" class="cam" data-cam="face" aria-pressed="false">Trois-quarts avant</button>
+      </div>
+      <div class="group" role="group" aria-label="Options">
+        <span class="label">Afficher</span>
+        <button type="button" id="optFx" aria-pressed="true">Effets</button>
+        <button type="button" id="optStop" aria-pressed="true">Hitstop</button>
+        <button type="button" id="optAxes" aria-pressed="true">Sens</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <p><span class="legend"><span class="sw" style="background: var(--attack)"></span><b>Flèche bleue</b></span> au sol : l'avant de l'attaquant, −Z comme dans Roblox. Le coup part dans ce sens ; les étincelles, l'onde de choc et le recul de la victime aussi.</p>
+    <p>Les poses viennent des deux fichiers exportés, relus par l'équation du moteur Roblox, avec la victime placée comme le fait le module : 3,90 studs devant l'attaquant, tournée vers lui. Hitstop, effets, recul et secousse reprennent les réglages de <b>M1.CONFIG</b>. Les particules sont une approximation de leur rendu dans Roblox.</p>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function () {
+  const D = {"fps":60,"att":[{"Torso":[0.0,3.0,0.0,0.0,0.0,0.0,1.0],"Head":[-0.0062,4.4902,-0.0982,-0.09874,0.00068,0.0062,0.99509],"Left Arm":[-1.5,3.0,-0.0006,0.0,-0.0,-0.0,1.0],"Left Leg":[-0.5,1.0,-0.0001,-0.0,-0.0,-0.0,1.0],"Right Arm":[1.5,3.0,0.0,0.0,0.0,0.0,1.0],"Right Leg":[0.5,1.0,-0.0001,3e-05,0.0,-0.0,1.0]},{"Torso":[-0.0004,2.9914,0.0047,-0.00734,-0.10732,0.00106,0.9942],"Head":[-0.0072,4.4817,-0.1075,-0.09793,0.00055,0.00618,0.99517],"Left Arm":[-1.4979,3.3185,-0.3646,0.04702,-0.10734,0.01879,0.99293],"Left Leg":[-0.4878,0.9898,-0.0724,-0.00734,-0.10732,0.00106,0.9942],"Right Arm":[1.525,3.5275,0.3499,0.09681,-0.13933,0.07937,0.9823],"Right Leg":[0.4891,0.9935,0.141,-0.00731,-0.10732,0.00106,0.9942]},{"Torso":[0.0066,2.9734,0.0173,-0.02103,-0.32847,0.00304,0.94428],"Head":[0.0081,4.4633,-0.1199,-0.09596,0.00255,0.00638,0.99536],"Left Arm":[-1.0888,3.8211,-0.9176,0.20161,-0.373,-0.01379,0.90556],"Left Leg":[-0.4016,0.9655,-0.2094,-0.02103,-0.32847,0.00304,0.94428],"Right Arm":[1.1631,4.1374,0.8443,0.1413,-0.21949,0.48276,0.83594],"Right Leg":[0.3827,0.985,0.4108,-0.021,-0.32847,0.00305,0.94428]},{"Torso":[0.0172,2.9587,0.037,-0.02787,-0.50059,0.00403,0.86522],"Head":[0.031,4.4483,-0.1086,-0.09381,0.00554,0.00666,0.99555],"Left Arm":[-0.625,3.9786,-1.1632,0.33132,-0.56053,-0.03062,0.75835],"Left Leg":[-0.274,0.9444,-0.2915,-0.02787,-0.50059,0.00403,0.86522],"Right Arm":[1.0656,4.3059,1.1437,-0.00031,-0.25241,0.705,0.66277],"Right Leg":[0.2248,0.9793,0.5745,-0.02785,-0.50059,0.00404,0.86523]},{"Torso":[0.0222,2.9517,0.0569,-0.02656,-0.59189,0.00278,0.80557],"Head":[0.0417,4.4417,-0.0811,-0.09233,0.0069,0.00678,0.99568],"Left Arm":[-0.3649,3.9544,-1.2827,0.3366,-0.61969,-0.016,0.70882],"Left Leg":[-0.1813,0.9366,-0.3277,-0.02656,-0.59189,0.00278,0.80557],"Right Arm":[0.9375,4.2929,1.3507,-0.06378,-0.29175,0.73496,0.60881],"Right Leg":[0.118,0.9725,0.6258,-0.02654,-0.59189,0.0028,0.80557]},{"Torso":[0.0257,2.9472,0.0768,-0.02337,-0.65556,-0.0004,0.75478],"Head":[0.0494,4.4378,-0.0486,-0.09108,0.00783,0.00686,0.99579],"Left Arm":[-0.1768,3.9362,-1.3301,0.33464,-0.64694,-0.01795,0.68495],"Left Leg":[-0.107,0.9344,-0.3485,-0.02337,-0.65556,-0.0004,0.75478],"Right Arm":[0.7957,4.2806,1.5035,-0.11531,-0.32228,0.7482,0.56837],"Right Leg":[0.0336,0.9644,0.6412,-0.02335,-0.65556,-0.00038,0.75478]},{"Torso":[0.0276,2.9446,0.0954,-0.01915,-0.69865,-0.00471,0.71519],"Head":[0.0535,4.4357,-0.015,-0.09005,0.00828,0.00689,0.99588],"Left Arm":[-0.0605,3.9187,-1.3496,0.33139,-0.65216,-0.03151,0.68109],"Left Leg":[-0.0513,0.9362,-0.3627,-0.01916,-0.69865,-0.00471,0.71519],"Right Arm":[0.652,4.2793,1.591,-0.14836,-0.34389,0.74815,0.54773],"Right Leg":[-0.0275,0.9562,0.6368,-0.01913,-0.69865,-0.00469,0.71519]},{"Torso":[0.0281,2.9431,0.1116,-0.01464,-0.72663,-0.00943,0.6868],"Head":[0.0547,4.4345,0.0164,-0.0892,0.00838,0.0069,0.99596],"Left Arm":[-0.0035,3.8988,-1.3618,0.33048,-0.64214,-0.05183,0.68975],"Left Leg":[-0.0121,0.9402,-0.3748,-0.01464,-0.72663,-0.00943,0.6868],"Right Arm":[0.5231,4.2918,1.6111,-0.15899,-0.35591,0.74008,0.54802],"Right Leg":[-0.0683,0.9485,0.6236,-0.01462,-0.72663,-0.00941,0.6868]},{"Torso":[0.028,2.9421,0.1244,-0.01051,-0.74342,-0.0138,0.6686],"Head":[0.0545,4.4336,0.0428,-0.0885,0.00829,0.00689,0.99602],"Left Arm":[0.009,3.8782,-1.3739,0.33213,-0.62324,-0.07376,0.70414],"Left Leg":[0.0128,0.9447,-0.3857,-0.01051,-0.74342,-0.0138,0.6686],"Right Arm":[0.426,4.3146,1.5709,-0.14443,-0.35413,0.73013,0.56625],"Right Leg":[-0.0929,0.9419,0.6087,-0.01049,-0.74342,-0.01378,0.6686]},{"Torso":[0.0277,2.941,0.1329,-0.00748,-0.75187,-0.01705,0.65905],"Head":[0.0539,4.4325,0.0611,-0.08797,0.00817,0.00687,0.99607],"Left Arm":[-0.0074,3.8603,-1.3827,0.33509,-0.60139,-0.09342,0.71925],"Left Leg":[0.026,0.948,-0.3943,-0.00748,-0.75187,-0.01705,0.65905],"Right Arm":[0.3749,4.3381,1.4867,-0.09869,-0.33096,0.72441,0.59662],"Right Leg":[-0.1052,0.9368,0.597,-0.00746,-0.75187,-0.01703,0.65905]},{"Torso":[0.0276,2.9394,0.1359,-0.0063,-0.75423,-0.01832,0.65632],"Head":[0.0536,4.4309,0.0681,-0.08763,0.00812,0.00686,0.9961],"Left Arm":[-0.0371,3.8511,-1.3838,0.33643,-0.5831,-0.1061,0.73181],"Left Leg":[0.0298,0.9482,-0.3979,-0.0063,-0.75423,-0.01832,0.65632],"Right Arm":[0.3893,4.3458,1.3905,-0.00207,-0.28023,0.72602,0.62798],"Right Leg":[-0.1086,0.9336,0.5923,-0.00628,-0.75423,-0.0183,0.65632]},{"Torso":[0.0394,2.9363,0.1107,-0.01575,-0.71727,-0.01816,0.69638],"Head":[0.0791,4.4274,0.0272,-0.08807,0.01144,0.00716,0.99602],"Left Arm":[-0.2146,3.9177,-1.2789,0.30382,-0.53939,-0.10904,0.77773],"Left Leg":[-0.0415,0.94,-0.3973,-0.01575,-0.71727,-0.01816,0.69638],"Right Arm":[0.6815,4.2573,1.2336,0.28703,-0.17915,0.66587,0.66494],"Right Leg":[-0.0711,0.9373,0.6023,-0.01573,-0.71727,-0.01814,0.69638]},{"Torso":[0.0618,2.9303,0.0404,-0.03842,-0.61835,-0.01758,0.78477],"Head":[0.1275,4.4186,-0.0871,-0.08951,0.01809,0.00777,0.99579],"Left Arm":[-0.4624,4.0555,-0.9728,0.2431,-0.41597,-0.12396,0.86747],"Left Leg":[-0.2057,0.9274,-0.3684,-0.03843,-0.61835,-0.01759,0.78477],"Right Arm":[1.2775,3.9703,0.5931,0.62416,-0.10008,0.39596,0.66605],"Right Leg":[0.029,0.9474,0.6034,-0.0384,-0.61835,-0.01757,0.78477]},{"Torso":[0.0756,2.9198,-0.0647,-0.0664,-0.47462,-0.01647,0.87753],"Head":[0.1572,4.402,-0.2563,-0.09138,0.02297,0.00825,0.99552],"Left Arm":[-0.5631,4.2051,-0.6253,0.18239,-0.17146,-0.1434,0.95748],"Left Leg":[-0.3827,0.9215,-0.2805,-0.0664,-0.47462,-0.01647,0.87753],"Right Arm":[1.301,3.7003,-0.5129,0.7018,-0.06661,0.16702,0.68931],"Right Leg":[0.1663,0.9556,0.5547,-0.06637,-0.47462,-0.01646,0.87753]},{"Torso":[0.07,2.905,-0.1901,-0.09446,-0.30075,-0.01487,0.9489],"Head":[0.1447,4.3779,-0.453,-0.09322,0.02244,0.00824,0.99536],"Left Arm":[-0.4704,4.2113,-0.3522,0.18244,0.1874,-0.24714,0.93301],"Left Leg":[-0.5094,0.9272,-0.1363,-0.09446,-0.30075,-0.01487,0.9489],"Right Arm":[0.8135,3.5298,-1.3042,0.69492,-0.01396,0.04667,0.71743],"Right Leg":[0.3092,0.9558,0.4372,-0.09443,-0.30075,-0.01487,0.9489]},{"Torso":[0.032,2.8887,-0.3148,-0.11628,-0.09132,-0.00892,0.98897],"Head":[0.0626,4.3524,-0.6375,-0.09487,0.01116,0.0072,0.9954],"Left Arm":[-0.5804,4.0754,-0.1708,0.09772,0.4438,-0.39135,0.80021],"Left Leg":[-0.5373,0.9413,0.0505,-0.11628,-0.09132,-0.00892,0.98897],"Right Arm":[0.4733,3.4599,-1.6527,0.67892,0.14931,-0.08382,0.71397],"Right Leg":[0.4458,0.9448,0.2332,-0.11625,-0.09132,-0.00892,0.98897]},{"Torso":[-0.027,2.8772,-0.4026,-0.12599,0.11679,0.00172,0.98513],"Head":[-0.0643,4.3362,-0.7459,-0.09578,-0.0085,0.00532,0.99535],"Left Arm":[-0.7458,3.9558,0.3284,-0.02996,0.59089,-0.44087,0.67497],"Left Leg":[-0.4477,0.9537,0.2082,-0.126,0.11679,0.00172,0.98513],"Right Arm":[0.4241,3.5172,-1.9157,0.64713,0.35199,-0.06636,0.67299],"Right Leg":[0.525,0.9276,-0.0223,-0.12597,0.11679,0.00172,0.98513]},{"Torso":[-0.0718,2.873,-0.4464,-0.12768,0.25973,0.01097,0.95714],"Head":[-0.1607,4.3309,-0.7807,-0.09599,-0.02396,0.00383,0.99509],"Left Arm":[-0.7404,3.8202,0.7253,-0.14816,0.6427,-0.46685,0.58909],"Left Leg":[-0.3296,0.9613,0.281,-0.12768,0.25973,0.01097,0.95714],"Right Arm":[0.3983,3.4163,-2.4009,0.61733,0.35812,0.31515,0.62557],"Right Leg":[0.5352,0.916,-0.219,-0.12765,0.25973,0.01096,0.95714]},{"Torso":[-0.0937,2.872,-0.4627,-0.12952,0.32199,0.01627,0.9377],"Head":[-0.2077,4.3287,-0.7906,-0.0959,-0.03154,0.0031,0.99489],"Left Arm":[-0.7852,3.7737,0.8461,-0.19171,0.62905,-0.4571,0.59884],"Left Leg":[-0.262,0.9666,0.3062,-0.12953,0.32199,0.01627,0.9377],"Right Arm":[0.3774,3.4187,-2.491,0.59151,0.37825,0.36602,0.61079],"Right Leg":[0.5301,0.9137,-0.3019,-0.1295,0.32199,0.01626,0.9377]},{"Torso":[-0.1151,2.8697,-0.4689,-0.1336,0.35884,0.02385,0.92348],"Head":[-0.2537,4.3238,-0.7933,-0.09517,-0.03891,0.00242,0.9947],"Left Arm":[-0.8809,3.7744,0.8462,-0.1919,0.59913,-0.41947,0.65442],"Left Leg":[-0.206,0.9693,0.3249,-0.1336,0.35884,0.02385,0.92348],"Right Arm":[0.3343,3.4061,-2.5375,0.57432,0.39127,0.3886,0.60502],"Right Leg":[0.5354,0.9174,-0.3442,-0.13358,0.35884,0.02384,0.92348]},{"Torso":[-0.1481,2.8665,-0.4714,-0.13766,0.4091,0.03738,0.90127],"Head":[-0.3248,4.3171,-0.7822,-0.09367,-0.05003,0.00143,0.99434],"Left Arm":[-0.9429,3.7809,0.8474,-0.18576,0.57756,-0.37635,0.7002],"Left Leg":[-0.1193,0.9705,0.3375,-0.13767,0.4091,0.03738,0.90127],"Right Arm":[0.3233,3.4009,-2.5815,0.54058,0.39729,0.43296,0.60206],"Right Leg":[0.5431,0.9253,-0.4102,-0.13764,0.4091,0.03737,0.90128]},{"Torso":[-0.1672,2.864,-0.4732,-0.14091,0.4369,0.04518,0.88726],"Head":[-0.3662,4.3116,-0.7758,-0.09256,-0.05645,0.00089,0.99411],"Left Arm":[-0.9834,3.7829,0.8417,-0.17818,0.5614,-0.3561,0.72545],"Left Leg":[-0.0677,0.973,0.3419,-0.14091,0.4369,0.04519,0.88726],"Right Arm":[0.2825,3.4007,-2.6044,0.52881,0.40237,0.44842,0.59782],"Right Leg":[0.5464,0.9301,-0.4461,-0.14089,0.4369,0.04517,0.88726]},{"Torso":[-0.1688,2.8628,-0.4771,-0.14355,0.43631,0.04509,0.88713],"Head":[-0.3697,4.3089,-0.7844,-0.0924,-0.05715,0.00084,0.99408],"Left Arm":[-1.0219,3.7815,0.8157,-0.17115,0.54725,-0.35012,0.7407],"Left Leg":[-0.066,0.9759,0.3471,-0.14355,0.43631,0.04509,0.88713],"Right Arm":[0.3538,3.3936,-2.6009,0.51282,0.39236,0.46544,0.60534],"Right Leg":[0.5492,0.9307,-0.44,-0.14352,0.43631,0.04508,0.88713]},{"Torso":[-0.1696,2.8619,-0.4803,-0.14545,0.43497,0.04486,0.88749],"Head":[-0.3712,4.307,-0.7912,-0.0923,-0.05753,0.00081,0.99407],"Left Arm":[-1.0535,3.7807,0.7906,-0.16407,0.53506,-0.34415,0.75389],"Left Leg":[-0.0661,0.978,0.3506,-0.14545,0.43497,0.04486,0.88749],"Right Arm":[0.4786,3.367,-2.5786,0.48321,0.37406,0.48781,0.6234],"Right Leg":[0.5514,0.9311,-0.4346,-0.14542,0.43497,0.04485,0.88749]},{"Torso":[-0.1696,2.8613,-0.4827,-0.14675,0.43298,0.04452,0.88826],"Head":[-0.3712,4.3058,-0.7967,-0.09227,-0.05763,0.0008,0.99406],"Left Arm":[-1.0789,3.7811,0.7663,-0.15694,0.52466,-0.3379,0.76545],"Left Leg":[-0.0678,0.9794,0.3527,-0.14675,0.43298,0.04452,0.88826],"Right Arm":[0.6516,3.3226,-2.5237,0.43985,0.34573,0.51317,0.65089],"Right Leg":[0.5532,0.9314,-0.4296,-0.14673,0.43298,0.04451,0.88827]},{"Torso":[-0.169,2.861,-0.4847,-0.14759,0.43039,0.0441,0.8894],"Head":[-0.37,4.305,-0.8011,-0.09228,-0.05752,0.00081,0.99407],"Left Arm":[-1.099,3.7826,0.7424,-0.14998,0.51586,-0.33138,0.77561],"Left Leg":[-0.0709,0.9802,0.3537,-0.14759,0.43039,0.0441,0.8894],"Right Arm":[0.8583,3.2636,-2.4204,0.38369,0.30578,0.53825,0.68525],"Right Leg":[0.5547,0.9315,-0.4249,-0.14757,0.43039,0.04409,0.88941]},{"Torso":[-0.168,2.8608,-0.4864,-0.14809,0.42729,0.04363,0.89083],"Head":[-0.3679,4.3046,-0.8048,-0.09234,-0.05725,0.00083,0.99408],"Left Arm":[-1.1144,3.7853,0.7188,-0.14331,0.50846,-0.32456,0.78459],"Left Leg":[-0.075,0.9805,0.3538,-0.1481,0.42729,0.04363,0.89083],"Right Arm":[1.0713,3.1975,-2.2606,0.31857,0.25434,0.55935,0.72177],"Right Leg":[0.556,0.9317,-0.4204,-0.14807,0.42729,0.04362,0.89084]},{"Torso":[-0.1668,2.8607,-0.4878,-0.14839,0.42376,0.04313,0.89249],"Head":[-0.3651,4.3044,-0.8081,-0.09241,-0.05687,0.00086,0.99409],"Left Arm":[-1.126,3.7891,0.6952,-0.13707,0.50227,-0.31748,0.79255],"Left Leg":[-0.0799,0.9806,0.3534,-0.1484,0.42376,0.04313,0.89249],"Right Arm":[1.2574,3.1342,-2.055,0.25155,0.19448,0.57391,0.75467],"Right Leg":[0.5572,0.9318,-0.4158,-0.14837,0.42376,0.04312,0.8925]},{"Torso":[-0.1654,2.8607,-0.4892,-0.14863,0.41986,0.04264,0.89432],"Head":[-0.3621,4.3043,-0.8113,-0.0925,-0.05645,0.0009,0.99411],"Left Arm":[-1.1345,3.7939,0.6716,-0.13136,0.49711,-0.31019,0.79963],"Left Leg":[-0.0852,0.9806,0.3526,-0.14863,0.41986,0.04264,0.89432],"Right Arm":[1.3945,3.082,-1.8321,0.19035,0.13154,0.58176,0.77975],"Right Leg":[0.5586,0.932,-0.411,-0.1486,0.41986,0.04263,0.89432]},{"Torso":[-0.164,2.8606,-0.4907,-0.14892,0.41568,0.04217,0.89624],"Head":[-0.3592,4.3041,-0.8147,-0.09258,-0.05604,0.00093,0.99413],"Left Arm":[-1.1406,3.7993,0.6478,-0.1263,0.4928,-0.30279,0.80593],"Left Leg":[-0.0907,0.9805,0.3518,-0.14892,0.41568,0.04217,0.89624],"Right Arm":[1.4809,3.0436,-1.6212,0.13985,0.07078,0.58471,0.79596],"Right Leg":[0.5601,0.9323,-0.4059,-0.14889,0.41568,0.04216,0.89625]},{"Torso":[-0.1628,2.8604,-0.4925,-0.1494,0.4113,0.04176,0.8982],"Head":[-0.3565,4.3037,-0.8187,-0.09264,-0.05569,0.00096,0.99414],"Left Arm":[-1.1453,3.8054,0.6239,-0.12195,0.48915,-0.29529,0.81158],"Left Leg":[-0.0961,0.9806,0.3512,-0.1494,0.4113,0.04177,0.8982],"Right Arm":[1.5284,3.0172,-1.44,0.10112,0.01587,0.58494,0.80459],"Right Leg":[0.5621,0.9327,-0.4002,-0.14938,0.4113,0.04175,0.89821]},{"Torso":[-0.1619,2.8601,-0.4947,-0.15021,0.40678,0.04144,0.90014],"Head":[-0.3545,4.3029,-0.8236,-0.09267,-0.05547,0.00098,0.99415],"Left Arm":[-1.1492,3.8119,0.5996,-0.11839,0.48599,-0.28779,0.81668],"Left Leg":[-0.1011,0.981,0.3511,-0.15021,0.40678,0.04144,0.90014],"Right Arm":[1.5506,2.9995,-1.2939,0.07268,-0.03113,0.58405,0.80786],"Right Leg":[0.5645,0.9333,-0.3937,-0.15019,0.40678,0.04143,0.90014]},{"Torso":[-0.1614,2.8595,-0.4975,-0.15148,0.40221,0.04123,0.90199],"Head":[-0.3535,4.3016,-0.8298,-0.09265,-0.05541,0.00099,0.99416],"Left Arm":[-1.1532,3.8182,0.5747,-0.11576,0.48309,-0.28051,0.8213],"Left Leg":[-0.1055,0.9818,0.3517,-0.15148,0.40221,0.04123,0.90199],"Right Arm":[1.5586,2.9873,-1.1825,0.05219,-0.06887,0.58293,0.80792],"Right Leg":[0.5675,0.9343,-0.3864,-0.15145,0.40221,0.04122,0.90199]},{"Torso":[-0.1615,2.8585,-0.501,-0.15334,0.39767,0.04115,0.90369],"Head":[-0.3537,4.2996,-0.8375,-0.09257,-0.05558,0.00098,0.99415],"Left Arm":[-1.1579,3.8243,0.5488,-0.11413,0.48022,-0.27358,0.82554],"Left Leg":[-0.109,0.9831,0.3534,-0.15334,0.39767,0.04115,0.90369],"Right Arm":[1.5595,2.9785,-1.104,0.03747,-0.0959,0.58193,0.80669],"Right Leg":[0.5713,0.9355,-0.378,-0.15331,0.39767,0.04114,0.90369]},{"Torso":[-0.163,2.8579,-0.5036,-0.15583,0.39324,0.04176,0.90517],"Head":[-0.3569,4.2973,-0.8448,-0.09243,-0.05623,0.00092,0.99413],"Left Arm":[-1.1645,3.83,0.5243,-0.11372,0.47756,-0.26705,0.82927],"Left Leg":[-0.1103,0.9855,0.3574,-0.15583,0.39324,0.04176,0.90517],"Right Arm":[1.5541,2.9687,-1.0412,0.02412,-0.11559,0.58012,0.80593],"Right Leg":[0.5769,0.9385,-0.3675,-0.15581,0.39324,0.04175,0.90517]},{"Torso":[-0.1661,2.8581,-0.5037,-0.15868,0.38912,0.04326,0.90638],"Head":[-0.3635,4.2955,-0.8495,-0.09227,-0.05739,0.00083,0.99408],"Left Arm":[-1.1726,3.8355,0.5038,-0.11444,0.47549,-0.26114,0.83224],"Left Leg":[-0.109,0.9888,0.3638,-0.15868,0.38912,0.04326,0.90638],"Right Arm":[1.5394,2.9536,-0.974,0.00845,-0.13416,0.576,0.80632],"Right Leg":[0.5844,0.9437,-0.3554,-0.15865,0.38913,0.04325,0.90639]},{"Torso":[-0.1699,2.8587,-0.5024,-0.16151,0.38553,0.04521,0.90732],"Head":[-0.3718,4.294,-0.8522,-0.09209,-0.05877,0.00071,0.99401],"Left Arm":[-1.181,3.8403,0.4874,-0.11582,0.47399,-0.25613,0.83446],"Left Leg":[-0.1061,0.9925,0.3711,-0.16152,0.38553,0.04521,0.90732],"Right Arm":[1.5146,2.9305,-0.9,-0.01009,-0.15308,0.56876,0.80807],"Right Leg":[0.5925,0.95,-0.3431,-0.16149,0.38553,0.0452,0.90733]},{"Torso":[-0.1737,2.8595,-0.5004,-0.16398,0.38269,0.04716,0.90798],"Head":[-0.3799,4.2928,-0.8536,-0.09193,-0.0601,0.0006,0.99395],"Left Arm":[-1.1886,3.8443,0.4756,-0.11732,0.47302,-0.25216,0.83601],"Left Leg":[-0.1028,0.9959,0.3781,-0.16399,0.38269,0.04716,0.90798],"Right Arm":[1.4799,2.8995,-0.8219,-0.03101,-0.17225,0.55811,0.8111],"Right Leg":[0.5999,0.956,-0.3323,-0.16396,0.38269,0.04715,0.90799]},{"Torso":[-0.1765,2.8602,-0.4987,-0.16573,0.38081,0.04866,0.90838],"Head":[-0.3861,4.2921,-0.854,-0.0918,-0.0611,0.00051,0.9939],"Left Arm":[-1.194,3.8469,0.4682,-0.11856,0.47249,-0.24962,0.83689],"Left Leg":[-0.1,0.9984,0.3833,-0.16573,0.38081,0.04866,0.90838],"Right Arm":[1.4424,2.8675,-0.7532,-0.05054,-0.18858,0.54637,0.81447],"Right Leg":[0.6053,0.9606,-0.3246,-0.16571,0.38081,0.04865,0.90838]},{"Torso":[-0.1777,2.8605,-0.4979,-0.16639,0.38014,0.04925,0.90851],"Head":[-0.3885,4.2918,-0.854,-0.09175,-0.0615,0.00048,0.99388],"Left Arm":[-1.1961,3.8479,0.4657,-0.11907,0.47233,-0.24873,0.83717],"Left Leg":[-0.0988,0.9994,0.3854,-0.16639,0.38014,0.04926,0.90851],"Right Arm":[1.4236,2.8522,-0.723,-0.05959,-0.1955,0.54046,0.81617],"Right Leg":[0.6073,0.9624,-0.3217,-0.16637,0.38014,0.04924,0.90851]}],"vic":[{"Torso":[-0.0,3.0,-3.899,0.0,1.0,-0.0,-0.0],"Head":[-0.0,4.5,-3.899,-0.0,1.0,-0.0,-0.0],"Left Arm":[1.5,3.0,-3.8982,2e-05,1.0,-1e-05,0.0008],"Left Leg":[0.5,1.0,-3.899,0.0,1.0,0.0,-0.0],"Right Arm":[-1.5,3.0,-3.899,-1e-05,1.0,-1e-05,-1e-05],"Right Leg":[-0.5,1.0,-3.8989,-0.0,1.0,-3e-05,-0.0]},{"Torso":[-0.001,2.9999,-3.9008,-0.02088,0.99741,-0.03984,-0.05613],"Head":[-0.1146,4.4755,-4.1021,-0.0452,0.97452,-0.13543,-0.17298],"Left Arm":[1.48,3.0557,-4.1456,-0.01685,0.99762,0.03552,-0.05669],"Left Leg":[0.5876,1.0266,-3.8032,-0.02088,0.99741,-0.03984,-0.05613],"Right Arm":[-1.5051,2.9508,-3.8605,-0.01371,0.99408,0.0907,-0.05828],"Right Leg":[-0.4052,0.9894,-3.6896,-0.02088,0.99741,-0.03987,-0.05613]},{"Torso":[-0.0023,2.9996,-3.9024,-0.04176,0.9896,-0.07968,-0.11225],"Head":[-0.2723,4.4045,-4.2605,-0.08916,0.89922,-0.26651,-0.33529],"Left Arm":[1.4209,3.0952,-4.3923,-0.0249,0.99038,0.07057,-0.11639],"Left Leg":[0.6845,1.0644,-3.7201,-0.04176,0.9896,-0.07968,-0.11225],"Right Arm":[-1.5195,2.9272,-3.811,-0.01194,0.9765,0.17923,-0.11908],"Right Leg":[-0.2868,0.9996,-3.4912,-0.04177,0.9896,-0.07971,-0.11225]},{"Torso":[-0.0036,2.9992,-3.9038,-0.06232,0.97669,-0.1189,-0.1675],"Head":[-0.3511,4.378,-4.3234,-0.10185,0.89097,-0.27345,-0.34788],"Left Arm":[1.3246,3.1168,-4.6286,-0.02386,0.97852,0.10402,-0.17636],"Left Leg":[0.7876,1.1122,-3.652,-0.06232,0.97669,-0.1189,-0.16751],"Right Arm":[-1.4808,2.8681,-3.594,-0.0254,0.97941,0.09391,-0.17688],"Right Leg":[-0.1485,1.0303,-3.3099,-0.06232,0.97669,-0.11893,-0.1675]},{"Torso":[-0.0028,2.9995,-3.903,-0.05066,0.98466,-0.09666,-0.13617],"Head":[-0.2701,4.4187,-4.2632,-0.08317,0.92795,-0.22357,-0.28638],"Left Arm":[1.3838,3.1068,-4.4957,-0.02556,0.98582,0.08522,-0.14226],"Left Leg":[0.7282,1.0838,-3.6888,-0.05066,0.98466,-0.09666,-0.13617],"Right Arm":[-1.4876,2.8843,-3.6548,-0.02655,0.98641,0.07679,-0.14282],"Right Leg":[-0.2295,1.0104,-3.4108,-0.05066,0.98465,-0.09669,-0.13617]},{"Torso":[-0.0022,2.9997,-3.9022,-0.0401,0.99041,-0.07651,-0.10778],"Head":[-0.2017,4.4489,-4.1996,-0.06597,0.95488,-0.17751,-0.22878],"Left Arm":[1.427,3.0927,-4.3729,-0.02459,0.99113,0.06781,-0.11158],"Left Leg":[0.6765,1.061,-3.7262,-0.0401,0.99041,-0.07651,-0.10778],"Right Arm":[-1.4925,2.9024,-3.7083,-0.02519,0.99149,0.06101,-0.11221],"Right Leg":[-0.2971,0.9981,-3.5065,-0.0401,0.99041,-0.07654,-0.10778]},{"Torso":[-0.0016,2.9998,-3.9015,-0.03072,0.99439,-0.05861,-0.08256],"Head":[-0.1456,4.47,-4.1366,-0.05054,0.97355,-0.13612,-0.17637],"Left Arm":[1.457,3.0764,-4.2623,-0.02176,0.99481,0.05212,-0.08459],"Left Leg":[0.6322,1.043,-3.7624,-0.03072,0.99439,-0.0586,-0.08256],"Right Arm":[-1.4958,2.9212,-3.7546,-0.02209,0.99501,0.04683,-0.08528],"Right Leg":[-0.3523,0.9916,-3.5946,-0.03072,0.99439,-0.05863,-0.08256]},{"Torso":[-0.0011,2.9999,-3.9009,-0.02256,0.99698,-0.04304,-0.06063],"Head":[-0.1009,4.4838,-4.0777,-0.03708,0.98576,-0.09994,-0.13009],"Left Arm":[1.4767,3.0595,-4.1655,-0.01783,0.99722,0.03835,-0.06141],"Left Leg":[0.5951,1.0292,-3.7961,-0.02256,0.99698,-0.04303,-0.06063],"Right Arm":[-1.4979,2.9395,-3.794,-0.01799,0.99731,0.03442,-0.06215],"Right Leg":[-0.3965,0.9895,-3.6732,-0.02256,0.99698,-0.04306,-0.06063]},{"Torso":[-0.0008,2.9999,-3.9003,-0.01565,0.99855,-0.02986,-0.04206],"Head":[-0.0663,4.4922,-4.0251,-0.02568,0.99315,-0.06926,-0.0905],"Left Arm":[1.4887,3.0432,-4.0835,-0.01344,0.99867,0.02663,-0.04203],"Left Leg":[0.5648,1.0189,-3.8261,-0.01565,0.99855,-0.02985,-0.04206],"Right Arm":[-1.4992,2.9565,-3.8268,-0.01351,0.99871,0.02388,-0.04281],"Right Leg":[-0.4312,0.9901,-3.7412,-0.01565,0.99855,-0.02988,-0.04206]},{"Torso":[-0.0005,3.0,-3.8999,-0.01,0.99941,-0.01908,-0.02689],"Head":[-0.0404,4.4968,-3.9806,-0.01638,0.99721,-0.0442,-0.05794],"Left Arm":[1.4953,3.0286,-4.0164,-0.00914,0.99946,0.01703,-0.0264],"Left Leg":[0.5407,1.0113,-3.8517,-0.01,0.99941,-0.01908,-0.02689],"Right Arm":[-1.4998,2.9714,-3.8532,-0.00917,0.99947,0.01526,-0.02719],"Right Leg":[-0.4576,0.9924,-3.7975,-0.01,0.99941,-0.01911,-0.02688]},{"Torso":[-0.0003,3.0,-3.8995,-0.00562,0.99981,-0.01072,-0.0151],"Head":[-0.0218,4.499,-3.9452,-0.00918,0.99912,-0.0248,-0.03258],"Left Arm":[1.4984,3.0164,-3.9645,-0.00537,0.99984,0.00956,-0.0144],"Left Leg":[0.5226,1.006,-3.8721,-0.00562,0.99981,-0.01072,-0.0151],"Right Arm":[-1.5,2.9836,-3.8734,-0.00538,0.99983,0.00857,-0.0152],"Right Leg":[-0.4769,0.9951,-3.8417,-0.00562,0.99981,-0.01075,-0.0151]},{"Torso":[-0.0001,3.0,-3.8992,-0.0025,0.99996,-0.00476,-0.00671],"Head":[-0.0094,4.4998,-3.9197,-0.00407,0.99983,-0.011,-0.01447],"Left Arm":[1.4996,3.0074,-3.9276,-0.00245,0.99997,0.00424,-0.00592],"Left Leg":[0.5099,1.0026,-3.8869,-0.0025,0.99996,-0.00476,-0.00671],"Right Arm":[-1.5,2.9926,-3.8877,-0.00247,0.99997,0.0038,-0.00673],"Right Leg":[-0.49,0.9977,-3.8734,-0.0025,0.99996,-0.00479,-0.00671]},{"Torso":[-0.0,3.0,-3.8991,-0.00062,1.0,-0.00119,-0.00168],"Head":[-0.0023,4.5,-3.9042,-0.00102,0.99999,-0.00275,-0.00362],"Left Arm":[1.4999,3.0019,-3.9055,-0.00061,1.0,0.00105,-0.00087],"Left Leg":[0.5025,1.0006,-3.8959,-0.00062,1.0,-0.00119,-0.00168],"Right Arm":[-1.5,2.9981,-3.8962,-0.00064,1.0,0.00094,-0.00168],"Right Leg":[-0.4975,0.9994,-3.8925,-0.00062,1.0,-0.00122,-0.00168]},{"Torso":[-0.0,3.0,-3.899,0.0,1.0,-0.0,-0.0],"Head":[-0.0,4.5,-3.899,-0.0,1.0,-0.0,-0.0],"Left Arm":[1.5,3.0,-3.8982,2e-05,1.0,-1e-05,0.0008],"Left Leg":[0.5,1.0,-3.899,0.0,1.0,0.0,-0.0],"Right Arm":[-1.5,3.0,-3.899,-1e-05,1.0,-1e-05,-1e-05],"Right Leg":[-0.5,1.0,-3.8989,-0.0,1.0,-3e-05,-0.0]}],"distance":3.899,"markers":{"trail_on":0.16666666666666666,"hit":0.2833333333333333,"trail_off":0.35},"phases":[["armement",0,0.15],["coup",0.15,0.35],["tenue",0.35,0.65]],"cfg":{"HITSTOP":0.07,"KNOCKBACK":0.9,"KNOCKBACK_TIME":0.16,"SHAKE_AMPLITUDE":0.28,"SHAKE_DURATION":0.2},"colors":{"FLASH_COLOR":"#ebf5ff","SPARK_COLOR":"#ffecaa","RING_COLOR":"#bee1ff","TRAIL_COLOR":"#d7ebff"},"sizes":{"Head":[2.0,1.0,1.0],"HumanoidRootPart":[2.0,2.0,1.0],"Left Arm":[1.0,2.0,1.0],"Left Leg":[1.0,2.0,1.0],"Right Arm":[1.0,2.0,1.0],"Right Leg":[1.0,2.0,1.0],"Torso":[2.0,2.0,1.0]}};
+  const FPS = D.fps, NA = D.att.length, NV = D.vic.length;
+  const T_HIT = D.markers.hit, T_ON = D.markers.trail_on, T_OFF = D.markers.trail_off;
+  const C = D.cfg;
+  const PARTS = ["Torso", "Head", "Left Arm", "Right Arm", "Left Leg", "Right Leg"];
+  const DIR = new THREE.Vector3(0, 0, -1);            // avant de l'attaquant (LookVector du HumanoidRootPart)
+  const TAIL = 0.45;
+  let useStop = true, useFx = true;
+  const HS = () => (useStop ? C.HITSTOP : 0);
+  const clipEnd = () => (NA - 1) / FPS + HS();
+  const total = () => clipEnd() + TAIL;
+
+  // ---------- scene ----------
+  const canvas = document.getElementById("view");
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0f1115);
+  scene.fog = new THREE.Fog(0x0f1115, 26, 60);
+  const camera = new THREE.PerspectiveCamera(42, 16 / 10, 0.1, 200);
+  scene.add(new THREE.HemisphereLight(0xcfd8ea, 0x2a2622, 0.75));
+  const sun = new THREE.DirectionalLight(0xffffff, 0.95);
+  sun.position.set(6, 12, 5);
+  sun.castShadow = true;
+  sun.shadow.mapSize.set(1024, 1024);
+  Object.assign(sun.shadow.camera, { left: -8, right: 8, top: 8, bottom: -8 });
+  scene.add(sun);
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), new THREE.MeshStandardMaterial({ color: new THREE.Color(0x3a3f4a).convertSRGBToLinear(), roughness: 0.95 }));
+  ground.rotation.x = -Math.PI / 2;
+  ground.receiveShadow = true;
+  scene.add(ground);
+  const grid = new THREE.GridHelper(80, 80, 0x535b6b, 0x444a57);
+  grid.position.y = 0.002;
+  scene.add(grid);
+
+  function faceTexture(skin) {
+    const c = document.createElement("canvas");
+    c.width = c.height = 128;
+    const g = c.getContext("2d");
+    g.fillStyle = skin; g.fillRect(0, 0, 128, 128);
+    g.fillStyle = "#1b1b1b";
+    g.beginPath(); g.ellipse(46, 54, 6, 11, 0, 0, Math.PI * 2); g.fill();
+    g.beginPath(); g.ellipse(82, 54, 6, 11, 0, 0, Math.PI * 2); g.fill();
+    g.lineWidth = 6; g.strokeStyle = "#1b1b1b"; g.lineCap = "round";
+    g.beginPath(); g.arc(64, 70, 22, 0.2 * Math.PI, 0.8 * Math.PI); g.stroke();
+    const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; return t;
+  }
+  function rig(colors) {
+    const parts = {};
+    for (const p of PARTS) {
+      const s = p === "Head" ? [1.25, 1.25, 1.25] : D.sizes[p];
+      const geo = new THREE.BoxGeometry(s[0], s[1], s[2]);
+      const base = new THREE.MeshStandardMaterial({ color: new THREE.Color(colors[p]).convertSRGBToLinear(), roughness: 0.62, metalness: 0.02 });
+      let mat = base;
+      if (p === "Head") {
+        // BoxGeometry : faces +X, -X, +Y, -Y, +Z, -Z -> le visage sur -Z (face avant Roblox)
+        const face = new THREE.MeshStandardMaterial({ map: faceTexture(colors.skinCss), roughness: 0.62 });
+        mat = [base, base, base, base, base, face];
+      }
+      const m = new THREE.Mesh(geo, mat);
+      m.castShadow = true;
+      scene.add(m);
+      parts[p] = m;
+    }
+    return parts;
+  }
+  const A = rig({ Torso: 0x2154b9, Head: 0xeab892, "Left Arm": 0xeab892, "Right Arm": 0xeab892, "Left Leg": 0x27462d, "Right Leg": 0x27462d, skinCss: "#eab892" });
+  const V = rig({ Torso: 0x78787c, Head: 0xa3a2a5, "Left Arm": 0xa3a2a5, "Right Arm": 0xa3a2a5, "Left Leg": 0x5b5d69, "Right Leg": 0x5b5d69, skinCss: "#a3a2a5" });
+
+  // reperes de sens
+  const axes = new THREE.Group();
+  const arrowA = new THREE.ArrowHelper(DIR, new THREE.Vector3(0, 0.03, 0.2), 2.2, 0x4d86e8, 0.45, 0.3);
+  const arrowV = new THREE.ArrowHelper(DIR.clone().negate(), new THREE.Vector3(0, 0.03, -D.distance - 0.2), 1.3, 0x9aa1ad, 0.35, 0.24);
+  axes.add(arrowA, arrowV);
+  scene.add(axes);
+
+  // ---------- effets (memes formules que render_vfx_preview.py) ----------
+  const add = (color, opacity) => new THREE.MeshBasicMaterial({ color, transparent: true, opacity, blending: THREE.AdditiveBlending, depthWrite: false });
+  const flash = new THREE.Mesh(new THREE.SphereGeometry(0.5, 24, 16), add(D.colors.FLASH_COLOR, 1));
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.05, 10, 64), add(D.colors.RING_COLOR, 0.75));
+  ring.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), DIR);   // axe du tore = sens du coup
+  scene.add(flash, ring);
+  let seed = 7;
+  const rnd = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
+  const perp1 = new THREE.Vector3(1, 0, 0), perp2 = new THREE.Vector3(0, 1, 0);
+  const sparks = [];
+  for (let i = 0; i < 16; i++) {
+    const th = (38 * Math.PI / 180) * Math.sqrt(rnd()), ph = rnd() * Math.PI * 2;
+    const v = DIR.clone().multiplyScalar(Math.cos(th))
+      .add(perp1.clone().multiplyScalar(Math.sin(th) * Math.cos(ph)))
+      .add(perp2.clone().multiplyScalar(Math.sin(th) * Math.sin(ph)));
+    const m = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), add(D.colors.SPARK_COLOR, 1));
+    m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), v);
+    scene.add(m);
+    sparks.push({ m, v, v0: 28 + 18 * rnd(), life: 0.16 + 0.14 * rnd() });
+  }
+  const trailGeo = new THREE.BufferGeometry();
+  const TRAIL_N = 14;
+  trailGeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(TRAIL_N * 2 * 3), 3));
+  const idx = [];
+  for (let i = 0; i < TRAIL_N - 1; i++) { const a = 2 * i; idx.push(a, a + 1, a + 3, a, a + 3, a + 2); }
+  trailGeo.setIndex(idx);
+  const trail = new THREE.Mesh(trailGeo, new THREE.MeshBasicMaterial({ color: D.colors.TRAIL_COLOR, transparent: true, opacity: 0.5, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false }));
+  trail.frustumCulled = false;
+  scene.add(trail);
+
+  // ---------- temps ----------
+  const animTime = (t) => (t < T_HIT ? t : t < T_HIT + HS() ? T_HIT : t - HS());
+  const qa = new THREE.Quaternion(), qb = new THREE.Quaternion();
+  function sample(track, n, f) {
+    f = Math.max(0, Math.min(n - 1, f));
+    const i = Math.min(n - 2, Math.floor(f)), u = f - i;
+    return (p) => {
+      const a = track[i][p], b = track[i + 1][p];
+      qa.set(a[3], a[4], a[5], a[6]); qb.set(b[3], b[4], b[5], b[6]);
+      return { pos: new THREE.Vector3(a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u, a[2] + (b[2] - a[2]) * u), quat: qa.clone().slerp(qb, u) };
+    };
+  }
+  function armSegment(ta) {
+    const s = sample(D.att, NA, ta * FPS)("Right Arm");
+    const top = new THREE.Vector3(0, -0.2, 0).applyQuaternion(s.quat).add(s.pos);
+    const fist = new THREE.Vector3(0, -1, 0).applyQuaternion(s.quat).add(s.pos);
+    return [top, fist];
+  }
+  const contact = (() => { const s = sample(D.att, NA, T_HIT * FPS)("Right Arm"); return new THREE.Vector3(0, -1, 0).applyQuaternion(s.quat).add(s.pos); })();
+  flash.position.copy(contact);
+  ring.position.copy(contact.clone().addScaledVector(DIR, 0.3));
+
+  function pose(t) {
+    const ta = animTime(t);
+    const sa = sample(D.att, NA, ta * FPS);
+    for (const p of PARTS) { const s = sa(p); A[p].position.copy(s.pos); A[p].quaternion.copy(s.quat); }
+    const tv = Math.max(0, ta - T_HIT);
+    const sv = sample(D.vic, NV, tv * FPS);
+    const kt = t - (T_HIT + HS());
+    let u = kt <= 0 ? 0 : Math.min(1, kt / C.KNOCKBACK_TIME);
+    u = 1 - (1 - u) * (1 - u);
+    const kb = DIR.clone().multiplyScalar(C.KNOCKBACK * u);
+    for (const p of PARTS) { const s = sv(p); V[p].position.copy(s.pos).add(kb); V[p].quaternion.copy(s.quat); }
+    arrowV.position.set(kb.x, 0.03, -D.distance - 0.2 + kb.z);
+
+    // effets
+    const age = t - T_HIT, on = useFx && age >= 0;
+    const fa = age / 0.1;
+    flash.visible = on && fa < 1;
+    if (flash.visible) {
+      const size = fa < 0.25 ? 0.5 + (3.4 - 0.5) * fa / 0.25 : 3.4 * (1 - (fa - 0.25) / 0.75);
+      flash.scale.setScalar(Math.max(0.01, size));
+      flash.material.opacity = 1 - 0.6 * fa;
+    }
+    const ra = age / 0.2;
+    ring.visible = on && ra < 1;
+    if (ring.visible) { const e = 1 - (1 - ra) * (1 - ra); const s = 0.8 + 6.2 * e; ring.scale.set(s, s, 1); ring.material.opacity = 0.75 * (1 - e); }
+    for (const sp of sparks) {
+      const alive = on && age < sp.life;
+      sp.m.visible = alive;
+      if (alive) {
+        const drag = 9, dist = sp.v0 * (1 - Math.pow(2, -drag * age)) / (drag * Math.LN2);
+        sp.m.position.copy(contact).addScaledVector(sp.v, dist); sp.m.position.y -= 0.5 * 35 * age * age;
+        const sz = 0.32 * (1 - age / sp.life);
+        sp.m.scale.set(sz * 0.35, sz * 0.35, sz * 1.6);
+      }
+    }
+    // trainee : ruban des positions du bras sur les 0,1 s passees, entre trail_on et trail_off
+    const pos = trailGeo.attributes.position;
+    let n = 0;
+    if (useFx) {
+      for (let k = TRAIL_N - 1; k >= 0; k--) {
+        const tau = t - 0.1 * k / (TRAIL_N - 1);
+        const at = animTime(tau);
+        if (tau < 0 || at < T_ON || at > T_OFF) continue;
+        const [a, b] = armSegment(at);
+        pos.setXYZ(2 * n, a.x, a.y, a.z); pos.setXYZ(2 * n + 1, b.x, b.y, b.z); n++;
+      }
+    }
+    for (let k = n; k < TRAIL_N; k++) { const j = Math.max(0, n - 1); pos.setXYZ(2 * k, pos.getX(2 * j), pos.getY(2 * j), pos.getZ(2 * j)); pos.setXYZ(2 * k + 1, pos.getX(2 * j + 1), pos.getY(2 * j + 1), pos.getZ(2 * j + 1)); }
+    pos.needsUpdate = true;
+    trail.visible = n > 1;
+    return { ta, age };
+  }
+
+  // ---------- camera ----------
+  const PRESETS = {
+    jeu: { pos: [8.2, 6.4, 10.6], target: [0, 2.5, -2.0] },
+    profil: { pos: [13.5, 3.2, -1.95], target: [0, 2.4, -1.95] },
+    face: { pos: [-9.6, 5.0, -10.4], target: [0, 2.5, -2.0] },
+  };
+  const orbit = { target: new THREE.Vector3(), r: 10, th: 0, ph: 1 };
+  function setPreset(name) {
+    const p = PRESETS[name], pos = new THREE.Vector3(...p.pos);
+    orbit.target.set(...p.target);
+    const off = pos.sub(orbit.target);
+    orbit.r = off.length(); orbit.th = Math.atan2(off.x, off.z); orbit.ph = Math.acos(off.y / orbit.r);
+    document.querySelectorAll(".cam").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.cam === name)));
+  }
+  function placeCamera(age) {
+    const off = new THREE.Vector3(Math.sin(orbit.ph) * Math.sin(orbit.th), Math.cos(orbit.ph), Math.sin(orbit.ph) * Math.cos(orbit.th)).multiplyScalar(orbit.r);
+    camera.position.copy(orbit.target).add(off);
+    camera.lookAt(orbit.target);
+    const k = age / C.SHAKE_DURATION;
+    if (useFx && age >= 0 && k < 1) {
+      const a = C.SHAKE_AMPLITUDE * (1 - k) * (1 - k), f = Math.floor(age * 60);
+      const h1 = Math.sin(f * 12.9898) * 43758.5453, h2 = Math.sin(f * 78.233) * 12345.6789;
+      camera.translateX(((h1 - Math.floor(h1)) * 2 - 1) * a);
+      camera.translateY(((h2 - Math.floor(h2)) * 2 - 1) * a);
+    }
+  }
+  const pointers = new Map();
+  let pinch0 = 0;
+  canvas.addEventListener("pointerdown", (e) => { canvas.setPointerCapture(e.pointerId); pointers.set(e.pointerId, { x: e.clientX, y: e.clientY }); });
+  canvas.addEventListener("pointerup", (e) => { pointers.delete(e.pointerId); pinch0 = 0; });
+  canvas.addEventListener("pointercancel", (e) => { pointers.delete(e.pointerId); pinch0 = 0; });
+  canvas.addEventListener("pointermove", (e) => {
+    if (!pointers.has(e.pointerId)) return;
+    const prev = pointers.get(e.pointerId);
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pointers.size === 1) {
+      orbit.th -= (e.clientX - prev.x) * 0.008;
+      orbit.ph = Math.max(0.15, Math.min(1.52, orbit.ph - (e.clientY - prev.y) * 0.008));
+      markCustom();
+    } else if (pointers.size === 2) {
+      const [a, b] = [...pointers.values()];
+      const d = Math.hypot(a.x - b.x, a.y - b.y);
+      if (pinch0) orbit.r = Math.max(3, Math.min(30, orbit.r * pinch0 / d));
+      pinch0 = d;
+    }
+  });
+  canvas.addEventListener("wheel", (e) => { e.preventDefault(); orbit.r = Math.max(3, Math.min(30, orbit.r * (1 + Math.sign(e.deltaY) * 0.08))); }, { passive: false });
+  function markCustom() { document.querySelectorAll(".cam").forEach((b) => b.setAttribute("aria-pressed", "false")); }
+
+  // ---------- transport ----------
+  const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let t = reduce ? T_HIT + 0.02 : 0, playing = !reduce, speed = 1, last = performance.now();
+  const hud = document.getElementById("hud"), scrub = document.getElementById("scrub"), head = document.getElementById("playhead");
+  const playBtn = document.getElementById("play");
+  function setPlaying(p) { playing = p; playBtn.textContent = p ? "Pause" : "Lecture"; }
+  setPlaying(playing);
+  playBtn.addEventListener("click", () => setPlaying(!playing));
+  document.getElementById("prev").addEventListener("click", () => { setPlaying(false); t = Math.max(0, t - 1 / FPS); });
+  document.getElementById("next").addEventListener("click", () => { setPlaying(false); t = Math.min(total(), t + 1 / FPS); });
+  document.querySelectorAll(".speed").forEach((b) => b.addEventListener("click", () => {
+    speed = parseFloat(b.dataset.speed);
+    document.querySelectorAll(".speed").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  }));
+  document.querySelectorAll(".cam").forEach((b) => b.addEventListener("click", () => setPreset(b.dataset.cam)));
+  function toggle(id, fn) { const b = document.getElementById(id); b.addEventListener("click", () => { const v = b.getAttribute("aria-pressed") !== "true"; b.setAttribute("aria-pressed", String(v)); fn(v); }); }
+  toggle("optFx", (v) => { useFx = v; });
+  toggle("optStop", (v) => { useStop = v; buildTimeline(); });
+  toggle("optAxes", (v) => { axes.visible = v; });
+  scrub.addEventListener("input", () => { setPlaying(false); t = (scrub.value / 1000) * total(); });
+
+  function buildTimeline() {
+    const T = total(), hs = HS();
+    const segs = [["armement", 0, 9 / FPS], ["coup", 9 / FPS, T_HIT]];
+    if (hs > 0) segs.push(["hitstop", T_HIT, T_HIT + hs]);
+    segs.push(["coup", T_HIT + hs, 21 / FPS + hs], ["tenue", 21 / FPS + hs, clipEnd()], ["fin", clipEnd(), T]);
+    const bands = document.getElementById("bands");
+    bands.innerHTML = "";
+    for (const [name, a, b] of segs) {
+      const el = document.createElement("div");
+      el.className = "band " + name;
+      el.style.width = ((b - a) / T * 100) + "%";
+      el.textContent = name === "fin" || (b - a) / T < 0.07 ? "" : name;
+      el.title = name + " : " + Math.round(a * FPS) + "–" + Math.round(b * FPS) + " f";
+      bands.appendChild(el);
+    }
+    const marks = document.getElementById("marks");
+    marks.innerHTML = "";
+    for (const [name, at] of [["trail_on", T_ON], ["hit", T_HIT], ["trail_off", T_OFF + hs]]) {
+      const el = document.createElement("div");
+      el.className = "mark" + (name === "hit" ? " hitmark" : "");
+      el.style.left = (at / T * 100) + "%";
+      el.textContent = name;
+      marks.appendChild(el);
+    }
+  }
+  buildTimeline();
+
+  function phaseOf(ta, age) {
+    if (useStop && age >= 0 && age < HS()) return "hitstop";
+    for (const [n, a, b] of D.phases) if (ta >= a && ta < b) return n;
+    return ta >= D.phases[2][1] ? "tenue" : "armement";
+  }
+  function resize() {
+    const r = canvas.parentElement.getBoundingClientRect();
+    renderer.setSize(r.width, r.height, false);
+    camera.aspect = r.width / r.height;
+    camera.updateProjectionMatrix();
+  }
+  window.addEventListener("resize", resize);
+  setPreset("jeu");
+  resize();
+
+  function frame(now) {
+    const dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+    if (playing) { t += dt * speed; if (t > total()) t = 0; }
+    const { ta, age } = pose(t);
+    placeCamera(age);
+    renderer.render(scene, camera);
+    const T = total();
+    scrub.value = String(Math.round(t / T * 1000));
+    head.style.left = (t / T * 100) + "%";
+    const f = Math.min(NA - 1, Math.round(ta * FPS));
+    const ph = phaseOf(ta, age);
+    const hit = age >= 0 && age < 0.12;
+    hud.innerHTML = '<span class="phase' + (ph === "hitstop" ? " hit" : "") + '">' + ph + "</span><br>" +
+      "t " + t.toFixed(3) + " s · anim f" + String(f).padStart(2, "0") + "/" + (NA - 1) + (hit ? ' · <span class="hit">hit</span>' : "");
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
