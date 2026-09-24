@@ -164,6 +164,7 @@ catégories.
 | 5 | **Test de généralisation** : une catégorie jamais travaillée (dash ou marche), sans réglage à la main | audit vs corpus de la bonne catégorie |
 | 6 | ✅ **produit (2026-09-24)** — brief libre « poing du dragon » : `experiments/r6_poing_dragon` (proposition : `SCENE_POING_DU_DRAGON.md`). Technique ultime de 8,8 s sur deux rigs V2.22 : animation, caméra, VFX, effets d'écran, planches manga, package Roblox, module Luau testé, lecteur jouable. En attente de la revue de Milan (critère : niveau de la vidéo « Pro ») | revue de Milan |
 | 7 | Nourrir en continu : chaque pack, vidéo ou retour devient une fiche du corpus | le corpus grossit, les seuils bougent avec lui |
+| 8 | **Scène à venir, demandée par Milan (2026-09-24)** : un combat à deux dans le style IMPACT HAVEN, « beaucoup plus dynamique ». Fiche mesurée dans `corpus/REFERENCES_VIDEO.md` : 19 impacts en 8 s ; carte silhouette + carte blanche ; tenue **avant** le choc et saut de pose caché par les cartes ; corps acrobatiques ; caméra fixe et large. Pas encore commencée | revue de Milan |
 
 ## 5. Risques, dits franchement
 
