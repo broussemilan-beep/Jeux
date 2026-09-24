@@ -142,3 +142,52 @@ jugé par Milan, avant toute généralisation.
 - **Tutos vidéo.** Milan les télécharge avec les sous-titres de son côté
   (liste de 19 vidéos : Roblox d'abord, puis GGXrd, Nakamura, « Why Your
   Punches Lack Energy »). Même traitement que les refs.
+
+## 7. Vidéos envoyées par Milan (zips du 2026-09-24) : étude visuelle
+
+Six vidéos muettes (640x360), rejointes depuis les zips découpés. On les étudie
+image par image, sur des planches. Les planches et les vidéos restent dans le
+scratchpad : ce sont des refs protégées, donc elles ne sont jamais commitées.
+Les quatre tutos longs ont chacun leur rapport dans `tutos/rapport_*` (§8).
+Les deux courts sont décrits ci-dessous.
+
+### 7.1 Nakamura, « Speed/Scale Contrast » (sakuga, 23 s) [VU]
+
+- **Cadrage.** Course et saut en plan très large : le perso est minuscule.
+  Coupe sec sur un gros plan où le poing grossit jusqu'à remplir le cadre.
+  L'avant-bras est vu en raccourci et le poing vient vers l'objectif.
+- **Impact.** 2 à 4 images en noir et blanc inversé, avec des rayons.
+- **Après l'impact.** Retour en plan très large sur le dôme de l'impact, puis
+  une tenue sur les conséquences.
+- **Leçon.** La puissance ne vient pas de la pose seule. Elle vient du
+  **contraste d'échelle d'un plan à l'autre** : petit/lent, puis énorme/rapide,
+  puis petit/figé. Ça confirme `poing_gros_plan` : on amène le poing vers la
+  caméra, on ne le grossit pas. Ça confirme aussi `cartes_impact`.
+- **Nuance pour nous.** Ça sert la caméra **cinématique** (finisher). En
+  caméra de jeu, on ne peut pas couper de plan. Il reste le poing vers la
+  caméra et les cartes d'impact.
+
+### 7.2 « Advanced Movement System » (vitrine Roblox R6, 27 s) [VU]
+
+Ce système de mouvement est vendu comme « premium ». On a relu les dash à
+6 i/s, recadrés. Ce qui le rend fluide et pas robotique :
+
+- **Dash avant.** Le corps passe **à l'horizontale** (torse ≈ 90°, plongeon
+  « superman », bras et jambes dans l'axe) pendant environ 1/6 s, puis il se
+  roule en boule et se relève penché. C'est une pose extrême, tenue très
+  peu de temps, entre deux poses normales.
+- **Dash arrière et latéraux.** Salto arrière groupé, ou roue/roulade :
+  rotation de tout le corps, jamais un simple glissement.
+- **Course.** Torse penché vers l'avant, bras qui balancent haut, grande
+  foulée, poussière à chaque pas. **Inclinaison directionnelle** : le corps
+  penche du côté où on tourne.
+- **Atterrissage.** Les bras s'ouvrent grand (T large), puis tout se
+  compresse (squash), puis on revient au neutre. Le moment le plus lisible
+  est la silhouette ouverte.
+- **Leçon.** Même en Roblox « smooth », la qualité perçue vient de **poses
+  très éloignées du neutre, en passant par tout le corps** (torse 60-90°),
+  tenues peu de temps. Ce n'est pas un lissage. C'est cohérent avec
+  `bascule_competence` : TSB compétences p90 44-97°, notre charge 35°.
+- **Contre-indication.** C'est du mouvement (dash), pas un coup. On ne recopie
+  pas ce plongeon tel quel sur une frappe. On garde le principe : une pose
+  hors d'équilibre franche, pas une pose « debout + bras ».
