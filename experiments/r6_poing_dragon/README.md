@@ -465,3 +465,46 @@ base est masqué par son corps. Le lanceur voit la caméra ciné ; ce sont les
 - `captures/verification/2026-09-24-poing-dragon-v5-vs-v6-rafale-cote-du-bras.png` ;
 - `captures/verification/2026-09-24-poing-dragon-v6-charge-et-impact-raconte.png` ;
 - `captures/verification/2026-09-24-poing-dragon-v6-camera-de-jeu-shift-lock.png`.
+
+## v7 (2026-09-24) : les poses du coup chargé
+
+Retour de Milan sur la v6 (7/10) : « il manque une touche manga… même un coup
+simple n'est pas un coup simple ». Avant d'animer, on a étudié le fichier TSB
+officiel et 6 tutos vidéo (`../_shared/animator_brain/corpus/TUTOS_ANIMATION.md`
+§7-8). Le diagnostic, mesuré, porte sur deux poses :
+- **la charge était une croix** : torse droit (0-1°), deux bras à l'horizontale
+  écartés, sur 93 % des images, contre 0 % chez l'attaquant TSB ;
+- **le contact restait droit** : penché de 20°, et le bras libre partait vers
+  l'avant avec l'autre.
+
+Fiche : `FICHE_V7.md`. Décision de Milan : aucun coup de pied.
+
+| temps | v6 | v7 |
+|---|---|---|
+| charge f121-146 | croix, torse droit | **« Serious Punch »** : racine penchée de 22° vers la cible, poing armé HAUT derrière l'épaule (+40°), bras avant replié qui vise bas, **genou avant levé** ; tenue **vivante** (oscillations du poing qui s'amortissent, f131/136/140/144) |
+| départ f144-150 | clés 146 / 148 en courbes | **clé du milieu rapprochée** (148 → 149) et segments 144 → 146 → 149 → 150 en **Linear** : palier de vitesse du poing de 0,51 à **0,90** (TSB ≥ 0,85) |
+| contact f150 | penché 20°, bras libre en avant (+0,88) | penché **36°**, bras libre **ramené à la hanche** (−0,64) ; torsion charge → contact gardée (129°) |
+| rafale | armement du direct (h2) et de la fente (h4) en croix (13 images) | l'autre bras vise plus bas (−28°) : plus aucune croix |
+| caméra ciné | secousse et punch-in à 100 % | **dosés à 70 %** sous la caméra ciné (lecteur et module Luau, `CINEMA_DOSE`) ; caméra de jeu inchangée |
+| aérien, VFX, cartes, rythme | — | inchangés |
+
+**Découvertes en posant les clés.**
+- **Blocage de cardan** : torse tourné vers −80°, le tangage du bassin
+  penchait le corps DE CÔTÉ, pas vers la cible. Pour la charge, on penche la
+  **racine** (rotation X monde), ce qui donne une vraie bascule vers la cible
+  (croquis contre rig, 1re passe écartée à l'écran).
+- **Deux règles en conflit** : casser la croix de la rafale en armant le poing
+  plus haut haussait l'épaule (0,30 stud ; règle « épaules jamais haussées »,
+  retour de Milan v2 « bras trop hauts »). Solution retenue : ne pas toucher
+  au poing armé, et faire viser plus bas l'autre bras.
+
+**Contrôles.**
+- règles : **13/13** ;
+- contacts : 0,05 stud sur les 7 coups ;
+- sens : 11/11 dans les fichiers, `SENS OK` en Luau, `PACKAGE OK` ;
+- aucune croix sur tout le clip (`perception.silhouette`).
+
+**Preuves** :
+- `captures/verification/2026-09-24-poing-dragon-v7-charge-contact-avant-apres.png` ;
+- `captures/verification/2026-09-24-poing-dragon-v7-video-v6-contre-v7.png` ;
+- `output/poing_du_dragon_v7_charge_v6_contre_v7.mp4`.

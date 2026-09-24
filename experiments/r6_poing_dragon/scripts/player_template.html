@@ -697,6 +697,9 @@
       shake += e.shake * Math.exp(-age / 0.09);
       punch += (e.name === "impact" ? 10 : 6) * Math.min(1.2, e.scale) * Math.exp(-age / 0.07);
     }
+    // v7 : camera cinematique dosee un cran plus bas (retour de Milan sur la v6)
+    const dose = camMode === "cinema" ? (D.cinema_dose || 1) : 1;
+    shake *= dose; punch *= dose;
     camera.position.copy(eye); camera.lookAt(look);
     camera.fov = Math.max(18, fov - punch); camera.updateProjectionMatrix();
     if (shake > 0.001) {

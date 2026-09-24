@@ -62,6 +62,11 @@ MANGA_F = 298
 WHITE_F = (304, 334)        # ecran blanc puis brouillard
 REVEAL_F = 334
 RISE_F = (490, 526)
+# v7 : poses du coup charge (FICHE_V7.md). Charge : penche (deg, - = en avant),
+# elevation du poing arme (deg), bras avant (dlacet, elevation, distance),
+# hauteur du pied avant leve. Contact : penche ; bras libre (azimut, elevation, distance).
+CH_LEAN, CH_EL, CH_AIM, CH_KNEE, CH_KNEE_Z = -22, 40, (0, -38, 1.95), 1.25, -0.45
+CT_LEAN, CT_FREE = -30, (140, -40, 2.0)
 
 MARKERS = [("activation", 0)] + [(f"hit{i + 1}", f) for i, (f, _h, _t) in enumerate(HITS)] + [
     ("coup_charge", UPPER_F), ("takeoff", TAKEOFF_F), ("suspend", APEX_F), ("dive", SUSPEND_END_F),
@@ -544,8 +549,11 @@ def attacker_keys(vw, rig):
         contact["auto_low"] = True
         plans.append((c, s, o, kind, tgt, croot, feet, contact, yaw, wind, lean, low))
 
-    def body(root, low, yaw, lean, f, hands, feet, chest=(0, 0.1, 0)):
-        return {"root": (tuple(float(x) for x in root), (0, 0, 0)), "pelvis": ((0, -low, 0), (lean, yaw, 0)),
+    def body(root, low, yaw, lean, f, hands, feet, chest=(0, 0.1, 0), rr=(0, 0, 0)):
+        # rr : rotation de la RACINE (v7). Torse tourne vers -80 deg, le tangage
+        # du bassin tombe en blocage de cardan (il penche DE COTE) : pour pencher
+        # vers la cible, on incline la racine (X monde).
+        return {"root": (tuple(float(x) for x in root), rr), "pelvis": ((0, -low, 0), (lean, yaw, 0)),
                 "chest": chest, "look": head(f), "hands": hands, "feet": feet, "auto_low": True}
 
     back = lambda r, d: np.asarray(r) + np.array([0.0, 0.0, d])  # noqa: E731
@@ -558,7 +566,12 @@ def attacker_keys(vw, rig):
         # FORME du coup (mains, en azimut/elevation/distance depuis l'epaule) :
         # arme = pose tenue ; a5 / a3 = arc a hauteur d'epaule ; l'autre bras :
         # contre-rotation (jab), vise la cible (direct, final), garde au visage
-        aim = {o: ("a", (wind, -12, 2.2))}
+        # v7 : l'armement du direct (h2) et de la fente (h4) etait une CROIX
+        # (torse droit, deux bras a l'horizontale ecartes ; perception.silhouette)
+        # -> l'autre bras vise plus BAS (-28 deg). Le poing arme reste a sa hauteur
+        # v6 : plus haut, l'IK haussait l'epaule (0,30 stud, regle « epaules
+        # jamais haussees », retour Milan v2 « bras trop hauts »)
+        aim = {o: ("a", (wind, -28, 2.2))}
         if kind == "chest":        # jab : court, le bras vient du cote
             chamber = {s: side(s, 55, 0, 2.05), o: GUARD()[o]}
             a5 = {s: side(s, 45, 0, 2.1), o: GUARD()[o]}
@@ -650,49 +663,74 @@ def attacker_keys(vw, rig):
     #   continue de s'enrouler un peu : tension, pas gel) ;
     # - DEPART en 4 f : hanche puis buste puis bras, trajet A PLAT ;
     # - extension TENUE, l'autre bras tire en arriere (contre-rotation).
+    # v7 (tutos video, FICHE_V7.md ; cerveau : silhouette_non_croix,
+    # compression_extension, ligne_epaules, tenue_vivante) : la charge v6 etait
+    # une CROIX (torse droit 0-1 deg, deux bras a l'horizontale ecartes : 93 %
+    # des images, contre 0 % chez l'attaquant TSB) et le contact restait droit
+    # (20 deg), le bras libre tendu vers l'avant avec l'autre. Ici :
+    # - charge « Serious Punch » : torse penche CH_LEAN, poing arme HAUT derriere
+    #   l'epaule (CH_EL), bras avant replie qui vise bas, genou avant LEVE ;
+    #   tenue vivante (petites oscillations qui s'amortissent, pas de gel) ;
+    # - contact en ligne jetee : penche CT_LEAN, bras libre ramene a la hanche.
     s_, o_ = "R", "L"
-    dist, az, wind, yaw, lean, low = 2.25, -8, -80, 45, -14, 0.3
+    dist, az, wind, yaw, lean, low = 2.25, -8, -80, 45, CT_LEAN, 0.3
     probe = {"root": ((0.0, 0.0, 0.0), (0, 0, 0)), "pelvis": ((0, -low, 0), (lean, yaw, 0)), "chest": (0, 0.15, 0)}
     solve_pose(rig, probe)
     y_sh = float(torso_pivot(V.current_parts(rig), s_)[1])
     tgt = target_h(UPPER_F, y_sh - 0.1)
+    HIKITE = {o_: side(o_, CT_FREE[0], CT_FREE[1], CT_FREE[2])}
     contact = {"root": ((0.0, 0.0, 0.0), (0, 0, 0)), "pelvis": ((0, -low, 0), (lean, yaw, 0)), "chest": (0, 0.15, 0),
                "fitp": (s_, tuple(tgt), dist, az), "look": head(UPPER_F),
-               "hands": {s_: ("w", tuple(tgt)), o_: FACE[o_]}}
+               "hands": {s_: ("w", tuple(tgt)), **HIKITE}}
     croot = presolve(contact)
     lx, lz = _pivot(-0.6, -0.55, 0.5 * yaw)
     rx, rz = _pivot(0.65, 1.2, 0.5 * yaw)
     cfeet = {"L": ("g", (croot[0] + lx, croot[2] + lz)), "R": ("g", (croot[0] + rx, croot[2] + rz))}
     contact["feet"] = cfeet
     contact["auto_low"] = True
-    aim = {o_: ("a", (wind, -12, 2.2))}
+    aim = {o_: ("a", (wind + CH_AIM[0], CH_AIM[1], CH_AIM[2]))}
     pr, pf = plans[-1][5], plans[-1][6]
     (_m, (fx0, fz0)), (_m, (bx0, bz0)) = pf["L"], pf["R"]
     (_m, (fx1, fz1)), (_m, (bx1, bz1)) = cfeet["L"], cfeet["R"]
+    # genou avant leve pendant la charge (pied gauche en l'air, devant la hanche)
+    knee = lambda h, dz: {"L": ("w", (fx1, h, fz1 + dz)), "R": cfeet["R"]}  # noqa: E731
+    armed = lambda k: {s_: side(s_, 150 + 4 * k, CH_EL + 3 * k, 2.0), **aim}  # noqa: E731
     # 2 pas pour se replacer (la victime a recule d'environ 1 stud)
     add(113, body(0.5 * (back(pr, 0.3) + back(croot, 0.6)), 0.15, -10, -4, 113, GUARD(),
                   {"L": ("w", (0.5 * (fx0 + fx1), 0.35, 0.5 * (fz0 + fz1))), "R": pf["R"]}))
     add(117, body(back(croot, 0.6), 0.18, 0.3 * wind, -2, 117, {s_: side(s_, 75, -25, 2.15), o_: GUARD()[o_]},
                   {"L": cfeet["L"], "R": ("w", (0.5 * (bx0 + bx1), 0.4, 0.5 * (bz0 + bz1)))}))
-    # enroulement : le poing passe par le cote (arc) puis derriere l'epaule
-    add(121, body(back(croot, 0.58), 0.24, 0.7 * wind, 2, 121, {s_: side(s_, 120, 3, 2.05), **aim}, cfeet))
-    add(126, body(back(croot, 0.6), 0.3, wind, 4, 126, {s_: side(s_, 150, 5, 2.0), **aim}, cfeet))
-    # tenue vivante : le buste continue de s'enrouler, le corps se ramasse un peu
-    add(144, body(back(croot, 0.66), 0.34, wind - 7, 5, 144, {s_: side(s_, 156, 6, 2.0), **aim}, cfeet))
-    # DEPART (4 f) : hanche et buste d'abord, le bras suit a plat
+    # enroulement : le poing passe par le cote (arc) puis monte derriere l'epaule ;
+    # le corps se penche et le genou avant monte
+    tilt = lambda k: (k * CH_LEAN, 0, 0)  # noqa: E731
+    add(121, body(back(croot, 0.58), 0.24, 0.7 * wind, 0, 121,
+                  {s_: side(s_, 120, 0.5 * CH_EL, 2.05), **aim}, knee(0.5 * CH_KNEE, 0.5 * CH_KNEE_Z), rr=tilt(0.5)))
+    add(126, body(back(croot, 0.6), 0.3, wind, 0, 126, armed(0), knee(CH_KNEE, CH_KNEE_Z), rr=tilt(1)))
+    # tenue VIVANTE (tuto uppercut : petits cercles qui ralentissent) : le buste
+    # continue de s'enrouler, le poing oscille autour de l'arme, de moins en moins
+    # 144 -> 146 -> 149 -> 150 en LINEAR (TSB : cles eparses en Linear ; tuto
+    # uppercut : le « snap » vient de l'espacement des cles, pas d'une courbe)
+    for f, k in ((131, 1.0), (136, -0.6), (140, 0.35), (144, 0.0)):
+        add(f, body(back(croot, 0.62 + 0.01 * (f - 126) / 6), 0.3 + 0.002 * (f - 126), wind - 7 * (f - 126) / 18,
+                    0, f, armed(k), knee(CH_KNEE + 0.05 * k, CH_KNEE_Z), rr=tilt(1 + 0.07 * k)),
+            "LINEAR" if f == 144 else "BEZIER")
+    # DEPART : hanche et buste d'abord, le pied avant se POSE, le bras suit a plat
     add(146, body(back(croot, 0.45), 0.33, 0.55 * wind + 0.45 * yaw, 0.3 * lean, 146,
-                  {s_: side(s_, 110, 3, 2.05), **aim}, cfeet))
-    add(148, body(back(croot, 0.15), 0.31, 0.15 * wind + 0.85 * yaw, 0.75 * lean, 148,
-                  {s_: side(s_, 35, -2, 2.2), o_: FACE[o_]}, cfeet))
+                  {s_: side(s_, 110, 0.4 * CH_EL, 2.05), **aim}, knee(0.35, 0.5 * CH_KNEE_Z), rr=tilt(0.6)), "LINEAR")
+    # tuto uppercut (Moon) : la cle du milieu RAPPROCHEE du contact (148 -> 149)
+    # -> le poing passe de derriere a devant en 3 f puis 1 f jusqu'au contact
+    add(149, body(back(croot, 0.15), 0.31, 0.15 * wind + 0.85 * yaw, 0.85 * lean, 149,
+                  {s_: side(s_, 35, -2, 2.2), **HIKITE}, cfeet), "LINEAR")
     add(UPPER_F, contact, "LINEAR")
-    # extension TENUE : le poing continue un peu devant, l'autre bras tire en arriere
+    # extension TENUE : le poing continue un peu devant (1 image de depassement),
+    # l'autre bras reste ramene
     fwd = tgt - (croot + np.array([0.0, float(tgt[1] - croot[1]), 0.0]))
     fwd = fwd / max(1e-6, np.linalg.norm(fwd))
     ext = tgt + 0.12 * fwd
     add(153, body(croot + 0.12 * fwd, low, 1.1 * yaw, 1.1 * lean, 153,
-                  {s_: ("w", tuple(ext)), o_: side(o_, 120, -30, 2.1)}, cfeet))
+                  {s_: ("w", tuple(ext)), o_: side(o_, CT_FREE[0] - 10, CT_FREE[1] + 5, 2.1)}, cfeet))
     add(158, body(croot + 0.12 * fwd, 0.9 * low, 1.05 * yaw, lean, 158,
-                  {s_: ("w", tuple(ext)), o_: side(o_, 115, -30, 2.1)}, cfeet))
+                  {s_: ("w", tuple(ext)), o_: side(o_, CT_FREE[0] - 15, CT_FREE[1] + 5, 2.1)}, cfeet))
     zc = float(croot[2]) + 0.7
     # ACCROUPI de 8 f (reference : 8 f a 30 i/s) puis DECOLLAGE
     # v5 : on garde les appuis du coup charge (sinon le pied arriere glisse de 0,85 en 4 f)

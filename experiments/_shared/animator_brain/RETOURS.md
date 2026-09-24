@@ -257,3 +257,20 @@ cerveau, voir la fin de l'entrée.
       comptaient comme une croix. Il manquait la condition « chaque bras part
       vers l'extérieur ». Vu sur la planche, corrigé.
     - Preuve : `captures/verification/2026-09-24-cerveau-detecteur-croix-v6-tsb-v7.png`.
+
+- **2026-09-24, v7 exécutée** (go de Milan). Trois leçons, apprises en
+  posant les clés et vues à l'écran, pas prévues par la fiche :
+  - **Blocage de cardan sur le bassin du V2.22.** Torse tourné vers −80°, le
+    tangage du bassin (Euler XYZ) penche le corps DE CÔTÉ. Pour pencher vers
+    la cible un torse de profil, on incline la RACINE (X monde). La 1re passe
+    le faisait mal : on l'a vu sur la planche, pas dans la mesure (le
+    `bascule_deg` était bon, mais dans la mauvaise direction). À retenir :
+    une mesure scalaire ne dit pas la DIRECTION, il faut regarder.
+  - **Deux règles justes peuvent se contredire.** Casser la croix de la
+    rafale en armant le poing plus haut haussait l'épaule (règle « épaules
+    jamais haussées », 0,30 stud). L'arbitrage s'est fait par le levier qui
+    ne touche pas l'autre règle : l'AUTRE bras vise plus bas.
+  - **Une pose nouvelle casse les cadrages anciens.** Le poing armé au-dessus
+    de la tête sortait du gros plan ciné de la charge (cadre réglé pour la
+    v6). Vu seulement sur la vidéo : les poses et la caméra se vérifient
+    ENSEMBLE, sur la vidéo, pas chacune de son côté.

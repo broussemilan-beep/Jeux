@@ -787,7 +787,9 @@ function DragonFist.play(attacker: Model, victim: Model, animations: Folder, dat
 			end)
 		end,
 		shake = function(amp: number, punch: number)
-			table.insert(shakes, { t0 = os.clock(), amp = amp, punch = punch })
+			-- v7 : la camera du module est la camera CINEMATIQUE -> dosee (CINEMA_DOSE)
+			local dose = data.CINEMA_DOSE or 1
+			table.insert(shakes, { t0 = os.clock(), amp = amp * dose, punch = punch * dose })
 		end,
 		bind = function(name: string, fn)
 			binds[name] = fn

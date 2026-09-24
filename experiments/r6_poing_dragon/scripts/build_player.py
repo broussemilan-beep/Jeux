@@ -71,7 +71,7 @@ def main():
         "fps": staging["fps"], "end": staging["end_f"], "parts": PARTS,
         "att": pack(aw), "vic": pack(vw),
         "camera": staging["camera"], "events": staging["events"], "palette": staging["palette"],
-        "markers": staging["markers"],
+        "markers": staging["markers"], "cinema_dose": staging.get("cinema_dose", 1),
         "sizes": X.RIG["part_sizes"],
         "manga": [data_uri(os.path.join(OUT, f"manga_{i}.png")) for i in (1, 2, 3)],
         "cartes": [data_uri(os.path.join(OUT, f"carte_{i}.png")) for i in (1, 2, 3)],

@@ -1,7 +1,8 @@
 # Poing du Dragon v7 : fiche (proposition)
 
-**État.** Proposition finale, **pas encore exécutée**. Elle attend le go de
-Milan. Objectif : 8/10 minimum.
+**État.** **Exécutée** le 2026-09-24, après le go de Milan (« Go v7 »).
+Résultat et écarts avec ce plan : section v7 du `README.md`. Objectif :
+8/10 minimum.
 
 - Étude close : fichier TSB officiel, 3 rapports de recherche, 6 vidéos de
   tutos étudiées image par image.

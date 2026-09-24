@@ -46,6 +46,9 @@ SMOKE = "#3b3530"
 FLASH = "#ffb070"     # teinte plate du corps a l'impact : blanc-orange (l'or pur se confondait avec le jaune du noob)
 
 
+CINEMA_DOSE = 0.7
+
+
 def resample(keys, t):
     ts = [k[0] for k in keys]
     i = max(0, min(len(ts) - 2, int(np.searchsorted(ts, t, side="right")) - 1))
@@ -105,12 +108,15 @@ def camera_keys(aw, vw):
     # visage R6 a un sourire fixe, il ne porte aucune tension (essai v6 vu a
     # l'ecran). Le regard se lit par l'orientation de la tete. Lente poussee.
     h = lambda f: aw[f]["Head"][1]  # noqa: E731
+    # v7 : le poing est arme HAUT au-dessus de la tete (charge « Serious
+    # Punch ») ; cadre v6 (visee 1,2 sous la tete) -> le poing sortait du cadre
+    # par le haut (vu sur la video v7). Visee a 0,5 sous la tete, un peu plus large.
     def regard(f):
         t = h(f) * 0.6 + Vt(f) * 0.4
-        t[1] = h(f)[1] - 1.2
+        t[1] = h(f)[1] - 0.5
         return t
-    add(126, h(126) + [7.6, -0.5, 1.0], regard(126), 44, "cut")
-    add(145, h(145) + [6.5, -0.5, 0.8], regard(145), 42)
+    add(126, h(126) + [8.6, -0.1, 1.0], regard(126), 46, "cut")
+    add(145, h(145) + [7.6, -0.1, 0.8], regard(145), 44)
     # 3. COUP CHARGE : coupe sur l'action au depart (f146), profil moyen qui
     # montre le trajet A PLAT du poing ; gele au contact sous les cartes.
     # (Essai v6 « poing vers la camera » ecarte : dans l'axe du coup, le corps
@@ -237,6 +243,10 @@ def main():
     data = {
         "fps": FPS, "end_f": END, "markers": M, "distance": D,
         "camera": camera_keys(aw, vw),
+        # v7 (Milan sur la v6 : camera cine « un peu trop abusee, mais leger ») :
+        # secousse et punch-in de FOV doses a 70 % sous la camera CINEMATIQUE
+        # seulement ; la camera de jeu (aimee) garde 100 %
+        "cinema_dose": CINEMA_DOSE,
         "events": events(aw, vw),
         "palette": {"gold": GOLD, "gold_deep": GOLD_DEEP, "white": WHITE, "smoke": SMOKE},
     }
