@@ -155,3 +155,67 @@ RootJoint) :
 C'est le faux coude du rig IK V2.22 (`RIG_V222.md`). Règle du cerveau :
 **tête toujours attachée** ; membres jugés sur la plage de leur catégorie,
 plus sur une règle « rotation pure ».
+
+## Ajout du 2026-09-24 : corpus VFX (deux packs Roblox)
+
+`vfx_corpus.py` lit les deux packs VFX envoyés par Milan : `100_Combat_VFX_Pack.rbxm`
+et `The_Creator_VFX.rbxm`. Ces packs étaient restés inexploités.
+Sorties : `vfx_100_combat_vfx_pack.json`, `vfx_the_creator.json`. Comme pour
+les animations, seules les mesures dérivées sont versionnées.
+
+Le lecteur binaire a dû être corrigé au passage. NumberSequence,
+ColorSequence et NumberRange étaient lus en big-endian (jamais appelés
+jusque-là). Désormais :
+
+- lecture en little-endian, avec vérification que le buffer est consommé
+  exactement ;
+- nouveaux décodeurs : Enum, Vector2, Vector3 et les attributs d'instance.
+
+**Ce que font les pros (100 Combat VFX, 104 effets, 2 073 émetteurs) :**
+
+| mesure | médiane [p10–p90] | notre M1 (`M1Technique.luau`) |
+|---|---|---|
+| émetteurs par effet | 14 [5–44] | 2 émetteurs + 1 Part anneau |
+| rôles par effet | 4 [1–6] | 3 (flash, étincelle, onde) |
+| durée d'un effet | 1,2 s [0,5–3,0] | ~0,3 s |
+| flash : durée de vie | 0,10 s [0,05–0,125] | 0,09–0,11 s ✔ |
+| flash : taille max | 11 studs [3,9–33] | ~3 studs |
+| étincelle : vitesse | 75 studs/s [22–299], drag 5 | 28–46, drag 9 |
+| onde : taille max | 12 studs [5–33], 11 clés de courbe | cylindre 7 studs, tween |
+| fumée/poussière | 18 % des émetteurs ; durée de vie 1 s, drag 5,4 | **absente** |
+
+Conventions de déclenchement :
+
+- 98 % des émetteurs sont **désactivés** et joués par `:Emit()`, piloté par
+  des attributs (voir la liste ci-dessous) :
+  - `EmitCount` : présent sur 97 % des émetteurs ; valeurs fréquentes 1, 2, 5, 3 ;
+  - `EmitDelay` : presque toujours 0 ; tout part en même temps, les couches
+    se séparent par leur durée de vie ;
+  - `EmitDuration` : utilisé pour les jets continus courts ;
+  - `TimeScale_Start/End/Duration` : un ralenti de 0,1 s sur les particules
+    elles-mêmes, soit l'équivalent VFX du hitstop.
+- Orientation : 46 % VelocityPerpendicular (anneaux et ondes à plat), 27 %
+  VelocityParallel (étincelles étirées), 26 % FacingCamera.
+- 50 % des émetteurs utilisent une planche de sprites animée (flipbook).
+
+Combinaison la plus fréquente pour un impact complet : **étincelle +
+flash + forme + fumée + onde**, avec des débris en plus pour les coups lourds.
+
+**The Creator** est un exemple d'**aura de personnage** :
+
+- sur chaque membre : 10 émetteurs continus (feu, étoiles, poussière
+  d'étoiles) ;
+- sur le HumanoidRootPart : un soleil (PointLight portée 60, ombres).
+
+C'est le modèle des « formes » et transformations.
+
+Réserve : le pack ne dit pas quel effet sert à un M1 ou à un finisher. Ses
+médianes mélangent coups légers et lourds. Pour un M1, il faut viser le bas
+de la plage (p10 à médiane), pas le p90.
+
+Leçon pour le cerveau : nos impacts sont **5 à 7 fois moins denses** que
+ceux d'un pack pro, et **3 fois trop petits**. Il leur manque une couche
+(fumée/poussière) et le ralenti de particules. Les textures du pack sont
+des assets Roblox (`rbxassetid://…`) utilisables en jeu. On ne peut pas les
+télécharger ici (`assetdelivery.roblox.com` est bloqué par le proxy), donc
+pas d'aperçu local.

@@ -278,15 +278,17 @@ def rotation_angle_deg(mat9):
 
 def decode_numbersequence_array(buf, n):
     """NumberSequence : [count:u32][(time,value,envelope) x count] par
-    instance, flottants BIG-endian sequentiels (pas transposes -- taille
-    variable par instance, la transposition ne s'applique pas)."""
+    instance, flottants little-endian sequentiels (pas transposes -- taille
+    variable par instance, la transposition ne s'applique pas). Corrige le
+    2026-09-24 : lu en big-endian auparavant (jamais appele jusque-la) ;
+    verifie sur 100_Combat_VFX_Pack (le buffer est consomme exactement)."""
     off = 0
     out = []
     for _ in range(n):
-        (cnt,) = struct.unpack_from(">I", buf, off); off += 4
+        (cnt,) = struct.unpack_from("<I", buf, off); off += 4
         kps = []
         for _k in range(cnt):
-            t, v, env = struct.unpack_from(">3f", buf, off); off += 12
+            t, v, env = struct.unpack_from("<3f", buf, off); off += 12
             kps.append((t, v, env))
         out.append(kps)
     return out, off
@@ -297,17 +299,25 @@ def decode_colorsequence_array(buf, n):
     off = 0
     out = []
     for _ in range(n):
-        (cnt,) = struct.unpack_from(">I", buf, off); off += 4
+        (cnt,) = struct.unpack_from("<I", buf, off); off += 4
         kps = []
         for _k in range(cnt):
-            t, r, g, b, env = struct.unpack_from(">5f", buf, off); off += 20
+            t, r, g, b, env = struct.unpack_from("<5f", buf, off); off += 20
             kps.append((t, (r, g, b), env))
         out.append(kps)
     return out, off
 
 
+def decode_vector3_array(buf, n):
+    """Vector3 / Color3 : 3 tableaux de flottants transposes (X..., Y..., Z...)."""
+    xs = decode_float32_array(buf[0:4 * n], n)
+    ys = decode_float32_array(buf[4 * n:8 * n], n)
+    zs = decode_float32_array(buf[8 * n:12 * n], n)
+    return list(zip(xs, ys, zs)), 12 * n
+
+
 def decode_numberrange_array(buf, n):
-    vals = struct.unpack_from(f">{2 * n}f", buf, 0)
+    vals = struct.unpack_from(f"<{2 * n}f", buf, 0)
     return [(vals[2 * i], vals[2 * i + 1]) for i in range(n)], 8 * n
 
 
@@ -333,7 +343,8 @@ def parse_prop_extended(chunks, classes, want):
         body = payload[off:]
         kind = want[key]
         decoders = {"cframe": decode_cframe_array, "numseq": decode_numbersequence_array,
-                    "colorseq": decode_colorsequence_array, "numrange": decode_numberrange_array}
+                    "colorseq": decode_colorsequence_array, "numrange": decode_numberrange_array,
+                    "vector3": decode_vector3_array, "color3": decode_vector3_array}
         try:
             entries, _ = decoders[kind](body, n)
             results[key] = dict(zip(refs, entries))
@@ -353,6 +364,86 @@ def inventory(path):
     for cid, c in sorted(classes.items(), key=lambda kv: -len(kv[1]["referents"])):
         print(f"  {c['name']:<24} x{len(c['referents'])}")
     return classes, chunks
+
+
+
+# ---------------------------------------------------------------------
+# Attributs (AttributesSerialize) -- ajoute le 2026-09-24 pour lire les
+# conventions de declenchement des packs VFX (EmitCount, EmitDelay...).
+
+def parse_attribute_blob(b):
+    """[u32 n][ (u32 len, nom)(u8 type)(valeur) x n ] -> {nom: valeur}.
+    Types decodes : 0x02 string, 0x03 bool, 0x05 float, 0x06 double.
+    Un type inconnu arrete la lecture (sa taille n'est pas connue) et est
+    note "type<N>"."""
+    if not b:
+        return {}
+    (n,) = struct.unpack_from("<I", b, 0)
+    o = 4
+    out = {}
+    for _ in range(n):
+        (ln,) = struct.unpack_from("<I", b, o); o += 4
+        name = b[o:o + ln].decode("latin1"); o += ln
+        t = b[o]; o += 1
+        if t == 0x06:
+            (val,) = struct.unpack_from("<d", b, o); o += 8
+        elif t == 0x05:
+            (val,) = struct.unpack_from("<f", b, o); o += 4
+        elif t == 0x03:
+            val = bool(b[o]); o += 1
+        elif t == 0x02:
+            (l2,) = struct.unpack_from("<I", b, o); o += 4
+            val = b[o:o + l2].decode("latin1"); o += l2
+        else:
+            out[name] = f"type{t}"
+            break
+        out[name] = val
+    return out
+
+
+def parse_attributes(chunks, classes):
+    """referent -> {nom: valeur} pour toute instance ayant des attributs."""
+    res = {}
+    for tag, payload in chunks:
+        if tag != "PROP":
+            continue
+        (cid,) = struct.unpack_from("<I", payload, 0)
+        nm, off = read_string(payload, 4)
+        if nm != b"AttributesSerialize" or cid not in classes:
+            continue
+        off += 1
+        for r in classes[cid]["referents"]:
+            s, off = read_string(payload, off)
+            if s:
+                res[r] = parse_attribute_blob(s)
+    return res
+
+
+def parse_enum_and_vector2(chunks, classes):
+    """{(classe, propriete): {referent: valeur}} pour les Enum (u32
+    transposes, sans zigzag) et les Vector2 (2 tableaux de flottants)."""
+    res = {}
+    for tag, payload in chunks:
+        if tag != "PROP":
+            continue
+        (cid,) = struct.unpack_from("<I", payload, 0)
+        nm, off = read_string(payload, 4)
+        dt = payload[off]; off += 1
+        cls = classes.get(cid)
+        if cls is None or dt not in (0x0D, 0x12):
+            continue
+        refs = cls["referents"]
+        n = len(refs)
+        body = payload[off:]
+        key = (cls["name"], nm.decode("utf-8", "replace"))
+        if dt == 0x12:
+            raw = untranspose_interleave(body, n, 4)
+            res[key] = dict(zip(refs, struct.unpack(f">{n}I", raw)))
+        else:
+            xs = decode_float32_array(body[:4 * n], n)
+            ys = decode_float32_array(body[4 * n:8 * n], n)
+            res[key] = {r: (x, y) for r, x, y in zip(refs, xs, ys)}
+    return res
 
 
 if __name__ == "__main__":
