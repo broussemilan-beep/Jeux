@@ -88,6 +88,41 @@ non versionné) :
 - **Ultimate1** : 10 s presque debout, un bras qui bouge. La caméra et les
   VFX font l'ultime.
 
+## 4 bis. Vu sur les planches (2e passe) : les jambes et la variété
+
+- **M4, le coup qui ferme le combo, est un COUP DE PIED** : jambe à
+  l'horizontale et torse basculé loin en arrière (f9-f15), puis retour.
+  M1 à M3 sont des poings. TSB change de membre pour fermer le combo ; notre
+  rafale enchaîne 4 poings (`variete_coups` est faux depuis la v4).
+- **Swift Sweep** : balayage, vrille, puis un coup de pied **tenu jambe à
+  l'horizontale environ 27 f** (0,45 s). Le pic est tenu, comme dans l'anime.
+- **Combo au mur** : genoux, coups de pied, torse à l'horizontale.
+- **Mesures.** Part du temps avec un pied au-dessus de la hanche :
+
+  | animation | pied au-dessus de la hanche |
+  |---|---|
+  | Swift Sweep | 62 % |
+  | M4 | 12 % |
+  | Stoic Bomb | 4 % |
+  | Collateral Ruin | 2 % |
+  | WallCombo | 2 % |
+  | Ultimate1-2 | 0 % |
+  | nous : rafale et charge | 0 % |
+  | nous : aérien | 9 % |
+
+  C'est **propre à la technique**, pas une règle universelle : une compétence
+  « de jambes » les utilise, les autres non.
+- **Tenues** (extrémités à moins de 4 studs/s pendant au moins 6 f) :
+  - TSB : Stoic Bomb 81 f (la charge) ; Ultimate1 58, 35, 21 f ;
+    Collateral Ruin 16 f.
+  - Nous : 18 f sur la charge, 58 et 27 f dans l'aérien.
+  - Pas d'écart de principe.
+
+**Jugement.** Pour une rafale de poings, la variété TSB passe par le
+**membre** : le dernier coup du combo est un coup de pied ou un genou, avec
+le corps entier qui bascule. C'est une piste de refonte pour notre h4, à
+proposer à Milan, pas une règle.
+
 ## 5. Ce que ça change pour nous
 
 1. **Le levier n°1 est notre chaîne d'export, pas nos poses.** Nous
