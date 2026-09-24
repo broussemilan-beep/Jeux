@@ -242,6 +242,12 @@ def timing_profile(world_frames, loop=False, ignore_parts=(), strike=False):
     out["deplacement_torse_studs"] = {"x": round(float(np.ptp(tp[:, 0])), 2), "y": round(float(np.ptp(tp[:, 1])), 2),
                                      "z": round(float(np.ptp(tp[:, 2])), 2)}
     out["torse_vitesse_max_studs_s"] = round(float(torso_lin.max()), 1)
+    # Ajout du 2026-09-24 (retour de Milan sur le Poing du Dragon : « il est
+    # accroupi ») : hauteur ABSOLUE du torse sous la position debout (centre
+    # du torse a y = 3 au repos). deplacement_torse_studs ne mesure que la
+    # VARIATION pendant le clip : un perso accroupi des la frame 0 y passait.
+    sag = np.maximum(0.0, 3.0 - tp[:, 1])
+    out["affaissement_torse_studs"] = {"max": round(float(sag.max()), 3), "median": round(float(np.median(sag)), 3)}
     return out
 
 

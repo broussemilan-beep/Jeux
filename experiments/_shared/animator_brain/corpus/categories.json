@@ -139,6 +139,18 @@
     "max": 1.0,
     "n": 1
    },
+   "timing.affaissement_torse_studs.max": {
+    "mediane": 0.032,
+    "min": 0.0,
+    "max": 0.064,
+    "n": 2
+   },
+   "timing.affaissement_torse_studs.median": {
+    "mediane": 0.024,
+    "min": 0.0,
+    "max": 0.047,
+    "n": 2
+   },
    "timing.deplacement_torse_studs.x": {
     "mediane": 0.0,
     "min": 0.0,
@@ -539,6 +551,18 @@
     "mediane": 0.868,
     "min": 0.828,
     "max": 0.973,
+    "n": 4
+   },
+   "timing.affaissement_torse_studs.max": {
+    "mediane": 0.463,
+    "min": 0.207,
+    "max": 0.756,
+    "n": 4
+   },
+   "timing.affaissement_torse_studs.median": {
+    "mediane": 0.091,
+    "min": 0.0,
+    "max": 0.382,
     "n": 4
    },
    "timing.deplacement_torse_studs.x": {
@@ -967,6 +991,18 @@
     "max": 0.999,
     "n": 4
    },
+   "timing.affaissement_torse_studs.max": {
+    "mediane": 0.137,
+    "min": 0.12,
+    "max": 0.218,
+    "n": 4
+   },
+   "timing.affaissement_torse_studs.median": {
+    "mediane": 0.06,
+    "min": 0.0,
+    "max": 0.094,
+    "n": 4
+   },
    "timing.deplacement_torse_studs.x": {
     "mediane": 0.19,
     "min": 0.06,
@@ -1136,33 +1172,33 @@
     "n": 4
    },
    "timing.phases.action_f60": {
-    "mediane": 11.0,
+    "mediane": 10.0,
     "min": 9.0,
     "max": 18.0,
     "n": 4
    },
    "timing.phases.anticipation_f60": {
-    "mediane": 5.0,
+    "mediane": 0.0,
     "min": 0.0,
     "max": 10.0,
     "n": 4
    },
    "timing.phases.fraction_anticipation": {
-    "mediane": 0.128,
+    "mediane": 0.0,
     "min": 0.0,
     "max": 0.256,
     "n": 4
    },
    "timing.phases.fraction_recuperation": {
-    "mediane": 0.542,
-    "min": 0.462,
-    "max": 0.718,
+    "mediane": 0.644,
+    "min": 0.513,
+    "max": 0.769,
     "n": 4
    },
    "timing.phases.recuperation_ou_tenue_f60": {
-    "mediane": 22.0,
-    "min": 18.0,
-    "max": 28.0,
+    "mediane": 26.0,
+    "min": 20.0,
+    "max": 30.0,
     "n": 4
    },
    "timing.poses_cles_par_s": {
@@ -1336,6 +1372,18 @@
     "mediane": 0.958,
     "min": 0.754,
     "max": 0.959,
+    "n": 3
+   },
+   "timing.affaissement_torse_studs.max": {
+    "mediane": 1.265,
+    "min": 0.719,
+    "max": 1.314,
+    "n": 3
+   },
+   "timing.affaissement_torse_studs.median": {
+    "mediane": 0.569,
+    "min": 0.043,
+    "max": 0.74,
     "n": 3
    },
    "timing.deplacement_torse_studs.x": {
@@ -1689,6 +1737,18 @@
     "max": 1.0,
     "n": 1
    },
+   "timing.affaissement_torse_studs.max": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 1
+   },
+   "timing.affaissement_torse_studs.median": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 1
+   },
    "timing.deplacement_torse_studs.x": {
     "mediane": 0.0,
     "min": 0.0,
@@ -2003,6 +2063,18 @@
     "mediane": 0.883,
     "min": 0.821,
     "max": 0.946,
+    "n": 2
+   },
+   "timing.affaissement_torse_studs.max": {
+    "mediane": 0.297,
+    "min": 0.169,
+    "max": 0.426,
+    "n": 2
+   },
+   "timing.affaissement_torse_studs.median": {
+    "mediane": 0.226,
+    "min": 0.102,
+    "max": 0.351,
     "n": 2
    },
    "timing.deplacement_torse_studs.x": {
@@ -2398,6 +2470,18 @@
     "mediane": 0.984,
     "min": 0.96,
     "max": 0.988,
+    "n": 3
+   },
+   "timing.affaissement_torse_studs.max": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.039,
+    "n": 3
+   },
+   "timing.affaissement_torse_studs.median": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.028,
     "n": 3
    },
    "timing.deplacement_torse_studs.x": {

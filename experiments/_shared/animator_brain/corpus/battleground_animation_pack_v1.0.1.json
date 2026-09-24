@@ -130,6 +130,7 @@
      ]
     }
    ],
+   "main_qui_frappe": "Right Arm",
    "membres": {
     "Torso": {
      "vitesse_max_deg_s": 4.5,
@@ -184,7 +185,11 @@
     "y": 0.03,
     "z": 0.0
    },
-   "torse_vitesse_max_studs_s": 0.1
+   "torse_vitesse_max_studs_s": 0.1,
+   "affaissement_torse_studs": {
+    "max": 0.064,
+    "median": 0.047
+   }
   },
   "audit": {
    "overlap sync Head <- Torso": 0.0,
@@ -247,7 +252,7 @@
      "debut_f60": 0.0,
      "fin_f60": 20.0,
      "fin_active_f60": 20.0,
-     "main_vers_avant_max_studs_s": 33.4,
+     "main_vers_avant_max_studs_s": 2.0,
      "pic_energie_rel": 1.0,
      "main_max_studs_s": 37.4,
      "ordre_des_pics": [
@@ -312,6 +317,7 @@
      ]
     }
    ],
+   "main_qui_frappe": "Left Arm",
    "membres": {
     "Torso": {
      "vitesse_max_deg_s": 185.2,
@@ -366,7 +372,11 @@
     "y": 0.16,
     "z": 0.3
    },
-   "torse_vitesse_max_studs_s": 2.9
+   "torse_vitesse_max_studs_s": 2.9,
+   "affaissement_torse_studs": {
+    "max": 0.426,
+    "median": 0.351
+   }
   },
   "audit": {
    "overlap sync Head <- Torso": 0.333,
@@ -429,7 +439,7 @@
      "debut_f60": 0.0,
      "fin_f60": 29.0,
      "fin_active_f60": 29.0,
-     "main_vers_avant_max_studs_s": 7.9,
+     "main_vers_avant_max_studs_s": 0.0,
      "pic_energie_rel": 1.0,
      "main_max_studs_s": 7.9,
      "ordre_des_pics": [
@@ -494,6 +504,7 @@
      ]
     }
    ],
+   "main_qui_frappe": "Right Arm",
    "membres": {
     "Torso": {
      "vitesse_max_deg_s": 106.0,
@@ -548,7 +559,11 @@
     "y": 0.15,
     "z": 0.07
    },
-   "torse_vitesse_max_studs_s": 1.2
+   "torse_vitesse_max_studs_s": 1.2,
+   "affaissement_torse_studs": {
+    "max": 0.169,
+    "median": 0.102
+   }
   },
   "audit": {
    "overlap sync Head <- Torso": 1.0,
@@ -640,7 +655,7 @@
      "debut_f60": 10.0,
      "fin_f60": 39.0,
      "fin_active_f60": 21.0,
-     "main_vers_avant_max_studs_s": 69.9,
+     "main_vers_avant_max_studs_s": 5.6,
      "pic_energie_rel": 0.83,
      "main_max_studs_s": 83.2,
      "ordre_des_pics": [
@@ -663,17 +678,18 @@
      ]
     }
    ],
+   "main_qui_frappe": "Left Arm",
    "phases": {
-    "anticipation_f60": 10.0,
-    "action_f60": 11.0,
-    "recuperation_ou_tenue_f60": 18.0,
-    "fraction_anticipation": 0.256,
-    "fraction_recuperation": 0.462,
+    "anticipation_f60": 0.0,
+    "action_f60": 9.0,
+    "recuperation_ou_tenue_f60": 30.0,
+    "fraction_anticipation": 0.0,
+    "fraction_recuperation": 0.769,
     "qui_mene_l_action": [
-     "Right Arm",
-     "Torso",
      "Head",
-     "Left Arm"
+     "Left Arm",
+     "Right Arm",
+     "Torso"
     ]
    },
    "membres": {
@@ -716,7 +732,11 @@
     "y": 0.19,
     "z": 0.31
    },
-   "torse_vitesse_max_studs_s": 4.8
+   "torse_vitesse_max_studs_s": 4.8,
+   "affaissement_torse_studs": {
+    "max": 0.129,
+    "median": 0.0
+   }
   },
   "audit": {
    "overlap sync Head <- Torso": 1.0,
@@ -804,6 +824,7 @@
      ]
     }
    ],
+   "main_qui_frappe": "Left Arm",
    "phases": {
     "anticipation_f60": 0.0,
     "action_f60": 11.0,
@@ -857,7 +878,11 @@
     "y": 0.25,
     "z": 0.58
    },
-   "torse_vitesse_max_studs_s": 8.6
+   "torse_vitesse_max_studs_s": 8.6,
+   "affaissement_torse_studs": {
+    "max": 0.218,
+    "median": 0.084
+   }
   },
   "audit": {
    "overlap sync Head <- Torso": 1.0,
@@ -971,6 +996,7 @@
      ]
     }
    ],
+   "main_qui_frappe": "Left Arm",
    "phases": {
     "anticipation_f60": 10.0,
     "action_f60": 9.0,
@@ -1024,7 +1050,11 @@
     "y": 0.08,
     "z": 0.43
    },
-   "torse_vitesse_max_studs_s": 6.9
+   "torse_vitesse_max_studs_s": 6.9,
+   "affaissement_torse_studs": {
+    "max": 0.144,
+    "median": 0.094
+   }
   },
   "audit": {
    "overlap sync Head <- Torso": 1.0,
@@ -1112,6 +1142,7 @@
      ]
     }
    ],
+   "main_qui_frappe": "Right Arm",
    "phases": {
     "anticipation_f60": 0.0,
     "action_f60": 18.0,
@@ -1165,7 +1196,11 @@
     "y": 0.11,
     "z": 0.64
    },
-   "torse_vitesse_max_studs_s": 7.8
+   "torse_vitesse_max_studs_s": 7.8,
+   "affaissement_torse_studs": {
+    "max": 0.12,
+    "median": 0.035
+   }
   },
   "audit": {
    "overlap sync Head <- Torso": 1.0,
@@ -1227,7 +1262,7 @@
      "debut_f60": 0.0,
      "fin_f60": 23.0,
      "fin_active_f60": 23.0,
-     "main_vers_avant_max_studs_s": 36.7,
+     "main_vers_avant_max_studs_s": 36.1,
      "pic_energie_rel": 1.0,
      "main_max_studs_s": 60.5,
      "ordre_des_pics": [
@@ -1292,6 +1327,7 @@
      ]
     }
    ],
+   "main_qui_frappe": "Right Arm",
    "phases": {
     "anticipation_f60": 0.0,
     "action_f60": 23.0,
@@ -1361,7 +1397,11 @@
     "y": 2.04,
     "z": 0.28
    },
-   "torse_vitesse_max_studs_s": 13.9
+   "torse_vitesse_max_studs_s": 13.9,
+   "affaissement_torse_studs": {
+    "max": 0.72,
+    "median": 0.0
+   }
   },
   "audit": {
    "overlap sync Head <- Torso": 0.0,
@@ -1424,7 +1464,7 @@
      "debut_f60": 0.0,
      "fin_f60": 15.0,
      "fin_active_f60": 15.0,
-     "main_vers_avant_max_studs_s": 25.1,
+     "main_vers_avant_max_studs_s": 18.8,
      "pic_energie_rel": 0.79,
      "main_max_studs_s": 62.8,
      "ordre_des_pics": [
@@ -1458,7 +1498,7 @@
      "debut_f60": 15.0,
      "fin_f60": 42.0,
      "fin_active_f60": 29.0,
-     "main_vers_avant_max_studs_s": 69.4,
+     "main_vers_avant_max_studs_s": 69.0,
      "pic_energie_rel": 1.0,
      "main_max_studs_s": 84.3,
      "ordre_des_pics": [
@@ -1519,6 +1559,7 @@
      ]
     }
    ],
+   "main_qui_frappe": "Left Arm",
    "phases": {
     "anticipation_f60": 15.0,
     "action_f60": 14.0,
@@ -1588,7 +1629,11 @@
     "y": 1.26,
     "z": 0.66
    },
-   "torse_vitesse_max_studs_s": 12.7
+   "torse_vitesse_max_studs_s": 12.7,
+   "affaissement_torse_studs": {
+    "max": 1.265,
+    "median": 0.74
+   }
   },
   "audit": {
    "overlap sync Head <- Torso": 0.0,
@@ -1685,7 +1730,7 @@
      "debut_f60": 35.0,
      "fin_f60": 65.0,
      "fin_active_f60": 64.0,
-     "main_vers_avant_max_studs_s": 15.1,
+     "main_vers_avant_max_studs_s": 15.0,
      "pic_energie_rel": 0.27,
      "main_max_studs_s": 17.9,
      "ordre_des_pics": [
@@ -1708,6 +1753,7 @@
      ]
     }
    ],
+   "main_qui_frappe": "Left Arm",
    "phases": {
     "anticipation_f60": 0.0,
     "action_f60": 20.0,
@@ -1777,7 +1823,11 @@
     "y": 1.31,
     "z": 0.91
    },
-   "torse_vitesse_max_studs_s": 10.9
+   "torse_vitesse_max_studs_s": 10.9,
+   "affaissement_torse_studs": {
+    "max": 1.314,
+    "median": 0.569
+   }
   },
   "audit": {
    "overlap sync Head <- Torso": 0.333,
@@ -1840,7 +1890,7 @@
      "debut_f60": 0.0,
      "fin_f60": 34.0,
      "fin_active_f60": 29.0,
-     "main_vers_avant_max_studs_s": 14.6,
+     "main_vers_avant_max_studs_s": 1.0,
      "pic_energie_rel": 0.28,
      "main_max_studs_s": 17.2,
      "ordre_des_pics": [
@@ -1893,6 +1943,7 @@
      ]
     }
    ],
+   "main_qui_frappe": "Right Arm",
    "phases": {
     "anticipation_f60": 34.0,
     "action_f60": 12.0,
@@ -1962,7 +2013,11 @@
     "y": 0.76,
     "z": 0.24
    },
-   "torse_vitesse_max_studs_s": 2.9
+   "torse_vitesse_max_studs_s": 2.9,
+   "affaissement_torse_studs": {
+    "max": 0.756,
+    "median": 0.382
+   }
   },
   "audit": {
    "overlap sync Head <- Torso": 1.0,
@@ -2059,7 +2114,7 @@
      "debut_f60": 13.0,
      "fin_f60": 32.0,
      "fin_active_f60": 32.0,
-     "main_vers_avant_max_studs_s": 3.2,
+     "main_vers_avant_max_studs_s": 0.0,
      "pic_energie_rel": 0.52,
      "main_max_studs_s": 16.8,
      "ordre_des_pics": [
@@ -2090,6 +2145,7 @@
      ]
     }
    ],
+   "main_qui_frappe": "Left Arm",
    "phases": {
     "anticipation_f60": 0.0,
     "action_f60": 9.0,
@@ -2159,7 +2215,11 @@
     "y": 0.21,
     "z": 0.0
    },
-   "torse_vitesse_max_studs_s": 9.6
+   "torse_vitesse_max_studs_s": 9.6,
+   "affaissement_torse_studs": {
+    "max": 0.207,
+    "median": 0.091
+   }
   },
   "audit": {
    "overlap sync Head <- Torso": 1.0,
@@ -2256,7 +2316,7 @@
      "debut_f60": 13.0,
      "fin_f60": 32.0,
      "fin_active_f60": 32.0,
-     "main_vers_avant_max_studs_s": 3.2,
+     "main_vers_avant_max_studs_s": 0.0,
      "pic_energie_rel": 0.52,
      "main_max_studs_s": 16.8,
      "ordre_des_pics": [
@@ -2287,6 +2347,7 @@
      ]
     }
    ],
+   "main_qui_frappe": "Right Arm",
    "phases": {
     "anticipation_f60": 0.0,
     "action_f60": 9.0,
@@ -2356,7 +2417,11 @@
     "y": 0.21,
     "z": 0.0
    },
-   "torse_vitesse_max_studs_s": 9.6
+   "torse_vitesse_max_studs_s": 9.6,
+   "affaissement_torse_studs": {
+    "max": 0.207,
+    "median": 0.091
+   }
   },
   "audit": {
    "overlap sync Head <- Torso": 1.0,
@@ -2445,6 +2510,7 @@
      ]
     }
    ],
+   "main_qui_frappe": "Right Arm",
    "phases": {
     "anticipation_f60": 0.0,
     "action_f60": 48.0,
@@ -2498,7 +2564,11 @@
     "y": 0.98,
     "z": 0.8
    },
-   "torse_vitesse_max_studs_s": 10.5
+   "torse_vitesse_max_studs_s": 10.5,
+   "affaissement_torse_studs": {
+    "max": 0.719,
+    "median": 0.043
+   }
   },
   "audit": {
    "overlap sync Head <- Torso": 0.333,
@@ -2587,6 +2657,7 @@
      ]
     }
    ],
+   "main_qui_frappe": "Left Arm",
    "phases": {
     "anticipation_f60": 0.0,
     "action_f60": 12.0,
@@ -2640,7 +2711,11 @@
     "y": 0.04,
     "z": 0.0
    },
-   "torse_vitesse_max_studs_s": 0.9
+   "torse_vitesse_max_studs_s": 0.9,
+   "affaissement_torse_studs": {
+    "max": 0.039,
+    "median": 0.028
+   }
   },
   "audit": {
    "miroir quasi exact Right Arm/Left Arm": 0.429,
@@ -2718,6 +2793,7 @@
      ]
     }
    ],
+   "main_qui_frappe": "Right Arm",
    "phases": {
     "anticipation_f60": 0.0,
     "action_f60": 13.0,
@@ -2771,7 +2847,11 @@
     "y": 0.0,
     "z": 0.0
    },
-   "torse_vitesse_max_studs_s": 0.0
+   "torse_vitesse_max_studs_s": 0.0,
+   "affaissement_torse_studs": {
+    "max": 0.0,
+    "median": 0.0
+   }
   },
   "audit": {
    "overlap sync Head <- Torso": 0.0,
@@ -2881,6 +2961,7 @@
      ]
     }
    ],
+   "main_qui_frappe": "Left Arm",
    "phases": {
     "anticipation_f60": 0.0,
     "action_f60": 11.0,
@@ -2934,7 +3015,11 @@
     "y": 0.0,
     "z": 0.0
    },
-   "torse_vitesse_max_studs_s": 0.0
+   "torse_vitesse_max_studs_s": 0.0,
+   "affaissement_torse_studs": {
+    "max": 0.0,
+    "median": 0.0
+   }
   },
   "audit": {
    "overlap sync Left Arm <- Torso": 0.0,
@@ -3014,6 +3099,7 @@
      ]
     }
    ],
+   "main_qui_frappe": "Right Arm",
    "phases": {
     "anticipation_f60": 0.0,
     "action_f60": 0.9,
@@ -3052,7 +3138,11 @@
     "y": 0.0,
     "z": 0.0
    },
-   "torse_vitesse_max_studs_s": 0.0
+   "torse_vitesse_max_studs_s": 0.0,
+   "affaissement_torse_studs": {
+    "max": 0.0,
+    "median": 0.0
+   }
   },
   "audit": {
    "miroir quasi exact Right Arm/Left Arm": 0.0,
@@ -3158,6 +3248,7 @@
      ]
     }
    ],
+   "main_qui_frappe": "Right Arm",
    "membres": {
     "Right Arm": {
      "vitesse_max_deg_s": 1.0,
@@ -3185,7 +3276,11 @@
     "y": 0.0,
     "z": 0.0
    },
-   "torse_vitesse_max_studs_s": 0.0
+   "torse_vitesse_max_studs_s": 0.0,
+   "affaissement_torse_studs": {
+    "max": 0.0,
+    "median": 0.0
+   }
   },
   "audit": {
    "arrets simultanes": 0.0,

@@ -1,0 +1,82 @@
+{
+ "ok": 3,
+ "total": 7,
+ "regles": [
+  {
+   "regle": "posture droite pendant les coups legers",
+   "ok": false,
+   "valeur": {
+    "max": 0.653,
+    "median": 0.552
+   },
+   "seuil": {
+    "max": 0.24,
+    "median": 0.123
+   },
+   "source": "corpus frappe_legere (affaissement_torse_studs) ; retour Milan 2026-09-24"
+  },
+  {
+   "regle": "escalade : hitstop",
+   "ok": false,
+   "valeur": [
+    0.05,
+    0.05,
+    0.05,
+    0.05,
+    0.05,
+    0.05
+   ],
+   "seuil": "dernier tiers >= 1.15 x premier tiers, aucune baisse > 10 %",
+   "source": "refs Black Flash / Serious Punch ; retour Milan 2026-09-24"
+  },
+  {
+   "regle": "escalade : recul de la victime (studs)",
+   "ok": true,
+   "valeur": [
+    0.398,
+    0.405,
+    0.496,
+    0.662,
+    1.411,
+    1.359
+   ],
+   "seuil": "dernier tiers >= 1.15 x premier tiers, aucune baisse > 10 %",
+   "source": "refs Black Flash / Serious Punch ; retour Milan 2026-09-24"
+  },
+  {
+   "regle": "escalade : secousse camera",
+   "ok": true,
+   "valeur": [
+    0.18,
+    0.21,
+    0.24,
+    0.27,
+    0.3,
+    0.33
+   ],
+   "seuil": "dernier tiers >= 1.15 x premier tiers, aucune baisse > 10 %",
+   "source": "refs Black Flash / Serious Punch ; retour Milan 2026-09-24"
+  },
+  {
+   "regle": "rafale : changement d'angle au moins toutes les 2 frappes",
+   "ok": false,
+   "valeur": 6,
+   "seuil": "<= 2 frappes par plan",
+   "source": "refs Black Flash ; LECONS.md 2"
+  },
+  {
+   "regle": "impact final visible avant les effets plein ecran",
+   "ok": false,
+   "valeur": 0,
+   "seuil": ">= 6 f a 60 i/s",
+   "source": "REFERENCES_VIDEO.md (Serious Punch) ; LECONS.md 3"
+  },
+  {
+   "regle": "plongee lisible (plan sans coupe)",
+   "ok": true,
+   "valeur": 30,
+   "seuil": ">= 20 f",
+   "source": "LECONS.md 3"
+  }
+ ]
+}
