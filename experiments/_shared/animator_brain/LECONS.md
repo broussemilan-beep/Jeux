@@ -173,3 +173,18 @@ Le verdict final reste la revue de Milan, tracée dans `RETOURS.md`.
   baisse le bassin par une fente, ce qui en fait un coup lourd, jugé au standard
   frappe_lourde (`check_rules.py`). « Accroupi » reste un défaut pour les coups
   légers.
+
+## 11. Un coup droit voyage à plat (diagnostic, règle à venir)
+
+- **Retour** : Milan, v3b (2026-09-24) : « les coups partent toujours du bas ».
+- **Mesure** (`fist_path.py`) :
+  - chez les pros, le poing arme **à hauteur d'épaule, en arrière**, puis
+    avance en ligne horizontale (montée ≤ 0,2 stud sur les 6 dernières frames) ;
+  - chez nous, il partait de la hanche et montait de 1,1 à 1,7 stud : un
+    uppercut.
+- **Ce que la carte de l'IK impose** : garder l'épaule basse ET armer haut
+  demande de vérifier, sur le rig, qu'une main armée **en arrière à hauteur
+  d'épaule** ne hausse pas l'épaule. C'est encore à sonder.
+- **Règle à écrire avec la correction** : départ du poing ≥ −0,5 stud sous
+  l'épaule, montée ≤ 0,3 sur les 6 dernières frames. Pour un uppercut
+  volontaire, la catégorie est différente.

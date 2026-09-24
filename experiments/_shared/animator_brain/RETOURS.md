@@ -127,3 +127,26 @@ v3b, voir plus bas. La rafale seulement ; le reste est inchangé
   - Affaissement des coups légers : médiane 0,05. La fente du coup final est
     jugée comme coup lourd : médiane 0,39, pour un seuil de 0,83.
 - **Preuve** : `captures/verification/2026-09-24-poing-dragon-v3-vs-v3b-bras-horizontal.png`.
+
+### Retour de Milan sur la v3b
+
+- **Retour**, texto : « toujours pas bon, les coups partent toujours du bas.
+  Pareil pour le grand coup final : on dirait un enchaînement d'uppercuts, mais
+  en même temps un coup droit. Étudie, comprends, avant de te lancer. » Milan
+  cherche une référence visuelle.
+- **Diagnostic mesuré**
+  (`captures/verification/2026-09-24-poing-dragon-v3b-trajectoire-poing-vs-pro.png`,
+  `r6_poing_dragon/scripts/fist_path.py`). Trajectoire du poing de profil,
+  sur les 16 f avant le contact :
+  - **Pros (M1_2, M1_4)** : le poing part à hauteur d'épaule (−0,14 à −0,37),
+    **derrière** le torse. Il avance en **ligne horizontale** et monte de 0,02 à
+    0,20 sur les 6 dernières frames. M1_1 part de la garde basse, mais **remonte
+    d'abord** à hauteur d'épaule, puis avance à plat.
+  - **Nous (v3b)** : le poing part de la hanche (−1,3 à −1,8 sous l'épaule),
+    reste bas pendant l'armement, puis monte **en diagonale** de 1,1 à 1,7 stud
+    en 6 f. C'est un uppercut qui finit à l'horizontale, d'où l'impression de
+    Milan : uppercut et coup droit à la fois.
+- **Cause** : pour garder l'épaule basse (leçon 6), l'armement et la garde
+  plaçaient la main bas et loin. La règle 6b mesure l'angle au contact, pas le
+  chemin. Encore une mesure manquante (leçon 8).
+- **Pas encore corrigé** : on attend la référence de Milan.
