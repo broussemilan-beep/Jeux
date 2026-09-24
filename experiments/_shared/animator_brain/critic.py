@@ -34,17 +34,51 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 HYP = os.path.join(HERE, "hypotheses.json")
 NOTES = os.path.join(HERE, "notes_milan.jsonl")
+AUTO = os.path.join(HERE, "etats_auto.json")         # etats MESURES (etats.py) : priment sur le jugement manuel
+PRODS = os.path.join(HERE, "productions.json")
 BASE, SPAN = 5.0, 3.0          # note de depart et amplitude (0 si tout faux .. 10 si tout vrai, avant apprentissage)
 LR = 0.35                      # vitesse d'apprentissage des poids
 
 
 def load():
+    """Hypotheses + notes. L'etat de chaque note = jugement manuel, remplace
+    par la MESURE quand etats.py en a une (le cerveau juge ce qu'il voit, plus
+    mes impressions). Les desaccords sont gardes : ils disent ou mon oeil se
+    trompait."""
     hyp = json.load(open(HYP))
     notes = [json.loads(l) for l in open(NOTES) if l.strip()]
+    auto = json.load(open(AUTO)) if os.path.exists(AUTO) else {}
+    for n in notes:
+        a = auto.get(n["version"])
+        n["etat_manuel"] = dict(n["etat"])
+        n["desaccords"] = []
+        if a:
+            for k, v in a["etat"].items():
+                if n["etat"].get(k) is not None and n["etat"][k] != v:
+                    n["desaccords"].append((k, n["etat"][k], v))
+                n["etat"][k] = v
+            n["parties_mesurees"] = a.get("parties", {})
     return hyp, notes
 
 
-def predict(hyp, etat):
+def style_warnings(hyp, style_cible):
+    """Hypotheses etalonnees sur un style appliquees a une partie d'un autre
+    style (ex. regle M1 realiste appliquee a un coup final manga)."""
+    out = []
+    for h in hyp["hypotheses"]:
+        et = h.get("etalon_style", "universel")
+        if et == "universel":
+            continue
+        for part, st in style_cible.items():
+            scope = {"coup_leger": ["rafale"], "coup_droit": ["rafale", "final"], "rafale": ["rafale"],
+                     "finisher": ["final"], "impact": ["rafale", "final", "aerien"], "tout": ["rafale", "final", "aerien"]}
+            touches = [x for p in h["portee"] for x in scope.get(p, [])]
+            if part in touches and st != et:
+                out.append(f"{h['id']} (etalon {et}) s'applique a la partie « {part} » visee {st}")
+    return out
+
+
+def predict(hyp, etat, style_cible=None):
     """Note predite + critique : moyenne ponderee des hypotheses connues."""
     num = den = 0.0
     forces, defauts, inconnues = [], [], []
@@ -63,12 +97,18 @@ def predict(hyp, etat):
     defauts.sort(reverse=True)
     return {"note_predite": round(note, 1), "score_brut": round(score, 3), "defauts_les_plus_lourds": [d[1] for d in defauts[:4]],
             "forces": [f[1] for f in sorted(forces, reverse=True)], "non_evaluees": inconnues,
-            "critique": [f"{d[1]} (poids {d[0]:.2f}) : {d[2]}" for d in defauts[:4]]}
+            "critique": [f"{d[1]} (poids {d[0]:.2f}) : {d[2]}" for d in defauts[:4]],
+            "alertes_style": style_warnings(hyp, style_cible) if style_cible else []}
 
 
 def reflect(write=True):
     hyp, notes = load()
     byid = {h["id"]: h for h in hyp["hypotheses"]}
+    # on rejoue tout l'historique depuis les poids a priori : relancer la
+    # reflexion donne le meme resultat (avant, chaque lancement re-appliquait
+    # les mises a jour et les poids derivaient avec le nombre de lancements)
+    for h in hyp["hypotheses"]:
+        h["poids_note"] = h.get("poids_a_priori", 0.5)
     graded = [n for n in notes if n.get("note_milan") is not None]
     lines = ["# Reflexion du critique", ""]
     # 1. predictions (avec les poids d'AVANT l'apprentissage) contre notes reelles
@@ -107,6 +147,37 @@ def reflect(write=True):
                 h["poids_note"] = round(h["poids_note"] + LR * (0.9 - h["poids_note"]), 3)
     for k in suspects:
         lines.append(f"- **{k}** : {byid[k]['enonce']} (sources : {'; '.join(byid[k]['sources'])})")
+    # 3b. la mesure contre mon jugement manuel
+    lines += ["", "## Ou la mesure contredit le jugement manuel (etats.py)"]
+    for n in notes:
+        for k, man, mes in n.get("desaccords", []):
+            lines.append(f"- {n['version']} {k} : jugement {man} -> mesure {mes}")
+    # 3c. apprendre de ce que Milan AIME : une hypothese mesuree partie par
+    # partie qui est vraie dans les parties aimees et fausse dans les parties
+    # rejetees DISCRIMINE -> elle gagne du poids ; si elle a le meme etat dans
+    # les deux, ce n'est pas elle qui fait la difference -> elle en perd.
+    lines += ["", "## Parties aimees contre parties rejetees"]
+    per = {}
+    for n in notes:
+        pm = n.get("parties_mesurees", {})
+        for part, verdict in n.get("parties", {}).items():
+            for k, v in pm.get(part, {}).items():
+                if k in byid and isinstance(v, bool):
+                    per.setdefault(k, {"+": [], "-": []})[verdict].append(v)
+    for k, d in per.items():
+        if not d["+"] or not d["-"]:
+            continue
+        pos, neg = sum(d["+"]) / len(d["+"]), sum(d["-"]) / len(d["-"])
+        h = byid[k]
+        if pos - neg >= 0.5:
+            h["poids_note"] = round(h["poids_note"] + LR * (0.9 - h["poids_note"]), 3)
+            verdict = "DISCRIMINE (vraie ou Milan aime, fausse ou il rejette) -> poids en hausse"
+        elif abs(pos - neg) < 0.25:
+            h["poids_note"] = round(h["poids_note"] + LR * (0.3 - h["poids_note"]), 3)
+            verdict = "ne discrimine pas (meme etat dans l'aime et le rejete) -> poids en baisse"
+        else:
+            verdict = "signal faible"
+        lines.append(f"- {k} : vraie dans {pos:.0%} des parties aimees, {neg:.0%} des rejetees : {verdict}")
     unknown = [k for k, h in byid.items() if all(n["etat"].get(k) is None for n in graded)]
     lines += ["", "## Jamais mesurees (angle mort du cerveau)"] + [f"- {k} : {byid[k]['enonce']}" for k in unknown]
     # 4. calibration de l'echelle : note = b + a * score (moindres carres, a >= 0).
@@ -141,7 +212,9 @@ if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "predict":
         hyp, notes = load()
         n = next(n for n in notes if n["version"] == sys.argv[2])
-        print(json.dumps(predict(hyp, n["etat"]), indent=1, ensure_ascii=False))
+        prods = json.load(open(PRODS))
+        style = next((p.get("style_cible") for k, p in prods.items() if not k.startswith("_") and n["version"] in p["versions"]), None)
+        print(json.dumps(predict(hyp, n["etat"], style), indent=1, ensure_ascii=False))
     else:
         rep = reflect()
         open(os.path.join(HERE, "REFLEXION.md"), "w").write(rep + "\n")

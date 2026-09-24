@@ -1,0 +1,101 @@
+{
+ "clip": "nous_poing_dragon_v2.mp4",
+ "sha1_16": "f84f6ae60e6069bc",
+ "duree_s": 10.2,
+ "resolution": [
+  960,
+  542
+ ],
+ "zone_analysee": [
+  27,
+  0,
+  125,
+  90
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 33.3,
+  "lecture": "en 2 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 3,
+  "part_du_temps": 0.373,
+  "plus_longue_ms": 2667
+ },
+ "energie": {
+  "mediane": 7.47,
+  "pic_p95": 38.1,
+  "contraste_p95_sur_mediane": 5.1,
+  "part_rapide": 0.046
+ },
+ "impacts": {
+  "nombre": 1,
+  "par_seconde": 0.1,
+  "ecart_median_s": null,
+  "cartes": [
+   {
+    "t_s": 5.667,
+    "type": "silhouette",
+    "duree_ms": 33
+   }
+  ],
+  "profil_autour": {
+   "approche": 8.59,
+   "0,1 s avant": 38.12,
+   "0,1 s apres": 0.01,
+   "tenue_avant_choc": false,
+   "explosion_apres": false
+  }
+ },
+ "coupes": {
+  "nombre": 7,
+  "t_s": [
+   2.733,
+   2.767,
+   4.967,
+   5.0,
+   5.6,
+   5.633,
+   5.7
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.44,
+  "decalage_p95_pct": 5.97
+ },
+ "palette": [
+  {
+   "hex": "#565450",
+   "part": 0.268
+  },
+  {
+   "hex": "#17181a",
+   "part": 0.198
+  },
+  {
+   "hex": "#9f9378",
+   "part": 0.164
+  },
+  {
+   "hex": "#76726a",
+   "part": 0.158
+  },
+  {
+   "hex": "#8b806d",
+   "part": 0.124
+  },
+  {
+   "hex": "#d0bf8c",
+   "part": 0.089
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 73,
+  "termes": {
+   "contraste_de_temps": 1.0,
+   "tenues_presentes": 0.76,
+   "impacts_rythmes": 0.07
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/sheets/nous_poing_dragon_v2.png"
+}

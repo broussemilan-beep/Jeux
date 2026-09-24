@@ -1,5 +1,5 @@
 {
- "_doc": "Cerveau v2 (CERVEAU_V2.md) : des HYPOTHESES, pas des regles. confiance_principe = a quel point c'est vrai en animation (sources). poids_note = a quel point ca fait bouger la note de Milan (appris par critic.reflect, jamais tape a la main). Les paroles de Milan entrent comme des pistes, avec leur source.",
+ "_doc": "Cerveau v2 (CERVEAU_V2.md) : des HYPOTHESES, pas des regles. confiance_principe = a quel point c'est vrai en animation (sources). poids_note = a quel point ca fait bouger la note de Milan (appris par critic.reflect, jamais tape a la main). Les paroles de Milan entrent comme des pistes, avec leur source. poids_a_priori = point de depart ; reflect REJOUE tout l'historique depuis lui (idempotent : relancer ne fait pas deriver les poids).",
  "hypotheses": [
   {
    "id": "posture_droite",
@@ -8,12 +8,14 @@
     "coup_leger"
    ],
    "confiance_principe": 0.7,
-   "poids_note": 0.601,
+   "poids_note": 0.582,
    "sources": [
     "Milan v1 : il est accroupi",
     "corpus frappe_legere (affaissement)"
    ],
-   "mesure": "regles:posture droite pendant les coups legers"
+   "mesure": "regles:posture droite pendant les coups legers",
+   "etalon_style": "tsb_m1",
+   "poids_a_priori": 0.5
   },
   {
    "id": "escalade",
@@ -22,12 +24,14 @@
     "rafale"
    ],
    "confiance_principe": 0.6,
-   "poids_note": 0.601,
+   "poids_note": 0.582,
    "sources": [
     "Milan v1 : l'enchainement",
     "Black Flash 15/10/7/7/10 f"
    ],
-   "mesure": "regles:escalade : hitstop"
+   "mesure": "regles:escalade : hitstop",
+   "etalon_style": "universel",
+   "poids_a_priori": 0.5
   },
   {
    "id": "impact_visible",
@@ -36,12 +40,14 @@
     "finisher"
    ],
    "confiance_principe": 0.7,
-   "poids_note": 0.601,
+   "poids_note": 0.582,
    "sources": [
     "auto-critique v1 validee par Milan",
     "Serious Punch 24 f dans la fumee"
    ],
-   "mesure": "regles:impact final visible avant les effets plein ecran"
+   "mesure": "regles:impact final visible avant les effets plein ecran",
+   "etalon_style": "universel",
+   "poids_a_priori": 0.5
   },
   {
    "id": "variete_coups",
@@ -50,12 +56,14 @@
     "rafale"
    ],
    "confiance_principe": 0.6,
-   "poids_note": 0.601,
+   "poids_note": 0.64,
    "sources": [
     "5 exemples de Milan (combo R6)",
     "IMPACT HAVEN"
    ],
-   "mesure": null
+   "mesure": "perception:variete (distance entre formes de coups vs M1 pro)",
+   "etalon_style": "tsb_m1",
+   "poids_a_priori": 0.5
   },
   {
    "id": "epaules_basses",
@@ -64,12 +72,14 @@
     "coup_leger"
    ],
    "confiance_principe": 0.5,
-   "poids_note": 0.327,
+   "poids_note": 0.395,
    "sources": [
     "Milan v2 : bras trop hauts (interpretation)",
     "corpus M1"
    ],
-   "mesure": "regles:epaules jamais haussees"
+   "mesure": "regles:epaules jamais haussees",
+   "etalon_style": "tsb_m1",
+   "poids_a_priori": 0.5
   },
   {
    "id": "bras_horizontal",
@@ -78,13 +88,15 @@
     "coup_droit"
    ],
    "confiance_principe": 0.8,
-   "poids_note": 0.327,
+   "poids_note": 0.395,
    "sources": [
     "Milan v3 : coups vers le bas",
     "ref Pro 17-52-55",
     "corpus M1 mediane -3 deg"
    ],
-   "mesure": "regles:bras quasi horizontal au contact"
+   "mesure": "regles:bras quasi horizontal au contact",
+   "etalon_style": "tsb_m1",
+   "poids_a_priori": 0.5
   },
   {
    "id": "poing_a_plat",
@@ -99,7 +111,9 @@
     "5 exemples de Milan",
     "corpus : M1 montee <= 0,22, Uppercut 1,45"
    ],
-   "mesure": "regles:coup droit : le poing voyage a plat (pas d'uppercut)"
+   "mesure": "regles:coup droit : le poing voyage a plat (pas d'uppercut)",
+   "etalon_style": "tsb_m1",
+   "poids_a_priori": 0.5
   },
   {
    "id": "transfert_poids",
@@ -108,12 +122,14 @@
     "coup_droit"
    ],
    "confiance_principe": 0.6,
-   "poids_note": 0.327,
+   "poids_note": 0.395,
    "sources": [
     "Milan v2 : pas en transfert de poids",
     "corpus frappe_lourde"
    ],
-   "mesure": "regles:transfert de poids sur les coups de puissance"
+   "mesure": "regles:transfert de poids sur les coups de puissance",
+   "etalon_style": "tsb_m1",
+   "poids_a_priori": 0.5
   },
   {
    "id": "tenue_avant_choc",
@@ -121,14 +137,17 @@
    "portee": [
     "impact"
    ],
-   "confiance_principe": 0.5,
-   "poids_note": 0.731,
+   "confiance_principe": 0.4,
+   "poids_note": 0.64,
    "sources": [
     "IMPACT HAVEN (mesure)",
     "coup chapeau LeftRight2601 (mesure)",
-    "Milan v1 : manque de puissance (piste)"
+    "Milan v1 : manque de puissance (piste)",
+    "fiches des refs (2026-09-24) : 3 refs sur 9 avec cartes d'impact le montrent (coup chapeau, serious punch 2, IMPACT HAVEN) ; Black Flash, Rewind Clock, Serious Punch TSB non -> depend du style, pas universel"
    ],
-   "mesure": "fiche:impacts.profil_autour.tenue_avant_choc"
+   "mesure": "fiche:impacts.profil_autour.tenue_avant_choc",
+   "etalon_style": "manga_ultime",
+   "poids_a_priori": 0.5
   },
   {
    "id": "coup_charge",
@@ -137,13 +156,15 @@
     "finisher"
    ],
    "confiance_principe": 0.6,
-   "poids_note": 0.731,
+   "poids_note": 0.64,
    "sources": [
     "Milan v4 : je verrais plus le coup de Saitama (piste)",
     "Serious Punch : garde tenue 32 f",
     "Mii smash : extension tenue"
    ],
-   "mesure": null
+   "mesure": "perception:charge_final (tenue, depart, buste)",
+   "etalon_style": "manga_ultime",
+   "poids_a_priori": 0.5
   },
   {
    "id": "arcs",
@@ -152,12 +173,14 @@
     "tout"
    ],
    "confiance_principe": 0.8,
-   "poids_note": 0.731,
+   "poids_note": 0.395,
    "sources": [
     "12 principes de l'animation (arcs)",
     "auto-critique v4 : controle IK interpole en ligne droite"
    ],
-   "mesure": null
+   "mesure": "perception:arcs (deviation des traits vs M1 pro)",
+   "etalon_style": "universel",
+   "poids_a_priori": 0.5
   },
   {
    "id": "contraste_de_temps",
@@ -171,7 +194,9 @@
     "REFERENCES_VIDEO principe 1",
     "pro vs noob"
    ],
-   "mesure": "fiche:energie.contraste_p95_sur_mediane"
+   "mesure": "fiche:energie.contraste_p95_sur_mediane",
+   "etalon_style": "universel",
+   "poids_a_priori": 0.5
   },
   {
    "id": "silhouette_lisible",
@@ -185,12 +210,36 @@
     "IMPACT HAVEN : cartes silhouette",
     "test de silhouette v2 (manga)"
    ],
-   "mesure": null
+   "mesure": null,
+   "etalon_style": "universel",
+   "poids_a_priori": 0.5
+  },
+  {
+   "id": "fluidite",
+   "enonce": "Le mouvement enchaine : un membre ne s'arrete pas a chaque pose cle (chevauchement, suivi), il repart avant d'etre a l'arret.",
+   "portee": [
+    "tout"
+   ],
+   "confiance_principe": 0.8,
+   "poids_note": 0.731,
+   "etalon_style": "universel",
+   "sources": [
+    "12 principes de l'animation (follow-through, overlapping action)",
+    "perception 2026-09-24 : M1 pro 4,2-5,7 traits/s ; notre aerien (aime par Milan) 3,5-4,2 ; notre rafale 8,8-11,9 (comme une reaction a un coup)",
+    "auto-critique : cles IK avec ralenti a chaque cle -> arret a chaque cle"
+   ],
+   "mesure": "perception:traits par seconde de mouvement vs M1 pro",
+   "poids_a_priori": 0.5
   }
  ],
+ "_styles": {
+  "tsb_m1": "etalonne sur le pack battleground (M1 realistes)",
+  "manga_ultime": "refs anime / ultimes TSB (exagere)",
+  "universel": "principe d'animation"
+ },
  "_calibration": {
-  "a": 0.577,
-  "b": 6.625,
+  "a": 0.621,
+  "b": 6.631,
   "n_notes": 3,
   "doc": "note = b + a * score ; reapprise a chaque reflexion"
  }

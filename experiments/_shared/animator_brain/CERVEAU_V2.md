@@ -61,6 +61,73 @@ guidé, pas une statistique. Le levier qui changera ça, ce sont les
 **comparaisons de variantes** : Milan choisit entre A, B et C en quelques
 secondes, ce qui apporte bien plus d'information que des notes isolées.
 
+## Perception branchée au jugement (2026-09-24, suite)
+
+Défaut du premier passage : l'état de chaque hypothèse était **rempli à la
+main**. Le critique jugeait donc mes impressions, pas l'animation.
+
+- `perception.py` mesure en 3D, sur l'export de chaque version (relu depuis
+  git) et sur le pack pro :
+  - les **arcs** : déviation de chaque trait par rapport à sa corde ;
+  - la **fluidité** : traits par seconde de mouvement, un trait étant un
+    mouvement entre deux arrêts ;
+  - l'**espacement** et le **frein** avant le contact ;
+  - la **charge** du coup final : tenue, départ, enroulement du buste ;
+  - la **variété** : distance entre les formes des coups.
+- `etats.py` calcule l'état de chaque hypothèse, avec sa preuve et son
+  étalon, dans `etats_auto.json`. Ses sources sont les règles, la fiche
+  vidéo de la version, la perception 3D, `corpus/perception_pro.json` pour
+  le pack pro et les fiches des références de Milan. La mesure prime sur le
+  jugement manuel, et les désaccords sont affichés.
+- `critic.py reflect` a deux nouveautés.
+  - Il **apprend de ce que Milan aime**. Les notes portent maintenant un
+    verdict par partie (`parties`) : aérien +, rafale −, final −. Une
+    hypothèse vraie dans l'aimé et fausse dans le rejeté gagne du poids ;
+    une hypothèse qui a le même état dans les deux en perd.
+  - Il est **idempotent** : il rejoue l'historique depuis `poids_a_priori`.
+    Avant, chaque lancement ré-appliquait les mises à jour.
+- **Alertes de style** : chaque hypothèse porte un `etalon_style`
+  (`tsb_m1`, `manga_ultime` ou `universel`), et chaque partie d'une
+  production porte un `style_cible` (`productions.json`).
+
+### Ce que la mesure a corrigé
+
+- **Arcs.** Je les jugeais faux en v4 ; la mesure les donne vrais. Les clés
+  d'arc de la v3 ont suffi : déviation de 0,20 à 0,21, contre 0,14 à 0,41
+  pour les M1 pro. Ce n'est donc plus un suspect. L'aérien, que Milan aime,
+  a d'ailleurs des traits *plus droits* (0,10).
+- **Fluidité : le vrai suspect, et il était invisible.** On mesure les
+  traits par seconde de mouvement (preuve :
+  `captures/verification/2026-09-24-cerveau-fluidite-arrets-pro-vs-nous.png`) :
+
+  | quoi | traits par seconde |
+  |---|---|
+  | M1 pro | 4,2 à 5,7 |
+  | Uppercut pro | 2,9 |
+  | notre aérien (aimé) | 3,5 à 4,2 |
+  | notre rafale et notre final (rejetés) | 7,5 à 11,9 |
+  | une *réaction à un coup* pro | 9,2 |
+
+  Nos coups s'arrêtent à chaque pose clé, parce que le contrôle IK ralentit
+  à chaque clé. C'est la seule hypothèse qui sépare l'aimé du rejeté.
+  Réserve honnête : notre rafale enchaîne 4 coups en 1,3 s, un M1 pro est un
+  seul coup en 0,65 s ; une partie de l'écart vient du tempo. Contre-épreuve
+  à faire : les rafales des références vidéo, par flux optique.
+- **Variété.** Je la jugeais bonne en v2 et en v4. Mesurée, elle est de 1,94
+  stud en v4 (0,7 en v1), contre 2,73 entre les 4 M1 pro : nos coups se
+  ressemblent encore plus que des M1 entre eux.
+- **Tenue avant le choc.** Seules 3 références sur 9 avec cartes d'impact la
+  montrent, alors que Black Flash, Rewind Clock et Serious Punch TSB non. Sa
+  confiance est baissée à 0,4 : elle dépend du style, ce n'est pas un
+  principe universel.
+- **Alerte de style sur le coup final.** Les règles `bras_horizontal`,
+  `poing_a_plat` et `transfert_poids`, étalonnées sur des M1 réalistes,
+  jugeaient un final qui vise le style manga ultime. C'est l'écart que Milan
+  pointait avec la piste Saitama.
+
+Critique de la v4 après recalcul, défauts les plus lourds d'abord :
+**fluidité**, variété, coup chargé, tenue avant le choc.
+
 ## Le champ des références (Milan)
 
 - Roblox : TSB, JJS, Heroes Battlegrounds, animateurs indépendants.
@@ -105,6 +172,9 @@ Milan.
 
 ## Prochaines étapes
 
+0. Scrapeur écrit et testé hors ligne (`scraper/`, 11/11 avec un faux
+   Sakugabooru local). `python3 scraper/scraper.py acces` dit quels domaines
+   passent.
 1. Réseau ouvert → scrapeur : Sakugabooru par étiquettes et score, puis les
    autres sources. Chaque clip passe dans `clip_analyzer` ; on ne garde que la
    fiche et la planche, jamais la vidéo.

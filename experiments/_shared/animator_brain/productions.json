@@ -1,0 +1,20 @@
+{
+ "_doc": "Versions notees par Milan -> commit ou lire leurs fichiers (etats.py). Les fiches video sont dans corpus/clips/nous_<production>_<version>.json.",
+ "poing_du_dragon": {
+  "dossier": "experiments/r6_poing_dragon/output",
+  "attaquant": "dragon_attaquant.rbxmx",
+  "versions": {
+   "v1": "15e4266",
+   "v2": "4c458fe",
+   "v3": "65339fb",
+   "v3b": "cd31aae",
+   "v4": "cb8858b"
+  },
+  "fiche": "nous_poing_dragon",
+  "style_cible": {
+   "rafale": "tsb_m1",
+   "final": "manga_ultime",
+   "aerien": "manga_ultime"
+  }
+ }
+}

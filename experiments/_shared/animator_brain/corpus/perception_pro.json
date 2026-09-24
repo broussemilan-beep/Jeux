@@ -1,0 +1,206 @@
+{
+ "source": "4b059cba-battleground_animation_pack_v1.0.1.rbxm",
+ "clips": {
+  "[1] Idle": {
+   "arcs": {
+    "deviation_mediane": null,
+    "deviation_p75": null,
+    "traits_par_s_de_mouvement": null,
+    "n_traits": 0
+   }
+  },
+  "[1] Run": {
+   "arcs": {
+    "deviation_mediane": 0.393,
+    "deviation_p75": 0.401,
+    "traits_par_s_de_mouvement": 3.19,
+    "n_traits": 6
+   }
+  },
+  "[1] Walk": {
+   "arcs": {
+    "deviation_mediane": 0.116,
+    "deviation_p75": 0.116,
+    "traits_par_s_de_mouvement": 2.12,
+    "n_traits": 6
+   }
+  },
+  "[2] M1_1": {
+   "arcs": {
+    "deviation_mediane": 0.341,
+    "deviation_p75": 0.461,
+    "traits_par_s_de_mouvement": 5.22,
+    "n_traits": 8
+   },
+   "contact_f": 12,
+   "main": "Left Arm",
+   "approche": {
+    "part_dernier_tiers": 0.23,
+    "frein_3f_sur_pic": 0.29,
+    "vitesse_pic_studs_par_f": 1.714
+   },
+   "charge": {
+    "tenue_f": 0,
+    "enroulement_buste_deg": 74.9,
+    "depart_f": 2
+   }
+  },
+  "[2] M1_2": {
+   "arcs": {
+    "deviation_mediane": 0.33,
+    "deviation_p75": 0.496,
+    "traits_par_s_de_mouvement": 5.71,
+    "n_traits": 6
+   },
+   "contact_f": 11,
+   "main": "Left Arm",
+   "approche": {
+    "part_dernier_tiers": 0.42,
+    "frein_3f_sur_pic": 0.6,
+    "vitesse_pic_studs_par_f": 2.11
+   },
+   "charge": {
+    "tenue_f": 0,
+    "enroulement_buste_deg": 134.4,
+    "depart_f": 7
+   }
+  },
+  "[2] M1_3": {
+   "arcs": {
+    "deviation_mediane": 0.14,
+    "deviation_p75": 0.28,
+    "traits_par_s_de_mouvement": 9.57,
+    "n_traits": 11
+   }
+  },
+  "[2] M1_4": {
+   "arcs": {
+    "deviation_mediane": 0.414,
+    "deviation_p75": 0.562,
+    "traits_par_s_de_mouvement": 4.24,
+    "n_traits": 6
+   },
+   "contact_f": 17,
+   "main": "Right Arm",
+   "approche": {
+    "part_dernier_tiers": 0.25,
+    "frein_3f_sur_pic": 0.27,
+    "vitesse_pic_studs_par_f": 1.056
+   },
+   "charge": {
+    "tenue_f": 0,
+    "enroulement_buste_deg": 155.0,
+    "depart_f": 1
+   }
+  },
+  "[3] Backdash": {
+   "arcs": {
+    "deviation_mediane": 0.409,
+    "deviation_p75": 1.247,
+    "traits_par_s_de_mouvement": 2.55,
+    "n_traits": 9
+   }
+  },
+  "[3] Downslam V1": {
+   "arcs": {
+    "deviation_mediane": 0.163,
+    "deviation_p75": 0.503,
+    "traits_par_s_de_mouvement": 4.43,
+    "n_traits": 13
+   }
+  },
+  "[3] Downslam V2": {
+   "arcs": {
+    "deviation_mediane": 0.444,
+    "deviation_p75": 0.714,
+    "traits_par_s_de_mouvement": 4.0,
+    "n_traits": 10
+   }
+  },
+  "[3] Forward Dash": {
+   "arcs": {
+    "deviation_mediane": 0.211,
+    "deviation_p75": 0.325,
+    "traits_par_s_de_mouvement": 2.4,
+    "n_traits": 7
+   }
+  },
+  "[3] Sidedash_L": {
+   "arcs": {
+    "deviation_mediane": 0.322,
+    "deviation_p75": 0.379,
+    "traits_par_s_de_mouvement": 3.9,
+    "n_traits": 8
+   }
+  },
+  "[3] Sidedash_R": {
+   "arcs": {
+    "deviation_mediane": 0.322,
+    "deviation_p75": 0.379,
+    "traits_par_s_de_mouvement": 3.9,
+    "n_traits": 8
+   }
+  },
+  "[3] Uppercut": {
+   "arcs": {
+    "deviation_mediane": 0.234,
+    "deviation_p75": 0.343,
+    "traits_par_s_de_mouvement": 2.88,
+    "n_traits": 10
+   },
+   "contact_f": 24,
+   "main": "Right Arm",
+   "approche": {
+    "part_dernier_tiers": 0.6,
+    "frein_3f_sur_pic": 0.86,
+    "vitesse_pic_studs_par_f": 1.367
+   },
+   "charge": {
+    "tenue_f": 1,
+    "enroulement_buste_deg": 95.9,
+    "depart_f": 8
+   }
+  },
+  "[4] Hit 1": {
+   "arcs": {
+    "deviation_mediane": 0.074,
+    "deviation_p75": 0.095,
+    "traits_par_s_de_mouvement": 12.63,
+    "n_traits": 4
+   }
+  },
+  "[4] Hit 2": {
+   "arcs": {
+    "deviation_mediane": 0.159,
+    "deviation_p75": 0.178,
+    "traits_par_s_de_mouvement": 9.23,
+    "n_traits": 2
+   }
+  },
+  "[4] Hit 3": {
+   "arcs": {
+    "deviation_mediane": 0.109,
+    "deviation_p75": 0.152,
+    "traits_par_s_de_mouvement": 9.6,
+    "n_traits": 4
+   }
+  },
+  "[5] Block Hit": {
+   "arcs": {
+    "deviation_mediane": null,
+    "deviation_p75": null,
+    "traits_par_s_de_mouvement": null,
+    "n_traits": 0
+   }
+  },
+  "[5] Block Idle": {
+   "arcs": {
+    "deviation_mediane": null,
+    "deviation_p75": null,
+    "traits_par_s_de_mouvement": null,
+    "n_traits": 0
+   }
+  }
+ },
+ "variete_m1": 2.734
+}
