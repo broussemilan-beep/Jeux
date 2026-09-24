@@ -743,5 +743,110 @@
    "depart_f": 1
   },
   "variete": 1.942
+ },
+ "v7": {
+  "etat": {
+   "posture_droite": true,
+   "escalade": true,
+   "impact_visible": true,
+   "epaules_basses": true,
+   "bras_horizontal": true,
+   "poing_a_plat": true,
+   "transfert_poids": true,
+   "arcs": true,
+   "coup_charge": false,
+   "variete_coups": false,
+   "ligne_epaules": false,
+   "bras_libre_ramene": false,
+   "bras_avant_bras": true,
+   "frappe_lineaire": false,
+   "bascule_competence": false,
+   "silhouette_non_croix": true,
+   "torsion_charge_contact": true
+  },
+  "preuve": {
+   "posture_droite": "regles_v7.json : posture droite pendant les coups legers ok ; posture droite pendant les coups legers (fente du coup final, standard coup lourd) ok",
+   "escalade": "regles_v7.json : escalade : hitstop ok",
+   "impact_visible": "regles_v7.json : impact final visible avant les effets plein ecran ok",
+   "epaules_basses": "regles_v7.json : epaules jamais haussees ok ; epaules jamais haussees (coup final, standard coup lourd) ok",
+   "bras_horizontal": "regles_v7.json : bras quasi horizontal au contact ok",
+   "poing_a_plat": "regles_v7.json : coup droit : le poing voyage a plat (pas d'uppercut) ok",
+   "transfert_poids": "regles_v7.json : transfert de poids sur les coups de puissance ok",
+   "arcs": "deviation mediane rafale 0.247 / final 0.233 ; M1 pro >= 0.14 (mediane 0.336)",
+   "coup_charge": "coup final : tenue 4 f, depart 7 f, buste 133.6 deg ; principe : tenue >= 12 f puis depart <= 6 f",
+   "variete_coups": "distance mediane entre formes de coups 1.942 studs ; M1 pro entre eux 2.734",
+   "ligne_epaules": "mediane bras/epaules 55 deg (pro <= 38.3), torse detourne 44 deg (pro >= 61.9)",
+   "bras_libre_ramene": "mediane bras libre / bras qui frappe 0.89 (pro <= 0.51)",
+   "bras_avant_bras": "mediane translation d'epaule au contact 0.96 stud (pro >= 0.38)",
+   "frappe_lineaire": "plateau de vitesse du poing (min/max phase rapide) mediane 0.75 [0.77, 0.75, 0.6, 0.64, 0.9] ; TSB M1-M4 >= 0.85",
+   "bascule_competence": "coup final (f108-170) : bascule du torse p90 36 deg ; competences TSB >= 43.6",
+   "silhouette_non_croix": "charge du coup final (f118-146) : 0 % des images en croix ; TSB attaquant <= 5 %",
+   "torsion_charge_contact": "lacet du torse charge -> contact f150 : 129 deg ; tutos R6 >= 90"
+  },
+  "parties": {
+   "rafale": {
+    "arcs": true,
+    "mesures": {
+     "deviation_mediane": 0.247,
+     "deviation_p75": 0.485,
+     "traits_par_s_de_mouvement": 8.96,
+     "n_traits": 33
+    }
+   },
+   "final": {
+    "arcs": true,
+    "mesures": {
+     "deviation_mediane": 0.233,
+     "deviation_p75": 0.56,
+     "traits_par_s_de_mouvement": 6.12,
+     "n_traits": 10
+    }
+   },
+   "aerien": {
+    "arcs": false,
+    "mesures": {
+     "deviation_mediane": 0.117,
+     "deviation_p75": 0.268,
+     "traits_par_s_de_mouvement": 3.26,
+     "n_traits": 17
+    }
+   }
+  },
+  "mesures_coups": [
+   {
+    "f": 14,
+    "type": "chest",
+    "part_dernier_tiers": 0.33,
+    "frein_3f_sur_pic": 0.36,
+    "vitesse_pic_studs_par_f": 1.091
+   },
+   {
+    "f": 40,
+    "type": "plexus",
+    "part_dernier_tiers": 0.32,
+    "frein_3f_sur_pic": 0.28,
+    "vitesse_pic_studs_par_f": 2.461
+   },
+   {
+    "f": 64,
+    "type": "ribs",
+    "part_dernier_tiers": 0.46,
+    "frein_3f_sur_pic": 0.57,
+    "vitesse_pic_studs_par_f": 1.81
+   },
+   {
+    "f": 90,
+    "type": "body",
+    "part_dernier_tiers": 0.39,
+    "frein_3f_sur_pic": 0.53,
+    "vitesse_pic_studs_par_f": 2.124
+   }
+  ],
+  "charge_final": {
+   "tenue_f": 4,
+   "enroulement_buste_deg": 133.6,
+   "depart_f": 7
+  },
+  "variete": 1.942
  }
 }

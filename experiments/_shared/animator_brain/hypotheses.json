@@ -163,7 +163,8 @@
    "sources": [
     "Milan v4 : je verrais plus le coup de Saitama (piste)",
     "Serious Punch : garde tenue 32 f",
-    "Mii smash : extension tenue"
+    "Mii smash : extension tenue",
+    "v7 (2026-09-24) : MESURE FAUSSE pour la v7 (tenue 4 f, depart 7 f) alors qu'a l'ecran la charge est tenue (poing a 0-4 stud/s f130-144) puis part a pleine vitesse en 1 image (f145 : 116 stud/s) et file en palier. Conflit de definitions : la tenue exige un torse FIGE (contredit tenue_vivante) et le 'depart' compte tout le palier. Essai d'assouplir la tenue (main seule) : ecarte, il declarait 'coup charge' les v1-v4 que Milan jugeait sans vraie charge. Mesure a refaire : a trancher avec la note de Milan sur la v7."
    ],
    "mesure": "perception:charge_final (tenue, depart, buste)",
    "etalon_style": "manga_ultime",
@@ -941,7 +942,8 @@
    "mesure": "jugement visuel",
    "sources": [
     "vidéos tutos envoyées par Milan (zips 2026-09-24, étude visuelle image par image ; corpus/tutos/rapport_video_*.md) : uppercut Moon Animator ('wiggle' : 'SMALL circles', 'keep getting slower' ; ~0,2 s d'action puis ~0,7 s de tenue vivante)",
-    "techniques anime : pic tenu animé en 2-3 avec tremblement (JJK, OPM, MHA, déjà dans TUTOS_ANIMATION §4)"
+    "techniques anime : pic tenu animé en 2-3 avec tremblement (JJK, OPM, MHA, déjà dans TUTOS_ANIMATION §4)",
+    "v7 : appliquee a la charge (f126-144, oscillations du poing qui s'amortissent) ; entre en conflit avec la mesure de coup_charge (tenue = torse fige)"
    ],
    "quand": "tenue de fin de coup ou de pose de pic en caméra de jeu",
    "contre_indication": "hitstop (AdjustSpeed(0)) et images d'impact : là, le gel EST le signal ; ne pas en faire un tremblement uniforme perpétuel"

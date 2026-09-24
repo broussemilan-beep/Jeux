@@ -508,3 +508,28 @@ Fiche : `FICHE_V7.md`. Décision de Milan : aucun coup de pied.
 - `captures/verification/2026-09-24-poing-dragon-v7-charge-contact-avant-apres.png` ;
 - `captures/verification/2026-09-24-poing-dragon-v7-video-v6-contre-v7.png` ;
 - `output/poing_du_dragon_v7_charge_v6_contre_v7.mp4`.
+
+**Ce que le cerveau mesure sur la v7** (`etats.py`, avant l'avis de Milan) :
+- vrai : `silhouette_non_croix` (0 % au lieu de 93 %), `torsion_charge_contact` ;
+- toujours faux :
+  - `bascule_competence` : p90 36°, contre 44° pour les techniques TSB ;
+  - `frappe_lineaire`, `bras_libre_ramene`, `ligne_epaules` : médianes sur
+    TOUS les coups, que la rafale inchangée tire vers le bas. Sur le seul coup
+    chargé, ils passent : palier 0,90, bras libre −0,64 ;
+- **régression mesurée** : `coup_charge` passe à faux (tenue 4 f, départ 7 f).
+  - À l'écran, la charge est tenue : le poing est à 0-4 stud/s de f130 à f144.
+    Puis il part à pleine vitesse en 1 image (f145) et file en palier.
+  - La mesure exige un torse figé, ce qui contredit la tenue vivante, et elle
+    compte tout le palier comme un départ.
+  - Un assouplissement a été essayé puis écarté : il validait les v1 à v4,
+    jugées sans vraie charge. On laisse la mesure telle quelle, et c'est la
+    note de Milan qui tranchera.
+
+**Prédiction notée AVANT l'avis de Milan.**
+- Critique du cerveau : **7,2** (il n'a jamais vu une note bouger sur une pose).
+- Mon jugement après la vidéo : **7,8** (fourchette 7,5 à 8,3).
+  - **Pour** : la charge et le contact se lisent enfin comme dans les refs.
+  - **Contre** : en caméra de jeu, la charge de profil reste petite et étroite ;
+    la rafale n'a presque pas changé ; la bascule reste sous TSB.
+- Je baisse de 0,2 par rapport à l'estimation de la fiche (8,0) après avoir vu
+  la caméra de jeu.
