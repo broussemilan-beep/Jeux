@@ -1,0 +1,114 @@
+{
+ "clip": "sakugabooru_sakuga_121591",
+ "sha1_16": "88ead2e934ea412a",
+ "duree_s": 70.62,
+ "resolution": [
+  640,
+  480
+ ],
+ "zone_analysee": [
+  7,
+  25,
+  155,
+  120
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 16,
+  "part_du_temps": 0.138,
+  "plus_longue_ms": 4967
+ },
+ "energie": {
+  "mediane": 8.99,
+  "pic_p95": 39.78,
+  "contraste_p95_sur_mediane": 4.43,
+  "part_rapide": 0.011
+ },
+ "impacts": {
+  "nombre": 0,
+  "par_seconde": 0.0,
+  "ecart_median_s": null,
+  "cartes": [],
+  "profil_autour": null
+ },
+ "coupes": {
+  "nombre": 13,
+  "t_s": [
+   0.467,
+   2.217,
+   9.717,
+   13.3,
+   15.517,
+   29.033,
+   29.45,
+   38.583,
+   44.05,
+   46.0,
+   49.0,
+   55.967,
+   61.683
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.72,
+  "decalage_p95_pct": 20.41
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 4.26,
+  "secondes_de_mouvement": 44.37,
+  "vitesse_sujet_p90": 3.338,
+  "pics": 371,
+  "part_des_pics_qui_montent": 0.31,
+  "deviation_trajectoire_mediane": 0.779,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#283337",
+   "part": 0.251
+  },
+  {
+   "hex": "#1e2426",
+   "part": 0.195
+  },
+  {
+   "hex": "#888675",
+   "part": 0.173
+  },
+  {
+   "hex": "#62573f",
+   "part": 0.159
+  },
+  {
+   "hex": "#3a3636",
+   "part": 0.136
+  },
+  {
+   "hex": "#aca69d",
+   "part": 0.087
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 54,
+  "termes": {
+   "contraste_de_temps": 0.84,
+   "tenues_presentes": 0.46,
+   "impacts_rythmes": 0.0
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_121591.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 121591,
+  "tags": "animated background_animation debris effects explosions fighting fire naruto naruto_(2002) norio_matsumoto rotation running smears smoke",
+  "score": 3576,
+  "source_oeuvre": "#030",
+  "url": "https://www.sakugabooru.com/post/show/121591",
+  "requete": "fighting order:score",
+  "pourquoi": "curiosite : les combats les mieux notes, quel qu'en soit le sujet"
+ }
+}

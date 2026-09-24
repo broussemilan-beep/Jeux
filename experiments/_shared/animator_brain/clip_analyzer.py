@@ -274,6 +274,9 @@ def _motion(g, changed, card, cut_frames):
             mag = np.hypot(fl[..., 0], fl[..., 1])
             thr = np.percentile(mag, 97)
             m = mag >= max(thr, 1e-3)
+            if not m.any():                                      # image sans mouvement mesurable
+                prev = i
+                continue
             dt = (i - j) * ms / 1000.0
             v = float(mag[m].mean()) / W / dt
             mx, my = fl[..., 0][m].mean(), fl[..., 1][m].mean()

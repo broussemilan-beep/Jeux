@@ -1,0 +1,238 @@
+{
+ "clip": "sakugabooru_sakuga_81256",
+ "sha1_16": "78690f1b1b601ca2",
+ "duree_s": 67.4,
+ "resolution": [
+  640,
+  480
+ ],
+ "zone_analysee": [
+  0,
+  0,
+  147,
+  106
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 14,
+  "part_du_temps": 0.075,
+  "plus_longue_ms": 1000
+ },
+ "energie": {
+  "mediane": 13.43,
+  "pic_p95": 62.2,
+  "contraste_p95_sur_mediane": 4.63,
+  "part_rapide": 0.006
+ },
+ "impacts": {
+  "nombre": 15,
+  "par_seconde": 0.22,
+  "ecart_median_s": 3.583,
+  "cartes": [
+   {
+    "t_s": 1.133,
+    "type": "blanc",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 2.0,
+    "type": "blanc",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 2.467,
+    "type": "noir",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 4.167,
+    "type": "blanc",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 9.8,
+    "type": "noir",
+    "duree_ms": 167
+   },
+   {
+    "t_s": 13.85,
+    "type": "blanc",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 18.6,
+    "type": "noir",
+    "duree_ms": 333
+   },
+   {
+    "t_s": 25.867,
+    "type": "noir",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 32.65,
+    "type": "blanc",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 32.783,
+    "type": "blanc",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 35.7,
+    "type": "noir",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 44.383,
+    "type": "blanc",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 44.467,
+    "type": "blanc",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 44.883,
+    "type": "blanc",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 48.0,
+    "type": "blanc",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 48.083,
+    "type": "blanc",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 50.6,
+    "type": "blanc",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 56.133,
+    "type": "blanc",
+    "duree_ms": 50
+   }
+  ],
+  "profil_autour": {
+   "approche": 1.0,
+   "0,1 s avant": 0.51,
+   "0,1 s apres": 3.57,
+   "tenue_avant_choc": false,
+   "explosion_apres": true
+  }
+ },
+ "coupes": {
+  "nombre": 58,
+  "t_s": [
+   0.217,
+   0.717,
+   0.75,
+   0.8,
+   0.883,
+   1.217,
+   1.467,
+   4.133,
+   4.217,
+   7.55,
+   13.8,
+   13.933,
+   16.1,
+   16.933,
+   24.017,
+   24.533,
+   25.033,
+   25.067,
+   32.533,
+   32.583,
+   32.7,
+   33.533,
+   35.583,
+   35.667,
+   36.7,
+   43.75,
+   43.833,
+   43.883,
+   44.0,
+   44.133,
+   44.167,
+   44.217,
+   44.25,
+   44.3,
+   44.333,
+   44.55,
+   44.583,
+   44.833,
+   46.467,
+   46.55
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.22,
+  "decalage_p95_pct": 10.5
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 7.47,
+  "secondes_de_mouvement": 38.27,
+  "vitesse_sujet_p90": 3.672,
+  "pics": 390,
+  "part_des_pics_qui_montent": 0.31,
+  "deviation_trajectoire_mediane": 1.17,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#85834e",
+   "part": 0.242
+  },
+  {
+   "hex": "#050e16",
+   "part": 0.22
+  },
+  {
+   "hex": "#343c25",
+   "part": 0.183
+  },
+  {
+   "hex": "#d8d8dd",
+   "part": 0.14
+  },
+  {
+   "hex": "#beb197",
+   "part": 0.12
+  },
+  {
+   "hex": "#732214",
+   "part": 0.095
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 52,
+  "termes": {
+   "contraste_de_temps": 0.89,
+   "tenues_presentes": 0.25,
+   "impacts_rythmes": 0.15
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_81256.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 81256,
+  "tags": "animated background_animation debris dragon_ball dragon_ball_4:_the_path_to_power dragon_ball_series effects explosions fighting hisashi_mori impact_frames presumed running smears smoke",
+  "score": 1195,
+  "source_oeuvre": "",
+  "url": "https://www.sakugabooru.com/post/show/81256",
+  "requete": "dragon_ball fighting",
+  "pourquoi": "combats aeriens, rafales"
+ }
+}

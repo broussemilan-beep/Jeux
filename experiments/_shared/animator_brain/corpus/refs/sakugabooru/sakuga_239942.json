@@ -1,0 +1,197 @@
+{
+ "clip": "sakugabooru_sakuga_239942",
+ "sha1_16": "3553e575ce90cdee",
+ "duree_s": 18.48,
+ "resolution": [
+  852,
+  480
+ ],
+ "zone_analysee": [
+  0,
+  0,
+  160,
+  90
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 83.3,
+  "lecture": "en 4+ a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 0,
+  "part_du_temps": 0.0,
+  "plus_longue_ms": 0
+ },
+ "energie": {
+  "mediane": 85.44,
+  "pic_p95": 124.17,
+  "contraste_p95_sur_mediane": 1.45,
+  "part_rapide": 0.145
+ },
+ "impacts": {
+  "nombre": 14,
+  "par_seconde": 0.76,
+  "ecart_median_s": 0.866,
+  "cartes": [
+   {
+    "t_s": 0.083,
+    "type": "blanc",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 0.633,
+    "type": "silhouette",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 2.0,
+    "type": "silhouette",
+    "duree_ms": 167
+   },
+   {
+    "t_s": 2.233,
+    "type": "silhouette",
+    "duree_ms": 567
+   },
+   {
+    "t_s": 4.167,
+    "type": "silhouette",
+    "duree_ms": 117
+   },
+   {
+    "t_s": 4.367,
+    "type": "silhouette",
+    "duree_ms": 150
+   },
+   {
+    "t_s": 6.033,
+    "type": "blanc",
+    "duree_ms": 167
+   },
+   {
+    "t_s": 7.883,
+    "type": "silhouette",
+    "duree_ms": 233
+   },
+   {
+    "t_s": 8.283,
+    "type": "silhouette",
+    "duree_ms": 800
+   },
+   {
+    "t_s": 11.567,
+    "type": "silhouette",
+    "duree_ms": 633
+   },
+   {
+    "t_s": 12.433,
+    "type": "silhouette",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 12.767,
+    "type": "silhouette",
+    "duree_ms": 317
+   },
+   {
+    "t_s": 13.317,
+    "type": "blanc",
+    "duree_ms": 117
+   },
+   {
+    "t_s": 13.483,
+    "type": "silhouette",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 13.8,
+    "type": "silhouette",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 17.433,
+    "type": "silhouette",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 18.2,
+    "type": "silhouette",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 18.367,
+    "type": "noir",
+    "duree_ms": 117
+   }
+  ],
+  "profil_autour": {
+   "approche": 7.25,
+   "0,1 s avant": 14.13,
+   "0,1 s apres": 16.57,
+   "tenue_avant_choc": false,
+   "explosion_apres": false
+  }
+ },
+ "coupes": {
+  "nombre": 0,
+  "t_s": []
+ },
+ "camera": {
+  "decalage_median_pct": 8.47,
+  "decalage_p95_pct": 44.76
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 0.08,
+  "secondes_de_mouvement": 11.88,
+  "vitesse_sujet_p90": 2.708,
+  "pics": 41,
+  "part_des_pics_qui_montent": 0.34,
+  "deviation_trajectoire_mediane": 1.044,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#000000",
+   "part": 0.355
+  },
+  {
+   "hex": "#fdfdfd",
+   "part": 0.301
+  },
+  {
+   "hex": "#585858",
+   "part": 0.096
+  },
+  {
+   "hex": "#c4c4c4",
+   "part": 0.093
+  },
+  {
+   "hex": "#ffffff",
+   "part": 0.089
+  },
+  {
+   "hex": "#161616",
+   "part": 0.065
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 10,
+  "termes": {
+   "contraste_de_temps": 0.0,
+   "tenues_presentes": 0.0,
+   "impacts_rythmes": 0.5
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_239942.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 239942,
+  "tags": "animated black_and_white castlevania castlevania_season_1 castlevania_series creatures effects genga production_materials spencer_wan western",
+  "score": 2305,
+  "source_oeuvre": "https://spencerwan.tumblr.com/post/167389153033/heres-my-animation-for-the-opening-credits-of",
+  "url": "https://www.sakugabooru.com/post/show/239942",
+  "requete": "western",
+  "pourquoi": "animation occidentale (Arcane, Avatar...)"
+ }
+}

@@ -1,0 +1,147 @@
+{
+ "clip": "sakugabooru_sakuga_203287",
+ "sha1_16": "093f412167d7413e",
+ "duree_s": 17.9,
+ "resolution": [
+  854,
+  480
+ ],
+ "zone_analysee": [
+  5,
+  0,
+  160,
+  90
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 0,
+  "part_du_temps": 0.0,
+  "plus_longue_ms": 0
+ },
+ "energie": {
+  "mediane": 13.31,
+  "pic_p95": 59.04,
+  "contraste_p95_sur_mediane": 4.43,
+  "part_rapide": 0.049
+ },
+ "impacts": {
+  "nombre": 5,
+  "par_seconde": 0.28,
+  "ecart_median_s": 3.008,
+  "cartes": [
+   {
+    "t_s": 0.917,
+    "type": "noir",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 6.167,
+    "type": "noir",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 10.633,
+    "type": "silhouette",
+    "duree_ms": 133
+   },
+   {
+    "t_s": 12.183,
+    "type": "noir",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 12.6,
+    "type": "noir",
+    "duree_ms": 33
+   }
+  ],
+  "profil_autour": {
+   "approche": 3.55,
+   "0,1 s avant": 0.36,
+   "0,1 s apres": 4.44,
+   "tenue_avant_choc": true,
+   "explosion_apres": true
+  }
+ },
+ "coupes": {
+  "nombre": 14,
+  "t_s": [
+   0.717,
+   1.333,
+   1.583,
+   1.633,
+   4.833,
+   4.917,
+   5.583,
+   5.883,
+   7.383,
+   9.183,
+   12.05,
+   12.217,
+   12.267,
+   12.85
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.21,
+  "decalage_p95_pct": 32.93
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 2.76,
+  "secondes_de_mouvement": 7.97,
+  "vitesse_sujet_p90": 4.652,
+  "pics": 51,
+  "part_des_pics_qui_montent": 0.2,
+  "deviation_trajectoire_mediane": 0.966,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#13192e",
+   "part": 0.251
+  },
+  {
+   "hex": "#563a26",
+   "part": 0.22
+  },
+  {
+   "hex": "#707977",
+   "part": 0.165
+  },
+  {
+   "hex": "#b7884b",
+   "part": 0.125
+  },
+  {
+   "hex": "#fcf181",
+   "part": 0.121
+  },
+  {
+   "hex": "#d8cd97",
+   "part": 0.118
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 41,
+  "termes": {
+   "contraste_de_temps": 0.84,
+   "tenues_presentes": 0.0,
+   "impacts_rythmes": 0.19
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_203287.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 203287,
+  "tags": "animated background_animation creatures debris effects fighting fire fullmetal_alchemist fullmetal_alchemist_brotherhood lightning liquid running smears smoke sparks yutaka_nakamura yutapon_cubes",
+  "score": 3534,
+  "source_oeuvre": "NCOP2",
+  "url": "https://www.sakugabooru.com/post/show/203287",
+  "requete": "fighting order:score",
+  "pourquoi": "curiosite : les combats les mieux notes, quel qu'en soit le sujet"
+ }
+}

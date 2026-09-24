@@ -1,0 +1,141 @@
+{
+ "clip": "sakugabooru_sakuga_240178",
+ "sha1_16": "e157b1493ce7c332",
+ "duree_s": 55.18,
+ "resolution": [
+  640,
+  480
+ ],
+ "zone_analysee": [
+  0,
+  0,
+  160,
+  120
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 6,
+  "part_du_temps": 0.046,
+  "plus_longue_ms": 1083
+ },
+ "energie": {
+  "mediane": 14.12,
+  "pic_p95": 58.51,
+  "contraste_p95_sur_mediane": 4.14,
+  "part_rapide": 0.015
+ },
+ "impacts": {
+  "nombre": 0,
+  "par_seconde": 0.0,
+  "ecart_median_s": null,
+  "cartes": [],
+  "profil_autour": null
+ },
+ "coupes": {
+  "nombre": 63,
+  "t_s": [
+   4.167,
+   4.217,
+   6.833,
+   7.967,
+   10.933,
+   12.933,
+   13.933,
+   15.217,
+   16.233,
+   23.817,
+   26.533,
+   28.033,
+   32.233,
+   32.283,
+   34.0,
+   34.033,
+   36.667,
+   36.7,
+   37.0,
+   37.033,
+   37.417,
+   37.533,
+   39.367,
+   39.417,
+   39.45,
+   39.783,
+   39.833,
+   39.95,
+   40.0,
+   40.033,
+   40.083,
+   40.2,
+   40.25,
+   40.5,
+   40.533,
+   40.75,
+   40.783,
+   40.833,
+   40.867,
+   43.633
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.21,
+  "decalage_p95_pct": 18.06
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 3.55,
+  "secondes_de_mouvement": 37.75,
+  "vitesse_sujet_p90": 3.661,
+  "pics": 372,
+  "part_des_pics_qui_montent": 0.24,
+  "deviation_trajectoire_mediane": 0.94,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#2a71ac",
+   "part": 0.209
+  },
+  {
+   "hex": "#d2a38f",
+   "part": 0.189
+  },
+  {
+   "hex": "#b17e6e",
+   "part": 0.181
+  },
+  {
+   "hex": "#dac9be",
+   "part": 0.152
+  },
+  {
+   "hex": "#39374b",
+   "part": 0.138
+  },
+  {
+   "hex": "#a6b5c4",
+   "part": 0.131
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 39,
+  "termes": {
+   "contraste_de_temps": 0.75,
+   "tenues_presentes": 0.15,
+   "impacts_rythmes": 0.0
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_240178.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 240178,
+  "tags": "animated background_animation dragon_ball dragon_ball_series fighting impact_frames katsuyoshi_nakatsuru rotation running smears",
+  "score": 681,
+  "source_oeuvre": "#097",
+  "url": "https://www.sakugabooru.com/post/show/240178",
+  "requete": "dragon_ball fighting",
+  "pourquoi": "combats aeriens, rafales"
+ }
+}

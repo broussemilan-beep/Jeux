@@ -1,0 +1,159 @@
+{
+ "clip": "danbooru_danbooru_6787236",
+ "sha1_16": "1f6a135c8677ace0",
+ "duree_s": 82.22,
+ "resolution": [
+  1280,
+  720
+ ],
+ "zone_analysee": [
+  0,
+  5,
+  160,
+  84
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 58.3,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 113,
+  "part_du_temps": 0.71,
+  "plus_longue_ms": 6617
+ },
+ "energie": {
+  "mediane": 11.56,
+  "pic_p95": 82.25,
+  "contraste_p95_sur_mediane": 7.12,
+  "part_rapide": 0.005
+ },
+ "impacts": {
+  "nombre": 2,
+  "par_seconde": 0.02,
+  "ecart_median_s": 28.65,
+  "cartes": [
+   {
+    "t_s": 11.033,
+    "type": "noir",
+    "duree_ms": 150
+   },
+   {
+    "t_s": 39.683,
+    "type": "noir",
+    "duree_ms": 400
+   }
+  ],
+  "profil_autour": {
+   "approche": 0.0,
+   "0,1 s avant": 0.0,
+   "0,1 s apres": 0.01,
+   "tenue_avant_choc": false,
+   "explosion_apres": true
+  }
+ },
+ "coupes": {
+  "nombre": 90,
+  "t_s": [
+   0.533,
+   0.9,
+   1.633,
+   2.233,
+   2.433,
+   2.833,
+   3.233,
+   4.1,
+   4.5,
+   4.9,
+   5.783,
+   5.983,
+   6.4,
+   9.583,
+   13.383,
+   20.0,
+   22.2,
+   22.6,
+   26.7,
+   27.1,
+   27.5,
+   27.9,
+   28.3,
+   30.2,
+   30.6,
+   31.0,
+   31.4,
+   31.8,
+   33.583,
+   35.083,
+   37.283,
+   38.483,
+   38.883,
+   39.283,
+   40.083,
+   40.483,
+   41.683,
+   43.583,
+   44.833,
+   46.833
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.37,
+  "decalage_p95_pct": 41.77
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 2.1,
+  "secondes_de_mouvement": 12.83,
+  "vitesse_sujet_p90": 3.016,
+  "pics": 67,
+  "part_des_pics_qui_montent": 0.28,
+  "deviation_trajectoire_mediane": 0.667,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#40304a",
+   "part": 0.255
+  },
+  {
+   "hex": "#857f95",
+   "part": 0.204
+  },
+  {
+   "hex": "#89c3d9",
+   "part": 0.154
+  },
+  {
+   "hex": "#f4f1d8",
+   "part": 0.149
+  },
+  {
+   "hex": "#a1e1c1",
+   "part": 0.124
+  },
+  {
+   "hex": "#dccfbd",
+   "part": 0.114
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 45,
+  "termes": {
+   "contraste_de_temps": 1.0,
+   "tenues_presentes": 0.0,
+   "impacts_rythmes": 0.02
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/danbooru_danbooru_6787236.png",
+ "source": {
+  "nom": "danbooru",
+  "id": 6787236,
+  "tags": "2boys 6+girls ahoge akari_(blue_archive) ako_(blue_archive) altyn_helmet android_(blue_archive) animal_ears animated aris_(blue_archive) arona_(blue_archive) aru_(blue_archive) atsuko_(blue_archive) audible_music azusa_(blue_archive) blue_archive blue_necktie book cat_ears cellphone cellphone_photo character_request check_character cherino_(blue_archive) chihiro_(blue_archive) chinatsu_(blue_archive) clapping classroom combat_helmet commentary computer curtains dancing disembodied_hand dropping dual_persona eve_(musician) everyone explosion eyes_in_shadow fighting flag food fuuka_(blue_archive) hair_on_horn halo hanako_(blue_archive) hare_(blue_archive) haruka_(blue_archive) haruna_(blue_archive) hatsune_miku hatsune_miku_(blue_archive) helmet helmet_gang_officer_(blue_archive) helmet_gangster_(blue_archive) hifumi_(blue_archive) hina_(blue_archive) hiyori_(blue_archive) holding holding_book holding_flag holding_food hoshino_(blue_archive) ibuki_(blue_archive) iori_(blue_archive) iroha_(blue_archive) izumi_(blue_archive) junko_(blue_archive) juri_(blue_archive) kayoko_(blue_archive) kirino_(blue_archive) koharu_(blue_archive) kotama_(blue_archive) laptop letterboxed library long_hair lyrics make-up_work_club_(blue_archive) maki_(blue_archive) makoto_(blue_archive) marina_(blue_archive) midori_(blue_archive) mika_(blue_archive) misaki_(blue_archive) momoi_(blue_archive) multiple_boys multiple_girls muscular muscular_male mushroom mushroom_on_head music_video mutsuki_(blue_archive) nagisa_(blue_archive) natsu_(blue_archive) necktie noa_(blue_archive) nodoka_(blue_archive) official_alternate_costume parody peroro_(blue_archive) phone pina_(blue_archive) pointing pointing_at_self prefect_team_(blue_archive) problem_solver_68_(blue_archive) rabu_(blue_archive) raised_fist reading removing_eyewear rin_(blue_archive) road_sign ruins saori_(blue_archive) school_uniform sena_(blue_archive) serika_(blue_archive) serika_(new_year)_(blue_archive) shigure_(blue_archive) shiroko_(blue_archive) sign singing smartphone song_name sound subtitled sumire_(blue_archive) sunglasses suzumi_(blue_archive) tea_party_militant_a_(blue_archive) tea_party_militant_outfit_(blue_archive) text_messaging tomoe_(blue_archive) ui_(blue_archive) video vocaloid washin wolf_ears yuuka_(blue_archive) yuzu_(blue_archive)",
+  "score": 80,
+  "source_oeuvre": "blue_archive eve_(musician) vocaloid",
+  "artiste": "washin",
+  "url": "https://danbooru.donmai.us/posts/6787236",
+  "requete": "fighting",
+  "pourquoi": "combats animes, qualite par score"
+ }
+}

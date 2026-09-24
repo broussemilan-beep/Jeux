@@ -1,0 +1,230 @@
+{
+ "clip": "danbooru_danbooru_7525170",
+ "sha1_16": "d35cc32c3166a966",
+ "duree_s": 90.0,
+ "resolution": [
+  1920,
+  1080
+ ],
+ "zone_analysee": [
+  0,
+  0,
+  160,
+  90
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 18,
+  "part_du_temps": 0.244,
+  "plus_longue_ms": 3133
+ },
+ "energie": {
+  "mediane": 9.48,
+  "pic_p95": 51.91,
+  "contraste_p95_sur_mediane": 5.48,
+  "part_rapide": 0.01
+ },
+ "impacts": {
+  "nombre": 14,
+  "par_seconde": 0.16,
+  "ecart_median_s": 3.3,
+  "cartes": [
+   {
+    "t_s": 0.0,
+    "type": "blanc",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 0.717,
+    "type": "blanc",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 16.05,
+    "type": "noir",
+    "duree_ms": 183
+   },
+   {
+    "t_s": 16.3,
+    "type": "silhouette",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 16.483,
+    "type": "blanc",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 17.233,
+    "type": "blanc",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 54.05,
+    "type": "blanc",
+    "duree_ms": 133
+   },
+   {
+    "t_s": 61.183,
+    "type": "blanc",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 65.317,
+    "type": "silhouette",
+    "duree_ms": 417
+   },
+   {
+    "t_s": 66.65,
+    "type": "blanc",
+    "duree_ms": 133
+   },
+   {
+    "t_s": 71.65,
+    "type": "noir",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 74.95,
+    "type": "blanc",
+    "duree_ms": 5583
+   },
+   {
+    "t_s": 84.55,
+    "type": "blanc",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 86.217,
+    "type": "silhouette",
+    "duree_ms": 117
+   },
+   {
+    "t_s": 86.383,
+    "type": "silhouette",
+    "duree_ms": 450
+   },
+   {
+    "t_s": 87.217,
+    "type": "silhouette",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 87.3,
+    "type": "silhouette",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 89.05,
+    "type": "noir",
+    "duree_ms": 950
+   }
+  ],
+  "profil_autour": {
+   "approche": 3.14,
+   "0,1 s avant": 1.98,
+   "0,1 s apres": 3.97,
+   "tenue_avant_choc": false,
+   "explosion_apres": true
+  }
+ },
+ "coupes": {
+  "nombre": 31,
+  "t_s": [
+   0.833,
+   0.883,
+   5.883,
+   12.3,
+   16.017,
+   16.517,
+   17.15,
+   17.35,
+   17.4,
+   17.433,
+   17.483,
+   17.567,
+   17.6,
+   29.65,
+   45.133,
+   50.85,
+   52.35,
+   52.633,
+   52.683,
+   52.717,
+   54.183,
+   59.517,
+   61.233,
+   65.733,
+   70.2,
+   73.783,
+   82.95,
+   84.383,
+   84.717,
+   84.75,
+   84.8
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.29,
+  "decalage_p95_pct": 4.61
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 3.62,
+  "secondes_de_mouvement": 32.05,
+  "vitesse_sujet_p90": 3.487,
+  "pics": 248,
+  "part_des_pics_qui_montent": 0.26,
+  "deviation_trajectoire_mediane": 0.729,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#060506",
+   "part": 0.248
+  },
+  {
+   "hex": "#979ca2",
+   "part": 0.209
+  },
+  {
+   "hex": "#fcfcf8",
+   "part": 0.179
+  },
+  {
+   "hex": "#3b2d33",
+   "part": 0.163
+  },
+  {
+   "hex": "#e4e5db",
+   "part": 0.108
+  },
+  {
+   "hex": "#9a3f38",
+   "part": 0.093
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 76,
+  "termes": {
+   "contraste_de_temps": 1.0,
+   "tenues_presentes": 0.81,
+   "impacts_rythmes": 0.1
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/danbooru_danbooru_7525170.png",
+ "source": {
+  "nom": "danbooru",
+  "id": 7525170,
+  "tags": "acheron_(honkai:_star_rail) aha_(honkai:_star_rail) animated arms_up audible_music audible_speech aventurine_(honkai:_star_rail) back-to-back black_shirt black_swan_(honkai:_star_rail) bleach blue_hair caelus_(honkai:_star_rail) coat colored_extremities colored_skin commentary_request crescent_moon dan_heng_(honkai:_star_rail) dr._ratio_(honkai:_star_rail) dual_persona earrings extra_faces fighting firefly_(honkai:_star_rail) gallagher_(honkai:_star_rail) game_screenshot_inset glasses gloves green_eyes grey_hair hair_bun halo head_wings highres himeko_(honkai:_star_rail) holding holding_sword holding_weapon honkai:_star_rail honkai_(series) japanese_audio jewelry jiuyuan_zhu_jiang juzhen_yinghua long_hair long_sleeves looking_at_viewer march_7th_(honkai:_star_rail) march_7th_(preservation)_(honkai:_star_rail) mask misha_(honkai:_star_rail) moon open_mouth purple_eyes purple_hair purple_skin puzzle_piece qiong_kong_youyuan red_eyes red_hair red_hands robin_(honkai:_star_rail) sam_(honkai:_star_rail) screenshot_inset shirt sidelocks simple_background sound sparkle_(honkai:_star_rail) sunday_(honkai:_star_rail) sword trailblazer_(honkai:_star_rail) very_long_hair video weapon welt_yang white_background white_coat white_gloves white_hair wings xipe_(honkai:_star_rail)",
+  "score": 101,
+  "source_oeuvre": "bleach honkai:_star_rail honkai_(series)",
+  "artiste": "jiuyuan_zhu_jiang juzhen_yinghua qiong_kong_youyuan",
+  "url": "https://danbooru.donmai.us/posts/7525170",
+  "requete": "fighting",
+  "pourquoi": "combats animes, qualite par score"
+ }
+}

@@ -1,0 +1,104 @@
+{
+ "clip": "danbooru_danbooru_8941534",
+ "sha1_16": "b093ffd420c3800b",
+ "duree_s": 23.75,
+ "resolution": [
+  3840,
+  2160
+ ],
+ "zone_analysee": [
+  0,
+  1,
+  160,
+  90
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 33.3,
+  "lecture": "en 2 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 2,
+  "part_du_temps": 0.079,
+  "plus_longue_ms": 967
+ },
+ "energie": {
+  "mediane": 7.63,
+  "pic_p95": 19.64,
+  "contraste_p95_sur_mediane": 2.57,
+  "part_rapide": 0.083
+ },
+ "impacts": {
+  "nombre": 0,
+  "par_seconde": 0.0,
+  "ecart_median_s": null,
+  "cartes": [],
+  "profil_autour": null
+ },
+ "coupes": {
+  "nombre": 2,
+  "t_s": [
+   0.05,
+   0.417
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.25,
+  "decalage_p95_pct": 1.86
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 1.54,
+  "secondes_de_mouvement": 13.6,
+  "vitesse_sujet_p90": 1.383,
+  "pics": 102,
+  "part_des_pics_qui_montent": 0.34,
+  "deviation_trajectoire_mediane": 0.419,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#443c4a",
+   "part": 0.206
+  },
+  {
+   "hex": "#819cbf",
+   "part": 0.194
+  },
+  {
+   "hex": "#547091",
+   "part": 0.191
+  },
+  {
+   "hex": "#7e798b",
+   "part": 0.148
+  },
+  {
+   "hex": "#baadbb",
+   "part": 0.141
+  },
+  {
+   "hex": "#e7e1e3",
+   "part": 0.121
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 23,
+  "termes": {
+   "contraste_de_temps": 0.31,
+   "tenues_presentes": 0.26,
+   "impacts_rythmes": 0.0
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/danbooru_danbooru_8941534.png",
+ "source": {
+  "nom": "danbooru",
+  "id": 8941534,
+  "tags": "3d 5girls :3 absurdres ahoge animal_ears animated ascot audible_music audible_speech black_gloves black_shorts blue_hair bridal_gauntlets broken_glass brown_hair cecilia_immergreen cecilia_immergreen_(1st_costume) chair chattino_(raora_panthera) chest_jewel circlet collared_dress collared_halterneck colored_inner_hair commentary computer_keyboard computer_mouse cup doll_joints door doorway dress earthquake elizabeth_rose_bloodflame elizabeth_rose_bloodflame_(1st_costume) english_commentary fingerless_gloves fire_extinguisher furrowed_brow gem gigi_murin gigi_murin_(1st_costume) glass gloves goggles goggles_on_head green_dress green_eyes green_hair grey_hair halter_dress halterneck hand_jewel headphones highres holojustice hololive hololive_english huge_ahoge indoors japanese_audio jetpack jewel_under_eye joints kicking koseki_bijou koseki_bijou_(1st_costume) long_hair looking_at_viewer looking_up moai moai_(koseki_bijou) monitor multicolored_hair multiple_girls nerissa_ravencroft office_chair panther_ears panther_girl panther_tail parted_lips pink_eyes pink_hair purple_eyes purple_gem raora_panthera raora_panthera_(1st_costume) red_ascot red_eyes red_hair saucer short_hair shorts sitting sleeveless sleeveless_dress smug sound streaked_hair sunekosurisuri suya swivel_chair tail teacup terrible_joe triangle_mouth twintails undershirt v-shaped_eyebrows video virtual_youtuber walking wanted_poster white_bridal_gauntlets white_dress white_streaks whiteboard wide-eyed winding_key window yellow_eyes",
+  "score": 101,
+  "source_oeuvre": "hololive hololive_english",
+  "artiste": "sunekosurisuri suya terrible_joe",
+  "url": "https://danbooru.donmai.us/posts/8941534",
+  "requete": "kicking",
+  "pourquoi": "coups de pied animes"
+ }
+}

@@ -1,0 +1,103 @@
+{
+ "clip": "danbooru_danbooru_9647288",
+ "sha1_16": "0d78aead81cea4da",
+ "duree_s": 7.67,
+ "resolution": [
+  720,
+  720
+ ],
+ "zone_analysee": [
+  0,
+  0,
+  160,
+  160
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 33.3,
+  "lecture": "en 2 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 2,
+  "part_du_temps": 0.517,
+  "plus_longue_ms": 3233
+ },
+ "energie": {
+  "mediane": 3.03,
+  "pic_p95": 28.37,
+  "contraste_p95_sur_mediane": 9.36,
+  "part_rapide": 0.035
+ },
+ "impacts": {
+  "nombre": 0,
+  "par_seconde": 0.0,
+  "ecart_median_s": null,
+  "cartes": [],
+  "profil_autour": null
+ },
+ "coupes": {
+  "nombre": 1,
+  "t_s": [
+   4.167
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.1,
+  "decalage_p95_pct": 0.44
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 6.92,
+  "secondes_de_mouvement": 0.87,
+  "vitesse_sujet_p90": 1.177,
+  "pics": 7,
+  "part_des_pics_qui_montent": 0.71,
+  "deviation_trajectoire_mediane": 1.112,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#767b80",
+   "part": 0.264
+  },
+  {
+   "hex": "#939ea6",
+   "part": 0.248
+  },
+  {
+   "hex": "#6a5861",
+   "part": 0.205
+  },
+  {
+   "hex": "#f6f4f4",
+   "part": 0.132
+  },
+  {
+   "hex": "#cdcdd4",
+   "part": 0.123
+  },
+  {
+   "hex": "#717c82",
+   "part": 0.028
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 55,
+  "termes": {
+   "contraste_de_temps": 1.0,
+   "tenues_presentes": 0.28,
+   "impacts_rythmes": 0.0
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/danbooru_danbooru_9647288.png",
+ "source": {
+  "nom": "danbooru",
+  "id": 9647288,
+  "tags": "1girl :d animal_ears animated audible_music boots bow bowtie closed_eyes commentary dress gloves gold_ship_(red_strife)_(umamusume) gold_ship_(umamusume) grey_hair grin hat high_kick horse_ears horse_girl horse_tail jamiroquai kicking long_hair meme metal_pipe_falling_(meme) mini_hat pantyhose pink_eyes red_bow red_bowtie red_dress roundhouse_kick smile solo sound tail thighhighs tsp umamusume untranslatable_commentary video virtual_insanity_(song) white_boots white_gloves white_pantyhose",
+  "score": 100,
+  "source_oeuvre": "jamiroquai umamusume virtual_insanity_(song)",
+  "artiste": "tsp",
+  "url": "https://danbooru.donmai.us/posts/9647288",
+  "requete": "kicking",
+  "pourquoi": "coups de pied animes"
+ }
+}

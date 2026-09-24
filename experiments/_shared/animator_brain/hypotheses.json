@@ -145,7 +145,8 @@
     "Milan v1 : manque de puissance (piste)",
     "fiches des refs (2026-09-24) : 3 refs sur 9 avec cartes d'impact le montrent (coup chapeau, serious punch 2, IMPACT HAVEN) ; Black Flash, Rewind Clock, Serious Punch TSB non -> depend du style, pas universel",
     "sakugabooru (2026-09-24, fighting impact_frames, 1ers clips) : 0 sur 4 clips avec impacts (Nakamura, OPM, MHA, One Piece) -> 3 refs sur 13 au total : effet de style, pas principe",
-    "synthese 2026-09-24 (21 clips sakuga) : 1/19 clips avec impacts ; l'inverse domine : explosion apres le choc 8/19 (nous 0/4)"
+    "synthese 2026-09-24 (21 clips sakuga) : 1/19 clips avec impacts ; l'inverse domine : explosion apres le choc 8/19 (nous 0/4)",
+    "synthese finale 2026-09-24 : sakuga 2/32, danbooru 2/10, refs de Milan 3/9"
    ],
    "mesure": "fiche:impacts.profil_autour.tenue_avant_choc",
    "etalon_style": "manga_ultime",
@@ -230,7 +231,8 @@
     "12 principes de l'animation (follow-through, overlapping action)",
     "perception 2026-09-24 : M1 pro 4,2-5,7 traits/s ; notre aerien (aime par Milan) 3,5-4,2 ; notre rafale 8,8-11,9 (comme une reaction a un coup)",
     "auto-critique : cles IK avec ralenti a chaque cle -> arret a chaque cle",
-    "synthese 2026-09-24 : temps fige (images immobiles >= 150 ms) sakuga 2 % [1-5], refs de Milan 14 %, nos versions 37 %"
+    "synthese 2026-09-24 : temps fige (images immobiles >= 150 ms) sakuga 2 % [1-5], refs de Milan 14 %, nos versions 37 %",
+    "synthese finale 2026-09-24 : temps fige sakuga (plans de combat TV) 2 %, danbooru (animations de fans, boucles) 22 %, refs de Milan 14 %, nous 37 % -- au-dessus de tout"
    ],
    "mesure": "perception:traits par seconde de mouvement vs M1 pro",
    "poids_a_priori": 0.5
@@ -246,7 +248,8 @@
    "poids_a_priori": 0.5,
    "etalon_style": "manga_ultime",
    "sources": [
-    "synthese 2026-09-24 : 8/19 clips sakuga avec impacts, refs de Milan 2/9, nous 0/4 (notre hitstop gele apres)"
+    "synthese 2026-09-24 : 8/19 clips sakuga avec impacts, refs de Milan 2/9, nous 0/4 (notre hitstop gele apres)",
+    "synthese finale 2026-09-24 : sakuga 12/32, danbooru 4/10, refs de Milan 2/9, nous 0/4"
    ],
    "mesure": "fiche:impacts.profil_autour.explosion_apres"
   }

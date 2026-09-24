@@ -1,0 +1,101 @@
+{
+ "clip": "danbooru_danbooru_9671641",
+ "sha1_16": "2ac771f2cfb927d1",
+ "duree_s": 15.9,
+ "resolution": [
+  3840,
+  2160
+ ],
+ "zone_analysee": [
+  0,
+  0,
+  158,
+  85
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 33.3,
+  "lecture": "en 2 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 1,
+  "part_du_temps": 0.01,
+  "plus_longue_ms": 167
+ },
+ "energie": {
+  "mediane": 3.13,
+  "pic_p95": 23.3,
+  "contraste_p95_sur_mediane": 7.45,
+  "part_rapide": 0.042
+ },
+ "impacts": {
+  "nombre": 0,
+  "par_seconde": 0.0,
+  "ecart_median_s": null,
+  "cartes": [],
+  "profil_autour": null
+ },
+ "coupes": {
+  "nombre": 0,
+  "t_s": []
+ },
+ "camera": {
+  "decalage_median_pct": 0.13,
+  "decalage_p95_pct": 2.03
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 0.67,
+  "secondes_de_mouvement": 13.47,
+  "vitesse_sujet_p90": 1.833,
+  "pics": 54,
+  "part_des_pics_qui_montent": 0.28,
+  "deviation_trajectoire_mediane": 1.878,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#423825",
+   "part": 0.225
+  },
+  {
+   "hex": "#625542",
+   "part": 0.184
+  },
+  {
+   "hex": "#513f2c",
+   "part": 0.179
+  },
+  {
+   "hex": "#493d28",
+   "part": 0.165
+  },
+  {
+   "hex": "#947e69",
+   "part": 0.126
+  },
+  {
+   "hex": "#dbca97",
+   "part": 0.121
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 46,
+  "termes": {
+   "contraste_de_temps": 1.0,
+   "tenues_presentes": 0.03,
+   "impacts_rythmes": 0.0
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/danbooru_danbooru_9671641.png",
+ "source": {
+  "nom": "danbooru",
+  "id": 9671641,
+  "tags": "1zumich_(suckyengy1zumi) 3d 3girls absurdres aiguillette animal_ears animated aqua_bow aqua_bowtie ascot asymmetrical_bangs audible_speech black_coat blue_eyes blue_jacket blunt_bangs blush boots bow bowtie brown_hat cape coat coldplay_kiss_cam_(meme) covering_face crowd dress dropkick ear_bow embarrassed english_audio flying_kick gold_ship_(red_strife)_(umamusume) gold_ship_(umamusume) grey_hair hat high_collar highres horse_ears horse_girl horse_tail jacket kicking long_hair long_sleeves looking_at_viewer mejiro_mcqueen_(frontline_elegance)_(umamusume) mejiro_mcqueen_(umamusume) meme multicolored_jacket multiple_girls open_clothes open_coat photo-referenced pillbox_hat pink_ascot pink_eyes pleated_skirt purple_bow purple_eyes purple_hair real_life red_cape red_dress shirt side_cape skirt sleeveless sleeveless_dress sound source_filmmaker_(medium) stadium standing tail tokai_teio_(peak_joy)_(umamusume) tokai_teio_(umamusume) two-tone_jacket umamusume video waving white_boots white_jacket white_shirt white_skirt yuri",
+  "score": 104,
+  "source_oeuvre": "real_life umamusume",
+  "artiste": "1zumich_(suckyengy1zumi)",
+  "url": "https://danbooru.donmai.us/posts/9671641",
+  "requete": "kicking",
+  "pourquoi": "coups de pied animes"
+ }
+}

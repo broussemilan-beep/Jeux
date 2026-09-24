@@ -1,0 +1,185 @@
+{
+ "clip": "danbooru_danbooru_7642990",
+ "sha1_16": "1fc8b595473edf6b",
+ "duree_s": 50.0,
+ "resolution": [
+  1920,
+  1080
+ ],
+ "zone_analysee": [
+  6,
+  2,
+  160,
+  90
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 100.0,
+  "lecture": "en 4+ a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 66,
+  "part_du_temps": 0.332,
+  "plus_longue_ms": 600
+ },
+ "energie": {
+  "mediane": 17.76,
+  "pic_p95": 57.8,
+  "contraste_p95_sur_mediane": 3.25,
+  "part_rapide": 0.046
+ },
+ "impacts": {
+  "nombre": 14,
+  "par_seconde": 0.28,
+  "ecart_median_s": 1.5,
+  "cartes": [
+   {
+    "t_s": 9.0,
+    "type": "blanc",
+    "duree_ms": 600
+   },
+   {
+    "t_s": 17.6,
+    "type": "blanc",
+    "duree_ms": 400
+   },
+   {
+    "t_s": 18.2,
+    "type": "blanc",
+    "duree_ms": 700
+   },
+   {
+    "t_s": 20.3,
+    "type": "blanc",
+    "duree_ms": 800
+   },
+   {
+    "t_s": 21.3,
+    "type": "blanc",
+    "duree_ms": 200
+   },
+   {
+    "t_s": 21.7,
+    "type": "blanc",
+    "duree_ms": 200
+   },
+   {
+    "t_s": 22.1,
+    "type": "blanc",
+    "duree_ms": 500
+   },
+   {
+    "t_s": 23.6,
+    "type": "blanc",
+    "duree_ms": 100
+   },
+   {
+    "t_s": 27.6,
+    "type": "blanc",
+    "duree_ms": 400
+   },
+   {
+    "t_s": 28.7,
+    "type": "blanc",
+    "duree_ms": 100
+   },
+   {
+    "t_s": 31.1,
+    "type": "blanc",
+    "duree_ms": 700
+   },
+   {
+    "t_s": 38.0,
+    "type": "blanc",
+    "duree_ms": 100
+   },
+   {
+    "t_s": 39.2,
+    "type": "blanc",
+    "duree_ms": 300
+   },
+   {
+    "t_s": 47.0,
+    "type": "blanc",
+    "duree_ms": 3000
+   }
+  ],
+  "profil_autour": {
+   "approche": 1.38,
+   "0,1 s avant": 1.15,
+   "0,1 s apres": 0.0,
+   "tenue_avant_choc": false,
+   "explosion_apres": false
+  }
+ },
+ "coupes": {
+  "nombre": 6,
+  "t_s": [
+   15.1,
+   21.1,
+   24.4,
+   26.3,
+   26.9,
+   33.6
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.51,
+  "decalage_p95_pct": 16.01
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 0.33,
+  "secondes_de_mouvement": 27.6,
+  "vitesse_sujet_p90": 1.212,
+  "pics": 76,
+  "part_des_pics_qui_montent": 0.26,
+  "deviation_trajectoire_mediane": 0.552,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#fdfdfb",
+   "part": 0.57
+  },
+  {
+   "hex": "#c2a89b",
+   "part": 0.282
+  },
+  {
+   "hex": "#fefef7",
+   "part": 0.083
+  },
+  {
+   "hex": "#fffffe",
+   "part": 0.028
+  },
+  {
+   "hex": "#fafdfc",
+   "part": 0.027
+  },
+  {
+   "hex": "#fffdfc",
+   "part": 0.01
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 57,
+  "termes": {
+   "contraste_de_temps": 0.5,
+   "tenues_presentes": 0.89,
+   "impacts_rythmes": 0.19
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/danbooru_danbooru_7642990.png",
+ "source": {
+  "nom": "danbooru",
+  "id": 7642990,
+  "tags": "+_+ 6+girls >_< ? absolutely_everyone absurdly_long_hair alcohol alice_margatroid anger_vein animal_ear_fluff animal_ears animated antennae apron ascot audible_music audible_speech bandaid bandaid_on_face bat_wings black_hair black_hat black_jacket black_vest blonde_hair blue_bow blue_dress blue_eyes blue_hair blue_hat blue_shorts blue_skirt blush booby_trap book bow braid broom brown_eyes brown_hair bruise bruise_on_face bucket camera cape capelet cat_ears cat_girl cat_tail chaotic_scene chasing chen chinese_clothes cirno closed_eyes collared_shirt commentary crescent crescent_hat_ornament cuffs daiyousei dancing detached_sleeves dress drinking eating empty_wallet english_commentary english_text everyone explosion extra_ears eyeball fairy fairy_wings flandre_scarlet fleeing floppy_ears flying_kick fox_tail frilled_ascot frilled_dress frilled_skirt frills frog frog_hair_ornament frozen frozen_frog fujiwara_no_mokou gloom_(expression) glowing glowing_eyes glutton green_eyes green_hair green_skirt green_vest grey_hair hair_bow hair_ornament hair_ribbon hair_tubes hairband hakurei_reimu hat hat_ornament headpat heart heart-shaped_pupils heart_tail highres hitting holding holding_book holding_broom holding_camera holding_knife holding_wallet hong_meiling horns hoshiguma_yuugi houraisan_kaguya ibuki_suika ice ice_wings inaba_tewi injury izayoi_sakuya jacket japanese_audio jumping kaenbyou_rin kamishirasawa_keine kick_back_(song) kicking kirisame_marisa kisume knife koakuma kochiya_sanae komeiji_koishi komeiji_satori konpaku_youmu korean_commentary kurodani_yamame laughing leaf_hair_ornament long_hair long_sleeves magic maid maid_headdress medium_hair mixed-language_commentary mizuhashi_parsee mob_cap moriya_suwako multiple_girls multiple_tails mushroom mystia_lorelei necktie nekomata oni patchouli_knowledge pink_eyes pink_hair pink_skirt pitfall pleated_skirt pointy_ears pom_pom_(clothes) ponytail puffy_short_sleeves puffy_sleeves purple_hair pyonta rabbit_ears rabbit_girl red_ascot red_bow red_cape red_eyes red_hair red_hairband red_hat red_horns red_necktie red_shirt reisen_udongein_inaba reiuji_utsuho remilia_scarlet revision ribbon riri_zpt rock rumia running saigyouji_yuyuko sake scribble shackles shameimaru_aya shirt short_hair short_ponytail short_sleeves shorts side_ponytail sidelocks simple_background single_braid single_hair_tube single_horn single_sidelock skirt sleeveless sleeveless_shirt slit_pupils sound speech_bubble spoken_character spoken_question_mark sword sword_on_back symbol-shaped_pupils tail taking_picture theft time_travel tokin_hat touhou twin_braids very_long_hair vest video waist_apron wallet weapon weapon_on_back white_background white_capelet white_dress white_hair white_hat white_shirt white_sleeves wide_sleeves wings witch_hat wriggle_nightbug x_x yagokoro_eirin yakumo_ran yakumo_yukari yasaka_kanako yellow_eyes yellow_ribbon",
+  "score": 110,
+  "source_oeuvre": "kick_back_(song) touhou",
+  "artiste": "riri_zpt",
+  "url": "https://danbooru.donmai.us/posts/7642990",
+  "requete": "kicking",
+  "pourquoi": "coups de pied animes"
+ }
+}

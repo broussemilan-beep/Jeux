@@ -1,0 +1,145 @@
+{
+ "clip": "sakugabooru_sakuga_250896",
+ "sha1_16": "1c6c811a2cfff1f9",
+ "duree_s": 77.12,
+ "resolution": [
+  854,
+  480
+ ],
+ "zone_analysee": [
+  0,
+  0,
+  133,
+  90
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 11,
+  "part_du_temps": 0.061,
+  "plus_longue_ms": 2083
+ },
+ "energie": {
+  "mediane": 11.04,
+  "pic_p95": 40.54,
+  "contraste_p95_sur_mediane": 3.67,
+  "part_rapide": 0.021
+ },
+ "impacts": {
+  "nombre": 3,
+  "par_seconde": 0.04,
+  "ecart_median_s": 28.534,
+  "cartes": [
+   {
+    "t_s": 13.633,
+    "type": "noir",
+    "duree_ms": 300
+   },
+   {
+    "t_s": 67.783,
+    "type": "noir",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 70.7,
+    "type": "blanc",
+    "duree_ms": 33
+   }
+  ],
+  "profil_autour": {
+   "approche": 0.97,
+   "0,1 s avant": 1.23,
+   "0,1 s apres": 1.33,
+   "tenue_avant_choc": false,
+   "explosion_apres": false
+  }
+ },
+ "coupes": {
+  "nombre": 22,
+  "t_s": [
+   8.383,
+   16.9,
+   20.15,
+   29.983,
+   33.867,
+   34.833,
+   44.717,
+   46.217,
+   46.667,
+   53.883,
+   57.267,
+   57.633,
+   60.017,
+   62.817,
+   62.9,
+   65.267,
+   67.15,
+   67.7,
+   68.65,
+   70.733,
+   73.4,
+   73.483
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.59,
+  "decalage_p95_pct": 14.36
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 5.68,
+  "secondes_de_mouvement": 54.2,
+  "vitesse_sujet_p90": 3.418,
+  "pics": 455,
+  "part_des_pics_qui_montent": 0.29,
+  "deviation_trajectoire_mediane": 0.952,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#411c17",
+   "part": 0.204
+  },
+  {
+   "hex": "#c3a170",
+   "part": 0.204
+  },
+  {
+   "hex": "#694f38",
+   "part": 0.161
+  },
+  {
+   "hex": "#8f6044",
+   "part": 0.151
+  },
+  {
+   "hex": "#ebd2a6",
+   "part": 0.14
+  },
+  {
+   "hex": "#8bd0f1",
+   "part": 0.139
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 36,
+  "termes": {
+   "contraste_de_temps": 0.62,
+   "tenues_presentes": 0.2,
+   "impacts_rythmes": 0.03
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_250896.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 250896,
+  "tags": "animated background_animation cgi creatures debris effects explosions fabric falling fighting fire flying hair hironori_tanaka keiichiro_watanabe liquid running shingo_yamashita smears smoke sousou_no_frieren sousou_no_frieren_series sparks tatsuya_yoshihara wind yen_bm yutaka_nakamura",
+  "score": 3947,
+  "source_oeuvre": "#06 (PN) (BD) (ED/SB/2nd KA: Toru Iwazawa, AD/2nd KA: Keisuke Hiroe)",
+  "url": "https://www.sakugabooru.com/post/show/250896",
+  "requete": "fighting order:score",
+  "pourquoi": "curiosite : les combats les mieux notes, quel qu'en soit le sujet"
+ }
+}

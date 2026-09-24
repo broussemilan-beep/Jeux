@@ -1,0 +1,133 @@
+{
+ "clip": "sakugabooru_sakuga_160435",
+ "sha1_16": "1c4556c9e38c3fa0",
+ "duree_s": 43.8,
+ "resolution": [
+  640,
+  480
+ ],
+ "zone_analysee": [
+  2,
+  11,
+  152,
+  120
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 0,
+  "part_du_temps": 0.0,
+  "plus_longue_ms": 0
+ },
+ "energie": {
+  "mediane": 6.79,
+  "pic_p95": 43.76,
+  "contraste_p95_sur_mediane": 6.45,
+  "part_rapide": 0.05
+ },
+ "impacts": {
+  "nombre": 1,
+  "par_seconde": 0.02,
+  "ecart_median_s": null,
+  "cartes": [
+   {
+    "t_s": 26.2,
+    "type": "noir",
+    "duree_ms": 33
+   }
+  ],
+  "profil_autour": {
+   "approche": 3.12,
+   "0,1 s avant": 7.96,
+   "0,1 s apres": 4.35,
+   "tenue_avant_choc": false,
+   "explosion_apres": false
+  }
+ },
+ "coupes": {
+  "nombre": 20,
+  "t_s": [
+   2.667,
+   2.717,
+   6.883,
+   10.383,
+   12.383,
+   13.05,
+   15.05,
+   17.683,
+   20.183,
+   22.4,
+   24.15,
+   24.767,
+   26.15,
+   26.233,
+   27.15,
+   27.783,
+   40.283,
+   40.367,
+   41.5,
+   43.0
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.14,
+  "decalage_p95_pct": 15.11
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 5.53,
+  "secondes_de_mouvement": 26.57,
+  "vitesse_sujet_p90": 3.401,
+  "pics": 279,
+  "part_des_pics_qui_montent": 0.28,
+  "deviation_trajectoire_mediane": 0.968,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#2970a0",
+   "part": 0.232
+  },
+  {
+   "hex": "#c4c5c4",
+   "part": 0.195
+  },
+  {
+   "hex": "#3b3042",
+   "part": 0.168
+  },
+  {
+   "hex": "#afaba8",
+   "part": 0.168
+  },
+  {
+   "hex": "#6d7f97",
+   "part": 0.124
+  },
+  {
+   "hex": "#d7d1cb",
+   "part": 0.112
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 45,
+  "termes": {
+   "contraste_de_temps": 1.0,
+   "tenues_presentes": 0.0,
+   "impacts_rythmes": 0.02
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_160435.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 160435,
+  "tags": "animated background_animation beams debris dragon_ball dragon_ball_series effects fighting hisashi_eguchi smoke",
+  "score": 1105,
+  "source_oeuvre": "#139",
+  "url": "https://www.sakugabooru.com/post/show/160435",
+  "requete": "dragon_ball fighting",
+  "pourquoi": "combats aeriens, rafales"
+ }
+}

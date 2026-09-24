@@ -1,0 +1,122 @@
+{
+ "clip": "sakugabooru_sakuga_200870",
+ "sha1_16": "a2231b9a0f473e73",
+ "duree_s": 17.3,
+ "resolution": [
+  852,
+  480
+ ],
+ "zone_analysee": [
+  0,
+  0,
+  160,
+  70
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 33.3,
+  "lecture": "en 2 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 4,
+  "part_du_temps": 0.162,
+  "plus_longue_ms": 1800
+ },
+ "energie": {
+  "mediane": 10.06,
+  "pic_p95": 72.36,
+  "contraste_p95_sur_mediane": 7.2,
+  "part_rapide": 0.067
+ },
+ "impacts": {
+  "nombre": 1,
+  "par_seconde": 0.06,
+  "ecart_median_s": null,
+  "cartes": [
+   {
+    "t_s": 14.1,
+    "type": "silhouette",
+    "duree_ms": 33
+   }
+  ],
+  "profil_autour": {
+   "approche": 5.97,
+   "0,1 s avant": 10.58,
+   "0,1 s apres": 4.44,
+   "tenue_avant_choc": false,
+   "explosion_apres": false
+  }
+ },
+ "coupes": {
+  "nombre": 9,
+  "t_s": [
+   0.4,
+   0.467,
+   6.233,
+   6.267,
+   6.333,
+   6.367,
+   8.667,
+   14.133,
+   16.5
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.16,
+  "decalage_p95_pct": 21.2
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 5.13,
+  "secondes_de_mouvement": 9.17,
+  "vitesse_sujet_p90": 2.593,
+  "pics": 63,
+  "part_des_pics_qui_montent": 0.25,
+  "deviation_trajectoire_mediane": 0.728,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#355fb8",
+   "part": 0.251
+  },
+  {
+   "hex": "#dde5e8",
+   "part": 0.2
+  },
+  {
+   "hex": "#4568be",
+   "part": 0.195
+  },
+  {
+   "hex": "#283a6e",
+   "part": 0.148
+  },
+  {
+   "hex": "#f7f4f0",
+   "part": 0.131
+  },
+  {
+   "hex": "#839ab6",
+   "part": 0.075
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 65,
+  "termes": {
+   "contraste_de_temps": 1.0,
+   "tenues_presentes": 0.54,
+   "impacts_rythmes": 0.04
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_200870.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 200870,
+  "tags": "animated effects fighting liquid smears vincent_chansard web western",
+  "score": 1254,
+  "source_oeuvre": "http://sparklerredpanda.tumblr.com/post/173000147717/i-do-encourage-you-to-play-bnhas-you-say-run",
+  "url": "https://www.sakugabooru.com/post/show/200870",
+  "requete": "western",
+  "pourquoi": "animation occidentale (Arcane, Avatar...)"
+ }
+}

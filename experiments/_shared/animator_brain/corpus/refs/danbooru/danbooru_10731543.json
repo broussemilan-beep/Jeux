@@ -1,0 +1,107 @@
+{
+ "clip": "danbooru_danbooru_10731543",
+ "sha1_16": "61e7ff5d9a53f4dc",
+ "duree_s": 4.2,
+ "resolution": [
+  1280,
+  720
+ ],
+ "zone_analysee": [
+  19,
+  33,
+  153,
+  90
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 33.3,
+  "lecture": "en 2 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 1,
+  "part_du_temps": 0.135,
+  "plus_longue_ms": 567
+ },
+ "energie": {
+  "mediane": 17.5,
+  "pic_p95": 46.04,
+  "contraste_p95_sur_mediane": 2.63,
+  "part_rapide": 0.175
+ },
+ "impacts": {
+  "nombre": 0,
+  "par_seconde": 0.0,
+  "ecart_median_s": null,
+  "cartes": [],
+  "profil_autour": null
+ },
+ "coupes": {
+  "nombre": 5,
+  "t_s": [
+   0.633,
+   1.083,
+   1.967,
+   2.083,
+   2.117
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.69,
+  "decalage_p95_pct": 5.1
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 2.17,
+  "secondes_de_mouvement": 2.77,
+  "vitesse_sujet_p90": 2.652,
+  "pics": 21,
+  "part_des_pics_qui_montent": 0.38,
+  "deviation_trajectoire_mediane": 0.712,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#48413f",
+   "part": 0.216
+  },
+  {
+   "hex": "#a9a8a8",
+   "part": 0.209
+  },
+  {
+   "hex": "#b1b0b0",
+   "part": 0.179
+  },
+  {
+   "hex": "#a29f9d",
+   "part": 0.171
+  },
+  {
+   "hex": "#c8c6c5",
+   "part": 0.134
+  },
+  {
+   "hex": "#949292",
+   "part": 0.091
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 30,
+  "termes": {
+   "contraste_de_temps": 0.32,
+   "tenues_presentes": 0.45,
+   "impacts_rythmes": 0.0
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/danbooru_danbooru_10731543.png",
+ "source": {
+  "nom": "danbooru",
+  "id": 10731543,
+  "tags": "1girl 3d animal_ears animated arknights arknights:_endfield attacking_viewer bare_shoulders bird_ears bird_girl black_gloves blue_eyes breasts brown_hair closed_mouth commentary dress english_commentary eyecandrymovies gif_caption_(meme) gloves headbutt jacket long_hair medium_breasts meme paypal_me_$30000_(meme) perlica_(arknights) pov punching punching_viewer solo sound twitter_username video white_dress white_jacket yellow_pupils",
+  "score": 73,
+  "source_oeuvre": "arknights arknights:_endfield",
+  "artiste": "eyecandrymovies",
+  "url": "https://danbooru.donmai.us/posts/10731543",
+  "requete": "punching",
+  "pourquoi": "coups de poing animes"
+ }
+}

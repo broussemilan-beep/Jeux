@@ -1,0 +1,182 @@
+{
+ "clip": "danbooru_danbooru_6340488",
+ "sha1_16": "3e0bdf9284e33372",
+ "duree_s": 91.97,
+ "resolution": [
+  1920,
+  1080
+ ],
+ "zone_analysee": [
+  9,
+  0,
+  160,
+  90
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 48,
+  "part_du_temps": 0.285,
+  "plus_longue_ms": 2283
+ },
+ "energie": {
+  "mediane": 5.43,
+  "pic_p95": 46.3,
+  "contraste_p95_sur_mediane": 8.53,
+  "part_rapide": 0.003
+ },
+ "impacts": {
+  "nombre": 11,
+  "par_seconde": 0.12,
+  "ecart_median_s": 1.041,
+  "cartes": [
+   {
+    "t_s": 30.083,
+    "type": "noir",
+    "duree_ms": 750
+   },
+   {
+    "t_s": 49.633,
+    "type": "blanc",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 60.25,
+    "type": "noir",
+    "duree_ms": 250
+   },
+   {
+    "t_s": 62.0,
+    "type": "blanc",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 62.7,
+    "type": "blanc",
+    "duree_ms": 100
+   },
+   {
+    "t_s": 63.45,
+    "type": "blanc",
+    "duree_ms": 100
+   },
+   {
+    "t_s": 64.0,
+    "type": "blanc",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 65.167,
+    "type": "noir",
+    "duree_ms": 333
+   },
+   {
+    "t_s": 66.083,
+    "type": "noir",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 66.3,
+    "type": "silhouette",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 91.383,
+    "type": "noir",
+    "duree_ms": 583
+   }
+  ],
+  "profil_autour": {
+   "approche": 0.0,
+   "0,1 s avant": 1.28,
+   "0,1 s apres": 0.57,
+   "tenue_avant_choc": false,
+   "explosion_apres": false
+  }
+ },
+ "coupes": {
+  "nombre": 18,
+  "t_s": [
+   38.583,
+   42.833,
+   45.583,
+   49.583,
+   52.833,
+   57.667,
+   60.2,
+   60.55,
+   64.083,
+   64.95,
+   65.5,
+   65.95,
+   66.133,
+   66.5,
+   66.55,
+   66.583,
+   66.633,
+   67.083
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.15,
+  "decalage_p95_pct": 2.14
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 5.03,
+  "secondes_de_mouvement": 30.83,
+  "vitesse_sujet_p90": 1.726,
+  "pics": 237,
+  "part_des_pics_qui_montent": 0.27,
+  "deviation_trajectoire_mediane": 0.933,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#080a1a",
+   "part": 0.223
+  },
+  {
+   "hex": "#696a8a",
+   "part": 0.177
+  },
+  {
+   "hex": "#3c3461",
+   "part": 0.174
+  },
+  {
+   "hex": "#1f2243",
+   "part": 0.152
+  },
+  {
+   "hex": "#b7b6bd",
+   "part": 0.144
+  },
+  {
+   "hex": "#e7e7e2",
+   "part": 0.13
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 80,
+  "termes": {
+   "contraste_de_temps": 1.0,
+   "tenues_presentes": 0.95,
+   "impacts_rythmes": 0.08
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/danbooru_danbooru_6340488.png",
+ "source": {
+  "nom": "danbooru",
+  "id": 6340488,
+  "tags": "4boys 6+girls aged_down ahoge animated arm_up armor bilibili_logo bird black_gloves black_hair blonde_hair blue_eyes blue_hair blush bronya_rand bug butterfly chair chinese_commentary clara_(honkai:_star_rail) closed_mouth cocolia_rand commentary_request crying dan_heng_(honkai:_star_rail) dress drill_hair drill_sidelocks fighting from_above full_moon gepard_landau gloves green_eyes grey_eyes gundam gundam_suisei_no_majo hair_flaps highres himeko_(honkai:_star_rail) holding holding_scythe honkai:_star_rail honkai_(series) hook_(honkai:_star_rail) ice jacket ji_haitang_yu_li lamppost long_hair low_twintails lyrics march_7th_(honkai:_star_rail) march_7th_(preservation)_(honkai:_star_rail) moon multicolored_hair multiple_boys multiple_girls natasha_(honkai:_star_rail) night open_mouth parted_lips pela_(honkai:_star_rail) pom-pom_(honkai:_star_rail) ripples road sampo_koski scythe seele_(honkai:_star_rail) serval_landau sidelocks sky sleeping smile sound star_(sky) stelle_(honkai:_star_rail) streaked_hair street stretching svarog_(honkai:_star_rail) syringe tied_jacket topless_male trailblazer_(honkai:_star_rail) twintails very_long_hair video walking walking_on_liquid water welt_yang white_dress white_eyes white_hair yoasobi",
+  "score": 147,
+  "source_oeuvre": "gundam gundam_suisei_no_majo honkai:_star_rail honkai_(series) yoasobi",
+  "artiste": "ji_haitang_yu_li",
+  "url": "https://danbooru.donmai.us/posts/6340488",
+  "requete": "fighting",
+  "pourquoi": "combats animes, qualite par score"
+ }
+}

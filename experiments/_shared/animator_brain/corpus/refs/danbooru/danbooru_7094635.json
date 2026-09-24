@@ -1,0 +1,172 @@
+{
+ "clip": "danbooru_danbooru_7094635",
+ "sha1_16": "42f4eb432dad62b5",
+ "duree_s": 93.63,
+ "resolution": [
+  1920,
+  1080
+ ],
+ "zone_analysee": [
+  0,
+  0,
+  155,
+  90
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 49,
+  "part_du_temps": 0.244,
+  "plus_longue_ms": 3383
+ },
+ "energie": {
+  "mediane": 10.51,
+  "pic_p95": 53.88,
+  "contraste_p95_sur_mediane": 5.13,
+  "part_rapide": 0.002
+ },
+ "impacts": {
+  "nombre": 6,
+  "par_seconde": 0.06,
+  "ecart_median_s": 13.5,
+  "cartes": [
+   {
+    "t_s": 0.0,
+    "type": "noir",
+    "duree_ms": 550
+   },
+   {
+    "t_s": 47.633,
+    "type": "noir",
+    "duree_ms": 167
+   },
+   {
+    "t_s": 62.583,
+    "type": "silhouette",
+    "duree_ms": 367
+   },
+   {
+    "t_s": 66.383,
+    "type": "silhouette",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 66.5,
+    "type": "noir",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 66.583,
+    "type": "silhouette",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 79.167,
+    "type": "noir",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 92.667,
+    "type": "noir",
+    "duree_ms": 967
+   }
+  ],
+  "profil_autour": {
+   "approche": 2.24,
+   "0,1 s avant": 13.09,
+   "0,1 s apres": 2.64,
+   "tenue_avant_choc": false,
+   "explosion_apres": false
+  }
+ },
+ "coupes": {
+  "nombre": 23,
+  "t_s": [
+   12.55,
+   14.0,
+   27.05,
+   32.917,
+   47.383,
+   47.45,
+   47.55,
+   47.8,
+   62.55,
+   65.883,
+   66.25,
+   66.3,
+   66.45,
+   66.55,
+   66.633,
+   70.75,
+   72.917,
+   73.783,
+   78.3,
+   79.3,
+   79.333,
+   80.05,
+   88.583
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.27,
+  "decalage_p95_pct": 19.3
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": null,
+  "secondes_de_mouvement": 0.0,
+  "vitesse_sujet_p90": null,
+  "pics": 0,
+  "part_des_pics_qui_montent": null,
+  "deviation_trajectoire_mediane": 1.172,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#846865",
+   "part": 0.221
+  },
+  {
+   "hex": "#04070f",
+   "part": 0.22
+  },
+  {
+   "hex": "#202645",
+   "part": 0.182
+  },
+  {
+   "hex": "#e0c7ad",
+   "part": 0.14
+  },
+  {
+   "hex": "#5b3233",
+   "part": 0.125
+  },
+  {
+   "hex": "#8eb1ab",
+   "part": 0.111
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 74,
+  "termes": {
+   "contraste_de_temps": 1.0,
+   "tenues_presentes": 0.81,
+   "impacts_rythmes": 0.04
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/danbooru_danbooru_7094635.png",
+ "source": {
+  "nom": "danbooru",
+  "id": 7094635,
+  "tags": "6+girls :p >_< against_tree alice_margatroid animal_ear_piercing animal_ears animal_hat animal_print animated apron aqua_shirt arm_cannon ascot asymmetrical_hair asymmetrical_wings audible_music bamboo bamboo_forest bandaged_arm bandages barefoot bat_(animal) bat_wings beads beret between_fingers bird_wings bishamonten's_spear black_bow black_bowtie black_dress black_hair black_hairband black_hat black_thighhighs black_wings blazer blonde_hair blue_bow blue_dress blue_eyes blue_hair blue_hat blue_kimono blue_shirt blue_skirt blue_vest blue_wings blush boat book bookshelf boots bow bowl bowl_hat bowtie bracelet braid brooch brown_boots brown_eyes brown_hair brown_hat brown_sash bubble_skirt building bun_cover buttons camera cape capelet carrot_necklace cat_ears cat_tail chain chair chakram chen chinese_clothes chireiden cirno cloak closed_eyes closed_mouth clothes_writing cloud commentary_request cone_horns constellation_print crescent crescent_hat_ornament cross cross-laced_clothes crossed_arms crossed_legs crystal cuffs cup curly_hair curtains dalachi_(headdress) dancing day demon_wings desk_lamp detached_sleeves detached_wings disembodied_linked_eye doll double_bun dress drum drumsticks dual_wielding earmuffs earrings earth_(ornament) eating eientei epaulettes explosion eyeball falling_petals false_arm false_limb fighting fire flaming_skull flandre_scarlet floating floating_skull floppy_ears flower food footwear_bow forest fox_ears fox_tail frilled_bow frilled_hair_tubes frilled_hat frilled_kimono frilled_shirt_collar frilled_sleeves frills frog_hair_ornament frog_print fruit fruit_hat_ornament fujiwara_no_mokou geta ghost_tail glasses gohei gold_chain gourd gradient_hair green_bow green_dress green_eyes green_hair green_skirt green_vest grey_hair hair_bobbles hair_bow hair_bun hair_ornament hair_ribbon hair_tubes hairband hakurei_reimu hakurei_shrine hand_on_own_cheek hand_on_own_face hands_on_own_hips hat hat_bow hat_ornament hat_ribbon hata_no_kokoro head_wings heart heart_button heart_hair_ornament hecatia_lapislazuli highres hijiri_byakuren hinanawi_tenshi holding holding_camera holding_drumsticks holding_gohei holding_knife holding_sword holding_umbrella holding_weapon hong_meiling hood horikawa_raiko horn_ornament horn_ribbon horns houjuu_nue houraisan_kaguya ibaraki_kasen ibuki_suika ice ice_wings inaba_tewi instrument izayoi_sakuya jacket japanese_clothes jewelry junko_(touhou) kaenbyou_rin kamishirasawa_keine karakasa_obake kariginu kariyushi_shirt katana kijin_seija kimono kirisame_marisa kitsune knife knives_between_fingers koakuma kochiya_sanae komainu_girl komano_aunn komeiji_koishi komeiji_satori konpaku_youmu kumoi_ichirin lamp layered_dress layered_sleeves leaf leaf_hair_ornament library long_hair long_sleeves magic_circle maid maid_apron maid_headdress maple_leaf mary_janes mask mask_on_head mob_cap mononobe_no_futo moon moon_(ornament) moriya_shrine moriya_suwako mountain multicolored_dress multicolored_hair multicolored_wings multiple_girls multiple_tails nature necklace necktie nekomata night nurse_cap obi off-shoulder_shirt off_shoulder official_art ofuda one_side_up oni onigiri onozuka_komachi open_book open_mouth orange_hair orange_skirt pants parasol patchouli_knowledge peach peach_hat_ornament pendant petals pinafore_dress pink_bow pink_bowtie pink_dress pink_eyes pink_flower pink_hair pink_hat pink_rose pink_shirt plaid_clothes plaid_shirt plate pointy_hair polearm pom_pom_(clothes) ponytail prayer_beads puffy_short_sleeves puffy_sleeves purple_bow purple_bowtie purple_cape purple_eyes purple_hair purple_necktie purple_tabard purple_umbrella purple_vest pyramid_(geometry) qipao rabbit_ears rabbit_girl rainbow_gradient reading red-framed_eyewear red_ascot red_bow red_bowtie red_cross red_eyes red_hair red_hairband red_hat red_kimono red_moon red_necktie red_pants red_ribbon red_scarf red_shirt red_skirt red_tabard red_vest red_wings reisen_udongein_inaba reiuji_utsuho remilia_scarlet ribbon ribbon-trimmed_skirt ribbon-trimmed_sleeves ribbon_trim ritual_baton rod_of_remorse rope rose saigyouji_yuyuko sash scarf scarlet_devil_mansion scroll scythe semi-rimless_eyewear shackles shameimaru_aya shanghai_doll shiki_eiki shimenawa shirt shoes short_dress short_hair short_over_long_sleeves short_sleeves shorts siblings side_braid single_braid single_earring single_hair_tube single_horn sisters sitting_on_drum skewer skirt skirt_set skull sky sleeve_bow sleeve_garter sleeveless sleeveless_dress sleeveless_shirt small_horns smile snake_hair_ornament socks soga_no_tojiko sorcerer's_sutra_scroll sound spear spear_the_gungnir spider_lily star_(symbol) star_hat_ornament streaked_hair striped_clothes striped_dress suit_jacket sukuna_shinmyoumaru sword t-shirt tabard table tail talisman tapping_foot tatara_kogasa tate_eboshi tengu-geta thighhighs tiger_print tokin_hat tongue tongue_out toramaru_shou torii touhou touhou_arcadia_record toyosatomimi_no_miko tree triangular_headpiece trident twin_braids two-tone_hair two_tails umbrella under-rim_eyewear underworld_(ornament) usami_sumireko vertical-striped_clothes vertical-striped_dress very_long_hair vest video voile waist_apron waist_bow watercraft weapon white_bow white_capelet white_hair white_hat white_jacket white_shorts wide_sleeves window wings witch_hat wrist_cuffs yagokoro_eirin yakumo_ran yakumo_yukari yasaka_kanako yellow_ascot yellow_bow yellow_eyes yellow_shirt yunomi zener_card",
+  "score": 175,
+  "source_oeuvre": "touhou touhou_arcadia_record",
+  "artiste": "",
+  "url": "https://danbooru.donmai.us/posts/7094635",
+  "requete": "fighting",
+  "pourquoi": "combats animes, qualite par score"
+ }
+}
