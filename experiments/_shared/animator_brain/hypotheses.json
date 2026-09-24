@@ -347,13 +347,14 @@
     "finisher",
     "rafale"
    ],
-   "confiance_principe": 0.7,
+   "confiance_principe": 0.8,
    "poids_note": 0.64,
    "poids_a_priori": 0.5,
    "etalon_style": "manga_ultime",
    "sources": [
     "corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~9 clips",
-    "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)"
+    "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)",
+    "image de Milan 8965d689 (planche OPM) : LE coup de Saitama = poing vers le lecteur, plus gros que la tete ; Umamusume 3D : meme principe en temps reel"
    ],
    "mesure": "jugement visuel",
    "categorie": "mise_en_scene",
@@ -492,11 +493,11 @@
   "manga_ultime": "refs anime / ultimes TSB (exagere)",
   "universel": "principe d'animation"
  },
+ "_regle_d_usage": "Retour de Milan (2026-09-24) : ce qu'on decouvre doit etre bien utilise, pas applique n'importe comment. Une hypothese vraie en animation n'est pas une case a cocher : chacune porte QUAND elle sert et QUAND elle nuit. Le critique juge l'usage au bon moment (hierarchie des temps forts, escalade, contraste), jamais la simple presence.",
  "_calibration": {
-  "a": 1.307,
-  "b": 7.316,
+  "a": 1.317,
+  "b": 7.325,
   "n_notes": 4,
   "doc": "note = b + a * score ; reapprise a chaque reflexion"
- },
- "_regle_d_usage": "Retour de Milan (2026-09-24) : ce qu'on decouvre doit etre bien utilise, pas applique n'importe comment. Une hypothese vraie en animation n'est pas une case a cocher : chacune porte QUAND elle sert et QUAND elle nuit. Le critique juge l'usage au bon moment (hierarchie des temps forts, escalade, contraste), jamais la simple presence."
+ }
 }

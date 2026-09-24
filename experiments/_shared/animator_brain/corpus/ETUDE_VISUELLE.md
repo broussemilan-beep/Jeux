@@ -12,11 +12,12 @@ de −30 à +14 f à 60 i/s. J'ai regardé ces planches **une par une** :
 
 | lot | planches regardées |
 |---|---|
-| refs de Milan | 16 |
+| refs de Milan (vidéos) | 16 |
+| images fixes de Milan | 15 |
 | Sakugabooru | 41 |
-| Danbooru | 10 sur 16 |
+| Danbooru | 15 |
 | notre v5 | 1 |
-| **total** | **68** |
+| **total** | **88** |
 
 - **Notes brutes, clip par clip** : `ETUDE_NOTES_BRUTES.md`.
 - **Les planches elles-mêmes** (des images d'œuvres protégées) restent en
@@ -47,7 +48,12 @@ total. Notre rafale et notre coup final ne l'appliquent pas.
 Pour chaque principe : ce que font les refs, combien de clips le montrent,
 ce qu'on fait nous.
 
-### A. Cartes d'impact graphiques — environ 22 clips
+### A. Cartes d'impact graphiques — environ 24 clips
+
+Milan a envoyé la même carte en deux polarités (`41d7796b` puis
+`a4a75c01` : étoiles noires sur blanc, puis blanches sur noir). L'alternance
+noir/blanc d'une image à l'autre, c'est une même carte inversée. On retrouve
+cette grammaire jusque dans une cinématique de jeu 3D (Honkai Star Rail).
 
 **Ce que font les refs.** Au moment du choc, l'image 3D est remplacée par 2
 à 8 cartes de 2 à 4 f chacune. On y trouve :
@@ -105,7 +111,12 @@ contre le géant, Genos), Kekkai Sensen, One Piece, Dragon Ball, Gemini
 
 **Chez nous.** Jamais. Notre caméra ne s'approche jamais d'un visage.
 
-### E. Le poing en très gros plan, souvent vers la caméra — environ 9 clips
+### E. Le poing en très gros plan, souvent vers la caméra — environ 11 clips
+
+**La référence Saitama de Milan est exactement ça.** Sa planche manga
+(`8965d689`) montre le poing qui vient **vers le lecteur**, plus gros que la
+tête, au milieu des débris. Le même principe marche en 3D temps réel : dans
+Umamusume, la chaussure remplit l'écran. Notre v5 montrait le coup de profil.
 
 **Ce que font les refs.** Le poing ou le bras remplit l'écran, en raccourci,
 tenu de 12 à 16 f : c'est la puissance faite image. Pendant la charge, la

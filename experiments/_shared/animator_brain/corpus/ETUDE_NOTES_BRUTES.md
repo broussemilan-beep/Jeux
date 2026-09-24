@@ -162,3 +162,16 @@
 ## sakuga 250896 (Frieren #06) : charge a la hache en contre-plongee laterale au ras du sol ; gueule du monstre en gros plan.
 
 ## derniers : FLCL 293698 (formes plates graphiques, perso minuscule au pied d'une tour), MHA S4 281605 (POING vers la camera tenu 14 f + BLANC 4 f + NOIR 4 f), DB 240178 (fond remplace par JAUNE plat a l'impact, noir 2 f, blanc), Castlevania 239831 (encre rouge/noir), JJK 252457 (silhouette blanche sur fond de lignes radiales), Sword of the Stranger 306329 (eclat bleu en croix a chaque choc, silhouettes a contre-jour), DB 81256 (BLANC 12 f puis eclatement du sol avec rochers).
+
+## Images fixes envoyees par Milan (2026-09, 15 images)
+- **8965d689 -- planche manga One Punch Man (Saitama)** : LE poing vers le lecteur, ENORME en raccourci (plus gros que la tete), debris qui volent autour, cape en arriere, visage crispe derriere le poing. C'est sa ref du coup Saitama : le coup se lit par le RACCOURCI du poing vers nous, pas par un bras vu de profil.
+- **41d7796b + a4a75c01 -- meme carte d'impact en DEUX POLARITES** (etoiles noires a 4 branches sur blanc, puis blanches sur noir, traits verticaux, contour arrondi) : l'alternance noir/blanc d'une frame a l'autre = une meme carte inversee.
+- **6dfb2f6c** : carte hachures a l'encre radiales (type Serious Punch).
+- **33393716** (anime, style Baki) : pose de charge BASSE et LARGE, bras en avant, dos muscle, lumiere doree qui monte du sol.
+- **1727676e / 8d015f39 / 7263e0c8** : refs VFX (projectile de feu en rotation, soleil The Creator VFX pack).
+- 095c28ec / 151f7f6d : trone et couronne (anciens projets). 14589186 / 50ace4b8 / 90118239 : captures de conversations (outils). dfdb9286 : rig R6 Blender. Pas d'animation a etudier.
+
+## Derniers Danbooru
+- 7525170 (Honkai Star Rail, Acheron -- cinematique de JEU) : blanc -> gros plan levres -> eclat radial rouge -> NOIR -> cartes N/B posterisees : meme grammaire dans une cinematique de jeu 3D.
+- 9671641 (Umamusume 3D) : coup de pied VERS LA CAMERA, la chaussure remplit l'ecran (raccourci) : le principe du poing en gros plan marche aussi en 3D temps reel.
+- 6787236 (Blue Archive, clip musical), 8941534 (hololive) : hors combat.
