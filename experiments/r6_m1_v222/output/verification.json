@@ -8,6 +8,14 @@
  },
  "translation_tete_max": 0.0,
  "aller_retour_max_studs": 3.501777277920762e-15,
+ "sens_roblox": {
+  "attaquant_regarde_moins_z": true,
+  "poing_devant_a_l_impact": true,
+  "victime_face_a_l_attaquant": true,
+  "poing_sur_la_face_avant_de_la_victime": true,
+  "tete_victime_projetee_vers_son_dos": true,
+  "armement_bras_droit_en_arriere": true
+ },
  "attaquant": {
   "categorie": "frappe_legere",
   "timing": {

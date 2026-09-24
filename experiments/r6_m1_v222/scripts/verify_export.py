@@ -50,11 +50,42 @@ def main(blend):
     vic = [((f - M.VIC_START_F) / M.FPS, wb[f][1]) for f in range(M.VIC_START_F, M.VIC_END_F + 1)]
     pa = os.path.join(M.OUT, "m1_attaquant.rbxmx")
     pv = os.path.join(M.OUT, "m1_victime_reaction.rbxmx")
-    X.write_kfseq(att, pa, "M1_Attaquant", priority=3, markers=[(M.IMPACT_F / M.FPS, "hit", "right_fist")],
+    # marqueurs = horloge des VFX, portee par l'animation elle-meme (le script
+    # de jeu ecoute GetMarkerReachedSignal, jamais un delai code en dur)
+    X.write_kfseq(att, pa, "M1_Attaquant", priority=3,
+                  markers=[(10 / M.FPS, "trail_on", "right_fist"),
+                           (M.IMPACT_F / M.FPS, "hit", "right_fist"),
+                           (21 / M.FPS, "trail_off", "right_fist")],
                   zero_weight=LEGS)
     X.write_kfseq(vic, pv, "M1_Victime_Reaction", priority=3, zero_weight=LEGS)
     rt = max(max(v[0] for v in X.roundtrip_error(p, fr).values()) for p, fr in ((pa, att), (pv, vic)))
     rep["aller_retour_max_studs"] = rt
+    # 3b. SENS en repere Roblox (le jeu : avant = -Z), sur les FICHIERS relus.
+    # Victime placee comme en jeu : attaquant * CFrame.new(0,0,-d) * Angles(0,pi,0).
+    ry = np.array([[-1.0, 0, 0], [0, 1.0, 0], [0, 0, -1.0]])
+    ha, hv = (np.eye(3), np.array([0.0, 3.0, 0.0])), (ry, np.array([0.0, 3.0, -d]))
+    fa = X.read_kfseq(pa)
+    fv = X.read_kfseq(pv)
+    fwd = np.array([0.0, 0.0, -1.0])
+    w0 = X.solve(fa[0][1], root=ha)
+    wi = X.solve(fa[M.IMPACT_F][1], root=ha)
+    v0 = X.solve(fv[0][1], root=hv)
+    v2 = X.solve(fv[2][1], root=hv)
+    w10 = X.solve(fa[10][1], root=ha)
+    fist = M.fist_tip(wi)
+    q = v0["Torso"][0].T @ (fist - v0["Torso"][1])
+    top = lambda w: w["Head"][1] + w["Head"][0] @ np.array([0.0, 0.6, 0.0])  # noqa: E731
+    sens = {
+        "attaquant_regarde_moins_z": bool(np.allclose(w0["Torso"][0] @ fwd, fwd, atol=1e-3)),
+        "poing_devant_a_l_impact": bool(fist[2] < -2.0),
+        "victime_face_a_l_attaquant": bool(np.allclose(v0["Torso"][0] @ fwd, -fwd, atol=1e-3)),
+        "poing_sur_la_face_avant_de_la_victime": bool(abs(q[2] + 0.5) < 0.05 and abs(q[0]) < 1.0 and abs(q[1]) < 1.0),
+        "tete_victime_projetee_vers_son_dos": bool((top(v2) - top(v0))[2] < -0.2),
+        "armement_bras_droit_en_arriere": bool(w10["Right Arm"][1][2] > 0.5),
+    }
+    rep["sens_roblox"] = sens
+    if not all(sens.values()):
+        raise SystemExit(f"SENS FAUX : {sens}")
     # 4. verdict calibre
     for key, frames, cat in (("attaquant", att, "frappe_legere"), ("victime", vic, "reaction")):
         tp = C.timing_profile(frames, False, LEGS, strike=(cat == "frappe_legere"))

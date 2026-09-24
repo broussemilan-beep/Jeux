@@ -130,10 +130,94 @@ Chaque point est corrigé et consigné dans le code concerné.
 - **Pas vu dans Roblox Studio** (pas de Studio ici) ; l'aller-retour par
   l'équation du moteur est le garde-fou.
 
+
+## Étape 4 : le package Roblox complet (2026-09-24)
+
+**`output/M1_Technique.rbxmx`** : un seul fichier à glisser dans Studio
+(Workspace), puis **Play**. Le coup se rejoue en boucle toutes les 2,2 s.
+
+| instance | rôle |
+|---|---|
+| `Attaquant`, `Victime` | mannequins R6 générés depuis les C0/C1 du vrai rig ; l'attaquant regarde −Z, la victime est placée devant lui et tournée vers lui |
+| `Animations` | les deux KeyframeSequence ; l'attaquant porte 3 marqueurs `trail_on` (0,167 s), `hit` (0,283 s), `trail_off` (0,350 s) |
+| `M1Technique` (ModuleScript) | la technique, voir le détail sous le tableau |
+| `Demo` (Script, RunContext Client) | boucle de démonstration ; tourne où qu'il soit dans Studio |
+
+Ce que fait `M1Technique` :
+
+- place la victime ;
+- joue les animations (id temporaire de Studio via
+  `KeyframeSequenceProvider`, ou l'attribut `AnimationId` de la
+  KeyframeSequence si tu publies l'animation) ;
+- **sur les marqueurs** : traînée du poing, puis à `hit` réaction de la
+  victime, hitstop (0,07 s, les deux animations figées), flash, étincelles,
+  onde de choc, recul et secousse de caméra ;
+- tous les réglages sont dans `M1.CONFIG`.
+
+Les effets n'utilisent que des textures intégrées au client Roblox
+(`rbxasset://textures/particles/sparkles_main.dds`) : rien à publier. Sources
+Luau lisibles dans `luau/`.
+
+**Tout le timing vient des marqueurs de l'animation**, aucun délai n'est codé
+en dur : si l'animation change, les effets suivent.
+
+### Le sens, vérifié à trois niveaux
+
+1. **Fichiers d'animation relus**, en repère Roblox (`verify_export.py`,
+   section `sens_roblox`) :
+   - l'attaquant regarde −Z ;
+   - le poing est devant lui à l'impact, sur la **face avant** du torse de la
+     victime ;
+   - la victime est tournée vers lui ;
+   - sa tête est projetée **vers son dos** ;
+   - à l'armement, le bras droit est **derrière**.
+
+   Le script s'arrête si un seul de ces points est faux.
+2. **Code Luau du module, exécuté** par l'interpréteur Luau officiel
+   (`luau/run_sens_test.py`, avec des CFrame aux conventions Roblox, 12
+   contrôles) :
+   - victime devant et face à l'attaquant, même quand il est tourné ;
+   - repère d'impact et étincelles dans le sens du coup ;
+   - anneau perpendiculaire au coup ;
+   - recul qui **éloigne** la victime (3,899 puis 4,799 studs) sans la faire
+     tourner.
+3. **Package écrit, relu** (`build_roblox_package.py`) :
+   - références uniques et résolues ;
+   - pose de repos exactement cohérente avec les Motor6D (écart 0) ;
+   - visages sur la face avant (−Z) ;
+   - victime devant et face à l'attaquant ;
+   - 3 marqueurs ;
+   - démo en contexte client.
+
+Les deux sources Luau **compilent** avec `luau-compile` officiel.
+
+### Aperçu
+
+`output/m1_technique_apercu.gif` : caméra de jeu, avec hitstop, effets, recul
+et secousse, **mêmes paramètres** que `M1.CONFIG` (lus dans le source Luau).
+C'est une **approximation** des particules Roblox (Cycles, formes
+simplifiées) ; positions, directions et timings sont calculés comme dans le
+module. `output/m1_technique_impact.png` en montre 6 instants.
+
+### Limites
+
+- **Pas testé dans Roblox Studio lui-même** (pas de Studio ici). Le module est
+  vérifié par compilation, exécution de sa géométrie et relecture du
+  package, pas par une vraie partie.
+- `RegisterKeyframeSequence` donne un id **temporaire, valable dans Studio**.
+  Pour un vrai jeu, publie les deux animations et mets leur id dans
+  l'attribut `AnimationId` de chaque KeyframeSequence.
+- Les animations se jouent côté client dans la démo : pour une vraie
+  compétence en multijoueur, il faudra le relais serveur habituel
+  (RemoteEvent) ; la logique du module reste la même.
+
 ## Vérification (captures)
 
 - `captures/verification/2026-09-24-m1-v222-poses-cles.png` : 9 poses clés,
   de profil et en caméra de jeu.
+- `captures/verification/2026-09-24-m1-v222-technique-impact.png` : 6 instants
+  de la technique complète (traînée, impact, étincelles et anneau dans le sens
+  du coup, recul de la victime).
 - `captures/verification/2026-09-24-m1-v222-chaine-pics-pro-vs-notre.png` :
   même profil de vitesse que le M1 pro (armement vers f3, quasi-arrêt vers
   f10, coup vers f14-16, le bras avant le torse), mesuré sur le fichier livré.

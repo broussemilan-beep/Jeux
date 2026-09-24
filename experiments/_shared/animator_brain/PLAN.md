@@ -160,7 +160,7 @@ catégories.
 | 1 | ✅ **fait (2026-09-24)** — 19 animations du pack mesurées et rangées (`corpus/`, `taxonomy.py`) ; `audit.calibrated_verdict()` remplace les seuils fixes pour les catégories du corpus ; nos protos comparés (voir `corpus/README.md`) | écart chiffré entre nos protos et le pro, catégorie par catégorie |
 | 2 | Outil de revue de pose : rendu face/profil/3-4 ✅, **export depuis le rig ✅, deux rigs par scène ✅** (2026-09-23, voir `RIG_V222.md`) ; reste la caméra de jeu et la critique écrite systématique | planches de revue committées |
 | 3 | ✅ **fait (2026-09-24)** — `experiments/r6_m1_v222` : M1 0,65 s + réaction 0,22 s sur deux rigs V2.22, contact exact, 32/38 et 29/38 mesures dans la plage pro, export avec marker `hit` et jambes à poids 0 | distance au corpus, aller-retour moteur |
-| 4 | VFX Roblox natifs pour ce M1 (emitters, beams, textures, Luau sur markers) | `.rbxmx` qui se charge ; aperçu fidèle |
+| 4 | ✅ **fait (2026-09-24)** — `r6_m1_v222/output/M1_Technique.rbxmx` : mannequins, animations à marqueurs, module Luau (hitstop, flash, étincelles, onde de choc, traînée, recul, secousse), démo ; sens vérifié sur les fichiers, le code Luau exécuté et le package relu | `.rbxmx` qui se charge ; aperçu fidèle |
 | 5 | **Test de généralisation** : une catégorie jamais travaillée (dash ou marche), sans réglage à la main | audit vs corpus de la bonne catégorie |
 | 6 | Brief libre (« poing du dragon ») : brief → catégories → poses → clip + VFX. Critère d'acceptation : le niveau de la vidéo « Pro » | revue de Milan |
 | 7 | Nourrir en continu : chaque pack, vidéo ou retour devient une fiche du corpus | le corpus grossit, les seuils bougent avec lui |

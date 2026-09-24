@@ -1765,6 +1765,12 @@
           </Item>
         </Item>
       </Item>
+      <Item class="KeyframeMarker" referent="RBXAB000322">
+        <Properties>
+          <string name="Name">trail_on</string>
+          <string name="Value">right_fist</string>
+        </Properties>
+      </Item>
     </Item>
     <Item class="Keyframe" referent="RBXAB000090">
       <Properties>
@@ -2885,7 +2891,7 @@
           </Item>
         </Item>
       </Item>
-      <Item class="KeyframeMarker" referent="RBXAB000322">
+      <Item class="KeyframeMarker" referent="RBXAB000323">
         <Properties>
           <string name="Name">hit</string>
           <string name="Value">right_fist</string>
@@ -3530,6 +3536,12 @@
             </Properties>
           </Item>
         </Item>
+      </Item>
+      <Item class="KeyframeMarker" referent="RBXAB000324">
+        <Properties>
+          <string name="Name">trail_off</string>
+          <string name="Value">right_fist</string>
+        </Properties>
       </Item>
     </Item>
     <Item class="Keyframe" referent="RBXAB000178">
