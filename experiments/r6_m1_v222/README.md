@@ -174,7 +174,7 @@ en dur : si l'animation change, les effets suivent.
 
    Le script s'arrête si un seul de ces points est faux.
 2. **Code Luau du module, exécuté** par l'interpréteur Luau officiel
-   (`luau/run_sens_test.py`, avec des CFrame aux conventions Roblox, 12
+   (`luau/run_sens_test.py`, avec des CFrame aux conventions Roblox, 11
    contrôles) :
    - victime devant et face à l'attaquant, même quand il est tourné ;
    - repère d'impact et étincelles dans le sens du coup ;
