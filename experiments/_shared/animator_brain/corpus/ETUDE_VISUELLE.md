@@ -222,3 +222,54 @@ l'ordre des refs :
 Pour la rafale : séparer les silhouettes (angle de caméra), un gros plan par
 coup fort, décor remplacé par des lignes de vitesse à l'impact, torsion du
 tronc bien plus grande.
+
+## Lot 2 (Milan, 5 vidéos Roblox et animation) : ce que ça ajoute
+
+Notes brutes dans `ETUDE_NOTES_BRUTES.md` (« LOT 2 »).
+
+1. **L'ellipse** (« First time fighting a dummy »). On ne voit **jamais**
+   le coup. Il y a d'abord un regard tenu 1,2 s, puis l'éclairage qui
+   s'assombrit sur 2 f. Viennent ensuite 3 cartes de 2-3 f (noir griffé,
+   encre hachurée, inversé), un blanc de 2 f, et le retour sur le même
+   visage, surexposé. L'impact est **raconté**. Avant ça, le mannequin le
+   malmène, pour rire : le contraste entre comique et sérieux donne son poids
+   au moment sérieux.
+2. **La hiérarchie des effets** (« punch practice », « cross punch »).
+   - Petit coup : de petites lignes de vitesse au contact, 2-3 f, rien
+     d'autre.
+   - Coup principal : trois couches qui se suivent (étoile au poing sur 1 f,
+     anneaux le long du bras sur 2 f, croissant de souffle sur 2-3 f).
+   - Les « adornments » (particules, traînées) sont une couche **ajoutée** à
+     une animation qui se lit déjà sans.
+3. **Le métier du coup** (tuto firytwig) : armement, frappe, retour, avec
+   les règles suivantes.
+   - Les intervalles restent près de l'armement.
+   - Pas d'amorti vers la pose de frappe.
+   - Dépasser la pose (overshoot), ou tenir le membre.
+   - Tout le corps dans le coup, surtout les hanches.
+
+   **Mesuré chez nous :** le rythme du poing est **déjà au niveau** des M1
+   pro (armement → contact en 5-10 f, extension tenue 8-10 f). Ce n'est pas
+   ce qui retient la note.
+4. **La rotation du corps et la caméra** (« pro vs noob » dans Blender,
+   « punch practice »).
+   - Le pro passe de « BACK » à « FRONT » face à la caméra, soit environ
+     180° de torse. Il anime **en rotation, pièce par pièce** (les cercles
+     sont des gizmos de rotation FK).
+   - **Mesuré chez nous :** 98-137° sur les coups de puissance, contre
+     109-162° pour les M1 pro. La rotation **existe en 3D**, mais notre
+     caméra de côté l'écrase à l'écran.
+   - Les pros vérifient sous **deux vues** (côté et dessus).
+   - C'est un problème de lisibilité et de caméra, pas de corps.
+5. **Le mouvement secondaire** (« cross punch ») : la queue et les oreilles
+   suivent en retard pendant le suivi tenu. Notre R6 n'a rien qui pende.
+   Ça ne s'appliquera que s'il a un accessoire.
+
+**Ce que ça change dans le jugement.** Deux de mes hypothèses sur notre
+retard sont écartées par la mesure : le rythme du poing, et en partie la
+rotation du corps. Ce qui reste, c'est ce qui se voit à l'écran : l'angle,
+la hiérarchie des effets, l'ellipse et la lisibilité.
+
+**Leçon de méthode.** Les pros animent **un seul coup en boucle** (« cross
+punch », « punch practice »), le perfectionnent et le regardent sous deux
+angles. Nous, on a animé 9 s de technique d'un bloc.

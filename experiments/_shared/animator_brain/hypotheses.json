@@ -213,7 +213,8 @@
    "sources": [
     "IMPACT HAVEN : cartes silhouette",
     "test de silhouette v2 (manga)",
-    "corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : tous les bons clips separent les silhouettes ; noob vs pro (epee) ; NOUS : rafale et coup final se chevauchent en plan moyen (bras cache contre la victime, poing arme cache derriere le corps)"
+    "corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : tous les bons clips separent les silhouettes ; noob vs pro (epee) ; NOUS : rafale et coup final se chevauchent en plan moyen (bras cache contre la victime, poing arme cache derriere le corps)",
+    "lot 2 : la rotation du torse et la separation des persos dependent de l'ANGLE de camera ; les pros verifient sous deux vues (cote + dessus)"
    ],
    "mesure": "jugement visuel",
    "etalon_style": "universel",
@@ -438,7 +439,8 @@
    "etalon_style": "manga_ultime",
    "sources": [
     "corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~7 clips",
-    "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)"
+    "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)",
+    "lot 2 : pro vs noob Blender (BACK -> FRONT, ~180 deg), cross punch (dos a la camera a l'armement), tuto firytwig « surtout les hanches » ; MESURE : nous 98-137 deg sur les coups de puissance, M1 pro 109-162 -> la rotation existe, c'est la CAMERA de cote qui l'ecrase (la vue de dessus du 6a0095ed la montre)"
    ],
    "mesure": "jugement visuel",
    "categorie": "mise_en_scene",
@@ -486,6 +488,86 @@
    "categorie": "mise_en_scene",
    "quand": "gros impacts",
    "contre_indication": "sur tout : plus d'escalade possible"
+  },
+  {
+   "id": "ellipse_impact",
+   "enonce": "On n'a pas besoin de montrer le coup : les cartes, le blanc ou une coupe racontent l'impact, et on revient sur le visage ou la consequence.",
+   "portee": [
+    "impact",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.731,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "sources": [
+    "First time fighting a dummy (lot 2), Serious Punch TSB, OPM (le coup final = un trait dans le noir)"
+   ],
+   "mesure": "jugement visuel",
+   "categorie": "mise_en_scene",
+   "quand": "finisher, coup le plus fort",
+   "contre_indication": "sur les coups ou le spectateur doit comprendre le geste (rafale lisible)"
+  },
+  {
+   "id": "hierarchie_effets",
+   "enonce": "L'effet est proportionnel au coup : petits coups = petites lignes de vitesse 2-3 f ; gros coup = couches successives (etoile au contact 1 f -> anneaux le long du bras 2 f -> croissant de souffle 2-3 f).",
+   "portee": [
+    "impact",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.8,
+   "poids_note": 0.731,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "sources": [
+    "punch practice (lot 2), cross punch (lot 2), refs Black Flash / TSB"
+   ],
+   "mesure": "jugement visuel",
+   "categorie": "mise_en_scene",
+   "quand": "toujours : c'est l'escalade",
+   "contre_indication": "jamais le meme effet sur tous les coups"
+  },
+  {
+   "id": "armement_frappe_retour",
+   "enonce": "Chaque coup = armement (intervalles serres pres de l'armement), frappe sans amorti vers la pose, overshoot ou tenue du membre, retour.",
+   "portee": [
+    "impact",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.8,
+   "poids_note": 0.43,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "sources": [
+    "tuto firytwig (lot 2) ; MESURE : nos coups y sont deja (armement->contact 5-10 f, 10-90 % en 2-5 f, extension tenue 8-10 f)"
+   ],
+   "mesure": "perception (a brancher)",
+   "categorie": "animation",
+   "quand": "tous les coups",
+   "contre_indication": "-"
+  },
+  {
+   "id": "mouvement_secondaire",
+   "enonce": "Ce qui pend suit en retard et se stabilise apres (queue, oreilles, cheveux, vetements) : ca vend le poids et la vitesse.",
+   "portee": [
+    "impact",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "sources": [
+    "cross punch (queue/oreilles), First time fighting a dummy (cheveux), Umamusume/Castlevania"
+   ],
+   "mesure": "jugement visuel",
+   "categorie": "animation",
+   "quand": "le perso a des elements souples",
+   "contre_indication": "R6 nu sans accessoire : rien a faire suivre"
   }
  ],
  "_styles": {
@@ -495,8 +577,8 @@
  },
  "_regle_d_usage": "Retour de Milan (2026-09-24) : ce qu'on decouvre doit etre bien utilise, pas applique n'importe comment. Une hypothese vraie en animation n'est pas une case a cocher : chacune porte QUAND elle sert et QUAND elle nuit. Le critique juge l'usage au bon moment (hierarchie des temps forts, escalade, contraste), jamais la simple presence.",
  "_calibration": {
-  "a": 1.317,
-  "b": 7.325,
+  "a": 1.285,
+  "b": 7.33,
   "n_notes": 4,
   "doc": "note = b + a * score ; reapprise a chaque reflexion"
  }

@@ -175,3 +175,39 @@
 - 7525170 (Honkai Star Rail, Acheron -- cinematique de JEU) : blanc -> gros plan levres -> eclat radial rouge -> NOIR -> cartes N/B posterisees : meme grammaire dans une cinematique de jeu 3D.
 - 9671641 (Umamusume 3D) : coup de pied VERS LA CAMERA, la chaussure remplit l'ecran (raccourci) : le principe du poing en gros plan marche aussi en 3D temps reel.
 - 6787236 (Blue Archive, clip musical), 8941534 (hololive) : hors combat.
+
+# LOT 2 (Milan, 2026-09-24 soir) -- 5 videos Roblox / animation
+
+## df406483 « First time fighting a dummy » (@drowsyrbx, Moon Animator)
+- HISTOIRE en deux temps : d'abord le mannequin le malmene (0-2,9 s : coups qui l'envoient voler, camera qui le suit en l'air, perso minuscule qui tournoie dans le ciel, grosses trainees noires 2 f), PUIS il devient serieux.
+- 3,5-4,7 s : gros plan de trois-quarts bas, visage + oeil jaune qui brille, TENU 1,2 s (le regard), respiration seulement.
+- 4,73 : l'eclairage s'assombrit 2 f (annonce) -> 4,80 carte NOIRE avec silhouette blanche griffee -> 4,87 carte BLANCHE hachures radiales a l'encre -> 4,97 carte inversee griffee -> 5,03 BLANC 2 f -> 5,10 retour au MEME gros plan, surexpose (bloom), cheveux qui bougent, secousse.
+- On NE VOIT PAS le coup : l'impact est raconte par les cartes (ellipse). Chaque carte 2-3 f a 60 i/s, toute la salve ~0,25 s.
+- Les chutes du debut sont comiques : le contraste comique -> serieux donne du poids au moment serieux.
+
+## 8556a37c « cross punch » (@acertain_torwesley, Moon Animator, boucle d'un seul coup)
+- Garde, poing arme a hauteur d'EPAULE ; le buste tourne jusqu'a montrer le DOS a la camera (0,33-0,47 s) ; depart en 1-2 f (0,47 -> 0,53).
+- Au contact : ETOILE blanche au poing (1 f) -> ANNEAUX concentriques le long du bras (2 f) -> grand CROISSANT de souffle (2-3 f). Trois couches d'effet qui se succedent.
+- Suivi TENU ~0,4 s, corps completement tourne ; la queue et les oreilles suivent en retard (mouvement secondaire) ; retour a la garde ~1 s.
+- Gants a contour orange lumineux : les mains se lisent toujours.
+
+## f1b5bd4b « pro vs noob » (Blender, rig R6 colore FRONT/BACK)
+- PRO : chambre = poing replie a la poitrine, coude haut, torse tourne DOS a la camera (on lit BACK), genou leve ; frappe = on lit FRONT : ~180 deg de rotation du torse ; bras tendu a l'horizontale, poing exactement sur la cible, tenu.
+- Les CERCLES affiches sont des gizmos de ROTATION : il anime en FK, piece par piece, en rotation.
+- NOOB : debout, droit, seul le bras monte.
+
+## 6a0095ed « punch practice » (@acertain_torwesley avec LTGamerNation)
+- Corps a corps tres proche, garde basse et large, pieds plantes, tete qui avance dans le coup.
+- Coups legers : SEULEMENT de petites lignes de vitesse blanches au contact, 2-3 f -> hierarchie : petit coup = petit effet.
+- Version « with adornments » : particules orange aux articulations + traits de trajectoire : couche AJOUTEE sur une animation qui se lit deja sans.
+- Deux cameras : de cote ET de dessus. La vue de dessus montre la rotation du torse que la vue de cote cache.
+
+## afaa00eb tuto « Attacks Animation Tutorial - Punches and Kicks » (@firytwig)
+- 3 poses : CHAMBER (armement) -> ATTACK -> RECOVERY (coup de pied de cote, fente de poing).
+- « Keep the inbetweens close to the chamber » (les intervalles restent pres de l'armement : on part lentement, puis tout d'un coup).
+- « Don't ease out towards the main pose » ; on peut amortir de l'OVERSHOOT vers la pose principale.
+- OVERSHOOT : depasser la pose de frappe puis revenir. « Keep it as snappy as possible, minimize frames in between, do not ease out, hold or overshoot the attacking limb. Put the whole body into the attack, especially the hips. »
+
+## Mesures faites en reponse (3D, nos coups v5 contre M1 pro)
+- Rythme du poing : armement->contact 5-10 f (pro 7-17), 10-90 % en 2-5 f (pro 5-8), extension tenue 8-10 f (pro 1-12). => DEJA au niveau : ce n'est pas le timing du poing qui retient la note.
+- Rotation du torse (armement -> contact) : jab 53, direct 99, crochet 98, fente 116, coup charge 137 deg ; M1 pro 109-162, Uppercut 111. => proche des pros sauf le jab (normal pour un jab) ; mais notre camera de cote l'ECRASE : la rotation existe en 3D et ne se voit pas a l'ecran (lecon du 6a0095ed : il faut la vue qui la montre).

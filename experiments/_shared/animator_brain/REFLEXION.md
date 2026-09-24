@@ -2,7 +2,7 @@
 
 ## Predictions contre notes de Milan (poids avant apprentissage)
 - v1 : predit 6.1, Milan 6.0 (ecart +0.1)
-- v2 : predit 6.5, Milan 6.7 (ecart -0.2)
+- v2 : predit 6.4, Milan 6.7 (ecart -0.3)
 - v4 : predit 6.9, Milan 6.7 (ecart +0.2)
 - v5 : predit 7.1, Milan 6.8 (ecart +0.3)
 
@@ -21,9 +21,11 @@
 - **contraste_echelle** : Coupes entre perso minuscule (plan tres large) et tres gros plan ; contact en gros plan puis consequence en plan tres lointain. (sources : corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~9 clips; refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...))
 - **fond_remplace** : A l'impact, le decor est remplace par des lignes de vitesse, une couleur plate ou un fond flou. (sources : corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~6 clips; refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...))
 - **camera_vivante** : La camera participe : fouet vers le ciel, rotation/cadre penche, zoom eclair, poussee jusque dans le corps. (sources : corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~7 clips; refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...))
-- **torsion_tronc** : La puissance vient du TRONC qui s'enroule puis se deroule (vu de dos/trois-quarts, 120-150 deg), poses extremes ; garde basse et large normale. (sources : corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~7 clips; refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...))
+- **torsion_tronc** : La puissance vient du TRONC qui s'enroule puis se deroule (vu de dos/trois-quarts, 120-150 deg), poses extremes ; garde basse et large normale. (sources : corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~7 clips; refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...); lot 2 : pro vs noob Blender (BACK -> FRONT, ~180 deg), cross punch (dos a la camera a l'armement), tuto firytwig « surtout les hanches » ; MESURE : nous 98-137 deg sur les coups de puissance, M1 pro 109-162 -> la rotation existe, c'est la CAMERA de cote qui l'ecrase (la vue de dessus du 6a0095ed la montre))
 - **smear_graphique** : Une trainee/smear porte la vitesse ; la trajectoire du coup reste dessinee a l'ecran quelques frames. (sources : corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~5 clips; refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...))
 - **victime_deformee** : La victime reagit fort : se plie autour du poing, joue ecrasee, tete qui part. (sources : corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~4 clips; refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...))
+- **ellipse_impact** : On n'a pas besoin de montrer le coup : les cartes, le blanc ou une coupe racontent l'impact, et on revient sur le visage ou la consequence. (sources : First time fighting a dummy (lot 2), Serious Punch TSB, OPM (le coup final = un trait dans le noir))
+- **hierarchie_effets** : L'effet est proportionnel au coup : petits coups = petites lignes de vitesse 2-3 f ; gros coup = couches successives (etoile au contact 1 f -> anneaux le long du bras 2 f -> croissant de souffle 2-3 f). (sources : punch practice (lot 2), cross punch (lot 2), refs Black Flash / TSB)
 
 ## Ou la mesure contredit le jugement manuel (etats.py)
 - v2 variete_coups : jugement True -> mesure False
@@ -43,11 +45,15 @@
 - smear_graphique : vraie dans 100% des parties aimees, 0% des rejetees : DISCRIMINE (vraie ou Milan aime, fausse ou il rejette) -> poids en hausse
 - victime_deformee : vraie dans 100% des parties aimees, 0% des rejetees : DISCRIMINE (vraie ou Milan aime, fausse ou il rejette) -> poids en hausse
 - silhouette_lisible : vraie dans 100% des parties aimees, 0% des rejetees : DISCRIMINE (vraie ou Milan aime, fausse ou il rejette) -> poids en hausse
+- ellipse_impact : vraie dans 100% des parties aimees, 0% des rejetees : DISCRIMINE (vraie ou Milan aime, fausse ou il rejette) -> poids en hausse
+- hierarchie_effets : vraie dans 100% des parties aimees, 0% des rejetees : DISCRIMINE (vraie ou Milan aime, fausse ou il rejette) -> poids en hausse
+- armement_frappe_retour : vraie dans 100% des parties aimees, 100% des rejetees : ne discrimine pas (vraie dans l'aime ET le rejete) -> poids en baisse
 
 ## Jamais mesurees (angle mort du cerveau)
 - fluidite : Le mouvement enchaine : un membre ne s'arrete pas a chaque pose cle (chevauchement, suivi), il repart avant d'etre a l'arret.
+- mouvement_secondaire : Ce qui pend suit en retard et se stabilise apres (queue, oreilles, cheveux, vetements) : ca vend le poids et la vitesse.
 
-## Echelle calibree sur 4 notes : note = 7.33 + 1.32 x score
+## Echelle calibree sur 4 notes : note = 7.33 + 1.29 x score
 
 ## Poids appris (ce qui fait bouger la note de Milan)
 - cartes_impact        poids_note 0.73 (confiance principe 0.85)
@@ -56,6 +62,8 @@
 - camera_vivante       poids_note 0.73 (confiance principe 0.65)
 - smear_graphique      poids_note 0.73 (confiance principe 0.55)
 - victime_deformee     poids_note 0.73 (confiance principe 0.50)
+- ellipse_impact       poids_note 0.73 (confiance principe 0.60)
+- hierarchie_effets    poids_note 0.73 (confiance principe 0.80)
 - variete_coups        poids_note 0.64 (confiance principe 0.60)
 - silhouette_lisible   poids_note 0.64 (confiance principe 0.80)
 - silence_noir         poids_note 0.64 (confiance principe 0.80)
@@ -71,6 +79,8 @@
 - contraste_de_temps   poids_note 0.50 (confiance principe 0.70)
 - fluidite             poids_note 0.50 (confiance principe 0.60)
 - explosion_apres      poids_note 0.50 (confiance principe 0.50)
+- mouvement_secondaire poids_note 0.50 (confiance principe 0.60)
+- armement_frappe_retour poids_note 0.43 (confiance principe 0.80)
 - epaules_basses       poids_note 0.40 (confiance principe 0.50)
 - bras_horizontal      poids_note 0.40 (confiance principe 0.80)
 - transfert_poids      poids_note 0.40 (confiance principe 0.60)
@@ -79,6 +89,6 @@
 
 ## Predictions apres apprentissage
 - v1 : predit 6.1, Milan 6.0
-- v2 : predit 6.5, Milan 6.7
+- v2 : predit 6.4, Milan 6.7
 - v4 : predit 6.8, Milan 6.7
 - v5 : predit 6.8, Milan 6.8
