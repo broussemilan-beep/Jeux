@@ -576,5 +576,96 @@
    "depart_f": 1
   },
   "variete": 1.942
+ },
+ "v6": {
+  "etat": {
+   "posture_droite": true,
+   "escalade": true,
+   "impact_visible": true,
+   "epaules_basses": true,
+   "bras_horizontal": true,
+   "poing_a_plat": true,
+   "transfert_poids": true,
+   "arcs": true,
+   "coup_charge": true,
+   "variete_coups": false
+  },
+  "preuve": {
+   "posture_droite": "regles_v6.json : posture droite pendant les coups legers ok ; posture droite pendant les coups legers (fente du coup final, standard coup lourd) ok",
+   "escalade": "regles_v6.json : escalade : hitstop ok",
+   "impact_visible": "regles_v6.json : impact final visible avant les effets plein ecran ok",
+   "epaules_basses": "regles_v6.json : epaules jamais haussees ok ; epaules jamais haussees (coup final, standard coup lourd) ok",
+   "bras_horizontal": "regles_v6.json : bras quasi horizontal au contact ok",
+   "poing_a_plat": "regles_v6.json : coup droit : le poing voyage a plat (pas d'uppercut) ok",
+   "transfert_poids": "regles_v6.json : transfert de poids sur les coups de puissance ok",
+   "arcs": "deviation mediane rafale 0.212 / final 0.242 ; M1 pro >= 0.14 (mediane 0.336)",
+   "coup_charge": "coup final : tenue 13 f, depart 1 f, buste 132.0 deg ; principe : tenue >= 12 f puis depart <= 6 f",
+   "variete_coups": "distance mediane entre formes de coups 1.942 studs ; M1 pro entre eux 2.734"
+  },
+  "parties": {
+   "rafale": {
+    "arcs": true,
+    "mesures": {
+     "deviation_mediane": 0.212,
+     "deviation_p75": 0.454,
+     "traits_par_s_de_mouvement": 9.27,
+     "n_traits": 34
+    }
+   },
+   "final": {
+    "arcs": true,
+    "mesures": {
+     "deviation_mediane": 0.242,
+     "deviation_p75": 0.551,
+     "traits_par_s_de_mouvement": 7.06,
+     "n_traits": 10
+    }
+   },
+   "aerien": {
+    "arcs": false,
+    "mesures": {
+     "deviation_mediane": 0.108,
+     "deviation_p75": 0.264,
+     "traits_par_s_de_mouvement": 3.47,
+     "n_traits": 18
+    }
+   }
+  },
+  "mesures_coups": [
+   {
+    "f": 14,
+    "type": "chest",
+    "part_dernier_tiers": 0.33,
+    "frein_3f_sur_pic": 0.36,
+    "vitesse_pic_studs_par_f": 1.091
+   },
+   {
+    "f": 40,
+    "type": "plexus",
+    "part_dernier_tiers": 0.32,
+    "frein_3f_sur_pic": 0.28,
+    "vitesse_pic_studs_par_f": 2.461
+   },
+   {
+    "f": 64,
+    "type": "ribs",
+    "part_dernier_tiers": 0.46,
+    "frein_3f_sur_pic": 0.57,
+    "vitesse_pic_studs_par_f": 1.81
+   },
+   {
+    "f": 90,
+    "type": "body",
+    "part_dernier_tiers": 0.39,
+    "frein_3f_sur_pic": 0.53,
+    "vitesse_pic_studs_par_f": 2.124
+   }
+  ],
+  "charge_final": {
+   "tenue_f": 13,
+   "enroulement_buste_deg": 132.0,
+   "depart_f": 1
+  },
+  "variete": 1.942
  }
 }
