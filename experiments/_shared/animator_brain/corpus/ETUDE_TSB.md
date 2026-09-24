@@ -152,7 +152,7 @@ Question : au contact, le torse est-il droit ou jeté dans le coup ?
   qui frappe tendu, l'autre ramené.
 
 Même conclusion que TSB et l'anime, trois sources indépendantes : le corps
-s'engage. Les croquis v7 vont dans ce sens (`FICHE_V7_BROUILLON.md`).
+s'engage. Les croquis v7 vont dans ce sens (`experiments/r6_poing_dragon/FICHE_V7.md`).
 
 ## 5. Ce que ça change pour nous
 

@@ -139,9 +139,8 @@ jugé par Milan, avant toute généralisation.
   densité de clés de TSB. Il faut l'ouvrir dans Studio et l'exporter en
   `.rbxm` (clic droit, puis « Save to File ») ; `corpus.load_rbxm_sequences`
   le lit déjà.
-- **Tutos vidéo.** Milan les télécharge avec les sous-titres de son côté
-  (liste de 19 vidéos : Roblox d'abord, puis GGXrd, Nakamura, « Why Your
-  Punches Lack Energy »). Même traitement que les refs.
+- **Tutos vidéo.** Fait : Milan a envoyé 6 vidéos, sans le son. Elles sont
+  étudiées image par image aux §7 et §8.
 
 ## 7. Vidéos envoyées par Milan (zips du 2026-09-24) : étude visuelle
 
@@ -191,3 +190,54 @@ Ce système de mouvement est vendu comme « premium ». On a relu les dash à
 - **Contre-indication.** C'est du mouvement (dash), pas un coup. On ne recopie
   pas ce plongeon tel quel sur une frappe. On garde le principe : une pose
   hors d'équilibre franche, pas une pose « debout + bras ».
+
+## 8. Les quatre tutos longs : ce qu'ils disent vraiment
+
+Quatre agents les ont étudiés image par image, sans le son. Le texte à
+l'écran a été lu quand il y en avait. J'ai revérifié moi-même les images clés
+de chaque rapport. Rapports complets :
+- `tutos/rapport_video_uppercut_moon.md`
+- `tutos/rapport_video_punch_blender.md`
+- `tutos/rapport_video_techniques_anime.md`
+- `tutos/rapport_video_critique_poses.md`
+
+| vidéo | ce qu'elle apporte | sûr / estimé |
+|---|---|---|
+| **Uppercut R6, Moon Animator** (tuto « smooth ») | Linear ; 13 clés à 60 i/s, une toutes les 5 f ; la clé du milieu rapprochée à 2-3 f pour le snap ; **toutes les pistes clées aux mêmes images** (l'overlap est dans les poses : bras qui traîne « dislocated ») ; tenue **jamais figée** (wiggle en petits cercles qui ralentissent) ; départ accroupi, torse de profil | texte à l'écran lu ; angles estimés |
+| **Punch R6, Blender** (add-on Rbx Animations) | charge **asymétrique** : torse ~90° détourné, bras avant tendu, bras arrière armé haut, grand écart ; frappe en **2 f** (60→62), avec une clé intermédiaire sur le seul bras ; contact : torse pivoté ~180°, penché ~45°, bras translaté vers l'avant, bras libre replié, jambe arrière presque couchée ; espacements très irréguliers | poses lues image par image ; angles à l'œil |
+| **Techniques anime** (impact frames, smears, obari, Kanada, timing) | pic tenu = **images d'impact** (1 à ~55) ; armé tenu 0,9-1,8 s puis poing vers la caméra en ~8 images (obari) ; smear = trajet du bras en 1-2 images ; « hold and release » ; timing « en 4 » : 3-5 images par dessin pendant l'action, 8-10+ sur les clés | comptes approximatifs (30 i/s contre 24) |
+| **Vlog DeHapy + critique Xoaterz** | planche ✗/✓ : ✗ **croix de face « stickman »**, ✗ accroupi tenu genoux écartés ; ✓ torse de 3/4, bras armé derrière, genou levé, « akin to The Serious Punch (TSB) » ; **ligne d'équilibre** tête → pied d'appui ; pros : pose tenue 8-10 i puis coup en 3-4 i à 30 i/s ; images d'impact faites dans Roblox (ColorCorrection, Highlight, FOV) | planche lue en clair ; repose en direct vue sans le son |
+
+**Ce qui change dans le cerveau** (`hypotheses.json`) :
+- **Nouvelles hypothèses** :
+  - `silhouette_non_croix` (confiance 0,7) ;
+  - `torsion_charge_contact` ;
+  - `tenue_vivante` ;
+  - `arme_tenu_long` ;
+  - `ligne_equilibre`.
+  Chacune a son `quand` et sa `contre_indication`.
+- **Hypothèses existantes, nouvelles sources** : `compression_extension`,
+  `frappe_lineaire`, `poses_tenues_limitees`, `cartes_impact`,
+  `poing_gros_plan`, `bascule_competence`.
+- **`ligne_epaules` recadrée** : confiance 0,4 → 0,55, mais seulement pour
+  les coups qui comptent. Les M1 TSB la contredisent.
+- **Nuance sur la compression.** Sur R6, la « compression en C » se lit
+  surtout par la **torsion du torse**, pas par un dos rond. L'accroupi tenu
+  est explicitement rejeté (Xoaterz, et Milan en v1-v2).
+
+**Contrainte R6 découverte au labo** (`scripts/croquis_v7.py`). Le torse R6
+est aussi le bassin : un torse de profil penché vers la cible fait basculer
+la ligne des hanches. Au-delà de ~30°, les deux pieds ne peuvent pas rester
+au sol sans grand écart. La « ligne jetée » se fait pied arrière en l'air.
+
+**Ce qu'aucun tuto ne montre.** Aucun graph editor, aucune courbe. Le
+« smooth » R6 vient des poses, de l'espacement des clés et d'amortis faits à
+la main, jamais d'un lissage. C'est cohérent avec le fichier TSB (Linear
+partout).
+
+**Limites.**
+- Aucune vidéo n'est de TSB lui-même.
+- Toutes les vidéos sont sans le son.
+- Les angles sont estimés sur du 640x360.
+- Ce sont des indices convergents, pas des mesures. Le juge reste l'écran,
+  puis Milan.
