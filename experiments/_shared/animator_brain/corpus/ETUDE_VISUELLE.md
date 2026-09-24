@@ -273,3 +273,39 @@ la hiérarchie des effets, l'ellipse et la lisibilité.
 **Leçon de méthode.** Les pros animent **un seul coup en boucle** (« cross
 punch », « punch practice »), le perfectionnent et le regardent sous deux
 angles. Nous, on a animé 9 s de technique d'un bloc.
+
+## Lot 3 (Milan, 5 GIF de jeux battlegrounds, caméra de jeu) : ce que ça ajoute
+
+Notes brutes dans `ETUDE_NOTES_BRUTES.md` (« LOT 3 »).
+
+1. **Caméra de jeu contre cinématique : le point qui manquait.** Dans ces
+   jeux, les coups ordinaires (M1, compétences) se jouent dans la **caméra du
+   joueur** : fixe, souvent de dos, parfois lointaine. Ils doivent donc se
+   lire de là. Seul l'**ultime** passe en cinématique. Chez le boxeur :
+   - caméra de jeu de dos, puis blanc ;
+   - angles proches qui changent toutes les ~0,6 s ;
+   - quatre blancs de plus en plus gros ;
+   - retour à la caméra de jeu de dos.
+
+   Notre Poing du Dragon est entièrement pensé en cinématique, et jugé de
+   profil. **On n'a jamais regardé s'il se lit depuis la caméra du joueur.**
+2. **La hiérarchie des effets, confirmée en jeu.**
+   - M1 : un éclat au poing sur 1 f et un anneau, à peine plus gros sur les
+     coups 3-4.
+   - Coup fort : éclat à éclats, gerbe rouge, anneaux qui s'élargissent.
+3. **La rafale en masse** (« gatling »). Une rafale ultime très rapide ne se
+   lit pas coup par coup. On la lit comme une **masse blanche de
+   poings-smears** continue pendant 3 s, puis des anneaux de fumée. C'est le
+   contraire d'une rafale courte de coups distincts, où chaque forme doit se
+   lire : la règle d'usage décide laquelle choisir.
+4. **La trace qui reste et la tenue sur la conséquence.**
+   - Mythra : tache au sol, attaquant debout au-dessus, tenu 1,1 s.
+   - Victime envoyée en point minuscule dans le ciel, visible même en caméra
+     de jeu lointaine.
+   - Notre partie aérienne (cratère, fumée) le fait déjà.
+5. **Le contact prolongé** (Mythra) : saisie, soulèvement, projection. La
+   victime est manipulée, pas seulement frappée.
+
+**À vérifier sur notre travail, avant de toucher quoi que ce soit.** Une
+planche de la v5 vue depuis une caméra de jeu (de dos, à distance de
+joueur), pour juger si nos coups s'y lisent.

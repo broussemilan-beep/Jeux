@@ -211,3 +211,27 @@
 ## Mesures faites en reponse (3D, nos coups v5 contre M1 pro)
 - Rythme du poing : armement->contact 5-10 f (pro 7-17), 10-90 % en 2-5 f (pro 5-8), extension tenue 8-10 f (pro 1-12). => DEJA au niveau : ce n'est pas le timing du poing qui retient la note.
 - Rotation du torse (armement -> contact) : jab 53, direct 99, crochet 98, fente 116, coup charge 137 deg ; M1 pro 109-162, Uppercut 111. => proche des pros sauf le jab (normal pour un jab) ; mais notre camera de cote l'ECRASE : la rotation existe en 3D et ne se voit pas a l'ecran (lecon du 6a0095ed : il faut la vue qui la montre).
+
+# LOT 3 (Milan, 5 GIF de jeux battlegrounds, camera de JEU)
+
+## 6d3be6e1 (jeu « Mythra », Tobi contre Shinso, camera 3e personne du joueur)
+- Saisie : petit eclat blanc a la main (0,4-0,5 s, le signal « je t'attrape »), puis les deux corps s'emmelent : soulevement (1,0-1,4 s, victime retournee), lutte au sol (1,4-2,2 s), PROJECTION au sol (2,33 s).
+- Impact au sol : eclaboussure ROUGE + anneau blanc au sol + debris sombres qui montent (2,5-2,9 s), puis TACHE sombre qui reste au sol ; la victime reste couchee et l'attaquant se tient au-dessus, tenu ~1,1 s.
+- La camera ne bouge pas : c'est la camera du joueur. L'impact est vendu par le sol (anneau, tache, debris) et par la tenue sur la consequence.
+
+## 449345ad (rue de nuit, M1 en place, vue de face)
+- 4 coups en ~2 s, bras alternes, buste qui tourne, le 4e coup est different (bas).
+- Effets MINUSCULES : un eclat blanc au poing (1 f) + un anneau blanc autour du bras (1-2 f) ; les coups 3 et 4 un peu plus gros (trait de coupe, double anneau) -> la hierarchie existe meme dans les M1.
+- Garde au repos : poings devant, a hauteur de taille/poitrine, genoux flechis, leger rebond.
+
+## 58322fc4 (boxeur type Ippo contre mannequin, ultime, 11 s)
+- 0-1,2 s : camera de JEU, de dos ; etincelles blanches sur le corps (charge).
+- 1,4 s : BLANC plein ecran -> la camera PASSE EN CINEMATIQUE : plans proches, bas, de cote, un nouvel angle toutes les ~0,6 s.
+- Esquives en « 8 » (roulis de Dempsey) lues par des TRAINEES BLEUES ; chaque serie de coups = anneaux blancs + gerbe ROUGE ; BLANC total a 1,4 / 5,0 / 5,8 / 8,4 s (4 fois, de plus en plus gros).
+- Final : lignes de vitesse horizontales (camera qui suit, 7,2-8,2 s) -> blanc + rouge -> tunnel de lignes radiales, le mannequin part au loin -> retour a la camera de jeu de dos (9,6 s), anneau qui se dissipe, le boxeur debout.
+## a0341700 (perso rose type Luffy, rafale « gatling », camera de dos)
+- La rafale n'est PAS une suite de coups lisibles : c'est une MASSE blanche de poings-smears devant le perso, continue pendant ~3,3 s (0,7-4,0 s), puis des anneaux de fumee (4,1-4,4 s) et retour a la garde.
+- Camera de jeu fixe de dos : la rafale se lit a la masse et au rythme, pas au geste.
+## aafdc91d (perso orange, camera de jeu tres lointaine)
+- Coup 1 : petit eclat blanc + fumee. Coup 2 (1,2 s) : gros eclat blanc a eclats + gerbe rouge + anneaux qui s'elargissent.
+- La victime est envoyee TRES haut : un point minuscule qui monte pendant 1,5 s (2,1-3,6 s). La consequence se lit a l'echelle, meme en camera de jeu.

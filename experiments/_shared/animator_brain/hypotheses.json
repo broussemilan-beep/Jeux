@@ -376,7 +376,8 @@
    "etalon_style": "manga_ultime",
    "sources": [
     "corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~9 clips",
-    "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)"
+    "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)",
+    "lot 3 : aafdc91d (victime envoyee en point minuscule dans le ciel, camera de jeu), boxeur (tunnel, le mannequin part au loin)"
    ],
    "mesure": "jugement visuel",
    "categorie": "mise_en_scene",
@@ -517,12 +518,13 @@
     "finisher",
     "rafale"
    ],
-   "confiance_principe": 0.8,
+   "confiance_principe": 0.85,
    "poids_note": 0.731,
    "poids_a_priori": 0.5,
    "etalon_style": "universel",
    "sources": [
-    "punch practice (lot 2), cross punch (lot 2), refs Black Flash / TSB"
+    "punch practice (lot 2), cross punch (lot 2), refs Black Flash / TSB",
+    "lot 3 : M1 de nuit (449345ad : eclat 1 f + anneau, un peu plus gros sur les coups 3-4), aafdc91d (coup 1 petit, coup 2 gros + rouge + anneaux)"
    ],
    "mesure": "jugement visuel",
    "categorie": "mise_en_scene",
@@ -568,6 +570,86 @@
    "categorie": "animation",
    "quand": "le perso a des elements souples",
    "contre_indication": "R6 nu sans accessoire : rien a faire suivre"
+  },
+  {
+   "id": "camera_jeu_vs_cinematique",
+   "enonce": "En jeu, M1 et competences se jouent dans la camera du JOUEUR (souvent de dos) et doivent s'y lire ; seul l'ultime coupe en cinematique (cartes, gros plans, angles) puis REVIENT a la camera de jeu.",
+   "portee": [
+    "impact",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.8,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "sources": [
+    "lot 3 : boxeur (jeu de dos -> blanc -> cinematique -> retour de dos), gatling, M1 de nuit, Mythra (camera fixe) ; Serious Punch TSB"
+   ],
+   "mesure": "jugement visuel",
+   "categorie": "mise_en_scene",
+   "quand": "ultime = cinematique ; M1 / competences = camera du joueur",
+   "contre_indication": "donner une cinematique a un coup ordinaire ; animer un coup qui ne se lit que de profil"
+  },
+  {
+   "id": "rafale_en_masse",
+   "enonce": "Une rafale tres rapide se montre comme une MASSE de poings-smears continue (on lit le rythme et le volume), pas coup par coup.",
+   "portee": [
+    "impact",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "sources": [
+    "lot 3 : gatling (a0341700), boxeur (series de coups en trainees), refs One Piece Gear 5"
+   ],
+   "mesure": "jugement visuel",
+   "categorie": "mise_en_scene",
+   "quand": "rafale « ultime » tres rapide (> 6 coups/s)",
+   "contre_indication": "rafale courte de coups distincts (jab, direct, crochet) : la on doit lire chaque forme"
+  },
+  {
+   "id": "trace_persistante",
+   "enonce": "L'impact laisse une trace qui reste : tache ou cratere au sol, anneau qui se dissipe, fumee ; et on TIENT sur la consequence (~1 s).",
+   "portee": [
+    "impact",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.7,
+   "poids_note": 0.64,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "sources": [
+    "lot 3 : Mythra (tache au sol, tenue 1,1 s), boxeur (anneau qui se dissipe), aafdc91d ; notre aerien (cratere, fumee) le fait deja"
+   ],
+   "mesure": "jugement visuel",
+   "categorie": "mise_en_scene",
+   "quand": "coups qui touchent le sol, finisher",
+   "contre_indication": "coups legers : rien ne doit rester"
+  },
+  {
+   "id": "contact_prolonge",
+   "enonce": "Une saisie ou une projection garde les corps en contact (on soulève, on retourne, on plaque) : la victime est manipulee, pas seulement frappee.",
+   "portee": [
+    "impact",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.5,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "sources": [
+    "lot 3 : Mythra (saisie -> soulevement -> lutte -> projection)"
+   ],
+   "mesure": "jugement visuel",
+   "categorie": "mise_en_scene",
+   "quand": "prises, projections",
+   "contre_indication": "coups de poing a distance"
   }
  ],
  "_styles": {
@@ -577,8 +659,8 @@
  },
  "_regle_d_usage": "Retour de Milan (2026-09-24) : ce qu'on decouvre doit etre bien utilise, pas applique n'importe comment. Une hypothese vraie en animation n'est pas une case a cocher : chacune porte QUAND elle sert et QUAND elle nuit. Le critique juge l'usage au bon moment (hierarchie des temps forts, escalade, contraste), jamais la simple presence.",
  "_calibration": {
-  "a": 1.285,
-  "b": 7.33,
+  "a": 1.289,
+  "b": 7.334,
   "n_notes": 4,
   "doc": "note = b + a * score ; reapprise a chaque reflexion"
  }
