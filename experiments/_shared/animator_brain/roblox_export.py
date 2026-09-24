@@ -95,6 +95,55 @@ def solve(transforms, root=(np.eye(3), np.array([0.0, 3.0, 0.0]))):
     return world
 
 
+def _slerp_rot(r0, r1, u):
+    """Rotation interpolee comme CFrame:Lerp (slerp)."""
+    d = r0.T @ r1
+    ang = np.arccos(np.clip((np.trace(d) - 1) / 2, -1.0, 1.0))
+    if ang < 1e-9:
+        return r0
+    w = np.array([d[2, 1] - d[1, 2], d[0, 2] - d[2, 0], d[1, 0] - d[0, 1]]) / (2 * np.sin(ang))
+    a = ang * u
+    k = np.array([[0, -w[2], w[1]], [w[2], 0, -w[0]], [-w[1], w[0], 0]])
+    return r0 @ (np.eye(3) + np.sin(a) * k + (1 - np.cos(a)) * (k @ k))
+
+
+def reduce_keyframes(frames, pos_tol=0.01, ang_tol_deg=0.4, keep_times=()):
+    """Reduit une animation cuite image par image aux seules cles utiles,
+    comme un animateur (pack pro : ~44 cles par animation). Le moteur
+    interpole chaque Pose lineairement (EasingStyle Linear : Lerp de la
+    position, slerp de la rotation) : une frame est retiree si cette
+    interpolation entre les cles gardees la reproduit a pos_tol stud et
+    ang_tol_deg degres pres, pour CHAQUE Motor6D. keep_times : instants
+    forces (markers). Retourne la sous-liste de frames."""
+    parts = [p for p in PART_ORDER if p != "HumanoidRootPart"]
+    T = [{p: joint_transform(p, w) for p in parts} for _t, w in frames]
+    ts = np.array([t for t, _w in frames])
+    forced = {int(np.argmin(np.abs(ts - k))) for k in keep_times}
+    n = len(frames)
+    cos_tol = np.cos(np.radians(ang_tol_deg))
+
+    def ok(i, j):
+        for k in range(i + 1, j):
+            u = (ts[k] - ts[i]) / (ts[j] - ts[i])
+            for p in parts:
+                (ra, pa), (rb, pb), (rk, pk) = T[i][p], T[j][p], T[k][p]
+                if np.linalg.norm(pa + (pb - pa) * u - pk) > pos_tol:
+                    return False
+                if (np.trace(_slerp_rot(ra, rb, u).T @ rk) - 1) / 2 < cos_tol:
+                    return False
+        return True
+
+    kept = [0]
+    i = 0
+    while i < n - 1:
+        j = i + 1
+        while j + 1 < n and (j not in forced) and ok(i, j + 1):
+            j += 1
+        kept.append(j)
+        i = j
+    return [frames[k] for k in kept]
+
+
 def _cframe(parent, name, pos, m):
     el = ET.SubElement(parent, "CoordinateFrame", {"name": name})
     for tag, v in zip(("X", "Y", "Z"), pos):

@@ -162,7 +162,7 @@ catégories.
 | 3 | ✅ **fait (2026-09-24)** — `experiments/r6_m1_v222` : M1 0,65 s + réaction 0,22 s sur deux rigs V2.22, contact exact, 32/38 et 29/38 mesures dans la plage pro, export avec marker `hit` et jambes à poids 0 | distance au corpus, aller-retour moteur |
 | 4 | ✅ **fait (2026-09-24)** — `r6_m1_v222/output/M1_Technique.rbxmx` : mannequins, animations à marqueurs, module Luau (hitstop, flash, étincelles, onde de choc, traînée, recul, secousse), démo ; sens vérifié sur les fichiers, le code Luau exécuté et le package relu | `.rbxmx` qui se charge ; aperçu fidèle |
 | 5 | **Test de généralisation** : une catégorie jamais travaillée (dash ou marche), sans réglage à la main | audit vs corpus de la bonne catégorie |
-| 6 | Brief libre (« poing du dragon ») : brief → catégories → poses → clip + VFX. Critère d’acceptation : le niveau de la vidéo « Pro ». **Proposition écrite (2026-09-24) : `SCENE_POING_DU_DRAGON.md`** | revue de Milan |
+| 6 | ✅ **produit (2026-09-24)** — brief libre « poing du dragon » : `experiments/r6_poing_dragon` (proposition : `SCENE_POING_DU_DRAGON.md`). Technique ultime de 8,8 s sur deux rigs V2.22 : animation, caméra, VFX, effets d'écran, planches manga, package Roblox, module Luau testé, lecteur jouable. En attente de la revue de Milan (critère : niveau de la vidéo « Pro ») | revue de Milan |
 | 7 | Nourrir en continu : chaque pack, vidéo ou retour devient une fiche du corpus | le corpus grossit, les seuils bougent avec lui |
 
 ## 5. Risques, dits franchement
