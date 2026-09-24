@@ -155,7 +155,8 @@ v3b, voir plus bas. La rafale seulement ; le reste est inchangé
 
 ## Poing du Dragon v4 (2026-09-24) : réponse au retour v3b
 
-Pas encore revu par Milan.
+Revu par Milan : « toujours pas bon ». Il a demandé ma note et celle du
+cerveau, voir la fin de l'entrée.
 
 - **Règles** (`r6_poing_dragon/output/regles_v4.json`) : **13/13**.
 - **Trajectoire du poing** : montée de 0,00 sur les 0,1 s avant le contact, pour
@@ -166,3 +167,25 @@ Pas encore revu par Milan.
   final monte à +0,26, dans la plage des coups lourds.
 - **Transfert** : 0,58 à 0,91.
 - **Preuve** : `captures/verification/2026-09-24-poing-dragon-v4-trajectoire-poing-vs-pro.png`.
+
+### Retour de Milan sur la v4 : « toujours pas bon, toi tu mets combien, et le cerveau ? »
+
+- **Ma note, après relecture image par image en caméra cinéma** : rafale
+  **4/10**, technique entière **5/10** (l'aérien reste autour de 7).
+  - Poses raides : bras en planche, tendus de chaque côté à l'armement
+    (épouvantail). Au coup final, les deux bras se referment comme une
+    accolade.
+  - Mouvement mécanique : le contrôle IK de la main va en ligne droite entre
+    les clés. Pas d'arc naturel, pas de décalage entre les membres.
+  - La silhouette au contact est cachée par le flash du corps.
+  - Réactions de la victime peu lisibles.
+- **Note du cerveau** : il n'en a pas, et c'est le vrai problème.
+  - Règles apprises : 13/13. Elles se lisent comme un 10/10, alors que Milan
+    rejette.
+  - Verdict calibré sur le corpus : **53 %** des mesures des coups dans la plage
+    pro, 44 % pour les réactions, 47 % pour l'uppercut et la plongée. Ramené sur
+    10, ça fait environ 5.
+  - Aucune de ces mesures n'a jamais été confrontée aux notes de Milan.
+- **Leçon** : 4 versions de suite corrigent chacune la mesure du retour
+  précédent (épaules, puis angle du bras, puis trajectoire), sans rendre le
+  mouvement bon. On traite des symptômes un par un.
