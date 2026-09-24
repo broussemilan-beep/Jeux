@@ -142,6 +142,18 @@ Milan sur ce coup. On retrouve deux règles de l'anime (`TUTOS_ANIMATION.md`
 §4) : la **compression en C** pendant la charge, puis l'**extension en une
 droite** hors d'équilibre, du pied arrière au poing, torse compris.
 
+## 4 quater. Les refs R6 de Milan relues avec cette question
+
+Question : au contact, le torse est-il droit ou jeté dans le coup ?
+- **combo_r6_front** : au coup, le corps entier **pivote violemment**,
+  jusqu'à montrer le dos à la caméra. Au 2e coup, le torse **plonge vers
+  l'avant** et le corps descend. Jamais un torse vertical.
+- **double_jab_r6** : torse **penché en avant** pendant tout le combo ; bras
+  qui frappe tendu, l'autre ramené.
+
+Même conclusion que TSB et l'anime, trois sources indépendantes : le corps
+s'engage. Les croquis v7 vont dans ce sens (`FICHE_V7_BROUILLON.md`).
+
 ## 5. Ce que ça change pour nous
 
 1. **Le levier n°1 est notre chaîne d'export, pas nos poses.** Nous
