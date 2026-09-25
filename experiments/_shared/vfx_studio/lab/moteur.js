@@ -146,6 +146,89 @@
     }
   };
 
+  // modèles 3D riggés (modeles/*.json : dragon) ; texture = TEX["<nom>_atlas"]
+  const MODELES = {};
+  VFX.loadModeles = function (data) { for (const k in data) MODELES[k] = data[k]; };
+
+  // repères le long d'une polyligne : T (vers la TÊTE), up par transport
+  // parallèle depuis la tête (pas de vrille brusque)
+  function reperes(pts) {
+    const n = pts.length, out = [];
+    let up = new T.Vector3(0, 1, 0);
+    for (let k = 0; k < n; k++) {
+      const T0 = pts[Math.max(0, k - 1)].clone().sub(pts[Math.min(n - 1, k + 1)]);
+      if (T0.lengthSq() < 1e-12) T0.set(-1, 0, 0);
+      T0.normalize();
+      up = up.sub(T0.clone().multiplyScalar(up.dot(T0)));
+      if (up.lengthSq() < 1e-6) up = new T.Vector3(0, 0, 1).sub(T0.clone().multiplyScalar(T0.z));
+      up.normalize();
+      out.push({ p: pts[k], t: T0, up: up.clone() });
+    }
+    return out;
+  }
+  function repereA(R, s) {        // s in [0,1] le long de la polyligne (par index)
+    const f = Math.min(R.length - 1, Math.max(0, s * (R.length - 1)));
+    const i = Math.min(R.length - 2, Math.floor(f)), u = f - i;
+    const p = R[i].p.clone().lerp(R[i + 1].p, u);
+    const t = R[i].t.clone().lerp(R[i + 1].t, u).normalize();
+    const up = R[i].up.clone().lerp(R[i + 1].up, u);
+    up.sub(t.clone().multiplyScalar(up.dot(t))).normalize();
+    return { p, t, up };
+  }
+
+  // DRAGON 3D : SkinnedMesh (os « Tete » + colonne le long de +X au repos)
+  // piloté par la même forme échantillonnée que le ruban ; contour par coque
+  // inversée (sur Roblox : Highlight). Naissance / mort : les os hors de la
+  // partie visible [tete_visible, queue_visible] se replient sur le bord.
+  function Modele3D(L, forme) {
+    const D = MODELES[L.modele];
+    const k = L.echelle || 1;
+    const geo = new T.BufferGeometry();
+    geo.setAttribute("position", new T.Float32BufferAttribute(D.positions.map((v) => v * k), 3));
+    geo.setAttribute("normal", new T.Float32BufferAttribute(D.normales, 3));
+    geo.setAttribute("uv", new T.Float32BufferAttribute(D.uv, 2));
+    geo.setAttribute("skinIndex", new T.Uint16BufferAttribute(D.os_indices, 4));
+    geo.setAttribute("skinWeight", new T.Float32BufferAttribute(D.os_poids, 4));
+    geo.setIndex(D.indices);
+    const xs = [0].concat(D.os_x);                 // os 0 = Tete (au cou), puis la colonne
+    const grp = new T.Group();
+    const bones = xs.map((x) => { const b = new T.Bone(); b.position.set(x * k, 0, 0); grp.add(b); return b; });
+    grp.updateMatrixWorld(true);
+    const skel = new T.Skeleton(bones);
+    const mat = new T.MeshStandardMaterial({ map: TEX[L.modele + "_atlas"], metalness: 0.55, roughness: 0.32,
+      emissive: new T.Color(0.35, 0.2, 0.02), transparent: true });
+    const mesh = new T.SkinnedMesh(geo, mat);
+    mesh.bind(skel);
+    mesh.frustumCulled = false;
+    const contourMat = new T.MeshBasicMaterial({ color: 0x3a1a06, side: T.BackSide, transparent: true });
+    contourMat.onBeforeCompile = (sh) => {
+      sh.vertexShader = sh.vertexShader.replace("#include <begin_vertex>", "#include <begin_vertex>\n transformed += normal * " + (0.018 * k).toFixed(4) + ";");
+    };
+    const contour = new T.SkinnedMesh(geo, contourMat);
+    contour.bind(skel); contour.frustumCulled = false;
+    grp.add(mesh); grp.add(contour);
+    const LT = D.longueur;
+    return {
+      obj: grp,
+      update(t, a, s0, s1, glob) {
+        const pts = forme(t);
+        const R = reperes(pts);
+        xs.forEach((x, i) => {
+          let sN = Math.max(0, x) / LT;
+          sN = Math.min(Math.max(sN, s0), Math.max(s0, s1));
+          const f = repereA(R, sN);
+          const X = f.t.clone().negate(), Y = f.up, Z = new T.Vector3().crossVectors(X, Y);
+          bones[i].position.copy(f.p);
+          bones[i].quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(X, Y, Z));
+        });
+        const vis = s1 - s0 > 0.01 && glob > 0;
+        mesh.visible = contour.visible = vis;
+        mat.opacity = contourMat.opacity = glob;
+        return 1;
+      },
+    };
+  }
+
   // --------------------------------------------- matériau additif / normal
   function spriteMat(tex, additif) {
     return new T.ShaderMaterial({
@@ -411,6 +494,16 @@
     };
   }
 
+  // interpolation de la forme d'un serpent entre deux échantillons
+  function formeSerpent(L, t) {
+    const im = L.images;
+    let i = 0;
+    while (i < im.length - 2 && im[i + 1][0] <= t) i++;
+    const a = im[i], b = im[Math.min(i + 1, im.length - 1)];
+    const u = b[0] > a[0] ? Math.min(1, Math.max(0, (t - a[0]) / (b[0] - a[0]))) : 0;
+    return a[1].map((p, k) => new T.Vector3(p[0] + (b[1][k][0] - p[0]) * u, p[1] + (b[1][k][1] - p[1]) * u, p[2] + (b[1][k][2] - p[2]) * u));
+  }
+
   // ==================================================== couche SERPENT
   // Le corps du DRAGON (fiches/AURA_DRAGON.md) : un ruban tourné vers la
   // caméra, passant par N points dont la forme est ÉCHANTILLONNÉE hors ligne
@@ -422,6 +515,19 @@
   // Roblox avec la texture miroir de la face arrière).
   function Serpent(L) {
     const N = L.images[0][1].length;
+    if (L.modele && MODELES[L.modele]) {
+      const M3 = Modele3D(L, (t) => formeSerpent(L, t));
+      return {
+        obj: M3.obj,
+        update(t) {
+          const a = (t - L.t0) / L.duree;
+          if (a < 0 || a > 1) { M3.obj.visible = false; return 0; }
+          M3.obj.visible = true;
+          const s0 = seq(L.tete_visible == null ? 0 : L.tete_visible, a), s1 = seq(L.queue_visible == null ? 1 : L.queue_visible, a);
+          return M3.update(t, a, s0, s1, 1 - Math.min(1, Math.max(0, seq(L.transparency || 0, a))));
+        },
+      };
+    }
     const geo = new T.BufferGeometry();
     const pos = new Float32Array(N * 2 * 3), uv = new Float32Array(N * 2 * 2), col = new Float32Array(N * 2 * 4);
     const idx = [];
@@ -439,7 +545,8 @@
       tete.renderOrder = 9; grp.add(tete);
     }
     const cam = new T.Vector3(), camUp = new T.Vector3();
-    function forme(t) {                        // interpolation entre deux échantillons
+    function forme(t) { return formeSerpent(L, t); }
+    function _formeInutile(t) {
       const im = L.images;
       let i = 0;
       while (i < im.length - 2 && im[i + 1][0] <= t) i++;

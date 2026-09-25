@@ -37,7 +37,13 @@ def main(sortie=None):
     cs = json.load(open(os.path.join(HERE, "sons", "catalogue.json")))["sons"]
     audio = {x["nom"]: "data:audio/wav;base64," + base64.b64encode(open(os.path.join(HERE, "sons", x["fichier"]), "rb").read()).decode()
              for x in cs}
-    data = {"textures": textures, "variantes": variantes, "sons": audio, "meshes": json.load(open(os.path.join(mesh_dir, "meshes.json"))),
+    # modèles 3D riggés (modeles/dragon.py) + leur atlas
+    mod_dir = os.path.join(HERE, "modeles")
+    modeles = {}
+    for nom in ("dragon",):
+        modeles[nom] = json.load(open(os.path.join(mod_dir, f"{nom}.json")))
+        textures[nom + "_atlas"] = "data:image/png;base64," + base64.b64encode(open(os.path.join(mod_dir, f"{nom}_atlas.png"), "rb").read()).decode()
+    data = {"textures": textures, "variantes": variantes, "sons": audio, "modeles": modeles, "meshes": json.load(open(os.path.join(mesh_dir, "meshes.json"))),
             "recettes": recettes.toutes()}
     html = open(os.path.join(HERE, "lab", "lab_template.html"), encoding="utf-8").read()
     html = html.replace("__THREE__", open(THREE, encoding="utf-8").read())

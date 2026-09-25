@@ -34,13 +34,17 @@
   const DATA = __DATA__;
   VFX.loadTextures(DATA.textures);
   VFX.loadMeshes(DATA.meshes);
-  VFX.variantes = DATA.variantes;          // défilement quantifié comme sur Roblox
+  VFX.variantes = DATA.variantes;
+  VFX.loadModeles(DATA.modeles || {});          // défilement quantifié comme sur Roblox
   const stage = document.getElementById("stage");
   const renderer = new T.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
   renderer.setPixelRatio(1);
   stage.appendChild(renderer.domElement);
   const scene = new T.Scene();
   scene.background = new T.Color("#7f9ab8");
+  // lumière (seuls les modèles 3D, en matériau standard, la voient ; tout le reste est non éclairé comme les particules Roblox)
+  scene.add(new T.HemisphereLight(0xdfe8ff, 0x6a5a48, 0.9));
+  const soleil = new T.DirectionalLight(0xfff1dc, 1.3); soleil.position.set(10, 22, 8); scene.add(soleil);
   const camera = new T.PerspectiveCamera(50, 16 / 9, 0.05, 500);
   // sol à damier (façon baseplate) + mannequins R6 pour l'échelle
   const cv = document.createElement("canvas"); cv.width = cv.height = 64;

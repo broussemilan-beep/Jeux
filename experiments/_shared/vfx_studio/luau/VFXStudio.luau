@@ -473,8 +473,111 @@ function VFXStudio.jouer(rec, repere, opts)
 	-- face ARRIÈRE porte la texture normale, la face AVANT la texture miroir,
 	-- pour que le museau suive toujours le cou, de quelque côté qu'on la voie).
 	local camera = opts.camera or workspace.CurrentCamera
+	-- repères le long d'une polyligne (= reperes() de l'aperçu) : T vers la
+	-- TÊTE, « haut » par transport parallèle depuis la tête
+	local function reperes(pts)
+		local n, out = #pts, {}
+		local up = Vector3.new(0, 1, 0)
+		for k = 1, n do
+			local T0 = pts[math.max(1, k - 1)] - pts[math.min(n, k + 1)]
+			T0 = if T0.Magnitude < 1e-6 then Vector3.new(-1, 0, 0) else T0.Unit
+			up = up - T0 * up:Dot(T0)
+			if up.Magnitude < 1e-3 then
+				up = Vector3.new(0, 0, 1) - T0 * T0.Z
+			end
+			up = up.Unit
+			out[k] = { p = pts[k], t = T0, up = up }
+		end
+		return out
+	end
+	local function repereA(R, s)
+		local f = math.clamp(s * (#R - 1), 0, #R - 1)
+		local i = math.min(#R - 2, math.floor(f))
+		local u = f - i
+		local a, b = R[i + 1], R[i + 2]
+		local p = a.p:Lerp(b.p, u)
+		local t = a.t:Lerp(b.t, u).Unit
+		local up = a.up:Lerp(b.up, u)
+		up = (up - t * up:Dot(t)).Unit
+		return p, t, up
+	end
+
+	-- DRAGON 3D (modeles/dragon.fbx importé dans Studio, MeshPart skinné) :
+	-- ses os (Tete, Os01..) suivent la même forme que l'aperçu ; contour =
+	-- Highlight. Transform = (Part * os)^-1 * repère voulu * rotation de repos.
+	local function modele3D(L, forme)
+		local modele = ASSETS.modeles and ASSETS.modeles[L.modele]
+		if not modele then
+			return false
+		end
+		local m = modele:Clone()
+		local part = if m:IsA("BasePart") then m else m:FindFirstChildWhichIsA("MeshPart", true)
+		part.Anchored = true
+		part.CanCollide, part.CanQuery, part.CanTouch = false, false, false
+		part.CFrame = CFrame.new(0, 0, 0)
+		if L.echelle and part.Size then
+			part.Size = part.Size * L.echelle
+		end
+		m.Parent = dossier
+		local contour = Instance.new("Highlight")
+		contour.Adornee = m
+		contour.FillTransparency = 1
+		contour.OutlineColor = Color3.fromRGB(58, 26, 6)
+		contour.DepthMode = Enum.HighlightDepthMode.Occluded
+		contour.Parent = m
+		local os_ = {}
+		for i, sN in ipairs(L.os_s) do
+			local nom = if i == 1 then "Tete" else string.format("Os%02d", i - 1)
+			local b = m:FindFirstChild(nom, true)
+			if b then
+				table.insert(os_, { b = b, s = sN })
+			end
+		end
+		table.insert(miseAJour, function(t)
+			local a = (t - L.t0) / L.duree
+			local actif = a >= 0 and a <= 1
+			part.Transparency = if actif then 0 else 1
+			contour.Enabled = actif
+			if not actif then
+				return
+			end
+			local s0 = if L.tete_visible then seq(L.tete_visible, a) else 0
+			local s1 = if L.queue_visible then seq(L.queue_visible, a) else 1
+			local R = reperes(forme(t))
+			for _, o in ipairs(os_) do
+				local sN = math.clamp(o.s, s0, math.max(s0, s1))
+				local p, tg, up = repereA(R, sN)
+				local voulu = CFrame.fromMatrix(p, -tg, up) * o.b.CFrame.Rotation
+				o.b.Transform = (part.CFrame * o.b.CFrame):Inverse() * voulu
+			end
+		end)
+		finMax = math.max(finMax, L.t0 + L.duree)
+		return true
+	end
+
+	local function formeSerpent(L, t)
+		local im = L.images
+		local i = 1
+		while i < #im - 1 and im[i + 1][1] <= t do
+			i += 1
+		end
+		local a, b = im[i], im[math.min(i + 1, #im)]
+		local u = if b[1] > a[1] then math.clamp((t - a[1]) / (b[1] - a[1]), 0, 1) else 0
+		local out = {}
+		for k = 1, #a[2] do
+			local pa, pb = a[2][k], b[2][k]
+			out[k] = monde({ pa[1] + (pb[1] - pa[1]) * u, pa[2] + (pb[2] - pa[2]) * u, pa[3] + (pb[3] - pa[3]) * u })
+		end
+		return out
+	end
+
 	local function serpent(L)
 		local N = #L.images[1][2]
+		if L.modele and modele3D(L, function(t)
+			return formeSerpent(L, t)
+		end) then
+			return
+		end
 		local p = porteur(dossier, "D_" .. (L.nom or "serpent"))
 		p.CFrame = CFrame.new(0, 0, 0)
 		local atts, beams = {}, {}

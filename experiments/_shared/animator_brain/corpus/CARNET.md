@@ -508,6 +508,12 @@ Méthode pour chacune :
 
 ## 6. Mes biais connus (à relire avant de juger)
 
+- **Je note mes VFX contre mes versions précédentes, pas contre le pack**
+  (v10 : prédit 6, v11 : prédit 7 ; Milan : 4). Avant de noter, poser la
+  capture À CÔTÉ d'une ref du pack ou d'une ref visuelle, même échelle.
+- **« Mélange X à Y »** : demander de quoi (pose ? effet ? couleur ?) si ce
+  n'est pas dit ; ici c'était la POSE d'Izuku, pas ses éclairs.
+
 - Je juge sur des images figées et agrandies (1.1).
 - Mes poses sont ~2x trop sages (1.4, 1.5).
 - J'applique un principe comme une règle et j'appelle défaut ce qui ne

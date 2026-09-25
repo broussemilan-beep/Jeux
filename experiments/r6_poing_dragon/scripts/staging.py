@@ -390,12 +390,9 @@ def dragon_events(aw, vw, rt, studio):
         c = [corps]
         ch_poing = [[rel(f)] + v3(poing(f)) for f in range(226, sf + 1, 2)]
         ch_corps = [[rel(f)] + v3(aw[f]["Torso"][1]) for f in range(226, sf + 1, 2)]
-        c.append(R.eclairs({"chemin": ch_poing}, 0.0, round(t_c + 0.1, 4), rayon=1.0, nombre=5, nom="eclairs_poing"))
-        c.append(R.eclairs({"chemin": ch_corps}, 0.0, round(t_c, 4), rayon=2.0, nombre=4, longueur=(1.2, 2.4),
-                           nom="eclairs_corps"))
-        sons = [{"son": "crepitement", "t0": 0.0, "volume": 0.35},
-                {"son": "rugissement", "t0": round(t_n, 4), "volume": 0.45, "hauteur": 1.15},
-                {"son": "crepitement", "t0": round(t_n + 1.1, 4), "volume": 0.3, "hauteur": 1.1}]
+        # (éclairs verts d'Izuku retirés, 2026-09-25 : Milan voulait la POSE
+        # d'Izuku mélangée à celle de Goku, pas ses éclairs)
+        sons = [{"son": "rugissement", "t0": round(t_n, 4), "volume": 0.45, "hauteur": 1.15}]
         return c, sons
     studio(226, "dragon_arme", armes)
 
@@ -434,10 +431,7 @@ def dragon_events(aw, vw, rt, studio):
                   "echelle": [[0, [1.5, 0.6, 1.5]], [0.3, [7, 5, 7]], [1, [9, 7, 9]]],
                   "transparency": [[0, 0.1], [0.6, 0.35], [1, 1]], "color": [[0, "#fff6dc"], [0.5, "#ff8a1f"], [1, "#c8401a"]],
                   "rotation_vitesse": 420, "light_emission": 1})
-        c.append(R.eclairs({"pos": v3(G + np.array([0, 1.5, 0]))}, tc, 0.5, rayon=4.5, nombre=7, longueur=(2, 4.5),
-                           couleur=[[0, "#ffffff"], [0.4, R.VERT_OFA], [1, "#ffc53d"]], largeur=0.5, nom="eclairs_impact"))
-        sons = [{"son": "rugissement", "t0": round(t_dep + 0.15, 4), "volume": 0.9},
-                {"son": "crepitement", "t0": tc, "volume": 0.4, "hauteur": 0.8}]
+        sons = [{"son": "rugissement", "t0": round(t_dep + 0.15, 4), "volume": 0.9}]
         return c, sons
     studio(imf, "dragon_monte", monte)
     return []

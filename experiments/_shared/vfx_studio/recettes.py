@@ -275,7 +275,7 @@ VERT_OFA = "#6dff8a"   # vert One For All (Izuku)
 
 
 def serpent(images, t0, duree, largeur=None, naissance=0.25, mort=None, tete=True, vitesse=1.5, taille_tete=(4.4, 2.2),
-            couleur="#ffffff"):
+            couleur="#ffffff", modele="dragon", echelle=0.7):
     """Corps de DRAGON (fiches/AURA_DRAGON.md) : `images` = [[t, [[x,y,z]...]]]
     (tête en premier), temps relatifs à la recette. Naît de la tête vers la
     queue en `naissance` (fraction de la durée) ; `mort` = (début, "tete" |
@@ -291,6 +291,13 @@ def serpent(images, t0, duree, largeur=None, naissance=0.25, mort=None, tete=Tru
     L = {"type": "serpent", "nom": "dragon", "t0": t0, "duree": duree, "images": images, "texture": "dragon_ecailles",
          "largeur": largeur or [[0, 1.3], [0.08, 1.5], [0.5, 1.1], [0.85, 0.6], [1, 0.1]], "vitesse_texture": vitesse,
          "tete_visible": tete_v, "queue_visible": queue_v, "light_emission": 0, "color": couleur}
+    if modele:
+        # DRAGON 3D riggé (modeles/dragon.py) ; le ruban + la carte restent le
+        # repli si le modèle manque (Roblox : FBX pas encore importé)
+        L["modele"], L["echelle"] = modele, echelle
+        # abscisse (0-1) de chaque os le long du corps : Tete puis la colonne
+        d = json.load(open(os.path.join(HERE, "modeles", f"{modele}.json")))
+        L["os_s"] = [0.0] + [round(x / d["longueur"], 4) for x in d["os_x"]]
     if tete:
         L["tete"] = {"texture": "dragon_tete", "texture_miroir": "dragon_tete_miroir", "taille": list(taille_tete), "cou": 0.1}
     return L
@@ -327,10 +334,11 @@ def dragon_aura_demo():
     et ondule ; éclairs verts autour. Réglage du rendu avant le Dragon."""
     imgs = [[round(k / 30, 3), spirale([0, 1, 0], [0, 1, 0], 2.4, 6.5, 1.3, 28, phase=0.9 * k / 30, rayon_fin=1.6)]
             for k in range(0, 61)]
-    c = [serpent(imgs, 0.0, 2.0, naissance=0.3, mort=(0.8, "queue")),
-         eclairs({"pos": [0, 3, 0]}, 0.0, 2.0, rayon=1.6, nombre=6)]
+    # (éclairs verts retirés : Milan voulait la POSE d'Izuku, pas ses éclairs)
+    c = [serpent(imgs, 0.0, 2.0, naissance=0.3, mort=(0.8, "queue"))]
     r = recette("dragon_aura_demo", c, titre="Dragon : aura (démo)")
     r["cameras"] = {"large": {"oeil": [11, 6, 9], "cible": [0, 3.5, 0], "fov": 50},
+                    "proche": {"oeil": [3.5, 8.8, 7.5], "cible": [1.5, 7.0, 1.0], "fov": 45},
                     "jeu": {"oeil": [1.75, 5.5, 11], "cible": [1.75, 3.5, -4], "fov": 70}}
     return r
 

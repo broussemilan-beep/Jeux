@@ -49,7 +49,10 @@ C.__add = function(a, v) return cf(a.p + v, a.r) end
 local CM = {}
 function CM.PointToWorldSpace(self, v) return self.p + rotv(self.r, v) end
 function CM.VectorToWorldSpace(self, v) return rotv(self.r, v) end
+local function transpose(r) return { { r[1][1], r[2][1], r[3][1] }, { r[1][2], r[2][2], r[3][2] }, { r[1][3], r[2][3], r[3][3] } } end
+function CM.Inverse(self) local ri = transpose(self.r); return cf(rotv(ri, self.p) * -1, ri) end
 C.__index = function(t, k)
+	if k == "Rotation" then return cf(v3(0, 0, 0), t.r) end
 	if k == "Position" then return t.p end
 	if k == "UpVector" then return v3(t.r[1][2], t.r[2][2], t.r[3][2]) end
 	if k == "RightVector" then return v3(t.r[1][1], t.r[2][1], t.r[3][1]) end
@@ -164,6 +167,23 @@ function Obj.GetDescendants(o)
 	return out
 end
 function Obj.Destroy(o) o.Parent = nil; rawset(o, "_detruit", true) end
+function Obj.IsA(o, cls) return rawget(o, "ClassName") == cls or (cls == "BasePart" and (rawget(o, "ClassName") == "Part" or rawget(o, "ClassName") == "MeshPart")) end
+function Obj.FindFirstChild(o, nom, rec)
+	for _, c in ipairs(rawget(o, "_enfants")) do if c.Name == nom then return c end end
+	if rec then for _, c in ipairs(rawget(o, "_enfants")) do local r = c:FindFirstChild(nom, true); if r then return r end end end
+	return nil
+end
+function Obj.FindFirstChildWhichIsA(o, cls, rec)
+	for _, c in ipairs(rawget(o, "_enfants")) do if c:IsA(cls) then return c end end
+	if rec then for _, c in ipairs(rawget(o, "_enfants")) do local r = c:FindFirstChildWhichIsA(cls, true); if r then return r end end end
+	return nil
+end
+function Obj.Clone(o)
+	local c = Instance.new(rawget(o, "ClassName"))
+	for k, v in pairs(rawget(o, "_p")) do if k ~= "Parent" then rawget(c, "_p")[k] = v end end
+	for _, e in ipairs(rawget(o, "_enfants")) do local ce = e:Clone(); ce.Parent = c end
+	return c
+end
 function Obj.Emit(o, n) table.insert(rawget(o, "_emis"), { t = TEMPS, n = n }) end
 function Obj.Play(o) rawset(o, "_joue", TEMPS) end
 local function nouvelle(cls)
@@ -357,7 +377,49 @@ if DATA.recettes.dragon_aura_demo then
 	h.Annuler()
 end
 
--- 6. Annuler au milieu (technique interrompue)
+-- 6. DRAGON 3D (MeshPart skinné) : chaque os arrive sur la forme voulue
+if DATA.recettes.dragon_aura_demo then
+	local rec = DATA.recettes.dragon_aura_demo
+	local L = rec.couches[1]
+	local modele = nouvelle("MeshPart")
+	modele.Name = "Dragon"
+	modele.Size = Vector3.new(20, 4, 4)
+	modele.CFrame = CFrame.new(0, 0, 0)
+	for i, sN in ipairs(L.os_s) do
+		local b = nouvelle("Bone")
+		b.Name = if i == 1 then "Tete" else string.format("Os%02d", i - 1)
+		-- repos importé avec une rotation quelconque (comme un FBX) : le calcul doit s'en moquer
+		b.CFrame = CFrame.new(sN * 14, 0, 0) * CFrame.Angles(0, 0, math.pi / 2)
+		b.Transform = CFrame.new(0, 0, 0)
+		b.Parent = modele
+	end
+	VFXStudio.configurer({ modeles = { dragon = modele } })
+	local h = VFXStudio.jouer(rec, CFrame.new(5, 0, -3), { manuel = true })
+	local t = 1.0
+	h._etape(t)
+	local clone = h.Dossier:FindFirstChild("Dragon")
+	ok(clone ~= nil and clone:FindFirstChildWhichIsA("Highlight") ~= nil, "dragon 3D : modèle cloné, contour Highlight")
+	-- tête attendue : 1er point de la forme à t (repère CFrame.new(5,0,-3))
+	local im = L.images
+	local i = 1
+	while i < #im - 1 and im[i + 1][1] <= t do i += 1 end
+	local a, b = im[i], im[i + 1]
+	local u = (t - a[1]) / (b[1] - a[1])
+	local p0 = Vector3.new(a[2][1][1] + (b[2][1][1] - a[2][1][1]) * u, a[2][1][2] + (b[2][1][2] - a[2][1][2]) * u,
+		a[2][1][3] + (b[2][1][3] - a[2][1][3]) * u) + Vector3.new(5, 0, -3)
+	local tete = clone:FindFirstChild("Tete", true)
+	local monde = clone.CFrame * tete.CFrame * tete.Transform
+	ok((monde.Position - p0).Magnitude < 1e-6, string.format("dragon 3D : l'os de tête est sur la forme (écart %.2e)", (monde.Position - p0).Magnitude))
+	-- la rotation de repos importée est préservée : l'axe local du modèle suit la forme
+	local os12 = clone:FindFirstChild("Os12", true)
+	local m12 = clone.CFrame * os12.CFrame * os12.Transform
+	local rot = m12.Rotation * os12.CFrame.Rotation:Inverse()
+	ok(math.abs(rot.UpVector.Magnitude - 1) < 1e-6, "dragon 3D : repère d'os orthonormé")
+	h.Annuler()
+	VFXStudio.configurer({ modeles = {} })
+end
+
+-- 7. Annuler au milieu (technique interrompue)
 do
 	local rec = DATA.recettes.orbe_impact
 	local h = VFXStudio.jouer(rec, CFrame.new(10, 0, 0), { manuel = true })

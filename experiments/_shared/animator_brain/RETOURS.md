@@ -608,3 +608,17 @@ cerveau, voir la fin de l'entrée.
     verts ; rugissement et crépitement ; tout jouable dans Roblox.
   - Défauts trouvés à l'écran et corrigés : tête invisible par la tranche,
     tête / cou qui bouchent le plan obari, montée hors cadre.
+
+- **2026-09-25, v11 aura dragon -> VFX 4/10 (Milan)** : « je voulais pas que
+  ça se mélange aux éclairs de Izuku mais que la POSE reste celle qu'on a vue
+  de Izuku mélangée à celle de Goku ; montre ta créativité avec le cerveau,
+  l'animation et les VFX. 4 aux VFX : le dragon est moche, pas du tout du
+  modèle premium ; même les VFX construits sont nuls face aux refs du pack ou
+  aux refs visuelles. »
+  - **Mauvaise lecture (encore)** : « mélange ça à Izuku » = la pose, pas
+    ses éclairs. Même biais que « coup final » (CARNET §6).
+  - **Écart de prédiction** : j'avais dit ~7 (et 6 pour la v10) ; Milan 4.
+    Je surestime mes VFX de 2 à 3 points : je les compare à NOS versions
+    précédentes, pas au pack ni aux refs.
+  - **Premium** = un vrai modèle 3D (volume, lumière, contour), pas des
+    cartes et des rubans plats ; densité et finition du pack 100 Combat VFX.

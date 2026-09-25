@@ -107,3 +107,5 @@ dragon ». Étudiées dans `fiches/AURA_DRAGON.md`.
 | 1a567c2f-image.jpg | 6a96118684045841 | Illustration : le dragon s'enroule en spirale derrière Goku, flammes, éclairs blancs, traînée d'encre. |
 | 656d965b-image.gif | f254bee59fbe663b | Goku poing levé vers le ciel, TENU 2 s, rayons de lumière dans les nuages (l'invocation). |
 | d514ee70-image.gif | 7a2b4ae8801394c5 | Le Poing du Dragon : poing vers l'objectif sur éclatement radial, blanc, explosion, tourbillon de feu, le dragon sort du tourbillon (tête en très gros plan). |
+| 09a83af0-image.jpg | 50c7d71304f14e3f | Manga MHA : Deku, POING GÉANT vers le lecteur (raccourci extrême), corps en diagonale derrière, hachures de vitesse. Pose à mélanger avec Goku (2026-09-25). |
+| 37b6bf9a-image.webp = 0ca551a4 | ea7afcc9b89f6fcd | Deku couleur (déjà au catalogue) : bras tendu vers le lecteur, épaule en avant, tête basse derrière le poing, autre bras rentré. |
