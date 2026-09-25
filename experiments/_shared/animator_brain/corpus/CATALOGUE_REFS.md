@@ -136,3 +136,19 @@ Envoyées par Milan sans texte, après les images de Suiryu. Étudiées dans
 | cab1e5b6-image.jpg | a7ae2ffe9cb6a596 | VFX stylisé : un DRAGON-PROJECTILE cyan (tête devant, corps = faisceau), sortant d'une gerbe blanche à pointes ; 2 tons + blanc, lueur. |
 | 2c6dce4d-image.jpg | 0d4e44f865edf8df | « Cursed Dragon, VFX Showcase » (Roblox) : tête de dragon sombre, fissures et yeux VIOLETS émissifs, fumée noire. |
 | 5b6ab8d1-image.jpg | 099b2483bda562e3 | Coup R6 : anneau bleu lumineux + étoile au poing, arcs blancs, croissants de vent gris qui s'enroulent autour de la victime projetée. |
+
+## Archive vidéo n° 1 (2026-09-25) : ultimes, vitrines, tutos
+
+`9755a706-videos_archive_part1.zip` (sha1 ef7c636001f0248d). Étude :
+`tutos/ETUDE_ARCHIVE_VIDEOS_1_2026-09-25.md`.
+
+| fichier (dans l'archive) | sha1 | ce que c'est |
+|---|---|---|
+| lvB-wTylH3Y (.mp4) | 4ea7509937eace7f | Serious Punch recréé par Pew : 3 s de charge, 2 images de carte inversée, ligne de roches jusqu'à l'horizon tenue 7 s. |
+| BpDlTrnlIUk (.mp4) | ac8fa912d32b66f1 | Stoic Bomb (TSB) : dôme rouge vu de dessus plein cadre 1,6 s, blanc, cratère. |
+| 6sXVqrZ_rYA (.mp4) | c7526690f484bb3e | Slap (TSB) : gros plans désaturés 2,7 s puis planches MANGA plein écran 2,5 s (visage déformé). |
+| 2ka3-cCuHXg (.mp4) | 1f2730537200abf0 | Black Flash « sneak » de Gojo (Sorcerers BG) : 6 s de champ/contrechamp, noir à traits cyan, blanc à silhouette qui rapetisse. |
+| RhsY24ct-vQ (.mp4) | 9a8d936b2f59ea60 | Sunrise Finisher (concept TSB) : minuscule / très gros plans, coupe retardée, bulle rayée, explosion « soleil ». |
+| pXqH8vOZ8X8 (.mp4) | aa476239e9f6b2bc | Thunder Dragon (vitrine) : jaillissement de pointes, pilier qui change de couleur à chaque image. |
+| 4e0sX6p8-30 (.mp4) | 2dc5991318003b95 | TSB, animations abandonnées (5 min) : rig lettré F/B/L/R, storyboards, dragon « Last Breath » v1-v3 (serpent Blender, tête vers la caméra, plein écran de feu). |
+| 10 sous-titres .vtt | - | Tutos : explosion J8uIGox3xfU, pilier _EciT4WQizk, slash zlKdwujvP2A, capacités anime Q0mXhHCW2OM, flipbooks TdU0A8etl1o (+ 2 basiques, 3 sans parole). |

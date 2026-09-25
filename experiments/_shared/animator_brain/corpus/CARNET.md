@@ -564,6 +564,22 @@ regarde en premier. Et le dragon est au POING ou à la place du perso : il
 EST le coup (projectile qui part du poing, gueule qui avale), jamais un
 décor qui tourne autour.
 
+**4b.17 Le temps d'un ultime se donne à la charge et à la conséquence,
+pas au coup** (archive vidéo n° 1, 4 ultimes mesurés). Charge / tension
+3-6 s (Serious Punch de Pew, Black Flash de Gojo : champ / contrechamp de
+gros plans), coup 1-2 images, abstraction plein écran 1,6-2,5 s (dôme vu
+de dessus, manga 2D, noir puis blanc, soleil de feu), conséquence 2-7 s
+en plan très large (ligne de roches jusqu'à l'horizon tenue 7 s). Notre
+invocation dure 0,5 s.
+
+**4b.18 Le dragon de TSB, c'est notre idée, exécutée autrement** (« Last
+Breath » v1-v3, animations abandonnées de TSB). Un long serpent fait dans
+Blender ; en jeu : aplat violet + écailles dessinées en trait (rien de
+sculpté), énorme au premier plan, tête qui plonge VERS la caméra gueule
+ouverte, puis plein écran de feu ; ou un très long corps qui file au ras
+du sol vers la cible. L'écart avec notre v12 n'est pas l'idée, c'est
+l'exécution : aplat + trait, taille, caméra, et le plein écran qui suit.
+
 ## 5. Pistes à essayer (classées, aucune n'est décidée)
 
 1. **Rafale : ré-armement lent, frappe rapide, clés espacées** (2.1,
