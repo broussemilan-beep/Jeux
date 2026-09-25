@@ -33,6 +33,7 @@
   const DATA = __DATA__;
   VFX.loadTextures(DATA.textures);
   VFX.loadMeshes(DATA.meshes);
+  VFX.variantes = DATA.variantes;          // défilement quantifié comme sur Roblox
   const stage = document.getElementById("stage");
   const renderer = new T.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
   renderer.setPixelRatio(1);

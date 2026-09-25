@@ -299,6 +299,22 @@ FLIPBOOKS = {
 }
 
 
+# DÉFILEMENT sur Roblox : un mesh n'a pas de décalage de texture natif. On
+# fait tourner N copies de la texture, décalées de k/N en U (le moteur Luau
+# échange SpecialMesh.TextureId). L'aperçu quantifie son défilement de la
+# même façon : ce qu'on voit dans le labo, c'est ce que Roblox fera.
+VARIANTES_DEFILEMENT = {"bruit_energie": 8}
+
+
+def variantes(img, n):
+    """n copies décalées de k/n de la largeur (U), sans couture si l'image
+    boucle en U."""
+    import numpy as _np
+    a = _np.asarray(img)
+    w = a.shape[1]
+    return [Image.fromarray(_np.roll(a, -round(k * w / n), axis=1)) for k in range(n)]
+
+
 def main(sortie=None):
     sortie = sortie or os.path.join(HERE, "textures")
     os.makedirs(sortie, exist_ok=True)
@@ -306,6 +322,12 @@ def main(sortie=None):
     for nom, (fn, mode, role) in FORMES.items():
         fn().save(os.path.join(sortie, f"{nom}.png"))
         catalogue.append({"nom": nom, "fichier": f"{nom}.png", "grille": "Static", "resolution": N, "mode": mode, "role": role})
+    for nom, n in VARIANTES_DEFILEMENT.items():
+        for k, im in enumerate(variantes(Image.open(os.path.join(sortie, f"{nom}.png")), n)):
+            im.save(os.path.join(sortie, f"{nom}_d{k}.png"))
+            catalogue.append({"nom": f"{nom}_d{k}", "fichier": f"{nom}_d{k}.png", "grille": "Static", "resolution": N,
+                              "mode": "defilement", "variante_de": nom, "decalage_u": k / n,
+                              "role": f"défilement Roblox : {nom} décalée de {k}/{n} en U"})
     for nom, (fn, n_img, g, mode, role) in FLIPBOOKS.items():
         planche([fn(k, n_img) for k in range(n_img)], g).save(os.path.join(sortie, f"{nom}_{g}x{g}.png"))
         catalogue.append({"nom": nom, "fichier": f"{nom}_{g}x{g}.png", "grille": f"Grid{g}x{g}", "images": n_img,

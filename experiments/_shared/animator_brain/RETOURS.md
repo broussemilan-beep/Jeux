@@ -571,3 +571,13 @@ cerveau, voir la fin de l'entrée.
       sans vérifier.
   - **Défaut de performance trouvé dans notre module** : le Highlight est
     recréé à chaque coup, ce qui provoque des pics de coût (doc officielle).
+
+- **2026-09-25, rôle (Milan)** : « je suis là pour donner des pistes, je ne
+  suis pas expert mais j'ai l'œil ; l'expert est censé être le cerveau, qui
+  doit animer complètement, donc aussi les VFX ; une fois fini, note sur 10
+  tes VFX comparés à ceux observés ; il y a aussi les SFX, etc. »
+  - **Conséquence** : le studio VFX se termine de bout en bout sans
+    attendre de consignes. Au programme : compilation Roblox, critique,
+    **son (SFX)** et intégration au Poing du Dragon.
+  - **Ensuite** : une auto-évaluation sur 10, côte à côte avec les refs,
+    notée AVANT l'avis de Milan.

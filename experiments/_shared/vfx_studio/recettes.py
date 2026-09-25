@@ -106,7 +106,7 @@ def orbe_impact():
         "couches": [
             # APPARITION (0 -> 0,3 s) : l'orbe se forme au point de départ
             {"type": "mesh", "nom": "naissance", "t0": 0.0, "duree": 0.3, "ancre": {"pos": [0, 3.2, 7]}, "mesh": "sphere",
-             "texture": "bruit_energie", "defilement": [1.6, 0.4], "echelle": [[0, 0], [0.6, 1.2], [1, 0.9]],
+             "texture": "bruit_energie", "defilement": [1.6, 0], "echelle": [[0, 0], [0.6, 1.2], [1, 0.9]],
              "color": pal[1], "brightness": 1.8, "bord": 0.6, "transparency": 0, "light_emission": 1},
             {"type": "particules", "nom": "naissance_etoile", "t0": 0.0, "ancre": {"pos": [0, 3.2, 7]}, "texture": "etoile4",
              "emit": 1, "lifetime": [0.3, 0.3], "size": [[0, 0], [0.4, 6], [1, 0]], "color": pal[0], "light_emission": 1},
@@ -116,7 +116,7 @@ def orbe_impact():
              "forme": {"sphere": 4.0}},
             # PROJECTION : coquille d'énergie qui tourne + halo autour du cœur
             {"type": "mesh", "nom": "coquille", "t0": 0.3, "duree": t1 - 0.3, "ancre": "projectile", "mesh": "sphere",
-             "texture": "bruit_energie", "defilement": [2.4, 0.6], "echelle": 1.35, "color": pal[1], "brightness": 1.6,
+             "texture": "bruit_energie", "defilement": [2.4, 0], "echelle": 1.35, "color": pal[1], "brightness": 1.6,
              "bord": 0.8, "transparency": 0, "light_emission": 1},
             {"type": "particules", "nom": "halo_orbe", "t0": 0.3, "ancre": "projectile", "texture": "halo", "rate": 60,
              "duree_emission": t1 - 0.3, "lifetime": [0.06, 0.06], "size": [[0, 5.5], [1, 5.0]], "transparency": [[0, 0.35], [1, 0.6]],
@@ -125,7 +125,7 @@ def orbe_impact():
             {"type": "trail", "nom": "trainee", "t0": 0.3, "t1": t1, "ancre": "projectile", "lifetime": 0.22,
              "t1_ancre": t1, "largeur": [[0, 1.6], [1, 0]], "texture": "ruban", "segments": 24,
              "transparency": [[0, 0], [1, 1]], "color": [[0, pal[0]], [1, pal[2]]], "light_emission": 1},
-            {"type": "particules", "nom": "semis", "t0": 0.3, "ancre": "projectile", "texture": "eclat", "rate": 120,
+            {"type": "particules", "nom": "semis", "t0": 0.3, "ancre": "projectile", "texture": "eclat", "rate": 90,   # 120 dépassait le plafond mobile (critique.py)
              "duree_emission": t1 - 0.3, "lifetime": [0.15, 0.3], "speed": [2, 6], "spread": [180, 180], "drag": 4,
              "orientation": "FacingCamera", "size": [[0, 0.7], [1, 0]], "color": pal[1], "light_emission": 1,
              "bloque_a_l_ancre": False},

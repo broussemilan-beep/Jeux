@@ -15,15 +15,23 @@ Conception : `../animator_brain/corpus/fiches/VFX.md` et
 | recettes (un effet = une donnée) | `recettes.py` | `orbe_impact` (apparition -> projection -> collision -> onde + explosion + vent + fumée), `impact_m1` (tier 1) |
 | moteur d'aperçu (sémantique Roblox, déterministe) | `lab/moteur.js` | particules (Emit/Rate, NumberSequence avec enveloppe, Drag, orientations, flipbook, LightEmission, gel du hitstop), meshes à texture qui défile, Trail et Beam, projectile, bloom maison, flash d'écran, secousse directionnelle à graine fixe |
 | lab (page jouable) | `build_lab.py` -> `lab/studio_vfx.html` | choix de la recette, lecture / pause / curseur, ×1 ×0,25 ×0,1, caméras, bloom |
-| compilation Roblox (.rbxmx + module Luau) | à venir | — |
-| critique VFX (limites officielles + overdraw) | à venir | — |
+| compilation Roblox | `compile_roblox.py` -> `luau/VFXRecettes.luau` | séquences ramenées de 0 à 1 et compressées à 20 points (Ramer-Douglas-Peucker), couleurs 0-1, table des assets ; ce qui n'a pas encore de rbxassetid est listé comme MANQUANT (repli : texture intégrée à Roblox) |
+| moteur d'exécution Roblox | `luau/VFXStudio.luau` | joue une recette compilée : ParticleEmitter (LightInfluence 0 explicite, Sphere/Disc, aspiration = ShapeInOut Inward), Part + SpecialMesh (FileMesh), Trail, Beam, projectile, BloomEffect animé, flash d'écran, secousse (même générateur que l'aperçu), gel (TimeScale 0), Sound ; une seule boucle pilotée par le temps ; `Annuler()` nettoie tout |
+| test du moteur Roblox | `luau/run_test.py` (+ `test_vfxstudio.luau`, `references_apercu.js`) | interpréteur Luau officiel + faux objets Roblox qui REFUSENT ce que Roblox refuse ; compare secousse, bloom et flash aux valeurs calculées par le vrai `moteur.js` ; 25 contrôles |
+| critique VFX (limites officielles + coût) | `critique.py` | Rate, Lifetime, séquences, flipbooks, Trail, Beam, particules vivantes instant par instant, appels de rendu estimés, défilement sans variantes |
+| capture du labo | `capture_lab.js` | planche d'instants choisis (preuves, auto-évaluation) |
 
 **Correspondance avec Roblox.**
 - Particules → `ParticleEmitter`.
-- Mesh → `MeshPart`. Le défilement de texture n'existe pas nativement sur
-  un MeshPart (doc officielle). Il se fera par un `Texture` dont on anime
-  `OffsetStudsU/V`, ou par des flipbooks [À VÉRIFIER dans Studio]. Sur un
-  `Beam`, il est natif (`TextureSpeed`).
+- Mesh → `Part` + `SpecialMesh` (FileMesh) : contrairement à un MeshPart,
+  MeshId, TextureId, Scale et VertexColor y sont modifiables en jeu (doc
+  officielle). Le défilement de texture n'existe pas nativement sur un
+  mesh : `formes.py` écrit 8 copies décalées de 1/8 en U
+  (`bruit_energie_d0..7`), et le moteur échange `TextureId`. L'aperçu
+  quantifie son défilement au même pas, en U seulement : ce qu'on voit dans
+  le labo est ce que Roblox fera. Sur un `Beam` / `Trail`, le défilement
+  est natif (`TextureSpeed`). Le rendu additif d'un mesh (Neon ?) reste
+  [À VÉRIFIER dans Studio].
 - Trail / Beam → `Trail` / `Beam`.
 - Bloom → `BloomEffect` animé.
 - Gel → `TimeScale = 0`.

@@ -309,7 +309,17 @@
           const sx = seq(e.map((k) => [k[0], k[1][0]]), a), sy = seq(e.map((k) => [k[0], k[1][1]]), a), sz = seq(e.map((k) => [k[0], k[1][2]]), a);
           m.scale.set(sx, sy, sz);
         } else { const s = seq(e || 1, a); m.scale.set(s, s, s); }
-        mat.uniforms.off.value.set(((L.defilement || [0, 0])[0] * (t - L.t0)) % 1, ((L.defilement || [0, 0])[1] * (t - L.t0)) % 1);
+        // défilement FIDÈLE À ROBLOX : là-bas, N variantes décalées de la
+        // texture (formes.py, VARIANTES_DEFILEMENT), en U seulement. On
+        // quantifie pareil, sinon l'aperçu montrerait un effet que le jeu
+        // n'aura pas. VFX.fideliteRoblox = false : défilement continu.
+        const du = (L.defilement || [0, 0])[0], dv = (L.defilement || [0, 0])[1];
+        const nv = (VFX.variantes || {})[L.texture];
+        if (VFX.fideliteRoblox !== false && nv) {
+          const x = (((du * (t - L.t0)) % 1) + 1) % 1;
+          mat.uniforms.off.value.set(Math.floor(x * nv) / nv, 0);
+        } else if (VFX.fideliteRoblox !== false) mat.uniforms.off.value.set(0, 0);
+        else mat.uniforms.off.value.set((du * (t - L.t0)) % 1, (dv * (t - L.t0)) % 1);
         mat.uniforms.col.value.copy(cseq(L.color, a)).multiplyScalar(L.brightness || 1);
         mat.uniforms.alpha.value = 1 - Math.min(1, Math.max(0, seq(L.transparency, a)));
         return 1;

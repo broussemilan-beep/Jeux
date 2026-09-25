@@ -24,9 +24,15 @@ def main(sortie=None):
     formes.main(tex_dir)
     meshes.main(mesh_dir)
     cat = json.load(open(os.path.join(tex_dir, "catalogue.json")))["textures"]
+    # les variantes décalées (défilement Roblox) ne sont pas intégrées : l'aperçu
+    # décale la texture de base du même pas quantifié (moteur.js)
     textures = {t["nom"]: "data:image/png;base64," + base64.b64encode(open(os.path.join(tex_dir, t["fichier"]), "rb").read()).decode()
-                for t in cat}
-    data = {"textures": textures, "meshes": json.load(open(os.path.join(mesh_dir, "meshes.json"))),
+                for t in cat if not t.get("variante_de")}
+    variantes = {}
+    for t in cat:
+        if t.get("variante_de"):
+            variantes[t["variante_de"]] = variantes.get(t["variante_de"], 0) + 1
+    data = {"textures": textures, "variantes": variantes, "meshes": json.load(open(os.path.join(mesh_dir, "meshes.json"))),
             "recettes": recettes.toutes()}
     html = open(os.path.join(HERE, "lab", "lab_template.html"), encoding="utf-8").read()
     html = html.replace("__THREE__", open(THREE, encoding="utf-8").read())

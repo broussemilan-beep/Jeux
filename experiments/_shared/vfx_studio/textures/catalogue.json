@@ -81,6 +81,86 @@
    "role": "lueur douce autour d'un point chaud (accompagne une forme nette)"
   },
   {
+   "nom": "bruit_energie_d0",
+   "fichier": "bruit_energie_d0.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "defilement",
+   "variante_de": "bruit_energie",
+   "decalage_u": 0.0,
+   "role": "défilement Roblox : bruit_energie décalée de 0/8 en U"
+  },
+  {
+   "nom": "bruit_energie_d1",
+   "fichier": "bruit_energie_d1.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "defilement",
+   "variante_de": "bruit_energie",
+   "decalage_u": 0.125,
+   "role": "défilement Roblox : bruit_energie décalée de 1/8 en U"
+  },
+  {
+   "nom": "bruit_energie_d2",
+   "fichier": "bruit_energie_d2.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "defilement",
+   "variante_de": "bruit_energie",
+   "decalage_u": 0.25,
+   "role": "défilement Roblox : bruit_energie décalée de 2/8 en U"
+  },
+  {
+   "nom": "bruit_energie_d3",
+   "fichier": "bruit_energie_d3.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "defilement",
+   "variante_de": "bruit_energie",
+   "decalage_u": 0.375,
+   "role": "défilement Roblox : bruit_energie décalée de 3/8 en U"
+  },
+  {
+   "nom": "bruit_energie_d4",
+   "fichier": "bruit_energie_d4.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "defilement",
+   "variante_de": "bruit_energie",
+   "decalage_u": 0.5,
+   "role": "défilement Roblox : bruit_energie décalée de 4/8 en U"
+  },
+  {
+   "nom": "bruit_energie_d5",
+   "fichier": "bruit_energie_d5.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "defilement",
+   "variante_de": "bruit_energie",
+   "decalage_u": 0.625,
+   "role": "défilement Roblox : bruit_energie décalée de 5/8 en U"
+  },
+  {
+   "nom": "bruit_energie_d6",
+   "fichier": "bruit_energie_d6.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "defilement",
+   "variante_de": "bruit_energie",
+   "decalage_u": 0.75,
+   "role": "défilement Roblox : bruit_energie décalée de 6/8 en U"
+  },
+  {
+   "nom": "bruit_energie_d7",
+   "fichier": "bruit_energie_d7.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "defilement",
+   "variante_de": "bruit_energie",
+   "decalage_u": 0.875,
+   "role": "défilement Roblox : bruit_energie décalée de 7/8 en U"
+  },
+  {
    "nom": "fumee_cel",
    "fichier": "fumee_cel_4x4.png",
    "grille": "Grid4x4",
