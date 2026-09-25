@@ -352,3 +352,22 @@ cerveau, voir la fin de l'entrée.
     blanc à 60 Hz. Eiserloh recommande en 3D la rotation seule, avec un
     bruit lisse et une intensité en trauma². C'est à essayer en A/B
     (CARNET §4.1), et ça peut expliquer « caméra ciné un peu trop abusée ».
+
+- **2026-09-25 (soir), les 15 tutos manquants lus par Gemini** (texte collé
+  par Milan) : `corpus/tutos/gemini_transcriptions_2026-09-25.md`.
+  - **Portée.** Gemini n'a lu que la parole. Transcriptions vides : DAS,
+    Charlotte, Nate.Animations. Le texte, ma lecture critique et les
+    mesures sont dans le même fichier.
+  - **Trois affirmations chiffrées confrontées à TSB**
+    (`r6_poing_dragon/scripts/tutos_vs_tsb.py`) :
+    1. « Avancer d'1-2 studs à la frappe » : on le fait déjà (0,3-1,0 dans
+       l'anim, TSB ≤ 0,7). Pas un manque.
+    2. Rotation du torse pendant la frappe : rafale v7 33-68°, TSB M1-M3
+       84-110°. Deux fois moins.
+    3. Clés espacées de 2-4 images (Sikasisi, TSB mesuré) : la v7 exporte
+       une clé par image. Le plan v7 prévoyait des clés éparses ; seul un
+       A/B l'a fait.
+  - **Convergence.** Dong Chang (wind-up long, frappe en 1 image,
+    follow-through lent) et Wimshurst (fouet, timing 3/5/1/1/4/5)
+    rejoignent Williams et la mesure de contraste de la rafale.
+    C'est maintenant la piste n°1 du `CARNET.md` §5, pas encore appliquée.

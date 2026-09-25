@@ -117,6 +117,46 @@ slow against the fast ».
   contre TSB.
 - Contre-indication : une rafale « mitraillette » peut vouloir un flux
   continu (TSB Ultimate1 : 0,38). C'est un choix, pas un oubli.
+- **Renforcé le 2026-09-25 (soir) par deux tutos lus par Gemini**
+  (`tutos/gemini_transcriptions_2026-09-25.md`) :
+  - Dong Chang : wind-up qui retient beaucoup d'images, punch en 1 image,
+    follow-through lent ;
+  - Wimshurst : pré-anticipation 3, anticipation 5, fouet 1, action 1,
+    follow-through 4, aftermath 5 images (dessin 2D ; le rapport compte
+    plus que les chiffres).
+  - Avec Williams et la mesure TSB, ça fait quatre sources indépendantes.
+    Reste une piste tant que Milan n'a pas vu d'essai.
+
+**2.1b La rafale v7 tourne le torse deux fois moins que TSB.** *Mesuré
+chez nous* (`r6_poing_dragon/scripts/tutos_vs_tsb.py`).
+- Lacet du torse entre f-15 et le contact :
+  - TSB M1-M3 : 84-110° ; M4 : 31° ; Collateral Ruin : 187° ;
+  - v7 h1-h4 : 33-68° ; coup chargé : 132°.
+- Wimshurst : le bras libre part d'abord pour lancer la rotation des
+  hanches ; un coup puissant sort le centre de gravité de l'axe des pieds.
+- **À essayer** avec 2.1 : torsion ~x1,5 et x2 sur la rafale.
+  Contre-indication connue : l'épaule qui monte (règle « épaules jamais
+  haussées », conflit déjà vu en v7).
+
+**2.1c Clés espacées contre cuisson image par image.** *Mesuré chez nous* +
+*lu par Gemini*.
+- Tutos : Sikasisi 2-4 images, Thundey base de 5, doc7090 Constant puis
+  Linear, GGXrd sans interpolation.
+- TSB mesuré : écart médian 2-4 images, en Linear.
+- **v7 : une clé par image** sur la rafale et le coup chargé, cuites depuis
+  l'IK. La fiche v7 prévoyait des clés éparses ; seul un A/B sur le coup
+  chargé l'a fait.
+- Une cuisson image par image garde les accélérations douces de l'IK
+  partout. Des clés espacées en Linear donnent des segments à vitesse
+  constante qui cassent net à chaque clé : c'est le « snap » des M1 TSB.
+- **À essayer** : rafale en clés espacées (poses fortes seules, 2-5 images
+  selon la phase), puis jugée contre TSB.
+
+**2.1d Mener par le corps ou par la tête.** *Lu par Gemini* (Wimshurst,
+oral) : mener l'action par le corps donne une impression passionnée, hors de
+contrôle ; la mener par la tête donne un contrôle calculé.
+- Piste de caractère pour Rank Zero : deux styles de combattant, sans
+  changer les poses clés, seulement l'ordre de départ.
 
 **2.2 Contact montré ou contact sauté.** *Texte vérifié*, deux maîtres,
 deux gestes opposés au service du même but (un saut que l'œil sent sans
@@ -132,6 +172,8 @@ le voir) :
   les cartes ; (b) pas de contact, directement le résultat (victime déjà
   pliée) avec le flash.
 - On choisit par coup, en variantes jugées en boucle.
+- Dong Chang (lu par Gemini) : « le coup doit être ressenti par le
+  spectateur, pas vu ». C'est presque mot pour mot Ken Harris.
 
 **2.3 Anticipations invisibles.** *Texte vérifié* (sommaire + manuscrit) :
 une ou deux images dans le sens opposé, trop rapides pour être vues, pour
@@ -167,6 +209,11 @@ the back would become too small. Instead, we would extend the arm of the
 - Même conclusion par ASW et par notre essai. Confiance en hausse,
   toujours pas validée par Milan.
 - R6 : translation du bloc bras (Motor6D), sans déformation.
+
+- *Lu par Gemini* (SinChi) : obari = bras tiré en arrière, torse bombé en
+  avant, poing droit vers la caméra. Même structure que notre prototype.
+  L'œil Umakoshi (zoom agressif sur l'œil de celui qui charge) est une
+  idée de plan pour la charge.
 
 **3.2 Poings grossis à l'impact.** *Texte vérifié* : « In a punching
 action, the fists are slightly enlarged ».
@@ -227,8 +274,9 @@ d'impact ; intervalles automatiques → pas de vie. Donc trop = juste.
 
 ## 5. Pistes à essayer (classées, aucune n'est décidée)
 
-1. **Rafale : ré-armement lent, frappe rapide** (2.1, 2.3). Mesure prête
-   (contraste 3D et écran contre TSB).
+1. **Rafale : ré-armement lent, frappe rapide, torsion x1,5-2, clés
+   espacées** (2.1, 2.1b, 2.1c, 2.3). Quatre sources + trois mesures
+   contre TSB. Mesures prêtes : `regard_v7_vs_tsb.py`, `tutos_vs_tsb.py`.
 2. **Contact du coup chargé vu avant les cartes, ou sauté** (2.2). Deux
    variantes en boucle.
 3. **Secousse rotation + bruit lisse** (4.1). A/B, même dose.

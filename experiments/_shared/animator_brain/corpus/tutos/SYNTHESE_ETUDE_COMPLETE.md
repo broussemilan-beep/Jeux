@@ -58,3 +58,10 @@ les zips : toute l'étude est visuelle. **Manquent 15 vidéos** :
   yhGjCzxJV3E (talk GGXrd).
 YouTube reste bloqué depuis ce sandbox (« Sign in to confirm you're not a
 bot »). Cette synthèse ne vaut donc que pour 6 vidéos sur 21.
+
+**Mise à jour 2026-09-25 (soir).** Les 15 manquantes ont été lues par
+Gemini, **sur transcription seulement**. Milan a collé le texte :
+`gemini_transcriptions_2026-09-25.md`, avec ma lecture critique et les
+mesures contre TSB. Trois transcriptions sont vides (DAS, Charlotte,
+Nate.Animations). Couverture : parole de 18 vidéos + image de 6. L'image
+des 15 reste à voir.
