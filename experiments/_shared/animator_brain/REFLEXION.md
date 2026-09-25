@@ -5,23 +5,22 @@
 - v2 : predit 6.5, Milan 6.7 (ecart -0.2)
 - v4 : predit 6.7, Milan 6.7 (ecart +0.0)
 - v5 : predit 6.7, Milan 6.8 (ecart -0.1)
-- v6 : predit 7.1, Milan 7.0 (ecart +0.1)
+- v6 : predit 7.2, Milan 7.0 (ecart +0.2)
+- v8 : predit 7.3, Milan 7.5 (ecart -0.2)
 
 ## Ce qui a change entre deux versions notees
 - v1 -> v2 : note 6.0 -> 6.7 (+0.7) ; corrigees : posture_droite, escalade, impact_visible ; perdues : aucune
 - v2 -> v4 : note 6.7 -> 6.7 (+0.0) ; corrigees : epaules_basses, bras_horizontal, transfert_poids ; perdues : bras_libre_ramene
 - v4 -> v5 : note 6.7 -> 6.8 (+0.1) ; corrigees : coup_charge, arcs ; perdues : aucune
 - v5 -> v6 : note 6.8 -> 7.0 (+0.2) ; corrigees : silhouette_lisible, cartes_impact, silence_noir, blanc_total, poing_gros_plan, contraste_echelle, fond_remplace, camera_vivante, hierarchie_effets ; perdues : aucune
+- v6 -> v8 : note 7.0 -> 7.5 (+0.5) ; corrigees : regard_intention, torsion_tronc, bras_libre_ramene, frappe_lineaire, silhouette_non_croix ; perdues : coup_charge
 
 ## Suspects (toujours faux sur toutes les versions notees, note bloquee)
 - **variete_coups** : Une rafale varie les formes de coups (jab, direct, crochet, marteau, toupie). (sources : 5 exemples de Milan (combo R6); IMPACT HAVEN)
-- **regard_intention** : Avant que le coup parte : tres gros plan visage/yeux tenu 16-30 f (l'intention ; la charge se lit dans le regard). (sources : corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~10 clips; refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...); essais v6 vus a l'ecran (captures/verification/2026-09-24-poing-dragon-v6-essais-camera-rejetes.png) : le gros plan de face d'une tete R6 montre un sourire fixe -> comique, zero tension ; le regard s'est lu par l'ORIENTATION de la tete en plan rapproche de profil, la cible au bout du regard)
-- **torsion_tronc** : La puissance vient du TRONC qui s'enroule puis se deroule (vu de dos/trois-quarts, 120-150 deg), poses extremes ; garde basse et large normale. (sources : corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~7 clips; refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...); lot 2 : pro vs noob Blender (BACK -> FRONT, ~180 deg), cross punch (dos a la camera a l'armement), tuto firytwig « surtout les hanches » ; MESURE : nous 98-137 deg sur les coups de puissance, M1 pro 109-162 -> la rotation existe, c'est la CAMERA de cote qui l'ecrase (la vue de dessus du 6a0095ed la montre))
 - **smear_graphique** : Une trainee/smear porte la vitesse ; la trajectoire du coup reste dessinee a l'ecran quelques frames. (sources : corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~5 clips; refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...))
 - **victime_deformee** : La victime reagit fort : se plie autour du poing, joue ecrasee, tete qui part. (sources : corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~4 clips; refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...))
 - **ellipse_impact** : On n'a pas besoin de montrer le coup : les cartes, le blanc ou une coupe racontent l'impact, et on revient sur le visage ou la consequence. (sources : First time fighting a dummy (lot 2), Serious Punch TSB, OPM (le coup final = un trait dans le noir))
-- **ligne_epaules** : Coup droit : a l'extension, le bras qui frappe PROLONGE la ligne des epaules (torse tourne presque de profil) ; pied arriere, torse et bras forment une seule droite. C'est « l'epaule dans le coup ». (sources : corpus/TUTOS_ANIMATION.md (recherche 2026-09-24 : DevForum Roblox, 31 sources ; ArcSys GGXrd 4Gamer, Cartwright GDC 2014, Mattesi FORCE ; extraits sakugabooru mesures); pack pro battleground (4 M1) : bras/epaules 18-28 deg, torse detourne 67-75 deg au contact ; NOUS v6 : 46-72 et 32-48 (captures/verification/2026-09-24-cerveau-ligne-epaules-pro-vs-nous.png); Motomura (ArcSys) : mettre ou non l'epaule dans le coup change « j'ai mis de la force » / « j'ai frappe leger »; Mattesi FORCE : extension = une seule droite du pied arriere au poing; DevForum Shift4D : tourner le torse encore plus; animations TSB officielles (fichier fourni par Milan, 13 animations ; mesures derivees dans corpus/perception_tsb.json) : les M1 TSB NE le font PAS (bras/epaules 61-78 deg, torse detourne 23-62 deg, bras libre 0,26-0,79) -- plus proches de nous que du pack. Regle ramenee a une hypothese de style « pack », pas une regle TSB.)
-- **frappe_lineaire** : Le poing PASSE a pleine vitesse en 1 image et file en palier (vitesse constante 2-3 images) jusqu'au contact : cles eparses (~15/s) en Linear. Pas de rampe d'acceleration lissee en triangle. (sources : animations TSB officielles (fichier fourni par Milan, 13 animations ; mesures derivees dans corpus/perception_tsb.json) : 3 425 poses sur 3 492 en Linear, 12-18 cles/s sur toutes les animations faites a la main (une pose ~toutes les 4 f a 60 i/s) ; M1 : 8 cles en 0,43 s ; plateau de vitesse du poing 0,92-1,0 (NOUS v1-v6 : 0,51-0,77 : rampe en triangle sur 2-3 images, pointe unique) ; captures/verification/2026-09-24-cerveau-profil-frappe-tsb-vs-nous.png; GGXrd (ArcSys) : 15 poses/s ; « lisser a 60 i/s puis sauter des images = 3D qui rame » ; l'oeil repere la 3D a la fluidite uniforme des courbes; DevForum GolgiToad : moins de cles, laisser le moteur aller de A a B, rapprocher les cles, c'est un coup)
+- **ligne_epaules** : Coup droit : a l'extension, le bras qui frappe PROLONGE la ligne des epaules (torse tourne presque de profil) ; pied arriere, torse et bras forment une seule droite. C'est « l'epaule dans le coup ». (sources : corpus/TUTOS_ANIMATION.md (recherche 2026-09-24 : DevForum Roblox, 31 sources ; ArcSys GGXrd 4Gamer, Cartwright GDC 2014, Mattesi FORCE ; extraits sakugabooru mesures); pack pro battleground (4 M1) : bras/epaules 18-28 deg, torse detourne 67-75 deg au contact ; NOUS v6 : 46-72 et 32-48 (captures/verification/2026-09-24-cerveau-ligne-epaules-pro-vs-nous.png); Motomura (ArcSys) : mettre ou non l'epaule dans le coup change « j'ai mis de la force » / « j'ai frappe leger »; Mattesi FORCE : extension = une seule droite du pied arriere au poing; DevForum Shift4D : tourner le torse encore plus; animations TSB officielles (fichier fourni par Milan, 13 animations ; mesures derivees dans corpus/perception_tsb.json) : les M1 TSB NE le font PAS (bras/epaules 61-78 deg, torse detourne 23-62 deg, bras libre 0,26-0,79) -- plus proches de nous que du pack. Regle ramenee a une hypothese de style « pack », pas une regle TSB.; vidéos tutos envoyées par Milan (zips 2026-09-24, étude visuelle image par image ; corpus/tutos/rapport_video_*.md) : tuto punch Blender : au contact le torse a pivoté ~180° depuis la charge (on voit son dos), penché ~45°, bras de frappe horizontal dans l'axe de l'épaule ET translaté vers l'avant (décollé), bras libre replié contre la tête, jambe arrière tendue presque couchée ; coup de boxe (smears, vidéo techniques anime) : épaule entièrement rentrée, tête qui plonge)
 
 ## Ou la mesure contredit le jugement manuel (etats.py)
 - v2 variete_coups : jugement True -> mesure False
@@ -54,12 +53,21 @@
 - camera_jeu_vs_cinematique : En jeu, M1 et competences se jouent dans la camera du JOUEUR (souvent de dos) et doivent s'y lire ; seul l'ultime coupe en cinematique (cartes, gros plans, angles) puis REVIENT a la camera de jeu.
 - rafale_en_masse : Une rafale tres rapide se montre comme une MASSE de poings-smears continue (on lit le rythme et le volume), pas coup par coup.
 - contact_prolonge : Une saisie ou une projection garde les corps en contact (on soulève, on retourne, on plaque) : la victime est manipulee, pas seulement frappee.
-- compression_extension : Anticipation = COMPRESSION en C (corps enroule et bas, tete rentree derriere l'epaule, poing arme derriere le plan du corps) ; extension = une droite hors d'equilibre. Le coup anime montre deux poses extremes, le trajet passe en 1-2 f.
+- compression_extension : Anticipation = COMPRESSION en C (corps enroule et bas, tete rentree derriere l'epaule, poing arme derriere le plan du corps) ; extension = une droite hors d'equilibre. Le coup anime montre deux poses extremes, le trajet passe en 1-2 f. Nuance (tutos R6) : sur un bloc R6, la compression se lit surtout par la TORSION du torse détourné de la cible, plus que par un dos rond.
 - depassement_1f : Une image de DEPASSEMENT au-dela de la pose d'extension (ou du corps hors de sa pose finale dans le sens du coup), puis retour : l'arret n'est jamais mort.
 - recuperation_effort : Apres un gros coup, la recuperation montre l'EFFORT (recul, reprise d'appui, poids) ; le retour a la garde est lent et ne ressemble pas a un second coup.
 - poses_tenues_limitees : Animation LIMITEE : sur les attaques, poses tenues de durees irregulieres (1 a 5 f a 60 i/s) sans interpolation ; seules les trajectoires (saut, vol, dash) restent lisses.
+- tenue_vivante : Une pose tenue (fin de coup, pic, retour) n'est jamais figée : micro-mouvement en petits cercles d'amplitude et de vitesse décroissantes (l'énergie s'amortit), clés aux mêmes images que le reste.
+- ligne_equilibre : Sur une pose hors d'équilibre, la tête reste au-dessus du pied d'appui (ligne verticale tête → pied) : le corps peut basculer fort sans avoir l'air de tomber, et la pose paraît lourde.
+- corps_avant_bras : Ordre de travail : le TORSE porte tout le mouvement (anticipation, drag, milieu, exagération, amorti) et doit se lire SEUL, avant qu'un bras bouge ; puis bras libre, bras qui frappe, tête, jambes en dernier (pieds plantés).
+- pose_apres_tenue : La pose d'APRÈS le coup est la plus extrême et la plus longue : corps plié / couché dans le sens du coup, très bas, tenue 0,4-1 s (vivante). L'extension elle-même ne dure qu'1-2 images : l'œil lit charge tenue → pose d'après tenue.
+- cadrage_serre : Placement : pendant un temps fort, le perso REMPLIT le cadre (plan poitrine/taille, 60-80 % de la hauteur), caméra basse, souvent inclinée (dutch) ; le décor n'est qu'un fond. Un changement de pose qui ne couvre que 1/4 de l'image ne se voit pas.
+- obari_poing_objectif : Coup chargé façon Saitama/obari : 1) armé TENU 1-2 s (léger tremblement, fond uni + lignes radiales, caméra qui avance), 2) le poing traverse VERS l'objectif et remplit 40-60 % du cadre (perspective forcée, grand angle), 3) coupe sur le plan large de la conséquence.
+- pose_pour_sa_camera : Une pose se conçoit et se juge DEPUIS la caméra du plan où elle apparaît ; un membre pointé vers l'objectif cache la silhouette (sauf celui qui porte le coup). Si deux plans ont des besoins opposés (charge lisible / poing vers l'objectif), on COUPE entre deux caméras.
+- reglage_double : Correction de jugement : mes réglages d'amplitude « à l'œil » sont systématiquement ~2x trop sages par rapport aux références (enroulement, hauteur du corps, écart des pieds). Avant de valider une pose, la pousser jusqu'à ce qu'elle paraisse trop, puis comparer à la ref au même angle.
+- pose_vue_nette : Ce qu'on veut montrer doit être NET à l'écran assez longtemps pour être retenu (pose et caméra quasi immobiles ensemble ~0,1 s ou plus) ; le mouvement rapide passe en flou d'1-2 vignettes entre deux moments nets.
 
-## Echelle calibree sur 5 notes : note = 6.91 + 0.74 x score
+## Echelle calibree sur 6 notes : note = 6.97 + 0.86 x score
 
 ## Poids appris (ce qui fait bouger la note de Milan)
 - silhouette_lisible   poids_note 0.65 (confiance principe 0.80)
@@ -77,6 +85,11 @@
 - posture_droite       poids_note 0.58 (confiance principe 0.70)
 - escalade             poids_note 0.58 (confiance principe 0.60)
 - impact_visible       poids_note 0.58 (confiance principe 0.70)
+- regard_intention     poids_note 0.54 (confiance principe 0.75)
+- torsion_tronc        poids_note 0.54 (confiance principe 0.65)
+- bras_libre_ramene    poids_note 0.54 (confiance principe 0.40)
+- frappe_lineaire      poids_note 0.54 (confiance principe 0.55)
+- silhouette_non_croix poids_note 0.54 (confiance principe 0.40)
 - silence_noir         poids_note 0.51 (confiance principe 0.80)
 - poing_gros_plan      poids_note 0.51 (confiance principe 0.80)
 - fond_remplace        poids_note 0.51 (confiance principe 0.60)
@@ -86,22 +99,29 @@
 - contraste_de_temps   poids_note 0.50 (confiance principe 0.70)
 - fluidite             poids_note 0.50 (confiance principe 0.60)
 - explosion_apres      poids_note 0.50 (confiance principe 0.50)
-- regard_intention     poids_note 0.50 (confiance principe 0.75)
-- torsion_tronc        poids_note 0.50 (confiance principe 0.65)
 - mouvement_secondaire poids_note 0.50 (confiance principe 0.60)
 - camera_jeu_vs_cinematique poids_note 0.50 (confiance principe 0.80)
 - rafale_en_masse      poids_note 0.50 (confiance principe 0.60)
 - contact_prolonge     poids_note 0.50 (confiance principe 0.50)
 - signature_visuelle   poids_note 0.50 (confiance principe 0.65)
-- ligne_epaules        poids_note 0.50 (confiance principe 0.40)
-- bras_libre_ramene    poids_note 0.50 (confiance principe 0.40)
+- ligne_epaules        poids_note 0.50 (confiance principe 0.55)
 - bras_avant_bras      poids_note 0.50 (confiance principe 0.70)
 - compression_extension poids_note 0.50 (confiance principe 0.70)
 - depassement_1f       poids_note 0.50 (confiance principe 0.70)
 - recuperation_effort  poids_note 0.50 (confiance principe 0.60)
 - poses_tenues_limitees poids_note 0.50 (confiance principe 0.50)
-- frappe_lineaire      poids_note 0.50 (confiance principe 0.75)
 - bascule_competence   poids_note 0.50 (confiance principe 0.60)
+- tenue_vivante        poids_note 0.50 (confiance principe 0.55)
+- torsion_charge_contact poids_note 0.50 (confiance principe 0.50)
+- arme_tenu_long       poids_note 0.50 (confiance principe 0.55)
+- ligne_equilibre      poids_note 0.50 (confiance principe 0.50)
+- corps_avant_bras     poids_note 0.50 (confiance principe 0.60)
+- pose_apres_tenue     poids_note 0.50 (confiance principe 0.60)
+- cadrage_serre        poids_note 0.50 (confiance principe 0.60)
+- obari_poing_objectif poids_note 0.50 (confiance principe 0.65)
+- pose_pour_sa_camera  poids_note 0.50 (confiance principe 0.60)
+- reglage_double       poids_note 0.50 (confiance principe 0.55)
+- pose_vue_nette       poids_note 0.50 (confiance principe 0.55)
 - armement_frappe_retour poids_note 0.43 (confiance principe 0.80)
 - epaules_basses       poids_note 0.40 (confiance principe 0.50)
 - bras_horizontal      poids_note 0.40 (confiance principe 0.80)
@@ -114,4 +134,5 @@
 - v2 : predit 6.5, Milan 6.7
 - v4 : predit 6.6, Milan 6.7
 - v5 : predit 6.7, Milan 6.8
-- v6 : predit 7.1, Milan 7.0
+- v6 : predit 7.2, Milan 7.0
+- v8 : predit 7.4, Milan 7.5

@@ -334,7 +334,7 @@
     "rafale"
    ],
    "confiance_principe": 0.75,
-   "poids_note": 0.5,
+   "poids_note": 0.535,
    "poids_a_priori": 0.5,
    "etalon_style": "manga_ultime",
    "sources": [
@@ -446,7 +446,7 @@
     "rafale"
    ],
    "confiance_principe": 0.65,
-   "poids_note": 0.5,
+   "poids_note": 0.535,
    "poids_a_priori": 0.5,
    "etalon_style": "manga_ultime",
    "sources": [
@@ -756,7 +756,7 @@
     "rafale"
    ],
    "confiance_principe": 0.4,
-   "poids_note": 0.5,
+   "poids_note": 0.535,
    "poids_a_priori": 0.5,
    "etalon_style": "pack_m1",
    "categorie": "pose",
@@ -892,7 +892,7 @@
     "finisher"
    ],
    "confiance_principe": 0.55,
-   "poids_note": 0.5,
+   "poids_note": 0.535,
    "poids_a_priori": 0.5,
    "etalon_style": "tsb_m1",
    "categorie": "animation",
@@ -996,7 +996,7 @@
     "impact"
    ],
    "confiance_principe": 0.4,
-   "poids_note": 0.5,
+   "poids_note": 0.535,
    "poids_a_priori": 0.5,
    "etalon_style": "roblox_smooth",
    "categorie": "pose",
@@ -1179,9 +1179,9 @@
  },
  "_regle_d_usage": "Retour de Milan (2026-09-24) : ce qu'on decouvre doit etre bien utilise, pas applique n'importe comment. Une hypothese vraie en animation n'est pas une case a cocher : chacune porte QUAND elle sert et QUAND elle nuit. Le critique juge l'usage au bon moment (hierarchie des temps forts, escalade, contraste), jamais la simple presence.",
  "_calibration": {
-  "a": 0.739,
-  "b": 6.905,
-  "n_notes": 5,
+  "a": 0.864,
+  "b": 6.969,
+  "n_notes": 6,
   "doc": "note = b + a * score ; reapprise a chaque reflexion"
  }
 }

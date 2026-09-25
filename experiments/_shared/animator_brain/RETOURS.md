@@ -477,3 +477,27 @@ cerveau, voir la fin de l'entrée.
       `r6_directional_punch` (un coup chargé), oublié lui aussi.
     - Le rappel est ajouté au démarrage de session (CLAUDE.md) et au carnet
       (§1.11).
+
+- **2026-09-25, « le cerveau se nourrit à 30 %, et toi aussi » (Milan).**
+  - **Audit.** Sur ~15 sources du cerveau, la v8 en a cité 3-4 : le carnet,
+    trois tutos, des mesures TSB. Pas consultés : l'étude visuelle, les notes
+    brutes, les 41 extraits sakuga, les repros (obari), l'étude TSB, le
+    critique (pas lancé), le Serious Punch. Le constat de Milan est juste.
+  - **Causes.**
+    - Le cerveau empile des études CHRONOLOGIQUES, sans rien qui rassemble
+      tout au moment de décider.
+    - Je travaille sur le plus récent et sur des résumés, et je ne relis pas
+      les bases anciennes si rien ne m'y oblige.
+    - Le critique n'était pas lancé, et le format de `notes_milan` avait
+      dérivé : les v7/v8 n'avaient pas d'`etat`, et le critique plantait.
+  - **Réparé.**
+    - `notes_milan` v7/v8 remis au format ; `etats_auto.json` recalculé avec
+      la v8.
+    - Le critique tourne à nouveau : v8 prédite 7,4, notée 7,5 par Milan.
+  - **Nouveau : fiches de conception** (`corpus/fiches/`). Une fiche par
+    moment de décision, avec toutes les sources digérées ensemble et leur
+    liste. Première fiche : `COUP_CHARGE.md`.
+    - Ce qu'elle a fait remonter : le Serious Punch montre la frappe DE
+      FACE, poing vers l'objectif (grammaire obari, comme la planche OPM et
+      Deku). Depuis la v5, notre coup final est vu de profil.
+    - Sept versions ont retravaillé la pose sans toucher à ça.

@@ -17,6 +17,10 @@ technique ou relecture de références, lancer
 et chercher chaque fichier de ref dans `corpus/CATALOGUE_REFS.md` (la
 mémoire n'existe que dans les fichiers : rien n'est rappelé sans ça). Le
 carnet d'apprentissage est `corpus/CARNET.md` (apprentissages, pas règles).
+Avant de concevoir un moment (coup chargé, rafale, impact…), lire d'abord
+sa fiche de conception dans `corpus/fiches/` : toutes les sources de ce
+moment digérées ensemble (la digestion, pas les piles chronologiques).
+S'il n'en existe pas, l'écrire avant de poser la moindre clé.
 
 Ce dépôt est le cerveau du projet (`docs/ARCHITECTURE_VFX_v3.md` §12.2) :
 aucune décision, recette, palette, seed ou verdict qualité n'existe ailleurs
