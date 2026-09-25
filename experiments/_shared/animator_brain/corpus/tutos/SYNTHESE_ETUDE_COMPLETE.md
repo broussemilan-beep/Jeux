@@ -44,3 +44,17 @@ Vidéos sans le son (les explications orales manquent : surtout Xoaterz qui
 repose en direct). Angles estimés à l'œil sur du 640x360. Un tuto par
 animateur. Aucune source n'est TSB. Rien de ceci n'est certifié tant que ce
 n'est pas vu à l'écran puis jugé par Milan.
+
+## Couverture réelle (vérifiée le 2026-09-25, contenu des zips)
+
+Sur les 19 vidéos demandées, les zips en contenaient **4** (xkHILCmgbig,
+0vjAiAR-YFk, C09ZMD9_D9I, iMV9Tlpo1wY), plus 2 choisies par Milan
+(LWMujy7LSC0, olr5q-iIlKI). **Aucun sous-titre ni description** n'était dans
+les zips : toute l'étude est visuelle. **Manquent 15 vidéos** :
+- Roblox (10) : uoXd04yPN8s, KneO6y3FebM, AH30avEEC9A, ILaV0JYHzwY,
+  2FwaIG87LYo, Cu7Xl-cZVBU, bzS9B3-iVH0, 5_Zr4yYSLks, l_bE_-wcVBg,
+  5u2GSOwjOlM (texte seul) ;
+- général (5) : kZsboyfs-L4, g64E-UNRqcg, -HXx1fK415I, 234m7y8D3cE,
+  yhGjCzxJV3E (talk GGXrd).
+YouTube reste bloqué depuis ce sandbox (« Sign in to confirm you're not a
+bot »). Cette synthèse ne vaut donc que pour 6 vidéos sur 21.
