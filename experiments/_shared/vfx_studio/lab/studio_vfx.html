@@ -1,15 +1,11 @@
-<!doctype html>
-<html lang="fr">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Studio VFX</title>
+<title>Labo VFX R6</title>
 <style>
+  /* un seul thème sombre, voulu : c'est un visionneur d'effets lumineux */
   :root { color-scheme: dark; --fond: #111217; --panneau: #1a1c23; --trait: #2d313c; --texte: #e8e6df; --doux: #9197a3; --or: #ffc53d; }
-  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --fond: #111217; } }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--fond); color: var(--texte); font: 14px/1.4 system-ui, sans-serif; }
-  #stage { position: relative; width: 100%; aspect-ratio: 16 / 9; max-height: 78vh; background: #000; }
+  body { margin: 0; padding-inline: 16px; padding-block: 12px; background: var(--fond); color: var(--texte); font: 14px/1.4 system-ui, sans-serif; }
+  button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--or); outline-offset: 2px; }
+  #stage { position: relative; width: 100%; max-width: 100%; border-radius: 6px; overflow: hidden; aspect-ratio: 16 / 9; max-height: 78vh; background: #000; }
   #stage canvas { width: 100%; height: 100%; display: block; }
   #barre { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px 16px; background: var(--panneau); border-top: 1px solid var(--trait); }
   button, select { background: #242833; color: var(--texte); border: 1px solid var(--trait); border-radius: 6px; padding: 6px 10px; font: inherit; cursor: pointer; }
@@ -18,8 +14,6 @@
   #info { padding: 8px 16px; color: var(--doux); font-size: 13px; }
   .grp { display: flex; gap: 4px; flex-wrap: wrap; }
 </style>
-</head>
-<body>
 <div id="stage"></div>
 <div id="barre">
   <select id="recette" aria-label="Recette"></select>
@@ -637,5 +631,3 @@
   };
 })();
 </script>
-</body>
-</html>
