@@ -379,6 +379,34 @@ dans les refs + mesuré.*
   silhouette (éclats latéraux, multiples), plutôt que chercher à montrer
   le bras.
 
+**3.8 Poser en DIRECTIONS MONDE, puis faire le tour de la pose.** *Appris
+en construisant (coup final aérien v9, 2026-09-25).*
+- La 1re pose d'armé était un tas : le bras qui « vise » la victime, juste
+  EN DESSOUS de lui, pendait comme un bras au repos. Le genou « levé »
+  partait en ARRIÈRE : l'axe local du contrôle de jambe ne veut pas dire
+  « devant ».
+- Réparé en posant chaque membre par une direction monde depuis son pivot
+  (épaule, hanche) : genou vers la victime, jambe arrière qui traîne, poing
+  armé derrière, bras avant placé. On pose la silhouette qu'on veut voir,
+  on ne devine plus les axes.
+- Le « tour » à 8 angles (même pose, caméras tout autour) montre en une
+  image depuis où la silhouette est ouverte. On choisit la caméra d'APRÈS
+  la pose (repro leçon 2), au lieu de tâtonner caméra par caméra.
+- Contre-indication : un bras qui vise une cible juste sous lui se confond
+  avec le repos. Viser, c'est une direction qui n'est pas celle du repos.
+
+**3.9 Le poing vers l'objectif marche en R6 si la caméra est CHEZ la
+victime, à côté d'elle.** *Vérifié à l'écran (v9).*
+- Caméra juste au-dessus et à côté du torse de la victime, grand angle
+  (78°), visée qui suit le poing et la tête. Le poing grossit jusqu'à
+  remplir le cadre, avec la tête derrière, comme la planche OPM.
+- Recoupe l'essai obari (repro, leçon 4) et lève le blocage de la v6 (« le
+  corps de la victime est toujours entre l'objectif et le poing ») : ce
+  n'est vrai que si la caméra est derrière la victime, dans l'axe.
+- Ce qui reste moins bien que le Serious Punch : leur gant sombre, dans la
+  fumée, est une forme nette. Chez nous, les anneaux dorés du dragon
+  encombrent le poing.
+
 ## 4. Hitstop et caméra
 
 **4.1 Secousse de caméra : rotation, bruit lisse, trauma².** *Texte
@@ -442,3 +470,8 @@ Méthode pour chacune :
   l'est pas chez les pros (1.2, fausse alerte du 2026-09-25).
 - Je cherche dans une source ce qui confirme mon plan (retour de Milan
   sur l'étude des tutos, 2026-09-25).
+- Je fais confiance aux noms de mes contrôles (« genou devant ») sans
+  regarder la pose de tous les côtés (3.8, v9).
+- Je traduis les mots de Milan en ma propre étiquette et je perds son sens :
+  pour lui, « coup final » = le coup aérien depuis la v7 ; j'avais mélangé
+  avec la charge au sol (fiche COUP_CHARGE §4).

@@ -139,6 +139,21 @@ les deux :
 
 ## 4. Ce qu'on a déjà essayé, et pourquoi ça n'a pas marché
 
+**Correction (2026-09-25, en construisant la v9).** Dans le Poing du Dragon, il
+y a DEUX coups chargés : la charge au sol (f121-150, l'ex-uppercut) et le
+coup aérien (f200-288). Depuis sa note v7 (« coup chargé aérien, qui part
+toujours d'en bas »), Milan appelle « coup final » le coup **aérien**. La
+première version de ce tableau mélangeait les deux.
+
+- **v1-v8, aérien** : charge suspendue ~1 s vue DE DOS (plongée au-dessus de
+  l'épaule), poing levé au-dessus de la tête, donc dans la colonne du corps et
+  invisible. La plongée est filmée en contre-plongée depuis sous la victime,
+  et le contact reste illisible (blocs plein cadre). C'est revu à l'œil sur la
+  v8 avant de construire la v9.
+- **v9, aérien** : fait d'après cette fiche. Résultat dans `r6_poing_dragon/README.md`, section v9.
+
+Historique de la charge AU SOL :
+
 | version | coup final | ce qui a été reproché | lecture aujourd'hui |
 |---|---|---|---|
 | v1-v4 | uppercut sorti d'une boule, puis enchaînement uppercut + direct | « part d'en bas », « enchaînement d'uppercuts » | pose en boule, en plan moyen, qui ne raconte rien |

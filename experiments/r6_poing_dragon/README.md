@@ -606,3 +606,73 @@ v8 à droite, ciné en haut, jeu en bas. Vitesse réelle, puis ralentie x0,5.
 - En caméra de jeu (de dos), la différence se voit surtout au rythme :
   armé tenu, puis frappe sèche. Les poses se lisent mieux en ciné et de
   profil.
+
+## v9 (2026-09-25) : le coup final aérien, fait d'après la fiche de conception
+
+Retour de Milan sur la v8 (7,5 ; jeu 7,8 et ciné 7,2, « à part le coup
+final, pas encore travaillé »). Son « coup final » est le coup chargé
+**aérien** (sa note v7 : « qui part toujours d'en bas ; comme sur les
+images : Deku poing vers le lecteur, poing géant ; le coup chargé de
+Saitama »).
+- **Méthode.** Fiche de conception d'abord
+  (`../_shared/animator_brain/corpus/fiches/COUP_CHARGE.md` : toutes les
+  sources du coup chargé digérées ensemble). Puis construction, variantes
+  jugées à l'œil en mouvement, comparaison visuelle au Serious Punch, et les
+  chiffres en garde-fou seulement.
+- **La v8, revue à l'œil avant de toucher à quoi que ce soit.** La charge
+  suspendue dure ~1 s et on la voit DE DOS, poing levé au-dessus de la tête,
+  donc dans la colonne du corps. Plongée et contact illisibles (blocs plein
+  cadre).
+
+| temps | v8 | v9 (grammaire du Serious Punch) |
+|---|---|---|
+| 200-224 | charge de dos, aura dès l'apex | **calme** : il flotte à l'apex, bras relâchés, regarde la victime ; plan moyen DE FACE, fixe ; pas d'aura |
+| 224-256 | — | **armé** : départ en 6 f, le buste part d'abord, dépassement, puis tenue vivante. Silhouette ouverte en K : poing armé HAUT derrière l'épaule, bras avant placé vers la victime, genou devant, jambe arrière qui traîne. Plan de profil, corps entier, lente poussée ; aura et poing qui s'allument ici |
+| 256-278 | contre-plongée depuis sous la victime | **frappe vers l'objectif (obari)** : caméra CHEZ la victime, à côté d'elle, grand angle. Le corps bascule d'abord, le poing traîne (fouet). Le bras s'étend en 3 f, puis tout le corps fonce le long de l'axe, poing devant, et le poing grossit jusqu'à remplir le cadre, tête derrière |
+| 279-288 | même plan | coupe après le gel du contact : la chute, de côté, les deux corps dans le cadre |
+| 288 et après | — | inchangé (écrasement, planches manga, blanc, révélation) |
+
+- **Trois variantes vues avant de choisir.**
+  - 1re pose d'armé : un tas. Le bras qui « vise » la victime juste en
+    dessous pendait ; le genou « levé » partait en arrière (axes locaux du
+    contrôle de jambe).
+  - Refaite en directions monde (nouveau mode `"d"` de `solve_pose`),
+    choisie grâce au tour de la pose à 8 angles
+    (`../_shared/animator_brain/outils/tour.py`, CARNET §3.8).
+  - Caméra d'armé : de face, le bras avant venait dans l'objectif et
+    cachait tout ; trop serrée, le genou venait dans l'objectif ; retenue
+    de profil, corps entier.
+- **A contre B, jugées à vitesse réelle dans les deux caméras.**
+  - A = poing armé à la hanche (Serious Punch) ; B = poing armé haut
+    derrière l'épaule (planche Xoaterz « akin to TSB »).
+  - **B retenue** : en caméra de jeu (de dos), le poing levé qui brille sort
+    de la silhouette. Avec A, le corps reste une colonne.
+  - `DRAGON_FINAL=v8` rejoue l'aérien v8, `v9a` la variante A.
+- **Comparé ensuite au GIF du Serious Punch** (côte à côte, temps par temps ;
+  planche locale, le GIF n'est pas versionné).
+  - Même grammaire : calme de face, armé, poing vers l'objectif, carte,
+    blanc, conséquence tenue dans le cratère.
+  - Moins bien chez nous : leur gant sombre dans la fumée est une forme
+    nette et remplit la moitié du cadre ; nos anneaux dorés du dragon
+    encombrent le poing. Leur armé est filmé plus près et plus bas.
+
+**Contrôles.**
+- contacts : 0,05 stud sur les 7 coups ;
+- aérien : le poing ne traverse plus la victime après le contact (v8 : 0,087).
+  La 1re passe visait une allonge de 2,0 studs, alors que le bras R6
+  n'atteint que ~1,85 ; le poing s'arrêtait à 0,34 de la cible.
+- sens : 11/11 dans les fichiers, `SENS OK` en Luau, `PACKAGE OK` ;
+- règles : **12/13**. L'échec est « plongée lisible (plan sans coupe) » : 9 f
+  pour un seuil de 20.
+  - La plongée VERS le poing tient en un plan sans coupe de 22 f (f256-278),
+    ce que demande la leçon 3b.
+  - La fenêtre de la règle court jusqu'à l'écrasement au sol (f288), et la
+    v9 coupe volontairement après le contact, comme le Serious Punch.
+  - On garde la coupe. Une règle qui échoue est un signal à regarder, pas un
+    veto (CARNET §1.9) : c'est à Milan de trancher.
+
+**Preuves** :
+- `captures/verification/2026-09-25-coup-final-aerien-v8-contre-v9.png` ;
+- `captures/verification/2026-09-25-coup-final-v9-tour-de-la-pose-arme.png`
+  (pose d'armé retenue, vue de 8 angles : de profil, le K est ouvert ; de
+  dos, le poing sort de la silhouette).

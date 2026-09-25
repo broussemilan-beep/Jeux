@@ -161,7 +161,9 @@ def camera_keys(aw, vw):
             fist = tip(aw[f], "Right Arm")
             add(f, eye, fist * 0.55 + h(f) * 0.45, 78, "cut" if f == 256 else "smooth")
         # 7. la chute, de cote (coupe apres le gel du contact)
-        add(SCENE["strike_f"] + 1, c + [7.5, 0.5, 4.0], c + [0, -3.0, 0], 50, "cut")
+        # (1er essai visant le poing : l'attaquant n'entrait dans le cadre
+        #  qu'a mi-chute) -> visee entre les deux corps
+        add(SCENE["strike_f"] + 1, mid(283) + [8.0, 0.8, 4.2], mid(283) + [0, -1.5, 0], 52, "cut")
     imp = tip(aw[SCENE["impact_f"]], "Right Arm")
     add(SCENE["impact_f"], imp + [6.0, 2.6, 5.0], imp + [0, 0.6, 0], 46)
     # v2 (LECONS.md 3) : on RESTE sur l'impact 10 f, en reculant pour voir

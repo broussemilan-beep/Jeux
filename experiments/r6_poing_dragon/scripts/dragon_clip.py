@@ -69,7 +69,7 @@ RAFALE = _rafale_cfg()
 # (animator_brain/corpus/fiches/COUP_CHARGE.md) : grammaire du Serious Punch
 # (calme tenu -> armé violent -> poing VERS L'OBJECTIF -> cartes -> blanc).
 # DRAGON_FINAL="v8" rejoue l'aerien v8 a l'identique ; "v9a" / "v9b" = variantes.
-FINAL = os.environ.get("DRAGON_FINAL", "v8")
+FINAL = os.environ.get("DRAGON_FINAL", "v9b")   # production v9 (choisie le 2026-09-25 : B, voir README v9)
 sys.path.insert(0, os.path.join(HERE, "..", "..", "_shared"))
 
 from animator_brain import v222_rig as V  # noqa: E402
@@ -1026,7 +1026,7 @@ def aerien_v9(add, vw, head, target, variant):
     s0 = sh_at(SUSPEND_END_F, 0.26)
     ax = chest(STRIKE_F) - s0
     ax = ax / np.linalg.norm(ax)
-    reach = 2.0
+    reach = 1.85        # allonge reelle du bras R6 (epaule -> poing) ; 2,0 laissait le poing a 0,34 de la cible
 
     def dive(f, gap, yaw, twist, pitch, hand_r, hand_l, legs):
         tgt = chest(f)
@@ -1039,7 +1039,8 @@ def aerien_v9(add, vw, head, target, variant):
                   {"L": ("c", (0.0, 0.6, 0.8)), "R": ("c", (0.0, -0.8, 0.3))}), "LINEAR")
     # le bras s'etend VERS la victime en 3 f, le bras libre est tire en arriere
     for f, gap in ((263, 3.5), (270, 1.9), (STRIKE_F, 0.0)):
-        add(f, dive(f, gap, 18, 26, -64, ("t", (tuple(chest(f)), reach)), ("a", (-150, -35, 1.9)), trail), "LINEAR")
+        hr = ("t", (tuple(chest(f)), reach)) if f < STRIKE_F else ("w", tuple(chest(f)))   # contact exact
+        add(f, dive(f, gap, 18, 26, -64, hr, ("a", (-150, -35, 1.9)), trail), "LINEAR")
     # le poing reste dans la victime pendant qu'elle tombe (comme la v8)
     for f, rot, off in ((280, -62, (0.38, 1.7, 0.7)), (281, -59, (0.39, 1.75, 0.6)), (282, -55, (0.4, 1.8, 0.5)),
                         (285, -42, (0.45, 1.65, 0.6))):
