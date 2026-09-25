@@ -90,6 +90,14 @@ Milan a envoyé le dragon « Dragon's Descent » de Suiryu (TSB) : étude dans
 Rien n'est décidé : questions posées à Milan (couleur or ou violet, le
 dragon remplace-t-il le coup, vidéo pour le timing).
 
+## 0 quater. v13 : Milan tranche (or, invoqué dans les airs, il MANGE)
+
+« Le dragon or, invoqué dans les airs comme Goku, puis le coup se
+transforme en le dragon qui mange le perso. » La suite est dans
+`POING_DU_DRAGON_V13.md` (scène complète, Last Breath et Goku relus à
+0,1 s) : dragon d'or DESSINÉ (aplats, trait, yeux cyan), mâchoire
+animable, 3 couches (invocation, morsure, remontée du cratère).
+
 ## 1. Le mélange (mauvaise lecture, v11)
 
 - **Le dragon est de Goku** : doré, serpent long, tête de profil, crinière
