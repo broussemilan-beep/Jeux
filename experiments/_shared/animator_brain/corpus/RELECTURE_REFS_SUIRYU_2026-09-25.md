@@ -89,3 +89,64 @@ sombre ; accents : blanc (dents) et jaune-orange (yeux).
    cible, comme « Descent »), ou accompagne-t-il le perso ?
 3. La vidéo de ce coup (pour le timing : durée du sourire, ouverture de la
    gueule, descente).
+
+## 2. Deuxième envoi : quatre autres dragons et un coup (2026-09-25)
+
+Mesures (`outils/durees.py`, part de pixels d'effet ; palette 6 couleurs) :
+Dragon Ball Rage 52 % (or #fac657, jaune pâle #fcf7ac, brun #8a4d15,
+contours sombres) ; dragon cyan 24 % (#40cfdc, #c5eef1 sur fond sombre) ;
+Cursed Dragon 27 % (violet #5926b3 sur violet nuit) ; coup R6 25 % (bleu
+#66b4eb, #bfe2f8).
+
+**Dragon Ball Rage (fa08ccd8)** : c'est NOTRE composition, faite par un jeu
+Roblox. Goku en blocs (bras R6) tend le poing vers nous (Izuku) ; le dragon
+doré a la tête À CÔTÉ du poing, gueule ouverte, et le corps s'enroule
+derrière. Dragon dessiné cel : gros contours brun sombre, ombres orangées
+en aplats, crinière et moustaches, et des YEUX CYAN qui brillent : la seule
+couleur froide, complémentaire de l'or (même idée que les yeux orange sur
+le violet de Suiryu). La tête du dragon est aussi grosse que le perso.
+
+**Dragon cyan (cab1e5b6)** : le dragon EST le projectile. Tête devant,
+gueule ouverte, le corps n'est qu'un faisceau qui s'effiloche ; au départ,
+une gerbe blanche à pointes (l'éclatement du coup). Deux tons + blanc,
+formes nettes, lueur autour. Rien de réaliste.
+
+**Cursed Dragon (2c6dce4d)** : tête sombre presque noire, l'énergie passe
+par des FISSURES violettes émissives et des yeux violets ; fumée noire.
+Autre recette du même principe : matière neutre + émission par endroits.
+
+**Coup R6 (5b6ab8d1)** : anneau bleu lumineux + étoile au point d'impact,
+arcs blancs du geste, croissants de vent gris qui s'ENROULENT autour de la
+victime projetée. Peu d'éléments, très nets. Notre palier 1 (étoile, anneau,
+croissant) va dans ce sens ; le leur est plus lumineux et l'air suit la
+victime.
+
+## 3. Ce que les neuf images disent ensemble
+
+1. **Tête d'abord, et de face ou de 3/4 face.** Aucun ne montre un serpent
+   entier de profil comme le nôtre. Le corps, quand il existe, est un
+   faisceau, une fumée ou un enroulement derrière.
+2. **Les yeux qui brillent, en couleur COMPLÉMENTAIRE** (or → cyan,
+   violet → orange, sombre → violet) : c'est le point focal. Nous : aucun
+   accent.
+3. **L'énergie, pas la matière** : translucide, non éclairée, lueur ; ou
+   matière neutre fendue d'émission (Cursed).
+4. **Au bon endroit = au POING ou À LA PLACE du perso**, face à la cible, et
+   GRAND (tête ≈ taille du perso, ou 64 % de l'écran). Le dragon est le
+   coup : il part du poing (projectile) ou avale la cible (Suiryu).
+5. **Trait / contour** : cel à gros contours (Dragon Ball Rage), trait peint
+   (Suiryu), formes découpées nettes (cyan).
+
+## 4. Proposition pour le Poing du Dragon (à valider par Milan)
+
+Garder l'or de Goku (la signature du film et de Dragon Ball Rage) et
+prendre la LECTURE de TSB :
+- tête de dragon dorée cel (aplats, gros contour sombre, crinière), YEUX
+  CYAN qui brillent, gueule ouverte ; corps réduit à un faisceau d'énergie
+  doré qui s'effiloche ;
+- invocation : la tête naît du poing levé et reste 1,5-2 s, grande, de 3/4
+  face au-dessus du poing ;
+- plongée : la tête est À CÔTÉ du poing tendu vers la caméra (la vignette
+  Dragon Ball Rage), aussi grosse que le perso ;
+- impact : le dragon-projectile part du poing dans la gerbe blanche et
+  AVALE la victime (Suiryu), puis tourbillon plein cadre (Goku).

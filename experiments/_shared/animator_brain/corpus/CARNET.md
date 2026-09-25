@@ -557,6 +557,13 @@ hauteur d'écran en caméra de jeu, à la place du joueur. Mon dragon v12
 se lit pas. Se lit en UNE image = face, contraste maximal, silhouette
 élargie.
 
+**4b.16 L'accent complémentaire dans les yeux** (9 refs de dragons). Or →
+yeux cyan (Dragon Ball Rage), violet → yeux orange (Suiryu), sombre → yeux
+violets (Cursed Dragon). Le seul point de couleur opposée est ce qu'on
+regarde en premier. Et le dragon est au POING ou à la place du perso : il
+EST le coup (projectile qui part du poing, gueule qui avale), jamais un
+décor qui tourne autour.
+
 ## 5. Pistes à essayer (classées, aucune n'est décidée)
 
 1. **Rafale : ré-armement lent, frappe rapide, clés espacées** (2.1,

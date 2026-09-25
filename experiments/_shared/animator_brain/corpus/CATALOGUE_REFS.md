@@ -123,3 +123,16 @@ ref ». Captures de jeu (TSB, caméra de jeu et gros plans). Étudiées dans
 | 996d38b7-image.jpg | 94c6a203bcd87b95 | Face, très près, titre « Dragon's Descent » : yeux jaune-orange incandescents (bloom), grand sourire blanc. |
 | feb2d674-image.jpg | 708832710a170aa0 | « SUIRYU UPDATE » : la gueule s'OUVRE en grand (intérieur sombre, anneau de dents), croissants de vent blancs, fumée grise cel, éclats violets. |
 | 68f0ad1a-image.jpg | 0455e90e2cb363e5 | Caméra de jeu paysage : la tête fait ~64 % de la hauteur d'écran, au sol, à la place du joueur. |
+
+## Dragons et coups (2e envoi du 2026-09-25)
+
+Envoyées par Milan sans texte, après les images de Suiryu. Étudiées dans
+`RELECTURE_REFS_SUIRYU_2026-09-25.md` §2.
+
+| fichier | sha1 | ce que c'est |
+|---|---|---|
+| 2e572cf7-image.jpg = 68f0ad1a | 0455e90e2cb363e5 | Doublon : Suiryu en caméra de jeu. |
+| fa08ccd8-image.jpg | ccf4b1ce547595df | Vignette « Dragon Ball Rage » (Roblox) : Goku SSJ3 en blocs, POING VERS NOUS, dragon doré cel (gros contours, yeux CYAN qui brillent) gueule ouverte À CÔTÉ du poing, corps derrière. |
+| cab1e5b6-image.jpg | a7ae2ffe9cb6a596 | VFX stylisé : un DRAGON-PROJECTILE cyan (tête devant, corps = faisceau), sortant d'une gerbe blanche à pointes ; 2 tons + blanc, lueur. |
+| 2c6dce4d-image.jpg | 0d4e44f865edf8df | « Cursed Dragon, VFX Showcase » (Roblox) : tête de dragon sombre, fissures et yeux VIOLETS émissifs, fumée noire. |
+| 5b6ab8d1-image.jpg | 099b2483bda562e3 | Coup R6 : anneau bleu lumineux + étoile au poing, arcs blancs, croissants de vent gris qui s'enroulent autour de la victime projetée. |
