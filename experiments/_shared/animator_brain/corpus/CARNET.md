@@ -546,6 +546,17 @@ seulement de présence. Biais mesuré par `critic.py` : +3,0 points sur les
 VFX (2 notes), +0,3 sur l'animation (4 notes). À soustraire tant qu'il ne
 se résorbe pas, et juger avec `durees.py` contre la ref, pas avec la liste.
 
+**4b.15 Le « premium » de TSB est dans le DESIGN, pas dans les polygones**
+(dragon de Suiryu, 5 images, `RELECTURE_REFS_SUIRYU_2026-09-25.md`).
+Une tête seule, de face, en goutte ; matière d'énergie violette non
+éclairée et translucide ; le dessin (sourcils, volutes, naseaux) PEINT en
+trait sombre ; deux accents : yeux jaune-orange qui brillent et sourire
+blanc aux dents pointues. Une EXPRESSION : c'est un personnage. ~64 % de la
+hauteur d'écran en caméra de jeu, à la place du joueur. Mon dragon v12
+(serpent doré sculpté, écailles, profil, petit) empilait du détail qui ne
+se lit pas. Se lit en UNE image = face, contraste maximal, silhouette
+élargie.
+
 ## 5. Pistes à essayer (classées, aucune n'est décidée)
 
 1. **Rafale : ré-armement lent, frappe rapide, clés espacées** (2.1,

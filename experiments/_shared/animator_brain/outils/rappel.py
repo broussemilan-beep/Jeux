@@ -48,7 +48,8 @@ CONCEPTS = {
     "jugement_vfx": ["qualité vfx", "qualite vfx", "biais", "prediction", "prédiction", "compter les couches",
                      "surestime", "note vfx", "auto-évaluation", "auto-evaluation"],
     "dragon": ["dragon", "aura dragon", "goku", "ssj3", "shenron", "izuku", "deku", "one for all", "full cowl",
-               "eclair vert", "éclair vert", "tourbillon de feu"],
+               "eclair vert", "éclair vert", "tourbillon de feu", "suiryu", "dragon's descent", "tete de dragon",
+               "tête de dragon", "violet"],
     "victime": ["victime", "reaction", "réaction", "recul", "encaisse"],
 }
 

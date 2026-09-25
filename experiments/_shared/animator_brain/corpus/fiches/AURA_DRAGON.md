@@ -71,6 +71,25 @@ Apprentissages, pas règles. À lire avant de poser la moindre clé d'effet.
   PLEIN ÉCRAN du GIF 7a2b4ae8 ne sont pas faits (on a le tourbillon au
   sol) ; en jeu, le dragon attend l'import du FBX (sinon repli rubans).
 
+## 0 ter. Après la v12 (VFX 2-4/10) : la ref TSB de Suiryu
+
+Milan a envoyé le dragon « Dragon's Descent » de Suiryu (TSB) : étude dans
+`../RELECTURE_REFS_SUIRYU_2026-09-25.md`, mesures de durée dans
+`../clips/durees_effets_2026-09-25.json`. Ce qu'elles opposent à la v12 :
+
+| | v12 (nous) | Suiryu (TSB) | GIF Goku 7a2b4ae8 |
+|---|---|---|---|
+| forme | serpent entier, écailles, profil | TÊTE seule, de face, en goutte | tête qui sort du tourbillon, vers nous |
+| matière | or éclairé (PBR) | énergie violette non éclairée, translucide, fumée au bord | peint, cel |
+| détail | géométrie | TRAIT peint sur un volume simple | trait |
+| accent | aucun | yeux incandescents + sourire blanc | gueule, crocs |
+| place | derrière / autour du perso | à la place du joueur, face à la cible | plein cadre |
+| taille (caméra de jeu) | petite | ~64 % de la hauteur d'écran | 100 % |
+| durée | 0,57 s (invocation) | à mesurer (vidéo) | 2,3 s d'effet plein écran |
+
+Rien n'est décidé : questions posées à Milan (couleur or ou violet, le
+dragon remplace-t-il le coup, vidéo pour le timing).
+
 ## 1. Le mélange (mauvaise lecture, v11)
 
 - **Le dragon est de Goku** : doré, serpent long, tête de profil, crinière

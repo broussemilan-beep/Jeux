@@ -109,3 +109,17 @@ dragon ». Étudiées dans `fiches/AURA_DRAGON.md`.
 | d514ee70-image.gif | 7a2b4ae8801394c5 | Le Poing du Dragon : poing vers l'objectif sur éclatement radial, blanc, explosion, tourbillon de feu, le dragon sort du tourbillon (tête en très gros plan). |
 | 09a83af0-image.jpg | 50c7d71304f14e3f | Manga MHA : Deku, POING GÉANT vers le lecteur (raccourci extrême), corps en diagonale derrière, hachures de vitesse. Pose à mélanger avec Goku (2026-09-25). |
 | 37b6bf9a-image.webp = 0ca551a4 | ea7afcc9b89f6fcd | Deku couleur (déjà au catalogue) : bras tendu vers le lecteur, épaule en avant, tête basse derrière le poing, autre bras rentré. |
+
+## Dragon « Dragon's Descent » de Suiryu (TSB), 2026-09-25
+
+Envoyées par Milan après la v12 (VFX 2-4/10) : « je t'envoie des images
+ref ». Captures de jeu (TSB, caméra de jeu et gros plans). Étudiées dans
+`RELECTURE_REFS_SUIRYU_2026-09-25.md`.
+
+| fichier | sha1 | ce que c'est |
+|---|---|---|
+| 930606b5-image.jpg | d9547b705d16d353 | Tête de dragon VIOLETTE de face, sourire carnassier, yeux orange, moustaches spirales, pointe au sol ; caméra de jeu (téléphone). |
+| d598c391-image.jpg | 9de2e038cb4389ec | Même tête, 3/4, gros plan : trait sombre peint sur le volume, œil qui brille, ombre portée au sol. |
+| 996d38b7-image.jpg | 94c6a203bcd87b95 | Face, très près, titre « Dragon's Descent » : yeux jaune-orange incandescents (bloom), grand sourire blanc. |
+| feb2d674-image.jpg | 708832710a170aa0 | « SUIRYU UPDATE » : la gueule s'OUVRE en grand (intérieur sombre, anneau de dents), croissants de vent blancs, fumée grise cel, éclats violets. |
+| 68f0ad1a-image.jpg | 0455e90e2cb363e5 | Caméra de jeu paysage : la tête fait ~64 % de la hauteur d'écran, au sol, à la place du joueur. |
