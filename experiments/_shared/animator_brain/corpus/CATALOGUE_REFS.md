@@ -100,6 +100,8 @@ Rappel : `python3 outils/rappel.py son`.
 
 Envoyées par Milan le 2026-09-25 : « mélange ça à Izuku pour le poing du
 dragon ». Étudiées dans `fiches/AURA_DRAGON.md`.
+Plein écran (planches tourbillon / rouge / soleil, Last Breath + Goku + refs VFX
+stylisées + retour de Milan « peint, pas dessiné ») : `fiches/PLEIN_ECRAN.md`.
 
 | fichier | sha1 | ce que c'est |
 |---|---|---|

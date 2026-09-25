@@ -906,3 +906,9 @@ Refaire : `python3 scripts/build_planches.py <rendu_gueule.png> <rendu_silhouett
 Roblox : réimporter `output/planches/spirale_*.png`, `rouge_*.png`,
 `soleil.png` (mêmes noms) dans `DragonFist.CONFIG.PLANCHE_IDS`.
 
+Juge temporel sur la vidéo v13c
+(`../../captures/verification/2026-09-25-v13c-scene-complete-avec-son.mp4`,
+bandes `2026-09-25-v13c-bande-0.1s-*.png`) : part d'effet au pic 0,83
+(v13 : 0,71 ; seuil 0,70), plein écran 1,13 s, plus longue plage 0,80 s,
+conséquence 5,2 s : porte franchie.
+
