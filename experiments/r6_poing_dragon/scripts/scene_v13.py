@@ -275,7 +275,16 @@ def camera(sc, add, A, Vt, h):
     # (1er essai à 42 studs en diagonale : la boucle vue par la tranche, le
     # dragon un trait lointain) -> en face du plan de la boucle, plus près
     add(450, G + [-4.0, 7.0, 33.0], G + [-6.0, 22.0, -10.0], 62, "cut")
-    add(496, G + [-3.0, 8.0, 31.0], G + [-4.0, 30.0, -6.0], 60)
+    add(470, G + [-3.6, 7.4, 32.2], G + [-6.0, 25.0, -9.0], 61)
+    # (bande v13d : dans le très large le dragon restait un trait, 15 % de
+    # l'image) -> après 0,35 s d'échelle, la caméra le SUIT de près en
+    # montant : à 17 studs sous lui, de côté, la visée sur le milieu du corps
+    for k, f in enumerate(range(472, 497, 4)):
+        H = sc.tete_b(f)
+        dv = sc.tete_b(f) - sc.tete_b(f - 3)
+        dv /= (np.linalg.norm(dv) + 1e-9)
+        mil = H - dv * 3.0
+        add(f, mil + np.array([3.5, -5.0, 19.0]), mil, 58, "cut" if k == 0 else "smooth")
     add(498, G + [24.0, 30.0, 20.0], G + [1.0, 38.0, -3.0], 56, "cut")
     add(528, G + [21.0, 29.0, 19.0], G + [5.0, 35.0, -1.0], 54)
     add(530, G + [10.0, 1.5, 10.0], G + [1.5, 24.0, 0.0], 64, "cut")

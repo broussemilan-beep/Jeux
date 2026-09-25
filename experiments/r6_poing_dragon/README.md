@@ -928,4 +928,11 @@ conséquence 5,2 s : porte franchie.
   gueule, il monte en grande boucle dans le ciel au-dessus de l'arène, se
   retourne au sommet et replonge dans le cratère au blanc. Trois plans :
   très large face à la boucle, contre-plongée au sommet, depuis le cratère.
+- Vidéo : `../../captures/verification/2026-09-25-v13d-dragon-visible-sans-planches-avec-son.mp4` ;
+  bande à 0,1 s du vol : `2026-09-25-v13d-bande-0.1s-le-dragon-vole.png`.
+  Après 0,35 s de plan très large (l'attaquant donne l'échelle), la caméra
+  SUIT le dragon de près pendant qu'il monte.
+- Juge temporel : **porte non franchie** (effet au pic 0,33, plein écran 0 s)
+  et c'est attendu : il mesure le temps d'abstraction plein écran des refs
+  Last Breath, que Milan a retiré pour ce style (CARNET 4b.29).
 
