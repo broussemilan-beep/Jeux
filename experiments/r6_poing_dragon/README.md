@@ -777,3 +777,45 @@ conception : `../_shared/animator_brain/corpus/fiches/AURA_DRAGON.md`.
   l'impact, comme dans le film.
 - Montée en colonne de 15 studs : tête toujours hors du cadre de la
   révélation -> spirale large et basse (4,7 studs) autour du cratère.
+
+## v12 (2026-09-25) : la pose Goku x Izuku et le dragon « premium »
+
+Retour de Milan sur la v11 (VFX 4/10) : « mélange » voulait dire la POSE
+(Goku puis Izuku), pas les éclairs d'Izuku ; le dragon est « moche, pas du
+tout premium » ; les VFX construits sont loin du pack et des refs. Fiche :
+`../_shared/animator_brain/corpus/fiches/AURA_DRAGON.md` §0 et §0 bis.
+
+- **Éclairs verts retirés.** La pose raconte le mélange :
+  1. invocation (Goku, affiche e92ac0d7 + GIF f254bee5) : bras droit tendu
+     vers le ciel en « V », poing gauche armé à la hanche, jambes qui
+     traînent, regard devant menton levé ; caméra 3/4 face ;
+  2. plongée (Izuku, 0ca551a4 / 09a83af0) : le corps bascule, le poing
+     passe au-dessus de la tête puis se tend vers l'objectif, épaule en
+     avant, tête basse, autre bras rentré, jambes ensemble derrière.
+- **Dragon 3D riggé** (`../_shared/vfx_studio/modeles/`) : écailles de
+  ~0,5 stud peintes en volume, dos orange profond, ventre crème, crinière
+  et nageoires brunes, gueule ouverte ; il s'enroule DERRIÈRE le perso et
+  dresse la tête de profil au-dessus du poing ; à l'impact il sort du
+  cratère, nimbé de FEU qui coule le long du corps (`recettes.flammes_corps`).
+- **VFX construits** : débris de sol peints (4 formes, gravité) sur les
+  impacts au sol ; bloom dans le lecteur (= BloomEffect du jeu) ; débris
+  physiques du cratère recolorés.
+- **Bug corrigé** : la forme du dragon avait 10 images d'avance sur le corps
+  (temps relatifs lus comme temps de recette).
+- **Roblox** : importer `../_shared/vfx_studio/modeles/dragon.fbx`
+  (3D Importer de Studio : un Model avec le MeshPart et ses Bones), le
+  renommer `DragonModele` et le
+  poser à côté de `DragonFist` ou dans ReplicatedStorage : `DragonFist` le
+  donne au moteur (`vfx.configurer({modeles = {dragon = …}})`). Absent : repli
+  sur le ruban de Beams + carte. Banc Luau : 146 contrôles, TOUT OK.
+
+**Essais vus à l'écran et abandonnés** (captures dans
+`../../captures/verification/2026-09-25-v1*`).
+- Invocation v10a : genou levé devant le torse, tête cachée, caméra à -22°
+  sous le corps : un tas illisible.
+- Bras visé à 1,55 stud : couché en travers de la tête ; à 2,4 : tendu.
+- Regard visé droit au-dessus : tête basculée de 90°.
+- Cou du dragon vertical (pilier doré), puis tête piquée vers la victime
+  (on voyait le crâne) -> tête horizontale de profil.
+- Spires autour du bras devant le visage -> décalées derrière le perso.
+- Caméra obari : le bras tendu traversait l'objectif (prisme brun).

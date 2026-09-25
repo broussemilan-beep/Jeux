@@ -406,6 +406,20 @@ victime, à côté d'elle.** *Vérifié à l'écran (v9).*
 - Ce qui reste moins bien que le Serious Punch : leur gant sombre, dans la
   fumée, est une forme nette. Chez nous, les anneaux dorés du dragon
   encombrent le poing.
+- v12 : le bras tendu passait À TRAVERS le plan proche de l'objectif (un
+  « prisme » brun plein cadre). Œil plus bas et plus sur le côté.
+
+**3.10 Un bras « levé au ciel » en R6 : mesurer où tombe le HAUT du bras.**
+*Vu au tour à 8 caméras puis mesuré (invocation v12).*
+- Cible IK à portée (1,55 stud du pivot) : le poing était bien au-dessus
+  de l'épaule, mais le bras se couchait EN TRAVERS de la tête (haut du bras
+  mesuré au cou). Cible au-delà de la portée (2,4) : le bras se tend, 25°
+  vers l'extérieur, au bord de la tête : le « V » de l'affiche.
+- Le poing au bon endroit ne dit rien de la silhouette : c'est la boîte
+  entière qu'on voit.
+- Même piège pour le regard : une cible de regard droit au-dessus de la
+  tête la faisait basculer de 90° (cube couché). Regarder devant, menton
+  levé.
 
 ## 4. Hitstop et caméra
 
@@ -482,6 +496,25 @@ fait le film : le dragon sort de l'impact, pas du bras qui frappe.
 **4b.8 Une carte peinte doit toujours faire face à la caméra** : orientée
 dans l'axe de ce qu'elle suit, elle disparaît dès qu'on la regarde par la
 tranche. Face caméra, et l'image tournée selon l'axe projeté à l'écran.
+
+**4b.9 Un détail de texture n'existe qu'à la distance de la caméra**
+(dragon v12). 70 x 16 écailles de 0,2 stud tracées en 5 px : à 8 studs,
+le corps se lisait comme un tube jaune uni, « du plastique ». Écailles de
+~0,5 stud peintes en volume (bord libre foncé, reflet) : elles se lisent.
+Et un métal très brillant sans environnement à refléter devient une
+couleur plate.
+
+**4b.10 Un modèle 3D nu se lit comme une statue** (dragon v12). Les refs
+(7a2b4ae8) montrent le dragon ENVELOPPÉ d'énergie : il sort d'un tourbillon
+de feu et en reste nimbé. Le modèle apporte le volume ; le feu qui coule le
+long du corps (et traîne derrière quand il bouge) apporte la vie. Fait en
+DONNÉE (émetteurs sur des chemins = points du corps) : aucun code moteur.
+
+**4b.11 Une tête qui pique vers sa cible se lit comme un crâne** (armé v12).
+Visée droit sur la victime, qui est EN BAS, la tête du dragon montrait son
+dessus et sa crinière. De profil, horizontale, devant et au-dessus du poing :
+la gueule ouverte se lit (l'affiche e92ac0d7). Et le perso reste DEVANT le
+dragon : les spires qui passaient devant le visage cachaient le héros.
 
 ## 5. Pistes à essayer (classées, aucune n'est décidée)
 

@@ -30,7 +30,48 @@ Apprentissages, pas règles. À lire avant de poser la moindre clé d'effet.
   vend la vitesse (§4b.3), rien de réaliste ; rig R6 ; tout jouable dans
   Roblox (moteur VFXStudio) ; pas de cape ni d'écharpe (mandat).
 
-## 1. Le mélange
+## 0. CORRECTION (retour de Milan sur la v11, VFX 4/10)
+
+- « Mélange ça à Izuku » voulait dire : la POSE d'Izuku mélangée à celle de
+  Goku (animation), PAS les éclairs d'Izuku sur le dragon. Les éclairs verts
+  sont retirés ; la §1 ci-dessous est une mauvaise lecture, gardée pour
+  mémoire.
+- « Le dragon est moche, pas du tout du modèle premium » : les cartes
+  peintes et le ruban de Beams se lisent comme des AUTOCOLLANTS. Premium =
+  un vrai modèle en VOLUME (lumière, contour, silhouette qui tourne).
+  Remplacé par le dragon 3D riggé de `vfx_studio/modeles/dragon.py`
+  (Blender, FBX, MeshPart skinné dans Roblox, SkinnedMesh dans l'aperçu).
+- La pose (v10 de l'aérien, `dragon_clip.py aerien_v10`) : INVOCATION de
+  Goku (poing vers le ciel, tenu, le dragon s'enroule autour du bras et
+  dresse la tête au-dessus du poing), puis PLONGÉE d'Izuku (poing tendu vers
+  l'objectif, épaule en avant, tête basse derrière le poing, autre bras
+  rentré, jambes ensemble derrière).
+
+## 0 bis. Ce que la v12 a changé (vu à l'écran, pas seulement mesuré)
+
+- **Invocation = l'affiche** : bras droit tendu vers le ciel en « V » au
+  bord de la tête, poing gauche armé à la hanche, jambes qui traînent
+  derrière, regard devant menton levé ; caméra 3/4 face, -6°, corps + poing
+  + tête du dragon dans le cadre. Le dragon s'enroule DERRIÈRE le perso, le
+  cou monte au-dessus du poing puis la tête se couche à l'horizontale, de
+  profil, gueule ouverte. (Essais écartés, captures `2026-09-25-v10a-*`,
+  `-v12-tour-invocation-avant`.)
+- **Plongée = Izuku** (inchangée) ; caméra obari plus basse et sur le côté
+  (le bras traversait l'objectif).
+- **Dragon premium** : écailles lisibles (~0,5 stud, peintes en volume),
+  dos orange profond, ventre crème en plaques, crinière et nageoires brunes
+  (les refs) ; matériau mat ; FEU qui coule le long du corps
+  (`recettes.flammes_corps`, émetteurs sur des chemins) + lueur ; bloom
+  dans le lecteur (= BloomEffect du jeu).
+- **Bug corrigé** : les images de forme du dragon étaient écrites relatives
+  au début de la couche, le moteur les lit en temps de recette -> le dragon
+  avait 10 images d'avance sur le corps.
+- Reste faible (à dire à Milan) : la tête du modèle est lisse (pas
+  d'écailles sur le crâne) ; l'éclatement radial + le tourbillon de feu
+  PLEIN ÉCRAN du GIF 7a2b4ae8 ne sont pas faits (on a le tourbillon au
+  sol) ; en jeu, le dragon attend l'import du FBX (sinon repli rubans).
+
+## 1. Le mélange (mauvaise lecture, v11)
 
 - **Le dragon est de Goku** : doré, serpent long, tête de profil, crinière
   de flammes, nageoires dorsales foncées. C'est la SIGNATURE (celle qui

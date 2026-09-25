@@ -195,8 +195,12 @@
     const bones = xs.map((x) => { const b = new T.Bone(); b.position.set(x * k, 0, 0); grp.add(b); return b; });
     grp.updateMatrixWorld(true);
     const skel = new T.Skeleton(bones);
-    const mat = new T.MeshStandardMaterial({ map: TEX[L.modele + "_atlas"], metalness: 0.55, roughness: 0.32,
-      emissive: new T.Color(0.35, 0.2, 0.02), transparent: true });
+    // v2 : métal 0,55 + émissif fort = une statue jaune uniforme (écailles
+    // et crinière brune noyées) ; Roblox rend un MeshPart texturé sans
+    // émission -> matériau plus mat, émission faible (le feu autour fait la
+    // lumière, flammes_corps)
+    const mat = new T.MeshStandardMaterial({ map: TEX[L.modele + "_atlas"], metalness: 0.25, roughness: 0.45,
+      emissive: new T.Color(0.12, 0.06, 0.0), transparent: true });
     const mesh = new T.SkinnedMesh(geo, mat);
     mesh.bind(skel);
     mesh.frustumCulled = false;
@@ -680,12 +684,15 @@
   // BloomEffect Roblox : Intensity, Size, Threshold. Passe maison (le module
   // three.js n'est pas disponible ici) : seuil -> flou gaussien à 2 échelles
   // -> ajout.
-  function Bloom(renderer, w, h) {
+  function Bloom(renderer, w, h, opt) {
     // cibles 8 bits : les cibles en demi-flottant donnaient des carrés noirs
     // (valeurs invalides) sous le rendu logiciel. En 8 bits, c'est portable
     // et déterministe ; les valeurs > 1 saturent, le seuil fait le reste.
     const rt = (s) => new T.WebGLRenderTarget(Math.max(1, (w / s) | 0), Math.max(1, (h / s) | 0));
     const scene = rt(1), a2 = rt(2), b2 = rt(2), a4 = rt(4), b4 = rt(4);
+    // rendu sRGB (lecteur du Dragon, outputEncoding sRGB) : la scène est
+    // encodée dans sa cible, sinon l'image sortait sombre (valeurs linéaires)
+    if (opt && opt.srgb) scene.texture.encoding = T.sRGBEncoding;
     const cam = new T.OrthographicCamera(-1, 1, 1, -1, 0, 1);
     const quad = new T.Mesh(new T.PlaneGeometry(2, 2));
     const sc = new T.Scene(); sc.add(quad);

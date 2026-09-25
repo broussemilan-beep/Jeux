@@ -92,7 +92,9 @@ def main():
         "variantes": variantes,
         "meshes": json.load(open(os.path.join(vs, "meshes", "meshes.json"))),
         "sons": {x["nom"]: b64(os.path.join(vs, "sons", x["fichier"]), "audio/wav") for x in cs},
+        "modeles": {"dragon": json.load(open(os.path.join(vs, "modeles", "dragon.json")))},
     }
+    data["vfx"]["textures"]["dragon_atlas"] = b64(os.path.join(vs, "modeles", "dragon_atlas.png"), "image/png")
     html = open(os.path.join(HERE, "player_template.html")).read()
     html = html.replace("/*__MOTEUR_VFX__*/", open(os.path.join(vs, "lab", "moteur.js")).read())
     html = html.replace("/*__DATA__*/null", json.dumps(data, separators=(",", ":")))

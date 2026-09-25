@@ -154,12 +154,26 @@ def camera_keys(aw, vw):
         #    PROFIL cote du poing arme, un peu en contre-plongee. Le bras qui
         #    vise la victime part sur le cote du cadre, jamais vers l'objectif
         #    (1er essai de face : il cachait tout, repro/README.md lecon 5)
-        add(228, A(234) + [8.4, -1.2, -1.5], A(234) + [0, -0.2, -0.7], 46, "cut")
-        add(255, A(255) + [7.4, -1.05, -1.3], A(255) + [0, -0.2, -0.7], 44)
+        if str(SCENE.get("aerien", "")).startswith("v10"):
+            # v10 INVOCATION (Goku, GIF f254bee5) : contre-plongée de face, on
+            # le voit d'en dessous lever le poing vers le ciel, le dragon
+            # s'enroule autour du bras et dresse la tête au-dessus du poing
+            # (v10a : trop bas et trop loin, -22° à 9 studs -> on voyait le
+            # DESSOUS du corps, tête cachée, poing hors lecture) -> 3/4 face
+            # côté poing levé, -10°, corps + poing + tête du dragon dans le cadre
+            # (v10b : cadre trop serré, poing et tête du dragon hors champ)
+            add(228, A(234) + [4.6, -1.0, -10.2], A(240) + [0.8, 2.5, 0.0], 58, "cut")
+            add(255, A(255) + [4.0, -0.9, -9.0], A(255) + [0.8, 2.7, 0.0], 56)
+        else:
+            add(228, A(234) + [8.4, -1.2, -1.5], A(234) + [0, -0.2, -0.7], 46, "cut")
+            add(255, A(255) + [7.4, -1.05, -1.3], A(255) + [0, -0.2, -0.7], 44)
         # 6. OBARI : la camera est chez la victime, a cote d'elle (jamais entre
         #    l'objectif et le poing) ; le poing vient VERS l'objectif et
         #    grossit jusqu'a remplir le cadre ; la visee suit le poing et la tete
-        eye = Vt(SCENE["strike_f"]) + [-1.1, 1.3, -0.2]
+        # v10 : le bras tendu d'Izuku traversait le plan proche de l'objectif
+        # (vu : un « prisme » brun qui masquait tout) -> œil plus bas et plus
+        # sur le côté : contre-plongée sur le poing qui arrive
+        eye = Vt(SCENE["strike_f"]) + ([-2.0, 0.5, -1.3] if str(SCENE.get("aerien", "")).startswith("v10") else [-1.1, 1.3, -0.2])
         for f in (256, 260, 263, 266, 270, 274, SCENE["strike_f"]):
             fist = tip(aw[f], "Right Arm")
             add(f, eye, fist * 0.55 + h(f) * 0.45, 78, "cut" if f == 256 else "smooth")
@@ -324,12 +338,36 @@ def dragon_events(aw, vw, rt, studio):
         rt_, T = aw[f]["Torso"]
         up = rt_ @ np.array([0.0, 1, 0])
         vis = (vict - F) / np.linalg.norm(vict - F)
-        H = F + vis * 1.2 + up * 0.7
+        if str(SCENE.get("aerien", "")).startswith("v10"):
+            # v10 : poing levé au ciel -> la tête se dresse AU-DESSUS du poing,
+            # tournée vers la victime (l'affiche e92ac0d7)
+            # v10b : la 1re version dressait le cou à la VERTICALE (un pilier
+            # doré, gueule vers le ciel) ; sur l'affiche le cou monte puis la
+            # tête se COURBE vers l'adversaire, gueule ouverte sur lui
+            # (2e essai : visée vers la victime, qui est EN BAS -> tête piquée
+            # vers le sol, on ne voyait que le haut du crâne et la crinière
+            # emmêlée au poing) -> tête HORIZONTALE, de profil, devant et
+            # au-dessus du poing, détachée de lui
+            y = np.array([0.0, 1.0, 0.0])
+            vh = np.array([vis[0], 0.0, vis[2]])
+            vh = vh / (np.linalg.norm(vh) + 1e-9)
+            H = F + y * 2.1 + vh * 1.5
+            pts = [H, H - vh * 1.1 + y * 0.25, F + y * 1.3 - vh * 0.2]
+        else:
+            H = F + vis * 1.2 + up * 0.7
+            pts = [H, (H + F) / 2 + up * 0.3]
         phi = 2.4 * t
-        pts = [H, (H + F) / 2 + up * 0.3]
-        pts += _helice(F, Sh, 1.0, 1.5, phi, 30)
         haut, bas = T + up * 1.6, T - up * 3.2
-        pts += _helice(haut, bas, 2.4, 1.3, phi * 0.6 + 2.0, 50, rayon_fin=1.7)
+        if str(SCENE.get("aerien", "")).startswith("v10"):
+            # l'affiche : le perso DEVANT, le dragon DERRIÈRE lui (3e essai : les
+            # spires autour du bras passaient devant le visage) -> spires
+            # décalées vers l'arrière (loin de la victime et de la caméra)
+            recul = -vh * 1.7
+            pts += [p + recul * 0.6 for p in _helice(F, Sh, 0.7, 1.2, phi, 30)]
+            pts += [p + recul for p in _helice(haut, bas, 2.2, 1.3, phi * 0.6 + 2.0, 50, rayon_fin=1.7)]
+        else:
+            pts += _helice(F, Sh, 1.0, 1.5, phi, 30)
+            pts += _helice(haut, bas, 2.4, 1.3, phi * 0.6 + 2.0, 50, rayon_fin=1.7)
         return _reechantillonne(pts, NP)
 
     def file(f, t):
@@ -383,11 +421,14 @@ def dragon_events(aw, vw, rt, studio):
             images.append([round(t, 4), [v3(p) for p in pts]])
         t_n, t_c = rel(fa0), rel(sf)
         duree = rel(f_fin) - t_n
-        images = [[round(t - t_n, 4), pts] for t, pts in images]
+        # (bug trouvé à la relecture v10b : les images étaient rendues
+        # RELATIVES au début de la couche alors que le moteur les lit en temps
+        # de RECETTE -> la forme du dragon avait 10 images d'avance sur le
+        # corps ; il plongeait avant le perso)
         # dissolution depuis la queue : le corps se ramasse dans le poing
         corps = R.serpent(images, round(t_n, 4), round(duree, 4), naissance=0.18,
-                          mort=((rel(258) - t_n) / duree, "queue"), vitesse=2.0, taille_tete=(3.4, 1.7))
-        c = [corps]
+                          mort=((rel(258) - t_n) / duree, "queue"), vitesse=2.0, taille_tete=(3.4, 1.7), echelle=0.5)
+        c = [corps] + R.flammes_corps(corps, n=6, rate=14)
         ch_poing = [[rel(f)] + v3(poing(f)) for f in range(226, sf + 1, 2)]
         ch_corps = [[rel(f)] + v3(aw[f]["Torso"][1]) for f in range(226, sf + 1, 2)]
         # (éclairs verts d'Izuku retirés, 2026-09-25 : Milan voulait la POSE
@@ -423,9 +464,11 @@ def dragon_events(aw, vw, rt, studio):
             if len(hist) < 2:
                 hist = [G + np.array([0, 0.5, 0]), G]
             return _reechantillonne(hist + [G - np.array([0, 1.0, 0])], NP)
-        images = [[round(u * duree, 4), [v3(p) for p in forme(u)]] for u in np.linspace(0, 1, 46)]
+        images = [[round(t_dep + u * duree, 4), [v3(p) for p in forme(u)]] for u in np.linspace(0, 1, 46)]   # temps de RECETTE
         c = [R.serpent(images, round(t_dep, 4), round(duree, 4), naissance=0.2, mort=(0.72, "queue"), vitesse=2.5,
-                       taille_tete=(7.0, 3.5), largeur=[[0, 2.2], [0.08, 2.5], [0.5, 1.9], [0.85, 1.0], [1, 0.2]])]
+                       taille_tete=(7.0, 3.5), largeur=[[0, 2.2], [0.08, 2.5], [0.5, 1.9], [0.85, 1.0], [1, 0.2]],
+                       echelle=0.85)]
+        c += R.flammes_corps(c[0], n=8, rate=18)
         c.append({"type": "mesh", "nom": "tourbillon_feu", "t0": tc, "duree": 0.9, "ancre": {"pos": v3(G)},
                   "mesh": "tourbillon", "texture": "bruit_energie", "defilement": [2.5, 0],
                   "echelle": [[0, [1.5, 0.6, 1.5]], [0.3, [7, 5, 7]], [1, [9, 7, 9]]],

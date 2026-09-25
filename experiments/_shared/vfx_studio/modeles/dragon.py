@@ -43,7 +43,7 @@ PASTILLES = {
     "or": ((255, 214, 92), (206, 128, 24)),
     "or_fonce": ((226, 150, 38), (150, 80, 14)),
     "creme": ((255, 246, 214), (226, 196, 140)),
-    "brun": ((176, 82, 30), (96, 38, 12)),
+    "brun": ((196, 86, 26), (84, 30, 8)),
     "blanc": ((255, 255, 250), (220, 214, 200)),
     "rouge": ((170, 24, 18), (90, 8, 8)),
     "oeil": ((255, 236, 90), (230, 150, 20)),
@@ -422,42 +422,61 @@ def poids(M):
 
 
 def atlas(chemin):
-    """Texture : bande du corps (écailles) + pastilles en dégradé."""
+    """Texture : bande du corps (écailles) + pastilles en dégradé.
+
+    v2 (retour Milan, « pas du tout premium ») : 1re version = 70 x 16
+    écailles de 0,2 stud, des traits de 5 px -> invisibles à l'écran (le corps
+    se lisait comme un tube jaune uni). Écailles d'environ 0,5 stud, PEINTES
+    en volume (bord libre foncé vers la queue, reflet clair vers la tête),
+    dos orange profond, flancs or, ventre crème en plaques."""
     W = H = ATLAS
     im = Image.new("RGB", (W, H), (230, 170, 50))
     d = ImageDraw.Draw(im)
     hb = int(0.78 * H)     # hauteur de la bande du corps (v = angle autour de la colonne)
-    # angle a : 0 = côté +Z, 0.25 = dos, 0.5 = côté -Z, 0.75 = ventre
-    for yy in range(hb):
-        a = yy / hb
+
+    def teinte(a):
+        # angle a : 0 = côté +Z, 0.25 = dos, 0.5 = côté -Z, 0.75 = ventre
         dos = math.cos(2 * math.pi * (a - 0.25))       # 1 au dos, -1 au ventre
-        c_haut, c_bas = (255, 214, 92), (196, 118, 20)
-        k = 0.5 + 0.5 * dos
-        col = tuple(int(c_bas[i] + (c_haut[i] - c_bas[i]) * k) for i in range(3))
-        d.line([(0, yy), (W, yy)], fill=col)
-    # écailles en écusson (rangées décalées), plus serrées vers la queue
-    n_long, n_tour = 70, 16
-    for i in range(n_long + 1):
-        for j in range(n_tour):
-            x = (i + 0.5 * (j % 2)) * W / n_long
-            y = (j + 0.5) * hb / n_tour
-            a = (j + 0.5) / n_tour
-            if 0.62 < a < 0.88:
-                continue    # ventre : plaques, pas d'écailles
-            rx, ry = W / n_long * 0.62, hb / n_tour * 0.7
-            d.arc([x - rx, y - ry, x + rx, y + ry], 15, 165, fill=(150, 78, 12), width=5)
-            d.arc([x - rx * 0.8, y - ry * 0.8, x + rx * 0.8, y + ry * 0.55], 200, 340, fill=(255, 238, 150), width=3)
-    # plaques de ventre crème
-    y0, y1 = int(0.63 * hb), int(0.87 * hb)
-    d.rectangle([0, y0, W, y1], fill=(255, 240, 200))
-    for i in range(0, 90):
-        x = i * W / 90
-        d.line([(x, y0), (x, y1)], fill=(214, 164, 90), width=6)
-    d.line([(0, y0), (W, y0)], fill=(150, 78, 12), width=6)
-    d.line([(0, y1), (W, y1)], fill=(150, 78, 12), width=6)
-    # arête dorsale plus foncée
+        k = max(0.0, dos)
+        flanc, dos_c = (255, 204, 74), (206, 104, 18)
+        return tuple(int(flanc[i] + (dos_c[i] - flanc[i]) * k ** 1.3) for i in range(3))
+
+    for yy in range(hb):
+        d.line([(0, yy), (W, yy)], fill=teinte(yy / hb))
+    n_long, n_tour = 28, 10
+    pas_x, pas_y = W / n_long, hb / n_tour
+    ventre = (0.655, 0.845)
+    # de la queue vers la tête : le bord libre (arrondi, vers la queue) de
+    # chaque écaille recouvre la base de la suivante
+    for i in range(n_long + 1, -2, -1):
+        for j in range(-1, n_tour + 1):
+            a = ((j + 0.5) / n_tour) % 1.0
+            if ventre[0] - 0.03 < a < ventre[1] + 0.03:
+                continue
+            x = (i + 0.5 * (j % 2)) * pas_x
+            y = (j + 0.5) * pas_y
+            base = teinte(a)
+            rx, ry = pas_x * 1.4, pas_y * 0.64    # le bord arrondi couvre la base (corde) de la voisine
+            fonce = tuple(int(c * 0.42) for c in base)
+            moyen = tuple(int(c * 0.8) for c in base)
+            clair = tuple(min(255, int(c * 1.12 + 30)) for c in base)
+            d.pieslice([x - rx, y - ry, x + rx, y + ry], -90, 90, fill=fonce)
+            d.pieslice([x - rx * 0.88, y - ry * 0.86, x + rx * 0.88, y + ry * 0.86], -90, 90, fill=moyen)
+            d.pieslice([x - rx * 0.7, y - ry * 0.7, x + rx * 0.62, y + ry * 0.62], -90, 90, fill=base)
+            d.ellipse([x + rx * 0.3, y - ry * 0.42, x + rx * 0.5, y - ry * 0.12], fill=clair)
+    # plaques de ventre crème (0,35 stud)
+    y0, y1 = int(ventre[0] * hb), int(ventre[1] * hb)
+    d.rectangle([0, y0, W, y1], fill=(255, 238, 196))
+    for i in range(0, 41):
+        x = i * W / 40
+        d.rectangle([x - 5, y0, x + 5, y1], fill=(196, 140, 70))
+        d.rectangle([x + 5, y0, x + 14, y1], fill=(255, 250, 228))
+    d.rectangle([0, y0 - 8, W, y0 + 4], fill=(120, 56, 10))
+    d.rectangle([0, y1 - 4, W, y1 + 8], fill=(120, 56, 10))
+    # arête dorsale brun-rouge (les nageoires y sont plantées)
     yd = int(0.25 * hb)
-    d.rectangle([0, yd - 10, W, yd + 10], fill=(170, 90, 16))
+    d.rectangle([0, yd - 34, W, yd + 34], fill=(150, 62, 16))
+    d.rectangle([0, yd - 8, W, yd + 8], fill=(110, 40, 10))
     # pastilles en dégradé vertical (haut clair -> bas foncé)
     n = len(NOMS)
     for k, nom in enumerate(NOMS):

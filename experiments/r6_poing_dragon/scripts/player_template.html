@@ -522,8 +522,11 @@
       fxRoot.add(m); spikes.push(m);
     }
     const debris = [];
+    // (v10b : des cubes presque NOIRS sous le bloom, à côté des débris peints
+    // du studio -> teinte de la roche du sol, comme les Parts Slate en jeu)
+    const stoneDeb = new THREE.MeshStandardMaterial({ color: col("#8a7f73"), roughness: 1, flatShading: true });
     for (let i = 0; i < 26; i++) {
-      const m = new THREE.Mesh(new THREE.BoxGeometry(0.35 + 0.5 * rnd(), 0.3 + 0.4 * rnd(), 0.35 + 0.5 * rnd()), stoneD);
+      const m = new THREE.Mesh(new THREE.BoxGeometry(0.35 + 0.5 * rnd(), 0.3 + 0.4 * rnd(), 0.35 + 0.5 * rnd()), stoneDeb);
       m.castShadow = true; fxRoot.add(m);
       const a = rnd() * Math.PI * 2;
       debris.push({ m, v: new THREE.Vector3(Math.cos(a) * (8 + 12 * rnd()), 14 + 16 * rnd(), Math.sin(a) * (8 + 12 * rnd())), spin: new THREE.Vector3(rnd() * 9, rnd() * 9, rnd() * 9) });
@@ -642,7 +645,7 @@
   // ---- STUDIO VFX : impacts, air et son joués par les recettes du studio
   // (vfx_studio/lab/moteur.js), les mêmes que le labo et que le moteur Roblox
   // VFXStudio.luau. Temps interne = secondes RÉELLES depuis le déclenchement.
-  VFX.loadTextures(D.vfx.textures); VFX.loadMeshes(D.vfx.meshes); VFX.variantes = D.vfx.variantes;
+  VFX.loadTextures(D.vfx.textures); VFX.loadMeshes(D.vfx.meshes); VFX.variantes = D.vfx.variantes; VFX.loadModeles(D.vfx.modeles || {});
   const studios = E.filter((e) => e.kind === "studio").map((ev) => {
     const eff = VFX.Effet(ev.recette, scene);
     return { ev, eff, objs: eff.couches.map((c) => c.obj) };
@@ -936,9 +939,15 @@
   }
   buildTimeline();
   function beatOf(fa) { for (const [n, a, b] of BEATS) if (fa >= a && fa < b) return n; return "Fin"; }
+  // bloom = le BloomEffect de Lighting du jeu (le Neon et les particules
+  // LightEmission y débordent en lueur) ; sans lui, l'aperçu montrait les
+  // effets plus ternes qu'en jeu (auto-évaluation VFX, piste 2)
+  let bloom = null;
   function resize() {
     const r = stage.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
     renderer.setSize(r.width, r.height, false);
+    const db = renderer.getDrawingBufferSize(new THREE.Vector2());
+    bloom = VFX.Bloom(renderer, db.x, db.y, { srgb: true });
     fx.width = Math.round(r.width * dpr); fx.height = Math.round(r.height * dpr);
     camera.aspect = r.width / r.height; camera.updateProjectionMatrix();
   }
@@ -953,7 +962,8 @@
     applyBodyFlash(tr);
     placeCamera(tr, fa, sa, sv);
     for (const u of updaters) u(tr, fa, sa, sv, camera);
-    renderer.render(scene, camera);
+    if (useFx && bloom) bloom.render(scene, camera, { intensite: 0.55, seuil: 0.8, taille: 1.4 });
+    else { renderer.setRenderTarget(null); renderer.render(scene, camera); }
     drawScreen(tr, fa, sa);
     const T = total();
     scrub.value = String(Math.round(tr / T * 1000)); head.style.left = (Math.min(1, tr / T) * 100) + "%";
@@ -969,7 +979,7 @@
     requestAnimationFrame(frame);
   }
   // crochets de verification (captures automatiques)
-  window.__dragon = { sons: () => ({ planifies: sources.length, decodes: Object.keys(tampons).length, total: SONS.length }), seekFrame: (f) => { setPlaying(false); tr = realTimeOf(f) + 1e-4; render(); }, seekReal: (t) => { setPlaying(false); tr = t; render(); }, setCam, realTimeOf, total };
+  window.__dragon = { sons: () => ({ planifies: sources.length, decodes: Object.keys(tampons).length, total: SONS.length }), seekFrame: (f) => { setPlaying(false); tr = realTimeOf(f) + 1e-4; render(); }, seekReal: (t) => { setPlaying(false); tr = t; render(); }, setCam, realTimeOf, total, orbit };
   requestAnimationFrame(frame);
 })();
 </script>

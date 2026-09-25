@@ -69,7 +69,7 @@ RAFALE = _rafale_cfg()
 # (animator_brain/corpus/fiches/COUP_CHARGE.md) : grammaire du Serious Punch
 # (calme tenu -> armé violent -> poing VERS L'OBJECTIF -> cartes -> blanc).
 # DRAGON_FINAL="v8" rejoue l'aerien v8 a l'identique ; "v9a" / "v9b" = variantes.
-FINAL = os.environ.get("DRAGON_FINAL", "v9b")   # production v9 (choisie le 2026-09-25 : B, voir README v9)
+FINAL = os.environ.get("DRAGON_FINAL", "v10")   # production v10 : pose Izuku x Goku (2026-09-25) ; v9b = la v9
 sys.path.insert(0, os.path.join(HERE, "..", "..", "_shared"))
 
 from animator_brain import v222_rig as V  # noqa: E402
@@ -914,7 +914,9 @@ def attacker_keys(vw, rig):
                 "feet": {"L": ("c", (0.0, 0.95 * k, 1.35 * k)), "R": ("c", (0.1, -1.15 * k, 0.55 * k))},
                 "look": head(f),
                 "hands": {"R": ("w", (1.2, y + 4.5 + 0.2 * k, ax_z + back)), "L": ("w", (-0.55, y + 1.6, ax_z - 2.5))}}
-    if FINAL != "v8":
+    if FINAL.startswith("v10"):
+        aerien_v10(add, vw, head, target)
+    elif FINAL != "v8":
         aerien_v9(add, vw, head, target, FINAL)
     else:
         aerien_v8(add, vw, head, target, cocked, ax_z)
@@ -1042,6 +1044,104 @@ def aerien_v9(add, vw, head, target, variant):
         hr = ("t", (tuple(chest(f)), reach)) if f < STRIKE_F else ("w", tuple(chest(f)))   # contact exact
         add(f, dive(f, gap, 18, 26, -64, hr, ("a", (-150, -35, 1.9)), trail), "LINEAR")
     # le poing reste dans la victime pendant qu'elle tombe (comme la v8)
+    for f, rot, off in ((280, -62, (0.38, 1.7, 0.7)), (281, -59, (0.39, 1.75, 0.6)), (282, -55, (0.4, 1.8, 0.5)),
+                        (285, -42, (0.45, 1.65, 0.6))):
+        tg = target(f, "chest")
+        add(f, {"root": ((0.0, tg[1] + 1.0, tg[2] + 1.5), (rot, 0, 0)), "pelvis": ((0, 0, 0), (-12, 22, 0)),
+                "fit": ("R", tg, off, (1, 1, 1)), "chest": (0, 0.25, 0),
+                "feet": {"L": ("c", (0.0, 0.0, 0.3)), "R": ("c", (0.0, -0.4, 0.1))}, "look": tuple(tg),
+                "hands": {"R": ("w", tuple(tg)), "L": ("rw", (-1.4, 2.4, 0.6))}}, "LINEAR")
+
+def aerien_v10(add, vw, head, target):
+    """v10 : la POSE d'Izuku mélangée à celle de Goku (demande de Milan,
+    2026-09-25 : refs du Poing du Dragon de Goku SSJ3 + Deku 0ca551a4 /
+    09a83af0 ; fiches/COUP_CHARGE.md §7 et AURA_DRAGON.md).
+
+    - CALME VIVANT (200-224) : il flotte ; bassin et torse dérivent
+      (respiration, léger roulis), la tête suit la victime (fiche §7).
+    - INVOCATION (226-256, Goku f254bee5 / e92ac0d7) : le poing droit monte
+      vers le CIEL, bras tendu ; poing gauche serré à la hanche ; buste qui
+      s'OUVRE et se cambre, regard vers le poing. Tenue vivante portée par
+      le CORPS : le buste se cambre encore, le genou monte, les épaules se
+      tassent (fiche §7 : « le torse continue de s'enrouler »).
+    - PLONGÉE (256-278, Deku + vol de Goku 7a2b4ae8) : le CORPS bascule
+      d'abord ; le poing, parti du ciel, passe au-dessus de la tête en arc
+      puis se TEND vers la victime (et vers la caméra obari) ; épaule en
+      avant, tête basse derrière le poing, l'autre bras rentré contre le
+      flanc, jambes ensemble qui suivent derrière (fouet en retard).
+    Le contact et la chute reprennent la v9 (contact exact, poing dans la
+    victime qui tombe)."""
+    Vt = lambda f: np.asarray(vw[f]["Torso"][1], float)  # noqa: E731
+    chest = lambda f: np.asarray(target(f, "chest"), float)  # noqa: E731
+    HOV = np.array([0.0, 5.6, 2.8])
+
+    def sh_at(f, lift=0.0):
+        return Vt(f) + HOV + np.array([1.0, 0.5 + lift, 0.0])
+
+    look = lambda f: tuple(head(f))  # noqa: E731
+    # 1. CALME VIVANT : dérive lente du bassin et du torse, roulis, regard
+    for f, lift, lk, roll, tw in ((APEX_F, 0.0, -6, 0, -4), (206, 0.06, -7, 3, -2), (212, 0.12, -8, -2, -6),
+                                  (218, 0.16, -8, 2, -3), (224, 0.18, -9, -1, -5)):
+        add(f, {"root": ((0.0, 0.0, 0.0), (lk, 0, roll)), "pelvis": ((0, 0, 0), (2, tw, 0)), "chest": (0, 0.1 + 0.02 * (f % 3), 0),
+                "fit": ("R", tuple(sh_at(f, lift)), (0, 0, 0), (1, 1, 1)),
+                "feet": {"L": ("c", (0.0, 0.3, 0.35)), "R": ("c", (0.0, 0.0, 0.05))},
+                "hands": {"R": ("a", (110, -72, 1.9)), "L": ("a", (-110, -72, 1.9))},
+                "look": look(f)})
+
+    # 2. INVOCATION (Goku) : poing vers le ciel. Membres en directions MONDE
+    #    (leçon v9 : les axes locaux des contrôles trahissent la pose)
+    def invoque(f, cambre, poing_haut, genou, epaules, tw, wig=(0.0, 0.0)):
+        # v10b (tour à 8 caméras de la 1re version : un tas illisible, genou
+        # levé DEVANT le torse, tête cachée derrière le bras) : silhouette
+        # OUVERTE comme l'affiche e92ac0d7 -> corps droit, bras tendu à la
+        # verticale sur le CÔTÉ de la tête (pas au-dessus), poing gauche armé
+        # à la hanche coude en arrière, jambes qui pendent et traînent
+        # derrière (jamais devant le buste)
+        ciel = np.array([0.2 + 0.03 * wig[0], 1.0, 0.04 + 0.03 * wig[1]])
+        return {"root": ((0.0, 0.0, 0.0), (cambre, -10, 3)), "pelvis": ((0, 0, 0), (cambre * 0.4, tw, 0)),
+                "chest": (0, 0.35 + epaules, 0),
+                "fit": ("R", tuple(sh_at(f, 0.3 + poing_haut * 0.15)), (0, 0, 0), (1, 1, 1)),
+                "feet": {"L": ("d", ((-0.08, -1.0, 0.12), 2.0)), "R": ("d", ((0.1, -0.8, 0.45 + genou), 1.9))},
+                # cible AU-DELÀ de la portée (2,4) : le bras se tend, haut du bras
+                # au bord de la tête, bras 25° vers l'extérieur (le « V » de
+                # l'affiche) ; à 1,55 l'IK couchait le bras EN TRAVERS de la
+                # tête (mesuré : haut du bras au cou)
+                "hands": {"R": ("d", (tuple(ciel), 2.4)), "L": ("d", ((-0.25, -0.55, 0.75), 1.35))},
+                # regard DEVANT, menton levé (Goku défie l'adversaire) : visé
+                # droit au-dessus, la tête basculait de 90° (cube couché)
+                "look": tuple(Vt(f) + HOV + np.array([0.6, 2.0 + poing_haut, -6.0]))}
+    add(226, invoque(226, 2, 0.0, 0.0, 0.0, -6), "LINEAR")             # le buste part d'abord
+    add(230, invoque(230, 9, 0.5, 0.25, 0.05, -14))                   # dépasse
+    add(234, invoque(234, 7, 0.4, 0.2, 0.04, -12))
+    # tenue vivante : le CORPS monte en tension (cambrure, jambe, épaules)
+    for f, k, w in ((240, 0.25, (3, 2)), (246, 0.5, (-2, 3)), (251, 0.75, (2, -2))):
+        add(f, invoque(f, 7 + 3 * k, 0.4 + 0.3 * k, 0.2 + 0.2 * k, 0.04 + 0.06 * k, -12 - 8 * k, w))
+    add(SUSPEND_END_F, invoque(SUSPEND_END_F, 11, 0.75, 0.42, 0.11, -21), "LINEAR")
+
+    # 3. PLONGÉE (Izuku + vol de Goku)
+    s0 = sh_at(SUSPEND_END_F, 0.4)
+    ax = chest(STRIKE_F) - s0
+    ax = ax / np.linalg.norm(ax)
+    reach = 1.85
+
+    def dive(f, gap, yaw, twist, pitch, hand_r, hand_l, legs, chest_y=0.2):
+        tgt = chest(f)
+        return {"root": ((0.0, 0.0, 0.0), (pitch, yaw, 0)), "pelvis": ((0, 0, 0), (-8, twist, 0)), "chest": (0, chest_y, 0),
+                "fit": ("R", tuple(tgt - ax * (reach + gap)), (0, 0, 0), (1, 1, 1)),
+                "feet": legs, "hands": {"R": hand_r, "L": hand_l}, "look": tuple(tgt)}
+    # jambes ENSEMBLE derrière (vol de Goku), légèrement pliées, en retard
+    ensemble = lambda k: {"L": ("d", ((0.08, 0.35 * k, 1.0), 2.0)), "R": ("d", ((-0.02, 0.2 * k, 1.0), 1.9))}  # noqa: E731
+    # le corps bascule, le poing est encore au ciel puis passe AU-DESSUS de la
+    # tête (arc) ; le bras gauche se rentre contre le flanc
+    rentre = ("d", ((-0.25, -0.55, 0.8), 1.5))
+    add(260, dive(260, 3.9, -14, -26, -40, ("d", ((0.1, 0.8, 0.6), 2.0)), rentre,
+                  {"L": ("d", ((0.05, -0.6, 0.6), 2.0)), "R": ("d", ((0.1, -0.2, 0.9), 1.8))}), "LINEAR")
+    add(263, dive(263, 3.5, 6, 10, -58, ("d", ((0.05, 0.1, -1.0), 2.0)), rentre, ensemble(0.6)), "LINEAR")
+    # Izuku : bras TENDU vers la cible, épaule en avant, tête basse derrière
+    for f, gap in ((270, 1.9), (STRIKE_F, 0.0)):
+        hr = ("t", (tuple(chest(f)), reach)) if f < STRIKE_F else ("w", tuple(chest(f)))   # contact exact
+        add(f, dive(f, gap, 20, 30, -68, hr, rentre, ensemble(0.2 if f < STRIKE_F else 0.1), chest_y=0.45), "LINEAR")
+    # le poing reste dans la victime pendant qu'elle tombe (comme la v9)
     for f, rot, off in ((280, -62, (0.38, 1.7, 0.7)), (281, -59, (0.39, 1.75, 0.6)), (282, -55, (0.4, 1.8, 0.5)),
                         (285, -42, (0.45, 1.65, 0.6))):
         tg = target(f, "chest")

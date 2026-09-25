@@ -805,6 +805,14 @@ function DragonFist.play(attacker: Model, victim: Model, animations: Folder, dat
 		if dataMod then
 			vfx.configurer(require(dataMod).assets)
 		end
+		-- dragon 3D riggé (vfx_studio/modeles/dragon.fbx importé dans Studio,
+		-- renommé « DragonModele ») : à côté du script ou dans
+		-- ReplicatedStorage. Absent : repli sur le ruban de Beams + carte.
+		local modele = script.Parent:FindFirstChild("DragonModele")
+			or game:GetService("ReplicatedStorage"):FindFirstChild("DragonModele")
+		if modele then
+			vfx.configurer({ modeles = { dragon = modele } })
+		end
 	end
 	local highlight = Instance.new("Highlight")
 	highlight.Adornee = attacker

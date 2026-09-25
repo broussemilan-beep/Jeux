@@ -221,6 +221,16 @@
    "marge_px": 8,
    "mode": "à teinter",
    "role": "flamme d'aura à pointes, Loop"
+  },
+  {
+   "nom": "roches_cel",
+   "fichier": "roches_cel_2x2.png",
+   "grille": "Grid2x2",
+   "images": 4,
+   "resolution": 1024,
+   "marge_px": 8,
+   "mode": "peint",
+   "role": "débris de sol, 4 formes (départ aléatoire, 1 i/s)"
   }
  ],
  "rbxassetid": {}

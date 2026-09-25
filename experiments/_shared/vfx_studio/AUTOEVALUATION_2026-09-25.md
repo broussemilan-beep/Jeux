@@ -76,3 +76,22 @@ sans débris, et le son synthétique risque de sonner « jeu vidéo des années
 5. **Son** : banque d'enregistrements libres de droits (CC0) en couches
    sous la synthèse, et un vide plus long avant le coup chargé, décidé avec
    la mise en scène.
+
+## Après le retour de Milan (VFX 4/10) : v12
+
+Milan a mis **4** (je prédisais 6) : « le dragon est moche, pas du tout du
+modèle premium ; les VFX construits sont nuls par rapport au pack et aux
+refs ». Écart de 2 points : je comparais mes effets à MES versions
+précédentes, pas au pack (biais noté au CARNET §6).
+
+Ce que la v12 change, jugé cette fois contre les refs (captures
+`captures/verification/2026-09-25-v12-*`) :
+
+| moment | avant (v11) | v12 | ce qui manque encore face aux refs |
+|---|---|---|---|
+| dragon | ruban de Beams + carte peinte (autocollant) | modèle 3D riggé, écailles lisibles, crinière brune, gueule ouverte, nimbé de feu qui traîne derrière lui | tête lisse ; pas d'éclatement radial ni de tourbillon plein écran (GIF 7a2b4ae8) |
+| impact au sol | dôme, anneau, feu, fumée | + débris peints qui jaillissent et retombent, + bloom | fissures animées au sol, poussière rasante |
+| lecteur | sans bloom | bloom (= BloomEffect du jeu) | — |
+
+Estimation (avant l'avis de Milan, `notes_milan.jsonl` v12) : VFX 6
+(fourchette 5-7).

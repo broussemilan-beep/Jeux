@@ -87,6 +87,19 @@ def impact_couches(ancre="impact", coup=(0, 0, -1), palette=("#fff4d6", "#ffb23e
          "transparency": [[0, 0], [1, 0]], "color": [[0, "#ffffff"], [1, "#b9b4ae"]], "light_emission": 0,
          "rotation": [0, 360], "forme": {"sphere": 1.0 * s}},
     ]
+    if sol:
+        # 7. DÉBRIS (Stagnant Rage : des blocs de sol qui volent partout ;
+        #    écart n°1 de l'auto-évaluation) : blocs peints qui jaillissent en
+        #    cône, retombent (gravité) en tournoyant, + gravillons plus fins
+        roc = {"type": "particules", "texture": "roches_cel", "ancre": ancre, "light_emission": 0, "t0": t0,
+               "flipbook": {"grille": 2, "mode": "Loop", "fps": 1, "depart_aleatoire": True},
+               "rotation": [0, 360], "transparency": [[0, 0], [0.85, 0], [1, 1]], "color": "#ffffff"}
+        couches += [
+            dict(roc, nom="debris", emit=16, lifetime=[0.9, 1.4], speed=[24 * s, 44 * s], spread=[38, 38], drag=0.5,
+                 accel=[0, -62 * s, 0], size=[[0, 1.2 * s], [1, 1.0 * s]], rotspeed=[-420, 420]),
+            dict(roc, nom="gravillons", emit=26, lifetime=[0.6, 1.0], speed=[16 * s, 34 * s], spread=[65, 65], drag=0.8,
+                 accel=[0, -55 * s, 0], size=[[0, 0.42 * s], [1, 0.36 * s]], rotspeed=[-600, 600]),
+        ]
     if not sol:
         # EN L'AIR : pas d'anneau ni de vague au sol ; le dôme devient une
         # coquille orientée dans le sens du coup
@@ -277,6 +290,7 @@ VERT_OFA = "#6dff8a"   # vert One For All (Izuku)
 def serpent(images, t0, duree, largeur=None, naissance=0.25, mort=None, tete=True, vitesse=1.5, taille_tete=(4.4, 2.2),
             couleur="#ffffff", modele="dragon", echelle=0.7):
     """Corps de DRAGON (fiches/AURA_DRAGON.md) : `images` = [[t, [[x,y,z]...]]]
+    (t en temps de RECETTE, pas relatif à t0 : piège de la v10a)
     (tête en premier), temps relatifs à la recette. Naît de la tête vers la
     queue en `naissance` (fraction de la durée) ; `mort` = (début, "tete" |
     "queue") : se dissout depuis ce bout-là."""
@@ -301,6 +315,75 @@ def serpent(images, t0, duree, largeur=None, naissance=0.25, mort=None, tete=Tru
     if tete:
         L["tete"] = {"texture": "dragon_tete", "texture_miroir": "dragon_tete_miroir", "taille": list(taille_tete), "cou": 0.1}
     return L
+
+
+def _interp(seq_, a):
+    """Valeur d'une séquence [[t, v], ...] (t dans 0-1) en a."""
+    if a <= seq_[0][0]:
+        return seq_[0][1]
+    for (t0, v0), (t1, v1) in zip(seq_, seq_[1:]):
+        if a <= t1:
+            return v0 + (v1 - v0) * ((a - t0) / (t1 - t0) if t1 > t0 else 1.0)
+    return seq_[-1][1]
+
+
+def _point_abscisse(pts, s):
+    """Point à l'abscisse curviligne s (0 = tête, 1 = queue) d'une polyligne."""
+    import numpy as np
+    P = np.asarray(pts, float)
+    seg = np.linalg.norm(np.diff(P, axis=0), axis=1)
+    cum = np.concatenate([[0.0], np.cumsum(seg)])
+    x = s * cum[-1]
+    i = int(min(len(seg) - 1, np.searchsorted(cum, x, side="right") - 1))
+    u = (x - cum[i]) / seg[i] if seg[i] > 1e-9 else 0.0
+    return P[i] + (P[i + 1] - P[i]) * u
+
+
+def flammes_corps(L, n=7, rate=16, palette=("#fff4c8", "#ffb02e", "#ff4d12"), halo=True):
+    """Feu qui COULE le long du dragon (fiches/AURA_DRAGON.md §0 bis ; le
+    GIF 7a2b4ae8 : le dragon sort d'un tourbillon de feu et en reste nimbé).
+    Un modèle 3D nu se lit comme une statue dorée ; les refs le montrent
+    ENVELOPPÉ d'énergie. `n` émetteurs, chacun sur un CHEMIN = le point
+    d'abscisse s_k du corps à chaque image : c'est de la donnée, les trois
+    moteurs le jouent sans code nouveau (Roblox : n Attachments déplacés à
+    chaque image, les particules gardent leur vitesse de naissance -> les
+    flammes TRAÎNENT derrière le corps en mouvement). Chaque émetteur ne
+    brûle que pendant que son bout de corps est visible (naissance, mort)."""
+    images, t0, duree = L["images"], L["t0"], L["duree"]
+    k_ech = L.get("echelle", 0.7)
+    blanc, chaud, fonce = palette
+    out = []
+    for k in range(n):
+        s = 0.06 + 0.84 * k / max(1, n - 1)
+        chemin, vis = [], []
+        for t, pts in images:
+            a = (t - t0) / duree
+            s0 = _interp(L.get("tete_visible", [[0, 0], [1, 0]]), a)
+            s1 = _interp(L.get("queue_visible", [[0, 1], [1, 1]]), a)
+            p = _point_abscisse(pts, s)
+            chemin.append([round(t, 4)] + [round(float(v), 3) for v in p])
+            if s0 <= s <= s1:
+                vis.append(t)
+        if len(vis) < 2:
+            continue
+        ta, tb = max(t0, vis[0]), min(t0 + duree, vis[-1])
+        taille = 2.6 * k_ech * (1.15 - 0.6 * s)          # plus gros au cou, fin vers la queue
+        out.append({"type": "particules", "nom": f"flamme_corps_{k}", "t0": round(ta, 4),
+                    "duree_emission": round(tb - ta, 4), "rate": rate, "ancre": {"chemin": chemin},
+                    "texture": "flamme_aura", "flipbook": {"grille": 4, "mode": "Loop", "fps": 24, "depart_aleatoire": True},
+                    "lifetime": [0.28, 0.5], "speed": [0.6 * k_ech, 2.2 * k_ech], "spread": [180, 180], "drag": 2.5,
+                    "accel": [0, 5 * k_ech, 0], "size": [[0, 0.5 * taille], [0.35, taille], [1, 0.25 * taille]],
+                    "transparency": [[0, 0.35], [0.25, 0.05], [1, 1]],
+                    "color": [[0, blanc], [0.45, chaud], [1, fonce]], "light_emission": 1,
+                    "rotation": [-25, 25], "rotspeed": [-40, 40], "zoffset": 0.3})
+        if halo and k % 2 == 0:
+            # lueur douce autour du corps (le bloom que Roblox ajoute au Neon)
+            out.append({"type": "particules", "nom": f"lueur_corps_{k}", "t0": round(ta, 4),
+                        "duree_emission": round(tb - ta, 4), "rate": 6, "ancre": {"chemin": chemin},
+                        "texture": "halo", "lifetime": [0.3, 0.45], "speed": [0, 0.3], "spread": [180, 180],
+                        "size": [[0, 2.2 * taille], [1, 2.8 * taille]], "transparency": [[0, 0.7], [0.4, 0.6], [1, 1]],
+                        "color": chaud, "light_emission": 1})
+    return out
 
 
 def eclairs(ancre, t0, duree, rayon=1.2, nombre=6, longueur=(0.9, 2.0), couleur=VERT_OFA, largeur=0.38, periode=0.05,
@@ -336,6 +419,7 @@ def dragon_aura_demo():
             for k in range(0, 61)]
     # (éclairs verts retirés : Milan voulait la POSE d'Izuku, pas ses éclairs)
     c = [serpent(imgs, 0.0, 2.0, naissance=0.3, mort=(0.8, "queue"))]
+    c += flammes_corps(c[0])
     r = recette("dragon_aura_demo", c, titre="Dragon : aura (démo)")
     r["cameras"] = {"large": {"oeil": [11, 6, 9], "cible": [0, 3.5, 0], "fov": 50},
                     "proche": {"oeil": [3.5, 8.8, 7.5], "cible": [1.5, 7.0, 1.0], "fov": 45},

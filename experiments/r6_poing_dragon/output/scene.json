@@ -87,7 +87,7 @@
  "upper_f": 150,
  "final_f": 150,
  "final_side": "R",
- "aerien": "v9b",
+ "aerien": "v10",
  "white": [
   304,
   334
@@ -740,7 +740,21 @@
     }
    ],
    [
+    206,
+    {
+     "hands.R": 0.0,
+     "hands.L": 0.0
+    }
+   ],
+   [
     212,
+    {
+     "hands.R": 0.0,
+     "hands.L": 0.0
+    }
+   ],
+   [
+    218,
     {
      "hands.R": 0.0,
      "hands.L": 0.0
@@ -756,26 +770,26 @@
    [
     226,
     {
-     "feet.L": 0.0023,
-     "feet.R": 0.0003,
+     "feet.L": 0.0001,
+     "feet.R": 0.0,
      "hands.R": 0.0,
-     "hands.L": 0.0
+     "hands.L": 0.0001
     }
    ],
    [
     230,
     {
-     "feet.L": 0.0032,
-     "feet.R": 0.0005,
+     "feet.L": 0.0003,
+     "feet.R": 0.0,
      "hands.R": 0.0,
-     "hands.L": 0.0
+     "hands.L": 0.0001
     }
    ],
    [
     234,
     {
-     "feet.L": 0.0032,
-     "feet.R": 0.0006,
+     "feet.L": 0.0002,
+     "feet.R": 0.0,
      "hands.R": 0.0,
      "hands.L": 0.0
     }
@@ -783,8 +797,8 @@
    [
     240,
     {
-     "feet.L": 0.0032,
-     "feet.R": 0.0005,
+     "feet.L": 0.0003,
+     "feet.R": 0.0,
      "hands.R": 0.0,
      "hands.L": 0.0
     }
@@ -792,33 +806,35 @@
    [
     246,
     {
-     "feet.L": 0.0032,
-     "feet.R": 0.0005,
+     "feet.L": 0.0003,
+     "feet.R": 0.0,
      "hands.R": 0.0,
-     "hands.L": 0.0
+     "hands.L": 0.0001
     }
    ],
    [
     251,
     {
-     "feet.L": 0.0032,
-     "feet.R": 0.0007,
+     "feet.L": 0.0003,
+     "feet.R": 0.0,
      "hands.R": 0.0,
-     "hands.L": 0.0
+     "hands.L": 0.0002
     }
    ],
    [
     256,
     {
-     "feet.L": 0.0032,
-     "feet.R": 0.0006,
+     "feet.L": 0.0003,
+     "feet.R": 0.0001,
      "hands.R": 0.0,
-     "hands.L": 0.0
+     "hands.L": 0.0003
     }
    ],
    [
     260,
     {
+     "feet.L": 0.0,
+     "feet.R": 0.0001,
      "hands.R": 0.0,
      "hands.L": 0.0
     }
@@ -826,49 +842,55 @@
    [
     263,
     {
+     "feet.L": 0.0002,
+     "feet.R": 0.0,
      "hands.R": 0.0,
-     "hands.L": 0.0003
+     "hands.L": 0.0
     }
    ],
    [
     270,
     {
+     "feet.L": 0.0008,
+     "feet.R": 0.0,
      "hands.R": 0.0,
-     "hands.L": 0.0003
+     "hands.L": 0.0
     }
    ],
    [
     278,
     {
-     "hands.R": 0.0003,
-     "hands.L": 0.0003
+     "feet.L": 0.0006,
+     "feet.R": 0.0,
+     "hands.R": 0.0,
+     "hands.L": 0.0
     }
    ],
    [
     280,
     {
-     "hands.R": 0.0,
+     "hands.R": 0.001,
      "hands.L": 0.0
     }
    ],
    [
     281,
     {
-     "hands.R": 0.0006,
+     "hands.R": 0.0003,
      "hands.L": 0.0
     }
    ],
    [
     282,
     {
-     "hands.R": 0.0003,
+     "hands.R": 0.0,
      "hands.L": 0.0
     }
    ],
    [
     285,
     {
-     "hands.R": 0.0299,
+     "hands.R": 0.0,
      "hands.L": 0.0006
     }
    ],
@@ -922,7 +944,7 @@
     {
      "feet.L": 0.0003,
      "feet.R": 0.0,
-     "hands.R": 0.0001,
+     "hands.R": 0.0002,
      "hands.L": 0.0
     }
    ],

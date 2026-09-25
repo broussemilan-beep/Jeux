@@ -280,6 +280,39 @@ def flamme_aura(k, n_img, n=256, graine=41):
     return Image.fromarray(np.dstack([g, g, g, (a * 255).astype(np.uint8)]), "RGBA")
 
 
+def roches_cel(k, n_img, n=256, graine=53):
+    """DÉBRIS de sol peints (Stagnant Rage : des blocs qui volent partout ;
+    auto-évaluation VFX, piste 1). Éclat de roche anguleux, 3 tons cel :
+    facette éclairée, corps, facette d'ombre, contour brun sombre. 4 formes
+    (planche 2x2) : chaque particule en tire une au hasard."""
+    rng = np.random.default_rng(graine + 17 * k)
+    m = rng.integers(5, 8)
+    ang = np.sort(rng.uniform(0, 2 * math.pi, m))
+    rad = rng.uniform(0.55, 0.92, m)
+    px, py = rad * np.cos(ang), rad * np.sin(ang) * rng.uniform(0.65, 0.95)
+    x, y = grille(n)
+    # distance signée au polygone convexe (max des demi-plans)
+    d = np.full_like(x, -1e9)
+    for i in range(m):
+        ax_, ay_ = px[i], py[i]
+        bx_, by_ = px[(i + 1) % m], py[(i + 1) % m]
+        nx_, ny_ = by_ - ay_, -(bx_ - ax_)
+        ln = math.hypot(nx_, ny_) + 1e-9
+        d = np.maximum(d, ((x - ax_) * nx_ + (y - ay_) * ny_) / ln)
+    ext = lisse(d, 0.02)
+    corps = lisse(d + 0.07, 0.02)
+    # facette éclairée en haut à gauche, ombre en bas à droite (coupe en biais)
+    cx, cy = rng.uniform(-0.15, 0.15), rng.uniform(-0.15, 0.15)
+    haut = ((x - cx) * 0.6 + (y - cy) * 1.0) < -0.12
+    bas = ((x - cx) * -0.4 + (y - cy) * 1.0) > 0.22
+    rgb = np.zeros((n, n, 3), np.float32)
+    rgb[:] = (0.16, 0.11, 0.08)                               # contour
+    base = np.array((0.52, 0.45, 0.38))
+    col = np.where(haut[..., None], np.array((0.78, 0.72, 0.62)), np.where(bas[..., None], np.array((0.30, 0.25, 0.21)), base))
+    rgb = rgb * (1 - corps[..., None]) + col * corps[..., None]
+    return Image.fromarray(np.dstack([(rgb * 255).astype(np.uint8), (ext * 255).astype(np.uint8)]), "RGBA")
+
+
 FORMES = {
     "croissant": (croissant, "à teinter", "trace d'un coup, coupe, vent (VelocityPerpendicular ou mesh)"),
     "eclat": (eclat, "à teinter", "étincelle acérée orientée (VelocityParallel)"),
@@ -296,6 +329,7 @@ FLIPBOOKS = {
     "fumee_cel": (fumee_cel, 16, 4, "à teinter", "bouffée de fumée cel 2 tons, OneShot"),
     "feu_cel": (feu_cel, 16, 4, "peint", "feu cel à contour, OneShot"),
     "flamme_aura": (flamme_aura, 16, 4, "à teinter", "flamme d'aura à pointes, Loop"),
+    "roches_cel": (roches_cel, 4, 2, "peint", "débris de sol, 4 formes (départ aléatoire, 1 i/s)"),
 }
 
 
