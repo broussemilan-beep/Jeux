@@ -6,8 +6,13 @@ sur notre v7 :
 - avance_studs : déplacement du torse vers la cible entre f-15 et f+3
   (Sikasisi : « avancer de 1 à 2 studs à la frappe » ; bizfr : avancer
   puis reculer) ;
-- rot_torse_deg : rotation du torse (lacet) sur la même fenêtre (Wimshurst :
-  le bras libre part d'abord pour faire tourner les hanches) ;
+- rot_torse_deg : rotation NETTE du torse (lacet, début -> fin de fenêtre) ;
+- amp_torse_deg : AMPLITUDE du lacet (max - min) sur la même fenêtre
+  (Wimshurst : les hanches tournent). ATTENTION (2026-09-25) : comparer
+  les amplitudes, pas les nettes. Notre torse part en contre-rotation puis
+  revient, donc sa nette est petite alors que son amplitude est au niveau
+  de TSB. Conclure sur la nette avait fait écrire à tort « deux fois moins
+  que TSB ».
 - fouet_images : image du pic de vitesse du poing moins image du pic de
   rotation du torse (> 0 : le torse mène, « whip frame ») ;
 - écart médian entre clés (Sikasisi : 2 à 4 images ; Thundey : 5).
@@ -28,7 +33,8 @@ def mes(w, f, h):
     vf = [0.0] + [float(np.linalg.norm(P.tip(b, h) - P.tip(a, h))) for a, b in zip(w, w[1:])]
     pt = lo + int(np.argmax(vy[lo:f + 2])); pf = lo + int(np.argmax(vf[lo:f + 2]))
     rot = float(np.degrees(abs(ys[min(f+1,len(w)-1)] - ys[lo])))
-    return dict(avance_studs=round(avance, 2), rot_torse_deg=round(rot), fouet_images=pf - pt)
+    amp = float(np.degrees(ys[lo:hi + 1].max() - ys[lo:hi + 1].min()))
+    return dict(avance_studs=round(avance, 2), rot_torse_deg=round(rot), amp_torse_deg=round(amp), fouet_images=pf - pt)
 def cles(s):
     t = np.array([x[0] for x in s["frames"]]) * 60
     return round(float(np.median(np.diff(t))), 1) if len(t) > 1 else None

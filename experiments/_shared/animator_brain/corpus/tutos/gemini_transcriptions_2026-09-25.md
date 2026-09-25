@@ -177,10 +177,11 @@ sortie `output/tutos_vs_tsb.txt`) :
   - Chez TSB, l'avancée vient surtout du script (P1 de `recherche/roblox`).
   - **Pas un manque chez nous.**
 - **Rotation du torse pendant la frappe (Wimshurst : les hanches tournent).**
-  - TSB M1-M3 : 84-110° ; Collateral Ruin : 187° ; M4 : 31°.
-  - v7 rafale : 33-68°, soit environ **la moitié**. Ça rejoint « poses ~2x
-    trop sages ».
-  - Coup chargé : 132°, dans la norme.
+  - **Corrigé le 2026-09-25 (relecture des refs).** J'avais écrit « la
+    moitié de TSB » en comparant des rotations NETTES (v7 33-68° contre TSB
+    84-110°).
+  - En AMPLITUDE : v7 53-116°, TSB 77-111°. On est au niveau.
+  - Voir `CARNET.md` §2.1b.
 - **Fouet (le torse mène le poing).**
   - TSB : de -5 à +4 images selon le coup. Trop bruité pour conclure.
   - v7 h1 et h3 : -7 et -8. Le poing atteint sa vitesse max bien AVANT le

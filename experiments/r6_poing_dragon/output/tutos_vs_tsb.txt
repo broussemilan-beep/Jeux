@@ -1,18 +1,18 @@
-TSB Collateral Ruin f 77 {'avance_studs': 0.68, 'rot_torse_deg': 187, 'fouet_images': -2} ecart_cles_median 3.3
-TSB M1 f 9 {'avance_studs': 0.07, 'rot_torse_deg': 93, 'fouet_images': 3} ecart_cles_median 4.0
-TSB M2 f 12 {'avance_studs': 0.65, 'rot_torse_deg': 84, 'fouet_images': 0} ecart_cles_median 4.0
-TSB M3 f 8 {'avance_studs': -0.42, 'rot_torse_deg': 110, 'fouet_images': 4} ecart_cles_median 4.0
-TSB M4 f 23 {'avance_studs': -0.0, 'rot_torse_deg': 31, 'fouet_images': -5} ecart_cles_median 2.0
-PACK [2] M1_1 f 12 {'avance_studs': 0.25, 'rot_torse_deg': 48, 'fouet_images': -11} ecart_cles_median 1.0
-PACK [2] M1_2 f 11 {'avance_studs': -0.14, 'rot_torse_deg': 120, 'fouet_images': 3} ecart_cles_median 1.0
-PACK [2] M1_3 f 0 {'avance_studs': -0.1, 'rot_torse_deg': 0, 'fouet_images': 0} ecart_cles_median 1.0
-PACK [2] M1_4 f 17 {'avance_studs': 0.19, 'rot_torse_deg': 146, 'fouet_images': 2} ecart_cles_median 1.0
-PACK [3] Downslam V1 f 22 {'avance_studs': 0.06, 'rot_torse_deg': 24, 'fouet_images': -3} ecart_cles_median 1.0
-PACK [3] Downslam V2 f 7 {'avance_studs': -0.16, 'rot_torse_deg': 42, 'fouet_images': -3} ecart_cles_median 1.0
-PACK [3] Uppercut f 21 {'avance_studs': 0.57, 'rot_torse_deg': 60, 'fouet_images': 2} ecart_cles_median 0.9
+TSB Collateral Ruin f 77 {'avance_studs': 0.68, 'rot_torse_deg': 187, 'amp_torse_deg': 245, 'fouet_images': -2} ecart_cles_median 3.3
+TSB M1 f 9 {'avance_studs': 0.07, 'rot_torse_deg': 93, 'amp_torse_deg': 102, 'fouet_images': 3} ecart_cles_median 4.0
+TSB M2 f 12 {'avance_studs': 0.65, 'rot_torse_deg': 84, 'amp_torse_deg': 90, 'fouet_images': 0} ecart_cles_median 4.0
+TSB M3 f 8 {'avance_studs': -0.42, 'rot_torse_deg': 110, 'amp_torse_deg': 111, 'fouet_images': 4} ecart_cles_median 4.0
+TSB M4 f 23 {'avance_studs': -0.0, 'rot_torse_deg': 31, 'amp_torse_deg': 77, 'fouet_images': -5} ecart_cles_median 2.0
+PACK [2] M1_1 f 12 {'avance_studs': 0.25, 'rot_torse_deg': 48, 'amp_torse_deg': 109, 'fouet_images': -11} ecart_cles_median 1.0
+PACK [2] M1_2 f 11 {'avance_studs': -0.14, 'rot_torse_deg': 120, 'amp_torse_deg': 137, 'fouet_images': 3} ecart_cles_median 1.0
+PACK [2] M1_3 f 0 {'avance_studs': -0.1, 'rot_torse_deg': 0, 'amp_torse_deg': 6, 'fouet_images': 0} ecart_cles_median 1.0
+PACK [2] M1_4 f 17 {'avance_studs': 0.19, 'rot_torse_deg': 146, 'amp_torse_deg': 162, 'fouet_images': 2} ecart_cles_median 1.0
+PACK [3] Downslam V1 f 22 {'avance_studs': 0.06, 'rot_torse_deg': 24, 'amp_torse_deg': 33, 'fouet_images': -3} ecart_cles_median 1.0
+PACK [3] Downslam V2 f 7 {'avance_studs': -0.16, 'rot_torse_deg': 42, 'amp_torse_deg': 57, 'fouet_images': -3} ecart_cles_median 1.0
+PACK [3] Uppercut f 21 {'avance_studs': 0.57, 'rot_torse_deg': 60, 'amp_torse_deg': 114, 'fouet_images': 2} ecart_cles_median 0.9
 v7 ecart cles median 1.0 (rafale f0-110: 1.0 )
-v7 h1 {'avance_studs': 0.54, 'rot_torse_deg': 33, 'fouet_images': -7}
-v7 h2 {'avance_studs': 0.33, 'rot_torse_deg': 55, 'fouet_images': 1}
-v7 h3 {'avance_studs': 0.94, 'rot_torse_deg': 68, 'fouet_images': -8}
-v7 h4 {'avance_studs': 1.03, 'rot_torse_deg': 60, 'fouet_images': -1}
-v7 coup_charge {'avance_studs': 1.03, 'rot_torse_deg': 132, 'fouet_images': 0}
+v7 h1 {'avance_studs': 0.54, 'rot_torse_deg': 33, 'amp_torse_deg': 53, 'fouet_images': -7}
+v7 h2 {'avance_studs': 0.33, 'rot_torse_deg': 55, 'amp_torse_deg': 99, 'fouet_images': 1}
+v7 h3 {'avance_studs': 0.94, 'rot_torse_deg': 68, 'amp_torse_deg': 98, 'fouet_images': -8}
+v7 h4 {'avance_studs': 1.03, 'rot_torse_deg': 60, 'amp_torse_deg': 116, 'fouet_images': -1}
+v7 coup_charge {'avance_studs': 1.03, 'rot_torse_deg': 132, 'amp_torse_deg': 138, 'fouet_images': 0}

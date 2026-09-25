@@ -126,17 +126,29 @@ slow against the fast ».
     plus que les chiffres).
   - Avec Williams et la mesure TSB, ça fait quatre sources indépendantes.
     Reste une piste tant que Milan n'a pas vu d'essai.
+- **Cinquième source, relue le 2026-09-25** (ref de Milan : tuto dessiné
+  firytwig, texte lu en pleine résolution) : « Keep the inbetweens close to
+  the chamber », « Do not ease out » (vers la pose de frappe), « Even 1
+  frame of chamber matters ». Et la mesure tient sur les M1 de TSB
+  ENCHAÎNÉS : 2,3-3,7 contre 0,55-1,49 chez nous
+  (`RELECTURE_REFS_ANIMATION_2026-09-25.md`).
 
-**2.1b La rafale v7 tourne le torse deux fois moins que TSB.** *Mesuré
-chez nous* (`r6_poing_dragon/scripts/tutos_vs_tsb.py`).
-- Lacet du torse entre f-15 et le contact :
-  - TSB M1-M3 : 84-110° ; M4 : 31° ; Collateral Ruin : 187° ;
-  - v7 h1-h4 : 33-68° ; coup chargé : 132°.
-- Wimshurst : le bras libre part d'abord pour lancer la rotation des
-  hanches ; un coup puissant sort le centre de gravité de l'axe des pieds.
-- **À essayer** avec 2.1 : torsion ~x1,5 et x2 sur la rafale.
-  Contre-indication connue : l'épaule qui monte (règle « épaules jamais
-  haussées », conflit déjà vu en v7).
+**2.1b Torsion du torse de la rafale : AU NIVEAU de TSB (erreur corrigée).**
+*Mesuré chez nous* (`r6_poing_dragon/scripts/tutos_vs_tsb.py`).
+- Le 2026-09-25 au soir, j'avais écrit « deux fois moins que TSB ». C'était
+  **faux**. J'avais comparé la rotation NETTE (début -> fin de fenêtre) :
+  - v7 : 33-68° ;
+  - TSB : 84-110°.
+- Or notre torse part d'abord en contre-rotation puis revient. En
+  AMPLITUDE (max - min), on est au niveau :
+  - v7 h1-h4 : 53 / 99 / 98 / 116° (le jab est à 53°, normal pour un jab) ;
+  - TSB M1-M4 : 102 / 90 / 111 / 77° ;
+  - l'étude visuelle du 2026-09-24 avait déjà mesuré 98-137°.
+- Relecture des refs (2026-09-25) : les tutos « pro » de Moon et Blender
+  montrent ~180° (le « BACK » face caméra), au-dessus de TSB. C'est un
+  registre de démonstration, pas la norme du jeu.
+- Leçon de méthode : avant de conclure sur un écart, vérifier qu'on compare
+  la même grandeur. Une nette et une amplitude ne se comparent pas.
 
 **2.1c Clés espacées contre cuisson image par image.** *Mesuré chez nous* +
 *lu par Gemini*.
@@ -197,6 +209,28 @@ le « snap ».
 d'après.** *Extrait* (Sakurai « Follow-Throughs Make the Impact », Cooper).
 - Rejoint `pose_apres_tenue` (tutos). Même idée par trois chemins.
 
+**2.5b Le silence avant, et entre.** *Vu dans les refs de Milan*
+(relecture du 2026-09-25).
+- Tenue AVANT de partir :
+  - 0,42-0,48 s debout avant un saut (deux jeux de la même famille) ;
+  - 1,53 s immobile en caméra de jeu avant l'élan (Stagnant Rage) ;
+  - 1,07 s avant la Black Hole.
+- Silence ENTRE deux actions qui montent : 0,3 s de pause, puis une action
+  plus grosse (aafdc91d).
+- À essayer : une pause nette entre la rafale et le coup chargé. Chez nous
+  la charge s'enchaîne sans silence ; à mesurer avec `planche_ref.py`
+  avant d'y toucher.
+- Contre-indication : en jeu, une tenue avant de partir coûte en
+  réactivité. Réservée aux techniques qui prennent la main (ultime,
+  cinématique).
+
+**2.6b La suite peut être très longue.** *Vu dans les refs.*
+- Mannequin : extension tenue et prolongée ~2 s après un coup chargé.
+- « First time fighting a dummy » : ~4 s de gros plan sur l'attitude du
+  perso après l'action.
+- Projection : 0,8 s sur le résultat.
+- Le paiement d'un coup peut être le personnage (attitude), pas le coup.
+
 ## 3. La 3D qui imite l'anime
 
 **3.1 Perspective forcée : avancer le bras, pas élargir le FOV.** *Texte
@@ -240,6 +274,24 @@ par coup.
 par agent* (slides ASW « Bone Placement Tips »).
 - Tester les pivots sur les poses les plus violentes, pas sur l'idle.
 
+**3.6 Pose tenue en déplacement.** *Vu dans les refs* (boxeur 58322fc4).
+- Une seconde avec la MÊME silhouette forte (très bas, torse ~45°, gants
+  au visage) pendant que le corps fonce.
+- La vitesse est lue par les lignes horizontales et la caméra qui suit,
+  pas par des membres qui s'agitent. Puis frappe en ~2 images et flash.
+- Contraire de notre rafale, où les bras bougent tout le temps. Piste pour
+  une ruée vers la cible.
+
+**3.7 De dos, une rafale se lit par ce qui dépasse de la silhouette.** *Vu
+dans les refs + mesuré.*
+- Gatling vu de dos (a0341700) : corps presque fixe, multiples de poings
+  et traînées blanches tout AUTOUR de la silhouette (côtés, dessus).
+- Recoupe §1.2 : de dos, le bras qui frappe est caché par le torse chez
+  tout le monde. La lecture passe par ce qui dépasse.
+- À essayer pour notre rafale en caméra de jeu : effets qui sortent de la
+  silhouette (éclats latéraux, multiples), plutôt que chercher à montrer
+  le bras.
+
 ## 4. Hitstop et caméra
 
 **4.1 Secousse de caméra : rotation, bruit lisse, trauma².** *Texte
@@ -274,13 +326,16 @@ d'impact ; intervalles automatiques → pas de vie. Donc trop = juste.
 
 ## 5. Pistes à essayer (classées, aucune n'est décidée)
 
-1. **Rafale : ré-armement lent, frappe rapide, torsion x1,5-2, clés
-   espacées** (2.1, 2.1b, 2.1c, 2.3). Quatre sources + trois mesures
-   contre TSB. Mesures prêtes : `regard_v7_vs_tsb.py`, `tutos_vs_tsb.py`.
+1. **Rafale : ré-armement lent, frappe rapide, clés espacées** (2.1,
+   2.1c, 2.3). Quatre sources, plus le contraste mesuré contre TSB : même
+   avec les M1 enchaînés, 2,3-3,7 chez TSB contre 0,55-1,49 chez nous. La
+   torsion est hors de cause (2.1b corrigé). Mesures prêtes : `regard_v7_vs_tsb.py`, `tutos_vs_tsb.py`.
 2. **Contact du coup chargé vu avant les cartes, ou sauté** (2.2). Deux
    variantes en boucle.
 3. **Secousse rotation + bruit lisse** (4.1). A/B, même dose.
 4. **Caméra immobile pendant les tenues** (3.4).
+4b. **Silence avant le coup chargé** (2.5b) et **formes hors silhouette
+   pour la rafale de dos** (3.7).
 5. **Victime secouée pendant le gel** (4.2).
 6. **Aérien Saitama/obari** : perspective forcée (3.1), déjà prototypée,
    à porter dans le rig V2.22.

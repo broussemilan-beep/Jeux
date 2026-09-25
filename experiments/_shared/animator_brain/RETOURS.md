@@ -363,7 +363,9 @@ cerveau, voir la fin de l'entrée.
     1. « Avancer d'1-2 studs à la frappe » : on le fait déjà (0,3-1,0 dans
        l'anim, TSB ≤ 0,7). Pas un manque.
     2. Rotation du torse pendant la frappe : rafale v7 33-68°, TSB M1-M3
-       84-110°. Deux fois moins.
+       84-110°. J'en avais conclu « deux fois moins » : **conclusion fausse**,
+       corrigée plus bas (relecture des refs). Je comparais des rotations
+       nettes, pas des amplitudes.
     3. Clés espacées de 2-4 images (Sikasisi, TSB mesuré) : la v7 exporte
        une clé par image. Le plan v7 prévoyait des clés éparses ; seul un
        A/B l'a fait.
@@ -371,3 +373,24 @@ cerveau, voir la fin de l'entrée.
     follow-through lent) et Wimshurst (fouet, timing 3/5/1/1/4/5)
     rejoignent Williams et la mesure de contraste de la rafale.
     C'est maintenant la piste n°1 du `CARNET.md` §5, pas encore appliquée.
+
+- **2026-09-25, relecture ANIMATION de toutes les refs de Milan** (26
+  vidéos/GIF) : `corpus/RELECTURE_REFS_ANIMATION_2026-09-25.md`.
+  - **Méthode.** Nouvel outil `outils/planche_ref.py` (tenues, pics,
+    énergie). Notes écrites à froid, AVANT de relire l'étude du 24.
+  - **Nouveau :**
+    - tenues pro contre noob mesurées (19 % contre 0 %, à contraste de
+      vitesse égal) ;
+    - pose tenue en déplacement ;
+    - silence avant et entre les actions ;
+    - suites très longues ;
+    - la rafale de dos se lit par ce qui dépasse de la silhouette.
+  - **Erreur corrigée.** « Torsion deux fois moins que TSB » (hier soir)
+    était faux : je comparais des rotations nettes. En amplitude, on est au
+    niveau (53-116° contre 77-111°).
+  - **Confirmé et renforcé.** Le contraste ré-armement / frappe de la
+    rafale (0,55-1,49 contre 2,3-3,7 sur les M1 TSB enchaînés). Le tuto
+    firytwig le disait déjà : lu le 24, mais on avait mesuré les durées,
+    pas la vitesse relative.
+  - **Nuance.** Les M1 TSB n'ont pas de tenue dans le clip (hitstop moteur)
+    : pas un manque de notre rafale.
