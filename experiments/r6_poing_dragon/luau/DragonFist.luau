@@ -517,6 +517,16 @@ local function crater(ctx, ev)
 	scar.Size = Vector3.new(0.12, ev.radius * 1.45, ev.radius * 1.45)
 	scar.CFrame = CFrame.new(center + Vector3.new(0, 0.02, 0)) * CFrame.Angles(0, 0, math.rad(90))
 	scar.Parent = model
+	-- v13e : BRAISE au fond du cratere (la consequence etait trop sombre) :
+	-- lumiere chaude, forte a l'impact puis stable (meme valeur que l'apercu)
+	local braise = Instance.new("PointLight")
+	braise.Name = "Braise"
+	braise.Color = Color3.fromRGB(255, 138, 58)
+	braise.Range = math.min(60, ev.radius * 3.2)
+	braise.Brightness = 4.5
+	braise.Shadows = false
+	braise.Parent = scar
+	TweenService:Create(braise, TweenInfo.new(1.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Brightness = 1.9 }):Play()
 	-- pics de pierre qui sortent du sol en 0,12 s, inclines vers l'exterieur
 	for i = 1, ev.spikes do
 		local outer = i > ev.spikes * 0.45

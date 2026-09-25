@@ -729,3 +729,26 @@ cerveau, voir la fin de l'entrée.
     de carte contre 0,66 s de seuil, tiré de refs avec abstractions) ; c'est
     voulu par Milan, dit dans le rapport.
 
+- **2026-09-25, v13d -> 7,85/10 (Milan)** : « je donne pas 8 car il y a
+  quelques bugs, il manque un polissage certain et un vrai cap pour passer
+  au premium (genre 9) ; et un problème de vitesse et de rythme dans
+  l'enchaînement : le dragon va dans tous les sens hyper rapidement ».
+  - **Mesuré** (nouvel outil `outils/allure.py`, sur les données jouées) :
+    la tête du dragon filait à 25-60 studs/s (2-3 longueurs de corps par
+    seconde) et virait à 200-900 °/s presque tout le temps ; le vol après la
+    morsure était RAPIDE 83 % du temps, sans pause. Et 21 coupes caméra, les
+    plans du dragon de 0,33-0,6 s, avec une échelle qui sautait d'un plan à
+    l'autre (grand / petit / boule de crinière / petit / grand).
+  - **Corrigé (v13e)** : trois coups rapides seulement (jaillissement,
+    morsure, plongeon), le reste LENT ou TENU (invocation : une grande courbe,
+    rugissement tenu, anticipation ; vol : monte en ralentissant, se suspend
+    au sommet, plonge en accélérant ; remontée du cratère sans spirale).
+    Vol : rapide 83 % -> 33 %. Caméra : 2 coupes remplacées par des
+    mouvements continus, le vol suivi de profil jusqu'à la bascule.
+  - **Bugs trouvés en relisant toute la vidéo à 0,1 s** : corps de
+    l'attaquant tout blanc à l'image 0 ; feu et nuages ronds « cartoon »
+    encore dans l'explosion du coup chargé ; bras de la victime sous le sol
+    au rebond (0,25 -> 0,14 stud). **Polissage** : braise chaude au fond du
+    cratère (lecteur + Roblox).
+  - Avant/après : `captures/verification/2026-09-25-v13e-rythme-bugs-polissage-avant-apres.png`.
+

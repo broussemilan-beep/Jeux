@@ -105,10 +105,15 @@ class Scene13:
         # (revue sans Milan : à la naissance la tête montait DEVANT lui, côté
         #  caméra (z < 0) : vue d'en dessous elle couvrait tout son corps)
         #  -> elle monte DERRIÈRE lui (z > 0), il reste lisible devant
+        # v13e (Milan 7,85 : « le dragon va dans tous les sens hyper
+        # rapidement » ; mesuré : 25-47 studs/s et 200-900 °/s de virage
+        # pendant tout l'enroulement) -> UN seul coup rapide (le jaillissement,
+        # 236-256), puis UNE grande courbe lente (8-15 studs/s, virages
+        # < 150 °/s), le rugissement TENU, une dérive lente derrière
+        # l'attaquant, une anticipation (il se cabre) avant de plonger
         self.WA = [(236, F0), (240, F0 + (1.0, 4.6, 1.8)), (246, F0 + (3.0, 9.0, 2.2)), (256, F0 + (5.2, 10.6, 1.6)),
-                   (268, F0 + (6.5, 10.8, -3.5)), (282, F0 + (3.5, 11.8, -8.5)), (296, F0 + (-3.0, 10.2, -8.0)),
-                   (310, F0 + (-5.2, 9.2, -5.4)), (330, F0 + (-5.4, 8.8, -4.2)), (344, F0 + (-4.5, 12.5, 6.0)),
-                   (356, F0 + (1.5, 10.5, 7.0))]
+                   (274, F0 + (5.6, 12.0, -2.4)), (292, F0 + (2.6, 12.6, -5.6)), (304, F0 + (-0.6, 12.0, -6.4)),
+                   (322, F0 + (-2.4, 11.6, -5.6)), (346, F0 + (-3.6, 12.6, 1.6)), (356, F0 + (-2.0, 14.6, 4.6))]
         # B : la tête SORT du poing (coup à distance) face à la victime, gueule
         #     qui s'ouvre (anticipation, 0,25 s), puis claque en avançant : à
         #     MORSURE_F le centre de la gueule (4,3 studs devant l'os de tête à
@@ -125,11 +130,15 @@ class Scene13:
         #  et replonge droit dans le cratère au blanc (DIVE_F)
         G = self.G
         self.DIVE_F = scene["white"][0]
+        # v13e : mesuré 40-57 studs/s sans pause pendant toute la boucle ->
+        # après la morsure il MONTE en ralentissant (22 -> 11 studs/s), se
+        # SUSPEND au sommet 0,45 s (la tête bascule vers le sol), puis
+        # plonge en accélérant (30 -> 80 studs/s) : lent / tenu / rapide
         self.WB = [(self.sf, Fs + self.ax * 0.3), (386, Fs - self.ax * 0.9 + (0, 0.5, 0)), (394, Fs - self.ax * 1.1 + (0, 0.6, 0)),
-                   (self.mf, V - self.ax * g), (410, V + (0.0, -2.0, -5.0)), (424, G + (-3.0, 10.0, -12.0)),
-                   (444, G + (-11.0, 17.0, -20.0)), (466, G + (-14.0, 28.0, -12.0)), (488, G + (-7.0, 38.0, -2.0)),
-                   (508, G + (4.0, 42.0, 0.0)), (526, G + (8.0, 37.0, -1.0)), (542, G + (4.0, 25.0, 0.0)),
-                   (556, G + (1.0, 11.0, 0.0)), (self.DIVE_F, G + (0.0, 0.5, 0.0)), (self.DIVE_F + 10, G + (0.0, -9.0, 0.0))]
+                   (self.mf, V - self.ax * g), (410, G + (0.0, 14.5, 3.0)), (430, G + (-2.0, 17.0, -3.5)),
+                   (460, G + (-3.0, 27.5, -5.0)), (490, G + (-1.2, 35.5, -2.2)), (510, G + (0.8, 38.3, 0.2)),
+                   (527, G + (2.2, 38.0, 1.2)), (540, G + (2.4, 31.5, 1.0)), (554, G + (1.0, 15.0, 0.5)),
+                   (self.DIVE_F, G + (0.0, 0.5, 0.0)), (self.DIVE_F + 10, G + (0.0, -9.0, 0.0))]
 
     def poing(self, f):
         a, u = int(np.floor(f)), f - np.floor(f)
@@ -230,7 +239,10 @@ def camera(sc, add, A, Vt, h):
     ciel = sc.F0 + np.array([0.0, 8.0, -3.0])
     # (revue : l'attaquant coupé à la taille par le bas du cadre) -> visée
     # plus basse et plus ouvert : il est entier, petit, sous le dragon
-    add(252, A(252) + [15.0, -9.0, -20.0], ciel - [0, 1.8, 0], 64, "cut")
+    # (v13e, rythme : 21 coupes, plans de 0,33-0,6 s dans le passage du
+    # dragon) -> plus de coupe ici : la caméra RECULE en continu du
+    # jaillissement au plan très large (un seul plan de 1,2 s)
+    add(262, A(262) + [14.0, -8.0, -19.5], ciel - [0, 1.8, 0], 62)
     add(298, A(298) + [13.0, -8.4, -18.0], ciel - [0, 1.2, 0], 62)
     # gros plan : la tête RUGIT (devant le museau, un peu dessous, de côté)
     H = sc.tete_a(304)
@@ -279,14 +291,16 @@ def camera(sc, add, A, Vt, h):
     # (bande v13d : dans le très large le dragon restait un trait, 15 % de
     # l'image) -> après 0,35 s d'échelle, la caméra le SUIT de près en
     # montant : à 17 studs sous lui, de côté, la visée sur le milieu du corps
-    for k, f in enumerate(range(472, 497, 4)):
+    # (v13e, relecture à 0,1 s : grand / petit / boule de crinière / petit /
+    # grand -- l'échelle sautait à chaque plan) -> UN plan qui le suit de
+    # profil jusqu'au sommet et la bascule, puis le plongeon vu du cratère
+    for k, f in enumerate(range(480, 531, 4)):
         H = sc.tete_b(f)
         dv = sc.tete_b(f) - sc.tete_b(f - 3)
         dv /= (np.linalg.norm(dv) + 1e-9)
         mil = H - dv * 3.0
-        add(f, mil + np.array([3.5, -5.0, 19.0]), mil, 58, "cut" if k == 0 else "smooth")
-    add(498, G + [24.0, 30.0, 20.0], G + [1.0, 38.0, -3.0], 56, "cut")
-    add(528, G + [21.0, 29.0, 19.0], G + [5.0, 35.0, -1.0], 54)
+        # (v13e : sans coupe, la caméra part du très large et rejoint le dragon)
+        add(f, mil + np.array([3.5, -5.0, 19.0]), mil, 58)
     add(530, G + [10.0, 1.5, 10.0], G + [1.5, 24.0, 0.0], 64, "cut")
     add(561, G + [9.0, 1.4, 9.0], G + [0.5, 12.0, 0.0], 66)
     # conséquence (derrière le blanc) : très large
@@ -496,8 +510,10 @@ def studio(sc, studio_fn):
             u = k / n_t
             if u <= 0.3:
                 e = 1 - (1 - u / 0.3) ** 2
-                ang = 2 * np.pi * 1.0 * (u / 0.3) + 0.4
-                r = 2.5 + 3.5 * e
+                # (v13e : un tour complet en 0,9 s = 300-500 °/s de virage)
+                # -> il JAILLIT presque droit, un quart de tour
+                ang = 2 * np.pi * 0.25 * (u / 0.3) + 0.4
+                r = 1.5 + 2.5 * e
                 p = G + np.array([r * np.cos(ang), -1.0 + 17.0 * e, r * np.sin(ang)])
                 P1 = p
             else:

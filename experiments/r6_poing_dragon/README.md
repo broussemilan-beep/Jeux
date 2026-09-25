@@ -936,3 +936,17 @@ conséquence 5,2 s : porte franchie.
   et c'est attendu : il mesure le temps d'abstraction plein écran des refs
   Last Breath, que Milan a retiré pour ce style (CARNET 4b.29).
 
+### v13e (2026-09-25) : rythme, bugs, polissage (retour de Milan : 7,85/10)
+
+- **Rythme** : allure du dragon mesurée par `../_shared/animator_brain/outils/allure.py`
+  (`python3 allure.py output/staging.json`) : le vol après la morsure passe
+  de 83 % du temps rapide à 33 % (morsure et plongeon seulement) ; il se
+  suspend au sommet de la boucle ; l'invocation est une courbe lente, le
+  rugissement tenu ; la remontée du cratère n'a plus de spirale. Caméra :
+  recul continu à l'invocation, suivi de profil du vol jusqu'à la bascule.
+- **Bugs** : flash blanc à l'image 0 retiré ; feu et nuages cel retirés de
+  l'explosion du coup chargé (feu dessiné) ; bras de la victime au rebond.
+- **Polissage** : braise chaude au fond du cratère (`PointLight` « Braise »
+  dans `DragonFist.luau`).
+- Avant/après : `../../captures/verification/2026-09-25-v13e-rythme-bugs-polissage-avant-apres.png`.
+

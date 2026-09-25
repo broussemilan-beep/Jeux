@@ -53,6 +53,8 @@ CONCEPTS = {
                "tête de dragon", "violet", "last breath", "morsure", "mange", "gueule", "machoire", "mâchoire",
                "invocation", "dragon d'or"],
     "victime": ["victime", "reaction", "réaction", "recul", "encaisse"],
+    "allure": ["allure", "allure.py", "vitesse du dragon", "dans tous les sens", "trop rapide", "virage",
+               "majestueux", "rythme", "enchainement", "enchaînement", "serpent", "corps par seconde"],
 }
 
 

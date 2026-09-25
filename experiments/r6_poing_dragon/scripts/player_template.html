@@ -537,8 +537,14 @@
       const a = rnd() * Math.PI * 2;
       debris.push({ m, v: new THREE.Vector3(Math.cos(a) * (8 + 12 * rnd()), 14 + 16 * rnd(), Math.sin(a) * (8 + 12 * rnd())), spin: new THREE.Vector3(rnd() * 9, rnd() * 9, rnd() * 9) });
     }
+    // v13e : BRAISE au fond du cratère (la conséquence était trop sombre) :
+    // lumière chaude qui éclaire la victime et l'attaquant, forte à l'impact
+    // puis stable ; même valeur que DragonFist.luau (PointLight « Braise »)
+    const braise = new THREE.PointLight(col("#ff8a3a"), 0, ev.radius * 3.2, 1.6);
+    braise.position.copy(P).setY(1.6); scene.add(braise);
     on((tr) => {
       const age = tr - t0(), vis = age >= 0;
+      braise.intensity = vis ? 1.9 + 2.6 * Math.max(0, 1 - age / 1.2) + 0.15 * Math.sin(age * 9.0) : 0;
       scar.visible = vis; glow.visible = useFx && vis && age < 2.5;
       if (glow.visible) glow.material.opacity = 0.9 * Math.max(0, 1 - age / 2.5);
       for (const m of spikes) {

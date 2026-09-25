@@ -536,10 +536,17 @@ def victim_v13():
     # abaisse l'épaule ; le rebond monte donc à + 1,3)
     add(647, victim_pose(CRATERE_BACK + 0.6, y=LIE_Y + 1.3, rootrot=(98, 0, 8), head=(10, 0, 0),
                          arms=((-120, 0, 40), (-110, 0, -45)), feet=TUMBLE_LEGS), ("QUAD", "EASE_OUT"))
+    # (v13e : entre 647 et 656 le bras gauche passait 0,2 stud sous le sol)
+    # (1er essai bras à -128° : couché sur le dos, le bras gauche levé pointe
+    # VERS le sol, pire) -> bras gauche ramené le long du corps, écarté
+    add(651, victim_pose(CRATERE_BACK + 0.65, y=LIE_Y + 0.9, rootrot=(94, 0, 6), head=(4, 12, 0),
+                         arms=((-60, 0, 70), (-70, 0, -52)), feet=TUMBLE_LEGS), ("QUAD", "EASE_IN"))
     add(656, victim_pose(CRATERE_BACK + 0.7, y=LIE_Y + 0.05, rootrot=(90, 0, 5), head=(0, 26, 0), pelvis=((0, 0, 0), (-3, 0, 5)),
-                         arms=((-150, 0, 50), (-25, 0, -60)), feet=LIE_LEGS, ground=True), ("QUAD", "EASE_IN"))
+                         arms=((-40, 0, 78), (-25, 0, -60)), feet=LIE_LEGS, ground=True), ("QUAD", "EASE_IN"))
+    # (v13e : bras gauche au-dessus de la tête -> pour l'atteindre il balayait un
+    # arc qui traversait le sol ; il reste écarté sur le côté)
     add(END_F, victim_pose(CRATERE_BACK + 0.7, y=LIE_Y, rootrot=(90, 0, 4), head=(0, 32, 0), pelvis=((0, 0, 0), (-2, 0, 5)),
-                           arms=((-155, 0, 52), (-18, 0, -62)), feet=LIE_LEGS, ground=True))
+                           arms=((-36, 0, 80), (-18, 0, -62)), feet=LIE_LEGS, ground=True))
     return K
 
 

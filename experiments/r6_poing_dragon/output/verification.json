@@ -38,7 +38,7 @@
  ],
  "sol": {
   "plus_bas_attaquant": -0.16,
-  "plus_bas_victime": -0.205
+  "plus_bas_victime": -0.143
  },
  "translation_tete_max": 1e-05,
  "rafale_cles_posees": [

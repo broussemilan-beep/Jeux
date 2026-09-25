@@ -161,4 +161,12 @@ captures `captures/verification/2026-09-25-v13-*`) :
   ciel (sommet f508, 42 studs), retournement, plongeon dans le cratère au
   blanc (f564). Caméra : très large face à la boucle (l'attaquant donne
   l'échelle), contre-plongée au sommet, puis depuis le cratère.
+- **v13e (Milan 7,85 : bugs, polissage, rythme « dans tous les sens »)** :
+  allure mesurée (`outils/allure.py`) et refaite : lent / tenu sauf
+  jaillissement, morsure, plongeon ; WA (invocation) en une courbe lente +
+  anticipation ; WB (vol) monte en ralentissant, suspendu au sommet f510-527,
+  plonge en accélérant ; remontée sans spirale. Caméra : recul continu
+  f226-298, suivi de profil f480-530. Bugs : flash blanc à l'image 0 retiré,
+  feu / fumée cel retirés du coup chargé, bras de la victime au rebond.
+  Braise au fond du cratère.
 

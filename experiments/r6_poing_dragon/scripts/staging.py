@@ -221,7 +221,9 @@ def events(aw, vw):
     bas de la plage pro, finisher au p90)."""
     E = []
     ev = lambda f, kind, **kw: E.append(dict(frame=f, kind=kind, **kw))  # noqa: E731
-    ev(0, "body_flash", who="attaquant", color=WHITE, frames=4)
+    # (v13e : un flash du corps dès l'image 0, sans rien avant, ressemblait à
+    # un raté de chargement -- blanc comme or) -> retiré ; l'éclat au sol
+    # marque l'activation
     ev(0, "ground_burst", pos=v3([0, 0.05, 0]), color=GOLD, scale=0.8)
     # v2 : escalade (rules.check_escalade) -- hitstop, secousse et taille montent
     # v6 HIERARCHIE (ETUDE_VISUELLE.md) : l'effet est proportionnel au coup.
@@ -549,7 +551,13 @@ def studio_events(aw, vw, E):
         g = p + 1.6 * d
         g[1] = 0.0
         c += [L for L in R.impact_couches({"pos": v3(g)}, palette=R.DRAGON, echelle=1.3, t0=t_ex) if L["nom"] in ("anneau_sol", "vague")]
-        c += R.sillage(chemin(vw, "Torso", u + 1, 170, rel, tete=False), largeur=2.2, fumee=True)
+        c += R.sillage(chemin(vw, "Torso", u + 1, 170, rel, tete=False), largeur=2.2, fumee=False)
+        # (v13e, relecture à 0,1 s : le feu et la fumée cel à contour -- boules
+        # orange, nuages ronds cernés -- restaient dans CETTE explosion alors
+        # qu'ils sont retirés partout ailleurs, CARNET 4b.24) -> retirés, le
+        # feu est dessiné comme aux autres impacts
+        c = [L for L in c if L["nom"] not in ("feu", "fumee", "fumee_sillage")]
+        c += R.jaillissement_dessine("feu", t0=t_ex, pos=v3(p + 1.6 * d - [0, 0.8, 0]), echelle=1.2, suffixe="_charge")
         sons = [x for x in sons if x["son"] != "impact_lourd"] + [
             {"son": "impact_lourd", "t0": round(tc + 0.15, 4), "volume": 1.0, "impact": True, "vide": 0.08},
             {"son": "grondement", "t0": round(tc + 0.16, 4), "volume": 0.7},

@@ -702,6 +702,18 @@ Roblox premium »). Les refs Last Breath en abusent, mais pour ce projet la
 (grande boucle dans le ciel, sommet, plongeon). Le seuil « plein écran »
 du juge ne vaut donc pas pour ce style.
 
+**4b.30 Un dragon se MESURE en longueurs de corps par seconde** (Milan, 7,85 :
+« le dragon va dans tous les sens hyper rapidement »). `outils/allure.py`
+sur les données jouées : 2-3 corps/s et 200-900 °/s presque en continu.
+Ce qui marchait chez les refs (Last Breath : il tourne 3 s ; Goku : tenu
+2 s) c'est l'inverse : LENT ou TENU la plupart du temps (< 1,2 corps/s,
+virages < 150 °/s) et 1 à 3 coups rapides qui comptent (jaillir, mordre,
+plonger). Un chemin tracé par des clés rapprochées dans l'espace mais
+espacées de 12-14 images « ondule » : chaque clé ajoute un virage. Moins
+de clés, plus loin, plus lentes. Et le montage suit : des plans de
+0,3-0,6 s dont l'échelle saute font le même effet haché qu'un dragon trop
+rapide ; un plan qui SUIT le sujet vaut mieux que trois coupes.
+
 ## 5. Pistes à essayer (classées, aucune n'est décidée)
 
 1. **Rafale : ré-armement lent, frappe rapide, clés espacées** (2.1,
