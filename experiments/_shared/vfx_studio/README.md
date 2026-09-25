@@ -71,3 +71,30 @@ dessinés » parce qu'ils passent par des meshes 3D. Dans le studio :
 Limite connue : dans Roblox, une texture changée pour la 1re fois peut
 clignoter le temps de se charger : précharger les images (ContentProvider)
 avant la technique.
+
+## v13 (2026-09-25) : dragon d'or DESSINÉ, mâchoire, rayons
+
+Demande de Milan : « VFX de qualité dessin, pas du cube ou cartoon » ;
+« le dragon or… le coup se transforme en le dragon qui mange le perso ».
+
+- **Dragon d'or dessiné** (`modeles/dragon.py`) : plus de dégradés peints
+  en volume (v12 : une statue) ; aplats francs deux tons, écailles en TRAIT
+  d'encre (festons en U), plaques de ventre cernées, arête dorsale, yeux
+  CYAN (accent complémentaire, Dragon Ball Rage). Aperçu : matériau non
+  éclairé + ombre cel légère + liseré de contre-jour ; contour d'encre
+  proportionnel à l'échelle. Roblox : les deux tons sont dans la texture,
+  contour = Highlight.
+- **Mâchoire animable** : os `Machoire` (charnière au fond de la gueule,
+  repos 20°), piloté par `machoire` = [[a, degrés], …] dans une couche
+  serpent (`recettes.serpent(machoire=…)`) ; aperçu et `VFXStudio.luau`
+  font le même calcul (repère de la tête x charnière x rotation Z). Test
+  Luau : la charnière reste sur la tête, l'ouverture = angle - repos.
+  Mâchoire du bas raccourcie, menton qui remonte (vue ouverte de face :
+  c'était une planche rouge).
+- **Recette `dragon_gueule_demo`** : le dragon face caméra, gueule
+  ouverte ; sert de modèle à la carte manga (`r6_poing_dragon/scripts/
+  build_planches.py`).
+- **Beams : fondu dans le temps** (`transparency_temps`) désormais joué
+  aussi par `VFXStudio.luau` (NumberSequence recalculée à chaque image).
+- **Impacts de rafale** : un trait de pinceau en arc (mesh `arc_trait`,
+  images `trait_feu`, en 2) autour de l'axe du coup.

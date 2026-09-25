@@ -316,6 +316,17 @@ def studio(sc, studio_fn):
         c = [L] + R.flammes_corps(L, n=8, rate=16)
         F0 = sc.F0
         c += R.jaillissement_dessine("feu", t0=round(rel(236), 4), pos=v3(F0 - [0, 1.0, 0]), echelle=1.3, suffixe="_poing")
+        # RAYONS de lumière qui tombent du ciel sur lui (Goku 656d965b : les
+        # rayons dans les nuages pendant l'invocation tenue)
+        for i in range(6):
+            ang = 2 * np.pi * i / 6 + 0.4
+            haut = F0 + np.array([7.0 * np.cos(ang), 42.0, 7.0 * np.sin(ang) - 3.0])
+            bas = F0 + np.array([1.4 * np.cos(ang), -7.0, 1.4 * np.sin(ang)])
+            c.append({"type": "beam", "nom": f"rayon_{i}", "t0": round(rel(240) + 0.04 * i, 4),
+                      "duree": round(rel(350) - rel(240), 4), "de": v3(haut), "a": v3(bas), "segments": 6,
+                      "texture": "halo", "largeur": [[0, 6.0], [1, 1.6]], "transparency": [[0, 0.5], [0.75, 0.62], [1, 1]],
+                      "transparency_temps": [[0, 1], [0.12, 0.3], [0.85, 0.4], [1, 1]], "color": "#fff0bf",
+                      "light_emission": 1})
         sons = [{"son": "aspiration", "t0": 0.0, "volume": 0.5}, {"son": "naissance_orbe", "t0": 0.02, "volume": 0.4},
                 {"son": "rugissement", "t0": round(rel(238), 4), "volume": 0.7, "hauteur": 1.1},
                 {"son": "rugissement", "t0": round(rel(303), 4), "volume": 1.0, "hauteur": 0.85},

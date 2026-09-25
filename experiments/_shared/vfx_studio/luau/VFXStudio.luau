@@ -454,6 +454,27 @@ function VFXStudio.jouer(rec, repere, opts)
 		ev(L.t0 + L.duree, function()
 			b.Enabled = false
 		end)
+		-- fondu dans le TEMPS (comme l'aperçu : transparence le long du
+		-- beam combinée à transparency_temps(a))
+		if L.transparency_temps then
+			local base = L.transparency
+			table.insert(miseAJour, function(t)
+				local a = (t - L.t0) / L.duree
+				if a < 0 or a > 1 then
+					return
+				end
+				local g = 1 - math.clamp(seq(L.transparency_temps, a), 0, 1)
+				local kp = {}
+				if type(base) == "table" then
+					for _, k in ipairs(base) do
+						table.insert(kp, NumberSequenceKeypoint.new(k[1], 1 - (1 - k[2]) * g))
+					end
+				else
+					kp = { NumberSequenceKeypoint.new(0, 1 - (1 - (base or 0)) * g), NumberSequenceKeypoint.new(1, 1 - (1 - (base or 0)) * g) }
+				end
+				b.Transparency = NumberSequence.new(kp)
+			end)
+		end
 		finMax = math.max(finMax, L.t0 + L.duree)
 	end
 

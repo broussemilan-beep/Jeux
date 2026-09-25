@@ -819,3 +819,44 @@ tout premium » ; les VFX construits sont loin du pack et des refs. Fiche :
   (on voyait le crâne) -> tête horizontale de profil.
 - Spires autour du bras devant le visage -> décalées derrière le perso.
 - Caméra obari : le bras tendu traversait l'objectif (prisme brun).
+
+## v13 (2026-09-25) : la scène refaite — le coup DEVIENT le dragon d'or qui mange
+
+Retour de Milan sur la v12 (note 4 ; animation 7,7, VFX 2-4) : « le dragon
+apparaît 0,5 s et pas au bon endroit » ; puis : « le dragon OR est invoqué
+dans les airs comme Goku, puis le coup se transforme en le dragon qui mange
+le perso ; refais tout, niveau 8,5/10 ; VFX qualité dessin, pas du cube ou
+cartoon ; améliore l'architecture, vérifie le jugement ».
+
+Conception : `../_shared/animator_brain/corpus/fiches/POING_DU_DRAGON_V13.md`
+(d'après Last Breath v1-v3 et le Poing du Dragon de Goku relus à 0,1 s :
+`corpus/RELECTURE_LAST_BREATH_GOKU_2026-09-25.md`).
+
+| frames | acte | ce qui se passe |
+|---|---|---|
+| 0-200 | rafale, coup chargé, envol | inchangés (impacts avec un trait de pinceau dessiné) |
+| 200-224 | calme | il flotte au-dessus de la victime |
+| 226-340 | **invocation, 1,9 s tenue** | poing au ciel ; le dragon d'or JAILLIT du poing, s'enroule dans le ciel, rugit en gros plan (gueule qui s'ouvre) |
+| 340-378 | regard, armé, coup | il regarde la victime, le poing recule, il frappe À DISTANCE ; le dragon rentre dans son poing |
+| 378-400 | **le coup devient le dragon** | flash, la tête sort du poing, ouvre la gueule, claque : la victime est AVALÉE (f400) |
+| 420-566 | **plein écran 2,45 s** | carte manga de la gueule à l'encre (tirée de notre modèle), tourbillon de feu peint joué en 2, rouge radial, soleil à silhouette |
+| 566-760 | **conséquence 3,2 s** | cratère, le dragon jaillit du sol vers le ciel, recrache la victime qui retombe ; l'attaquant atterrit en 3 appuis |
+| 760-830 | retour | il se relève |
+
+Nouveau dans la chaîne :
+- `scripts/scene_v13.py` : caméra et effets après l'apex, les 3 couches
+  du dragon échantillonnées sur les pistes exportées ;
+- `scripts/build_planches.py` : les planches plein écran
+  (`python3 build_planches.py <rendu de la gueule>` ; le rendu vient du labo,
+  recette `dragon_gueule_demo`, caméra « face ») ;
+- dragon (`../_shared/vfx_studio/modeles/dragon.py`) : aplats deux tons,
+  écailles en trait, yeux cyan, os `Machoire` (piloté par `machoire` dans la
+  recette ; Roblox : `Bone.Transform`) ; FBX réexporté ;
+- `DragonFist.luau` : planches (`CONFIG.PLANCHE_IDS`, par nom ; repli en
+  aplat), victime cachée (`LocalTransparencyModifier`) de la morsure au
+  recrachat, teinte dorée bornée par les marqueurs ;
+- juge temporel : `../_shared/animator_brain/outils/juge.py` (voir plus bas).
+
+Roblox, en plus de la v12 : importer les 8 PNG de `output/planches/` et
+mettre leurs IDs dans `DragonFist.CONFIG.PLANCHE_IDS` ; réimporter
+`dragon.fbx` (os Machoire).

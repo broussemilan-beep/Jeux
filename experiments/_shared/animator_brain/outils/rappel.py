@@ -46,10 +46,12 @@ CONCEPTS = {
     "duree": ["duree", "durée", "temps reel", "temps réel", "à l'écran", "a l'ecran", "couverture", "tenue",
               "signature", "planche d'images fixes", "effet_max", "durees.py"],
     "jugement_vfx": ["qualité vfx", "qualite vfx", "biais", "prediction", "prédiction", "compter les couches",
-                     "surestime", "note vfx", "auto-évaluation", "auto-evaluation"],
+                     "surestime", "note vfx", "auto-évaluation", "auto-evaluation", "juge", "porte", "plein ecran",
+                     "plein écran", "consequence", "conséquence", "juge.py"],
     "dragon": ["dragon", "aura dragon", "goku", "ssj3", "shenron", "izuku", "deku", "one for all", "full cowl",
                "eclair vert", "éclair vert", "tourbillon de feu", "suiryu", "dragon's descent", "tete de dragon",
-               "tête de dragon", "violet"],
+               "tête de dragon", "violet", "last breath", "morsure", "mange", "gueule", "machoire", "mâchoire",
+               "invocation", "dragon d'or"],
     "victime": ["victime", "reaction", "réaction", "recul", "encaisse"],
 }
 

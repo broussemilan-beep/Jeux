@@ -125,3 +125,24 @@ lointain qui monte, vent.
 - cou vertical = pilier ; tête piquée = on ne voit que le crâne (v10b) ;
 - spires devant le visage (v10b) ;
 - un plan fixe choisi cache la durée (CARNET 4b.12).
+
+## 9. Ce qui a été fait (tel que construit, 2026-09-25)
+
+Écarts à la conception, tous vus à l'écran (planches `rev1`-`rev5`,
+captures `captures/verification/2026-09-25-v13-*`) :
+
+- **Coup à distance** (§2 acte 6) : la conception disait « le poing
+  s'arrête à 2 studs ». La tête du modèle fait ~8 studs devant son os à
+  l'échelle 1,4 : elle traversait la victime avant d'être sortie ; le
+  détour « monte puis plonge » était illisible. Le poing s'arrête à ~5
+  studs (`poing_s_arrete_avant_la_victime`, 3,5-7) ; la tête sort derrière
+  le flash, ouvre la gueule 0,25 s, claque en avançant (CARNET 4b.22).
+- **Jaillissement de profil**, fusion par derrière, gros plan à 15 studs
+  (CARNET 4b.23).
+- **Plein écran** : 0,5 s de carte manga + 0,83 s de tourbillon + 0,72 s
+  de rouge + 0,4 s de soleil = 2,45 s (le soleil à 0,28 s laissait 4 images
+  du vrai décor avant le blanc).
+- **Conséquence** : le dragon JAILLIT du cratère (12 studs en 0,3 s) et
+  recrache la victime, qui retombe 0,9 s ; la caméra le suit vers le ciel.
+- **Pas cartoon** : boules de feu cel et nuages ronds cernés retirés des
+  impacts du sol et de la morsure (CARNET 4b.24).

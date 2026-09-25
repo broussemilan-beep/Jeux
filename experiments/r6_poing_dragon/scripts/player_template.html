@@ -704,6 +704,13 @@
       // tourne pas sa camera pendant une technique), FOV Roblox par defaut 70
       const a = sa[IDX.Torso].pos, sx = 0.3 * a.x + 1.75;
       eye = new THREE.Vector3(sx, Math.max(4.5, a.y + 1.8), a.z + 10); look = new THREE.Vector3(sx, a.y + 0.2, a.z - 4); fov = 70;
+      if (M.morsure && fa >= 200) {
+        // v13 : en l'air, le joueur recule et cadre l'attaquant ET la victime
+        // plus bas (1er essai : regard à l'horizontale, victime et dragon hors champ)
+        const v = sv[IDX.Torso].pos;
+        eye = new THREE.Vector3(sx, Math.max(4.5, a.y + 3.5), a.z + 16);
+        look = new THREE.Vector3(sx * 0.5, Math.max(1, (a.y + v.y) / 2 + 2), (a.z + v.z) / 2);
+      }
     } else {
       look = fa > 300 ? sa[IDX.Torso].pos.clone().lerp(sv[IDX.Torso].pos, 0.35) : mid;
       const th = camMode === "profil" ? Math.PI / 2 : orbit.th, ph = camMode === "profil" ? 1.35 : orbit.ph;

@@ -606,6 +606,45 @@ essayé dans le studio : `vfx_studio/dessins.py`, recettes `dessin_tornade`,
   et sens différents ; griffures d'encre de 3 studs devant tout = des
   taches -> fines, parmi les lames.
 
+**4b.21 La morsure se raconte en deux fois, et ce qui DURE, c'est l'avant
+et l'après** (Last Breath v1-v2 relus à 0,1 s,
+`RELECTURE_LAST_BREATH_GOKU_2026-09-25.md`). La tête qui avale en 3D :
+0,4 s ; la carte manga de la gueule à l'encre : 0,5 s. Autour : le regard
+(0,8 s), le corps qui envahit le cadre (0,5 s), puis 2 s de plein écran et
+2,7-3,4 s de conséquence. Le dragon est plus long que le cadre : on ne le
+voit presque jamais entier.
+
+**4b.22 Une tête longue ne peut pas sortir d'un poing collé à la cible**
+(v13, vu à l'écran). La tête du modèle fait ~8 studs devant son os à
+l'échelle 1,4 : poing à 2 studs de la victime -> la tête la traverse avant
+d'avoir fini de sortir ; le demi-tour « monte puis plonge » inventé pour
+l'éviter était illisible. Réponse : coup À DISTANCE (le poing s'arrête à
+~5 studs), la tête sort derrière un flash de 2 images, ouvre la gueule
+(anticipation 0,25 s), puis claque en avançant. La géométrie du modèle
+décide du staging : mesurer la tête avant de poser le coup.
+
+**4b.23 Le chemin d'un dragon se pense depuis la caméra** (v13, trois
+essais vus) : jaillissement droit vers le haut vu d'en dessous = une boule
+de crinière hérissée -> il monte en courbe de PROFIL pour cette caméra ;
+fusion dans le poing par-devant = un œil géant contre l'objectif obari ->
+par derrière l'attaquant ; gros plan à 9 studs = la mâchoire seule -> 15.
+
+**4b.24 « Pas cartoon » : les boules de feu cel à contour sont ce qui
+fait cartoon, pas le cel lui-même** (v13) : les planches peintes à bord net
+(tourbillon, rouge, soleil) et les traits dessinés en mesh passent ; les
+explosions en boules orange cernées de rouge et les nuages gris ronds
+cernés font dessin animé pour enfants. Retirés des impacts du sol et de
+la morsure.
+
+**4b.25 Juger les PROPORTIONS DE TEMPS contre des refs mesurées pareil**
+(`outils/juge.py`, refs `clips/juge_refs_ultimes.json`) : part d'effet au
+pic, temps plein écran, plus longue plage plein écran, conséquence ; seuil
+= 0,8 x médiane de 6 ultimes. Il ne juge pas la beauté : il empêche de
+présenter un ultime qui n'en a pas le temps (v12 : 0,1 s de plein écran).
+Rétro-test : la vidéo v12 échoue aux 4 critères (effet au pic 0,33 contre
+0,70 ; plein écran 0 contre 0,66 s ; conséquence 0 contre 3,4 s), ce qui
+colle au 4/10 de Milan ; le juge l'aurait arrêtée avant de la montrer.
+
 ## 5. Pistes à essayer (classées, aucune n'est décidée)
 
 1. **Rafale : ré-armement lent, frappe rapide, clés espacées** (2.1,
