@@ -319,9 +319,12 @@ def main(sortie=None):
     sortie = sortie or os.path.join(HERE, "textures")
     os.makedirs(sortie, exist_ok=True)
     catalogue = []
-    for nom, (fn, mode, role) in FORMES.items():
-        fn().save(os.path.join(sortie, f"{nom}.png"))
-        catalogue.append({"nom": nom, "fichier": f"{nom}.png", "grille": "Static", "resolution": N, "mode": mode, "role": role})
+    import peints  # textures peintes (dragon, éclair) : peints.py
+    for nom, (fn, mode, role) in list(FORMES.items()) + list(peints.PEINTS.items()):
+        im = fn()
+        im.save(os.path.join(sortie, f"{nom}.png"))
+        catalogue.append({"nom": nom, "fichier": f"{nom}.png", "grille": "Static", "resolution": max(im.size), "mode": mode,
+                          "role": role})
     for nom, n in VARIANTES_DEFILEMENT.items():
         for k, im in enumerate(variantes(Image.open(os.path.join(sortie, f"{nom}.png")), n)):
             im.save(os.path.join(sortie, f"{nom}_d{k}.png"))

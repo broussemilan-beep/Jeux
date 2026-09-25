@@ -95,3 +95,15 @@ effets. Pour trouver ce que chaque ref fait en VFX :
 Flash (12e7dae5), Stagnant Rage (4fb4f776), Rewind Clock (3ae71567), IMPACT
 HAVEN (eba5ed69) et Black Hole (01f4b1d2) mesurées avec `outils/ecoute.py`.
 Rappel : `python3 outils/rappel.py son`.
+
+## Poing du Dragon de Goku (aura dragon), à mélanger avec Izuku
+
+Envoyées par Milan le 2026-09-25 : « mélange ça à Izuku pour le poing du
+dragon ». Étudiées dans `fiches/AURA_DRAGON.md`.
+
+| fichier | sha1 | ce que c'est |
+|---|---|---|
+| ef27f9e2-image.jpg | e92ac0d7bab8dedf | Affiche du film DBZ 13 : Goku SSJ3 poing levé, dragon doré gueule ouverte au-dessus. |
+| 1a567c2f-image.jpg | 6a96118684045841 | Illustration : le dragon s'enroule en spirale derrière Goku, flammes, éclairs blancs, traînée d'encre. |
+| 656d965b-image.gif | f254bee59fbe663b | Goku poing levé vers le ciel, TENU 2 s, rayons de lumière dans les nuages (l'invocation). |
+| d514ee70-image.gif | 7a2b4ae8801394c5 | Le Poing du Dragon : poing vers l'objectif sur éclatement radial, blanc, explosion, tourbillon de feu, le dragon sort du tourbillon (tête en très gros plan). |

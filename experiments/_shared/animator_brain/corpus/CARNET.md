@@ -472,6 +472,17 @@ impact des refs = trait vertical large bande, surtout du grave (sub ~0,6 des
 Je n'ai pas d'oreille : je règle sur des mesures, et Milan est le seul à
 pouvoir dire si ça « sonne ».
 
+**4b.7 Un effet qui LONGE le bras bouche le plan obari** (aura dragon,
+2026-09-25). La caméra obari est chez la victime, dans l'axe du poing : tête,
+cou ou corps qui suivent le bras passent entre l'objectif et l'attaquant.
+Dans ce plan, l'effet doit se retirer (rentrer dans le poing) et revenir
+APRÈS, dans un plan qui le montre (la révélation). C'est d'ailleurs ce que
+fait le film : le dragon sort de l'impact, pas du bras qui frappe.
+
+**4b.8 Une carte peinte doit toujours faire face à la caméra** : orientée
+dans l'axe de ce qu'elle suit, elle disparaît dès qu'on la regarde par la
+tranche. Face caméra, et l'image tournée selon l'axe projeté à l'écran.
+
 ## 5. Pistes à essayer (classées, aucune n'est décidée)
 
 1. **Rafale : ré-armement lent, frappe rapide, clés espacées** (2.1,

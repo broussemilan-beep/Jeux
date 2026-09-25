@@ -271,9 +271,75 @@ def sillage(chemin, palette=DRAGON, largeur=1.4, fumee=False, t_fin=None, lignes
     return c
 
 
+VERT_OFA = "#6dff8a"   # vert One For All (Izuku)
+
+
+def serpent(images, t0, duree, largeur=None, naissance=0.25, mort=None, tete=True, vitesse=1.5, taille_tete=(4.4, 2.2),
+            couleur="#ffffff"):
+    """Corps de DRAGON (fiches/AURA_DRAGON.md) : `images` = [[t, [[x,y,z]...]]]
+    (tête en premier), temps relatifs à la recette. Naît de la tête vers la
+    queue en `naissance` (fraction de la durée) ; `mort` = (début, "tete" |
+    "queue") : se dissout depuis ce bout-là."""
+    tete_v = [[0, 0], [1, 0]]
+    queue_v = [[0, 0.02], [naissance, 1], [1, 1]]
+    if mort:
+        debut, bout = mort
+        if bout == "tete":
+            tete_v = [[0, 0], [debut, 0], [1, 1]]
+        else:
+            queue_v = [[0, 0.02], [min(naissance, debut * 0.99), 1], [debut, 1], [1, 0]]
+    L = {"type": "serpent", "nom": "dragon", "t0": t0, "duree": duree, "images": images, "texture": "dragon_ecailles",
+         "largeur": largeur or [[0, 1.3], [0.08, 1.5], [0.5, 1.1], [0.85, 0.6], [1, 0.1]], "vitesse_texture": vitesse,
+         "tete_visible": tete_v, "queue_visible": queue_v, "light_emission": 0, "color": couleur}
+    if tete:
+        L["tete"] = {"texture": "dragon_tete", "texture_miroir": "dragon_tete_miroir", "taille": list(taille_tete), "cou": 0.1}
+    return L
+
+
+def eclairs(ancre, t0, duree, rayon=1.2, nombre=6, longueur=(0.9, 2.0), couleur=VERT_OFA, largeur=0.38, periode=0.05,
+            nom="eclairs"):
+    """Éclairs One For All (Izuku) qui crépitent autour d'une ancre."""
+    return {"type": "eclairs", "nom": nom, "t0": t0, "duree": duree, "ancre": ancre, "rayon": rayon, "nombre": nombre,
+            "longueur": list(longueur), "brisures": 5, "periode": periode, "largeur": largeur, "texture": "eclair",
+            "color": couleur, "light_emission": 1, "transparency": [[0, 0], [0.85, 0], [1, 1]]}
+
+
+def spirale(centre, axe, rayon, hauteur, tours, n, phase=0.0, rayon_fin=None):
+    """Points d'une hélice (tête = premier point, en haut)."""
+    import numpy as np
+    c, ax = np.array(centre, float), np.array(axe, float)
+    ax /= np.linalg.norm(ax)
+    ref = np.array([1.0, 0, 0]) if abs(ax[0]) < 0.9 else np.array([0, 0, 1.0])
+    e1 = np.cross(ax, ref); e1 /= np.linalg.norm(e1)
+    e2 = np.cross(ax, e1)
+    out = []
+    for k in range(n):
+        u = k / (n - 1)
+        r = rayon + ((rayon_fin if rayon_fin is not None else rayon) - rayon) * u
+        a = phase + 2 * np.pi * tours * u
+        p = c + ax * hauteur * (1 - u) + r * (np.cos(a) * e1 + np.sin(a) * e2)
+        out.append([round(float(x), 3) for x in p])
+    return out
+
+
+def dragon_aura_demo():
+    """Aperçu labo : le dragon s'enroule autour d'un axe vertical (le perso)
+    et ondule ; éclairs verts autour. Réglage du rendu avant le Dragon."""
+    imgs = [[round(k / 30, 3), spirale([0, 1, 0], [0, 1, 0], 2.4, 6.5, 1.3, 28, phase=0.9 * k / 30, rayon_fin=1.6)]
+            for k in range(0, 61)]
+    c = [serpent(imgs, 0.0, 2.0, naissance=0.3, mort=(0.8, "queue")),
+         eclairs({"pos": [0, 3, 0]}, 0.0, 2.0, rayon=1.6, nombre=6)]
+    r = recette("dragon_aura_demo", c, titre="Dragon : aura (démo)")
+    r["cameras"] = {"large": {"oeil": [11, 6, 9], "cible": [0, 3.5, 0], "fov": 50},
+                    "jeu": {"oeil": [1.75, 5.5, 11], "cible": [1.75, 3.5, -4], "fov": 70}}
+    return r
+
+
 def fin_couche(L):
     if L["type"] == "particules":
         return L["t0"] + L.get("duree_emission", 0) + L["lifetime"][1]
+    if L["type"] in ("serpent", "eclairs"):
+        return L["t0"] + L["duree"]
     if L["type"] == "trail":
         return L["t1"] + L.get("lifetime", 0.3)
     return L["t0"] + L.get("duree", 0)
@@ -327,7 +393,8 @@ def dragon_plongee():
 
 
 RECETTES = {"orbe_impact": orbe_impact, "impact_m1": impact_m1,
-            "dragon_impact_aerien": dragon_impact_aerien, "dragon_plongee": dragon_plongee}
+            "dragon_impact_aerien": dragon_impact_aerien, "dragon_plongee": dragon_plongee,
+            "dragon_aura_demo": dragon_aura_demo}
 
 
 def toutes():

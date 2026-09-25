@@ -738,3 +738,42 @@ manquants (repli : texture intégrée de Roblox, aucun son).
 
 **Lecteur.** Bouton « Son » : les mêmes WAV qu'en jeu, placés au temps réel
 (hitstops compris). Vidéo avec son : `scripts/video_son.py`.
+
+## v11 (2026-09-25) : l'aura DRAGON (Goku x Izuku)
+
+Refs de Milan : le Poing du Dragon de Goku SSJ3 (film DBZ 13 : affiche,
+illustration, GIF du ciel, GIF du coup), « à mélanger avec Izuku ». Fiche de
+conception : `../_shared/animator_brain/corpus/fiches/AURA_DRAGON.md`.
+
+- **Le dragon (Goku)** : corps = chaîne de 27 Beams avec des écailles
+  peintes qui défilent (nageoires dorsales brunes, écussons dorés, ventre
+  crème) ; tête = carte peinte (gueule ouverte, crocs, arcade en colère,
+  moustaches, cornes, crinière de flammes) toujours face caméra. Textures :
+  `../_shared/vfx_studio/peints.py`.
+- **Le courant (Izuku)** : éclairs VERTS One For All qui crépitent autour du
+  poing et du corps, de l'armé au contact ; éclairs verts et or à l'impact.
+- **Trois temps** :
+  1. armé (236-256) : le dragon SORT du poing, s'enroule autour du bras puis
+     derrière le corps ; tête gueule ouverte à côté du poing (l'affiche) ;
+  2. plongée : il RENTRE dans le poing (dernière image de la tête ~f262),
+     il reste le sillage d'air et les éclairs ;
+  3. impact : tourbillon de feu (le GIF), puis le dragon SORT du cratère,
+     tourne autour en montant, rugit pendant la révélation, se dissout.
+- **Son** : crépitement électrique (Izuku), rugissement à la naissance et un
+  grand rugissement à la sortie du cratère.
+- **Roblox** : les couches `serpent` et `eclairs` du moteur VFXStudio
+  (Beams recyclés, jamais recréés ; tête = Part invisible + 2 Decals, la face
+  avant porte la texture MIROIR pour que le museau suive le cou des deux
+  côtés). Banc Luau : 143 contrôles dont « aucun objet créé pendant la
+  lecture » et « tête face caméra, à l'endroit ».
+
+**Essais vus à l'écran et abandonnés.**
+- Tête dans l'axe du cou : en caméra obari, carte vue par la tranche,
+  invisible -> carte face caméra, museau le long du cou PROJETÉ.
+- Tête devant le poing à la plongée : passe derrière la caméra (qui est
+  chez la victime) ; à côté : grossit et cache l'attaquant ; qui s'écarte :
+  c'est le COU qui passe devant l'objectif. En obari, tout ce qui longe le
+  bras bouche le plan -> le dragon rentre dans le poing et ressort à
+  l'impact, comme dans le film.
+- Montée en colonne de 15 studs : tête toujours hors du cadre de la
+  révélation -> spirale large et basse (4,7 studs) autour du cratère.

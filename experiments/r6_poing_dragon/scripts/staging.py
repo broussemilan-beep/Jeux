@@ -247,7 +247,6 @@ def events(aw, vw):
         # v9 : le CALME n'a pas d'aura ; elle s'allume avec l'arme
         ev(226, "aura", who="attaquant", frames=30, color=GOLD, intensity=1.0)
         ev(228, "fist_glow", who="attaquant", side="R", frames=50, color=GOLD)
-    ev(236, "dragon", who="attaquant", side="R", frames=52, color=GOLD, smoke=SMOKE)
     sf = SCENE["strike_f"]
     p = tip(aw[sf], "Right Arm")
     ev(sf, "body_flash", who="attaquant", color=FLASH, frames=3)
@@ -272,6 +271,176 @@ def events(aw, vw):
             e["studio"] = True
     E += studio_events(aw, vw, E)
     return E
+
+
+def _reechantillonne(pts, n):
+    """Polyligne -> n points équidistants (abscisse curviligne)."""
+    pts = np.asarray(pts, float)
+    d = np.r_[0, np.cumsum(np.linalg.norm(np.diff(pts, axis=0), axis=1))]
+    if d[-1] < 1e-9:
+        return np.repeat(pts[:1], n, axis=0)
+    u = np.linspace(0, d[-1], n)
+    return np.stack([np.interp(u, d, pts[:, k]) for k in range(3)], axis=1)
+
+
+def _helice(a, b, rayon, tours, phase, n=40, rayon_fin=None):
+    """Hélice autour du segment a -> b (de a vers b)."""
+    ax = b - a
+    ln = np.linalg.norm(ax)
+    ax = ax / ln
+    ref = np.array([0.0, 1, 0]) if abs(ax[1]) < 0.9 else np.array([1.0, 0, 0])
+    e1 = np.cross(ax, ref)
+    e1 /= np.linalg.norm(e1)
+    e2 = np.cross(ax, e1)
+    out = []
+    for k in range(n):
+        u = k / (n - 1)
+        r = rayon + ((rayon_fin if rayon_fin is not None else rayon) - rayon) * u
+        ang = phase + 2 * np.pi * tours * u
+        out.append(a + ax * ln * u + r * (np.cos(ang) * e1 + np.sin(ang) * e2))
+    return out
+
+
+def dragon_events(aw, vw, rt, studio):
+    """Le DRAGON (Goku) + les ÉCLAIRS VERTS (Izuku), en trois temps : il sort
+    du poing et s'enroule autour du bras puis du corps (armé), part avec le
+    poing (plongée), puis sort du tourbillon de l'impact et monte vers le
+    ciel (révélation). Forme calculée ici, sur les pistes réelles, à 30 Hz."""
+    NP = 28
+    fa0, sf, imf = 236, SCENE["strike_f"], SCENE["impact_f"]
+    vict = vw[sf]["Torso"][1]
+
+    def poing(f):
+        return tip(aw[f], "Right Arm")
+
+    def epaule(f):
+        r, p = aw[f]["Right Arm"]
+        return p + r @ np.array([0.0, 1.0, 0.0])
+
+    def enroule(f, t):
+        """Armé : tête au-dessus-devant du poing, hélice autour du bras,
+        puis grande hélice qui descend derrière le corps."""
+        F, Sh = poing(f), epaule(f)
+        rt_, T = aw[f]["Torso"]
+        up = rt_ @ np.array([0.0, 1, 0])
+        vis = (vict - F) / np.linalg.norm(vict - F)
+        H = F + vis * 1.2 + up * 0.7
+        phi = 2.4 * t
+        pts = [H, (H + F) / 2 + up * 0.3]
+        pts += _helice(F, Sh, 1.0, 1.5, phi, 30)
+        haut, bas = T + up * 1.6, T - up * 3.2
+        pts += _helice(haut, bas, 2.4, 1.3, phi * 0.6 + 2.0, 50, rayon_fin=1.7)
+        return _reechantillonne(pts, NP)
+
+    def file(f, t):
+        """Plongée : tête devant le poing (à CÔTÉ, pour ne pas cacher le poing
+        en caméra obari), corps sur le trajet réel du poing, en spirale."""
+        F = poing(f)
+        d = poing(min(sf, f + 1)) - poing(max(fa0, f - 1))
+        d = d / (np.linalg.norm(d) + 1e-9)
+        lat = np.cross(d, [0.0, 1, 0])
+        lat = lat / (np.linalg.norm(lat) + 1e-9)
+        # (essais d*1,4 + lat*1,1 puis d*2,1 : la tête DEVANT le poing passe
+        # derrière la caméra obari, qui est chez la victime -> à côté et
+        # au-dessus du poing, un peu en retrait)
+        # plus le poing approche (caméra obari chez la victime), plus la tête
+        # s'ÉCARTE vers le haut : elle ne doit jamais cacher le poing au contact
+        w = np.clip((f - 256) / (sf - 256), 0, 1) ** 1.5
+        H = F - d * 0.3 - lat * (1.1 + 2.2 * w) + np.array([0.0, 1.3 + 3.0 * w, 0.0])
+        hist = [poing(max(fa0, f - k)) for k in range(0, 24)]
+        # le cou prolonge le SENS DE LA PLONGÉE (sinon la tête se dressait à
+        # la verticale) : 2e point juste derrière la tête, dans l'axe du coup
+        base = _reechantillonne([H, H - d * 0.9] + hist, NP)
+        base[1] = H - d * (np.linalg.norm(base[1] - base[0]))
+        out = []
+        for k, p in enumerate(base):
+            s_ = k / (NP - 1)
+            tan = base[min(NP - 1, k + 1)] - base[max(0, k - 1)]
+            tan = tan / (np.linalg.norm(tan) + 1e-9)
+            e1 = np.cross(tan, [0.0, 1, 0]); e1 /= (np.linalg.norm(e1) + 1e-9)
+            e2 = np.cross(tan, e1)
+            ang = 2 * np.pi * 2.2 * s_ + 3.0 * t
+            r = 1.2 * s_ * (1 - 0.4 * s_)
+            out.append(p + r * (np.cos(ang) * e1 + np.sin(ang) * e2))
+        return np.array(out)
+
+    def armes(tc, rel):
+        # le serpent naît à 236 (dans l'armé) ; l'événement démarre à 226 avec
+        # les éclairs (l'arme s'allume) : tous les temps sont relatifs à 226
+        # plongée : essais vus à l'écran -> en caméra obari (chez la victime),
+        # tête ou cou passent entre l'objectif et l'attaquant et cachent tout.
+        # Le dragon RENTRE donc dans le poing au début de la plongée (dernière
+        # image de la tête à ~f262), et RESSORT à l'impact (comme le film)
+        f_fin = 270
+        images = []
+        for f in range(fa0, f_fin + 1, 2):
+            t = rel(f)
+            if f <= 256:
+                pts = enroule(f, t)
+            else:
+                w = min(1.0, (f - 256) / 8)
+                pts = (1 - w) * enroule(256, t) + w * file(f, t)
+            images.append([round(t, 4), [v3(p) for p in pts]])
+        t_n, t_c = rel(fa0), rel(sf)
+        duree = rel(f_fin) - t_n
+        images = [[round(t - t_n, 4), pts] for t, pts in images]
+        # dissolution depuis la queue : le corps se ramasse dans le poing
+        corps = R.serpent(images, round(t_n, 4), round(duree, 4), naissance=0.18,
+                          mort=((rel(258) - t_n) / duree, "queue"), vitesse=2.0, taille_tete=(3.4, 1.7))
+        c = [corps]
+        ch_poing = [[rel(f)] + v3(poing(f)) for f in range(226, sf + 1, 2)]
+        ch_corps = [[rel(f)] + v3(aw[f]["Torso"][1]) for f in range(226, sf + 1, 2)]
+        c.append(R.eclairs({"chemin": ch_poing}, 0.0, round(t_c + 0.1, 4), rayon=1.0, nombre=5, nom="eclairs_poing"))
+        c.append(R.eclairs({"chemin": ch_corps}, 0.0, round(t_c, 4), rayon=2.0, nombre=4, longueur=(1.2, 2.4),
+                           nom="eclairs_corps"))
+        sons = [{"son": "crepitement", "t0": 0.0, "volume": 0.35},
+                {"son": "rugissement", "t0": round(t_n, 4), "volume": 0.45, "hauteur": 1.15},
+                {"son": "crepitement", "t0": round(t_n + 1.1, 4), "volume": 0.3, "hauteur": 1.1}]
+        return c, sons
+    studio(226, "dragon_arme", armes)
+
+    # IMPACT : tourbillon de feu (7a2b4ae8), éclairs verts et or, puis le
+    # dragon SORT du cratère et monte en spirale vers le ciel ; il se dissout
+    # pendant la révélation (la conséquence reste à l'écran)
+    G = tip(aw[imf], "Right Arm")
+    G[1] = 0.0
+
+    def monte(tc, rel):
+        fin = rel(470)
+        t_dep = tc + 0.12
+        duree = fin - t_dep
+        tete = []
+        n_t = 120
+        for k in range(n_t + 1):
+            u = k / n_t
+            # 1er essai : colonne de 15 studs, tête toujours hors du cadre de la
+            # révélation -> spirale LARGE et BASSE autour du cratère (7 studs)
+            e = 1 - (1 - min(1.0, u * 1.4)) ** 2
+            ang = 2 * np.pi * 1.25 * u + 0.6
+            r = 2.0 + 2.7 * e
+            tete.append((u, G + np.array([r * np.cos(ang), 0.5 + 4.2 * e, r * np.sin(ang)])))
+
+        def forme(u):
+            # corps = les positions PASSÉES de la tête (il suit son propre chemin)
+            hist = [p for (uu, p) in tete if uu <= u + 1e-9][::-1][:40]
+            if len(hist) < 2:
+                hist = [G + np.array([0, 0.5, 0]), G]
+            return _reechantillonne(hist + [G - np.array([0, 1.0, 0])], NP)
+        images = [[round(u * duree, 4), [v3(p) for p in forme(u)]] for u in np.linspace(0, 1, 46)]
+        c = [R.serpent(images, round(t_dep, 4), round(duree, 4), naissance=0.2, mort=(0.72, "queue"), vitesse=2.5,
+                       taille_tete=(7.0, 3.5), largeur=[[0, 2.2], [0.08, 2.5], [0.5, 1.9], [0.85, 1.0], [1, 0.2]])]
+        c.append({"type": "mesh", "nom": "tourbillon_feu", "t0": tc, "duree": 0.9, "ancre": {"pos": v3(G)},
+                  "mesh": "tourbillon", "texture": "bruit_energie", "defilement": [2.5, 0],
+                  "echelle": [[0, [1.5, 0.6, 1.5]], [0.3, [7, 5, 7]], [1, [9, 7, 9]]],
+                  "transparency": [[0, 0.1], [0.6, 0.35], [1, 1]], "color": [[0, "#fff6dc"], [0.5, "#ff8a1f"], [1, "#c8401a"]],
+                  "rotation_vitesse": 420, "light_emission": 1})
+        c.append(R.eclairs({"pos": v3(G + np.array([0, 1.5, 0]))}, tc, 0.5, rayon=4.5, nombre=7, longueur=(2, 4.5),
+                           couleur=[[0, "#ffffff"], [0.4, R.VERT_OFA], [1, "#ffc53d"]], largeur=0.5, nom="eclairs_impact"))
+        sons = [{"son": "rugissement", "t0": round(t_dep + 0.15, 4), "volume": 0.9},
+                {"son": "crepitement", "t0": tc, "volume": 0.4, "hauteur": 0.8}]
+        return c, sons
+    studio(imf, "dragon_monte", monte)
+    return []
 
 
 def temps_reel(E):
@@ -358,6 +527,8 @@ def studio_events(aw, vw, E):
         R.impact_couches({"pos": v3(gr)}, palette=R.DRAGON, echelle=1.4, t0=tc),
         [{"son": "impact_lourd", "t0": tc, "volume": 1.0, "hauteur": 0.8, "impact": True, "vide": 0.03},
          {"son": "grondement", "t0": round(tc + 0.01, 4), "volume": 0.9, "hauteur": 0.85}]))
+    # 6. AURA DRAGON (fiches/AURA_DRAGON.md) : Goku x Izuku
+    out += dragon_events(aw, vw, rt, studio)
     # 5. RÉVÉLATION : un fond de vent sous le calme (aucune ref n'a de
     #    silence numérique ; le 1er mixage laissait 3 s de silence total)
     wf = SCENE["white"]

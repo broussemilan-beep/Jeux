@@ -81,6 +81,38 @@
    "role": "lueur douce autour d'un point chaud (accompagne une forme nette)"
   },
   {
+   "nom": "dragon_tete",
+   "fichier": "dragon_tete.png",
+   "grille": "Static",
+   "resolution": 1024,
+   "mode": "peint",
+   "role": "tête du dragon de profil (carte), museau à droite"
+  },
+  {
+   "nom": "dragon_tete_miroir",
+   "fichier": "dragon_tete_miroir.png",
+   "grille": "Static",
+   "resolution": 1024,
+   "mode": "peint",
+   "role": "tête du dragon, miroir (face arrière de la carte Roblox)"
+  },
+  {
+   "nom": "dragon_ecailles",
+   "fichier": "dragon_ecailles.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "corps du dragon pour Beam, raccord en U"
+  },
+  {
+   "nom": "eclair",
+   "fichier": "eclair.png",
+   "grille": "Static",
+   "resolution": 256,
+   "mode": "à teinter",
+   "role": "segment d'éclair (Beam), cœur blanc"
+  },
+  {
    "nom": "bruit_energie_d0",
    "fichier": "bruit_energie_d0.png",
    "grille": "Static",

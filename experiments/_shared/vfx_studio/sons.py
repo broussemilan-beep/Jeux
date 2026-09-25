@@ -215,6 +215,38 @@ def vent_ambiant(d=3.6, graine=8):
     return norm(x * lfo * fade)
 
 
+def crepitement(d=1.2, graine=9):
+    """Éclairs verts d'Izuku : claquements électriques secs et irréguliers +
+    bourdonnement grave léger."""
+    n = n_(d)
+    t = np.arange(n) / SR
+    rng = np.random.default_rng(graine)
+    x = np.zeros(n)
+    for _ in range(46):
+        i = int(rng.random() * (n - 600))
+        ln = int(rng.uniform(80, 500))
+        x[i:i + ln] += rng.uniform(0.4, 1) * rng.standard_normal(ln) * np.exp(-np.arange(ln) / (ln / 4))
+    x = bande(x, 1800, 11000)
+    buzz = 0.12 * np.sign(np.sin(2 * np.pi * 120 * t)) * (0.5 + 0.5 * np.sin(2 * np.pi * 7 * t))
+    return norm((norm(x) + bande(buzz, 100, 2000)) * np.minimum(1, t / 0.02) * np.minimum(1, (d - t) / 0.15))
+
+
+def rugissement(d=1.7, graine=10):
+    """Le DRAGON rugit : grondement harmonique (~85 Hz) rendu rauque par une
+    modulation rapide, formant de bruit qui s'ouvre puis se ferme, hauteur
+    qui monte puis retombe."""
+    n = n_(d)
+    t = np.arange(n) / SR
+    u = t / d
+    f0 = 78 + 38 * np.sin(np.pi * np.clip(u * 1.2, 0, 1)) + 3 * np.sin(2 * np.pi * 6 * t)
+    ph = 2 * np.pi * np.cumsum(f0) / SR
+    harm = sum(np.sin(k * ph) / k ** 0.9 for k in range(1, 14))
+    rauque = 0.6 + 0.4 * np.sin(2 * np.pi * 27 * t + 3 * np.sin(2 * np.pi * 3 * t))
+    souffle = balayage(n, graine, lambda v: 500 + 900 * np.sin(np.pi * min(1.0, v * 1.3)), 1.0, grain=0.03)
+    env_ = np.minimum(1, t / 0.18) * np.clip((d - t) / 0.6, 0, 1)
+    return norm(sat(norm(harm * rauque) * 0.8 + 0.45 * norm(souffle), 1.8) * env_)
+
+
 BANQUE = {
     "impact_lourd": (impact_lourd, "craquement + corps + sub : le gros coup"),
     "frappe_m1": (frappe_m1, "tier 1 : court et sec"),
@@ -225,6 +257,8 @@ BANQUE = {
     "vent_arc": (vent_arc, "croissant de vent autour de l'impact"),
     "fouet_m1": (fouet_m1, "le bras qui part (tier 1)"),
     "vent_ambiant": (vent_ambiant, "fond de vent grave, le calme après le coup"),
+    "crepitement": (crepitement, "éclairs verts d'Izuku (One For All) qui crépitent"),
+    "rugissement": (rugissement, "le dragon rugit"),
 }
 
 

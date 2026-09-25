@@ -43,6 +43,8 @@ CONCEPTS = {
             "cratere", "cratère", "flipbook", "shader", "texture"],
     "son": ["son", "sons", "sfx", "audio", "bruitage", "sound", "grondement", "souffle", "vide avant",
             "silence", "ecoute", "écoute", "spectrogramme"],
+    "dragon": ["dragon", "aura dragon", "goku", "ssj3", "shenron", "izuku", "deku", "one for all", "full cowl",
+               "eclair vert", "éclair vert", "tourbillon de feu"],
     "victime": ["victime", "reaction", "réaction", "recul", "encaisse"],
 }
 

@@ -19,6 +19,7 @@ V.__add = function(a, b) return v3(a.X + b.X, a.Y + b.Y, a.Z + b.Z) end
 V.__sub = function(a, b) return v3(a.X - b.X, a.Y - b.Y, a.Z - b.Z) end
 V.__mul = function(a, k) return v3(a.X * k, a.Y * k, a.Z * k) end
 V.__div = function(a, k) return v3(a.X / k, a.Y / k, a.Z / k) end
+V.__unm = function(a) return v3(-a.X, -a.Y, -a.Z) end
 local VM = {}
 function VM.Dot(a, b) return a.X * b.X + a.Y * b.Y + a.Z * b.Z end
 function VM.Cross(a, b) return v3(a.Y * b.Z - a.Z * b.Y, a.Z * b.X - a.X * b.Z, a.X * b.Y - a.Y * b.X) end
@@ -51,6 +52,8 @@ function CM.VectorToWorldSpace(self, v) return rotv(self.r, v) end
 C.__index = function(t, k)
 	if k == "Position" then return t.p end
 	if k == "UpVector" then return v3(t.r[1][2], t.r[2][2], t.r[3][2]) end
+	if k == "RightVector" then return v3(t.r[1][1], t.r[2][1], t.r[3][1]) end
+	if k == "LookVector" then return v3(-t.r[1][3], -t.r[2][3], -t.r[3][3]) end
 	return CM[k]
 end
 CFrame = {
@@ -64,6 +67,10 @@ CFrame = {
 		local Ry = { { cy, 0, sy }, { 0, 1, 0 }, { -sy, 0, cy } }
 		local Rz = { { cz, -sz, 0 }, { sz, cz, 0 }, { 0, 0, 1 } }
 		return cf(v3(0, 0, 0), matmul(matmul(Rx, Ry), Rz))
+	end,
+	fromMatrix = function(p, x, y)
+		local z = VM.Cross(x, y)
+		return cf(p, { { x.X, y.X, z.X }, { x.Y, y.Y, z.Y }, { x.Z, y.Z, z.Z } })
 	end,
 	fromAxisAngle = function(a, th)
 		local c, s, t = math.cos(th), math.sin(th), 1 - math.cos(th)
@@ -85,9 +92,20 @@ local function verifSeq(kp, quoi)
 	for i = 2, #kp do if kp[i].Time < kp[i - 1].Time then refuse(quoi .. " : temps non croissants") end end
 end
 NumberSequenceKeypoint = { new = function(t, v, e) return { Time = t, Value = v, Envelope = e or 0 } end }
-NumberSequence = { new = function(kp) verifSeq(kp, "NumberSequence"); return { Keypoints = kp } end }
+-- API Roblox : new(keypoints), new(n) constante, new(n0, n1) de 0 à 1
+NumberSequence = { new = function(kp, b)
+	if type(kp) == "number" then
+		kp = { NumberSequenceKeypoint.new(0, kp), NumberSequenceKeypoint.new(1, b or kp) }
+	end
+	verifSeq(kp, "NumberSequence"); return { Keypoints = kp }
+end }
 ColorSequenceKeypoint = { new = function(t, c) return { Time = t, Value = c } end }
-ColorSequence = { new = function(kp) verifSeq(kp, "ColorSequence"); return { Keypoints = kp } end }
+ColorSequence = { new = function(kp, b)
+	if kp.R ~= nil then   -- new(couleur) ou new(c0, c1)
+		kp = { ColorSequenceKeypoint.new(0, kp), ColorSequenceKeypoint.new(1, b or kp) }
+	end
+	verifSeq(kp, "ColorSequence"); return { Keypoints = kp }
+end }
 NumberRange = { new = function(a, b) return { Min = a, Max = b or a } end }
 Vector2 = { new = function(x, y) return { X = x, Y = y } end }
 Color3 = {
@@ -309,7 +327,37 @@ do
 	VFXStudio.configurer({ sons = {} })
 end
 
--- 5. Annuler au milieu (technique interrompue)
+-- 5. DRAGON (serpent + éclairs) : chaîne de Beams, tête face caméra, aucun
+--    objet créé pendant la lecture (Beams recyclés)
+if DATA.recettes.dragon_aura_demo then
+	local rec = DATA.recettes.dragon_aura_demo
+	local cam = { CFrame = CFrame.new(11, 6, 9) }
+	local h = VFXStudio.jouer(rec, CFrame.new(0, 0, 0), { manuel = true, camera = cam })
+	h._etape(0)
+	local n0 = #h.Dossier:GetDescendants()
+	local beamsCorps, visibles = 0, 0
+	for i = 1, 60 do
+		h._etape(i / 60)
+	end
+	for _, d in ipairs(h.Dossier:GetDescendants()) do
+		if d.ClassName == "Beam" and d.Parent.Name == "D_dragon" then
+			beamsCorps += 1
+			if d.Transparency.Keypoints[1].Value < 1 then visibles += 1 end
+		end
+	end
+	ok(#h.Dossier:GetDescendants() == n0, "dragon : aucun objet créé pendant la lecture (" .. n0 .. " objets)")
+	ok(beamsCorps == 27 and visibles > 20, string.format("dragon : corps = 27 Beams, %d visibles à t=1 s", visibles))
+	local tete = trouver(h.Dossier, "D_tete")
+	local versCam = (cam.CFrame.Position - tete.CFrame.Position).Unit
+	local face = math.abs(tete.CFrame.LookVector:Dot(versCam))
+	-- visée calculée depuis le COU (comme l'aperçu), le centre de la carte est
+	-- décalé vers le museau : quelques degrés d'écart, voulus
+	ok(face > 0.99, string.format("dragon : carte de tête face caméra (|cos| = %.4f)", face))
+	ok(math.abs(tete.CFrame.UpVector.Y) > 0.2 and tete.CFrame.UpVector.Y > 0, "dragon : tête à l'endroit (haut de la carte vers le haut)")
+	h.Annuler()
+end
+
+-- 6. Annuler au milieu (technique interrompue)
 do
 	local rec = DATA.recettes.orbe_impact
 	local h = VFXStudio.jouer(rec, CFrame.new(10, 0, 0), { manuel = true })

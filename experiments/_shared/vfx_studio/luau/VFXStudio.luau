@@ -467,14 +467,212 @@ function VFXStudio.jouer(rec, repere, opts)
 		finMax = math.max(finMax, L.t0 + (L.duree or 2) / (L.hauteur or 1))
 	end
 
+	-- ------------------------------------------------- serpent (dragon)
+	-- Corps = chaîne de N-1 Beams (FaceCamera) entre N Attachments posés sur
+	-- la forme échantillonnée ; tête = carte (Part invisible + 2 Decals : la
+	-- face ARRIÈRE porte la texture normale, la face AVANT la texture miroir,
+	-- pour que le museau suive toujours le cou, de quelque côté qu'on la voie).
+	local camera = opts.camera or workspace.CurrentCamera
+	local function serpent(L)
+		local N = #L.images[1][2]
+		local p = porteur(dossier, "D_" .. (L.nom or "serpent"))
+		p.CFrame = CFrame.new(0, 0, 0)
+		local atts, beams = {}, {}
+		for i = 1, N do
+			local a = Instance.new("Attachment")
+			a.Parent = p
+			atts[i] = a
+		end
+		local largeur = function(sN)
+			return seq(L.largeur, sN)
+		end
+		for i = 1, N - 1 do
+			local b = Instance.new("Beam")
+			b.Attachment0, b.Attachment1 = atts[i], atts[i + 1]
+			b.FaceCamera = true
+			b.Segments = 1
+			b.Texture = texture(L.texture)
+			b.TextureMode = Enum.TextureMode.Stretch
+			b.TextureLength = 1
+			b.TextureSpeed = L.vitesse_texture or 0
+			b.LightEmission = L.light_emission or 0
+			b.LightInfluence = 0
+			b.Width0 = largeur((i - 1) / (N - 1))
+			b.Width1 = largeur(i / (N - 1))
+			local c = colAt(L.color, (i - 0.5) / (N - 1))
+			b.Color = ColorSequence.new(Color3.new(c[1], c[2], c[3]))
+			b.Transparency = NumberSequence.new(1)
+			b.Parent = p
+			beams[i] = { b = b, vis = 1 }
+		end
+		local tete, decals
+		if L.tete then
+			tete = porteur(dossier, "D_tete")
+			tete.Size = Vector3.new(L.tete.taille[1], L.tete.taille[2], 0.05)
+			local dos = Instance.new("Decal")
+			dos.Face = Enum.NormalId.Back
+			dos.Texture = texture(L.tete.texture)
+			dos.Parent = tete
+			local face = Instance.new("Decal")
+			face.Face = Enum.NormalId.Front
+			face.Texture = texture(L.tete.texture_miroir or L.tete.texture)
+			face.Parent = tete
+			decals = { dos, face }
+		end
+		local function forme(t)
+			local im = L.images
+			local i = 1
+			while i < #im - 1 and im[i + 1][1] <= t do
+				i += 1
+			end
+			local a, b = im[i], im[math.min(i + 1, #im)]
+			local u = if b[1] > a[1] then math.clamp((t - a[1]) / (b[1] - a[1]), 0, 1) else 0
+			local out = {}
+			for k = 1, N do
+				local pa, pb = a[2][k], b[2][k]
+				out[k] = monde({ pa[1] + (pb[1] - pa[1]) * u, pa[2] + (pb[2] - pa[2]) * u, pa[3] + (pb[3] - pa[3]) * u })
+			end
+			return out
+		end
+		table.insert(miseAJour, function(t)
+			local a = (t - L.t0) / L.duree
+			local actif = a >= 0 and a <= 1
+			local s0 = if L.tete_visible then seq(L.tete_visible, a) else 0
+			local s1 = if L.queue_visible then seq(L.queue_visible, a) else 1
+			local glob = 1 - math.clamp(seq(L.transparency or 0, a), 0, 1)
+			local pts = actif and forme(t) or nil
+			for i = 1, N - 1 do
+				local sa, sb = (i - 1) / (N - 1), i / (N - 1)
+				local vis = if actif and sa >= s0 - 1e-6 and sb <= s1 + 1e-6 then 1 - glob else 1
+				if pts then
+					atts[i].WorldPosition = pts[i]
+					atts[i + 1].WorldPosition = pts[i + 1]
+				end
+				if vis ~= beams[i].vis then
+					beams[i].b.Transparency = NumberSequence.new(vis)
+					beams[i].vis = vis
+				end
+			end
+			if tete then
+				local visible = actif and s0 <= 1e-6 and s1 > 0.02 and glob > 0
+				for _, d in ipairs(decals) do
+					d.Transparency = if visible then 1 - glob else 1
+				end
+				if visible then
+					-- carte face caméra, museau le long du cou projeté (= aperçu)
+					local p0, p3 = pts[1], pts[math.min(4, N)]
+					local Z = if camera then (camera.CFrame.Position - p0).Unit else Vector3.new(0, 0, 1)
+					local cou = p0 - p3
+					local X = cou - Z * cou:Dot(Z)
+					if X.Magnitude < 0.25 * cou.Magnitude or X.Magnitude < 1e-4 then
+						local droite = if camera then camera.CFrame.RightVector else Vector3.new(1, 0, 0)
+						X = droite * (if X:Dot(droite) < 0 then -1 else 1)
+					end
+					X = X.Unit
+					local Y = Z:Cross(X).Unit
+					local haut = if camera then camera.CFrame.UpVector else Vector3.new(0, 1, 0)
+					if Y:Dot(haut) < 0 then
+						Y = -Y
+					end
+					local centre = p0 + X * (L.tete.taille[1] * (0.5 - (L.tete.cou or 0.12)))
+					tete.CFrame = CFrame.fromMatrix(centre, X, Y)
+				end
+			end
+		end)
+		finMax = math.max(finMax, L.t0 + L.duree)
+	end
+
+	-- -------------------------------------------------------- éclairs
+	-- Mêmes tirages que l'aperçu (mulberry32, même graine par couche, même
+	-- ordre) : on re-calcule les points à chaque image, les Beams et
+	-- Attachments sont créés une fois (jamais de création / destruction).
+	local function eclairs(L, graine)
+		local K, M = L.brisures or 5, L.nombre or 4
+		local p = porteur(dossier, "E_" .. (L.nom or "eclairs"))
+		p.CFrame = CFrame.new(0, 0, 0)
+		local bolts = {}
+		for b = 1, M do
+			local atts, beams = {}, {}
+			for i = 1, K + 1 do
+				local a = Instance.new("Attachment")
+				a.Parent = p
+				atts[i] = a
+			end
+			for i = 1, K do
+				local bm = Instance.new("Beam")
+				bm.Attachment0, bm.Attachment1 = atts[i], atts[i + 1]
+				bm.FaceCamera = true
+				bm.Segments = 1
+				bm.Texture = texture(L.texture or "eclair")
+				bm.LightEmission = L.light_emission or 1
+				bm.LightInfluence = 0
+				bm.Transparency = NumberSequence.new(1)
+				bm.Parent = p
+				beams[i] = bm
+			end
+			bolts[b] = { atts = atts, beams = beams, vis = 1 }
+		end
+		table.insert(miseAJour, function(t)
+			local a = (t - L.t0) / L.duree
+			local actif = a >= 0 and a <= 1
+			local q = math.floor((t - L.t0) / (L.periode or 0.05))
+			local pos = actif and resolve(L.ancre, t) or nil
+			local glob = 1 - math.clamp(seq(L.transparency or 0, a), 0, 1)
+			local c = colAt(L.color, math.clamp(a, 0, 1))
+			for b = 1, M do
+				local B = bolts[b]
+				local vis = 1
+				if actif then
+					local r = VFXStudio.mulberry(graine * 31 + q * 977 + (b - 1) * 131)
+					if r() < (L.presence or 0.8) then
+						vis = 1 - glob
+					end
+					local u1, th, rr = r() * 2 - 1, r() * math.pi * 2, (L.rayon or 1) * r() ^ (1 / 3)
+					local st = pos + Vector3.new(math.sqrt(1 - u1 * u1) * math.cos(th), u1, math.sqrt(1 - u1 * u1) * math.sin(th)) * rr
+					local v1, ph = r() * 2 - 1, r() * math.pi * 2
+					local dir = Vector3.new(math.sqrt(1 - v1 * v1) * math.cos(ph), v1, math.sqrt(1 - v1 * v1) * math.sin(ph))
+					local lg = L.longueur[1] + r() * (L.longueur[2] - L.longueur[1])
+					local base = repereY(Vector3.new(0, 0, 0), dir)
+					local bx, bz = base.RightVector, -base.LookVector
+					for i = 0, K do
+						local pt = st + dir * (lg * i / K)
+						if i > 0 and i < K then
+							pt = pt + bx * ((r() * 2 - 1) * lg * 0.22) + bz * ((r() * 2 - 1) * lg * 0.22)
+						end
+						B.atts[i + 1].WorldPosition = pt
+					end
+					local w = (L.largeur or 0.2) * (0.6 + 0.4 * r())
+					for _, bm in ipairs(B.beams) do
+						bm.Width0, bm.Width1 = w, w
+						bm.Color = ColorSequence.new(Color3.new(c[1], c[2], c[3]))
+					end
+				end
+				if vis ~= B.vis then
+					for _, bm in ipairs(B.beams) do
+						bm.Transparency = NumberSequence.new(vis)
+					end
+					B.vis = vis
+				end
+			end
+		end)
+		finMax = math.max(finMax, L.t0 + L.duree)
+	end
+
 	-- ------------------------------------------------------- couches
 	if P then
 		local v = table.clone(P.visuel)
 		v.nom = v.nom or "projectile"
 		mesh(v)
 	end
+	-- graine par couche : même suite que l'aperçu (moteur.js, VFX.Effet)
+	local graine = rec.graine or 1
 	for _, L in ipairs(rec.couches) do
-		if L.type == "particules" then
+		graine = (graine * 16807) % 2147483647
+		if L.type == "serpent" then
+			serpent(L)
+		elseif L.type == "eclairs" then
+			eclairs(L, graine)
+		elseif L.type == "particules" then
 			particules(L)
 		elseif L.type == "mesh" then
 			mesh(L)

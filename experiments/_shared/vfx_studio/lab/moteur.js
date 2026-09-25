@@ -411,6 +411,155 @@
     };
   }
 
+  // ==================================================== couche SERPENT
+  // Le corps du DRAGON (fiches/AURA_DRAGON.md) : un ruban tourné vers la
+  // caméra, passant par N points dont la forme est ÉCHANTILLONNÉE hors ligne
+  // (L.images = [[t, [[x,y,z] x N]], ...], tête en premier). Sur Roblox :
+  // une chaîne de N-1 Beams. Partie visible : s de tete(a) à queue(a) (a =
+  // temps normalisé) : il naît de la tête vers la queue et peut se dissoudre
+  // dans les deux sens. La TÊTE est une carte peinte qui contient l'axe du
+  // cou et se tourne vers la caméra (vue de dos : en miroir, comme sur
+  // Roblox avec la texture miroir de la face arrière).
+  function Serpent(L) {
+    const N = L.images[0][1].length;
+    const geo = new T.BufferGeometry();
+    const pos = new Float32Array(N * 2 * 3), uv = new Float32Array(N * 2 * 2), col = new Float32Array(N * 2 * 4);
+    const idx = [];
+    for (let i = 0; i < N - 1; i++) { const a = i * 2; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
+    geo.setAttribute("position", new T.BufferAttribute(pos, 3));
+    geo.setAttribute("uv", new T.BufferAttribute(uv, 2));
+    geo.setAttribute("couleur", new T.BufferAttribute(col, 4));
+    geo.setIndex(idx);
+    const corps = new T.Mesh(geo, spriteMat(TEX[L.texture], (L.light_emission || 0) >= 0.5));
+    corps.frustumCulled = false; corps.renderOrder = 7;
+    const grp = new T.Group(); grp.add(corps);
+    let tete = null;
+    if (L.tete) {
+      tete = new T.Mesh(new T.PlaneGeometry(1, 1), new T.MeshBasicMaterial({ map: TEX[L.tete.texture], transparent: true, side: T.DoubleSide, depthWrite: false }));
+      tete.renderOrder = 9; grp.add(tete);
+    }
+    const cam = new T.Vector3(), camUp = new T.Vector3();
+    function forme(t) {                        // interpolation entre deux échantillons
+      const im = L.images;
+      let i = 0;
+      while (i < im.length - 2 && im[i + 1][0] <= t) i++;
+      const a = im[i], b = im[Math.min(i + 1, im.length - 1)];
+      const u = b[0] > a[0] ? Math.min(1, Math.max(0, (t - a[0]) / (b[0] - a[0]))) : 0;
+      return a[1].map((p, k) => new T.Vector3(p[0] + (b[1][k][0] - p[0]) * u, p[1] + (b[1][k][1] - p[1]) * u, p[2] + (b[1][k][2] - p[2]) * u));
+    }
+    return {
+      obj: grp,
+      update(t, camera) {
+        const a = (t - L.t0) / L.duree;
+        if (a < 0 || a > 1) { grp.visible = false; return 0; }
+        grp.visible = true;
+        camera.getWorldPosition(cam); camUp.setFromMatrixColumn(camera.matrixWorld, 1);
+        const pts = forme(t);
+        const s0 = seq(L.tete_visible == null ? 0 : L.tete_visible, a), s1 = seq(L.queue_visible == null ? 1 : L.queue_visible, a);
+        const scroll = (L.vitesse_texture || 0) * (t - L.t0);
+        const glob = 1 - Math.min(1, Math.max(0, seq(L.transparency || 0, a)));
+        for (let i = 0; i < N; i++) {
+          const sN = i / (N - 1), p = pts[i];
+          const tan = pts[Math.min(N - 1, i + 1)].clone().sub(pts[Math.max(0, i - 1)]);
+          if (tan.lengthSq() < 1e-10) tan.set(0, 1, 0);
+          const side = new T.Vector3().crossVectors(tan.normalize(), cam.clone().sub(p).normalize()).normalize();
+          const w = seq(L.largeur || 1, sN) / 2;
+          const vis = sN >= s0 - 1e-6 && sN <= s1 + 1e-6 ? glob : 0;
+          const c = cseq(L.color || "#ffffff", sN);
+          const A = p.clone().add(side.clone().multiplyScalar(w)), B = p.clone().sub(side.clone().multiplyScalar(w));
+          pos.set([A.x, A.y, A.z, B.x, B.y, B.z], i * 6);
+          const uu = sN * (L.repetition || N - 1) - scroll;
+          uv.set([uu, 0, uu, 1], i * 4);
+          col.set([c.r, c.g, c.b, vis, c.r, c.g, c.b, vis], i * 8);
+        }
+        geo.attributes.position.needsUpdate = true; geo.attributes.uv.needsUpdate = true; geo.attributes.couleur.needsUpdate = true;
+        if (tete) {
+          tete.visible = s0 <= 1e-6 && s1 > 0.02 && glob > 0;
+          // carte TOUJOURS face caméra (1er essai : carte qui contenait l'axe du
+          // cou -> vue de profil dans l'axe en caméra obari, elle disparaissait) ;
+          // le museau suit l'axe du cou PROJETÉ à l'écran
+          const Z = cam.clone().sub(pts[0]).normalize();
+          const cou = pts[0].clone().sub(pts[Math.min(3, N - 1)]);
+          let X = cou.sub(Z.clone().multiplyScalar(cou.dot(Z)));
+          if (X.length() < 0.25 * pts[0].distanceTo(pts[Math.min(3, N - 1)]) || X.lengthSq() < 1e-8) {
+            X = new T.Vector3().setFromMatrixColumn(camera.matrixWorld, 0).multiplyScalar(X.dot(new T.Vector3().setFromMatrixColumn(camera.matrixWorld, 0)) < 0 ? -1 : 1);
+          }
+          X.normalize();
+          let Y = new T.Vector3().crossVectors(Z, X).normalize();
+          if (Y.dot(camUp) < 0) Y.negate();
+          const Zb = new T.Vector3().crossVectors(X, Y);
+          const [tw, th] = L.tete.taille;
+          tete.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(X, Y, Zb));
+          tete.position.copy(pts[0]).addScaledVector(X, tw * (0.5 - (L.tete.cou || 0.12)));
+          tete.scale.set(tw, th, 1);
+          tete.material.opacity = glob;
+        }
+        return N;
+      },
+    };
+  }
+
+  // ==================================================== couche ÉCLAIRS
+  // Éclairs brisés (One For All d'Izuku) : `nombre` éclairs de `brisures`
+  // segments autour de l'ancre, RE-TIRÉS toutes les `periode` s avec une
+  // graine fixe (déterministe). Sur Roblox : des Beams dont on déplace les
+  // Attachments à chaque tirage (jamais de création / destruction).
+  function Eclairs(L, anchors, seed) {
+    const K = L.brisures || 5, M = L.nombre || 4;
+    const geo = new T.BufferGeometry();
+    const nv = M * (K + 1) * 2;
+    const pos = new Float32Array(nv * 3), uv = new Float32Array(nv * 2), col = new Float32Array(nv * 4);
+    const idx = [];
+    for (let b = 0; b < M; b++) for (let i = 0; i < K; i++) { const a = (b * (K + 1) + i) * 2; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
+    geo.setAttribute("position", new T.BufferAttribute(pos, 3));
+    geo.setAttribute("uv", new T.BufferAttribute(uv, 2));
+    geo.setAttribute("couleur", new T.BufferAttribute(col, 4));
+    geo.setIndex(idx);
+    const m = new T.Mesh(geo, spriteMat(TEX[L.texture || "eclair"], true));
+    m.frustumCulled = false; m.renderOrder = 11;
+    const cam = new T.Vector3();
+    return {
+      obj: m,
+      update(t, camera) {
+        const a = (t - L.t0) / L.duree;
+        if (a < 0 || a > 1) { m.visible = false; return 0; }
+        m.visible = true;
+        camera.getWorldPosition(cam);
+        const q = Math.floor((t - L.t0) / (L.periode || 0.05));
+        const anc = anchors.resolve(L.ancre, t);
+        const c = cseq(L.color || "#ffffff", a);
+        const glob = 1 - Math.min(1, Math.max(0, seq(L.transparency || 0, a)));
+        for (let b = 0; b < M; b++) {
+          const r = mulberry(((seed * 31 + q * 977 + b * 131) | 0));
+          const on = r() < (L.presence == null ? 0.8 : L.presence) ? glob : 0;
+          const u1 = r() * 2 - 1, th = r() * Math.PI * 2, rr = (L.rayon || 1) * Math.cbrt(r());
+          const st = anc.pos.clone().add(new T.Vector3(Math.sqrt(1 - u1 * u1) * Math.cos(th), u1, Math.sqrt(1 - u1 * u1) * Math.sin(th)).multiplyScalar(rr));
+          const v1 = r() * 2 - 1, ph = r() * Math.PI * 2;
+          const dir = new T.Vector3(Math.sqrt(1 - v1 * v1) * Math.cos(ph), v1, Math.sqrt(1 - v1 * v1) * Math.sin(ph));
+          const lg = (L.longueur || [1, 1])[0] + r() * ((L.longueur || [1, 1])[1] - (L.longueur || [1, 1])[0]);
+          const B = basis(dir);
+          const P = [];
+          for (let i = 0; i <= K; i++) {
+            const p = st.clone().addScaledVector(dir, (lg * i) / K);
+            if (i > 0 && i < K) p.addScaledVector(B.x, (r() * 2 - 1) * lg * 0.22).addScaledVector(B.z, (r() * 2 - 1) * lg * 0.22);
+            P.push(p);
+          }
+          const w = (L.largeur || 0.2) * (0.6 + 0.4 * r()) / 2;
+          for (let i = 0; i <= K; i++) {
+            const tan = P[Math.min(K, i + 1)].clone().sub(P[Math.max(0, i - 1)]).normalize();
+            const side = new T.Vector3().crossVectors(tan, cam.clone().sub(P[i]).normalize()).normalize().multiplyScalar(w);
+            const A = P[i].clone().add(side), Bq = P[i].clone().sub(side), o = (b * (K + 1) + i);
+            pos.set([A.x, A.y, A.z, Bq.x, Bq.y, Bq.z], o * 6);
+            uv.set([i / K, 0, i / K, 1], o * 4);
+            col.set([c.r, c.g, c.b, on, c.r, c.g, c.b, on], o * 8);
+          }
+        }
+        geo.attributes.position.needsUpdate = true; geo.attributes.uv.needsUpdate = true; geo.attributes.couleur.needsUpdate = true;
+        return M;
+      },
+    };
+  }
+
   // ================================================== couche PROJECTILE
   // l'objet qui voyage : un mesh (sphère d'énergie...) entre t0 et t1, qui
   // DISPARAÎT à la collision
@@ -481,6 +630,8 @@
       if (L.type === "particules") c = Particules(L, anchors, seed);
       else if (L.type === "mesh") c = MeshCouche(L, anchors);
       else if (L.type === "trail" || L.type === "beam") c = Ruban(L, anchors);
+      else if (L.type === "serpent") c = Serpent(L);
+      else if (L.type === "eclairs") c = Eclairs(L, anchors, seed);
       if (c) { c.L = L; scene.add(c.obj); couches.push(c); }
     }
     return {

@@ -96,6 +96,21 @@ def critiquer(nom, rec):
             if not (0.01 <= lt <= 20):
                 err.append(f"{n} : Trail.Lifetime {lt} hors [0,01 ; 20]")
             verifier_seq(L["transparency"], n + ".Transparency", err, (0, 1))
+        elif L["type"] == "serpent":
+            n_pts = len(L["images"][0][1])
+            if any(len(im[1]) != n_pts for im in L["images"]):
+                err.append(f"{n} : échantillons de tailles différentes")
+            if L["images"][0][0] > 1e-6 or any(b[0] < a[0] for a, b in zip(L["images"], L["images"][1:])):
+                err.append(f"{n} : temps des échantillons pas croissants depuis 0")
+            appels += 1 + (1 if L.get("tete") else 0)
+            if L.get("tete"):
+                for k in ("texture", "texture_miroir"):
+                    if L["tete"].get(k) and L["tete"][k] not in cat:
+                        err.append(f"{n} : texture de tête inconnue {L['tete'][k]}")
+            info.append(f"{n} : {n_pts - 1} Beams + carte de tête, {len(L['images'])} échantillons")
+        elif L["type"] == "eclairs":
+            appels += 1
+            info.append(f"{n} : {L.get('nombre', 4) * L.get('brisures', 5)} Beams recyclés (jamais recréés)")
         elif L["type"] == "beam":
             appels += 1
             npts = max(len(L["transparency"]), len(L["color"]))

@@ -134,6 +134,15 @@ def couche(L):
         c["echelle"] = echelle(L.get("echelle"))
         c["transparency"] = nseq(L.get("transparency", 0))
         c["color"] = cseq(L.get("color"))
+    elif t == "serpent":
+        c["largeur"] = nseq(L.get("largeur", 1))
+        c["color"] = cseq(L.get("color"))
+        for k in ("tete_visible", "queue_visible", "transparency"):
+            if L.get(k) is not None:
+                c[k] = nseq(L[k])
+    elif t == "eclairs":
+        c["color"] = cseq(L.get("color"))
+        c["transparency"] = nseq(L.get("transparency", 0))
     elif t in ("trail", "beam"):
         c["largeur"] = nseq(L.get("largeur", 1))
         c["transparency"] = nseq(L.get("transparency", 0))

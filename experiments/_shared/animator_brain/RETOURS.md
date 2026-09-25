@@ -596,3 +596,15 @@ cerveau, voir la fin de l'entrée.
     l'identique.
   - Écart principal aux refs : densité et DÉBRIS (Stagnant Rage). Prochain
     pas proposé : débris + bloom dans le lecteur + traînée de vent par coup.
+
+- **2026-09-25, aura dragon (Milan)** : 4 refs du Poing du Dragon de Goku
+  SSJ3 + « mélange ça à Izuku pour le poing du dragon ».
+  - Étude image par image des GIF (le dragon SORT du tourbillon de feu de
+    l'impact), fiche `fiches/AURA_DRAGON.md` écrite avant toute clé.
+  - Mélange retenu : dragon doré de Goku (signature) + éclairs verts One
+    For All d'Izuku (le courant du perso).
+  - Fait (v11) : dragon qui sort du poing et s'enroule (armé), rentre dans
+    le poing (plongée), ressort du cratère et rugit (révélation) ; éclairs
+    verts ; rugissement et crépitement ; tout jouable dans Roblox.
+  - Défauts trouvés à l'écran et corrigés : tête invisible par la tranche,
+    tête / cou qui bouchent le plan obari, montée hors cadre.

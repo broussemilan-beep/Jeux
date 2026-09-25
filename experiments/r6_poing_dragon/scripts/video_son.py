@@ -4,7 +4,7 @@ VIDÉO du Poing du Dragon AVEC SON : images du lecteur (filmer_lecteur.js,
 leur temps RÉEL (hitstops compris, même calcul que realTimeOf() du
 lecteur) -> MP4.
 
-Usage : python3 video_son.py <sortie.mp4> [camera=cinema] [fps=30]
+Usage : python3 video_son.py <sortie.mp4> [camera=cinema] [fps=30] [frame_de] [frame_a]
 """
 import json
 import os
@@ -41,22 +41,29 @@ def mixage(staging, duree):
     return mix / c * 0.98 if c > 0.98 else mix
 
 
-def main(sortie, cam="cinema", fps=30):
+def main(sortie, cam="cinema", fps=30, f_de=None, f_a=None):
     staging = json.load(open(os.path.join(OUT, "staging.json")))
     E = staging["events"]
     stops = sorted((e["frame"], e["hitstop"]) for e in E if e["kind"] == "impact" and e.get("hitstop", 0) > 0)
+    rt = lambda f: f / staging["fps"] + sum(h for fs, h in stops if fs < f)  # noqa: E731
     duree = staging["end_f"] / staging["fps"] + sum(h for _f, h in stops) + 0.8
-    d = tempfile.mkdtemp(prefix="dragonvid_")
+    t_de = rt(f_de) if f_de is not None else 0.0
+    t_a = rt(f_a) if f_a is not None else duree
+    d = tempfile.mkdtemp(prefix="dragonvid_", dir=os.environ.get("TMPDIR"))
     env = dict(os.environ, NODE_PATH=subprocess.run(["npm", "root", "-g"], capture_output=True, text=True).stdout.strip())
     parts = 4
-    procs = [subprocess.Popen(["node", os.path.join(HERE, "filmer_lecteur.js"), str(duree * k / parts),
-                               str(min(duree, duree * (k + 1) / parts)), d, cam, str(fps)], env=env)
+    span = t_a - t_de
+    procs = [subprocess.Popen(["node", os.path.join(HERE, "filmer_lecteur.js"), str(t_de + span * k / parts),
+                               str(t_de + span * (k + 1) / parts), d, cam, str(fps)], env=env)
              for k in range(parts)]
     for p in procs:
         p.wait()
     wav = os.path.join(d, "son.wav")
-    sons.ecrire_wav(mixage(staging, duree), wav)
-    subprocess.run(["ffmpeg", "-v", "error", "-y", "-framerate", str(fps), "-i", os.path.join(d, "f%04d.png"), "-i", wav,
+    mix = mixage(staging, duree)
+    sons.ecrire_wav(mix[int(t_de * sons.SR): int(t_a * sons.SR)], wav)
+    k0 = int(round(t_de * fps))
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-framerate", str(fps), "-start_number", str(k0),
+                    "-i", os.path.join(d, "f%04d.png"), "-i", wav,
                     "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", "-c:a", "aac", "-b:a", "160k", "-shortest", sortie],
                    check=True)
     print(sortie, round(duree, 2), "s")
@@ -64,4 +71,5 @@ def main(sortie, cam="cinema", fps=30):
 
 if __name__ == "__main__":
     a = sys.argv[1:]
-    main(a[0], a[1] if len(a) > 1 else "cinema", int(a[2]) if len(a) > 2 else 30)
+    main(a[0], a[1] if len(a) > 1 else "cinema", int(a[2]) if len(a) > 2 else 30,
+         int(a[3]) if len(a) > 3 else None, int(a[4]) if len(a) > 4 else None)

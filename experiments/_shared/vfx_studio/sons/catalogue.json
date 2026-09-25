@@ -53,6 +53,18 @@
    "fichier": "vent_ambiant.wav",
    "duree": 3.6,
    "role": "fond de vent grave, le calme après le coup"
+  },
+  {
+   "nom": "crepitement",
+   "fichier": "crepitement.wav",
+   "duree": 1.2,
+   "role": "éclairs verts d'Izuku (One For All) qui crépitent"
+  },
+  {
+   "nom": "rugissement",
+   "fichier": "rugissement.wav",
+   "duree": 1.7,
+   "role": "le dragon rugit"
   }
  ],
  "rbxassetid": {}
