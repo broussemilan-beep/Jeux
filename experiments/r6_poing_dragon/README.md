@@ -860,3 +860,25 @@ Nouveau dans la chaîne :
 Roblox, en plus de la v12 : importer les 8 PNG de `output/planches/` et
 mettre leurs IDs dans `DragonFist.CONFIG.PLANCHE_IDS` ; réimporter
 `dragon.fbx` (os Machoire).
+
+**Tête refaite (v13b, retour de Milan : « les yeux cassent le truc, trop
+cubique, pas assez travaillé »)** : sections arrondies, museau court et
+haut, arcades, œil or à fente sous l'arcade, crinière de flammes, texture
+de tête ; avant/après : `../../captures/verification/2026-09-25-v13b-tete-dragon-avant-apres.png`.
+
+**Juge temporel** (`../_shared/animator_brain/outils/juge.py`, seuils =
+0,8 x médiane de 6 ultimes de référence), sur la vidéo finale
+`../../captures/verification/2026-09-25-v13-scene-complete-avec-son.mp4` :
+
+| critère | v12 | v13 | seuil |
+|---|---|---|---|
+| part d'effet au pic | 0,33 | 0,71 | 0,70 |
+| temps plein écran | 0 s | 1,13 s | 0,66 s |
+| plus longue plage plein écran | 0 s | 0,77 s | 0,48 s |
+| conséquence | 0 s | 5,2 s | 3,4 s |
+
+Porte franchie (v12 : 0 critère sur 4). Bandes à 0,1 s :
+`2026-09-25-v13-bande-0.1s-*.png` ; moments clés : `2026-09-25-v13-moments-cles.png`.
+Vu à la bande et corrigé avant de livrer : 2 s de plan vide et sombre dans
+la conséquence (le dragon sortait du cadre) -> il s'envole en grand arc
+visible, puis plan moyen sur les deux corps.
