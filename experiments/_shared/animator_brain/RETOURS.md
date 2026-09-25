@@ -501,3 +501,25 @@ cerveau, voir la fin de l'entrée.
       FACE, poing vers l'objectif (grammaire obari, comme la planche OPM et
       Deku). Depuis la v5, notre coup final est vu de profil.
     - Sept versions ont retravaillé la pose sans toucher à ça.
+
+- **2026-09-25, v9 : le coup final aérien refait avec la nouvelle méthode**
+  (fiche d'abord, l'œil, les refs, puis les chiffres).
+  - **Ce qui a servi** (la fiche a fait remonter des sources jamais utilisées
+    en production) :
+    - le Serious Punch revu image par image (calme, armé, poing vers
+      l'objectif) ;
+    - la planche OPM et Deku (tête derrière le poing) ;
+    - la repro obari : leçons 2 (pose pour sa caméra), 4 (perspective) et
+      5 (membre vers l'objectif) ;
+    - Wimshurst (le corps part d'abord) ;
+    - les mots de Milan depuis la v1.
+  - **Erreurs trouvées en regardant** :
+    - la pose d'armé était un tas : bras qui pend, genou parti en arrière à
+      cause des axes locaux du contrôle ;
+    - le bras avant venait dans l'objectif ;
+    - l'allonge de 2,0 studs laissait le poing à 0,34 de la cible.
+    Tout a été corrigé avant la production.
+  - **Angle mort du cerveau** : `etats.py` mesure la v9 exactement comme la
+    v8. Aucune mesure ne regarde la mise en scène de l'aérien. Le critique
+    prédit donc 7,4 comme pour la v8, et seule la note de Milan pourra
+    apprendre aux hypothèses « obari ».

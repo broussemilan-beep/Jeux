@@ -676,3 +676,25 @@ Saitama »).
 - `captures/verification/2026-09-25-coup-final-v9-tour-de-la-pose-arme.png`
   (pose d'armé retenue, vue de 8 angles : de profil, le K est ouvert ; de
   dos, le poing sort de la silhouette).
+
+**Ce que le cerveau mesure sur la v9** (`etats.py`, avant l'avis de Milan) :
+- états mesurés **identiques à la v8**. Les mesures regardent les coups au
+  sol (rafale, charge de f150), pas la mise en scène de l'aérien : calme,
+  caméra, poing vers l'objectif. C'est un angle mort du cerveau, noté ici ;
+- l'aérien n'est vu que par les hypothèses de jugement (`obari_poing_objectif`,
+  `pose_pour_sa_camera`, `pose_vue_nette`), renseignées à l'œil ;
+- honnêtement : `arme_tenu_long` passe à faux (armé tenu ~0,5 s, contre
+  ~0,9 s pour la charge suspendue v8).
+
+**Prédiction notée AVANT l'avis de Milan.**
+- Critique du cerveau : **7,4**. C'est sa prédiction de la v8 : ses
+  hypothèses « obari » n'ont encore jamais vu une note bouger.
+- Mon jugement : **7,9** (caméra de jeu 8,0 ; ciné 7,9 ; fourchette 7,5 à 8,3).
+  - **Pour** : le coup final suit enfin la grammaire du Serious Punch, que
+    Milan cite depuis la v4, et ça se voit à vitesse réelle, pas seulement
+    sur des images figées.
+  - **Contre** :
+    - les anneaux dorés encombrent le poing ;
+    - le visage R6 souriant apparaît dans le plan obari ;
+    - en caméra de jeu, la plongée reste un bloc vu de dos ;
+    - l'armé n'est tenu que 0,5 s.
