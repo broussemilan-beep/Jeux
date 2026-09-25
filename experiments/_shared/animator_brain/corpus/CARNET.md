@@ -1,0 +1,254 @@
+# Carnet d'apprentissage (pas des règles)
+
+Demande de Milan (2026-09-25) : « rajoute encore plus de tutos, le but
+apprendre et nourrir, pas forcément combler des trous… des tricks, des
+pépites utiles, mais ça doit pas devenir des règles, mais de
+l'apprentissage ; le but c'est qu'on soit hyper fort, polyvalent. »
+
+Ce carnet est la **mémoire de ce que j'ai appris et pas encore prouvé
+chez nous**. Il n'est lu par aucun contrôle automatique (`rules.py`,
+`critic.py`). Une pépite n'en sort vers `LECONS.md` / `hypotheses.json`
+que si un essai chez nous et un retour de Milan la confirment.
+
+**Statut de chaque entrée**
+- **texte vérifié** : j'ai lu la phrase moi-même dans la source primaire ;
+- **lu par agent** : un agent l'a lue dans la source, pas moi ;
+- **extrait** : résumé de moteur de recherche, indice seulement ;
+- **mesuré chez nous** : j'ai mesuré la chose sur nos fichiers et sur une
+  référence dans les mêmes conditions ;
+- **essayé** : on l'a réellement appliqué, avec le résultat.
+
+Sources complètes : `corpus/recherche/` (roblox, jugement, anime3d du
+2026-09-25), `corpus/tutos/`, `corpus/TUTOS_ANIMATION.md`.
+
+---
+
+## 1. Voir et juger
+
+**1.1 Juger en mouvement, pas sur des images.** *Texte vérifié* (*Illusion
+of Life*, sweatbox) : Walt pouvait feuilleter les dessins, « but the only
+way he really could tell how they would look was to have the drawings
+filmed ». Williams teste en vidéo « at each stage – even the first
+scribbles ».
+- Chez nous : c'est exactement l'erreur de la v7 (planches figées).
+  `outils/regard.py` est notre « pencil test » approché.
+- Limite : c'est une approximation de l'œil, pas l'œil de Milan. Mes
+  verdicts restent provisoires tant qu'il n'a pas vu la boucle.
+
+**1.2 Le test de silhouette ne se transpose pas tel quel à une caméra de
+dos.** *Texte vérifié* + *mesuré chez nous*.
+- Disney : sur Mickey noir sur noir, « a hand in front of the chest would
+  simply disappear » ; « Work in silhouette ».
+- Essai (`outils/vues.py`, `scripts/regard_v7.py`) : en caméra de jeu, au
+  contact v7, le bras qui frappe est à 8 % hors du tronc. J'ai d'abord
+  cru à un défaut.
+- **Mesuré ensuite sur TSB, même caméra** (`scripts/regard_v7_vs_tsb.py`)
+  : médiane 15 %, M1 à 1 %. Le bras libre prend 22-53 % de l'image du
+  perso chez TSB, 35 % chez nous. **Pas un défaut, c'est la caméra.**
+- Ce qui lit un coup de dos : la torsion du corps, la victime, les
+  effets. En caméra ciné, notre contact est à 94 % hors du tronc :
+  lisible.
+- **Leçon de méthode** : avant d'appeler défaut ce qu'un principe
+  signale, mesurer la même chose sur la référence, dans la même caméra.
+
+**1.3 Le cadrage fait partie de la pose.** *Texte vérifié* : « If he is
+kicking, you do not have the camera in close on a waist shot. »
+- Déjà appris chez nous (`pose_pour_sa_camera`, essai obari).
+- Tension ouverte :
+  - « tricher vers la caméra » (Lango, *extrait* ; GGXrd règle chaque image
+    pour sa caméra, *lu par agent*) ;
+  - contre « vérifier sous plusieurs angles ».
+- Réponse pour Rank Zero : le lanceur voit la caméra ciné (`DragonFist.play`
+  prend la caméra). Les autres joueurs voient d'où ils sont. Donc on
+  triche pour la ciné, et la pose doit rester lisible de loin et de biais
+  pour les spectateurs.
+
+**1.4 « Never make a small change ».** *Texte vérifié* (Ham Luske) : « When
+they ask for a change, they're thinking of a big one… otherwise they
+wouldn't mention it. »
+- Chez nous : « je vois aucun changement » (v7), et des amplitudes ~2x
+  trop sages (essais de reproduction).
+- Quand Milan demande un changement, le changement proportionné est
+  probablement plus grand que ce que je juge suffisant.
+
+**1.5 Pousser jusqu'à « trop », puis revenir.** *Texte vérifié* (Dave
+Hand, refusé 6 fois par Walt) : « make it so extreme that you make me
+mad ». Même passage : « he seldom asked an animator to tame down an
+action if the idea was right ».
+- Façon de faire : produire des variantes x1 / x1,5 / x2 / x3 et les
+  juger côte à côte dans le cadrage réel. En cas de doute, prendre celle
+  qui paraît un peu trop (mon biais connu va vers le sage).
+- Limite : Walt refusait aussi la distorsion qui casse la crédibilité.
+
+**1.6 Yeux neufs.** *Extrait*.
+- Miroir, lecture à l'envers : `vues.miroir`.
+- Le premier regard de Milan est la ressource rare. Ne pas le gaspiller
+  sur une version que je n'ai pas moi-même regardée en boucle.
+
+**1.7 Notes au format sweatbox.** *Texte vérifié* (note de Walt à Fred
+Moore) : « have Doc jump back (just a little) in a fighting pose,
+dropping his fanny and getting a stretch in the legs ».
+- Une bonne note dit quelle partie du corps, dans quel sens, à quel
+  moment et pour quelle intention. Elle ne dit pas « le principe X n'est
+  pas respecté ».
+- À appliquer à mes propres critiques.
+
+## 2. Le coup et l'impact
+
+**2.1 Lent contre rapide.** *Texte vérifié* (Williams) : « go just a
+little too fast and then switch to going just a little too slow… the
+slow against the fast ».
+- **Mesuré chez nous** : vitesse du poing à la frappe / vitesse max pendant
+  la préparation (`regard_v7_vs_tsb.py`,
+  `captures/verification/2026-09-25-contraste-frappe-rafale-v7-vs-tsb.png`).
+  - **Rafale v7 : 0,55 à 1,49.** Le poing va aussi vite, ou plus vite, en
+    se ré-armant qu'en frappant : l'œil ne sait pas quel mouvement est « le
+    coup ».
+  - **TSB M1-M4 et Collateral Ruin : 2,3 à 5,7.**
+  - Notre coup chargé : 31, grâce à la tenue.
+- Limites de la mesure :
+  - les M1 TSB sont des clips séparés qui partent du repos, alors que
+    notre rafale est un seul clip enchaîné ;
+  - en jeu, Roblox fond les M1 entre eux (fondu non mesuré ici).
+  - L'écart réel est donc peut-être plus petit. Il reste que, dans notre
+    clip, le ré-armement est le mouvement le plus rapide.
+- **À essayer** (piste, pas règle) : ré-armer plus lentement (ou le cacher
+  dans le recul), frapper en 1-2 images. Juger en regard vitesse réelle
+  contre TSB.
+- Contre-indication : une rafale « mitraillette » peut vouloir un flux
+  continu (TSB Ultimate1 : 0,38). C'est un choix, pas un oubli.
+
+**2.2 Contact montré ou contact sauté.** *Texte vérifié*, deux maîtres,
+deux gestes opposés au service du même but (un saut que l'œil sent sans
+le voir) :
+- Ken Harris ajoute UNE image de contact juste avant l'écrasement : « we
+  won't see it, but we'll feel it ».
+- Babbitt (via Natwick, manuscrit lisible) : on montre la main déjà passée
+  au-delà du menton, le menton déjà déplacé, sans image de contact :
+  « 10 times the impact ». Les vieux westerns coupaient le contact au
+  montage.
+- Chez nous : la v7 montre un contact que personne ne voit (flou, puis
+  cartes). Deux essais possibles : (a) contact net tenu 2-3 images, puis
+  les cartes ; (b) pas de contact, directement le résultat (victime déjà
+  pliée) avec le flash.
+- On choisit par coup, en variantes jugées en boucle.
+
+**2.3 Anticipations invisibles.** *Texte vérifié* (sommaire + manuscrit) :
+une ou deux images dans le sens opposé, trop rapides pour être vues, pour
+le « snap ».
+- Utile en jeu : ça coûte 1 à 3 images de réactivité seulement.
+- À essayer sur la rafale, avec 2.1.
+
+**2.4 L'anticipation peut être « corny ».** *Texte vérifié* (Williams) :
+« then the great thing is to do something different – a surprise ».
+- Même le principe le plus enseigné est un outil qui peut rater.
+
+**2.5 Action et réaction dans le même cadre.** *Lu par agent*
+(description Every Frame a Painting, Jackie Chan).
+- Juger un coup avec la victime visible, pas l'attaquant seul.
+- « Two good hits = one great hit » : le même coup montré deux fois
+  (large puis serré), sans raccord exact, se lit comme un coup plus fort.
+- Chez nous : c'est une piste pour le coup chargé (plan de jeu, puis gros
+  plan).
+
+**2.6 Le follow-through est long ; la lisibilité vit dans la pose
+d'après.** *Extrait* (Sakurai « Follow-Throughs Make the Impact », Cooper).
+- Rejoint `pose_apres_tenue` (tutos). Même idée par trois chemins.
+
+## 3. La 3D qui imite l'anime
+
+**3.1 Perspective forcée : avancer le bras, pas élargir le FOV.** *Texte
+vérifié* (4Gamer, GGXrd) : « If we widened the angle of view… the face in
+the back would become too small. Instead, we would extend the arm of the
+3D model and bring the hand closer to the camera. »
+- **Déjà trouvé en reproduction** (`repro/saitama_obari.py`) : le poing
+  géant vient de la perspective (corps qui plonge, bras disloqué vers
+  l'objectif), à FOV raisonnable.
+- Même conclusion par ASW et par notre essai. Confiance en hausse,
+  toujours pas validée par Milan.
+- R6 : translation du bloc bras (Motor6D), sans déformation.
+
+**3.2 Poings grossis à l'impact.** *Texte vérifié* : « In a punching
+action, the fists are slightly enlarged ».
+- R6 : seul un bloc entier se scale, et ça touche l'identité « 6 blocs ».
+  C'est une décision de Milan, pas la mienne.
+
+**3.3 Tenues irrégulières.** *Texte vérifié* : base 15 i/s en
+cinématique, tenues « 2F, 3F, 5F, 1F, 1F, 2F, 2F, 3F, 4F » fixées coup
+par coup.
+- Rejoint `frappe_lineaire` (TSB : poses clés espacées).
+- Idées *extrait* à essayer :
+  - cadence par partie du corps (Hobie : veste en 4s, corps en 3s) ;
+  - cadence comme caractère (Miles en 2s, Peter en 1s) : un rang faible
+    moins fluide qu'un rang fort ?
+
+**3.4 Caméra fluide + perso tenu = saccade (« strobing »).** *Extrait*
+(Spider-Verse).
+- Rejoint ce que `regard.py` a vu en v7 : wiggle + caméra qui avance =
+  jamais une image nette.
+- À essayer : caméra immobile pendant une tenue, ou qui avance par pas
+  avec la pose.
+
+**3.5 « As long as what you see on the screen is cool, it's OK. »** *Lu
+par agent* (slides ASW « Bone Placement Tips »).
+- Tester les pivots sur les poses les plus violentes, pas sur l'idle.
+
+## 4. Hitstop et caméra
+
+**4.1 Secousse de caméra : rotation, bruit lisse, trauma².** *Texte
+vérifié* (slides Eiserloh, GDC 2016) :
+- « Camera shake is trauma² or trauma³ » ;
+- « Use Perlin noise instead » ;
+- en 3D, la secousse en translation est jugée « super lame ».
+- **Chez nous** (`player_template.html`, `DragonFist.luau`) : translation
+  X/Y + un peu de roulis, bruit blanc tiré à neuf chaque image (60 Hz),
+  décroissance exponentielle. Côté Luau, `math.random`, donc non déterministe.
+- Ce bruit blanc rend chaque image différente de la précédente : c'est
+  exactement ce que `regard.py` compte comme « jamais vu ». Il pourrait
+  expliquer une part de « caméra ciné un peu trop abusée » (Milan, v6).
+- **À essayer** : variantes rotation seule + bruit lisse contre l'actuel,
+  même dose, jugées en regard vitesse réelle. Ne pas changer sans les
+  comparer.
+
+**4.2 Le hitstop est un compromis, pas un « plus = mieux ».** *Extrait*.
+- SFV : 8 / 12 / 15 images, et Ken à 8 / 10 / 12 (identité « nerveuse »).
+- Smash : proportionnel aux dégâts, plafond 30.
+- Monster Hunter : trop, puis pas assez, selon le public.
+- Sakurai : garder l'attaquant légèrement en mouvement pendant le gel,
+  secouer la victime (horizontal au sol, vertical en l'air).
+- Chez nous : le gel reste un gel (décision v7). La secousse de la
+  victime pendant le gel est à essayer.
+
+**4.3 Sakurai, « Too Much is Just Right ».** *Lu par agent*
+(description) : 3D → des éléments se perdent ; caméra reculée → pas
+d'impact ; intervalles automatiques → pas de vie. Donc trop = juste.
+- Nos trois conditions exactement : R6 3D, caméra de jeu reculée,
+  interpolation Linear.
+
+## 5. Pistes à essayer (classées, aucune n'est décidée)
+
+1. **Rafale : ré-armement lent, frappe rapide** (2.1, 2.3). Mesure prête
+   (contraste 3D et écran contre TSB).
+2. **Contact du coup chargé vu avant les cartes, ou sauté** (2.2). Deux
+   variantes en boucle.
+3. **Secousse rotation + bruit lisse** (4.1). A/B, même dose.
+4. **Caméra immobile pendant les tenues** (3.4).
+5. **Victime secouée pendant le gel** (4.2).
+6. **Aérien Saitama/obari** : perspective forcée (3.1), déjà prototypée,
+   à porter dans le rig V2.22.
+
+Méthode pour chacune :
+- deux ou trois variantes, dont une « trop » (1.5) ;
+- regard vitesse réelle + vues de jugement ;
+- comparaison à la référence dans la même caméra (1.2) ;
+- note au format sweatbox (1.7) ;
+- Milan tranche.
+
+## 6. Mes biais connus (à relire avant de juger)
+
+- Je juge sur des images figées et agrandies (1.1).
+- Mes poses sont ~2x trop sages (1.4, 1.5).
+- J'applique un principe comme une règle et j'appelle défaut ce qui ne
+  l'est pas chez les pros (1.2, fausse alerte du 2026-09-25).
+- Je cherche dans une source ce qui confirme mon plan (retour de Milan
+  sur l'étude des tutos, 2026-09-25).

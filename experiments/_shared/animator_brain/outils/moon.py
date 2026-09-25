@@ -174,8 +174,11 @@ COL = {"Torso": (214, 54, 46), "Head": (230, 230, 230), "Right Arm": (80, 200, 1
 FACES = [(0, 1, 3, 2), (4, 6, 7, 5), (0, 4, 5, 1), (2, 3, 7, 6), (0, 2, 6, 4), (1, 5, 7, 3)]
 
 
-def render(worlds, eye, target, fov=50.0, size=(640, 360), title="", extra=None, sky=(170, 190, 210), backdrop=None, ground=True):
-    """worlds : liste de dicts {part: (R, p)} (plusieurs persos). Caméra perspective."""
+def render(worlds, eye, target, fov=50.0, size=(640, 360), title="", extra=None, sky=(170, 190, 210), backdrop=None, ground=True,
+           couleurs=None, ombre=True, contour=(20, 20, 20)):
+    """worlds : liste de dicts {part: (R, p)} (plusieurs persos). Caméra perspective.
+    couleurs : {part: rgb} à la place de COL (ex. tout noir = silhouette) ; ombre=False
+    et contour=None donnent un aplat pur (test de silhouette des animateurs)."""
     from PIL import Image, ImageDraw
     W, H = size
     eye = np.asarray(eye, float); target = np.asarray(target, float)
@@ -218,9 +221,9 @@ def render(worlds, eye, target, fov=50.0, size=(640, 360), title="", extra=None,
                 pts = [proj(p) for p in q]
                 if min(z for _p, z in pts) <= 0.05:
                     continue
-                k = 0.45 + 0.55 * max(0.0, n @ light)
-                col = tuple(int(min(255, x * k)) for x in COL[part])
-                polys.append((float(np.mean([z for _p, z in pts])), [p for p, _z in pts], col, (20, 20, 20)))
+                k = (0.45 + 0.55 * max(0.0, n @ light)) if ombre else 1.0
+                col = tuple(int(min(255, x * k)) for x in (couleurs or COL)[part])
+                polys.append((float(np.mean([z for _p, z in pts])), [p for p, _z in pts], col, contour))
     for _z, pts, col, ol in sorted(polys, key=lambda x: -x[0]):
         d.polygon(pts, fill=col, outline=ol)
     if extra:

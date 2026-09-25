@@ -319,3 +319,36 @@ cerveau, voir la fin de l'entrée.
     longtemps pour être retenue. Les cartes d'impact doivent venir APRÈS
     qu'on a vu le contact, pas à sa place. Le wiggle ne doit pas se cumuler
     avec un mouvement de caméra.
+
+- **2026-09-25, trois recherches versées + vues de jugement des animateurs.**
+  - **Recherches.** `corpus/recherche/` (roblox, jugement, anime3d). J'ai
+    relu moi-même, dans le texte des sources (*Illusion of Life*,
+    *Animator's Survival Kit*, 4Gamer GGXrd, slides d'Eiserloh), les
+    citations qui comptent pour nous. Elles sont vraies mot pour mot.
+  - **Carnet.** Les pépites vont dans `corpus/CARNET.md`, un carnet
+    d'apprentissage séparé des règles (demande de Milan : « pas des
+    règles, de l'apprentissage »). Aucun contrôle automatique ne le lit.
+  - **Nouvel outil** `outils/vues.py` : silhouette, part de chaque membre
+    hors du tronc, pelure d'oignon, espacement du poing, miroir, lecture
+    d'une KeyframeSequence image par image. Appliqué à la v7 :
+    `scripts/regard_v7.py`, `scripts/regard_v7_vs_tsb.py`.
+    - Preuves : `captures/verification/2026-09-25-vues-jugement-v7-silhouette-pelure-espacement.png`
+      et `…-contraste-frappe-rafale-v7-vs-tsb.png`.
+  - **Fausse alerte évitée.** En caméra de jeu (de dos), le bras qui frappe
+    au contact v7 n'est qu'à 8 % hors du tronc. J'y ai d'abord vu le
+    problème « main devant la poitrine » de Disney. Mesuré sur TSB, même
+    caméra : médiane 15 %, M1 à 1 %. C'est la caméra, pas la pose.
+    **Méthode retenue** : mesurer sur la référence, dans la même caméra,
+    avant d'appeler « défaut » ce qu'un principe signale.
+  - **Vraie différence trouvée.** Rafale v7, rapport vitesse du poing à la
+    frappe / pendant la préparation :
+    - **0,55-1,49 chez nous** : le ré-armement est aussi rapide que la
+      frappe, voire plus ;
+    - **2,3-5,7 chez TSB** (M1-M4, Collateral Ruin) ;
+    - Williams : « the slow against the fast ».
+    - Limite : les M1 TSB sont des clips séparés qui partent du repos.
+    - C'est une piste (CARNET §2.1), pas une correction décidée.
+  - **Autre piste.** Notre secousse de caméra est une translation en bruit
+    blanc à 60 Hz. Eiserloh recommande en 3D la rotation seule, avec un
+    bruit lisse et une intensité en trauma². C'est à essayer en A/B
+    (CARNET §4.1), et ça peut expliquer « caméra ciné un peu trop abusée ».
