@@ -995,7 +995,7 @@
     "finisher",
     "impact"
    ],
-   "confiance_principe": 0.7,
+   "confiance_principe": 0.4,
    "poids_note": 0.5,
    "poids_a_priori": 0.5,
    "etalon_style": "roblox_smooth",
@@ -1004,10 +1004,11 @@
    "sources": [
     "vidéos tutos envoyées par Milan (zips 2026-09-24) : vlog DeHapy, critique de l'animateur Xoaterz (planche ✗/✓ lisible, 2023 ; corpus/tutos/rapport_video_critique_poses.md) : ✗ « boring sameside posing / looks like a stickman » = bras tendus à l'horizontale, torse vertical de face ; ✓ « is interesting / doesn't look like a stickman / akin to The Serious Punch » = torse 3/4 penché, bras armé derrière, genou levé",
     "NOUS v6 MESURÉ : 93 % des images de la charge (f118-146) en croix ; TSB attaquant 0 % sur 13 animations (Stoic Bomb : bras CROISÉS devant, pas une croix, faux positif corrigé) ; la charge v6 est la croix ✗ (experiments/r6_poing_dragon/FICHE_V7.md, captures/verification/2026-09-24-croquis-v7-charge-contact-vs-v6.png)",
-    "tuto punch Blender : charge asymétrique torse détourné ~90°"
+    "tuto punch Blender : charge asymétrique torse détourné ~90°",
+    "étude COMPLÈTE des 4 vidéos longues (2026-09-25, vidéos entières à 1 img/s, tous textes lus ; corpus/tutos/etude_complete_*.md) : CONTRE-EXEMPLE : obari punch de Sakura : l'armé d'un coup chargé EST une croix de face bras écartés, et ça marche, parce qu'il est tenu, sur fond radial, caméra qui avance, puis poing dans l'objectif. La planche de Xoaterz vise une pose posée seule en plan moyen."
    ],
    "quand": "toute pose clé tenue ou lue (charge, pic, pose de fin)",
-   "contre_indication": "pose volontairement frontale et symétrique de mise en scène (garde du boss face caméra, ultime 'aura'), assumée comme telle et brève"
+   "contre_indication": "pose volontairement frontale et symétrique de mise en scène (garde du boss face caméra, ultime 'aura'), assumée comme telle et brève ; armé d'un coup chargé mis en scène (tenue + fond radial + caméra qui avance + poing vers l'objectif ensuite) : la croix y fonctionne (obari punch)"
   },
   {
    "id": "ligne_equilibre",
@@ -1027,6 +1028,86 @@
    ],
    "quand": "poses tenues ou lues au sol (charge, contact tenu, fin)",
    "contre_indication": "image de passage de 1-2 f (extension jetée, plongeon) où le déséquilibre EST le message ; poses aériennes"
+  },
+  {
+   "id": "corps_avant_bras",
+   "enonce": "Ordre de travail : le TORSE porte tout le mouvement (anticipation, drag, milieu, exagération, amorti) et doit se lire SEUL, avant qu'un bras bouge ; puis bras libre, bras qui frappe, tête, jambes en dernier (pieds plantés).",
+   "portee": [
+    "coup_droit",
+    "finisher",
+    "coup_leger"
+   ],
+   "confiance_principe": 0.5,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "roblox_smooth",
+   "categorie": "methode",
+   "mesure": "jugement : rejouer le torse seul (bras et jambes figés) ; lit-il le coup ?",
+   "sources": [
+    "étude COMPLÈTE des 4 vidéos longues (2026-09-25, vidéos entières à 1 img/s, tous textes lus ; corpus/tutos/etude_complete_*.md) : tuto uppercut 256-301 s (« If you followed the steps your animation should look like this » : résultat SANS bras, puis « Now lets animate the arms ») ; NOUS : dragon_clip part de la cible du POING (IK, fitp) et place le corps après : le corps n'a pas sa propre courbe"
+   ],
+   "quand": "tout coup qui doit avoir du poids",
+   "contre_indication": "gestes de bras isolés (garde qui respire, signe de main)"
+  },
+  {
+   "id": "pose_apres_tenue",
+   "enonce": "La pose d'APRÈS le coup est la plus extrême et la plus longue : corps plié / couché dans le sens du coup, très bas, tenue 0,4-1 s (vivante). L'extension elle-même ne dure qu'1-2 images : l'œil lit charge tenue → pose d'après tenue.",
+   "portee": [
+    "coup_droit",
+    "finisher"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "roblox_smooth",
+   "categorie": "pose",
+   "mesure": "durée de la pose d'après (poing hors du contact, corps encore plié) ; bascule du torse dans cette pose",
+   "sources": [
+    "étude COMPLÈTE des 4 vidéos longues (2026-09-25, vidéos entières à 1 img/s, tous textes lus ; corpus/tutos/etude_complete_*.md) : tuto punch Blender (extension 1 image vidéo, pose d'après pliée tenue 0,43 s) ; tuto uppercut (action 0,17 s, pose finale très basse/large tenue ~1 s) ; Xoaterz (pose d'après pliée ~70-90°, tenue 0,6 s en plan serré)",
+    "NOUS v7 : l'extension f150 est tenue 0,43 s (hitstop + cartes) et la pose d'après dure 0,13 s avant l'envol : l'inverse"
+   ],
+   "quand": "coup chargé, finisher, coup qui ferme une rafale",
+   "contre_indication": "M1 enchaînés ; coup aérien qui s'enchaîne directement"
+  },
+  {
+   "id": "cadrage_serre",
+   "enonce": "Placement : pendant un temps fort, le perso REMPLIT le cadre (plan poitrine/taille, 60-80 % de la hauteur), caméra basse, souvent inclinée (dutch) ; le décor n'est qu'un fond. Un changement de pose qui ne couvre que 1/4 de l'image ne se voit pas.",
+   "portee": [
+    "finisher",
+    "impact",
+    "coup_droit"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "roblox_smooth",
+   "categorie": "mise_en_scene",
+   "mesure": "fraction de la hauteur du cadre occupée par l'attaquant au temps fort (capture du lecteur)",
+   "sources": [
+    "étude COMPLÈTE des 4 vidéos longues (2026-09-25, vidéos entières à 1 img/s, tous textes lus ; corpus/tutos/etude_complete_*.md) : extraits pros Xoaterz / CrashMagician / Thundey (DeHapy 180-193 s) ; échelle LEVEL 1/8/99 (DeHapy 845-880 s) : ce qui monte = amplitude + proximité caméra + effet",
+    "Milan sur la v7 : « je vois aucun changement », « placement différent »"
+   ],
+   "quand": "charge, coup chargé, pose d'après",
+   "contre_indication": "plan de conséquence (très large, contraste d'échelle) ; caméra de jeu (distance imposée)"
+  },
+  {
+   "id": "obari_poing_objectif",
+   "enonce": "Coup chargé façon Saitama/obari : 1) armé TENU 1-2 s (léger tremblement, fond uni + lignes radiales, caméra qui avance), 2) le poing traverse VERS l'objectif et remplit 40-60 % du cadre (perspective forcée, grand angle), 3) coupe sur le plan large de la conséquence.",
+   "portee": [
+    "finisher"
+   ],
+   "confiance_principe": 0.65,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "manga_ultime",
+   "categorie": "mise_en_scene",
+   "mesure": "fiche : durée de tenue, part du cadre couverte par le poing, coupe vers plan large",
+   "sources": [
+    "étude COMPLÈTE des 4 vidéos longues (2026-09-25, vidéos entières à 1 img/s, tous textes lus ; corpus/tutos/etude_complete_*.md) : obari punch (Sakura : armé en croix tenu 0,7 s, poing 40 % du cadre à 1,5 s, coupe plan large ; Iczer : armé tenu ~2 s, poing plus gros que le buste, puis vers la caméra 50 % du cadre)",
+    "images de Milan (2026-09-25) : Deku poing vers le lecteur ; poing géant au 1er plan, perso petit derrière ; « c'est vraiment le coup chargé de Saitama »"
+   ],
+   "quand": "LE coup final d'une technique (un seul par technique)",
+   "contre_indication": "rafale, M1 ; coup où la victime serait entre l'objectif et le poing (au sol v6) : se placer du point de vue de la victime"
   }
  ],
  "_styles": {
