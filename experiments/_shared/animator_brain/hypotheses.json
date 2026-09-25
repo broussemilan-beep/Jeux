@@ -1168,6 +1168,64 @@
    ],
    "quand": "tout moment clé (charge, contact, pose d'après)",
    "contre_indication": "indicateur, pas une cible : des refs très bonnes sont à 0,32-0,43 (caméra à l'épaule en continu) ; ne jamais figer une scène pour « monter le chiffre »"
+  },
+  {
+   "id": "vfx_couverture_pic",
+   "enonce": "Au pic d'un gros impact ou d'un ultime, l'effet COUVRE une grande part de l'image (refs Roblox 49-77 % des pixels, anime 99 %) : il ne décore pas un coin du cadre, il EST l'image un instant.",
+   "portee": [
+    "impact",
+    "finisher"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "categorie": "vfx",
+   "mesure": "durees.py effet_max : Stagnant Rage 0,49, IMPACT HAVEN 0,58, Black Flash 0,77, Goku 7a2b4ae8 0,99 ; NOUS v12 0,33",
+   "sources": [
+    "outils/durees.py, corpus/clips/durees_effets_2026-09-25.json (audit du 2026-09-25 après la v12 notée VFX 2-4)",
+    "GIF 7a2b4ae8 : blanc puis tourbillon de feu plein cadre 2,3 s"
+   ],
+   "quand": "gros impact, ultime, signature",
+   "contre_indication": "mesure grossière (interface, ciel clair comptés) ; les coups légers doivent rester petits (hierarchie_effets)"
+  },
+  {
+   "id": "signature_tenue",
+   "enonce": "L'effet-SIGNATURE d'un ultime (le dragon, l'horloge, le trou noir) reste à l'écran assez longtemps pour être REGARDÉ : de l'ordre de 1,5-2,5 s, pas une apparition.",
+   "portee": [
+    "finisher"
+   ],
+   "confiance_principe": 0.65,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "categorie": "vfx",
+   "mesure": "durees.py + vidéo à vitesse réelle : invocation Goku f254bee5 tenue 2,0 s ; dragon qui sort du tourbillon 7a2b4ae8 ~1,5 s plein cadre ; NOUS v12 : dragon de l'invocation 0,57 s (entier ~0,27 s)",
+   "sources": [
+    "outils/durees.py, corpus/clips/durees_effets_2026-09-25.json (audit du 2026-09-25 après la v12 notée VFX 2-4)",
+    "Milan v12 : « le dragon apparaît 0,5 seconde »"
+   ],
+   "quand": "ultime à signature",
+   "contre_indication": "les effets de coups normaux, eux, sont des bouffées de 0,07-0,3 s (refs Roblox)"
+  },
+  {
+   "id": "signature_vers_objectif",
+   "enonce": "La signature d'un ultime vient VERS la caméra et grossit jusqu'au très gros plan (le dragon sort du tourbillon, gueule vers nous) ; elle est le coup, pas un décor qui tourne à côté.",
+   "portee": [
+    "finisher"
+   ],
+   "confiance_principe": 0.5,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "anime",
+   "categorie": "vfx",
+   "mesure": "lecture image par image de 7a2b4ae8 (bande durees.py) ; NOUS v12 : dragon en plan moyen, bas, autour du cratère",
+   "sources": [
+    "outils/durees.py, corpus/clips/durees_effets_2026-09-25.json (audit du 2026-09-25 après la v12 notée VFX 2-4)",
+    "Milan v12 : « pas au bon endroit » (hypothèse à confirmer avec lui)"
+   ],
+   "quand": "moment signature",
+   "contre_indication": "à confirmer avec Milan ; en caméra de jeu, la signature doit rester lisible sans cacher le joueur"
   }
  ],
  "_styles": {
@@ -1178,6 +1236,51 @@
   "pack_m1": "etalonne sur le pack battleground pro (4 M1) ; contredit en partie par les M1 TSB officiels"
  },
  "_regle_d_usage": "Retour de Milan (2026-09-24) : ce qu'on decouvre doit etre bien utilise, pas applique n'importe comment. Une hypothese vraie en animation n'est pas une case a cocher : chacune porte QUAND elle sert et QUAND elle nuit. Le critique juge l'usage au bon moment (hierarchie des temps forts, escalade, contraste), jamais la simple presence.",
+ "_biais_prediction": {
+  "technique": {
+   "biais": 0.33,
+   "n": 4,
+   "paires": [
+    [
+     "v5",
+     7.2,
+     6.8
+    ],
+    [
+     "v6",
+     7.8,
+     7.0
+    ],
+    [
+     "v8",
+     7.4,
+     7.5
+    ],
+    [
+     "v9",
+     7.9,
+     7.7
+    ]
+   ]
+  },
+  "vfx": {
+   "biais": 3.0,
+   "n": 2,
+   "paires": [
+    [
+     "v11_aura_dragon",
+     7.0,
+     4.0
+    ],
+    [
+     "v12_dragon_premium_pose_goku_izuku",
+     6.0,
+     3.0
+    ]
+   ]
+  },
+  "doc": "moi - Milan, par axe ; a soustraire de mes predictions"
+ },
  "_calibration": {
   "a": 0.969,
   "b": 7.023,

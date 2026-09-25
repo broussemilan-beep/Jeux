@@ -1,13 +1,18 @@
 # Reflexion du critique
 
+## Mes predictions contre les notes de Milan, PAR AXE
+
+- technique : biais moyen +0.3 sur 4 note(s) (v5 7.2->6.8, v6 7.8->7, v8 7.4->7.5, v9 7.9->7.7)
+- vfx : biais moyen +3.0 sur 2 note(s) (v11_aura_dragon 7->4, v12_dragon_premium_pose_goku_izuku 6->3)
+
 ## Predictions contre notes de Milan (poids avant apprentissage)
 - v1 : predit 6.3, Milan 6.0 (ecart +0.3)
-- v2 : predit 6.5, Milan 6.7 (ecart -0.2)
+- v2 : predit 6.4, Milan 6.7 (ecart -0.3)
 - v4 : predit 6.7, Milan 6.7 (ecart +0.0)
 - v5 : predit 6.8, Milan 6.8 (ecart +0.0)
 - v6 : predit 7.3, Milan 7.0 (ecart +0.3)
-- v8 : predit 7.4, Milan 7.5 (ecart -0.1)
-- v9 : predit 7.4, Milan 7.7 (ecart -0.3)
+- v8 : predit 7.5, Milan 7.5 (ecart +0.0)
+- v9 : predit 7.5, Milan 7.7 (ecart -0.2)
 
 ## Ce qui a change entre deux versions notees
 - v1 -> v2 : note 6.0 -> 6.7 (+0.7) ; corrigees : posture_droite, escalade, impact_visible ; perdues : aucune
@@ -64,6 +69,9 @@
 - pose_apres_tenue : La pose d'APRÈS le coup est la plus extrême et la plus longue : corps plié / couché dans le sens du coup, très bas, tenue 0,4-1 s (vivante). L'extension elle-même ne dure qu'1-2 images : l'œil lit charge tenue → pose d'après tenue.
 - cadrage_serre : Placement : pendant un temps fort, le perso REMPLIT le cadre (plan poitrine/taille, 60-80 % de la hauteur), caméra basse, souvent inclinée (dutch) ; le décor n'est qu'un fond. Un changement de pose qui ne couvre que 1/4 de l'image ne se voit pas.
 - reglage_double : Correction de jugement : mes réglages d'amplitude « à l'œil » sont systématiquement ~2x trop sages par rapport aux références (enroulement, hauteur du corps, écart des pieds). Avant de valider une pose, la pousser jusqu'à ce qu'elle paraisse trop, puis comparer à la ref au même angle.
+- vfx_couverture_pic : Au pic d'un gros impact ou d'un ultime, l'effet COUVRE une grande part de l'image (refs Roblox 49-77 % des pixels, anime 99 %) : il ne décore pas un coin du cadre, il EST l'image un instant.
+- signature_tenue : L'effet-SIGNATURE d'un ultime (le dragon, l'horloge, le trou noir) reste à l'écran assez longtemps pour être REGARDÉ : de l'ordre de 1,5-2,5 s, pas une apparition.
+- signature_vers_objectif : La signature d'un ultime vient VERS la caméra et grossit jusqu'au très gros plan (le dragon sort du tourbillon, gueule vers nous) ; elle est le coup, pas un décor qui tourne à côté.
 
 ## Echelle calibree sur 7 notes : note = 7.02 + 0.97 x score
 
@@ -120,6 +128,9 @@
 - pose_pour_sa_camera  poids_note 0.50 (confiance principe 0.60)
 - reglage_double       poids_note 0.50 (confiance principe 0.55)
 - pose_vue_nette       poids_note 0.50 (confiance principe 0.55)
+- vfx_couverture_pic   poids_note 0.50 (confiance principe 0.60)
+- signature_tenue      poids_note 0.50 (confiance principe 0.65)
+- signature_vers_objectif poids_note 0.50 (confiance principe 0.50)
 - armement_frappe_retour poids_note 0.43 (confiance principe 0.80)
 - epaules_basses       poids_note 0.40 (confiance principe 0.50)
 - bras_horizontal      poids_note 0.40 (confiance principe 0.80)

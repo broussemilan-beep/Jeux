@@ -46,10 +46,26 @@ def load():
     mes impressions). Les desaccords sont gardes : ils disent ou mon oeil se
     trompait."""
     hyp = json.load(open(HYP))
-    notes = [json.loads(l) for l in open(NOTES) if l.strip()]
+    notes = []
+    # une version peut avoir plusieurs lignes (la prediction AVANT Milan, puis
+    # sa note) : on les fusionne, la plus recente complete l'ancienne
+    for l in open(NOTES):
+        if not l.strip():
+            continue
+        n = json.loads(l)
+        prev = next((m for m in notes if m["version"] == n["version"] and m.get("production") == n.get("production")), None)
+        if prev is None:
+            notes.append(n)
+        else:
+            prev.update({k: v for k, v in n.items() if v is not None})
     auto = json.load(open(AUTO)) if os.path.exists(AUTO) else {}
     for n in notes:
         a = auto.get(n["version"])
+        # (2026-09-25) les notes VFX (v10+) n'ont pas d'etat d'hypotheses
+        # d'ANIMATION : sans ce garde, reflect() plantait depuis la v10 et le
+        # cerveau n'apprenait plus rien
+        n["axe_animation"] = "etat" in n
+        n.setdefault("etat", {})
         n["etat_manuel"] = dict(n["etat"])
         n["desaccords"] = []
         if a:
@@ -104,6 +120,52 @@ def predict(hyp, etat, style_cible=None):
             "alertes_style": style_warnings(hyp, style_cible) if style_cible else []}
 
 
+def _valeur(v):
+    """Note chiffree d'un champ de Milan : 7.7, [2, 4] -> 3.0, texte -> None."""
+    if isinstance(v, (int, float)) and not isinstance(v, bool):
+        return float(v)
+    if isinstance(v, list) and v and all(isinstance(x, (int, float)) for x in v):
+        return sum(v) / len(v)
+    return None
+
+
+def biais_predictions(notes, hyp):
+    """Ecart entre MA prediction (ecrite avant l'avis de Milan) et sa note,
+    axe par axe. Ecrit hyp['_biais_prediction'] : a SOUSTRAIRE de mes
+    prochaines predictions tant que l'ecart ne se resorbe pas."""
+    paires = {}
+    for n in notes:
+        pr = n.get("prediction_avant_milan") or {}
+        reel = {}
+        if _valeur(n.get("note_milan")) is not None:
+            reel["technique"] = _valeur(n["note_milan"])
+        for src in (n.get("axes_milan") or {}, n.get("parties") or {}):
+            for k, v in src.items():
+                if _valeur(v) is not None:
+                    reel[k] = _valeur(v)
+        if "technique_totale" in reel:
+            reel["technique"] = reel.pop("technique_totale")
+        pred = {}
+        for k in ("note", "jugement", "claude"):
+            if _valeur(pr.get(k)) is not None:
+                pred["technique"] = _valeur(pr[k])
+                break
+        for k, v in (pr.get("jugement_axes") or {}).items():
+            if _valeur(v) is not None:
+                pred[k] = _valeur(v)
+        for axe, v in pred.items():
+            if axe in reel:
+                paires.setdefault(axe, []).append((n["version"], v, reel[axe]))
+    out, biais = [], {}
+    for axe, ps in sorted(paires.items()):
+        m = sum(p - r for _, p, r in ps) / len(ps)
+        biais[axe] = {"biais": round(m, 2), "n": len(ps), "paires": [[v, p, r] for v, p, r in ps]}
+        out.append(f"- {axe} : biais moyen {m:+.1f} sur {len(ps)} note(s) ("
+                   + ", ".join(f"{v} {p:g}->{r:g}" for v, p, r in ps) + ")")
+    hyp["_biais_prediction"] = {**biais, "doc": "moi - Milan, par axe ; a soustraire de mes predictions"}
+    return out or ["- (aucune paire prediction / note)"]
+
+
 def reflect(write=True):
     hyp, notes = load()
     byid = {h["id"]: h for h in hyp["hypotheses"]}
@@ -112,8 +174,12 @@ def reflect(write=True):
     # les mises a jour et les poids derivaient avec le nombre de lancements)
     for h in hyp["hypotheses"]:
         h["poids_note"] = h.get("poids_a_priori", 0.5)
-    graded = [n for n in notes if n.get("note_milan") is not None]
+    # seules les notes d'ANIMATION apprennent les poids des hypotheses
+    # d'animation : une note tiree vers le bas par les VFX (v12 : 4, alors que
+    # l'animation du perso vaut 7,7) fausserait tout le modele
+    graded = [n for n in notes if n.get("note_milan") is not None and n["axe_animation"]]
     lines = ["# Reflexion du critique", ""]
+    lines += ["## Mes predictions contre les notes de Milan, PAR AXE", ""] + biais_predictions(notes, hyp) + [""]
     # 1. predictions (avec les poids d'AVANT l'apprentissage) contre notes reelles
     lines.append("## Predictions contre notes de Milan (poids avant apprentissage)")
     for n in graded:

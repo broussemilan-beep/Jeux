@@ -522,6 +522,30 @@ temps réel il vivait 0,57 s. Le GIF de Goku tient l'invocation 2 s. Un
 effet-signature se juge en vidéo à vitesse réelle, et sa durée se mesure
 contre la ref.
 
+**4b.13 L'effet-signature EST l'image, et le dragon vient VERS nous**
+(mesuré, `outils/durees.py`, `corpus/clips/durees_effets_2026-09-25.json`).
+- GIF du Poing du Dragon (7a2b4ae8) : après 0,6 s, l'effet couvre ~99 % de
+  l'écran pendant 2,3 s : blanc, explosion, tourbillon de feu PLEIN CADRE,
+  puis le dragon SORT du tourbillon vers l'objectif et finit tête en très
+  gros plan. C'est probablement le « bon endroit » dont parle Milan.
+- Invocation de Goku (f254bee5) : effet présent pendant les 2,0 s entières.
+- Refs Roblox : pic d'effet 49 % (Stagnant Rage), 58 % (IMPACT HAVEN), 77 %
+  (Black Flash) de l'écran, en bouffées de 0,07-0,3 s.
+- Nous (v12) : pic 33 %, bouffées de 0,07-0,23 s ; le dragon de
+  l'invocation est une petite forme dorée 0,4 s ; celui du cratère tourne
+  bas, en plan moyen, sur un sol gris qui occupe l'écran.
+- Donc : en jeu Roblox, les bouffées courtes sont normales, mais elles
+  couvrent 1,5 à 2,3 fois plus d'écran que les nôtres ; et un ULTIME à
+  signature (dragon) se joue comme l'anime : plein cadre et tenu.
+
+**4b.14 Compter les couches n'est pas juger** (audit du raisonnement,
+2026-09-25). Mes auto-évaluations VFX listaient ce qui était PRÉSENT (dôme,
+anneau, feu, fumée, débris) et concluaient « riche ». Le cerveau n'avait
+aucune hypothèse de QUALITÉ d'effet (taille à l'écran, durée, finition),
+seulement de présence. Biais mesuré par `critic.py` : +3,0 points sur les
+VFX (2 notes), +0,3 sur l'animation (4 notes). À soustraire tant qu'il ne
+se résorbe pas, et juger avec `durees.py` contre la ref, pas avec la liste.
+
 ## 5. Pistes à essayer (classées, aucune n'est décidée)
 
 1. **Rafale : ré-armement lent, frappe rapide, clés espacées** (2.1,
@@ -552,6 +576,16 @@ Méthode pour chacune :
   capture À CÔTÉ d'une ref du pack ou d'une ref visuelle, même échelle.
 - **« Mélange X à Y »** : demander de quoi (pose ? effet ? couleur ?) si ce
   n'est pas dit ; ici c'était la POSE d'Izuku, pas ses éclairs.
+- **Le biais VFX est MESURÉ, et le savoir ne l'a pas corrigé** (v12 :
+  prédit 6, Milan 2-4, alors que la ligne ci-dessus était déjà écrite).
+  `critic.py` le calcule à chaque réflexion (`hypotheses.json`,
+  `_biais_prediction`) : VFX +3,0, animation +0,3. Avant de donner une note
+  VFX : (1) `outils/durees.py` sur notre vidéo ET sur la ref, même pas de
+  temps, bandes côte à côte ; (2) couverture au pic et durée de la
+  signature contre la ref ; (3) retirer le biais mesuré de ma note.
+- **Planches d'instants choisis = je choisis les bons instants** (v12) :
+  8 images flatteuses d'un dragon qui vit 0,57 s. Toujours une bande à pas
+  de temps FIXE (`durees.py`) en plus des planches.
 
 - Je juge sur des images figées et agrandies (1.1).
 - Mes poses sont ~2x trop sages (1.4, 1.5).
