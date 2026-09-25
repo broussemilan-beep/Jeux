@@ -6,6 +6,12 @@ VFX que je compresserai comme hier ». Classées par utilité pour NOTRE écart
 textes (DevForum, doc Roblox) je les lis moi-même ; seules les vidéos
 passent par Milan.
 
+**Consigne de Milan (2026-09-25)** : ces vidéos et les images de réf qu'il
+envoie contiennent aussi de quoi apprendre en ANIMATION (poses, timing,
+caméra), pas seulement en VFX. Chaque étude a donc deux volets : animation
+(planche_ref.py, regard.py, tour du corps) et VFX (planche_vfx.py,
+durees.py : couverture, durées, couches), sur le même axe de temps.
+
 ## Priorité 1 : Roblox, style anime / battlegrounds (ce qu'on doit égaler)
 
 | # | vidéo | pourquoi |
