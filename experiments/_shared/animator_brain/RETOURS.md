@@ -581,3 +581,18 @@ cerveau, voir la fin de l'entrée.
     **son (SFX)** et intégration au Poing du Dragon.
   - **Ensuite** : une auto-évaluation sur 10, côte à côte avec les refs,
     notée AVANT l'avis de Milan.
+
+- **2026-09-25, studio VFX terminé (v10 du Dragon), auto-évaluation AVANT
+  Milan** : VFX 6/10, SFX 5/10 (`vfx_studio/AUTOEVALUATION_2026-09-25.md`).
+  - Fait : moteur Roblox testé, compilateur, critique, défilement par
+    variantes, son (étude d'écoute des refs + banque synthétisée), 9
+    recettes intégrées au Dragon (lecteur + DragonFist.luau).
+  - Défauts trouvés en regardant et corrigés : échelles qui avalaient le
+    cadre (caméra obari à 1,5 stud), lignes de vitesse en travers du
+    mouvement, éclats cachés par le corps en caméra de jeu (ZOffset),
+    direction des particules lue à l'instant courant au lieu de la naissance,
+    souffle qui débordait sur le contact, recette plus courte que ses sons,
+    filtre qui « sonnait », 3 s de silence numérique, même son rejoué à
+    l'identique.
+  - Écart principal aux refs : densité et DÉBRIS (Stagnant Rage). Prochain
+    pas proposé : débris + bloom dans le lecteur + traînée de vent par coup.

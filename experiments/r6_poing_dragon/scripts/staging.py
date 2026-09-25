@@ -306,7 +306,8 @@ def studio_events(aw, vw, E):
         p = tip(aw[c], "Right Arm" if sd == "R" else "Left Arm")
         d = impact_dir(aw, c, sd)
         studio(c, f"hit{i + 1}", lambda tc, rel, p=p, d=d, i=i: R.impact_palier(v3(p), v3(d), tier=tiers[i], t0=tc,
-                                                                               echelle=0.8 + 0.25 * SCENE["hit_scale"][i]),
+                                                                               echelle=0.8 + 0.25 * SCENE["hit_scale"][i],
+                                                                               hauteur=(1.04, 0.96, 1.08, 0.92)[i]),
                avance=8)
     # 2. COUP CHARGÉ : craquement au contact, SILENCE pendant le noir, boum
     #    quand les cartes tombent ; l'explosion du monde sort du blanc, dans
@@ -357,6 +358,10 @@ def studio_events(aw, vw, E):
         R.impact_couches({"pos": v3(gr)}, palette=R.DRAGON, echelle=1.4, t0=tc),
         [{"son": "impact_lourd", "t0": tc, "volume": 1.0, "hauteur": 0.8, "impact": True, "vide": 0.03},
          {"son": "grondement", "t0": round(tc + 0.01, 4), "volume": 0.9, "hauteur": 0.85}]))
+    # 5. RÉVÉLATION : un fond de vent sous le calme (aucune ref n'a de
+    #    silence numérique ; le 1er mixage laissait 3 s de silence total)
+    wf = SCENE["white"]
+    studio(wf[0] + 10, "calme", lambda tc, rel: ([], [{"son": "vent_ambiant", "t0": 0.0, "volume": 0.3}]))
     return out
 
 

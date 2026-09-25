@@ -47,9 +47,9 @@ return {
 	EVENTS = {
 		{ frame = 0, kind = "body_flash", who = "attaquant", color = "#fff6dc", frames = 4 },
 		{ frame = 0, kind = "ground_burst", pos = { 0.0, 0.05, 0.0 }, color = "#ffc53d", scale = 0.8 },
-		{ frame = 6, kind = "studio", name = "hit1", recette = { nom = "dragon_hit1", titre = "dragon_hit1", duree = 0.403, graine = 5, sons = {
-					{ son = "fouet_m1", t0 = 0.0033, volume = 0.45, duree = 0.1 },
-					{ son = "frappe_m1", t0 = 0.1333, volume = 0.85, impact = true, vide = 0.025, duree = 0.22 },
+		{ frame = 6, kind = "studio", name = "hit1", recette = { nom = "dragon_hit1", titre = "dragon_hit1", duree = 0.395, graine = 5, sons = {
+					{ son = "fouet_m1", t0 = 0.0033, volume = 0.45, hauteur = 1.04, duree = 0.1 },
+					{ son = "frappe_m1", t0 = 0.1333, volume = 0.85, impact = true, vide = 0.025, hauteur = 1.04, duree = 0.22 },
 				}, couches = {
 					{ type = "particules", nom = "etoile", t0 = 0.1333, ancre = { pos = { -0.0, 3.287, -2.75 }, dir = { 0.086, -0.103, -0.991 }, coup = { 0.086, -0.103, -0.991 } }, texture = "etoile4", emit = 1, lifetime = { 0.0333, 0.0333 }, size = {
 							{ 0.0, 3.23, 0.0 },
@@ -63,7 +63,7 @@ return {
 								1,
 								{ 1.0, 1.0, 1.0 },
 							},
-						}, light_emission = 1, zoffset = 1, transparency = {
+						}, light_emission = 1, zoffset = 2.5, transparency = {
 							{ 0, 0.0, 0 },
 							{ 1, 0.0, 0 },
 						}, squash = {
@@ -85,7 +85,7 @@ return {
 								1,
 								{ 1.0, 0.9647, 0.8627 },
 							},
-						}, light_emission = 1, squash = {
+						}, light_emission = 1, zoffset = 2, squash = {
 							{ 0, 0.0, 0 },
 							{ 1, 0.0, 0 },
 						}, speed = { 0.0, 0.0 }, rotation = { 0.0, 0.0 }, rotspeed = { 0.0, 0.0 }, spread = { 0, 0 }, accel = { 0, 0, 0 } },
@@ -104,7 +104,7 @@ return {
 								1,
 								{ 1.0, 1.0, 1.0 },
 							},
-						}, light_emission = 1, rotation = { -100.0, -80.0 }, squash = {
+						}, light_emission = 1, rotation = { -100.0, -80.0 }, zoffset = 2, squash = {
 							{ 0, 0.0, 0 },
 							{ 1, 0.0, 0 },
 						}, speed = { 0.0, 0.0 }, rotspeed = { 0.0, 0.0 }, spread = { 0, 0 }, accel = { 0, 0, 0 } },
@@ -132,9 +132,9 @@ return {
 						{ 1, 0.6, 0 },
 					}, seuil = 0.8, taille = 2 } } },
 		{ frame = 14, kind = "impact", pos = { -0.0, 3.287, -2.75 }, dir = { 0.086, -0.103, -0.991 }, scale = 0.6, color = "#ffc53d", hitstop = 0.03, shake = 0.14, name = "hit1", tier = 1, studio = true },
-		{ frame = 32, kind = "studio", name = "hit2", recette = { nom = "dragon_hit2", titre = "dragon_hit2", duree = 0.403, graine = 5, sons = {
-					{ son = "fouet_m1", t0 = 0.0033, volume = 0.45, duree = 0.1 },
-					{ son = "frappe_m1", t0 = 0.1333, volume = 0.85, impact = true, vide = 0.025, duree = 0.22 },
+		{ frame = 32, kind = "studio", name = "hit2", recette = { nom = "dragon_hit2", titre = "dragon_hit2", duree = 0.412, graine = 5, sons = {
+					{ son = "fouet_m1", t0 = 0.0033, volume = 0.45, hauteur = 0.96, duree = 0.1 },
+					{ son = "frappe_m1", t0 = 0.1333, volume = 0.85, impact = true, vide = 0.025, hauteur = 0.96, duree = 0.22 },
 				}, couches = {
 					{ type = "particules", nom = "etoile", t0 = 0.1333, ancre = { pos = { 0.0, 3.157, -3.0 }, dir = { -0.081, -0.075, -0.994 }, coup = { -0.081, -0.075, -0.994 } }, texture = "etoile4", emit = 1, lifetime = { 0.0333, 0.0333 }, size = {
 							{ 0.0, 3.383, 0.0 },
@@ -148,7 +148,7 @@ return {
 								1,
 								{ 1.0, 1.0, 1.0 },
 							},
-						}, light_emission = 1, zoffset = 1, transparency = {
+						}, light_emission = 1, zoffset = 2.5, transparency = {
 							{ 0, 0.0, 0 },
 							{ 1, 0.0, 0 },
 						}, squash = {
@@ -170,7 +170,7 @@ return {
 								1,
 								{ 1.0, 0.9647, 0.8627 },
 							},
-						}, light_emission = 1, squash = {
+						}, light_emission = 1, zoffset = 2, squash = {
 							{ 0, 0.0, 0 },
 							{ 1, 0.0, 0 },
 						}, speed = { 0.0, 0.0 }, rotation = { 0.0, 0.0 }, rotspeed = { 0.0, 0.0 }, spread = { 0, 0 }, accel = { 0, 0, 0 } },
@@ -189,7 +189,7 @@ return {
 								1,
 								{ 1.0, 1.0, 1.0 },
 							},
-						}, light_emission = 1, rotation = { -100.0, -80.0 }, squash = {
+						}, light_emission = 1, rotation = { -100.0, -80.0 }, zoffset = 2, squash = {
 							{ 0, 0.0, 0 },
 							{ 1, 0.0, 0 },
 						}, speed = { 0.0, 0.0 }, rotspeed = { 0.0, 0.0 }, spread = { 0, 0 }, accel = { 0, 0, 0 } },
@@ -217,9 +217,9 @@ return {
 						{ 1, 0.6, 0 },
 					}, seuil = 0.8, taille = 2 } } },
 		{ frame = 40, kind = "impact", pos = { 0.0, 3.157, -3.0 }, dir = { -0.081, -0.075, -0.994 }, scale = 0.78, color = "#ffc53d", hitstop = 0.045, shake = 0.22, name = "hit2", tier = 1, studio = true },
-		{ frame = 56, kind = "studio", name = "hit3", recette = { nom = "dragon_hit3", titre = "dragon_hit3", duree = 0.403, graine = 5, sons = {
-					{ son = "fouet_m1", t0 = 0.0033, volume = 0.45, duree = 0.1 },
-					{ son = "frappe_m1", t0 = 0.1333, volume = 0.85, impact = true, vide = 0.025, duree = 0.22 },
+		{ frame = 56, kind = "studio", name = "hit3", recette = { nom = "dragon_hit3", titre = "dragon_hit3", duree = 0.387, graine = 5, sons = {
+					{ son = "fouet_m1", t0 = 0.0033, volume = 0.45, hauteur = 1.08, duree = 0.1 },
+					{ son = "frappe_m1", t0 = 0.1333, volume = 0.85, impact = true, vide = 0.025, hauteur = 1.08, duree = 0.22 },
 				}, couches = {
 					{ type = "particules", nom = "etoile", t0 = 0.1333, ancre = { pos = { -0.562, 3.156, -3.379 }, dir = { 0.475, -0.135, -0.87 }, coup = { 0.475, -0.135, -0.87 } }, texture = "etoile4", emit = 1, lifetime = { 0.0333, 0.0333 }, size = {
 							{ 0.0, 3.5275, 0.0 },
@@ -233,7 +233,7 @@ return {
 								1,
 								{ 1.0, 1.0, 1.0 },
 							},
-						}, light_emission = 1, zoffset = 1, transparency = {
+						}, light_emission = 1, zoffset = 2.5, transparency = {
 							{ 0, 0.0, 0 },
 							{ 1, 0.0, 0 },
 						}, squash = {
@@ -255,7 +255,7 @@ return {
 								1,
 								{ 1.0, 0.9647, 0.8627 },
 							},
-						}, light_emission = 1, squash = {
+						}, light_emission = 1, zoffset = 2, squash = {
 							{ 0, 0.0, 0 },
 							{ 1, 0.0, 0 },
 						}, speed = { 0.0, 0.0 }, rotation = { 0.0, 0.0 }, rotspeed = { 0.0, 0.0 }, spread = { 0, 0 }, accel = { 0, 0, 0 } },
@@ -274,7 +274,7 @@ return {
 								1,
 								{ 1.0, 1.0, 1.0 },
 							},
-						}, light_emission = 1, rotation = { -100.0, -80.0 }, squash = {
+						}, light_emission = 1, rotation = { -100.0, -80.0 }, zoffset = 2, squash = {
 							{ 0, 0.0, 0 },
 							{ 1, 0.0, 0 },
 						}, speed = { 0.0, 0.0 }, rotspeed = { 0.0, 0.0 }, spread = { 0, 0 }, accel = { 0, 0, 0 } },
@@ -303,8 +303,8 @@ return {
 					}, seuil = 0.8, taille = 2 } } },
 		{ frame = 64, kind = "impact", pos = { -0.562, 3.156, -3.379 }, dir = { 0.475, -0.135, -0.87 }, scale = 0.95, color = "#ffc53d", hitstop = 0.06, shake = 0.3, name = "hit3", tier = 1, studio = true },
 		{ frame = 82, kind = "studio", name = "hit4", recette = { nom = "dragon_hit4", titre = "dragon_hit4", duree = 0.663, graine = 5, sons = {
-					{ son = "fouet_m1", t0 = 0.0033, volume = 0.45, duree = 0.1 },
-					{ son = "frappe_m1", t0 = 0.1333, volume = 0.85, impact = true, vide = 0.025, duree = 0.22 },
+					{ son = "fouet_m1", t0 = 0.0033, volume = 0.45, hauteur = 0.92, duree = 0.1 },
+					{ son = "frappe_m1", t0 = 0.1333, volume = 0.85, impact = true, vide = 0.025, hauteur = 0.92, duree = 0.22 },
 					{ son = "impact_lourd", t0 = 0.1333, volume = 0.35, hauteur = 1.25, duree = 0.6 },
 				}, couches = {
 					{ type = "particules", nom = "etoile", t0 = 0.1333, ancre = { pos = { 0.061, 2.142, -4.291 }, dir = { -0.022, -0.131, -0.991 }, coup = { -0.022, -0.131, -0.991 } }, texture = "etoile4", emit = 1, lifetime = { 0.08, 0.08 }, size = {
@@ -319,7 +319,7 @@ return {
 								1,
 								{ 1.0, 1.0, 1.0 },
 							},
-						}, light_emission = 1, zoffset = 1, transparency = {
+						}, light_emission = 1, zoffset = 2.5, transparency = {
 							{ 0, 0.0, 0 },
 							{ 1, 0.0, 0 },
 						}, squash = {
@@ -341,7 +341,7 @@ return {
 								1,
 								{ 1.0, 0.9647, 0.8627 },
 							},
-						}, light_emission = 1, squash = {
+						}, light_emission = 1, zoffset = 2, squash = {
 							{ 0, 0.0, 0 },
 							{ 1, 0.0, 0 },
 						}, speed = { 0.0, 0.0 }, rotation = { 0.0, 0.0 }, rotspeed = { 0.0, 0.0 }, spread = { 0, 0 }, accel = { 0, 0, 0 } },
@@ -360,7 +360,7 @@ return {
 								1,
 								{ 1.0, 1.0, 1.0 },
 							},
-						}, light_emission = 1, rotation = { -100.0, -80.0 }, squash = {
+						}, light_emission = 1, rotation = { -100.0, -80.0 }, zoffset = 2, squash = {
 							{ 0, 0.0, 0 },
 							{ 1, 0.0, 0 },
 						}, speed = { 0.0, 0.0 }, rotspeed = { 0.0, 0.0 }, spread = { 0, 0 }, accel = { 0, 0, 0 } },
@@ -443,8 +443,8 @@ return {
 		{ frame = 124, kind = "aura", who = "attaquant", frames = 24, color = "#ffc53d", intensity = 0.7 },
 		{ frame = 124, kind = "fist_glow", who = "attaquant", side = "R", frames = 26, color = "#ffc53d" },
 		{ frame = 142, kind = "studio", name = "coup_charge", recette = { nom = "dragon_coup_charge", titre = "dragon_coup_charge", duree = 2.271, graine = 5, sons = {
-					{ son = "fouet_m1", t0 = 0.0033, volume = 0.45, duree = 0.1 },
-					{ son = "frappe_m1", t0 = 0.1333, volume = 0.85, impact = true, vide = 0.025, duree = 0.22 },
+					{ son = "fouet_m1", t0 = 0.0033, volume = 0.45, hauteur = 1.0, duree = 0.1 },
+					{ son = "frappe_m1", t0 = 0.1333, volume = 0.85, impact = true, vide = 0.025, hauteur = 1.0, duree = 0.22 },
 					{ son = "impact_lourd", t0 = 0.2833, volume = 1.0, impact = true, vide = 0.08, duree = 0.6 },
 					{ son = "grondement", t0 = 0.2933, volume = 0.7, duree = 1.6 },
 					{ son = "vent_arc", t0 = 0.581, volume = 0.5, duree = 0.28 },
@@ -461,7 +461,7 @@ return {
 								1,
 								{ 1.0, 1.0, 1.0 },
 							},
-						}, light_emission = 1, zoffset = 1, transparency = {
+						}, light_emission = 1, zoffset = 2.5, transparency = {
 							{ 0, 0.0, 0 },
 							{ 1, 0.0, 0 },
 						}, squash = {
@@ -483,7 +483,7 @@ return {
 								1,
 								{ 1.0, 0.9647, 0.8627 },
 							},
-						}, light_emission = 1, squash = {
+						}, light_emission = 1, zoffset = 2, squash = {
 							{ 0, 0.0, 0 },
 							{ 1, 0.0, 0 },
 						}, speed = { 0.0, 0.0 }, rotation = { 0.0, 0.0 }, rotspeed = { 0.0, 0.0 }, spread = { 0, 0 }, accel = { 0, 0, 0 } },
@@ -502,7 +502,7 @@ return {
 								1,
 								{ 1.0, 1.0, 1.0 },
 							},
-						}, light_emission = 1, rotation = { -100.0, -80.0 }, squash = {
+						}, light_emission = 1, rotation = { -100.0, -80.0 }, zoffset = 2, squash = {
 							{ 0, 0.0, 0 },
 							{ 1, 0.0, 0 },
 						}, speed = { 0.0, 0.0 }, rotspeed = { 0.0, 0.0 }, spread = { 0, 0 }, accel = { 0, 0, 0 } },
@@ -1460,5 +1460,11 @@ return {
 					}, seuil = 0.8, taille = 2 } } },
 		{ frame = 298, kind = "manga", frames = { 298, 300, 302, 304 } },
 		{ frame = 304, kind = "white", frames = { 304, 316, 334 } },
+		{ frame = 314, kind = "studio", name = "calme", recette = { nom = "dragon_calme", titre = "dragon_calme", duree = 3.65, graine = 5, sons = {
+					{ son = "vent_ambiant", t0 = 0.0, volume = 0.3, duree = 3.6 },
+				}, couches = {  }, bloom = { intensite = {
+						{ 0, 0.6, 0 },
+						{ 1, 0.6, 0 },
+					}, seuil = 0.8, taille = 2 } } },
 	},
 }

@@ -35,12 +35,18 @@ def bruit(n, graine):
     return np.random.default_rng(graine).standard_normal(n)
 
 
-def bande(x, lo, hi):
-    """Filtre passe-bande idéal (masque FFT) : simple et sans dépendance."""
+def bande(x, lo, hi, pente=0.35):
+    """Filtre passe-bande par masque FFT, à bords ADOUCIS (rampe en cosinus
+    sur `pente` octave). Un masque à bords francs « sonne » : sur les clics
+    du crépitement, il laissait deux tonalités à 1,8 et 7 kHz, visibles en
+    lignes horizontales sur le spectrogramme du mixage du Dragon."""
     X = np.fft.rfft(x)
-    f = np.fft.rfftfreq(len(x), 1 / SR)
-    X[(f < lo) | (f > hi)] = 0
-    return np.fft.irfft(X, len(x))
+    f = np.maximum(np.fft.rfftfreq(len(x), 1 / SR), 1e-3)
+    oct_lo, oct_hi = np.log2(f / lo), np.log2(f / hi)
+    m = np.ones_like(f)
+    m = np.where(oct_lo < -pente, 0, np.where(oct_lo < 0, 0.5 + 0.5 * np.cos(np.pi * oct_lo / pente), m))
+    m = np.where(oct_hi > pente, 0, np.where(oct_hi > 0, m * (0.5 + 0.5 * np.cos(np.pi * oct_hi / pente)), m))
+    return np.fft.irfft(X * m, len(x))
 
 
 def balayage(n, graine, centres, largeur=0.6, grain=0.02):
@@ -197,6 +203,18 @@ def fouet_m1(d=0.1, graine=7):
     return norm(x * u ** 1.5)
 
 
+def vent_ambiant(d=3.6, graine=8):
+    """Le calme après le coup (révélation) : vent grave qui respire, jamais
+    un silence numérique (aucune ref n'en a : il y a toujours un fond)."""
+    n = n_(d)
+    t = np.arange(n) / SR
+    x = bande(np.cumsum(bruit(n, graine)), 70, 900)
+    x = norm(x - np.convolve(x, np.ones(4000) / 4000, "same"))
+    lfo = 0.65 + 0.35 * np.sin(2 * np.pi * 0.45 * t + 1.3)
+    fade = np.minimum(1, t / 0.6) * np.minimum(1, (d - t) / 1.2)
+    return norm(x * lfo * fade)
+
+
 BANQUE = {
     "impact_lourd": (impact_lourd, "craquement + corps + sub : le gros coup"),
     "frappe_m1": (frappe_m1, "tier 1 : court et sec"),
@@ -206,6 +224,7 @@ BANQUE = {
     "naissance_orbe": (naissance_orbe, "tonalité d'énergie qui se forme"),
     "vent_arc": (vent_arc, "croissant de vent autour de l'impact"),
     "fouet_m1": (fouet_m1, "le bras qui part (tier 1)"),
+    "vent_ambiant": (vent_ambiant, "fond de vent grave, le calme après le coup"),
 }
 
 

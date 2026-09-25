@@ -47,6 +47,12 @@
    "fichier": "fouet_m1.wav",
    "duree": 0.1,
    "role": "le bras qui part (tier 1)"
+  },
+  {
+   "nom": "vent_ambiant",
+   "fichier": "vent_ambiant.wav",
+   "duree": 3.6,
+   "role": "fond de vent grave, le calme après le coup"
   }
  ],
  "rbxassetid": {}

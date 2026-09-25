@@ -1558,6 +1558,7 @@ return {
 			naissance_orbe = nil,
 			vent_arc = nil,
 			fouet_m1 = nil,
+			vent_ambiant = nil,
 		},
 		manquants = {
 			"anneau",
@@ -1590,6 +1591,7 @@ return {
 			"impact_lourd",
 			"naissance_orbe",
 			"souffle_projectile",
+			"vent_ambiant",
 			"vent_arc",
 		},
 		repli_texture = "rbxasset://textures/particles/sparkles_main.dds",

@@ -911,7 +911,7 @@
    "recette": {
     "nom": "dragon_hit1",
     "titre": "dragon_hit1",
-    "duree": 0.403,
+    "duree": 0.395,
     "graine": 5,
     "couches": [
      {
@@ -953,7 +953,7 @@
       ],
       "color": "#ffffff",
       "light_emission": 1,
-      "zoffset": 1
+      "zoffset": 2.5
      },
      {
       "type": "particules",
@@ -1003,7 +1003,8 @@
        ]
       ],
       "color": "#fff6dc",
-      "light_emission": 1
+      "light_emission": 1,
+      "zoffset": 2
      },
      {
       "type": "particules",
@@ -1057,7 +1058,8 @@
       "rotation": [
        -100,
        -80
-      ]
+      ],
+      "zoffset": 2
      },
      {
       "type": "particules",
@@ -1123,14 +1125,16 @@
      {
       "son": "fouet_m1",
       "t0": 0.0033,
-      "volume": 0.45
+      "volume": 0.45,
+      "hauteur": 1.04
      },
      {
       "son": "frappe_m1",
       "t0": 0.1333,
       "volume": 0.85,
       "impact": true,
-      "vide": 0.025
+      "vide": 0.025,
+      "hauteur": 1.04
      }
     ]
    }
@@ -1142,7 +1146,7 @@
    "recette": {
     "nom": "dragon_hit2",
     "titre": "dragon_hit2",
-    "duree": 0.403,
+    "duree": 0.412,
     "graine": 5,
     "couches": [
      {
@@ -1184,7 +1188,7 @@
       ],
       "color": "#ffffff",
       "light_emission": 1,
-      "zoffset": 1
+      "zoffset": 2.5
      },
      {
       "type": "particules",
@@ -1234,7 +1238,8 @@
        ]
       ],
       "color": "#fff6dc",
-      "light_emission": 1
+      "light_emission": 1,
+      "zoffset": 2
      },
      {
       "type": "particules",
@@ -1288,7 +1293,8 @@
       "rotation": [
        -100,
        -80
-      ]
+      ],
+      "zoffset": 2
      },
      {
       "type": "particules",
@@ -1354,14 +1360,16 @@
      {
       "son": "fouet_m1",
       "t0": 0.0033,
-      "volume": 0.45
+      "volume": 0.45,
+      "hauteur": 0.96
      },
      {
       "son": "frappe_m1",
       "t0": 0.1333,
       "volume": 0.85,
       "impact": true,
-      "vide": 0.025
+      "vide": 0.025,
+      "hauteur": 0.96
      }
     ]
    }
@@ -1373,7 +1381,7 @@
    "recette": {
     "nom": "dragon_hit3",
     "titre": "dragon_hit3",
-    "duree": 0.403,
+    "duree": 0.387,
     "graine": 5,
     "couches": [
      {
@@ -1415,7 +1423,7 @@
       ],
       "color": "#ffffff",
       "light_emission": 1,
-      "zoffset": 1
+      "zoffset": 2.5
      },
      {
       "type": "particules",
@@ -1465,7 +1473,8 @@
        ]
       ],
       "color": "#fff6dc",
-      "light_emission": 1
+      "light_emission": 1,
+      "zoffset": 2
      },
      {
       "type": "particules",
@@ -1519,7 +1528,8 @@
       "rotation": [
        -100,
        -80
-      ]
+      ],
+      "zoffset": 2
      },
      {
       "type": "particules",
@@ -1585,14 +1595,16 @@
      {
       "son": "fouet_m1",
       "t0": 0.0033,
-      "volume": 0.45
+      "volume": 0.45,
+      "hauteur": 1.08
      },
      {
       "son": "frappe_m1",
       "t0": 0.1333,
       "volume": 0.85,
       "impact": true,
-      "vide": 0.025
+      "vide": 0.025,
+      "hauteur": 1.08
      }
     ]
    }
@@ -1646,7 +1658,7 @@
       ],
       "color": "#ffffff",
       "light_emission": 1,
-      "zoffset": 1
+      "zoffset": 2.5
      },
      {
       "type": "particules",
@@ -1696,7 +1708,8 @@
        ]
       ],
       "color": "#fff6dc",
-      "light_emission": 1
+      "light_emission": 1,
+      "zoffset": 2
      },
      {
       "type": "particules",
@@ -1750,7 +1763,8 @@
       "rotation": [
        -100,
        -80
-      ]
+      ],
+      "zoffset": 2
      },
      {
       "type": "particules",
@@ -1934,14 +1948,16 @@
      {
       "son": "fouet_m1",
       "t0": 0.0033,
-      "volume": 0.45
+      "volume": 0.45,
+      "hauteur": 0.92
      },
      {
       "son": "frappe_m1",
       "t0": 0.1333,
       "volume": 0.85,
       "impact": true,
-      "vide": 0.025
+      "vide": 0.025,
+      "hauteur": 0.92
      },
      {
       "son": "impact_lourd",
@@ -2001,7 +2017,7 @@
       ],
       "color": "#ffffff",
       "light_emission": 1,
-      "zoffset": 1
+      "zoffset": 2.5
      },
      {
       "type": "particules",
@@ -2051,7 +2067,8 @@
        ]
       ],
       "color": "#fff6dc",
-      "light_emission": 1
+      "light_emission": 1,
+      "zoffset": 2
      },
      {
       "type": "particules",
@@ -2105,7 +2122,8 @@
       "rotation": [
        -100,
        -80
-      ]
+      ],
+      "zoffset": 2
      },
      {
       "type": "particules",
@@ -3461,14 +3479,16 @@
      {
       "son": "fouet_m1",
       "t0": 0.0033,
-      "volume": 0.45
+      "volume": 0.45,
+      "hauteur": 1.0
      },
      {
       "son": "frappe_m1",
       "t0": 0.1333,
       "volume": 0.85,
       "impact": true,
-      "vide": 0.025
+      "vide": 0.025,
+      "hauteur": 1.0
      },
      {
       "son": "impact_lourd",
@@ -5067,6 +5087,25 @@
       "t0": 0.01,
       "volume": 0.9,
       "hauteur": 0.85
+     }
+    ]
+   }
+  },
+  {
+   "frame": 314,
+   "kind": "studio",
+   "name": "calme",
+   "recette": {
+    "nom": "dragon_calme",
+    "titre": "dragon_calme",
+    "duree": 3.65,
+    "graine": 5,
+    "couches": [],
+    "sons": [
+     {
+      "son": "vent_ambiant",
+      "t0": 0.0,
+      "volume": 0.3
      }
     ]
    }

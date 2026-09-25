@@ -198,30 +198,35 @@ def impact_m1():
 DRAGON = ("#fff6dc", "#ffc53d", "#ff8a1f")
 
 
-def impact_palier(pos, coup, tier=1, palette=DRAGON, t0=0.0, echelle=1.0):
+def impact_palier(pos, coup, tier=1, palette=DRAGON, t0=0.0, echelle=1.0, hauteur=1.0):
     """Impact de la rafale, proportionnel au coup (CARNET §4b.4, hiérarchie
     v6) : tier 1 = étoile 2 images + anneau fin + petit croissant + éclats ;
     tier 2 = + dôme court, croissant de vent, plus d'éclats. Rend (couches,
     sons) ; les temps sont relatifs au début de la recette."""
     blanc, chaud, _f = palette
+    # ZOffset (Roblox : décalage vers la caméra, en studs) : en caméra de jeu,
+    # derrière l'épaule, le contact est souvent CACHÉ par le corps de
+    # l'attaquant (vu à f40, 1er essai à 1) ; l'éclat doit passer devant
     anc = {"pos": list(pos), "dir": list(coup), "coup": list(coup)}
     s = echelle
     c = [
         {"type": "particules", "nom": "etoile", "t0": t0, "ancre": anc, "texture": "etoile4", "emit": 1,
          "lifetime": [2 / 60, 2 / 60] if tier == 1 else [0.08, 0.08], "size": [[0, 3.4 * s], [1, 2.4 * s]], "color": "#ffffff",
-         "light_emission": 1, "zoffset": 1},
+         "light_emission": 1, "zoffset": 2.5},
         {"type": "particules", "nom": "anneau", "t0": t0, "ancre": anc, "texture": "anneau", "emit": 1,
          "lifetime": [0.12, 0.12], "size": [[0, 0.6 * s], [1, 4.6 * s]], "transparency": [[0, 0], [1, 1]],
-         "color": blanc, "light_emission": 1},
+         "color": blanc, "light_emission": 1, "zoffset": 2},
         {"type": "particules", "nom": "croissant", "t0": max(0.0, t0 - 1 / 60), "ancre": anc, "texture": "croissant",
          "emit": 1, "lifetime": [0.09, 0.09], "size": [[0, 2.6 * s], [1, 3.2 * s]], "transparency": [[0, 0.1], [1, 1]],
-         "color": "#ffffff", "light_emission": 1, "rotation": [-100, -80]},
+         "color": "#ffffff", "light_emission": 1, "rotation": [-100, -80], "zoffset": 2},
         {"type": "particules", "nom": "eclats", "t0": t0, "ancre": anc, "texture": "eclat", "emit": 6 if tier == 1 else 14,
          "lifetime": [0.1, 0.2], "speed": [24 * s, 38 * s], "spread": [55, 55], "drag": 8, "orientation": "VelocityParallel",
          "size": [[0, 1.0 * s], [1, 0.1]], "color": [[0, "#ffffff"], [1, chaud]], "light_emission": 1},
     ]
-    sons = [{"son": "fouet_m1", "t0": round(max(0.0, t0 - 0.13), 4), "volume": 0.45},
-            {"son": "frappe_m1", "t0": t0, "volume": 0.85, "impact": True, "vide": 0.025}]
+    # `hauteur` varie d'un coup à l'autre : le même son rejoué à l'identique
+    # fait « mitraillette »
+    sons = [{"son": "fouet_m1", "t0": round(max(0.0, t0 - 0.13), 4), "volume": 0.45, "hauteur": hauteur},
+            {"son": "frappe_m1", "t0": t0, "volume": 0.85, "impact": True, "vide": 0.025, "hauteur": hauteur}]
     if tier >= 2:
         c += [
             {"type": "mesh", "nom": "dome", "t0": t0, "duree": 0.2, "ancre": anc, "mesh": "dome", "orientation": "coup",
