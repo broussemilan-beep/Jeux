@@ -93,6 +93,18 @@ dropping his fanny and getting a stretch in the legs ».
   pas respecté ».
 - À appliquer à mes propres critiques.
 
+**1.8 Ce que vaut une source de seconde main (calibré).** *Mesuré chez
+nous* (`tutos/gemini_visuel_2026-09-25.md`).
+- Description visuelle de Gemini, confrontée à 2 tutos que j'avais étudiés
+  image par image :
+  - la grande forme est juste ;
+  - le bras est faux, la pose du bras avant fausse, les numéros d'image
+    inventés ;
+  - les TENUES et l'ordre de travail sont manqués.
+- Même famille que les [EXTRAIT] des moteurs de recherche.
+- Usage : une carte (où regarder, quoi chercher), jamais une pose ou un
+  timing sans l'avoir vu soi-même.
+
 ## 2. Le coup et l'impact
 
 **2.1 Lent contre rapide.** *Texte vérifié* (Williams) : « go just a

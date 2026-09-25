@@ -394,3 +394,24 @@ cerveau, voir la fin de l'entrée.
     pas la vitesse relative.
   - **Nuance.** Les M1 TSB n'ont pas de tenue dans le clip (hitstop moteur)
     : pas un manque de notre rafale.
+
+- **2026-09-25, Gemini décrit l'IMAGE de 3 tutos** (texte collé par Milan) :
+  `corpus/tutos/gemini_visuel_2026-09-25.md`.
+  - **Vérification.** Deux des trois (Charlotte = uppercut Moon ;
+    Nate.Animations = coup de poing Blender de myloe) sont des tutos que
+    j'avais étudiés image par image : j'ai pu vérifier Gemini point par
+    point.
+  - **Ce qu'il réussit** : la grande forme (gros armé, frappe très rapide,
+    finir de dos), l'outil, l'espacement, le texte à l'écran.
+  - **Ce qu'il rate ou invente** :
+    - mauvais bras (c'est UpperArm.L qui frappe chez myloe) ;
+    - bras avant « tendu pour viser » alors qu'il est plié devant le visage ;
+    - numéros d'image inventés ;
+    - les tenues (charge 0,57 s, extension 1 image, pose d'après) ;
+    - l'ordre de travail (le torse d'abord).
+  - **Conséquence** : une description de Gemini sert de carte, pas de mesure
+    (CARNET §1.8). Le prompt Gemini gagne un point 8 : quel bras, tenues,
+    et « je ne peux pas compter » plutôt qu'un nombre inventé.
+  - **Sikasisi** (non vérifiable) : calques dans l'outil officiel TSB, une
+    traînée + une seule onde forte à l'impact, lancer / téléport au-dessus.
+    C'est une confirmation, pas une nouveauté.

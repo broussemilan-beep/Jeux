@@ -24,10 +24,21 @@ Toutes les autres sont dans `roblox_`, `jugement_` et
 > 5. les citations importantes mot pour mot, en langue d'origine ;
 > 6. ce qui est montré comme À NE PAS faire, et pourquoi ;
 > 7. ce que tu n'es pas sûr d'avoir compris.
+> 8. (image) pour chaque coup montré : quel bras frappe, vu depuis le
+>    personnage (sa droite ou sa gauche) ; combien de temps la pose d'armé
+>    est TENUE immobile ; combien d'images dure l'extension ; combien de
+>    temps la pose d'après est tenue ; où est la caméra. Si tu ne peux pas
+>    compter, écris « je ne peux pas compter » plutôt qu'un nombre.
 > N'invente rien. Si une vidéo est inaccessible, écris-le et passe à la
 > suivante. Mets tout dans UN document Google Docs intitulé
 > « Rank Zero – études vidéo Gemini 2 », enregistré dans mon Google Drive.
 > [coller ici la liste d'URL ci-dessous]
+
+**Calibration (2026-09-25)** : sur 2 vidéos que j'avais étudiées image
+par image, Gemini décrit juste la grande forme mais se trompe de bras, de
+pose de bras et de numéros d'image, et rate les tenues
+(`tutos/gemini_visuel_2026-09-25.md`). D'où le point 8. Ses descriptions
+servent de carte, pas de mesure.
 
 Claude Code peut lire ce document directement dans le Drive (connecteur
 Google Drive) : il suffit de dire quand il est prêt.
