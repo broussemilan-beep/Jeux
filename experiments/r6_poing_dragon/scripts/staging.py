@@ -34,6 +34,7 @@ from animator_brain import roblox_export as X  # noqa: E402
 
 sys.path.insert(0, os.path.join(HERE, "..", "..", "_shared", "vfx_studio"))
 import recettes as R  # noqa: E402  (studio VFX : les MÊMES recettes que le labo et le moteur Roblox)
+import scene_v13  # noqa: E402  (v13 : tout ce qui suit l'apex)
 
 SCENE = json.load(open(os.path.join(OUT, "scene.json")))
 FPS = SCENE["fps"]
@@ -50,6 +51,14 @@ FLASH = "#ffb070"     # teinte plate du corps a l'impact : blanc-orange (l'or pu
 
 
 CINEMA_DOSE = 0.7
+V13 = SCENE.get("aerien") == "v13"
+_SC13 = {}
+
+
+def scene13(aw, vw):
+    if "sc" not in _SC13:
+        _SC13["sc"] = scene_v13.Scene13(aw, vw, SCENE, tip)
+    return _SC13["sc"]
 
 
 def resample(keys, t):
@@ -135,6 +144,9 @@ def camera_keys(aw, vw):
     add(166, [a[0] + 9.0, 1.2, a[2] - 1.0], A(166) + [0, 1.6, -0.8], 54, "cut")
     add(172, [a[0] + 8.5, 1.8, a[2] - 2.4], mid(172) + [0, 1.0, 0], 56)
     add(196, mid(196) + [12.0, 1.0, 3.5], mid(196), 56)
+    if V13:
+        scene_v13.camera(scene13(aw, vw), add, A, Vt, h)
+        return K
     c = tip(aw[SCENE["strike_f"]], "Right Arm")
     if SCENE.get("aerien", "v8") == "v8":
         # 4. WHIP PAN (12 f) vers le plan large en plongee du temps suspendu
@@ -253,6 +265,13 @@ def events(aw, vw):
     g[1] = 0.05
     ev(u + 1, "ground_burst", pos=v3(g), color=GOLD, scale=1.4)
     ev(170, "ground_burst", pos=v3([aw[170]["Torso"][1][0], 0.05, aw[170]["Torso"][1][2]]), color=WHITE, scale=1.2)
+    if V13:
+        scene_v13.evenements(scene13(aw, vw), ev, GOLD, WHITE, FLASH)
+        for e in E:
+            if e["kind"] == "impact":
+                e["studio"] = True
+        E += studio_events(aw, vw, E)
+        return E
     ev(196, "whip", frames=12)
     if SCENE.get("aerien", "v8") == "v8":
         ev(200, "aura", who="attaquant", frames=56, color=GOLD, intensity=1.0)
@@ -538,6 +557,9 @@ def studio_events(aw, vw, E):
         ]
         return c, sons
     studio(u, "coup_charge", coup_charge, avance=8)
+    if V13:
+        scene_v13.studio(scene13(aw, vw), studio)
+        return out
     # 3. AÉRIEN : l'arme s'allume (son d'énergie), la plongée laisse un sillage
     #    d'air, le souffle est coupé 60 ms avant le contact, contact EN L'AIR
     studio(226, "arme", lambda tc, rel: ([], [{"son": "aspiration", "t0": 0.0, "volume": 0.5},

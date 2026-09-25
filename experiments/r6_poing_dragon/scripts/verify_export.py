@@ -60,8 +60,9 @@ def lowest(world):
 
 def contact_checks(aw, vw):
     rows = []
-    events = [(c, s, k) for c, s, k in M.HITS] + [(M.UPPER_F, "R", "chest"), (M.STRIKE_F, "R", "chest"),
-                                                   (M.IMPACT_F, "R", "chest")]
+    events = [(c, s, k) for c, s, k in M.HITS] + [(M.UPPER_F, "R", "chest")]
+    if M.FINAL != "v13":        # v13 : le poing ne touche pas, c'est le dragon qui mord (contrôlé ci-dessous)
+        events += [(M.STRIKE_F, "R", "chest"), (M.IMPACT_F, "R", "chest")]
     for c, s, kind in events:
         arm = "Right Arm" if s == "R" else "Left Arm"
         part = "Head" if kind in ("face", "chin") else "Torso"
@@ -90,11 +91,15 @@ def reduction_error(path, full, root):
     """Ecart max (studs, centres des parts) entre l'animation lue dans le
     fichier reduit et rejouee par le moteur, et la cuisson image par image."""
     keys = X.read_kfseq(path)
-    worst = 0.0
+    worst, where = 0.0, None
     for t, w in full:
         ws = X.solve(resample(keys, t), root=root)
         wf = X.solve({p: X.joint_transform(p, w) for p in ws if p != "HumanoidRootPart"}, root=root)
-        worst = max(worst, max(float(np.linalg.norm(ws[p][1] - wf[p][1])) for p in ws))
+        e = max(float(np.linalg.norm(ws[p][1] - wf[p][1])) for p in ws)
+        if e > worst:
+            worst, where = e, round(t * M.FPS)
+    if worst > 0.05:
+        print(f"  reduction : ecart {worst:.3f} stud a f{where} ({os.path.basename(path)})")
     return worst
 
 
@@ -163,7 +168,7 @@ def main(blend):
         "attaquant_au_dessus_a_l_apex": bool(wa(M.APEX_F)["Torso"][1][1] > wv(M.APEX_F)["Torso"][1][1] + 2.0),
         "poing_vers_le_bas_au_contact_air": bool(
             (V.limb_tip(wa(M.STRIKE_F), "Right Arm") - wa(M.STRIKE_F)["Right Arm"][1])[1] < -0.5),
-        "victime_ejectee_loin_devant": bool(wv(M.END_F)["Torso"][1][2] < -15.0),
+        "victime_ejectee_loin_devant": bool(wv(M.END_F)["Torso"][1][2] < (-12.0 if M.FINAL == "v13" else -15.0)),
         "victime_couchee_a_la_fin": bool(abs(look(wv(M.END_F))[1]) > 0.9),
     }
     # interpolation : chaque Pose en Linear (Enum.PoseEasingStyle.Linear = 0).
@@ -174,6 +179,13 @@ def main(blend):
     for nom in ("dragon_attaquant.rbxmx", "dragon_victime.rbxmx"):
         styles = set(_re.findall(r'<token name="EasingStyle">(\d+)</token>', open(os.path.join(M.OUT, nom)).read()))
         sens[f"interpolation_lineaire_{nom.split('_')[1].split('.')[0]}"] = styles == {"0"}
+    if M.FINAL == "v13":
+        # le poing S'ARRÊTE avant la victime (coup à distance, ~5 studs de la
+        # boîte du torse) : c'est la tête du dragon qui sort du poing et la mange
+        g = _box(V.limb_tip(wa(M.STRIKE_F), "Right Arm"), wv(M.STRIKE_F)["Torso"][0], wv(M.STRIKE_F)["Torso"][1], HALF["Torso"])
+        rep["ecart_poing_victime_strike"] = round(g, 3)
+        sens["poing_s_arrete_avant_la_victime"] = bool(3.5 < g < 7.0)
+        sens["attaquant_pose_au_sol_a_la_fin"] = bool(abs(lowest(wa(M.END_F))) < 0.15)
     rep["sens_roblox"] = sens
     if not all(sens.values()):
         raise SystemExit(f"SENS FAUX : {sens}")
@@ -183,7 +195,10 @@ def main(blend):
         seg[f"coup{i + 1}_{s}_{kind}"] = ("frappe_legere",) + segment_verdict(att[c - 10:c + 15], "frappe_legere", True)
         seg[f"reaction{i + 1}"] = ("reaction",) + segment_verdict(vic[c:c + 15], "reaction", False)
     seg["coup_charge"] = ("frappe_lourde",) + segment_verdict(att[118:171], "frappe_lourde", True)
-    seg["plongee_ecrasement"] = ("frappe_lourde",) + segment_verdict(att[240:300], "frappe_lourde", True)
+    if M.FINAL == "v13":
+        seg["coup_dragon"] = ("frappe_lourde",) + segment_verdict(att[330:400], "frappe_lourde", True)
+    else:
+        seg["plongee_ecrasement"] = ("frappe_lourde",) + segment_verdict(att[240:300], "frappe_lourde", True)
     rep["verdicts"] = {k: {"categorie": v[0], "dans_la_plage": v[1], "total": v[2], "hors_plage": v[3]}
                        for k, v in seg.items()}
     json.dump(rep, open(os.path.join(M.OUT, "verification.json"), "w"), indent=1, ensure_ascii=False, default=float)

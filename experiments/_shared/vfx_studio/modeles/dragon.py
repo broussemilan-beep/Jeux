@@ -304,16 +304,21 @@ def construire():
                     np.linspace(0.28, 0.14, 8), [0.07] * 8, n=10, uvf=lambda i, a, p: uv_pastille("rouge", 0.95))
     M.ajoute(P, UV, F, MACH)
     # mâchoire inférieure (ouverte) : dessus rouge (gencive), menton doré
-    xs_j = np.linspace(-0.9, -3.45, 16)
+    # (v13, vu gueule ouverte de face : une mâchoire aussi longue que le
+    # museau, dessus tout rouge = une PLANCHE rouge) -> plus courte que le
+    # museau, gencive rouge étroite au milieu, lèvres or, dessous crème
+    xs_j = np.linspace(-0.9, -2.95, 16)
     cj, lwj, lhj = [], [], []
     for x in xs_j:
-        u = (-(x + 0.9)) / 2.55
-        cj.append(charn + Rm @ (np.array([x, -0.08, 0]) - charn))
-        lwj.append(0.58 - 0.26 * u)
-        lhj.append(0.26 - 0.1 * u)
+        u = (-(x + 0.9)) / 2.05
+        # le menton REMONTE vers le bout (une mâchoire droite = une planche)
+        cj.append(charn + Rm @ (np.array([x, -0.08 + 0.16 * u * u, 0]) - charn))
+        lwj.append(0.5 - 0.24 * u)
+        lhj.append(0.3 - 0.12 * u)
     axes = [(Rm @ np.array([0, 1.0, 0]), np.array([0, 0, 1.0]))] * len(cj)
     P, UV, F = loft(cj, lwj, lhj, n=20, axes=axes, ex=3.0, ventre=1.0,
-                    uvf=lambda i, a, p: uv_pastille("rouge" if math.sin(a) > 0.55 else "or", 0.5 + 0.5 * math.sin(a)))
+                    uvf=lambda i, a, p: uv_pastille("rouge" if math.sin(a) > 0.82 else ("creme" if math.sin(a) < -0.35 else "or"),
+                                                    0.5 + 0.5 * math.sin(a)))
     M.ajoute(P, UV, F, MACH)
     # crocs : rangée du haut (vers le bas), gros crocs devant ; du bas (vers le haut)
     for cote in (1, -1):
@@ -325,11 +330,12 @@ def construire():
             P, UV, F = tube([base, base + np.array([-0.02, -ln * 0.6, 0]), base + np.array([-0.05, -ln, cote * -0.02])],
                             [0.075 if gros else 0.05, 0.04, 0.008], 6, uv=uv_pastille("blanc", 0.7))
             M.ajoute(P, UV, F, TETE)
-        for k, x in enumerate(np.linspace(-1.5, -3.3, 7)):
+        for k, x in enumerate(np.linspace(-1.5, -2.8, 7)):
             gros = k >= 5
             ln = 0.34 if gros else 0.16
-            w = 0.58 - 0.26 * (-(x + 0.9)) / 2.55
-            base = charn + Rm @ (np.array([x, 0.12, cote * w * 0.78]) - charn)
+            uu = (-(x + 0.9)) / 2.05
+            w = 0.5 - 0.24 * uu
+            base = charn + Rm @ (np.array([x, 0.14 + 0.16 * uu * uu, cote * w * 0.78]) - charn)
             up = Rm @ np.array([0, 1.0, 0])
             P, UV, F = tube([base, base + up * ln * 0.6, base + up * ln + np.array([0.02, 0, 0])],
                             [0.065 if gros else 0.045, 0.035, 0.008], 6, uv=uv_pastille("blanc", 0.7))

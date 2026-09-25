@@ -40,6 +40,10 @@ DragonFist.CONFIG = {
 	-- v6 : IDs des 3 cartes d'impact du coup charge (output/carte_1..3.png).
 	-- Vides : repli noir / blanc / noir, la sequence garde son rythme.
 	CARTE_IDS = { "", "", "" },
+	-- v13 : IDs des PLANCHES plein ecran (output/planches/<nom>.png, par nom :
+	-- gueule_encre, gueule_inverse, spirale_0..2, rouge_0..1, soleil).
+	-- Absentes : repli sur un aplat de la couleur dominante de la planche.
+	PLANCHE_IDS = {},
 	CAMERA = true, -- camera cinematique pour le joueur qui lance la technique
 	SCREEN_FX = true, -- barres, lignes de vitesse, manga, ecran blanc
 	CLEANUP_TIME = 6, -- s : duree de vie du cratere et des debris apres la fin
@@ -767,9 +771,68 @@ local function screen(ctx)
 		blade.ZIndex = 7
 		blade.Parent = star
 	end
+	-- v13 planches plein ecran : fond noir + image centree (tournee et zoomee)
+	local plancheFond = frame("PlancheFond", Color3.new(0, 0, 0), 8)
+	plancheFond.Visible = false
+	local planche = Instance.new("ImageLabel")
+	planche.Name = "Planche"
+	planche.AnchorPoint = Vector2.new(0.5, 0.5)
+	planche.Position = UDim2.fromScale(0.5, 0.5)
+	planche.BorderSizePixel = 0
+	planche.ScaleType = Enum.ScaleType.Crop
+	planche.ZIndex = 9
+	planche.Parent = plancheFond
 	table.insert(ctx.cleanup, gui)
-	return { gui = gui, tint = tint, white = white, manga = manga, vitesse = vitesse, cartes = cartes, star = star }
+	return { gui = gui, tint = tint, white = white, manga = manga, vitesse = vitesse, cartes = cartes, star = star,
+		planche = planche, plancheFond = plancheFond }
 end
+
+-- v13 : phase des planches plein ecran a l'age reel `age` (s) : { p, u } ou nil
+function DragonFist.planchePhase(ev, age: number)
+	if age < 0 then
+		return nil
+	end
+	local t = 0
+	for _, p in ev.sequence do
+		if age < t + p.duree then
+			return { p = p, u = (age - t) / p.duree }
+		end
+		t += p.duree
+	end
+	return nil
+end
+
+-- valeur d'une sequence [[u, v], ...] en u (lineaire, bornee)
+function DragonFist.seqV(sq, u: number): number
+	if u <= sq[1][1] then
+		return sq[1][2]
+	end
+	for i = 1, #sq - 1 do
+		local a, b = sq[i], sq[i + 1]
+		if u <= b[1] then
+			return a[2] + (b[2] - a[2]) * (if b[1] > a[1] then (u - a[1]) / (b[1] - a[1]) else 1)
+		end
+	end
+	return sq[#sq][2]
+end
+
+-- image de la planche a la phase u (jouee « en 2 » si cadence)
+function DragonFist.plancheImage(p, u: number): string
+	local n = #p.images
+	local k = 0
+	if p.cadence then
+		k = math.floor(u * p.duree * p.cadence + 1e-6) % n
+	end
+	return p.images[k + 1]
+end
+
+local REPLI_PLANCHE = {
+	gueule_encre = Color3.fromRGB(22, 10, 6),
+	gueule_inverse = Color3.fromRGB(250, 240, 214),
+	spirale = Color3.fromRGB(255, 132, 26),
+	rouge = Color3.fromRGB(196, 42, 14),
+	soleil = Color3.fromRGB(255, 214, 72),
+}
 
 -- ------------------------------------------------------------------ lecture
 
@@ -896,6 +959,30 @@ function DragonFist.play(attacker: Model, victim: Model, animations: Folder, dat
 	handlers.cartes = function(_, ev)
 		screenT0.cartes = { t0 = os.clock(), ev = ev }
 	end
+	handlers.planches = function(_, ev)
+		screenT0.planches = { t0 = os.clock(), ev = ev }
+	end
+	-- v13 : la victime est AVALEE (cachee pour ce client) de la morsure au recrachat
+	local frameNow = 0
+	handlers.cacher = function(_, ev)
+		local model = if ev.who == "victime" then victim else attacker
+		local parts = {}
+		for _, d in model:GetDescendants() do
+			if d:IsA("BasePart") or d:IsA("Decal") then
+				d.LocalTransparencyModifier = 1
+				table.insert(parts, d)
+			end
+		end
+		binds["cacher_" .. ev.who] = function()
+			if frameNow >= ev.frames[2] then
+				for _, d in parts do
+					d.LocalTransparencyModifier = 0
+				end
+				return false
+			end
+			return true
+		end
+	end
 
 	local stepName = "DragonFist_" .. tostring(os.clock())
 	local done = false
@@ -904,6 +991,7 @@ function DragonFist.play(attacker: Model, victim: Model, animations: Folder, dat
 			return
 		end
 		local f = attTrack.TimePosition * data.FPS
+		frameNow = f
 		for _, ev in DragonFist.due(data, state, f) do
 			local h = handlers[ev.kind]
 			if h then
@@ -938,7 +1026,35 @@ function DragonFist.play(attacker: Model, victim: Model, animations: Folder, dat
 		end
 		-- ecran : teinte du temps suspendu, planches manga, blanc puis brouillard
 		if scr then
-			scr.tint.BackgroundTransparency = if f >= 196 and f < 290 then 0.9 else 1
+			local teinte = data.TEINTE or { 196, 290 }
+			scr.tint.BackgroundTransparency = if f >= teinte[1] and f < teinte[2] then 0.9 else 1
+			local pl = screenT0.planches
+			local pph = if pl then DragonFist.planchePhase(pl.ev, os.clock() - pl.t0) else nil
+			scr.plancheFond.Visible = pph ~= nil
+			if pph then
+				local P, u = pph.p, pph.u
+				local nom = DragonFist.plancheImage(P, u)
+				local id = cfg.PLANCHE_IDS[nom] or ""
+				scr.planche.Image = id
+				scr.planche.BackgroundTransparency = if id == "" then 0 else 1
+				scr.planche.BackgroundColor3 = REPLI_PLANCHE[nom] or REPLI_PLANCHE[string.gsub(nom, "_%d+$", "")] or Color3.new(0, 0, 0)
+				local ech = if P.echelle then DragonFist.seqV(P.echelle, u) else 1
+				if P.rotation then
+					-- carree, cote = diagonale de l'ecran : couvre tout en tournant
+					scr.planche.SizeConstraint = Enum.SizeConstraint.RelativeXX
+					scr.planche.Size = UDim2.fromScale(1.16 * ech, 1.16 * ech)
+					scr.planche.Rotation = DragonFist.seqV(P.rotation, u)
+				else
+					scr.planche.SizeConstraint = Enum.SizeConstraint.RelativeXY
+					scr.planche.Size = UDim2.fromScale(ech, ech)
+					scr.planche.Rotation = 0
+				end
+				local sx, sy = 0, 0
+				if P.secousse then
+					sx, sy = (math.random() * 2 - 1) * P.secousse, (math.random() * 2 - 1) * P.secousse
+				end
+				scr.planche.Position = UDim2.fromScale(0.5 + sx, 0.5 + sy)
+			end
 			if mangaEv and f >= mangaEv.frames[1] and f < mangaEv.frames[4] then
 				local i = if f < mangaEv.frames[2] then 1 elseif f < mangaEv.frames[3] then 2 else 3
 				local id = cfg.MANGA_IDS[i]

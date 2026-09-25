@@ -75,6 +75,9 @@ def main():
         "sizes": X.RIG["part_sizes"],
         "manga": [data_uri(os.path.join(OUT, f"manga_{i}.png")) for i in (1, 2, 3)],
         "cartes": [data_uri(os.path.join(OUT, f"carte_{i}.png")) for i in (1, 2, 3)],
+        # v13 : planches plein écran (build_planches.py)
+        "planches": {os.path.splitext(n)[0]: data_uri(os.path.join(OUT, "planches", n))
+                     for n in sorted(os.listdir(os.path.join(OUT, "planches")))} if os.path.isdir(os.path.join(OUT, "planches")) else {},
         "verif": {"cles": ver["cles"], "aller_retour": ver["aller_retour_max"],
                   "sens": all(ver["sens_roblox"].values()), "reduction": ver["ecart_max_reduction_studs"]},
     }

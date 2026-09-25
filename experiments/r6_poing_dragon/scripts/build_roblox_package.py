@@ -98,6 +98,7 @@ def write_data_module():
         f"\tDISTANCE = {DIST},\n"
         f"\tWHIP_FRAME = {whip},\n"
         f"\tCINEMA_DOSE = {STAGING.get('cinema_dose', 1)},\n"
+        f"\tTEINTE = {{ 196, {STAGING['markers']['strike'] + 12} }},\n"
         f"\tFINAL = {{ attacker = {lua(fa)}, victim = {lua(fv)} }},\n"
         f"\tCAMERA = {lua(cam, 1)},\n"
         f"\tEVENTS = {lua(events, 1)},\n"

@@ -236,6 +236,13 @@ def impact_palier(pos, coup, tier=1, palette=DRAGON, t0=0.0, echelle=1.0, hauteu
          "lifetime": [0.1, 0.2], "speed": [24 * s, 38 * s], "spread": [55, 55], "drag": 8, "orientation": "VelocityParallel",
          "size": [[0, 1.0 * s], [1, 0.1]], "color": [[0, "#ffffff"], [1, chaud]], "light_emission": 1},
     ]
+    # v13 (Milan : « VFX de qualité dessin ») : un TRAIT de pinceau en arc
+    # autour de l'axe du coup, joué en 2 et qui s'érode (dessins.py)
+    c.append({"type": "mesh", "nom": "trait_dessine", "t0": t0, "duree": 0.2 if tier == 1 else 0.28, "ancre": anc,
+              "mesh": "arc_trait", "orientation": "coup", "images": _images("trait", "feu"), "images_de": 0.3,
+              "cadence": CADENCE_DESSIN, "rotation": round(97 * hauteur % 360, 1), "rotation_vitesse": 520,
+              "echelle": [[0, 0.8 * s], [0.3, 2.0 * s], [1, 2.6 * s]] if tier == 1 else [[0, 1.0 * s], [0.3, 2.8 * s], [1, 3.4 * s]],
+              "transparency": [[0, 0], [1, 0]], "color": "#ffffff", "light_emission": 0})
     # `hauteur` varie d'un coup à l'autre : le même son rejoué à l'identique
     # fait « mitraillette »
     sons = [{"son": "fouet_m1", "t0": round(max(0.0, t0 - 0.13), 4), "volume": 0.45, "hauteur": hauteur},
@@ -619,7 +626,24 @@ def dessin_jaillissements():
     return r
 
 
-RECETTES = {"orbe_impact": orbe_impact, "impact_m1": impact_m1,
+def dragon_gueule_demo():
+    """v13 : le dragon d'or FACE à l'objectif, gueule grande ouverte (58°),
+    immobile. Sert de modèle à la carte manga de la morsure (la gueule à
+    l'encre est tirée de NOTRE modèle, build_planches.py) et à juger la tête."""
+    import numpy as np
+    pts = [[0.0, 3.0 + 0.0 * k, -1.2 * k + 0.02 * k * k] for k in range(28)]
+    pts = [[round(0.35 * np.sin(k * 0.35), 3), round(3.0 - 0.05 * k, 3), round(-0.62 * k, 3)] for k in range(28)]
+    imgs = [[0.0, pts], [2.0, pts]]
+    L = serpent(imgs, 0.0, 2.0, naissance=0.001, echelle=1.0, tete=False,
+                machoire=[[0, 44], [1, 44]], nom="dragon_gueule")
+    r = recette("dragon_gueule_demo", [L], titre="Dragon : la gueule (modèle de la carte manga)")
+    r["cameras"] = {"face": {"oeil": [1.2, 2.4, 11.0], "cible": [0.0, 2.8, 1.0], "fov": 42},
+                    "large": {"oeil": [9, 4, 6], "cible": [0, 2.5, -3], "fov": 50},
+                    "jeu": {"oeil": [1.75, 5.5, 11], "cible": [1.75, 3.5, -4], "fov": 70}}
+    return r
+
+
+RECETTES = {"orbe_impact": orbe_impact, "impact_m1": impact_m1, "dragon_gueule_demo": dragon_gueule_demo,
             "dragon_impact_aerien": dragon_impact_aerien, "dragon_plongee": dragon_plongee,
             "dragon_aura_demo": dragon_aura_demo, "dessin_tornade": dessin_tornade,
             "dessin_jaillissements": dessin_jaillissements}

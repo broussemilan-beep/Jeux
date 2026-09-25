@@ -153,7 +153,10 @@ check(ordered, "evenements declenches dans l'ordre des frames")
 -- 6. fin : chaque HumanoidRootPart la ou son corps a fini, devant le depart
 local fa, fv = DragonFist.finalCFrames(att2, DATA)
 check(dot(fa.Position - att2.Position, att2.LookVector) > 4, "fin : attaquant replace dans le cratere (devant)")
-check(dot(fv.Position - att2.Position, att2.LookVector) > 15, "fin : victime replacee au loin devant")
+-- (v13 : la victime est recrachee dans le cratere, ~14 studs devant ; v12 : ejectee a 19)
+local v13 = false
+for _, e in DATA.EVENTS do if e.kind == "planches" then v13 = true end end
+check(dot(fv.Position - att2.Position, att2.LookVector) > (if v13 then 12 else 15), "fin : victime replacee au loin devant")
 near(fv.LookVector, att2.LookVector * -1, 1e-6, "fin : victime toujours tournee vers l'attaquant")
 check(math.abs(fa.Position.Y - att2.Position.Y) < 1e-6, "fin : hauteur de hanche conservee")
 
@@ -177,5 +180,33 @@ for _, c in { { 0.02, "contact", 0 }, { 0.10, "noir", 0 }, { 0.18, "carte", 1 },
 end
 check(DragonFist.cartePhase(cartesEv, 0.7) == nil and DragonFist.cartePhase(cartesEv, -0.01) == nil, "cartes : rien hors sequence")
 check(#tiers == 4 and tiers[1] == 1 and tiers[2] == 1 and tiers[3] == 1 and tiers[4] == 2, "hierarchie : coups de base tier 1, fente h4 tier 2")
+
+-- 8. v13 : le dragon MANGE la victime. Elle est cachee de la morsure au
+-- recrachat ; les planches plein ecran couvrent sans trou jusqu'au blanc ;
+-- le tourbillon est joue « en 2 » (12 i/s) et tourne
+local planchesEv, cacherEv, blancEv, morsure
+for _, e in DATA.EVENTS do
+	if e.kind == "planches" then planchesEv = e end
+	if e.kind == "cacher" then cacherEv = e end
+	if e.kind == "white" then blancEv = e end
+	if e.kind == "impact" and e.name == "morsure" then morsure = e end
+end
+if planchesEv then
+	check(cacherEv ~= nil and morsure ~= nil and cacherEv.who == "victime" and cacherEv.frames[1] == morsure.frame,
+		"v13 : la victime disparait a la frame de la morsure")
+	local dur = 0
+	for _, p in planchesEv.sequence do dur += p.duree end
+	local fin = planchesEv.frame + dur * DATA.FPS
+	check(blancEv ~= nil and fin >= blancEv.frames[1], string.format("v13 : planches jusqu'a f%.0f, le blanc prend a f%d (pas de trou)", fin, blancEv and blancEv.frames[1] or -1))
+	local ph0 = DragonFist.planchePhase(planchesEv, 0.01)
+	check(ph0 ~= nil and ph0.p.images[1] == "gueule_encre", "v13 : la 1re planche est la gueule a l'encre")
+	local ph = DragonFist.planchePhase(planchesEv, 0.5 + 0.05)
+	local sp = ph and ph.p
+	check(sp ~= nil and sp.cadence == 12 and DragonFist.plancheImage(sp, 0) == "spirale_0"
+		and DragonFist.plancheImage(sp, 1 / (sp.duree * 12) + 1e-4) == "spirale_1", "v13 : tourbillon joue en 2 (image suivante apres 1/12 s)")
+	check(sp ~= nil and math.abs(DragonFist.seqV(sp.rotation, 1) - sp.rotation[#sp.rotation][2]) < 1e-9 and DragonFist.seqV(sp.rotation, 0.5) > 0,
+		"v13 : le tourbillon tourne")
+	check(DragonFist.planchePhase(planchesEv, dur + 0.01) == nil and DragonFist.planchePhase(planchesEv, -0.01) == nil, "v13 : rien hors planches")
+end
 
 print(fails == 0 and "SENS OK" or ("SENS FAUX : " .. fails .. " echec(s)"))

@@ -69,7 +69,7 @@ RAFALE = _rafale_cfg()
 # (animator_brain/corpus/fiches/COUP_CHARGE.md) : grammaire du Serious Punch
 # (calme tenu -> armé violent -> poing VERS L'OBJECTIF -> cartes -> blanc).
 # DRAGON_FINAL="v8" rejoue l'aerien v8 a l'identique ; "v9a" / "v9b" = variantes.
-FINAL = os.environ.get("DRAGON_FINAL", "v10")   # production v10 : pose Izuku x Goku (2026-09-25) ; v9b = la v9
+FINAL = os.environ.get("DRAGON_FINAL", "v13")   # production v13 (2026-09-25) : le coup devient le dragon qui mange ; v10 = la v12
 sys.path.insert(0, os.path.join(HERE, "..", "..", "_shared"))
 
 from animator_brain import v222_rig as V  # noqa: E402
@@ -102,6 +102,22 @@ MANGA_F = 298
 WHITE_F = (304, 334)        # ecran blanc puis brouillard
 REVEAL_F = 334
 RISE_F = (490, 526)
+MORSURE_F = None
+if FINAL == "v13":
+    # v13 (fiches/POING_DU_DRAGON_V13.md, Last Breath et Goku relus à 0,1 s) :
+    # invocation TENUE 2,2 s, le coup devient le dragon qui MANGE la victime,
+    # carte manga, 2 s de plein écran, conséquence large de 3 s
+    END_F = 830
+    SUSPEND_END_F = 356         # fin de l'invocation (armé du coup)
+    STRIKE_F = 378              # le poing s'arrête à 2 studs : la tête du dragon SORT du poing
+    MORSURE_F = 400             # la gueule se referme sur la victime (elle disparaît)
+    MANGA_F = 420               # carte manga de la gueule (0,5 s)
+    PLEIN_F = (450, 566)        # plein écran peint (tourbillon, rouge, soleil)
+    WHITE_F = (564, 576)        # blanc bref : retour au réel
+    IMPACT_F = 570              # le cratère (le dragon a plongé dans le sol)
+    REVEAL_F = 570
+    RECRACHE_F = 584            # la victime est recrachée par le dragon qui remonte
+    RISE_F = (760, 820)
 # v7 : poses du coup charge (FICHE_V7.md). Charge : penche (deg, - = en avant),
 # elevation du poing arme (deg), bras avant (dlacet, elevation, distance),
 # hauteur du pied avant leve. Contact : penche ; bras libre (azimut, elevation, distance).
@@ -110,7 +126,9 @@ CT_LEAN, CT_FREE = -30, (140, -40, 2.0)
 
 MARKERS = [("activation", 0)] + [(f"hit{i + 1}", f) for i, (f, _h, _t) in enumerate(HITS)] + [
     ("coup_charge", UPPER_F), ("takeoff", TAKEOFF_F), ("suspend", APEX_F), ("dive", SUSPEND_END_F),
-    ("strike", STRIKE_F), ("impact", IMPACT_F), ("manga", MANGA_F), ("white", WHITE_F[0]), ("reveal", REVEAL_F)]
+    ("strike", STRIKE_F), ("impact", IMPACT_F), ("manga", MANGA_F), ("white", WHITE_F[0]), ("reveal", REVEAL_F)] + (
+    [("morsure", MORSURE_F)] if MORSURE_F else [])
+MARKERS.sort(key=lambda m: m[1])
 
 FOOT_Y = 0.065              # bout du pied (limb_tip) au repos, sol a y = 0
 
@@ -451,6 +469,8 @@ def victim_keys():
                          arms=((-70, 0, 0), (-65, 0, 0)), feet=AIR_LEGS), ("QUAD", "EASE_OUT"))
     add(APEX_F, victim_pose(4.2, y=10.5, rootrot=(62, 0, 8), head=(24, 10, 0), pelvis=((0, 0, 0), (12, 0, 0)),
                             arms=((-95, 0, 25), (-85, 0, -30)), feet=TUMBLE_LEGS))
+    if FINAL == "v13":
+        return K + victim_v13()
     # temps suspendu : derive lente
     add(SUSPEND_END_F, victim_pose(4.4, y=11.1, rootrot=(74, 0, 10), head=(18, 14, 0), pelvis=((0, 0, 0), (8, 0, 0)),
                                    arms=((-100, 0, 30), (-92, 0, -34)), feet=TUMBLE_LEGS))
@@ -474,6 +494,51 @@ def victim_keys():
     add(334, victim_pose(15.6, y=LIE_Y, rootrot=(90, 0, 4), head=(0, 32, 0), pelvis=((0, 0, 0), (-2, 0, 5)),
                          arms=((-155, 0, 52), (-18, 0, -62)), feet=LIE_LEGS, ground=True))
     add(END_F, victim_pose(15.6, y=LIE_Y, rootrot=(90, 0, 4), head=(0, 34, 0), pelvis=((0, 0, 0), (-2, 0, 5)),
+                           arms=((-155, 0, 52), (-18, 0, -62)), feet=LIE_LEGS, ground=True))
+    return K
+
+
+CRATERE_BACK = 10.0     # v13 : recul (le long de -Z) du cratère où le dragon a plongé
+
+
+def victim_v13():
+    """v13 : sonnée, elle DÉRIVE en l'air pendant toute l'invocation (tangage
+    lent, bras qui flottent : elle vit) ; un sursaut quand la tête du dragon
+    arrive ; mangée à MORSURE_F (cachée par le lecteur et en jeu jusqu'à
+    RECRACHE_F) ; recrachée très haut par le dragon qui remonte du cratère,
+    elle retombe 0,9 s en tournant, s'écrase, rebondit, reste couchée
+    (Last Breath v3 : 2 s de chute puis l'écrasement)."""
+    K = []
+    add = lambda f, p, i="BEZIER": K.append((f, p, i))  # noqa: E731
+    flot = lambda k: ((-95 - 8 * k, 0, 25 + 6 * k), (-85 + 6 * k, 0, -30 - 5 * k))  # noqa: E731
+    for f, y, rx, rz, k in ((238, 10.9, 70, 10, 1), (276, 11.2, 78, 12, -1), (316, 11.5, 86, 14, 1),
+                            (356, 11.75, 92, 16, -0.5)):
+        add(f, victim_pose(4.3 + 0.0006 * (f - 200), y=y, rootrot=(rx, 0.1 * (f - 200), rz), head=(20 - 0.05 * (f - 200), 12, 0),
+                           pelvis=((0, 0, 0), (10, 0, 0)), arms=flot(k), feet=TUMBLE_LEGS))
+    add(STRIKE_F, victim_pose(4.4, y=11.8, rootrot=(94, 18, 16), head=(12, 12, 0), pelvis=((0, 0, 0), (8, 0, 0)),
+                              arms=flot(0), feet=TUMBLE_LEGS), "LINEAR")
+    # sursaut : la tête du dragon sort du poing -> elle se recroqueville
+    add(386, victim_pose(4.45, y=11.9, rootrot=(100, 20, 18), head=(-24, 8, 0), pelvis=((0, 0, 0), (-26, 0, 0)),
+                         chest=(0, 0.3, 0), arms=((-40, 0, 30), (-40, 0, -30)), feet=AIR_LEGS))
+    add(MORSURE_F, victim_pose(4.5, y=11.9, rootrot=(104, 20, 18), head=(-28, 8, 0), pelvis=((0, 0, 0), (-30, 0, 0)),
+                               chest=(0, 0.3, 0), arms=((-35, 0, 30), (-35, 0, -30)), feet=AIR_LEGS), "LINEAR")
+    # (cachée de MORSURE_F à RECRACHE_F : on la place là où elle ressortira)
+    add(RECRACHE_F - 1, victim_pose(CRATERE_BACK, y=12.5, rootrot=(40, 0, 20), head=(20, 0, 0),
+                                    arms=((-140, 0, 40), (-130, 0, -40)), feet=TUMBLE_LEGS), "LINEAR")
+    add(RECRACHE_F, victim_pose(CRATERE_BACK, y=13.0, rootrot=(46, 0, 22), head=(24, 0, 0),
+                                arms=((-150, 0, 40), (-140, 0, -45)), feet=TUMBLE_LEGS), ("QUAD", "EASE_OUT"))
+    add(604, victim_pose(CRATERE_BACK + 0.3, y=15.0, rootrot=(70, 0, 30), head=(20, 10, 0),
+                         arms=((-160, 0, 50), (-120, 0, -50)), feet=TUMBLE_LEGS), ("QUAD", "EASE_IN"))
+    # chute : elle ACCÉLÈRE (ease-in) jusqu'au sol
+    add(640, victim_pose(CRATERE_BACK + 0.5, y=LIE_Y + 0.05, rootrot=(90, 0, 4), head=(-10, 0, 0), pelvis=((0, 0, 0), (-10, 0, 0)),
+                         arms=((-100, 0, 50), (-90, 0, -50)), feet=LIE_LEGS, ground=True), "LINEAR")
+    # (rebond : 1er essai à LIE_Y + 0,75 -> 0,48 sous le sol, la rotation de 98°
+    # abaisse l'épaule ; le rebond monte donc à + 1,3)
+    add(647, victim_pose(CRATERE_BACK + 0.6, y=LIE_Y + 1.3, rootrot=(98, 0, 8), head=(10, 0, 0),
+                         arms=((-120, 0, 40), (-110, 0, -45)), feet=TUMBLE_LEGS), ("QUAD", "EASE_OUT"))
+    add(656, victim_pose(CRATERE_BACK + 0.7, y=LIE_Y + 0.05, rootrot=(90, 0, 5), head=(0, 26, 0), pelvis=((0, 0, 0), (-3, 0, 5)),
+                         arms=((-150, 0, 50), (-25, 0, -60)), feet=LIE_LEGS, ground=True), ("QUAD", "EASE_IN"))
+    add(END_F, victim_pose(CRATERE_BACK + 0.7, y=LIE_Y, rootrot=(90, 0, 4), head=(0, 32, 0), pelvis=((0, 0, 0), (-2, 0, 5)),
                            arms=((-155, 0, 52), (-18, 0, -62)), feet=LIE_LEGS, ground=True))
     return K
 
@@ -914,6 +979,9 @@ def attacker_keys(vw, rig):
                 "feet": {"L": ("c", (0.0, 0.95 * k, 1.35 * k)), "R": ("c", (0.1, -1.15 * k, 0.55 * k))},
                 "look": head(f),
                 "hands": {"R": ("w", (1.2, y + 4.5 + 0.2 * k, ax_z + back)), "L": ("w", (-0.55, y + 1.6, ax_z - 2.5))}}
+    if FINAL == "v13":
+        aerien_v13(add, vw, head, target)
+        return K
     if FINAL.startswith("v10"):
         aerien_v10(add, vw, head, target)
     elif FINAL != "v8":
@@ -1150,6 +1218,132 @@ def aerien_v10(add, vw, head, target):
                 "feet": {"L": ("c", (0.0, 0.0, 0.3)), "R": ("c", (0.0, -0.4, 0.1))}, "look": tuple(tg),
                 "hands": {"R": ("w", tuple(tg)), "L": ("rw", (-1.4, 2.4, 0.6))}}, "LINEAR")
 
+def aerien_v13(add, vw, head, target):
+    """v13 (fiches/POING_DU_DRAGON_V13.md) : l'invocation de Goku TENUE, puis
+    le coup qui DEVIENT le dragon.
+
+    - CALME (200-224) : repris de la v10.
+    - INVOCATION (226-340, 1,9 s) : le poing monte au ciel en 8 f (le buste
+      part d'abord, dépasse, revient) ; le dragon jaillit du poing (f236).
+      Tenue VIVANTE portée par le corps (cambrure, genou, épaules, lacet qui
+      montent lentement ; le poing tremble à peine) : Goku 656d965b tient 2 s
+      presque immobile, seuls l'aura et les cheveux vivent.
+    - REGARD (340-356) : la tête descend vers la victime ; ARMÉ : le poing
+      recule loin derrière la tête, le buste se cambre en arrière, genou haut
+      (anticipation du coup : plus le retrait est grand, plus le coup pèse).
+    - COUP (356-378) : le corps bascule d'abord, le poing passe au-dessus de
+      la tête en arc puis se TEND vers la victime ; il s'ARRÊTE à 2 studs :
+      c'est le dragon qui frappe (la tête sort du poing à STRIKE_F).
+    - RECUL (378-420) : le dragon qui sort du poing le repousse (0,4 stud),
+      bras toujours tendu, qui vibre ; le corps tient la pose (le dragon
+      coule du poing jusqu'à la morsure).
+    - (plein écran 420-570 : il se place au-dessus du cratère)
+    - ATTERRISSAGE (570-600) : il tombe du ciel et se pose en trois appuis
+      au bord du cratère, poing au sol, écrasement puis tassement.
+    - RETOUR (760-820) : il se relève et regarde la victime."""
+    Vt = lambda f: np.asarray(vw[f]["Torso"][1], float)  # noqa: E731
+    chest = lambda f: np.asarray(target(f, "chest"), float)  # noqa: E731
+    HOV = np.array([0.0, 5.6, 2.8])
+
+    def sh_at(f, lift=0.0):
+        return Vt(f) + HOV + np.array([1.0, 0.5 + lift, 0.0])
+
+    look = lambda f: tuple(head(f))  # noqa: E731
+    # 1. CALME VIVANT (v10)
+    for f, lift, lk, roll, tw in ((APEX_F, 0.0, -6, 0, -4), (206, 0.06, -7, 3, -2), (212, 0.12, -8, -2, -6),
+                                  (218, 0.16, -8, 2, -3), (224, 0.18, -9, -1, -5)):
+        add(f, {"root": ((0.0, 0.0, 0.0), (lk, 0, roll)), "pelvis": ((0, 0, 0), (2, tw, 0)), "chest": (0, 0.1 + 0.02 * (f % 3), 0),
+                "fit": ("R", tuple(sh_at(f, lift)), (0, 0, 0), (1, 1, 1)),
+                "feet": {"L": ("c", (0.0, 0.3, 0.35)), "R": ("c", (0.0, 0.0, 0.05))},
+                "hands": {"R": ("a", (110, -72, 1.9)), "L": ("a", (-110, -72, 1.9))},
+                "look": look(f)})
+
+    # 2. INVOCATION : membres en directions MONDE (leçon v9)
+    def invoque(f, cambre, poing_haut, genou, epaules, tw, wig=(0.0, 0.0), ciel=None, regard=None):
+        ciel = np.array([0.2 + 0.03 * wig[0], 1.0, 0.04 + 0.03 * wig[1]]) if ciel is None else np.asarray(ciel, float)
+        lk = regard if regard is not None else tuple(Vt(f) + HOV + np.array([0.6, 2.0 + poing_haut, -6.0]))
+        return {"root": ((0.0, 0.0, 0.0), (cambre, -10, 3)), "pelvis": ((0, 0, 0), (cambre * 0.4, tw, 0)),
+                "chest": (0, 0.35 + epaules, 0),
+                "fit": ("R", tuple(sh_at(f, 0.3 + poing_haut * 0.15)), (0, 0, 0), (1, 1, 1)),
+                "feet": {"L": ("d", ((-0.08, -1.0, 0.12), 2.0)), "R": ("d", ((0.1, -0.8, 0.45 + genou), 1.9))},
+                "hands": {"R": ("d", (tuple(ciel), 2.4)), "L": ("d", ((-0.25, -0.55, 0.75), 1.35))},
+                "look": lk}
+    add(226, invoque(226, 2, 0.0, 0.0, 0.0, -6), "LINEAR")             # le buste part d'abord
+    add(230, invoque(230, 10, 0.55, 0.28, 0.06, -15))                 # dépasse (plus poussé que la v10)
+    add(235, invoque(235, 7, 0.4, 0.2, 0.04, -12))
+    # tenue VIVANTE, 1,75 s : la tension MONTE (k de 0 à 1), petites dérives
+    tenue = ((250, 0.12, (3, 2)), (266, 0.28, (-2, 3)), (282, 0.44, (2, -2)), (298, 0.6, (-3, -1)),
+             (314, 0.76, (2, 3)), (330, 0.9, (-1, -2)))
+    for f, k, w in tenue:
+        add(f, invoque(f, 7 + 4 * k, 0.4 + 0.35 * k, 0.2 + 0.25 * k, 0.04 + 0.07 * k, -12 - 9 * k, w))
+    # 3. REGARD puis ARMÉ : la tête vers la victime, le poing recule derrière
+    vis = lambda f: tuple(head(f))  # noqa: E731
+    add(340, invoque(340, 11, 0.75, 0.45, 0.11, -21, (0, 0), regard=vis(340)))
+    add(350, invoque(350, 16, 0.8, 0.6, 0.12, -30, ciel=(0.25, 0.75, 0.75), regard=vis(350)))
+    add(SUSPEND_END_F, invoque(SUSPEND_END_F, 18, 0.85, 0.65, 0.12, -32, ciel=(0.25, 0.6, 0.9), regard=vis(SUSPEND_END_F)),
+        "LINEAR")
+
+    # 4. COUP : le corps bascule, le poing passe au-dessus en arc, se tend et
+    #    S'ARRÊTE à 2 studs (le dragon prend le relais)
+    s0 = sh_at(SUSPEND_END_F, 0.4)
+    ax = chest(STRIKE_F) - s0
+    ax = ax / np.linalg.norm(ax)
+    reach = 1.85
+
+    def dive(f, gap, yaw, twist, pitch, hand_r, hand_l, legs, chest_y=0.2):
+        tgt = chest(min(f, MORSURE_F))
+        return {"root": ((0.0, 0.0, 0.0), (pitch, yaw, 0)), "pelvis": ((0, 0, 0), (-8, twist, 0)), "chest": (0, chest_y, 0),
+                "fit": ("R", tuple(tgt - ax * (reach + gap)), (0, 0, 0), (1, 1, 1)),
+                "feet": legs, "hands": {"R": hand_r, "L": hand_l}, "look": tuple(tgt)}
+    ensemble = lambda k: {"L": ("d", ((0.08, 0.35 * k, 1.0), 2.0)), "R": ("d", ((-0.02, 0.2 * k, 1.0), 1.9))}  # noqa: E731
+    rentre = ("d", ((-0.25, -0.55, 0.8), 1.5))
+    # (1er essai : le poing s'arrêtait à 2 studs -> la tête du dragon, longue
+    # de 8 studs, ne pouvait pas sortir du poing SANS traverser la victime ;
+    # elle faisait un demi-tour illisible) -> coup À DISTANCE : il frappe
+    # l'air vers elle à ~5 studs, le dragon jaillit du poing et couvre l'écart
+    add(362, dive(362, 6.6, -14, -26, -36, ("d", ((0.1, 0.8, 0.6), 2.0)), rentre,
+                  {"L": ("d", ((0.05, -0.6, 0.6), 2.0)), "R": ("d", ((0.1, -0.2, 0.9), 1.8))}), "LINEAR")
+    add(366, dive(366, 6.1, 6, 10, -52, ("d", ((0.05, 0.1, -1.0), 2.0)), rentre, ensemble(0.6)), "LINEAR")
+    for f, gap in ((372, 5.6), (STRIKE_F, 5.2)):
+        add(f, dive(f, gap, 20, 30, -64, ("t", (tuple(chest(f)), reach)), rentre, ensemble(0.2), chest_y=0.45), "LINEAR")
+    # 5. RECUL : repoussé par le dragon qui sort du poing ; le bras reste tendu
+    for f, gap, pitch, k in ((383, 5.7, -58, 0.3), (392, 5.55, -60, 0.25), (404, 5.65, -59, 0.2), (420, 5.8, -56, 0.25)):
+        add(f, dive(f, gap, 20, 30, pitch, ("t", (tuple(chest(min(f, MORSURE_F))), reach)), rentre, ensemble(k), chest_y=0.42))
+
+    # 6. ATTERRISSAGE au bord du cratère (le cratère : CRATERE_BACK derrière
+    #    la position de départ de la victime, le long de -Z)
+    zcr = -(D + CRATERE_BACK)
+    tg = np.array([0.4, 0.0, zcr + 4.0])           # le poing se pose au bord du cratère
+    zc2 = tg[2] + 1.35
+    vic_fin = lambda f: vw[f]["Head"][1]  # noqa: E731
+
+    def land(f, low, fist_y, lean=-30, lk=None):
+        return {"root": ((0.0, 0.0, zc2), (0, 0, 0)), "pelvis": ((0, -low, 0), (lean, 12, 0)), "chest": (0, 0.35, 0),
+                "fit": ("R", (tg[0], fist_y, tg[2]), (0.55, 1.35, 0.75), (1, 0, 1)),
+                "feet": {"L": ("rg", (-0.75, -0.95)), "R": ("rg", (0.75, 1.85))},
+                "look": lk if lk is not None else tuple(vic_fin(f)),
+                "hands": {"R": ("w", (tg[0], fist_y, tg[2])), "L": ("rw", (-1.7, 2.0 - (low - 1.1), -0.1))}}
+    chute = lambda f, y, k: {"root": ((0.0, y, zc2 + 0.6), (-12 * k, 0, 0)), "pelvis": ((0, 0, 0), (-10 * k, 8, 0)),  # noqa: E731
+                             "chest": (0, 0.2, 0),
+                             "feet": {"L": ("c", (0.0, 0.5 * k, 0.4 * k)), "R": ("c", (0.0, 0.3 * k, 0.2 * k))},
+                             "hands": {"R": ("rw", (1.3, 4.6, zc2 * 0 + 0.4)), "L": ("rw", (-1.3, 4.4, 0.3))},
+                             "look": (tg[0], 0.0, tg[2] - 3.0)}
+    add(566, chute(566, 8.5, 0.4), "LINEAR")
+    add(582, chute(582, 1.2, 1.0), ("QUAD", "EASE_IN"))
+    # (1er essai : bassin à 1,12 et poing à y = 0 -> genou et poing 0,32 sous
+    # le sol, main droite à 0,2 de sa cible : le poing se POSE à 0,3 comme en v12)
+    add(587, land(587, 1.0, 0.3, lean=-34, lk=(tg[0], 0.4, tg[2] - 2.0)), "LINEAR")      # écrasement
+    add(596, land(596, 0.94, 0.3, lean=-30, lk=(tg[0], 0.4, tg[2] - 2.5)))
+    add(640, land(640, 0.95, 0.3, lean=-29))
+    add(700, land(700, 0.92, 0.3, lean=-28))
+    add(RISE_F[0], land(RISE_F[0], 0.95, 0.3, lean=-29))
+    add(RISE_F[1], a_stance(zc2, low=0.2, yaw=-8, lean=-4, look=vic_fin(RISE_F[1]),
+                            feet=a_feet(zc2, lf=(-0.6, -0.6), rf=(0.65, 0.5)),
+                            hands={"L": ("w", (-1.3, 2.2, zc2 - 0.3)), "R": ("w", (1.35, 2.15, zc2 - 0.2))}))
+    add(END_F, a_stance(zc2, low=0.2, yaw=-9, lean=-4, look=vic_fin(END_F),
+                        feet=a_feet(zc2, lf=(-0.6, -0.6), rf=(0.65, 0.5)),
+                        hands={"L": ("w", (-1.3, 2.2, zc2 - 0.3)), "R": ("w", (1.35, 2.15, zc2 - 0.2))}))
+
 # ---------------------------------------------------------------------
 
 def build(blend):
@@ -1242,7 +1436,8 @@ def main(blend):
                 print(f"  {side} f{f}: {bad}")
     json.dump({"distance": D, "fps": FPS, "end_f": END_F, "markers": MARKERS, "impact_f": IMPACT_F,
                "strike_f": STRIKE_F, "hits": HITS, "upper_f": UPPER_F, "final_f": UPPER_F, "final_side": "R", "aerien": FINAL, "white": WHITE_F, "reveal_f": REVEAL_F,
-               "manga_f": MANGA_F, "hit_hitstop": HIT_HITSTOP, "hit_shake": HIT_SHAKE, "hit_scale": HIT_SCALE,
+               "manga_f": MANGA_F, "morsure_f": MORSURE_F, "plein_f": globals().get("PLEIN_F"),
+               "recrache_f": globals().get("RECRACHE_F"), "cratere_back": CRATERE_BACK, "hit_hitstop": HIT_HITSTOP, "hit_shake": HIT_SHAKE, "hit_scale": HIT_SCALE,
                "residus": report}, open(os.path.join(OUT, "scene.json"), "w"), indent=1)
     return a, b, aw, vw
 
