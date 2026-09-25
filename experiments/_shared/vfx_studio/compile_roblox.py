@@ -11,7 +11,8 @@ Ce que fait la compilation :
   Ramer-Douglas-Peucker. Même idée que la compression de VFX Editor (MIT),
   réécrite ici ;
 - convertit les couleurs (#hex -> {r, g, b} de 0 à 1) ;
-- produit la table des assets (texture / mesh / son -> rbxassetid).
+- produit la table des assets (texture / mesh / son -> rbxassetid ; sons :
+  sons/catalogue.json, écrit par sons.py).
   Ce qui n'est pas encore envoyé sur Roblox est listé comme MANQUANT, pas
   inventé. Le moteur se rabat alors sur une texture intégrée de Roblox.
 
@@ -186,7 +187,12 @@ def assets():
     for t in cat["textures"]:
         if t.get("variante_de"):
             var[t["variante_de"]] = var.get(t["variante_de"], 0) + 1
-    return {"textures": tex, "variantes": var, "manquants": sorted(k for k, v in tex.items() if not v),
+    cs = json.load(open(os.path.join(HERE, "sons", "catalogue.json")))
+    sid = cs.get("rbxassetid", {})
+    sons = {x["nom"]: sid.get(x["nom"]) for x in cs["sons"]}
+    return {"textures": tex, "variantes": var, "sons": sons,
+            "manquants": sorted(k for k, v in tex.items() if not v),
+            "sons_manquants": sorted(k for k, v in sons.items() if not v),
             "repli_texture": REPLI_TEXTURE}
 
 
@@ -198,7 +204,8 @@ def main(sortie=None):
            "-- Recettes VFX compilées (NumberSequence de 0 à 1, <= 20 points ; couleurs 0-1).\n"
            "return " + lua(data) + "\n")
     open(sortie, "w", encoding="utf-8").write(src)
-    print(sortie, len(data["recettes"]), "recettes ; textures sans rbxassetid :", len(data["assets"]["manquants"]))
+    print(sortie, len(data["recettes"]), "recettes ; sans rbxassetid :", len(data["assets"]["manquants"]), "textures,",
+          len(data["assets"]["sons_manquants"]), "sons")
     return data
 
 

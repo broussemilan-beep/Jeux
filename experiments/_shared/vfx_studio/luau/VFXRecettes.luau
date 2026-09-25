@@ -36,6 +36,39 @@ return {
 			gels = {
 				{0.8, 0.06},
 			},
+			sons = {
+				{
+					son = "naissance_orbe",
+					t0 = 0,
+					volume = 0.45,
+				},
+				{
+					son = "aspiration",
+					t0 = 0,
+					volume = 0.55,
+				},
+				{
+					son = "souffle_projectile",
+					t0 = 0.3,
+					volume = 0.75,
+				},
+				{
+					son = "impact_lourd",
+					t0 = 0.8,
+					volume = 0.85,
+					impact = true,
+				},
+				{
+					son = "grondement",
+					t0 = 0.81,
+					volume = 0.5,
+				},
+				{
+					son = "vent_arc",
+					t0 = 0.83,
+					volume = 0.35,
+				},
+			},
 			couches = {
 				{
 					type = "mesh",
@@ -777,6 +810,20 @@ return {
 				"#ffffff",
 				"#9fd8ff",
 			},
+			sons = {
+				{
+					son = "fouet_m1",
+					t0 = 0.07,
+					volume = 0.5,
+				},
+				{
+					son = "frappe_m1",
+					t0 = 0.2,
+					volume = 0.9,
+					impact = true,
+					vide = 0.025,
+				},
+			},
 			couches = {
 				{
 					type = "particules",
@@ -984,6 +1031,16 @@ return {
 		variantes = {
 			bruit_energie = 8,
 		},
+		sons = {
+			impact_lourd = nil,
+			frappe_m1 = nil,
+			grondement = nil,
+			souffle_projectile = nil,
+			aspiration = nil,
+			naissance_orbe = nil,
+			vent_arc = nil,
+			fouet_m1 = nil,
+		},
 		manquants = {
 			"anneau",
 			"arc_vent",
@@ -1006,6 +1063,16 @@ return {
 			"halo",
 			"ligne_vitesse",
 			"ruban",
+		},
+		sons_manquants = {
+			"aspiration",
+			"fouet_m1",
+			"frappe_m1",
+			"grondement",
+			"impact_lourd",
+			"naissance_orbe",
+			"souffle_projectile",
+			"vent_arc",
 		},
 		repli_texture = "rbxasset://textures/particles/sparkles_main.dds",
 	},

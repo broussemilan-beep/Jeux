@@ -434,15 +434,18 @@ function VFXStudio.jouer(rec, repere, opts)
 		if not id then
 			return -- pas d'identifiant : rien plutôt qu'un son inventé
 		end
+		-- créé DÈS le lancement (chargement), joué à t0 : pas de retard au
+		-- premier Play
 		local pos = resolve(L.ancre, L.t0)
+		local p = porteur(dossier, "S_" .. L.son)
+		p.CFrame = CFrame.new(pos)
+		local s = Instance.new("Sound")
+		s.Name = L.son
+		s.SoundId = id
+		s.Volume = L.volume or 1
+		s.PlaybackSpeed = L.hauteur or 1
+		s.Parent = p
 		ev(L.t0, function()
-			local p = porteur(dossier, "S_" .. L.son)
-			p.CFrame = CFrame.new(pos)
-			local s = Instance.new("Sound")
-			s.SoundId = id
-			s.Volume = L.volume or 1
-			s.PlaybackSpeed = L.hauteur or 1
-			s.Parent = p
 			s:Play()
 		end)
 	end

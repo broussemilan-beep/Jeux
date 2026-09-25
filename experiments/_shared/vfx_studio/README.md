@@ -19,6 +19,8 @@ Conception : `../animator_brain/corpus/fiches/VFX.md` et
 | moteur d'exécution Roblox | `luau/VFXStudio.luau` | joue une recette compilée : ParticleEmitter (LightInfluence 0 explicite, Sphere/Disc, aspiration = ShapeInOut Inward), Part + SpecialMesh (FileMesh), Trail, Beam, projectile, BloomEffect animé, flash d'écran, secousse (même générateur que l'aperçu), gel (TimeScale 0), Sound ; une seule boucle pilotée par le temps ; `Annuler()` nettoie tout |
 | test du moteur Roblox | `luau/run_test.py` (+ `test_vfxstudio.luau`, `references_apercu.js`) | interpréteur Luau officiel + faux objets Roblox qui REFUSENT ce que Roblox refuse ; compare secousse, bloom et flash aux valeurs calculées par le vrai `moteur.js` ; 25 contrôles |
 | critique VFX (limites officielles + coût) | `critique.py` | Rate, Lifetime, séquences, flipbooks, Trail, Beam, particules vivantes instant par instant, appels de rendu estimés, défilement sans variantes |
+| son (SFX) | `sons.py` -> `sons/*.wav` + `catalogue.json` | 8 sons synthétisés (numpy, graine fixe), les MÊMES WAV dans le labo (WebAudio, bouton « Son ») et dans Roblox (Sound, préchargé, joué à t0) ; `impact_lourd` réglé sur les mesures des refs (`../animator_brain/corpus/ECOUTE_REFS_SFX_2026-09-25.md`) ; `critique_son` vérifie le vide avant chaque impact |
+| vidéo avec son | `video_recette.py` | images du labo + mixage des sons -> MP4 (option ralenti) |
 | capture du labo | `capture_lab.js` | planche d'instants choisis (preuves, auto-évaluation) |
 
 **Correspondance avec Roblox.**

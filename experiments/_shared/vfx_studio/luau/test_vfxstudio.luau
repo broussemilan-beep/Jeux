@@ -278,7 +278,38 @@ for nom, rec in pairs(DATA.recettes) do
 	ok((cam.CFrame.Position - Vector3.new(0, 5, 10)).Magnitude < 1e-9, nom .. " : caméra rendue à sa place après la secousse")
 end
 
--- 4. Annuler au milieu (technique interrompue)
+-- 4. sons : sans identifiant, rien ; avec identifiant, chaque Sound part à son t0
+do
+	local rec = DATA.recettes.orbe_impact
+	local h0 = VFXStudio.jouer(rec, CFrame.new(0, 0, 0), { manuel = true })
+	local n0 = 0
+	for _, d in ipairs(h0.Dossier:GetDescendants()) do if d.ClassName == "Sound" then n0 += 1 end end
+	ok(n0 == 0, "sans rbxassetid, aucun son inventé")
+	h0.Annuler()
+	local ids = {}
+	-- (les sons sans identifiant valent nil dans DATA.assets.sons : on prend les noms de la recette)
+	for _, so in ipairs(rec.sons) do ids[so.son] = "rbxassetid://1" end
+	VFXStudio.configurer({ sons = ids })
+	local h = VFXStudio.jouer(rec, CFrame.new(0, 0, 0), { manuel = true })
+	local joues = {}
+	for i = 0, math.ceil(rec.duree * 60) do
+		TEMPS = i / 60
+		h._etape(TEMPS)
+		if h.Dossier._detruit then break end
+		for _, d in ipairs(h.Dossier:GetDescendants()) do
+			if d.ClassName == "Sound" and d._joue and not joues[d.Name] then joues[d.Name] = d._joue end
+		end
+	end
+	local bons = 0
+	for _, s in ipairs(rec.sons) do
+		local t = joues[s.son]
+		if t and t >= s.t0 - 1e-9 and t <= s.t0 + 1 / 60 + 1e-9 then bons += 1 else print("      " .. s.son .. " joué à " .. tostring(t)) end
+	end
+	ok(bons == #rec.sons, string.format("chaque son part dans l'image de son t0 (%d/%d)", bons, #rec.sons))
+	VFXStudio.configurer({ sons = {} })
+end
+
+-- 5. Annuler au milieu (technique interrompue)
 do
 	local rec = DATA.recettes.orbe_impact
 	local h = VFXStudio.jouer(rec, CFrame.new(10, 0, 0), { manuel = true })

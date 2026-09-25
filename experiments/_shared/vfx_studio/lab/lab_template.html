@@ -23,6 +23,7 @@
   <div class="grp" id="vitesses"></div>
   <div class="grp" id="cams"></div>
   <button id="bloom" aria-pressed="true">Bloom</button>
+  <button id="son" aria-pressed="false" title="Les mêmes fichiers WAV que dans Roblox">Son</button>
 </div>
 <div id="info"></div>
 <script>__THREE__</script>
@@ -71,6 +72,7 @@
     const presence = rec.nom === "orbe_impact";
     m1.visible = m2.visible = presence;
     t = 0; sel.value = nom;
+    if (typeof planifierSons === "function") planifierSons();
     const cams = document.getElementById("cams"); cams.innerHTML = "";
     for (const k of Object.keys(rec.cameras || {}).concat(["libre"])) {
       const b = document.createElement("button"); b.textContent = k; b.dataset.cam = k;
@@ -81,12 +83,47 @@
   }
   function setCam(k) { camNom = k; document.querySelectorAll("#cams button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.cam === k))); }
   sel.onchange = () => setRecette(sel.value);
-  document.getElementById("play").onclick = (e) => { playing = !playing; e.target.textContent = playing ? "Pause" : "Lecture"; e.target.setAttribute("aria-pressed", String(playing)); };
+  document.getElementById("play").onclick = (e) => { playing = !playing; e.target.textContent = playing ? "Pause" : "Lecture"; e.target.setAttribute("aria-pressed", String(playing)); planifierSons(); };
   document.getElementById("bloom").onclick = (e) => { useBloom = !useBloom; e.target.setAttribute("aria-pressed", String(useBloom)); };
   const vs = document.getElementById("vitesses");
-  for (const v of [1, 0.25, 0.1]) { const b = document.createElement("button"); b.textContent = "×" + v; b.onclick = () => { vitesse = v; vs.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); }; if (v === 1) b.setAttribute("aria-pressed", "true"); vs.appendChild(b); }
+  for (const v of [1, 0.25, 0.1]) { const b = document.createElement("button"); b.textContent = "×" + v; b.onclick = () => { vitesse = v; planifierSons(); vs.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); }; if (v === 1) b.setAttribute("aria-pressed", "true"); vs.appendChild(b); }
   const slider = document.getElementById("temps");
-  slider.oninput = () => { playing = false; document.getElementById("play").textContent = "Lecture"; t = (slider.value / 1000) * rec.duree; };
+  slider.oninput = () => { playing = false; couperSons(); document.getElementById("play").textContent = "Lecture"; t = (slider.value / 1000) * rec.duree; };
+  // ------------------------------------------------ SON (WebAudio)
+  // Les mêmes WAV que dans Roblox (sons.py). Le navigateur exige un clic
+  // avant tout son : le bouton « Son » crée le contexte. Au ralenti, le son
+  // ralentit aussi (playbackRate = vitesse), comme un ralenti de film.
+  let actx = null, tampons = {}, sources = [], sonActif = false;
+  async function initSon() {
+    actx = new (window.AudioContext || window.webkitAudioContext)();
+    for (const [nom, uri] of Object.entries(DATA.sons || {})) {
+      const bin = Uint8Array.from(atob(uri.split(",")[1]), (c) => c.charCodeAt(0));
+      tampons[nom] = await actx.decodeAudioData(bin.buffer);
+    }
+  }
+  function couperSons() { for (const s of sources) { try { s.stop(); } catch (e) {} } sources = []; }
+  function planifierSons() {
+    couperSons();
+    if (!sonActif || !actx || !playing || !rec) return;
+    const now = actx.currentTime;
+    for (const so of rec.sons || []) {
+      const b = tampons[so.son]; if (!b) continue;
+      const rate = (so.hauteur || 1) * vitesse, dur = b.duration / (so.hauteur || 1);
+      if (so.t0 + dur <= t) continue;
+      const src = actx.createBufferSource(); src.buffer = b; src.playbackRate.value = rate;
+      const g = actx.createGain(); g.gain.value = so.volume == null ? 1 : so.volume;
+      src.connect(g).connect(actx.destination);
+      const retard = Math.max(0, (so.t0 - t) / vitesse), offset = Math.max(0, (t - so.t0) * (so.hauteur || 1));
+      src.start(now + retard, offset);
+      sources.push(src);
+    }
+  }
+  document.getElementById("son").onclick = async (e) => {
+    sonActif = !sonActif; e.target.setAttribute("aria-pressed", String(sonActif));
+    if (sonActif && !actx) await initSon();
+    if (actx && actx.state === "suspended") await actx.resume();
+    planifierSons();
+  };
   let drag = null;
   stage.addEventListener("pointerdown", (e) => { drag = [e.clientX, e.clientY]; setCam("libre"); });
   window.addEventListener("pointerup", () => (drag = null));
@@ -117,7 +154,7 @@
   let last = performance.now();
   function boucle(now) {
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
-    if (playing) { t += dt * vitesse; if (t > rec.duree) t = 0; }
+    if (playing) { t += dt * vitesse; if (t > rec.duree) { t = 0; planifierSons(); } }
     rendu();
     requestAnimationFrame(boucle);
   }
@@ -125,9 +162,9 @@
   setRecette(Object.keys(DATA.recettes)[0]);
   requestAnimationFrame(boucle);
   window.__vfx = {
-    seek: (x) => { playing = false; t = x; rendu(); },
+    seek: (x) => { playing = false; couperSons(); t = x; rendu(); },
     setRecette, setCam, setBloom: (v) => { useBloom = v; }, duree: () => rec.duree,
-    couches: () => effet.couches.map((c) => ({ nom: c.L ? c.L.nom : 'projectile', visible: c.obj.visible })), stats: () => ({ elements: derniers }),
+    couches: () => effet.couches.map((c) => ({ nom: c.L ? c.L.nom : 'projectile', visible: c.obj.visible })), stats: () => ({ elements: derniers, sons_planifies: sources.length, sons_decodes: Object.keys(tampons).length }),
   };
 })();
 </script>

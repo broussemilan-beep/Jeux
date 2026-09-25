@@ -14,6 +14,7 @@ sys.path.insert(0, HERE)
 import formes  # noqa: E402
 import meshes  # noqa: E402
 import recettes  # noqa: E402
+import sons  # noqa: E402
 
 THREE = os.path.join(HERE, "..", "..", "r6_black_hole", "scripts", "vendor", "three.min.js")
 
@@ -32,7 +33,11 @@ def main(sortie=None):
     for t in cat:
         if t.get("variante_de"):
             variantes[t["variante_de"]] = variantes.get(t["variante_de"], 0) + 1
-    data = {"textures": textures, "variantes": variantes, "meshes": json.load(open(os.path.join(mesh_dir, "meshes.json"))),
+    sons.main(os.path.join(HERE, "sons"))
+    cs = json.load(open(os.path.join(HERE, "sons", "catalogue.json")))["sons"]
+    audio = {x["nom"]: "data:audio/wav;base64," + base64.b64encode(open(os.path.join(HERE, "sons", x["fichier"]), "rb").read()).decode()
+             for x in cs}
+    data = {"textures": textures, "variantes": variantes, "sons": audio, "meshes": json.load(open(os.path.join(mesh_dir, "meshes.json"))),
             "recettes": recettes.toutes()}
     html = open(os.path.join(HERE, "lab", "lab_template.html"), encoding="utf-8").read()
     html = html.replace("__THREE__", open(THREE, encoding="utf-8").read())

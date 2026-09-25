@@ -465,6 +465,13 @@ tout petit.
 et cartes plein écran. Notre Dragon est fort sur les cartes, faible dans le
 monde 3D.
 
+**4b.6 Le son (mesuré, pas écouté : ECOUTE_REFS_SFX_2026-09-25.md).** Un
+impact des refs = trait vertical large bande, surtout du grave (sub ~0,6 des
+300 ms qui suivent). Le gros coup est précédé d'un VIDE (Stagnant Rage :
+0,86 s où les aigus tombent de 25 dB). Le son suit l'image de 40 à 150 ms.
+Je n'ai pas d'oreille : je règle sur des mesures, et Milan est le seul à
+pouvoir dire si ça « sonne ».
+
 ## 5. Pistes à essayer (classées, aucune n'est décidée)
 
 1. **Rafale : ré-armement lent, frappe rapide, clés espacées** (2.1,

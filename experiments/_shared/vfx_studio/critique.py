@@ -117,6 +117,15 @@ def critiquer(nom, rec):
     simult = max(vivantes(i / 120) for i in range(int(rec["duree"] * 120) + 1))
     if simult > 100:
         avert.append(f"{nom} : ~{int(simult)} particules simultanées au pic (repère non officiel : 50-100 par effet)")
+    # son : existence dans la banque, puis le vide avant l'impact (sons.py)
+    import sons as SONS
+    for so in rec.get("sons", []):
+        if so["son"] not in SONS.BANQUE:
+            err.append(f"{nom} : son inconnu {so['son']}")
+    if not err:
+        e2, i2 = SONS.critique_son(rec)
+        err += e2
+        info += i2
     info.append(f"{nom} : {len(comp['couches'])} couches, ~{int(simult)} particules au pic, "
                 f"~{appels + semi} appels de rendu estimés ({semi} meshes semi-transparents), {len(tex)} textures")
     return err, avert, info

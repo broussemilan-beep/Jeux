@@ -135,6 +135,16 @@ def orbe_impact():
         "flashs": [{"t0": t1, "duree": 0.035, "couleur": "#fff6e0", "transparency": [[0, 0.1], [1, 0.9]]}],
         "secousses": [{"t0": t1, "duree": 0.35, "amplitude": 0.55, "direction": [0, -1, -0.6], "graine": 3}],
         "gels": [[t1, 0.06]],
+        # SON (sons.py) : le souffle est coupé net 60 ms avant la collision,
+        # le vide avant l'impact mesuré dans les refs (critique_son)
+        "sons": [
+            {"son": "naissance_orbe", "t0": 0.0, "volume": 0.45},
+            {"son": "aspiration", "t0": 0.0, "volume": 0.55},
+            {"son": "souffle_projectile", "t0": 0.3, "volume": 0.75},
+            {"son": "impact_lourd", "t0": t1, "volume": 0.85, "impact": True},
+            {"son": "grondement", "t0": t1 + 0.01, "volume": 0.5},
+            {"son": "vent_arc", "t0": t1 + 0.03, "volume": 0.35},
+        ],
         "cameras": {"large": {"oeil": [15, 6, 9], "cible": [0, 2, -2], "fov": 50},
                     "jeu": {"oeil": [1.75, 5.2, 12], "cible": [1.75, 3.2, -2], "fov": 70},
                     "impact": {"oeil": [9, 3.2, -1.5], "cible": [0, 1.8, -7], "fov": 55}},
@@ -163,6 +173,11 @@ def impact_m1():
              "size": [[0, 0.9], [1, 0.1]], "color": "#ffffff", "light_emission": 1},
         ],
         "bloom": {"intensite": 0.7, "seuil": 0.75, "taille": 2},
+        # le bras qui part puis le contact : 30 ms de vide (tier 1, court)
+        "sons": [
+            {"son": "fouet_m1", "t0": 0.07, "volume": 0.5},
+            {"son": "frappe_m1", "t0": 0.2, "volume": 0.9, "impact": True, "vide": 0.025},
+        ],
         "cameras": {"jeu": {"oeil": [1.75, 4.8, 8.5], "cible": [1.75, 3.2, -4], "fov": 70},
                     "large": {"oeil": [7, 4, 3], "cible": [0, 3, -2], "fov": 50}},
     }

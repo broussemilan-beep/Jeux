@@ -88,3 +88,10 @@ Punch n'existe chez nous qu'en GIF.
 Voir `RELECTURE_REFS_VFX_2026-09-25.md`, un tableau par ref centré sur les
 effets. Pour trouver ce que chaque ref fait en VFX :
 `python3 outils/rappel.py vfx`.
+
+## Écoute (le son des refs)
+
+`ECOUTE_REFS_SFX_2026-09-25.md` : 14 vidéos ont une piste audio ; Black
+Flash (12e7dae5), Stagnant Rage (4fb4f776), Rewind Clock (3ae71567), IMPACT
+HAVEN (eba5ed69) et Black Hole (01f4b1d2) mesurées avec `outils/ecoute.py`.
+Rappel : `python3 outils/rappel.py son`.

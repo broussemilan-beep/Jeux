@@ -1,0 +1,53 @@
+{
+ "sons": [
+  {
+   "nom": "impact_lourd",
+   "fichier": "impact_lourd.wav",
+   "duree": 0.6,
+   "role": "craquement + corps + sub : le gros coup"
+  },
+  {
+   "nom": "frappe_m1",
+   "fichier": "frappe_m1.wav",
+   "duree": 0.22,
+   "role": "tier 1 : court et sec"
+  },
+  {
+   "nom": "grondement",
+   "fichier": "grondement.wav",
+   "duree": 1.6,
+   "role": "queue d'explosion : grave qui roule + débris"
+  },
+  {
+   "nom": "souffle_projectile",
+   "fichier": "souffle_projectile.wav",
+   "duree": 0.44,
+   "role": "projectile qui arrive, coupé net avant l'impact"
+  },
+  {
+   "nom": "aspiration",
+   "fichier": "aspiration.wav",
+   "duree": 0.3,
+   "role": "énergie aspirée, monte puis coupe"
+  },
+  {
+   "nom": "naissance_orbe",
+   "fichier": "naissance_orbe.wav",
+   "duree": 0.4,
+   "role": "tonalité d'énergie qui se forme"
+  },
+  {
+   "nom": "vent_arc",
+   "fichier": "vent_arc.wav",
+   "duree": 0.28,
+   "role": "croissant de vent autour de l'impact"
+  },
+  {
+   "nom": "fouet_m1",
+   "fichier": "fouet_m1.wav",
+   "duree": 0.1,
+   "role": "le bras qui part (tier 1)"
+  }
+ ],
+ "rbxassetid": {}
+}

@@ -41,6 +41,8 @@ CONCEPTS = {
     "vfx": ["vfx", "effet", "effets", "particule", "particleemitter", "beam", "trail", "trainee", "traînée",
             "aura", "etincelle", "étincelle", "onde", "fumee", "fumée", "debris", "débris", "smear", "halo",
             "cratere", "cratère", "flipbook", "shader", "texture"],
+    "son": ["son", "sons", "sfx", "audio", "bruitage", "sound", "grondement", "souffle", "vide avant",
+            "silence", "ecoute", "écoute", "spectrogramme"],
     "victime": ["victime", "reaction", "réaction", "recul", "encaisse"],
 }
 
