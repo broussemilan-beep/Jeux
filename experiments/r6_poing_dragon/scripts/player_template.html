@@ -110,7 +110,13 @@
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<!-- three.js EMBARQUÉ (r134, la copie de r6_black_hole/scripts/vendor) :
+     la même version que le labo VFX et que toutes les captures de
+     vérification. (v13 : la page publiée chargeait r128 depuis le CDN ;
+     avant r129 un SkinnedMesh exige material.skinning = true, sans quoi le
+     dragon restait figé dans sa pose de repos, au mauvais endroit ; les
+     captures, faites en r134, ne le montraient pas.) -->
+<script>/*__THREE_JS__*/</script>
 <script>/*__MOTEUR_VFX__*/</script>
 <script>
 (function () {

@@ -99,6 +99,8 @@ def main():
     }
     data["vfx"]["textures"]["dragon_atlas"] = b64(os.path.join(vs, "modeles", "dragon_atlas.png"), "image/png")
     html = open(os.path.join(HERE, "player_template.html")).read()
+    three = os.path.join(HERE, "..", "..", "r6_black_hole", "scripts", "vendor", "three.min.js")
+    html = html.replace("/*__THREE_JS__*/", open(three).read())
     html = html.replace("/*__MOTEUR_VFX__*/", open(os.path.join(vs, "lab", "moteur.js")).read())
     html = html.replace("/*__DATA__*/null", json.dumps(data, separators=(",", ":")))
     path = os.path.join(OUT, "dragon_player.html")

@@ -214,6 +214,9 @@
         "  diffuseColor.rgb *= l > -0.15 ? 1.0 : 0.84;\n" +
         "  float rim = 1.0 - abs(n.z); diffuseColor.rgb = mix(diffuseColor.rgb, vec3(1.0, 0.96, 0.78), rim > 0.86 && l > -0.2 ? 0.5 : 0.0); }");
     };
+    // three.js < r129 : le skinning est une propriété du MATÉRIAU (sans
+    // elle le dragon reste dans sa pose de repos) ; ignorée à partir de r129
+    mat.skinning = true;
     const mesh = new T.SkinnedMesh(geo, mat);
     mesh.bind(skel);
     mesh.frustumCulled = false;
@@ -223,6 +226,7 @@
     contourMat.onBeforeCompile = (sh) => {
       sh.vertexShader = sh.vertexShader.replace("#include <begin_vertex>", "#include <begin_vertex>\n transformed += normal * " + (0.034 * k).toFixed(4) + ";");
     };
+    contourMat.skinning = true;
     const contour = new T.SkinnedMesh(geo, contourMat);
     contour.bind(skel); contour.frustumCulled = false;
     grp.add(mesh); grp.add(contour);

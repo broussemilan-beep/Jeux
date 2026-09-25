@@ -182,8 +182,9 @@ check(DragonFist.cartePhase(cartesEv, 0.7) == nil and DragonFist.cartePhase(cart
 check(#tiers == 4 and tiers[1] == 1 and tiers[2] == 1 and tiers[3] == 1 and tiers[4] == 2, "hierarchie : coups de base tier 1, fente h4 tier 2")
 
 -- 8. v13 : le dragon MANGE la victime. Elle est cachee de la morsure au
--- recrachat ; les planches plein ecran couvrent sans trou jusqu'au blanc ;
--- le tourbillon est joue « en 2 » (12 i/s) et tourne
+-- recrachat ; la carte manga (gueule a l'encre puis inversee) dure 0,5 s ;
+-- v13d : plus de planches tourbillon / rouge / soleil (retirees, Milan),
+-- le dragon VOLE en 3D (couche dragon_b) de la morsure jusqu'au blanc
 local planchesEv, cacherEv, blancEv, morsure
 for _, e in DATA.EVENTS do
 	if e.kind == "planches" then planchesEv = e end
@@ -196,17 +197,21 @@ if planchesEv then
 		"v13 : la victime disparait a la frame de la morsure")
 	local dur = 0
 	for _, p in planchesEv.sequence do dur += p.duree end
-	local fin = planchesEv.frame + dur * DATA.FPS
-	check(blancEv ~= nil and fin >= blancEv.frames[1], string.format("v13 : planches jusqu'a f%.0f, le blanc prend a f%d (pas de trou)", fin, blancEv and blancEv.frames[1] or -1))
 	local ph0 = DragonFist.planchePhase(planchesEv, 0.01)
 	check(ph0 ~= nil and ph0.p.images[1] == "gueule_encre", "v13 : la 1re planche est la gueule a l'encre")
-	local ph = DragonFist.planchePhase(planchesEv, 0.5 + 0.05)
-	local sp = ph and ph.p
-	check(sp ~= nil and sp.cadence == 12 and DragonFist.plancheImage(sp, 0) == "spirale_0"
-		and DragonFist.plancheImage(sp, 1 / (sp.duree * 12) + 1e-4) == "spirale_1", "v13 : tourbillon joue en 2 (image suivante apres 1/12 s)")
-	check(sp ~= nil and math.abs(DragonFist.seqV(sp.rotation, 1) - sp.rotation[#sp.rotation][2]) < 1e-9 and DragonFist.seqV(sp.rotation, 0.5) > 0,
-		"v13 : le tourbillon tourne")
+	local seulement = #planchesEv.sequence == 2 and planchesEv.sequence[2].images[1] == "gueule_inverse"
+	check(seulement and math.abs(dur - 0.5) < 1e-6, string.format("v13d : seulement la carte de la gueule (%d planches, %.2f s)", #planchesEv.sequence, dur))
 	check(DragonFist.planchePhase(planchesEv, dur + 0.01) == nil and DragonFist.planchePhase(planchesEv, -0.01) == nil, "v13 : rien hors planches")
+	local vol
+	for _, e in DATA.EVENTS do
+		if e.kind == "studio" and e.recette then
+			for _, L in e.recette.couches or {} do
+				if L.nom == "dragon_b" then vol = { ev = e, L = L } end
+			end
+		end
+	end
+	check(vol ~= nil and blancEv ~= nil and (vol.L.t0 + vol.L.duree) * DATA.FPS >= blancEv.frames[1] - vol.ev.frame,
+		"v13d : le dragon vole jusqu'au blanc (il est a l'ecran a la place des planches)")
 end
 
 print(fails == 0 and "SENS OK" or ("SENS FAUX : " .. fails .. " echec(s)"))

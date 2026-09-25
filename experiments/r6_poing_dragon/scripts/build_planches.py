@@ -450,11 +450,10 @@ def inverse(im):
 
 def main(rendu=None, rendu_sil=None):
     os.makedirs(OUT, exist_ok=True)
-    for k in range(3):
-        spirale(k).save(os.path.join(OUT, f"spirale_{k}.png"))
-    for k in range(2):
-        rouge(k).save(os.path.join(OUT, f"rouge_{k}.png"))
-    soleil(rendu_sil).save(os.path.join(OUT, "soleil.png"))
+    # v13d : tourbillon, rouge et soleil RETIRÉS de la scène (Milan : « ça
+    # ne rend pas bien pour du Roblox premium ») ; les fonctions restent
+    # (spirale, rouge, soleil) pour une autre technique, mais ne sont plus
+    # écrites. Seule la carte manga de la gueule est jouée.
     if rendu and os.path.exists(rendu):
         g = encre(rendu)
         g.save(os.path.join(OUT, "gueule_encre.png"))

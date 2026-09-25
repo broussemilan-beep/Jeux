@@ -154,4 +154,11 @@ captures `captures/verification/2026-09-25-v13-*`) :
   à côté de la colonne de feu ; dernier plan de côté (les deux) ; sons
   jusqu'à la fin. Détail : `../../RETOURS.md` (2026-09-25, revue), CARNET
   4b.26.
+- **v13d (Milan : planches retirées ; « le dragon n'apparaît pas là où il
+  faut, et très peu »)** : bug du lecteur publié (three.js r128 sans
+  `skinning` : dragon figé en pose de repos) corrigé en embarquant r134 ;
+  f400-f574 : la victime dans la gueule, rase-mottes, grande boucle dans le
+  ciel (sommet f508, 42 studs), retournement, plongeon dans le cratère au
+  blanc (f564). Caméra : très large face à la boucle (l'attaquant donne
+  l'échelle), contre-plongée au sommet, puis depuis le cratère.
 

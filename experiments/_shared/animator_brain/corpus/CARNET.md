@@ -686,6 +686,22 @@ des lignes de vitesse qui vont quelque part. Et une silhouette « maison »
 (notre modèle rendu) dit plus qu'une forme générique à épines. Vérifier
 aussi comment le lecteur AFFICHE l'image (carré tourné = recadrage x2).
 
+**4b.28 Vérifier dans les conditions du spectateur, pas les miennes**
+(v13, « le dragon n'apparaît pas là où il faut, et très peu »). Toutes mes
+captures chargeaient three.js r134 en local ; la page publiée chargeait r128
+depuis le CDN, où le dragon skinné restait figé en pose de repos. Aucune
+vérification ne pouvait le voir parce qu'aucune ne tournait sur ce que
+Milan ouvre. Ce que je vérifie doit être EXACTEMENT ce qui est livré (même
+bibliothèque, embarquée) ; et quand Milan dit « je ne vois pas X », chercher
+d'abord un bug d'affichage chez lui avant d'y lire un avis de goût.
+
+**4b.29 Roblox premium : le dragon en 3D plutôt que des planches 2D**
+(Milan retire tourbillon, rouge et soleil : « ça ne rend pas bien pour du
+Roblox premium »). Les refs Last Breath en abusent, mais pour ce projet la
+3D du jeu prime ; le temps d'abstraction sert mieux à MONTRER le dragon
+(grande boucle dans le ciel, sommet, plongeon). Le seuil « plein écran »
+du juge ne vaut donc pas pour ce style.
+
 ## 5. Pistes à essayer (classées, aucune n'est décidée)
 
 1. **Rafale : ré-armement lent, frappe rapide, clés espacées** (2.1,

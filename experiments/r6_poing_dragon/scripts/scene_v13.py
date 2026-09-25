@@ -117,8 +117,19 @@ class Scene13:
         ax = V - Fs
         self.ax = ax / np.linalg.norm(ax)
         g = 4.3
+        # (v13d, Milan : planches plein écran retirées, « je ne vois pas le
+        #  dragon ». Il plongeait dans le sol 0,4 s après la morsure, sous les
+        #  planches : on ne le voyait plus) -> la victime dans la gueule, il
+        #  file en rase-mottes, MONTE en grande boucle dans le ciel au-dessus
+        #  de l'arène (visible en entier), se retourne tête en bas au sommet
+        #  et replonge droit dans le cratère au blanc (DIVE_F)
+        G = self.G
+        self.DIVE_F = scene["white"][0]
         self.WB = [(self.sf, Fs + self.ax * 0.3), (386, Fs - self.ax * 0.9 + (0, 0.5, 0)), (394, Fs - self.ax * 1.1 + (0, 0.6, 0)),
-                   (self.mf, V - self.ax * g), (408, V + self.d * 3.5), (426, self.G + self.d * 3.5)]
+                   (self.mf, V - self.ax * g), (410, V + (0.0, -2.0, -5.0)), (424, G + (-3.0, 10.0, -12.0)),
+                   (444, G + (-11.0, 17.0, -20.0)), (466, G + (-14.0, 28.0, -12.0)), (488, G + (-7.0, 38.0, -2.0)),
+                   (508, G + (4.0, 42.0, 0.0)), (526, G + (8.0, 37.0, -1.0)), (542, G + (4.0, 25.0, 0.0)),
+                   (556, G + (1.0, 11.0, 0.0)), (self.DIVE_F, G + (0.0, 0.5, 0.0)), (self.DIVE_F + 10, G + (0.0, -9.0, 0.0))]
 
     def poing(self, f):
         a, u = int(np.floor(f)), f - np.floor(f)
@@ -188,6 +199,13 @@ class Scene13:
             amp = 0.55 * np.sin(np.pi * u) * min(1.0, lg / 4.0)
             p = p + lat * amp * np.sin(2 * np.pi * (1.6 * u - 2.5 * t)) + up * 0.6 * amp * np.cos(2 * np.pi * (1.1 * u - 2.0 * t))
             pts.append(p)
+        if f > 404:
+            # après la morsure le corps SUIT le chemin de la tête (il vole) :
+            # corps d'f404 (poing -> tête) puis la trajectoire de la tête
+            p404, _, _ = self.forme_b(404)
+            traj = [np.asarray(q) for q in p404[::-1]] + [self.tete_b(x) for x in np.arange(404.5, f + 1e-6, 0.5)]
+            pts, s1 = corps(traj, self.lb, Fs, sens)
+            return pts, 0.0, s1
         pts, s1 = corps(pts[::-1], self.lb, base, sens)
         return pts, 0.0, s1
 
@@ -249,8 +267,20 @@ def camera(sc, add, A, Vt, h):
     add(sf + 1, mil + [12.5, -3.5, 3.0], mil + [0.0, 0.6, 0.0], 58, "cut")
     add(398, mil + [11.0, -3.2, 2.6], mil + [0.0, 0.2, -0.2], 56)
     add(418, mil + [12.0, -3.0, 2.4], mil + [0.0, -1.5, -0.6], 58)
-    # conséquence (derrière les planches et le blanc) : très large
+    # v13d : LE DRAGON SE MONTRE (à la place des planches tourbillon, rouge,
+    # soleil). Plan très large depuis le sol : la grande boucle dans le ciel,
+    # l'attaquant petit en l'air (échelle) ; au sommet, plan moyen en
+    # contre-plongée ; le plongeon vu du cratère, il fond sur l'objectif
     G = sc.G
+    # (1er essai à 42 studs en diagonale : la boucle vue par la tranche, le
+    # dragon un trait lointain) -> en face du plan de la boucle, plus près
+    add(450, G + [-4.0, 7.0, 33.0], G + [-6.0, 22.0, -10.0], 62, "cut")
+    add(496, G + [-3.0, 8.0, 31.0], G + [-4.0, 30.0, -6.0], 60)
+    add(498, G + [24.0, 30.0, 20.0], G + [1.0, 38.0, -3.0], 56, "cut")
+    add(528, G + [21.0, 29.0, 19.0], G + [5.0, 35.0, -1.0], 54)
+    add(530, G + [10.0, 1.5, 10.0], G + [1.5, 24.0, 0.0], 64, "cut")
+    add(561, G + [9.0, 1.4, 9.0], G + [0.5, 12.0, 0.0], 66)
+    # conséquence (derrière le blanc) : très large
     add(562, G + [17.0, 6.5, 15.0], G + [0.0, 4.5, 0.0], 56, "cut")
     # la caméra SUIT le dragon qui jaillit vers le ciel et la victime
     # recrachée qui retombe (1er essai fixe : il sortait du cadre en 0,5 s)
@@ -276,18 +306,13 @@ def camera(sc, add, A, Vt, h):
 
 
 def planches_sequence():
-    """Plein écran (fiche §5) : carte manga de la gueule, puis tourbillon de
-    feu, rouge radial, soleil à silhouette. Durées réelles (s)."""
+    """Carte manga de la morsure (Last Breath v1, 17,0 s) : la gueule à
+    l'encre puis inversée, 0,5 s. (v13d : tourbillon, rouge et soleil
+    RETIRÉS, Milan : « ça ne rend pas bien pour du Roblox premium » ; le
+    temps qu'ils prenaient montre maintenant le dragon en 3D.)"""
     return [
         {"duree": 0.3, "images": ["gueule_encre"], "echelle": [[0, 1.12], [1, 1.0]], "secousse": 0.018},
         {"duree": 0.2, "images": ["gueule_inverse"], "echelle": [[0, 1.0], [1, 1.04]], "secousse": 0.03},
-        {"duree": 0.83, "images": ["spirale_0", "spirale_1", "spirale_2"], "cadence": 12,
-         # (planches dessinées v13c, carrées : à x1,25-1,7 on ne voyait que le cœur
-         # blanc, délavé) -> x1,0-1,25, les lames de feu restent dans le cadre
-         "rotation": [[0, 0], [1, 150]], "echelle": [[0, 1.0], [1, 1.2]]},
-        {"duree": 0.72, "images": ["rouge_0", "rouge_1"], "cadence": 12, "echelle": [[0, 1.0], [1, 1.12]]},
-        # (1er essai 0,28 s : 4 images du vrai décor passaient avant le blanc)
-        {"duree": 0.4, "images": ["soleil"], "echelle": [[0, 1.02], [1, 1.12]]},
     ]
 
 
@@ -395,10 +420,11 @@ def studio(sc, studio_fn):
     #    fouet, plonge et mange la victime (gueule 58° puis claque en 2 images)
     def morsure(tc, rel):
         images = []
-        t_n, t_f = rel(sf), rel(440)
+        fin_b = sc.DIVE_F + 10                 # (v13d) il vole jusqu'au plongeon
+        t_n, t_f = rel(sf), rel(fin_b)
         duree = t_f - t_n
         qv = []
-        for f in range(sf, 441):
+        for f in range(sf, fin_b + 1):
             pts, _s0, s1 = sc.forme_b(f)
             t = rel(f)
             images.append([round(t, 4), [v3(p) for p in pts]])
@@ -423,11 +449,14 @@ def studio(sc, studio_fn):
         return c, sons
     studio_fn(sf, "morsure", morsure)
 
-    # 4. PLEIN ÉCRAN : grondement et feu sous les planches
-    studio_fn(S["manga_f"], "plein_ecran", lambda tc, rel: ([], [
-        {"son": "grondement", "t0": 0.0, "volume": 0.9, "hauteur": 0.8},
-        {"son": "crepitement", "t0": round(rel(S["plein_f"][0]), 4), "volume": 0.7},
-        {"son": "grondement", "t0": round(rel(500), 4), "volume": 0.8, "hauteur": 0.7}]))
+    # 4. LE VOL (v13d, à la place du plein écran) : souffle en rase-mottes,
+    #    rugissement au sommet de la boucle, sifflement du plongeon
+    studio_fn(S["manga_f"], "vol", lambda tc, rel: ([], [
+        {"son": "grondement", "t0": 0.0, "volume": 0.8, "hauteur": 0.8},
+        {"son": "vent_arc", "t0": round(rel(446), 4), "volume": 0.7, "hauteur": 0.8},
+        {"son": "rugissement", "t0": round(rel(500), 4), "volume": 1.0, "hauteur": 0.8},
+        {"son": "vent_arc", "t0": round(rel(530), 4), "volume": 0.9, "hauteur": 1.3},
+        {"son": "aspiration", "t0": round(rel(548), 4), "volume": 0.7}]))
 
     # 5. LE RÉEL REVIENT : cratère, explosion dessinée, le dragon remonte
     G = sc.G

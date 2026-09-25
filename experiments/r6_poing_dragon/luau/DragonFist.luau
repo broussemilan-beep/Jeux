@@ -41,7 +41,7 @@ DragonFist.CONFIG = {
 	-- Vides : repli noir / blanc / noir, la sequence garde son rythme.
 	CARTE_IDS = { "", "", "" },
 	-- v13 : IDs des PLANCHES plein ecran (output/planches/<nom>.png, par nom :
-	-- gueule_encre, gueule_inverse, spirale_0..2, rouge_0..1, soleil).
+	-- gueule_encre, gueule_inverse ; v13d : tourbillon, rouge et soleil retires).
 	-- Absentes : repli sur un aplat de la couleur dominante de la planche.
 	PLANCHE_IDS = {},
 	CAMERA = true, -- camera cinematique pour le joueur qui lance la technique
@@ -829,9 +829,6 @@ end
 local REPLI_PLANCHE = {
 	gueule_encre = Color3.fromRGB(22, 10, 6),
 	gueule_inverse = Color3.fromRGB(250, 240, 214),
-	spirale = Color3.fromRGB(255, 132, 26),
-	rouge = Color3.fromRGB(196, 42, 14),
-	soleil = Color3.fromRGB(255, 214, 72),
 }
 
 -- ------------------------------------------------------------------ lecture

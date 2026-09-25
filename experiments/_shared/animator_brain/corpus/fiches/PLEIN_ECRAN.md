@@ -56,3 +56,12 @@ trait soleil silhouette tourbillon"`. Sources digérées ensemble :
   hachurées sont dans les lames sombres, pas sur le cœur blanc ;
 - juger chaque planche à la taille de l'écran ET jouée (en 2, tournée),
   pas seulement en vignette.
+
+## 4. Retiré (2026-09-25, Milan)
+
+Tourbillon, rouge et soleil sont RETIRÉS du Poing du Dragon : « ça ne rend
+pas bien pour du Roblox premium ». Seule la carte manga de la gueule reste
+(0,5 s). Le temps libéré montre le dragon en 3D (fiche POING_DU_DRAGON_V13
+§9, v13d). Les fonctions de dessin restent dans `build_planches.py` pour une
+autre technique, sans être jouées.
+

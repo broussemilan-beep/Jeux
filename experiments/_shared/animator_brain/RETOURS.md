@@ -706,3 +706,26 @@ cerveau, voir la fin de l'entrée.
     x2, et étiré en jeu).
   - Avant/après : `captures/verification/2026-09-25-v13c-planches-dessinees-avant-apres.png`.
 
+- **2026-09-25, v13c -> (Milan)** : « finalement retire les 3 planches, ça
+  ne rend pas bien pour du Roblox premium ; ensuite je ne vois toujours pas
+  le dragon comme il faut » ; puis, en précisant : « dans la scène que tu
+  as créée il y a un problème avec le dragon : il n'apparaît pas là où il
+  faut, et très peu ».
+  - **Cause trouvée (un vrai bug, pas du goût)** : le lecteur publié
+    chargeait three.js **r128** depuis le CDN, alors que le labo et TOUTES
+    mes captures tournaient en **r134** (copie locale, CDN bloqué ici).
+    Avant r129, un SkinnedMesh exige `material.skinning = true` : sans lui
+    le dragon restait dans sa pose de repos, droit, à l'origine de sa couche
+    (pas là où il faut) et ne suivait aucun chemin. Mes vérifications ne
+    pouvaient pas le voir.
+  - Corrigé deux fois : three.js r134 EMBARQUÉ dans le lecteur (plus de
+    CDN : ce que je vérifie = ce que Milan voit) + `skinning = true` posé
+    dans `moteur.js` (sans effet en r134).
+  - Planches tourbillon / rouge / soleil retirées (la carte manga de la
+    gueule reste, non critiquée). Leur temps (f450-f566) montre le dragon en
+    3D : la victime dans la gueule, il monte en grande boucle dans le ciel
+    au-dessus de l'arène, se retourne, et replonge dans le cratère au blanc.
+  - Le juge temporel : le critère « plein écran » ne peut plus passer (0,5 s
+    de carte contre 0,66 s de seuil, tiré de refs avec abstractions) ; c'est
+    voulu par Milan, dit dans le rapport.
+

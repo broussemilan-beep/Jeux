@@ -912,3 +912,20 @@ bandes `2026-09-25-v13c-bande-0.1s-*.png`) : part d'effet au pic 0,83
 (v13 : 0,71 ; seuil 0,70), plein écran 1,13 s, plus longue plage 0,80 s,
 conséquence 5,2 s : porte franchie.
 
+### v13d (2026-09-25) : le dragon s'affiche enfin chez Milan ; planches retirées
+
+- **Bug** (« le dragon n'apparaît pas là où il faut, et très peu ») : la
+  page publiée chargeait three.js r128 (CDN) ; avant r129 un SkinnedMesh
+  exige `material.skinning = true`, sans quoi le dragon restait figé en
+  pose de repos. Toutes les vérifications tournaient en r134 (copie
+  locale) et ne pouvaient pas le voir. Corrigé : three.js r134 est
+  EMBARQUÉ dans le lecteur (`build_player.py`, `/*__THREE_JS__*/`) et
+  `moteur.js` pose `skinning = true`.
+- **Planches** tourbillon / rouge / soleil retirées (Milan : « ça ne rend
+  pas bien pour du Roblox premium ») ; la carte de la gueule reste (0,5 s).
+  Roblox : ne plus importer `spirale_*`, `rouge_*`, `soleil`.
+- **Le dragon se montre** à leur place (f400-f574) : la victime dans la
+  gueule, il monte en grande boucle dans le ciel au-dessus de l'arène, se
+  retourne au sommet et replonge dans le cratère au blanc. Trois plans :
+  très large face à la boucle, contre-plongée au sommet, depuis le cratère.
+
