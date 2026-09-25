@@ -1150,6 +1150,24 @@
    ],
    "quand": "toute pose de temps fort",
    "contre_indication": "garde/idle (planche ✓ Xoaterz : droite et détendue)"
+  },
+  {
+   "id": "pose_vue_nette",
+   "enonce": "Ce qu'on veut montrer doit être NET à l'écran assez longtemps pour être retenu (pose et caméra quasi immobiles ensemble ~0,1 s ou plus) ; le mouvement rapide passe en flou d'1-2 vignettes entre deux moments nets.",
+   "portee": [
+    "tout"
+   ],
+   "confiance_principe": 0.55,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "categorie": "lecture",
+   "mesure": "outils/regard.py : part du temps où l'image est « vue » (écart image / persistance ~90 ms < 4) ; refs de Milan médiane 0,87 (0,32-1,0 sur 25 clips, les GIF à faible cadence gonflent la valeur) ; tuto punch 0,90 ; NOUS v7 ciné 0,43, jeu 0,60",
+   "sources": [
+    "regard à vitesse réelle, 2026-09-25 (RETOURS.md) : le contact v7 passe dans un flou puis est recouvert par les cartes ; la charge v7 est floue (wiggle + caméra qui avance cumulés)"
+   ],
+   "quand": "tout moment clé (charge, contact, pose d'après)",
+   "contre_indication": "indicateur, pas une cible : des refs très bonnes sont à 0,32-0,43 (caméra à l'épaule en continu) ; ne jamais figer une scène pour « monter le chiffre »"
   }
  ],
  "_styles": {
