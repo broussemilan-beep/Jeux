@@ -153,3 +153,15 @@ Envoyées par Milan sans texte, après les images de Suiryu. Étudiées dans
 | 4e0sX6p8-30 (.mp4) | 2dc5991318003b95 | TSB, animations abandonnées (5 min) : rig lettré F/B/L/R, storyboards, dragon « Last Breath » v1-v3 (serpent Blender, tête vers la caméra, plein écran de feu). |
 | 10 sous-titres .vtt | - | Tutos : explosion J8uIGox3xfU, pilier _EciT4WQizk, slash zlKdwujvP2A, capacités anime Q0mXhHCW2OM, flipbooks TdU0A8etl1o (+ 2 basiques, 3 sans parole). |
 | TdU0A8etl1o (.mp4, 2e archive c0038a4c) | bab3237b54c3ff0c | Tuto flipbooks (12 min) : feu→fumée réaliste 8x8, place de démo Roblox (« ground smash » : débris en flipbook), exemples de la communauté. |
+
+## Effets stylisés (5 images, 2026-09-25)
+
+Étudiés dans `RELECTURE_REFS_VFX_STYLE_2026-09-25.md`.
+
+| fichier | sha1 | ce que c'est |
+|---|---|---|
+| 8005ceb1-image.jpg | 722262fa20e93ffb | Deux jaillissements au sol (bleu, orange) : lames en dents de scie 3 tons, cœur blanc, arc blanc, GRIFFURES NOIRES dans l'effet. |
+| f23068ce-image.jpg | df15657b0dae59ec | Tranchée de roche en fusion (Roblox) : pointes triangulaires Neon, arcs, traits de vitesse, débris noirs. |
+| 81f070a6-image.jpg | 3279784695299c0d | Trois auras (rouge : croix scintillantes ; bleue : virgules + cœur blanc ; jaune : feu cel + rayon au-dessus de la tête). |
+| 0f85f7a1-image.jpg | 2e62252ab422abfb | Tornade / couronne de feu : croissants en spirale blanc-jaune-orange, langues pointues, halo. |
+| 22c8d49c-image.jpg | 1c4d815fd2da4251 | Impact sombre : étoile blanche, lueur rouge, veines d'encre noir-cramoisi en étoile. |

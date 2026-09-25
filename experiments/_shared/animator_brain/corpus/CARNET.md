@@ -580,6 +580,14 @@ ouverte, puis plein écran de feu ; ou un très long corps qui file au ras
 du sol vers la cible. L'écart avec notre v12 n'est pas l'idée, c'est
 l'exécution : aplat + trait, taille, caméra, et le plein écran qui suit.
 
+**4b.19 Du NOIR dans l'effet, et des pointes, pas des taches** (5 effets
+stylisés). Échelle de valeurs : cœur blanc → couleur saturée → bord
+sombre, avec des traits d'encre noirs (griffures, veines) posés DANS
+l'effet lumineux : c'est ce qui le fait ressortir. Silhouettes en dents de
+scie, lames, langues pointues ; mouvement dessiné (croissants en spirale,
+traits de vitesse). Nos effets : feu en taches arrondies, pas de noir
+dedans, peu de blanc.
+
 ## 5. Pistes à essayer (classées, aucune n'est décidée)
 
 1. **Rafale : ré-armement lent, frappe rapide, clés espacées** (2.1,
