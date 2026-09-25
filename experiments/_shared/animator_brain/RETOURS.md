@@ -274,3 +274,23 @@ cerveau, voir la fin de l'entrée.
     de la tête sortait du gros plan ciné de la charge (cadre réglé pour la
     v6). Vu seulement sur la vidéo : les poses et la caméra se vérifient
     ENSEMBLE, sur la vidéo, pas chacune de son côté.
+
+- **2026-09-25, retour de Milan sur la v7** : « je vois aucun changement ».
+  Pas de note. Ma prédiction (7,8) était fausse dans le sens. Trois constats
+  honnêtes :
+  - **Biais de confirmation dans l'étude des tutos.** Les 4 agents ont reçu
+    un cadrage (« notre défaut : torse vertical, charge en croix ») et une
+    hypothèse à confirmer ou contredire. Ils ont échantillonné une image
+    toutes les 3-4 s et regardé en détail surtout ce qui répondait à nos
+    questions. Moi, j'ai revu 3 à 13 images clés par vidéo, pas les vidéos
+    entières. On a donc cherché à COMBLER NOS TROUS, pas à tout comprendre.
+    Aucune règle issue de cette étude n'est « certifiée ».
+  - **Ampleur invisible à la vitesse réelle.** Les changements v7 tiennent
+    sur ~0,5 s et ont été vérifiés sur des poses figées agrandies. À la
+    lecture, dans le cadrage normal, Milan ne les voit pas. Nos refs sont
+    PLUS exagérées et le PLACEMENT (du perso dans le cadre, du corps par
+    rapport à la cible) est différent.
+  - **Coup chargé aérien** : il part toujours « d'en bas ». Refs données
+    (2 images manga) : le poing vient VERS le lecteur, raccourci ; il est
+    énorme au premier plan, et le corps est petit derrière. C'est le coup
+    chargé de Saitama.
