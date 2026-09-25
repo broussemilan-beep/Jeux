@@ -105,6 +105,20 @@ nous* (`tutos/gemini_visuel_2026-09-25.md`).
 - Usage : une carte (où regarder, quoi chercher), jamais une pose ou un
   timing sans l'avoir vu soi-même.
 
+**1.9 Les chiffres gardent, l'œil décide.** *Retour de Milan sur la v8
+(jeu 7,8, ciné 7,2).*
+- Sur la v8, les mesures ont évité des erreurs : fausse alerte du bras
+  caché, mauvaise référence pour la bascule, torsion nette prise pour une
+  amplitude.
+- Elles ont aussi trop piloté le choix final : 13/13 règles, contraste.
+- Ce qui a réellement amélioré les poses vient du regard (crochet masqué
+  par le bras libre, fente) et des références (firytwig, Wimshurst).
+- Ordre de travail :
+  1. regarder en mouvement, plusieurs fois, note au format sweatbox (§1.7) ;
+  2. décider à l'œil, refs à côté ;
+  3. chiffres ensuite, pour vérifier et éviter les pièges.
+- Une règle qui échoue est un signal à regarder, pas un veto.
+
 ## 2. Le coup et l'impact
 
 **2.1 Lent contre rapide.** *Texte vérifié* (Williams) : « go just a

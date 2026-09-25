@@ -431,3 +431,30 @@ cerveau, voir la fin de l'entrée.
       faisait rater le contact ;
     - mesurer la réf avant de pousser : les M1 TSB ne penchent que ~12°, le
       « corps à l'horizontale » vaut pour un coup lourd.
+
+- **2026-09-25, retour de Milan sur la v8 : jeu 7,8 (hors coup final),
+  ciné 7,2.** « Pas de gros changement en ciné. Le coup final n'est
+  toujours pas bon, ce qui est normal : pas encore travaillé. Le cerveau
+  a-t-il servi ? Ne t'es-tu pas trop enfermé dans les chiffres au lieu de
+  développer ton jugement ? Mais je note une amélioration. »
+  - **Ce qui a servi.** Le carnet :
+    - firytwig : intervalles près de l'armé, pas d'amorti ;
+    - Wimshurst : le bras libre lance la rotation ;
+    - le crochet masqué vu au test de silhouette ;
+    - la mesure de la bascule TSB, qui a évité de tout faire pencher.
+  - **Ce qui n'a pas servi.** Le critique chiffré (`hypotheses.json`,
+    `critic.py`) n'a pas été consulté une seule fois pour la v8.
+  - **Le biais, reconnu.** J'ai choisi B2 surtout parce qu'il passait
+    13/13 règles et gagnait en contraste, et j'ai écarté C sur deux échecs
+    de règles plus un pied qui flotte, sans l'avoir regardé en mouvement.
+    Les gains réels venaient de mes yeux sur les planches et des refs ; les
+    chiffres, eux, ont surtout empêché des erreurs.
+  - **Pourquoi la ciné bouge peu.** Découpage, cartes et charge sont
+    inchangés ; en gros plan, le rythme compte moins que la mise en scène.
+    En caméra de jeu, de loin, c'est le rythme qui se lit.
+  - **Méthode à partir de maintenant** (CARNET §1.9) :
+    1. regarder d'abord en mouvement, plusieurs fois, et écrire la note au
+       format sweatbox ;
+    2. décider à l'œil, en s'appuyant sur les refs ;
+    3. ne sortir les chiffres qu'ensuite, comme garde-fous. Une règle qui
+       échoue est un signal à regarder, pas un veto automatique.
