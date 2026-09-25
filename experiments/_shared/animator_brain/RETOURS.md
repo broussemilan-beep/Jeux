@@ -641,3 +641,20 @@ cerveau, voir la fin de l'entrée.
     envoyer).
   - L'animation du perso (7,7) tient : le cerveau d'animation marche mieux
     que le cerveau VFX.
+
+- **2026-09-25, v13 en cours (planches de travail) -> la TÊTE du dragon
+  (Milan)** : « les yeux du dragon, c'est ce qui casse le truc, ça fait
+  moche ; et c'est trop cubique aussi, pas assez travaillé. »
+  - Vu sous 3 angles (`captures/verification/2026-09-25-v13b-tete-dragon-
+    avant-apres.png`) : museau en PLANCHE (sections presque carrées, 4,5 studs
+    de long), œil rond cyan à pupille noire (un jouet), crinière de lames
+    brunes plates (un hérisson de carton), aucun détail sur la tête.
+  - Refait : sections arrondies, museau plus court et plus haut, bosse du
+    nez, arcades en fuseau (colère), œil or étroit à fente sous l'arcade,
+    pommettes, naseaux plats sur les côtés (les premiers faisaient des
+    oreilles d'ourson vus de face), crinière de mèches-flammes à deux tons,
+    bande de texture de tête (plaques du nez, écailles, lèvres à l'encre).
+  - Leçon : j'avais jugé la tête sur des plans où elle est petite ; ses
+    défauts sautent aux yeux en gros plan, et le gros plan du rugissement
+    est justement un plan de la scène. Regarder chaque élément dans le plan
+    le PLUS serré où il apparaît.

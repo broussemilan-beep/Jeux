@@ -636,6 +636,13 @@ explosions en boules orange cernées de rouge et les nuages gris ronds
 cernés font dessin animé pour enfants. Retirés des impacts du sol et de
 la morsure.
 
+**4b.24b Un modèle se juge dans son plan le PLUS SERRÉ** (retour de
+Milan sur la v13 : « les yeux cassent le truc, trop cubique »). Un œil rond
+à pupille lit « jouet » ; un œil étroit, incandescent, sous une arcade lit
+« féroce ». Des sections de loft presque carrées (exposant > 3) lisent
+« planche » ; 2,1-2,4 lisent « sculpté ». Deux pastilles éloignées sur une
+même mèche : le mélange traverse tout l'atlas (rayures).
+
 **4b.25 Juger les PROPORTIONS DE TEMPS contre des refs mesurées pareil**
 (`outils/juge.py`, refs `clips/juge_refs_ultimes.json`) : part d'effet au
 pic, temps plein écran, plus longue plage plein écran, conséquence ; seuil

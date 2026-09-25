@@ -238,10 +238,13 @@ def camera(sc, add, A, Vt, h):
     # la caméra SUIT le dragon qui jaillit vers le ciel et la victime
     # recrachée qui retombe (1er essai fixe : il sortait du cadre en 0,5 s)
     add(596, G + [16.5, 5.5, 15.5], G + [0.0, 10.0, 0.0], 58)
-    add(626, G + [16.0, 5.2, 16.0], G + [0.0, 9.0, 0.0], 58)
-    add(652, G + [15.6, 5.4, 16.6], G + [0.0, 4.2, 0.0], 56)
-    add(700, G + [15.0, 5.6, 17.5], G + [0.0, 3.8, 0.0], 54)
-    add(758, G + [13.5, 4.8, 17.0], G + [0.0, 2.6, 1.0], 52)
+    add(626, G + [16.0, 5.2, 16.0], G + [0.0, 9.0, -2.0], 58)
+    add(652, G + [15.6, 5.0, 16.6], G + [-2.0, 8.0, -8.0], 58)
+    add(700, G + [15.0, 4.6, 17.5], G + [-6.0, 9.0, -18.0], 56)
+    # plan moyen sur les deux corps (1er essai : plan large tenu 2 s sur un
+    # cratère sombre où rien ne bougeait)
+    add(716, G + [6.5, 2.8, 9.8], G + [0.0, 1.0, 2.2], 50, "cut")
+    add(758, G + [5.8, 2.6, 8.8], G + [0.0, 1.0, 2.2], 48)
     r0 = A(760)
     far = Vt(sc.S["end_f"])
     # (1er essai dans l'axe : le dos de l'attaquant cachait la victime)
@@ -392,19 +395,31 @@ def studio(sc, studio_fn):
     studio_fn(imf, "impact_sol", impact_sol)
 
     def remonte(tc, rel):
-        fin = rel(720)
+        fin = rel(760)
         t_dep = tc + 0.03
         duree = fin - t_dep
         tete = []
         n_t = 150
-        # (1er essai : il tournait au ras du sol pendant 1 s) -> il JAILLIT :
-        # 12 studs en 0,3 s, puis monte en spirale jusqu'à 26 studs
+        # (1er essai : il tournait au ras du sol pendant 1 s) -> il JAILLIT ;
+        # (2e essai, bande à 0,1 s : il montait à 26 studs et sortait du cadre
+        # en 0,8 s, puis 2 s de plan vide et sombre) -> il monte à 16 studs
+        # en spirale (0,9 s) puis s'ENVOLE en grand arc au-dessus du cratère,
+        # visible, vers l'horizon (Last Breath v3 : le dragon s'en va au loin)
+        P1 = None
         for k in range(n_t + 1):
             u = k / n_t
-            e = 1 - (1 - min(1.0, u / 0.45)) ** 2
-            ang = 2 * np.pi * 1.4 * u + 0.4
-            r = 2.5 + 3.5 * e
-            tete.append((u, G + np.array([r * np.cos(ang), -1.0 + 27.0 * e, r * np.sin(ang)])))
+            if u <= 0.3:
+                e = 1 - (1 - u / 0.3) ** 2
+                ang = 2 * np.pi * 1.0 * (u / 0.3) + 0.4
+                r = 2.5 + 3.5 * e
+                p = G + np.array([r * np.cos(ang), -1.0 + 17.0 * e, r * np.sin(ang)])
+                P1 = p
+            else:
+                v = (u - 0.3) / 0.7
+                b = [P1, P1 + np.array([0.0, 7.0, 0.0]), G + np.array([12.0, 22.0, -18.0]), G + np.array([-24.0, 21.0, -42.0])]
+                p = ((1 - v) ** 3 * b[0] + 3 * (1 - v) ** 2 * v * b[1] + 3 * (1 - v) * v * v * b[2] + v ** 3 * b[3]
+                     + np.array([0.0, 1.5 * np.sin(v * 9.0), 0.0]))
+            tete.append((u, p))
 
         def forme(u):
             hist = [p for (uu, p) in tete if uu <= u + 1e-9]
@@ -413,7 +428,7 @@ def studio(sc, studio_fn):
         images = [[round(t_dep + u * duree, 4), [v3(p) for p in forme(u)]] for u in np.linspace(0, 1, 60)]
         aa = lambda f: round(max(0.0, (rel(f) - t_dep) / duree), 4)  # noqa: E731
         mach = [[0, 20], [aa(578), 50], [aa(590), 52], [aa(600), 18], [aa(630), 44], [aa(660), 46], [aa(680), 16], [1, 16]]
-        c = [R.serpent(images, round(t_dep, 4), round(duree, 4), naissance=0.18, mort=(0.7, "queue"), echelle=1.6,
+        c = [R.serpent(images, round(t_dep, 4), round(duree, 4), naissance=0.18, mort=(0.82, "queue"), echelle=1.6,
                        machoire=mach, nom="dragon_c", tete=False)]
         c += R.flammes_corps(c[0], n=8, rate=18)
         sons = [{"son": "rugissement", "t0": round(rel(630), 4), "volume": 1.0, "hauteur": 0.8}]

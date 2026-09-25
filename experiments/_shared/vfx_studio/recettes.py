@@ -638,6 +638,8 @@ def dragon_gueule_demo():
                 machoire=[[0, 44], [1, 44]], nom="dragon_gueule")
     r = recette("dragon_gueule_demo", [L], titre="Dragon : la gueule (modèle de la carte manga)")
     r["cameras"] = {"face": {"oeil": [1.2, 2.4, 11.0], "cible": [0.0, 2.8, 1.0], "fov": 42},
+                    "profil": {"oeil": [9.0, 3.4, 1.5], "cible": [0.0, 3.1, 1.6], "fov": 42},
+                    "trois_quarts": {"oeil": [5.5, 4.6, 7.5], "cible": [0.0, 3.0, 1.8], "fov": 42},
                     "large": {"oeil": [9, 4, 6], "cible": [0, 2.5, -3], "fov": 50},
                     "jeu": {"oeil": [1.75, 5.5, 11], "cible": [1.75, 3.5, -4], "fov": 70}}
     return r
