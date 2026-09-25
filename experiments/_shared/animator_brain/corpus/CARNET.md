@@ -516,6 +516,12 @@ dessus et sa crinière. De profil, horizontale, devant et au-dessus du poing :
 la gueule ouverte se lit (l'affiche e92ac0d7). Et le perso reste DEVANT le
 dragon : les spires qui passaient devant le visage cachaient le héros.
 
+**4b.12 Une planche d'images fixes cache la DURÉE** (v12, Milan : « le
+dragon apparaît 0,5 seconde »). Mes planches montraient un beau dragon ; en
+temps réel il vivait 0,57 s. Le GIF de Goku tient l'invocation 2 s. Un
+effet-signature se juge en vidéo à vitesse réelle, et sa durée se mesure
+contre la ref.
+
 ## 5. Pistes à essayer (classées, aucune n'est décidée)
 
 1. **Rafale : ré-armement lent, frappe rapide, clés espacées** (2.1,

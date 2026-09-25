@@ -622,3 +622,22 @@ cerveau, voir la fin de l'entrée.
     précédentes, pas au pack ni aux refs.
   - **Premium** = un vrai modèle 3D (volume, lumière, contour), pas des
     cartes et des rubans plats ; densité et finition du pack 100 Combat VFX.
+
+- **2026-09-25, v12 -> technique 4/10, VFX 2 à 4/10, animation 7,7 (Milan)** :
+  « le dragon apparaît 0,5 seconde et pas au bon endroit ; tes VFX sont trop
+  nuls. Mais bravo pour le labo et les animations, on avance. Je vais te
+  nourrir, toi et le cerveau : des VFX à analyser, et des tutos VFX. »
+  - **Mesuré après coup** : le dragon de l'invocation vit 0,57 s (entier
+    ~0,27 s) ; la tenue 226-256 ne dure que 0,50 s à 60 i/s, alors que le
+    GIF f254bee5 la TIENT 2 s. Je l'ai jugé sur des planches d'images
+    fixes : une planche ne montre pas la DURÉE. Regarder la vidéo en temps
+    réel avant de noter un moment.
+  - « Pas au bon endroit » : à comprendre avec Milan (hypothèses : il doit
+    être LE coup, sortir du poing vers la victime comme dans le GIF
+    7a2b4ae8, pas décorer derrière le perso ; ou la montée au sol du cratère).
+  - **Écart de prédiction** : 6 prédit, 2-4 donné. Le biais « je juge contre
+    mes versions » n'est pas corrigé par le fait de le savoir : il faut des
+    refs de VFX étudiées côte à côte AVANT de construire (ce que Milan va
+    envoyer).
+  - L'animation du perso (7,7) tient : le cerveau d'animation marche mieux
+    que le cerveau VFX.
