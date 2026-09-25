@@ -231,8 +231,27 @@ Propriétés de base de ParticleEmitter : rien de nouveau pour le studio.
    mesh à normales inversées + couleurs aux sommets + Neon ; flash « si on
    voit sa forme, il dure trop ».
 
+## 3 bis. Deuxième envoi (`c0038a4c-videos_archive_part1.zip`)
+
+Une seule vidéo nouvelle : le tuto flipbooks (TdU0A8etl1o, 12 min 26,
+sha1 bab3237b54c3ff0c), vu à une image toutes les 5 s. Le Thunder Dragon
+est un doublon ; le .srt de « VFX Part 1 » ne contient que la musique.
+- Ce que l'image ajoute à la transcription : les flipbooks montrés sont
+  RÉALISTES (feu orange et fumée noire volumineuse, 8x8) ; une colonne de
+  feu = beaucoup de particules d'un flipbook feu→fumée qui montent ;
+  changer la couleur donne un feu vert (même planche teintée).
+- Place de démo de Roblox : boucles numérotées, étincelles, fumées, et un
+  « ground smash » : des BLOCS rouge sombre qui volent (débris en
+  flipbook) ; exemples de la communauté : feu réaliste de grande taille
+  (Art Blocks), orbe bleue, sphère orange.
+- Pour nous : nos flipbooks cel (feu, fumée) sont simples et peu
+  nombreux ; la densité des refs vient de BEAUCOUP de particules d'un
+  flipbook riche, et d'un mélange discret de réaliste sous le stylisé
+  (le tuto d'explosion le dit aussi).
+
 ## 4. Ce qu'il faut encore (à demander à Milan)
-- Les VIDÉOS des trois tutos sans parole (Energy Beam, VFX Part 1, et la
-  vidéo TSB scrapped hRzXUe6okOU).
+- Les VIDÉOS des tutos sans parole : Energy Beam (HJoVSZfK2Dw), « How to
+  make VFX Part 1 » (ITd1yAZs1As, le .srt n'a que la musique), TSB
+  scrapped (hRzXUe6okOU).
 - Les autres tutos de la liste (`A_TELECHARGER_VFX_2026-09-25.md`) : les
   vidéos 2, 6, 7 et 9-12 n'étaient pas dans cette partie.

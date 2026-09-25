@@ -152,3 +152,4 @@ Envoyées par Milan sans texte, après les images de Suiryu. Étudiées dans
 | pXqH8vOZ8X8 (.mp4) | aa476239e9f6b2bc | Thunder Dragon (vitrine) : jaillissement de pointes, pilier qui change de couleur à chaque image. |
 | 4e0sX6p8-30 (.mp4) | 2dc5991318003b95 | TSB, animations abandonnées (5 min) : rig lettré F/B/L/R, storyboards, dragon « Last Breath » v1-v3 (serpent Blender, tête vers la caméra, plein écran de feu). |
 | 10 sous-titres .vtt | - | Tutos : explosion J8uIGox3xfU, pilier _EciT4WQizk, slash zlKdwujvP2A, capacités anime Q0mXhHCW2OM, flipbooks TdU0A8etl1o (+ 2 basiques, 3 sans parole). |
+| TdU0A8etl1o (.mp4, 2e archive c0038a4c) | bab3237b54c3ff0c | Tuto flipbooks (12 min) : feu→fumée réaliste 8x8, place de démo Roblox (« ground smash » : débris en flipbook), exemples de la communauté. |
