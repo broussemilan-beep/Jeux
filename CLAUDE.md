@@ -11,6 +11,13 @@ section 1 — notamment : suppression de la cape/écharpe) ;
 Démarrage de session : lire le mandat en entier, puis `docs/worklog.md`
 (dernière entrée = où on en est, quoi de branché, prochain pas).
 
+Animation (cerveau `experiments/_shared/animator_brain/`) : avant toute
+technique ou relecture de références, lancer
+`python3 experiments/_shared/animator_brain/outils/rappel.py "<concept>"`
+et chercher chaque fichier de ref dans `corpus/CATALOGUE_REFS.md` (la
+mémoire n'existe que dans les fichiers : rien n'est rappelé sans ça). Le
+carnet d'apprentissage est `corpus/CARNET.md` (apprentissages, pas règles).
+
 Ce dépôt est le cerveau du projet (`docs/ARCHITECTURE_VFX_v3.md` §12.2) :
 aucune décision, recette, palette, seed ou verdict qualité n'existe ailleurs
 que dans un fichier versionné ici.

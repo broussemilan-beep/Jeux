@@ -137,6 +137,22 @@ nous* (`tutos/gemini_visuel_2026-09-25.md`).
   pas faire comme TSB » n'est pas un défaut en soi. Les mesures sur TSB
   restent des repères situés (§1.2, §2.8), pas des seuils.
 
+**1.11 La mémoire ne sert que si on la rappelle.** *Retour de Milan
+(2026-09-25).*
+- « Poing chargé puissant » devait me renvoyer au Serious Punch (le GIF
+  TSB et « Serious Punch 2 »).
+- Le jour même, j'ai relu ces deux GIF sans les reconnaître (« perso cape
+  jaune »). Tout était pourtant écrit : notes brutes, étude visuelle,
+  fiche v7.
+- Cause : mes souvenirs d'une session à l'autre ne sont que les fichiers.
+  Rien ne reliait un fichier ou un mot à ce qu'on en savait.
+- Réparation :
+  - `corpus/CATALOGUE_REFS.md` : fichier -> ce que c'est -> où c'est
+    étudié ;
+  - `outils/rappel.py "<concept>"` : ce que le cerveau sait déjà.
+- Usage : AVANT toute technique ou toute relecture, lancer le rappel sur
+  le concept et chercher chaque fichier de ref dans le catalogue.
+
 ## 2. Le coup et l'impact
 
 **2.1 Lent contre rapide.** *Texte vérifié* (Williams) : « go just a

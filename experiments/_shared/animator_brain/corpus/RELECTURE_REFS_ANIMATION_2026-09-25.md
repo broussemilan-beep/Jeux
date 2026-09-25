@@ -29,8 +29,8 @@ termes d'animation, pour réapprendre ».
 | ref | ce que fait le corps et le temps |
 |---|---|
 | 37d7971a (projection, 2 rigs, éditeur) | 2 s de flux continu, sans tenue (contraste 1,4) : une projection est un flux, pas du pose-à-pose. Puis UNE tenue de 0,8 s sur le résultat (victime à plat, attaquant debout). |
-| 48244687 (cape jaune) | Cape en très gros plan devant l'objectif = transition. **Tenue 0,42 s debout avant le saut**. Saut vu d'en bas, atterrissage accroupi, frappe au sol. ~3 s de pose d'après, quasi fixe. |
-| 772ee6b0 (manteau, même famille) | Même grammaire : tenue 0,48 s, saut, atterrissage très accroupi manteau ouvert, frappe au sol, 4 cartes (dessin, radial, X, blanc), pose finale accroupie tenue ~1 s. |
+| 48244687 (= **Serious Punch TSB**, Saitama, LE coup de ref ; non reconnu le jour de la relecture, voir `CATALOGUE_REFS.md`) | Cape en très gros plan devant l'objectif = transition. **Tenue 0,42 s debout avant le saut**. Saut vu d'en bas, atterrissage accroupi, frappe au sol. ~3 s de pose d'après, quasi fixe. |
+| 772ee6b0 (= **Serious Punch 2**, coup type Serious Punch ; non reconnu non plus) | Même grammaire : tenue 0,48 s, saut, atterrissage très accroupi manteau ouvert, frappe au sol, 4 cartes (dessin, radial, X, blanc), pose finale accroupie tenue ~1 s. |
 | 01f4b1d2 (Black Hole) | Immobile 1,07 s en plan large. Compression serrée (caméra collée), extension en V vue d'en bas, T flottant, **2e compression** avant l'explosion : compression/extension répétée, en escalade. |
 | 946bd286 (coup vers le ciel) | Le corps n'occupe que ~2 s sur 10. Contre-plongée, bras contre le ciel, **tenue 0,54 s juste avant les cartes**. Puis 5 s de débris au ralenti, victime minuscule. |
 | a0341700 (rafale gatling, caméra DE DOS) | 3,5 s de rafale : le corps bouge peu, les bras deviennent des **multiples + traînées blanches tout autour de la silhouette** (à gauche, à droite, au-dessus), donc HORS du tronc même de dos. Tenue 0,17 s avant, 0,83 s après. |

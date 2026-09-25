@@ -458,3 +458,22 @@ cerveau, voir la fin de l'entrée.
     2. décider à l'œil, en s'appuyant sur les refs ;
     3. ne sortir les chiffres qu'ensuite, comme garde-fous. Une règle qui
        échoue est un signal à regarder, pas un veto automatique.
+
+- **2026-09-25, mémoire du cerveau.** Question de Milan : « Le cerveau
+  a-t-il une bonne mémoire et tous les outils ? Poing chargé puissant
+  devrait faire écho au Serious Punch de Saitama, le GIF et l'anime TSB. »
+  - **Constat.** Tout était dans les fichiers : le Serious Punch TSB en GIF
+    (48244687 = IMG_3251, « LE coup de ref » dans les notes brutes), le
+    Serious Punch 2 (772ee6b0), la fiche v7. Mais le jour même, pendant la
+    relecture, j'ai étudié ces deux GIF sans les reconnaître.
+  - **Précision.** Le fichier d'animations TSB ne contient pas le Serious
+    Punch (il appartient à un autre personnage). Chez nous, le Serious
+    Punch n'existe qu'en GIF.
+  - **Réparation.**
+    - `corpus/CATALOGUE_REFS.md` relie chaque fichier de ref (par
+      empreinte) à ce qu'il est et à l'endroit où il est étudié.
+    - `outils/rappel.py "<concept>"` rassemble, par familles de synonymes,
+      tout ce que le cerveau sait. Il a aussi rappelé l'ancien prototype
+      `r6_directional_punch` (un coup chargé), oublié lui aussi.
+    - Le rappel est ajouté au démarrage de session (CLAUDE.md) et au carnet
+      (§1.11).
