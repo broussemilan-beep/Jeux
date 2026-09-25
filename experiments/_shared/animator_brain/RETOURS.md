@@ -523,3 +523,34 @@ cerveau, voir la fin de l'entrée.
     v8. Aucune mesure ne regarde la mise en scène de l'aérien. Le critique
     prédit donc 7,4 comme pour la v8, et seule la note de Milan pourra
     apprendre aux hypothèses « obari ».
+
+- **2026-09-25, note de Milan sur la v9 : 7,7** (v8 : 7,5 ; ma prédiction 7,9 ;
+  critique 7,4). Ses mots : « très léger en termes de smooth et
+  d'enchaînement, mais c'est mieux ; en fait tu n'as animé que les bras,
+  encore une fois ; je pense que tu as manqué de vigilance ».
+  - **Mesuré ensuite (`outils/corps_bras.py`, nouveau).** Il a raison :
+    - calme : torse figé 24/24 images, rien ne vit ;
+    - armé : torse figé 16/32 images. Le départ tourne le corps en 6
+      images, puis la « tenue vivante » ne fait osciller que la DIRECTION
+      DU POING ;
+    - frappe : torse figé 15/22 images. De f263 à f278, les 3 clés ont les
+      MÊMES angles de corps : le corps est translaté d'un bloc, seul le bras
+      agit (bras droit 470° contre torse 116°). En v8, le torse bougeait sur
+      chaque image de la frappe ;
+    - la rafale et la charge au sol n'ont pas ce défaut (torse jamais figé).
+  - **Où j'ai manqué de vigilance.**
+    - J'ai conçu des POSES (tour à 8 angles, silhouettes) et je les ai
+      reliées par des translations. Je n'ai jamais regardé le MOUVEMENT du
+      corps ENTRE les poses : pelure d'oignon, espacement du torse. J'ai
+      pourtant construit ces outils le matin même.
+    - Le principe « corps d'abord » était dans la fiche, le carnet (§2.1d)
+      et les repros (leçon 3). Je l'ai appliqué au départ du coup (260), pas
+      au reste.
+    - Mon jugement « en mouvement » s'est fait sur des planches à 20 i/s,
+      qui montrent des poses et pas la vie entre elles.
+  - **Ce que la note apprend au critique** : v9 prédite 7,5 après
+    apprentissage, Milan 7,7. La mise en scène obari a payé un peu, le corps
+    figé a coûté.
+  - **Pour la reprise** : voir `corpus/fiches/COUP_CHARGE.md` §7.
+  - **Décision** : animation en pause, chantier VFX ensuite (proposition de
+    Milan).

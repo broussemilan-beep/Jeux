@@ -472,6 +472,11 @@ Méthode pour chacune :
   sur l'étude des tutos, 2026-09-25).
 - Je fais confiance aux noms de mes contrôles (« genou devant ») sans
   regarder la pose de tous les côtés (3.8, v9).
+- **J'anime le membre qui porte le coup et je fige le corps** (récurrent :
+  « il manque les épaules » sur r6_directional_punch, « que les bras » sur
+  la v9). Je conçois des poses, puis je les relie par des translations
+  rigides. Garde-fou : `outils/corps_bras.py` sur chaque production, et la
+  pelure d'oignon du TORSE (pas seulement du poing) avant de montrer.
 - Je traduis les mots de Milan en ma propre étiquette et je perds son sens :
   pour lui, « coup final » = le coup aérien depuis la v7 ; j'avais mélangé
   avec la charge au sol (fiche COUP_CHARGE §4).

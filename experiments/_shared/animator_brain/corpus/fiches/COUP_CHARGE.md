@@ -199,3 +199,22 @@ Historique de la charge AU SOL :
 - Pas relus en entier pour cette fiche : `ETUDE_VISUELLE.md` (sections
   A-L, résumées par les notes brutes), `TUTOS_ANIMATION.md`, les fiches
   `corpus/clips/*.json` (mesures d'analyse vidéo).
+
+## 7. Reprise du coup final aérien (après la v9 : 7,7, « que les bras »)
+
+Mesuré avec `outils/corps_bras.py`. À faire quand l'animation reprendra :
+- **Calme vivant** : il flotte, avec une dérive lente du bassin et du torse
+  (respiration, léger roulis) et une tête qui suit la victime. Aujourd'hui
+  il est figé 24/24 images.
+- **Armé porté par le corps** : pendant la tenue, le TORSE continue de
+  s'enrouler lentement, le genou monte encore, les épaules se tassent.
+  C'est la tension qui monte (la v5 au sol le faisait : « le buste continue
+  de s'enrouler »). Aujourd'hui seule la direction du poing oscille.
+- **Frappe menée par le corps** : pendant la ruée (263-278), le torse
+  continue de tourner et de plonger, les jambes fouettent en retard
+  (chevauchement), la tête rentre. Le bras suit le corps, au lieu d'un bloc
+  translaté avec un bras qui bouge.
+- **Enchaînement / smooth** : pas de segment où tout s'arrête puis repart
+  d'un coup (calme -> départ LINEAR ; clés 263/270/278 identiques). Avant de
+  montrer, regarder la pelure d'oignon du torse et l'espacement du torse
+  dans les deux caméras, pas seulement des planches.

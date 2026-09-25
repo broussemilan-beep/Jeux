@@ -1179,9 +1179,9 @@
  },
  "_regle_d_usage": "Retour de Milan (2026-09-24) : ce qu'on decouvre doit etre bien utilise, pas applique n'importe comment. Une hypothese vraie en animation n'est pas une case a cocher : chacune porte QUAND elle sert et QUAND elle nuit. Le critique juge l'usage au bon moment (hierarchie des temps forts, escalade, contraste), jamais la simple presence.",
  "_calibration": {
-  "a": 0.864,
-  "b": 6.969,
-  "n_notes": 6,
+  "a": 0.969,
+  "b": 7.023,
+  "n_notes": 7,
   "doc": "note = b + a * score ; reapprise a chaque reflexion"
  }
 }

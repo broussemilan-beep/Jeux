@@ -4,9 +4,10 @@
 - v1 : predit 6.3, Milan 6.0 (ecart +0.3)
 - v2 : predit 6.5, Milan 6.7 (ecart -0.2)
 - v4 : predit 6.7, Milan 6.7 (ecart +0.0)
-- v5 : predit 6.7, Milan 6.8 (ecart -0.1)
-- v6 : predit 7.2, Milan 7.0 (ecart +0.2)
-- v8 : predit 7.3, Milan 7.5 (ecart -0.2)
+- v5 : predit 6.8, Milan 6.8 (ecart +0.0)
+- v6 : predit 7.3, Milan 7.0 (ecart +0.3)
+- v8 : predit 7.4, Milan 7.5 (ecart -0.1)
+- v9 : predit 7.4, Milan 7.7 (ecart -0.3)
 
 ## Ce qui a change entre deux versions notees
 - v1 -> v2 : note 6.0 -> 6.7 (+0.7) ; corrigees : posture_droite, escalade, impact_visible ; perdues : aucune
@@ -14,6 +15,7 @@
 - v4 -> v5 : note 6.7 -> 6.8 (+0.1) ; corrigees : coup_charge, arcs ; perdues : aucune
 - v5 -> v6 : note 6.8 -> 7.0 (+0.2) ; corrigees : silhouette_lisible, cartes_impact, silence_noir, blanc_total, poing_gros_plan, contraste_echelle, fond_remplace, camera_vivante, hierarchie_effets ; perdues : aucune
 - v6 -> v8 : note 7.0 -> 7.5 (+0.5) ; corrigees : regard_intention, torsion_tronc, bras_libre_ramene, frappe_lineaire, silhouette_non_croix ; perdues : coup_charge
+- v8 -> v9 : note 7.5 -> 7.7 (+0.2) ; corrigees : aucune ; perdues : arme_tenu_long
 
 ## Suspects (toujours faux sur toutes les versions notees, note bloquee)
 - **variete_coups** : Une rafale varie les formes de coups (jab, direct, crochet, marteau, toupie). (sources : 5 exemples de Milan (combo R6); IMPACT HAVEN)
@@ -53,7 +55,6 @@
 - camera_jeu_vs_cinematique : En jeu, M1 et competences se jouent dans la camera du JOUEUR (souvent de dos) et doivent s'y lire ; seul l'ultime coupe en cinematique (cartes, gros plans, angles) puis REVIENT a la camera de jeu.
 - rafale_en_masse : Une rafale tres rapide se montre comme une MASSE de poings-smears continue (on lit le rythme et le volume), pas coup par coup.
 - contact_prolonge : Une saisie ou une projection garde les corps en contact (on soulève, on retourne, on plaque) : la victime est manipulee, pas seulement frappee.
-- compression_extension : Anticipation = COMPRESSION en C (corps enroule et bas, tete rentree derriere l'epaule, poing arme derriere le plan du corps) ; extension = une droite hors d'equilibre. Le coup anime montre deux poses extremes, le trajet passe en 1-2 f. Nuance (tutos R6) : sur un bloc R6, la compression se lit surtout par la TORSION du torse détourné de la cible, plus que par un dos rond.
 - depassement_1f : Une image de DEPASSEMENT au-dela de la pose d'extension (ou du corps hors de sa pose finale dans le sens du coup), puis retour : l'arret n'est jamais mort.
 - recuperation_effort : Apres un gros coup, la recuperation montre l'EFFORT (recul, reprise d'appui, poids) ; le retour a la garde est lent et ne ressemble pas a un second coup.
 - poses_tenues_limitees : Animation LIMITEE : sur les attaques, poses tenues de durees irregulieres (1 a 5 f a 60 i/s) sans interpolation ; seules les trajectoires (saut, vol, dash) restent lisses.
@@ -62,12 +63,9 @@
 - corps_avant_bras : Ordre de travail : le TORSE porte tout le mouvement (anticipation, drag, milieu, exagération, amorti) et doit se lire SEUL, avant qu'un bras bouge ; puis bras libre, bras qui frappe, tête, jambes en dernier (pieds plantés).
 - pose_apres_tenue : La pose d'APRÈS le coup est la plus extrême et la plus longue : corps plié / couché dans le sens du coup, très bas, tenue 0,4-1 s (vivante). L'extension elle-même ne dure qu'1-2 images : l'œil lit charge tenue → pose d'après tenue.
 - cadrage_serre : Placement : pendant un temps fort, le perso REMPLIT le cadre (plan poitrine/taille, 60-80 % de la hauteur), caméra basse, souvent inclinée (dutch) ; le décor n'est qu'un fond. Un changement de pose qui ne couvre que 1/4 de l'image ne se voit pas.
-- obari_poing_objectif : Coup chargé façon Saitama/obari : 1) armé TENU 1-2 s (léger tremblement, fond uni + lignes radiales, caméra qui avance), 2) le poing traverse VERS l'objectif et remplit 40-60 % du cadre (perspective forcée, grand angle), 3) coupe sur le plan large de la conséquence.
-- pose_pour_sa_camera : Une pose se conçoit et se juge DEPUIS la caméra du plan où elle apparaît ; un membre pointé vers l'objectif cache la silhouette (sauf celui qui porte le coup). Si deux plans ont des besoins opposés (charge lisible / poing vers l'objectif), on COUPE entre deux caméras.
 - reglage_double : Correction de jugement : mes réglages d'amplitude « à l'œil » sont systématiquement ~2x trop sages par rapport aux références (enroulement, hauteur du corps, écart des pieds). Avant de valider une pose, la pousser jusqu'à ce qu'elle paraisse trop, puis comparer à la ref au même angle.
-- pose_vue_nette : Ce qu'on veut montrer doit être NET à l'écran assez longtemps pour être retenu (pose et caméra quasi immobiles ensemble ~0,1 s ou plus) ; le mouvement rapide passe en flou d'1-2 vignettes entre deux moments nets.
 
-## Echelle calibree sur 6 notes : note = 6.97 + 0.86 x score
+## Echelle calibree sur 7 notes : note = 7.02 + 0.97 x score
 
 ## Poids appris (ce qui fait bouger la note de Milan)
 - silhouette_lisible   poids_note 0.65 (confiance principe 0.80)
@@ -130,9 +128,10 @@
 - arcs                 poids_note 0.40 (confiance principe 0.80)
 
 ## Predictions apres apprentissage
-- v1 : predit 6.3, Milan 6.0
+- v1 : predit 6.2, Milan 6.0
 - v2 : predit 6.5, Milan 6.7
-- v4 : predit 6.6, Milan 6.7
+- v4 : predit 6.7, Milan 6.7
 - v5 : predit 6.7, Milan 6.8
-- v6 : predit 7.2, Milan 7.0
-- v8 : predit 7.4, Milan 7.5
+- v6 : predit 7.3, Milan 7.0
+- v8 : predit 7.5, Milan 7.5
+- v9 : predit 7.5, Milan 7.7
