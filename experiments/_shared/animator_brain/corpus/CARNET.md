@@ -439,6 +439,32 @@ d'impact ; intervalles automatiques → pas de vie. Donc trop = juste.
 - Nos trois conditions exactement : R6 3D, caméra de jeu reculée,
   interpolation Linear.
 
+## 4b. VFX (relecture des refs, 2026-09-25)
+
+**4b.1 Le style des refs est graphique (cel), jamais réaliste.** *Vu dans 14
+refs.*
+- Feu à bords durs cernés de rouge sombre, fumée en boules, éclats acérés,
+  étoiles à 4 branches, anneaux en trait fin, croissants effilés, aura à
+  pointes.
+- Une tache floue de lumière seule ne lit pas « anime ».
+- Contre-indication : la fumée qui se dissipe sur la conséquence est douce,
+  et c'est voulu (Serious Punch).
+
+**4b.2 2-3 couleurs + blanc par technique.** La palette fait la signature
+(Black Flash rouge / noir / blanc, boxeur blanc / rouge / bleu-violet).
+
+**4b.3 L'air vend la vitesse.** Croissants blancs qui tournent, lignes de
+pression, vague au sol, spirale autour du membre, tourbillon de fumée.
+Presque toutes les refs en ont ; le Poing du Dragon, aucun.
+
+**4b.4 Au tier 1, le blanc net suffit** (449, aafdc91d) : étoile de 2 images,
+anneau fin en 3-4 images, petit croissant. Lisible en caméra de jeu, même
+tout petit.
+
+**4b.5 Deux registres qui alternent** : VFX dans le monde 3D (caméra de jeu)
+et cartes plein écran. Notre Dragon est fort sur les cartes, faible dans le
+monde 3D.
+
 ## 5. Pistes à essayer (classées, aucune n'est décidée)
 
 1. **Rafale : ré-armement lent, frappe rapide, clés espacées** (2.1,

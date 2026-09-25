@@ -75,5 +75,16 @@ Punch n'existe chez nous qu'en GIF.
 - 095c28ec / 151f7f6d : trône et couronne (anciens projets).
 - 14589186 / 50ace4b8 / 90118239 : captures de conversation.
 - dfdb9286 : rig R6 Blender.
-- Non identifiés dans les notes : 448c613e, 80ac271e, da606c23. À regarder
-  à la prochaine relecture.
+- **448c613e** (identifiée le 2026-09-25, relecture VFX) : case de manga,
+  poing géant sur des bouffées de fumée hachurées à l'encre (coup chargé ;
+  fumée d'impact en style manga).
+- 80ac271e : capture d'un dossier de zips (general.zip, roblox.zip). Ce
+  n'est pas une ref.
+- da606c23 : fiche « DEMI-DIEU, S1 Poing Scintillant » (format de fiche,
+  voir `FICHE_COUP_MODELE.md`).
+
+## Relecture sous l'angle VFX
+
+Voir `RELECTURE_REFS_VFX_2026-09-25.md`, un tableau par ref centré sur les
+effets. Pour trouver ce que chaque ref fait en VFX :
+`python3 outils/rappel.py vfx`.
