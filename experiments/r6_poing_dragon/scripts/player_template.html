@@ -744,6 +744,7 @@
   const cartes = (D.cartes || []).map((src) => { const im = new Image(); im.src = src; return im; });
   const cartesEv = E.find((e) => e.kind === "cartes"), vitesseEv = E.filter((e) => e.kind === "vitesse");
   const planchesEv = E.find((e) => e.kind === "planches");
+  const flashEv = E.filter((e) => e.kind === "flash_ecran");
   const PLANCHES = {};
   for (const [nom, src] of Object.entries(D.planches || {})) { const im = new Image(); im.src = src; PLANCHES[nom] = im; }
   function seqV(sq, u) {
@@ -808,6 +809,11 @@
       if (e.name !== "strike") continue;
       const age = tr - realTimeOf(e.frame);
       if (age >= 0 && age < 2 / 60) { g2.fillStyle = "rgba(255,248,230,0.75)"; g2.fillRect(0, 0, W, H); }
+    }
+    // v13 flash d'écran bref (masque la victime avalée)
+    for (const e of flashEv) {
+      const age = tr - realTimeOf(e.frame);
+      if (age >= 0 && age < e.duree) { g2.fillStyle = e.couleur || "#fff6dc"; g2.fillRect(0, 0, W, H); }
     }
     // v6 fond de vitesse (coup moyen) : lignes de concentration a la peripherie,
     // le centre (les deux corps) reste lisible

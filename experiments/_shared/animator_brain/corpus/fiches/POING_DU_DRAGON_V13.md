@@ -146,3 +146,12 @@ captures `captures/verification/2026-09-25-v13-*`) :
   recrache la victime, qui retombe 0,9 s ; la caméra le suit vers le ciel.
 - **Pas cartoon** : boules de feu cel et nuages ronds cernés retirés des
   impacts du sol et de la morsure (CARNET 4b.24).
+- **Revue sans Milan (v13c)** : fusion = le MUSEAU (6 studs devant l'os à
+  l'échelle 1,9) touche le poing à f363, éclat d'or, fondu en 3 images, le
+  poing garde le feu jusqu'au coup ; la tête naît et monte DERRIÈRE lui ;
+  au regard elle est 12,5 studs au-dessus du poing ; morsure en
+  contre-plongée ; flash au moment où la victime est avalée ; atterrissage
+  à côté de la colonne de feu ; dernier plan de côté (les deux) ; sons
+  jusqu'à la fin. Détail : `../../RETOURS.md` (2026-09-25, revue), CARNET
+  4b.26.
+

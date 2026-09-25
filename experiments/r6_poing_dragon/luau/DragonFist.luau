@@ -962,6 +962,10 @@ function DragonFist.play(attacker: Model, victim: Model, animations: Folder, dat
 	handlers.planches = function(_, ev)
 		screenT0.planches = { t0 = os.clock(), ev = ev }
 	end
+	-- v13 : flash d'ecran bref (masque la victime avalee)
+	handlers.flash_ecran = function(_, ev)
+		screenT0.flash = { t0 = os.clock(), ev = ev }
+	end
 	-- v13 : la victime est AVALEE (cachee pour ce client) de la morsure au recrachat
 	local frameNow = 0
 	handlers.cacher = function(_, ev)
@@ -1091,6 +1095,10 @@ function DragonFist.play(attacker: Model, victim: Model, animations: Folder, dat
 				whiteT = 0
 			elseif ph and ph.kind == "fondu" then
 				whiteT = math.min(whiteT, ph.u)
+			end
+			local fl = screenT0.flash
+			if fl and os.clock() - fl.t0 < fl.ev.duree then
+				whiteT = 0
 			end
 			scr.white.BackgroundTransparency = whiteT
 		end

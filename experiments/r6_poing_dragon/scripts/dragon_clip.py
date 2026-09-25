@@ -1313,7 +1313,10 @@ def aerien_v13(add, vw, head, target):
     # 6. ATTERRISSAGE au bord du cratère (le cratère : CRATERE_BACK derrière
     #    la position de départ de la victime, le long de -Z)
     zcr = -(D + CRATERE_BACK)
-    tg = np.array([0.4, 0.0, zcr + 4.0])           # le poing se pose au bord du cratère
+    # (1er essai à 4 studs du centre, posé à f587 : il tombait DANS le dragon
+    # qui jaillit du cratère, les deux se traversaient) -> au bord, à 7,5
+    # studs, et après le jaillissement
+    tg = np.array([0.4, 0.0, zcr + 7.5])           # le poing se pose au bord du cratère
     zc2 = tg[2] + 1.35
     vic_fin = lambda f: vw[f]["Head"][1]  # noqa: E731
 
@@ -1328,12 +1331,12 @@ def aerien_v13(add, vw, head, target):
                              "feet": {"L": ("c", (0.0, 0.5 * k, 0.4 * k)), "R": ("c", (0.0, 0.3 * k, 0.2 * k))},
                              "hands": {"R": ("rw", (1.3, 4.6, zc2 * 0 + 0.4)), "L": ("rw", (-1.3, 4.4, 0.3))},
                              "look": (tg[0], 0.0, tg[2] - 3.0)}
-    add(566, chute(566, 8.5, 0.4), "LINEAR")
-    add(582, chute(582, 1.2, 1.0), ("QUAD", "EASE_IN"))
+    add(566, chute(566, 16.0, 0.4), "LINEAR")
+    add(599, chute(599, 1.2, 1.0), ("QUAD", "EASE_IN"))
     # (1er essai : bassin à 1,12 et poing à y = 0 -> genou et poing 0,32 sous
     # le sol, main droite à 0,2 de sa cible : le poing se POSE à 0,3 comme en v12)
-    add(587, land(587, 1.0, 0.3, lean=-34, lk=(tg[0], 0.4, tg[2] - 2.0)), "LINEAR")      # écrasement
-    add(596, land(596, 0.94, 0.3, lean=-30, lk=(tg[0], 0.4, tg[2] - 2.5)))
+    add(604, land(604, 1.0, 0.3, lean=-34, lk=(tg[0], 0.4, tg[2] - 2.0)), "LINEAR")      # écrasement
+    add(613, land(613, 0.94, 0.3, lean=-30, lk=(tg[0], 0.4, tg[2] - 2.5)))
     add(640, land(640, 0.95, 0.3, lean=-29))
     add(700, land(700, 0.92, 0.3, lean=-28))
     add(RISE_F[0], land(RISE_F[0], 0.95, 0.3, lean=-29))

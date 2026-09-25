@@ -90,6 +90,8 @@ class Scene13:
         self.F0 = self.poing(236)
         self.ka, self.kb = 1.9, 1.4            # échelles des couches A et B (la tête d'A fait ~11 studs)
         self.la, self.lb = L_MOD * self.ka, L_MOD * self.kb
+        self.MUSEAU = 3.28                     # museau devant l'os de tête (unités modèle, dragon.py X1)
+        self.FUSION_F = 363                    # le museau touche le poing
         V = self.V = np.asarray(vw[self.mf]["Torso"][1], float)
         d = self.G - V
         self.d = d / np.linalg.norm(d)         # axe de la plongée : victime -> cratère
@@ -100,10 +102,13 @@ class Scene13:
         #  la caméra (on le voit de profil) ; il finit DERRIÈRE l'attaquant
         #  (+Z) : la fusion dans le poing vient de derrière, jamais entre la
         #  caméra obari (chez la victime) et lui
-        self.WA = [(236, F0), (241, F0 + (1.2, 3.0, -0.6)), (247, F0 + (3.0, 6.6, -1.0)), (256, F0 + (5.2, 9.6, 0.4)),
+        # (revue sans Milan : à la naissance la tête montait DEVANT lui, côté
+        #  caméra (z < 0) : vue d'en dessous elle couvrait tout son corps)
+        #  -> elle monte DERRIÈRE lui (z > 0), il reste lisible devant
+        self.WA = [(236, F0), (240, F0 + (1.0, 4.6, 1.8)), (246, F0 + (3.0, 9.0, 2.2)), (256, F0 + (5.2, 10.6, 1.6)),
                    (268, F0 + (6.5, 10.8, -3.5)), (282, F0 + (3.5, 11.8, -8.5)), (296, F0 + (-3.0, 10.2, -8.0)),
-                   (310, F0 + (-5.2, 9.2, -5.4)), (330, F0 + (-5.4, 8.8, -4.2)), (344, F0 + (-3.5, 9.0, 2.5)),
-                   (356, F0 + (1.0, 7.5, 5.5))]
+                   (310, F0 + (-5.2, 9.2, -5.4)), (330, F0 + (-5.4, 8.8, -4.2)), (344, F0 + (-4.5, 12.5, 6.0)),
+                   (356, F0 + (1.5, 10.5, 7.0))]
         # B : la tête SORT du poing (coup à distance) face à la victime, gueule
         #     qui s'ouvre (anticipation, 0,25 s), puis claque en avançant : à
         #     MORSURE_F le centre de la gueule (4,3 studs devant l'os de tête à
@@ -131,14 +136,20 @@ class Scene13:
     def tete_a(self, f):
         if f <= 356:
             return _catmull(self.WA, f)
-        # fusion : la tête plonge dans le poing (f366), puis continue DANS le bras
-        if f <= 364:
-            keys = [(356, self.WA[-1][1]), (360, self.poing(360) + (0.4, 2.8, 2.2)), (364, self.poing(364))]
+        # fusion (revue sans Milan, fix1-fix2 : l'OS de tête arrivait au poing
+        # à f364 puis rentrait dans le bras ; or le museau est 6 studs DEVANT
+        # l'os à l'échelle 1,9 : la tête de 11 studs restait posée sur
+        # l'attaquant 14 images) -> c'est le MUSEAU qui touche le poing à
+        # FUSION_F ; là, éclat d'or et le dragon s'engouffre (fondu 3 images),
+        # le poing garde le feu jusqu'au coup
+        u = self.WA[-1][1] - self.poing(self.FUSION_F)
+        u /= np.linalg.norm(u)
+        m = self.MUSEAU * self.ka
+        keys = [(356, self.WA[-1][1]), (self.FUSION_F, self.poing(self.FUSION_F) + u * m),
+                (self.FUSION_F + 4, self.poing(self.FUSION_F + 4) + u * m * 0.4)]
+        if f <= self.FUSION_F + 4:
             return _catmull(keys, f)
-        v_in = self.la / 11.0                  # le corps entier rentre en 11 images
-        sens = self.epaule(f) - self.poing(f)
-        sens /= np.linalg.norm(sens)
-        return self.poing(f) + sens * v_in * (f - 364)
+        return self.poing(f) + u * m * 0.4
 
     def tete_b(self, f):
         return _catmull(self.WB, f)
@@ -152,13 +163,6 @@ class Scene13:
     def forme_a(self, f):
         """(pts, s0, s1) de la couche A à la frame f."""
         traj = [self.tete_a(x) for x in np.arange(236, f + 1e-6, 0.5)] if f >= 236 else [self.F0]
-        if f > 364:
-            # la partie DANS le bras (après le poing) est cachée : s0
-            entree = self.poing(f)
-            dans = float(np.linalg.norm(self.tete_a(f) - entree))
-            traj_ext = traj[:-1] + [entree, self.tete_a(f)]
-            pts, s1 = corps(traj_ext, self.la, self.F0, (0, -1, 0))
-            return pts, min(0.999, dans / self.la), s1
         pts, s1 = corps(traj, self.la, self.F0, (0, -1, 0))
         return pts, 0.0, s1
 
@@ -199,12 +203,17 @@ def camera(sc, add, A, Vt, h):
     # jaillissement : contre-plongée 3/4 face, assez loin pour voir le poing
     # ET le dragon qui monte en courbe (1er essai : trop près, la tête vue
     # d'en dessous remplissait le cadre)
-    add(226, A(226) + [7.5, -5.0, -13.0], A(226) + [1.5, 4.5, -0.5], 62, "cut")
-    add(250, A(250) + [7.0, -4.8, -12.2], A(250) + [2.0, 6.5, -1.0], 62)
+    # (2e essai, relu à 0,1 s : l'attaquant coupé par le bas du cadre et caché
+    # par le dragon, la pose de Goku ne se lisait pas) -> plus loin, le corps
+    # ENTIER en bas du cadre, le dragon monte à côté de lui
+    add(226, A(226) + [9.5, -2.5, -17.0], A(226) + [2.0, 4.0, 0.0], 56, "cut")
+    add(250, A(250) + [9.0, -2.4, -16.0], A(250) + [2.5, 5.0, 0.0], 56)
     # le dragon s'enroule dans le ciel : TRÈS large, contre-plongée (échelle)
     ciel = sc.F0 + np.array([0.0, 8.0, -3.0])
-    add(252, A(252) + [15.0, -9.0, -20.0], ciel, 60, "cut")
-    add(298, A(298) + [13.0, -8.4, -18.0], ciel + [0, 0.5, 0], 58)
+    # (revue : l'attaquant coupé à la taille par le bas du cadre) -> visée
+    # plus basse et plus ouvert : il est entier, petit, sous le dragon
+    add(252, A(252) + [15.0, -9.0, -20.0], ciel - [0, 1.8, 0], 64, "cut")
+    add(298, A(298) + [13.0, -8.4, -18.0], ciel - [0, 1.2, 0], 62)
     # gros plan : la tête RUGIT (devant le museau, un peu dessous, de côté)
     H = sc.tete_a(304)
     dvec = sc.dir_tete_a(304)
@@ -216,40 +225,54 @@ def camera(sc, add, A, Vt, h):
     add(334, museau + dvec * 13.0 + cote * 5.2 + [0, -2.2, 0], sc.tete_a(334) + sc.dir_tete_a(334) * 3.5, 50)
     # regard : contre-plongée sur l'attaquant, le dragon DERRIÈRE lui
     # (1er essai à 5 studs : bras et crinière collés à l'objectif)
-    add(336, A(336) + [5.5, -4.5, -9.5], A(336) + [0.5, 3.0, 0.5], 58, "cut")
-    add(354, A(354) + [5.0, -4.2, -8.8], A(354) + [0.5, 3.0, 0.5], 56)
+    # (2e essai : la tête du dragon se posait SUR celle de l'attaquant à
+    # l'image) -> tête du dragon plus haut et derrière, cadre plus haut
+    add(336, A(336) + [5.5, -4.5, -9.5], A(336) + [0.5, 4.5, 0.5], 62, "cut")
+    add(354, A(354) + [5.0, -4.2, -8.8], A(354) + [0.5, 4.5, 0.5], 60)
     # obari : chez la victime, le poing arrive vers l'objectif
     sf = sc.sf
-    # (1er essai à 2 studs de la victime : la tête qui rentre dans le poing
-    # passait contre l'objectif, un œil géant remplissait le cadre)
-    eye = Vt(sf) + [-3.6, 1.0, -3.4]
-    for f in (356, 362, 366, 370, 374, sf):
-        add(f, eye, sc.poing(f) * 0.55 + h(f) * 0.45, 78, "cut" if f == 356 else "smooth")
-    # le dragon SORT du poing (flash) : coupe de profil, la ligne poing ->
-    # victime -> cratère traverse le cadre ; il ouvre la gueule, claque
+    # (obari, 2 essais : le dragon qui rentre dans le poing passait contre
+    # l'objectif et remplissait l'écran, ni l'attaquant ni son poing ne se
+    # voyaient) -> 3/4 de côté : l'attaquant plonge, le dragon se VERSE
+    # dans son poing, la victime en bas du cadre
     V = sc.V
+    m3 = (A(366) + V) / 2
+    # (3e essai à 13 studs : la tête, longue de 11 studs à l'échelle 1,9,
+    # remplissait encore le cadre) -> 26 studs
+    add(356, m3 + [24.0, 3.0, 10.0], m3 + [0.0, 2.5, 0.5], 52, "cut")
+    add(sf, m3 + [21.0, 2.6, 8.8], m3 + [0.0, 1.5, 0.0], 50)
+    # le coup DEVIENT le dragon : même axe (on voit le poing ET la victime),
+    # caméra plus BASSE qui regarde un peu vers le haut (2e essai en plongée :
+    # la victime, à 12 studs du sol, semblait couchée PAR TERRE, le sol
+    # lointain derrière elle) -> le ciel derrière elle
     mil = (sc.poing(sf) + V) / 2
-    add(sf + 1, mil + [13.0, 1.5, 1.0], mil + [0.0, -0.5, 0.0], 50, "cut")
-    add(398, mil + [11.5, 1.2, 0.8], mil + [0.0, -0.8, -0.3], 48)
-    add(418, mil + [12.5, 1.0, 0.6], mil + [0.0, -2.5, -0.8], 52)
+    add(sf + 1, mil + [12.5, -3.5, 3.0], mil + [0.0, 0.6, 0.0], 58, "cut")
+    add(398, mil + [11.0, -3.2, 2.6], mil + [0.0, 0.2, -0.2], 56)
+    add(418, mil + [12.0, -3.0, 2.4], mil + [0.0, -1.5, -0.6], 58)
     # conséquence (derrière les planches et le blanc) : très large
     G = sc.G
     add(562, G + [17.0, 6.5, 15.0], G + [0.0, 4.5, 0.0], 56, "cut")
     # la caméra SUIT le dragon qui jaillit vers le ciel et la victime
     # recrachée qui retombe (1er essai fixe : il sortait du cadre en 0,5 s)
-    add(596, G + [16.5, 5.5, 15.5], G + [0.0, 10.0, 0.0], 58)
-    add(626, G + [16.0, 5.2, 16.0], G + [0.0, 9.0, -2.0], 58)
+    # (revue : l'attaquant qui atterrit à G+7,5 en z était coupé à mi-corps
+    # par le bas du cadre) -> plus loin, visée plus proche de lui
+    add(596, G + [20.0, 5.0, 19.5], G + [0.0, 8.5, 2.0], 60)
+    add(626, G + [19.5, 4.8, 20.0], G + [0.0, 8.0, 0.5], 60)
     add(652, G + [15.6, 5.0, 16.6], G + [-2.0, 8.0, -8.0], 58)
     add(700, G + [15.0, 4.6, 17.5], G + [-6.0, 9.0, -18.0], 56)
     # plan moyen sur les deux corps (1er essai : plan large tenu 2 s sur un
     # cratère sombre où rien ne bougeait)
-    add(716, G + [6.5, 2.8, 9.8], G + [0.0, 1.0, 2.2], 50, "cut")
-    add(758, G + [5.8, 2.6, 8.8], G + [0.0, 1.0, 2.2], 48)
+    # (de CÔTÉ : l'attaquant, maintenant au bord du cratère, et la victime au
+    # centre sont tous les deux dans le cadre)
+    add(716, G + [11.0, 3.2, 4.5], G + [0.0, 1.2, 4.0], 50, "cut")
+    add(758, G + [10.0, 3.0, 4.3], G + [0.0, 1.2, 4.0], 48)
     r0 = A(760)
     far = Vt(sc.S["end_f"])
-    # (1er essai dans l'axe : le dos de l'attaquant cachait la victime)
-    add(760, r0 + [5.5, 4.4, 10.0], (r0 + far) / 2 + [0, -1.2, 0], 52, "cut")
-    add(sc.S["end_f"], r0 + [4.6, 4.0, 8.6], (r0 + far) / 2 + [0, -0.8, 0], 50)
+    # (2 essais de dos : le dos de l'attaquant cachait la victime) -> de
+    # 3/4 côté, il se relève face à elle
+    mp = (r0 + far) / 2
+    add(760, mp + [11.0, 3.5, 4.5], mp + [0, 0.8, 0], 50, "cut")
+    add(sc.S["end_f"], mp + [9.6, 3.1, 4.0], mp + [0, 0.9, 0], 48)
 
 
 def planches_sequence():
@@ -280,6 +303,9 @@ def evenements(sc, ev, GOLD, WHITE, FLASH):
     ev(mf, "impact", pos=v3(sc.V), dir=v3(sc.d), scale=2.0, color=WHITE, hitstop=0.12, shake=0.9, name="morsure",
        tier=3, studio=True)
     ev(mf, "cacher", who="victime", frames=[mf, S["recrache_f"]])
+    # flash de 2 images qui MASQUE la disparition (1er essai : ses jambes
+    # dépassaient encore de la gueule quand elle disparaissait d'un coup)
+    ev(mf - 1, "flash_ecran", duree=round(3 / 60, 4), couleur="#fff6dc")
     ev(S["manga_f"], "planches", sequence=planches_sequence())
     w = S["white"]
     ev(w[0], "white", frames=[w[0], w[0] + 4, w[1] + 4])
@@ -315,9 +341,29 @@ def studio(sc, studio_fn):
         mach = [[0, 20], [aa(244), 34], [aa(256), 14], [aa(300), 14], [aa(304), 44], [aa(326), 46], [aa(334), 16],
                 [aa(350), 26], [aa(362), 36], [1, 36]]
         L = R.serpent(images, round(t_n, 4), round(duree, 4), echelle=sc.ka, machoire=mach, nom="dragon_a", tete=False)
+        # il s'engouffre dans le poing : fondu de 3 images sous l'éclat, et
+        # la partie visible se vide (les flammes du corps s'éteignent avec lui)
+        ff = sc.FUSION_F
+        tv = [x for x in tv if x[0] < aa(ff + 3)] + [[aa(ff + 3), 0.999], [1, 0.999]]
         L["tete_visible"], L["queue_visible"] = tv, qv
+        L["transparency"] = [[0, 0], [aa(ff), 0], [aa(ff + 3), 1], [1, 1]]
         c = [L] + R.flammes_corps(L, n=8, rate=16)
         F0 = sc.F0
+        pf = sc.poing(ff)
+        c += R.jaillissement_dessine("feu", t0=round(rel(ff), 4), pos=v3(pf - [0, 0.9, 0]), echelle=1.0, suffixe="_fusion")
+        c.append({"type": "particules", "nom": "eclat_fusion", "t0": round(rel(ff), 4), "ancre": {"pos": v3(pf)},
+                  "texture": "halo", "emit": 1, "lifetime": [0.22, 0.22], "speed": [0, 0],
+                  "size": [[0, 3.0], [0.3, 9.0], [1, 11.0]], "transparency": [[0, 0.1], [1, 1]], "color": "#fff3c4",
+                  "light_emission": 1, "zoffset": 2})
+        # le poing garde le feu du dragon jusqu'au coup
+        chem = [[round(rel(f), 4)] + v3(sc.poing(f)) for f in range(ff, sf + 1)]
+        c.append({"type": "particules", "nom": "feu_poing", "t0": round(rel(ff), 4), "duree_emission": round(rel(sf) - rel(ff), 4),
+                  "rate": 40, "ancre": {"chemin": chem}, "texture": "flamme_aura",
+                  "flipbook": {"grille": 4, "mode": "Loop", "fps": 24, "depart_aleatoire": True},
+                  "lifetime": [0.2, 0.35], "speed": [1.0, 3.0], "spread": [180, 180], "drag": 2.5, "accel": [0, 6, 0],
+                  "size": [[0, 1.2], [0.35, 2.4], [1, 0.5]], "transparency": [[0, 0.3], [0.25, 0.05], [1, 1]],
+                  "color": [[0, "#fff4c8"], [0.45, "#ffb02e"], [1, "#ff4d12"]], "light_emission": 1,
+                  "rotation": [-25, 25], "rotspeed": [-40, 40], "zoffset": 0.3})
         c += R.jaillissement_dessine("feu", t0=round(rel(236), 4), pos=v3(F0 - [0, 1.0, 0]), echelle=1.3, suffixe="_poing")
         # RAYONS de lumière qui tombent du ciel sur lui (Goku 656d965b : les
         # rayons dans les nuages pendant l'invocation tenue)
@@ -434,10 +480,14 @@ def studio(sc, studio_fn):
         sons = [{"son": "rugissement", "t0": round(rel(630), 4), "volume": 1.0, "hauteur": 0.8}]
         return c, sons
     studio_fn(imf, "dragon_remonte", remonte)
-    lx, lz = 0.4, float(G[2]) + 4.0
+    lx, lz = 0.4, float(G[2]) + 7.5
     def atterrissage(tc, rel):
         c, _sons = R.impact_palier([lx, 0.2, lz], [0, -1, 0], tier=1, t0=tc, echelle=1.3)
         return c, [{"son": "impact_lourd", "t0": tc, "volume": 0.6, "hauteur": 1.2, "impact": True}]
-    studio_fn(587, "atterrissage", atterrissage)
-    studio_fn(600, "calme", lambda tc, rel: ([], [{"son": "vent_ambiant", "t0": 0.0, "volume": 0.35}]))
+    studio_fn(604, "atterrissage", atterrissage)
+    # (1er essai : 1,5 s de silence TOTAL à la fin) -> le vent tient jusqu'au bout
+    studio_fn(600, "calme", lambda tc, rel: ([], [{"son": "vent_ambiant", "t0": 0.0, "volume": 0.35},
+                                                   {"son": "vent_ambiant", "t0": round(rel(690), 4), "volume": 0.35, "hauteur": 0.92},
+                                                   {"son": "grondement", "t0": round(rel(740), 4), "volume": 0.25, "hauteur": 0.6},
+                                                   {"son": "vent_ambiant", "t0": round(rel(770), 4), "volume": 0.3, "hauteur": 0.85}]))
 

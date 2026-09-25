@@ -77,15 +77,15 @@
   102,
   108
  ],
- "aller_retour_max": 4.784275514960799e-15,
+ "aller_retour_max": 4.2261452805446086e-15,
  "cles": {
-  "attaquant": 274,
+  "attaquant": 270,
   "victime": 174,
   "frames": 831
  },
  "ecart_max_reduction_studs": 0.5548,
  "taille_fichiers_ko": [
-  1756,
+  1731,
   1119
  ],
  "ecart_poing_victime_strike": 4.642,

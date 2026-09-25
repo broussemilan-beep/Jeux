@@ -573,13 +573,18 @@ function VFXStudio.jouer(rec, repere, opts)
 		table.insert(miseAJour, function(t)
 			local a = (t - L.t0) / L.duree
 			local actif = a >= 0 and a <= 1
-			part.Transparency = if actif then 0 else 1
-			contour.Enabled = actif
-			if not actif then
-				return
-			end
+			-- partie visible et fondu global comme l'aperçu (moteur.js) : le
+			-- modèle disparaît quand [tete_visible, queue_visible] est vide
 			local s0 = if L.tete_visible then seq(L.tete_visible, a) else 0
 			local s1 = if L.queue_visible then seq(L.queue_visible, a) else 1
+			local glob = 1 - math.clamp(seq(L.transparency or 0, a), 0, 1)
+			local vis = actif and s1 - s0 > 0.01 and glob > 0
+			part.Transparency = if vis then 1 - glob else 1
+			contour.Enabled = vis
+			contour.OutlineTransparency = 1 - glob
+			if not vis then
+				return
+			end
 			local R = reperes(forme(t))
 			for _, o in ipairs(os_) do
 				local sN = math.clamp(o.s, s0, math.max(s0, s1))

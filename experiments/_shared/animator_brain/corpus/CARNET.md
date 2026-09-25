@@ -652,6 +652,30 @@ Rétro-test : la vidéo v12 échoue aux 4 critères (effet au pic 0,33 contre
 0,70 ; plein écran 0 contre 0,66 s ; conséquence 0 contre 3,4 s), ce qui
 colle au 4/10 de Milan ; le juge l'aurait arrêtée avant de la montrer.
 
+**4b.26 Relire SA scène comme un spectateur, plan par plan, sans Milan**
+(« revois, il y a des problèmes, je veux voir si tu vois sans moi »,
+v13). Le juge (4b.25) passait, les tests passaient : dix défauts restaient,
+tous visibles en regardant chaque plan en entier à 0,1 s en se demandant
+« qu'est-ce que le spectateur COMPREND ici ? » :
+- un modèle qu'on déplace par un OS se place par son os ; si le bout qui
+  compte (le museau) est 6 studs devant, c'est ce bout-là qu'il faut
+  amener au contact (la tête de 11 studs posée sur l'attaquant 14 images) ;
+- une chose qui disparaît doit disparaître DERRIÈRE quelque chose (éclat,
+  flash) sinon elle « pope » (la victime avalée, le dragon dans le poing) ;
+- un personnage en l'air, filmé en plongée avec le sol derrière, se lit
+  « couché par terre » : contre-plongée, le ciel derrière lui ;
+- une caméra « sur » la scène qui ne suit pas ce qui bouge = un plan vide
+  (le dragon sort du cadre en 0,5 s) ; le dernier plan doit montrer les
+  deux personnages ;
+- 1,5 s de silence à la fin lit « c'est cassé », pas « c'est fini » ;
+- ce que l'aperçu fait, Roblox doit le faire : le dragon 3D ignorait sa
+  transparence dans VFXStudio.luau (opaque en jeu quand il devait
+  disparaître) ; un test le garde maintenant.
+- une correction n'est faite que si la planche AVANT/APRÈS aux mêmes
+  images la montre : deux des miennes (caméra de l'invocation, tête au
+  plan du regard) donnaient des images quasi identiques ; la vraie cause
+  était le chemin du dragon (devant lui, côté caméra), pas la caméra.
+
 ## 5. Pistes à essayer (classées, aucune n'est décidée)
 
 1. **Rafale : ré-armement lent, frappe rapide, clés espacées** (2.1,

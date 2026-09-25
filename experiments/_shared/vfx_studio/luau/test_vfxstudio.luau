@@ -438,6 +438,21 @@ if DATA.recettes.dragon_aura_demo then
 	ok(e1 < 1e-5 and e2 < 1e-5, string.format("dragon 3D : charnière de la mâchoire sur la tête (écart %.1e)", math.max(e1, e2)))
 	ok(math.abs(ang1 - (58 - L.machoire_repos)) < 0.05 and math.abs(ang2 - (4 - L.machoire_repos)) < 0.05,
 		string.format("dragon 3D : la gueule s'ouvre (%.1f°) puis claque (%.1f°), repos %.0f°", ang1, ang2, L.machoire_repos))
+	-- fondu global et partie visible vide : le modèle disparaît, comme dans
+	-- l'aperçu (revue v13 : Roblox l'ignorait, le dragon restait opaque)
+	local hl = clone:FindFirstChildWhichIsA("Highlight")
+	local ancienT, ancienTV = L.transparency, L.tete_visible
+	L.transparency = { { 0, 1 }, { 1, 1 } }
+	h._etape(0.5 * L.duree)
+	local cache1 = clone.Transparency == 1 and not hl.Enabled
+	L.transparency = { { 0, 0.4 }, { 1, 0.4 } }
+	h._etape(0.5 * L.duree)
+	local demi = math.abs(clone.Transparency - 0.4) < 1e-6 and hl.Enabled
+	L.transparency, L.tete_visible = nil, { { 0, 0.999 }, { 1, 0.999 } }
+	h._etape(0.5 * L.duree)
+	local cache2 = clone.Transparency == 1 and not hl.Enabled
+	L.transparency, L.tete_visible = ancienT, ancienTV
+	ok(cache1 and demi and cache2, "dragon 3D : fondu et partie visible vide respectés (caché / semi / caché)")
 	h.Annuler()
 	VFXStudio.configurer({ modeles = {} })
 end

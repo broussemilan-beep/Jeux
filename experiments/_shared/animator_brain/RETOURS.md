@@ -658,3 +658,32 @@ cerveau, voir la fin de l'entrée.
     défauts sautent aux yeux en gros plan, et le gros plan du rugissement
     est justement un plan de la scène. Regarder chaque élément dans le plan
     le PLUS serré où il apparaît.
+
+- **2026-09-25, v13 -> « Revois, il y a des problèmes, je veux voir si tu
+  vois sans moi » (Milan)**. Revue plan par plan à 0,1 s, sans indication.
+  Trouvés et corrigés :
+  1. invocation : à la naissance la tête montait DEVANT lui (côté caméra)
+     et le couvrait ; elle monte maintenant derrière lui et plus vite (il
+     reste ~0,2 s de crinière sur lui : l'éclosion, gardée) ;
+  2. plan du regard : la tête du dragon sur la tête de l'attaquant ;
+  3. fusion : le dragon remplissait le cadre, ni l'attaquant ni le poing ;
+  4. la transformation du coup en dragon ne se voyait pas (l'os de tête
+     rentrait au poing, le museau restait 6 studs devant, sur lui) ;
+  5. morsure : la victime (en l'air) semblait couchée par terre (plongée) ;
+  6. la victime disparaissait d'un coup à la morsure (pas de flash) ;
+  7. l'attaquant atterrissait DANS la colonne de feu du dragon ;
+  8. dernier plan : la victime cachée ;
+  9. 1,5 s de silence à la fin ;
+  10. en jeu (Luau), le dragon ignorait sa transparence : il ne pouvait pas
+      disparaître ;
+  11. plan très large de l'invocation : l'attaquant coupé à la taille par
+      le bas du cadre ;
+  12. conséquence : l'attaquant qui atterrit coupé à mi-corps.
+  Honnêteté : la 1re planche avant/après a montré que mes corrections 1 et 2
+  ne se voyaient PAS (images quasi identiques) ; refaites ensuite. Une
+  correction n'existe que si la planche avant/après la montre.
+  Pas corrigés (dits) : la silhouette du dragon dans la planche « soleil »
+  n'est pas notre modèle ; la conséquence reste sombre.
+  Apprentissages : CARNET 4b.26. Planche avant/après :
+  `captures/verification/2026-09-25-v13c-revue-sans-milan-avant-apres.png`.
+
