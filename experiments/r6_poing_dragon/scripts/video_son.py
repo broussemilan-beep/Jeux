@@ -64,6 +64,8 @@ def main(sortie, cam="cinema", fps=30, f_de=None, f_a=None):
     k0 = int(round(t_de * fps))
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-framerate", str(fps), "-start_number", str(k0),
                     "-i", os.path.join(d, "f%04d.png"), "-i", wav,
+                    # libx264 exige des dimensions paires (capture 870x491 refusée)
+                    "-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2",
                     "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", "-c:a", "aac", "-b:a", "160k", "-shortest", sortie],
                    check=True)
     print(sortie, round(duree, 2), "s")
