@@ -419,6 +419,57 @@ if DATA.recettes.dragon_aura_demo then
 	VFXStudio.configurer({ modeles = {} })
 end
 
+-- 6 bis. VFX DESSINÉS : mesh animé « en 2 » (cadence 12) et suite d'images
+-- (érosion du trait). La pose ne bouge qu'aux pas de 1/12 s ; l'image suit
+-- le même calcul que l'aperçu (images_de, puis réparties).
+do
+	local rec = DATA.recettes.dessin_tornade
+	if rec then
+		local L
+		for _, c in ipairs(rec.couches) do
+			if c.nom == "spirale_0" then
+				L = c
+			end
+		end
+		local tex = {}
+		for k = 0, 7 do
+			tex["trait_feu_e" .. k] = "rbxassetid://10" .. k
+		end
+		VFXStudio.configurer({ textures = tex })
+		local h = VFXStudio.jouer(rec, CFrame.new(0, 0, 0), { manuel = true })
+		local function porte()
+			return trouver(h.Dossier, "M_spirale_0")
+		end
+		-- deux instants dans le même pas de 1/12 s : même CFrame
+		local t1 = L.t0 + 2 / 12 + 0.01
+		h._etape(t1)
+		local cf1 = porte().CFrame
+		h._etape(t1 + 0.05)
+		local cf2 = porte().CFrame
+		ok((cf1.Position - cf2.Position).Magnitude < 1e-9 and cf1.LookVector:Dot(cf2.LookVector) > 1 - 1e-9,
+			"dessiné : pose tenue pendant un pas de cadence (12 i/s)")
+		h._etape(t1 + 1 / 12)
+		ok(porte().CFrame.LookVector:Dot(cf2.LookVector) < 1 - 1e-6, "dessiné : la pose saute au pas suivant")
+		-- image : au début la 1re, à la fin la dernière
+		local sm = porte():FindFirstChildWhichIsA("SpecialMesh")
+		ok(sm.TextureId == "rbxassetid://100", "dessiné : 1re image du trait au début")
+		local function imageA(a)
+			local n, de = #L.images, L.images_de or 0
+			if a < de then
+				return 0
+			end
+			return math.min(n - 1, math.floor((a - de) / (1 - de) * n))
+		end
+		local tFin = L.t0 + L.duree * 0.999
+		h._etape(tFin)
+		local tq = L.t0 + math.floor((tFin - L.t0) * L.cadence + 1e-6) / L.cadence
+		local k = imageA((tq - L.t0) / L.duree)
+		ok(sm.TextureId == "rbxassetid://10" .. k, string.format("dessiné : image d'érosion %d en fin de trait (%s)", k, sm.TextureId))
+		h.Annuler()
+		VFXStudio.configurer({ textures = {} })
+	end
+end
+
 -- 7. Annuler au milieu (technique interrompue)
 do
 	local rec = DATA.recettes.orbe_impact

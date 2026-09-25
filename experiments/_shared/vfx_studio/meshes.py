@@ -123,7 +123,49 @@ def tore(nu=64, nv=10, r_tube=0.04):
     return surface(f, nu, nv)
 
 
+def ruban_spirale(nu=64, nv=2, tours=0.8, largeur=0.2):
+    """Ruban en SPIRALE montante (tornade dessinée, 0f85f7a1) : bande de
+    largeur constante ; la forme du trait vient de la texture (dessins.py).
+    U = le long de la spirale (0 = queue en bas, 1 = tête en haut), V = en
+    travers (vertical). Rayon 0,45 -> 1, hauteur 0 -> 1."""
+    def f(u, v):
+        a = 2 * math.pi * tours * u
+        r = 0.45 + 0.55 * u
+        return (r * math.cos(a), 0.9 * u + (v - 0.5) * largeur, r * math.sin(a))
+    return surface(f, nu, nv)
+
+
+def arc_trait(nu=64, nv=2, ouverture=300.0, largeur=0.36):
+    """Arc plat de largeur CONSTANTE (coup de pinceau circulaire) : la forme
+    effilée vient de la texture ; U = le long de l'arc, V = en travers."""
+    def f(u, v):
+        a = math.radians(-ouverture / 2 + ouverture * u)
+        r = 1.0 + (v - 0.5) * largeur
+        return (r * math.sin(a), 0.0, r * math.cos(a))
+    return surface(f, nu, nv)
+
+
+def lame_plate(nu=16, nv=2, courbure=0.35):
+    """Lame / langue de flamme : DEUX bandes croisées en X (hauteur 1,
+    largeur 0,5), qui se courbent vers +Z en montant ; U = hauteur (0 =
+    base), V = en travers. Croisées : vue de profil, une bande seule devient
+    un fil (1er rendu de la tornade) ; deux plans à 90° gardent de la
+    largeur sous tous les angles (quads croisés, technique VFX classique)."""
+    def f1(u, v):
+        return ((v - 0.5) * 0.5, u, courbure * u * u)
+
+    def f2(u, v):
+        return (0.0, u, courbure * u * u + (v - 0.5) * 0.5)
+    a, b = surface(f1, nu, nv), surface(f2, nu, nv)
+    k = len(a["positions"])
+    return {"positions": np.vstack([a["positions"], b["positions"]]), "normales": np.vstack([a["normales"], b["normales"]]),
+            "uv": np.vstack([a["uv"], b["uv"]]), "indices": a["indices"] + [i + k for i in b["indices"]]}
+
+
 MESHES = {
+    "ruban_spirale": (ruban_spirale, "trait dessiné en spirale (tornade)"),
+    "arc_trait": (arc_trait, "trait dessiné en arc (slash, croissant de vent)"),
+    "lame_plate": (lame_plate, "lame / langue de flamme dessinée (jaillissement, couronne)"),
     "dome": (dome, "onde de choc en coupole, bouclier"),
     "sphere": (sphere, "orbe, soleil, cœur d'impact"),
     "anneau_plat": (anneau_plat, "onde au sol qui s'élargit"),

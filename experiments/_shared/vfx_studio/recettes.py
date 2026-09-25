@@ -484,9 +484,137 @@ def dragon_plongee():
     return r
 
 
+# ====================================================== VFX DESSINÉS
+# Idée de Milan (2026-09-25) : les VFX qui complètent les animations ont
+# l'air DESSINÉS parce qu'ils passent par des meshes 3D. Forme = mesh simple
+# (meshes.py : ruban_spirale, arc_trait, lame_plate) ; dessin = texture
+# peinte à bord net (dessins.py) ; animé « en 2 » (cadence 12) ; le trait
+# s'ÉRODE image par image (images). Réfs : 0f85f7a1 (tornade de feu),
+# 8005ceb1 (jaillissements bleu / orange, griffures noires).
+# Les aplats sont en mélange NORMAL (light_emission 0) : en additif, les
+# couches orange et jaune qui se recouvrent saturaient au BLANC et le dessin
+# disparaissait (1er rendu) ; seule la lueur (halo) est additive.
+CADENCE_DESSIN = 12
+
+
+def _images(nom, pal):
+    import dessins
+    return dessins.images(nom, pal)
+
+
+def tornade_dessinee(pal="feu", t0=0.0, pos=(0, 0, 0), echelle=1.0):
+    """Tornade / couronne de feu dessinée (0f85f7a1) : 4 traits en spirale
+    qui tournent en saccades (12 i/s) et s'érodent depuis la queue, une
+    couronne de 7 langues pointues qui jaillissent, un arc au sol, une lueur,
+    des étincelles."""
+    import math
+    s = echelle
+    anc = {"pos": list(pos)}
+    chaud = "#ffb02e" if pal == "feu" else "#46aaff"
+    c = []
+    # 4 traits DIFFÉRENTS (1er rendu : 4 spirales identiques = un ressort) :
+    # rayon, hauteur, penchement et vitesse varient ; deux tournent en sens
+    # inverse
+    variantes = [(1.0, 1.0, (0, 0, 0), 520), (0.75, 1.25, (8, 0, -6), 600), (1.2, 0.8, (-10, 0, 5), -440),
+                 (0.9, 1.1, (5, 0, 10), 480)]
+    for i, (kr, kh, incl, vit) in enumerate(variantes):
+        c.append({"type": "mesh", "nom": f"spirale_{i}", "t0": t0 + 0.03 * i, "duree": 0.75, "ancre": anc,
+                  "mesh": "ruban_spirale", "images": _images("trait", pal), "images_de": 0.35,
+                  "cadence": CADENCE_DESSIN, "rotation": 90 * i + 20 * (i % 2), "rotation_vitesse": vit,
+                  "inclinaison": list(incl),
+                  "echelle": [[0, [0.5 * s * kr, 0.25 * s * kh, 0.5 * s * kr]],
+                              [0.22, [2.0 * s * kr, 2.3 * s * kh, 2.0 * s * kr]],
+                              [1, [2.6 * s * kr, 3.0 * s * kh, 2.6 * s * kr]]],
+                  "transparency": [[0, 0], [0.9, 0], [1, 1]], "color": "#ffffff", "light_emission": 0,
+                  "zoffset": 1})
+    for i in range(7):
+        a = 2 * math.pi * i / 7 + 0.3
+        r = 0.8 * s
+        h = (2.6 if i % 2 == 0 else 1.9) * s
+        c.append({"type": "mesh", "nom": f"langue_{i}", "t0": t0 + 0.05 + 0.025 * (i % 3), "duree": 0.6, "ancre": anc,
+                  "mesh": "lame_plate", "images": _images("lame", pal), "images_de": 0.45,
+                  "cadence": CADENCE_DESSIN, "decalage": [r * math.cos(a), 0, r * math.sin(a)],
+                  "rotation": 90 - math.degrees(a),
+                  "echelle": [[0, [0.5 * s, 0.1, 0.5 * s]], [0.2, [2.3 * s, h, 2.3 * s]], [1, [2.4 * s, h * 1.15, 2.4 * s]]],
+                  "transparency": [[0, 0], [1, 0]], "color": "#ffffff", "light_emission": 0, "zoffset": 1})
+    c.append({"type": "mesh", "nom": "arc_sol", "t0": t0, "duree": 0.55, "ancre": anc, "mesh": "arc_trait",
+              "images": _images("trait", pal), "images_de": 0.3, "cadence": CADENCE_DESSIN, "rotation_vitesse": -380,
+              "echelle": [[0, 0.6 * s], [0.25, 2.2 * s], [1, 2.8 * s]], "decalage": [0, 0.08, 0],
+              "transparency": [[0, 0], [1, 0]], "color": "#ffffff", "light_emission": 0})
+    c.append({"type": "particules", "nom": "lueur", "t0": t0, "ancre": {"pos": [pos[0], pos[1] + 1.2 * s, pos[2]]},
+              "texture": "halo", "emit": 1, "lifetime": [0.8, 0.8], "speed": [0, 0], "size": [[0, 5 * s], [1, 6 * s]],
+              "transparency": [[0, 0.8], [0.12, 0.25], [1, 1]], "color": chaud, "light_emission": 1, "zoffset": 2})
+    c.append({"type": "particules", "nom": "etincelles", "t0": t0 + 0.05, "ancre": {"pos": [pos[0], pos[1] + 0.5 * s, pos[2]]},
+              "texture": "eclat", "emit": 18, "lifetime": [0.3, 0.55], "speed": [14 * s, 26 * s], "spread": [50, 50],
+              "drag": 4, "orientation": "VelocityParallel", "size": [[0, 0.9 * s, 0.3 * s], [1, 0.1]],
+              "transparency": [[0, 0], [1, 1]], "color": [[0, "#ffffff"], [1, chaud]], "light_emission": 1})
+    return c
+
+
+def jaillissement_dessine(pal="feu", t0=0.0, pos=(0, 0, 0), echelle=1.0, suffixe=""):
+    """Jaillissement dessiné (8005ceb1) : lames en éventail qui sortent du sol
+    en 2 images, arc blanc incandescent, GRIFFURES D'ENCRE noires plantées
+    dans l'effet, étincelles en diagonale, lueur."""
+    import math
+    s = echelle
+    anc = {"pos": list(pos)}
+    chaud = "#ffb02e" if pal == "feu" else "#46aaff"
+    c = []
+    for i in range(9):
+        a = math.radians(-70 + 140 * i / 8)
+        h = (1.6 + 1.6 * math.cos(a) ** 2 + 0.4 * ((i * 7) % 3)) * s
+        c.append({"type": "mesh", "nom": f"lame_{i}", "t0": t0 + 0.02 * (i % 4), "duree": 0.55, "ancre": anc,
+                  "mesh": "lame_plate", "images": _images("lame", pal), "images_de": 0.4, "cadence": CADENCE_DESSIN,
+                  "decalage": [0.5 * s * math.sin(a), 0, 0.2 * s * math.cos(a)], "rotation": math.degrees(a) * 0.9,
+                  "echelle": [[0, [0.6 * s, 0.2, 0.6 * s]], [0.15, [2.4 * s, h, 2.4 * s]], [1, [2.5 * s, h * 1.1, 2.5 * s]]],
+                  "transparency": [[0, 0], [1, 0]], "color": "#ffffff", "light_emission": 0, "zoffset": 1})
+    c.append({"type": "mesh", "nom": "arc_blanc", "t0": t0, "duree": 0.4, "ancre": anc, "mesh": "arc_trait",
+              "images": _images("trait", None), "images_de": 0.25, "cadence": CADENCE_DESSIN,
+              "inclinaison": [90, 0, 0], "rotation": 0, "decalage": [0, 0.9 * s, 0.3 * s],
+              "echelle": [[0, 0.5 * s], [0.25, 1.9 * s], [1, 2.3 * s]],
+              "transparency": [[0, 0], [1, 0]], "color": "#ffffff", "light_emission": 0, "zoffset": 2})
+    c.append({"type": "particules", "nom": "griffures", "t0": t0 + 0.03, "ancre": {"pos": [pos[0], pos[1] + 1.2 * s, pos[2]]},
+              "texture": "griffure", "emit": 2, "lifetime": [0.3, 0.45], "speed": [0.5, 1.5], "spread": [60, 60],
+              "size": [[0, 1.5 * s], [1, 1.8 * s]], "rotation": [-40, 40], "transparency": [[0, 0.1], [0.6, 0.2], [1, 1]],
+              "color": "#ffffff", "light_emission": 0, "zoffset": 0})
+    # (1er rendu : griffures de 3 studs devant tout = de grosses taches noires
+    #  qui cachaient l'effet ; dans la réf ce sont des traits fins PARMI les
+    #  lames)
+    c.append({"type": "particules", "nom": "etincelles", "t0": t0 + 0.02, "ancre": {"pos": [pos[0], pos[1] + 0.6 * s, pos[2]]},
+              "texture": "eclat", "emit": 22, "lifetime": [0.25, 0.5], "speed": [18 * s, 34 * s], "spread": [70, 70],
+              "drag": 5, "orientation": "VelocityParallel", "size": [[0, 1.1 * s, 0.3 * s], [1, 0.1]],
+              "transparency": [[0, 0], [1, 1]], "color": [[0, "#ffffff"], [1, chaud]], "light_emission": 1})
+    c.append({"type": "particules", "nom": "lueur", "t0": t0, "ancre": {"pos": [pos[0], pos[1] + 1.2 * s, pos[2]]},
+              "texture": "halo", "emit": 1, "lifetime": [0.7, 0.7], "speed": [0, 0], "size": [[0, 4.5 * s], [1, 5.5 * s]],
+              "transparency": [[0, 0.9], [0.12, 0.4], [1, 1]], "color": chaud, "light_emission": 1, "zoffset": 2})
+    for L in c:
+        L["nom"] += suffixe
+    return c
+
+
+CAM_DESSIN = {"large": {"oeil": [0, 3.2, 9.5], "cible": [0, 1.6, 0], "fov": 50},
+              "proche": {"oeil": [3.5, 2.2, 5.5], "cible": [0, 1.4, 0], "fov": 50},
+              "jeu": {"oeil": [1.75, 4.8, 9.5], "cible": [1.75, 1.5, -4], "fov": 70}}
+
+
+def dessin_tornade():
+    r = recette("dessin_tornade", tornade_dessinee("feu"), titre="Dessiné : tornade de feu (réf. 0f85f7a1)")
+    r["cameras"] = CAM_DESSIN
+    return r
+
+
+def dessin_jaillissements():
+    c = (jaillissement_dessine("bleu", pos=(-2.2, 0, 0), suffixe="_bleu")
+         + jaillissement_dessine("feu", t0=0.1, pos=(2.2, 0, 0), suffixe="_feu"))
+    r = recette("dessin_jaillissements", c, titre="Dessiné : jaillissements bleu / orange (réf. 8005ceb1)")
+    r["cameras"] = CAM_DESSIN
+    return r
+
+
 RECETTES = {"orbe_impact": orbe_impact, "impact_m1": impact_m1,
             "dragon_impact_aerien": dragon_impact_aerien, "dragon_plongee": dragon_plongee,
-            "dragon_aura_demo": dragon_aura_demo}
+            "dragon_aura_demo": dragon_aura_demo, "dessin_tornade": dessin_tornade,
+            "dessin_jaillissements": dessin_jaillissements}
 
 
 def toutes():

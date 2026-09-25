@@ -377,6 +377,13 @@
   }
 
   // ======================================================== couche MESH
+  // image d'une suite `images` : la 1re jusqu'à `images_de` (fraction de la
+  // durée), puis réparties sur le reste (même calcul côté Roblox)
+  function imageMesh(L, a) {
+    const n = L.images.length, de = L.images_de || 0;
+    if (a < de) return 0;
+    return Math.min(n - 1, Math.floor(((a - de) / Math.max(1e-6, 1 - de)) * n));
+  }
   function MeshCouche(L, anchors) {
     const mat = new T.ShaderMaterial({
       uniforms: { map: { value: TEX[L.texture] || null }, has: { value: TEX[L.texture] ? 1 : 0 },
@@ -393,9 +400,16 @@
     return {
       obj: m,
       update(t) {
+        // cadence (i/s) : animé « en 2 » comme un dessin animé (12 i/s) :
+        // l'effet saute d'une pose à l'autre au lieu de glisser (VFX dessinés)
+        if (L.cadence) t = L.t0 + Math.floor((t - L.t0) * L.cadence + 1e-6) / L.cadence;
         const a = (t - L.t0) / L.duree;
         if (a < 0 || a > 1) { m.visible = false; return 0; }
         m.visible = true;
+        if (L.images) {                        // suite d'images (érosion du trait) : Roblox change TextureId
+          const tx = TEX[L.images[imageMesh(L, a)]];
+          mat.uniforms.map.value = tx || null; mat.uniforms.has.value = tx ? 1 : 0;
+        }
         const anc = anchors.resolve(L.ancre, t);
         m.position.copy(anc.pos).add(new T.Vector3().fromArray(L.decalage || [0, 0, 0]));
         // orientation : "sol" (Y monde), "coup" (Y = sens du coup), "direction" (Y = dir de l'ancre)

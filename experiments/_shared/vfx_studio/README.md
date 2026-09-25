@@ -51,3 +51,23 @@ Conception : `../animator_brain/corpus/fiches/VFX.md` et
 - L'anneau au sol faisait une assiette opaque.
 
 Preuve : `captures/verification/2026-09-25-studio-vfx-v1-formes-orbe-impact-m1.png`.
+
+
+## VFX dessinés (2026-09-25)
+
+Idée de Milan : les VFX qui complètent les animations « ont l'air
+dessinés » parce qu'ils passent par des meshes 3D. Dans le studio :
+- `dessins.py` : textures peintes à bord net, en séries de 8 images qui
+  s'érodent (`trait`, `lame`, en gris à teinter ou peintes `feu` / `bleu`),
+  et encre noire (`griffure`, `veines`) ;
+- `meshes.py` : `ruban_spirale`, `arc_trait`, `lame_plate` (deux plans en
+  X) : la forme du trait vient de la texture ;
+- couche mesh : `cadence` (i/s, « en 2 » = 12 : la pose saute d'un pas à
+  l'autre) et `images` + `images_de` (la texture change image par image ;
+  Roblox : TextureId) ; même calcul dans l'aperçu et dans VFXStudio.luau
+  (banc : 4 contrôles « dessiné ») ;
+- recettes `dessin_tornade` (réf. 0f85f7a1) et `dessin_jaillissements`
+  (réf. 8005ceb1).
+Limite connue : dans Roblox, une texture changée pour la 1re fois peut
+clignoter le temps de se charger : précharger les images (ContentProvider)
+avant la technique.

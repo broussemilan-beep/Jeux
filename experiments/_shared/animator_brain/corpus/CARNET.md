@@ -588,6 +588,24 @@ scie, lames, langues pointues ; mouvement dessiné (croissants en spirale,
 traits de vitesse). Nos effets : feu en taches arrondies, pas de noir
 dedans, peu de blanc.
 
+**4b.20 Un VFX « dessiné » passe par un MESH : forme simple + dessin peint
++ animé en 2** (idée de Milan, 2026-09-25 : « on dirait c'est dessiné,
+sûrement parce que ça passe par des meshes 3D » ; confirmé par ses refs et
+essayé dans le studio : `vfx_studio/dessins.py`, recettes `dessin_tornade`,
+`dessin_jaillissements`, captures `2026-09-25-vfx-dessines-*`).
+- La FORME vient d'un mesh simple (ruban en spirale, arc, lame) ; le
+  DESSIN vient d'une texture peinte à bord net (aplats, cœur blanc, bord
+  sombre) ; l'anime vient de la cadence « en 2 » (12 i/s : la pose saute)
+  et d'une suite d'images où le trait s'ÉRODE depuis la queue.
+- Essais vus et corrigés : en mélange ADDITIF, les aplats qui se
+  recouvrent saturaient au BLANC (le dessin disparaissait) -> aplats en
+  mélange normal, seule la lueur est additive ; une texture grise TEINTÉE
+  perd son cœur blanc -> versions peintes (le blanc reste blanc) ; une
+  lame plate vue de profil devient un fil -> deux plans croisés en X ;
+  quatre spirales identiques = un ressort -> rayons, penchements, vitesses
+  et sens différents ; griffures d'encre de 3 studs devant tout = des
+  taches -> fines, parmi les lames.
+
 ## 5. Pistes à essayer (classées, aucune n'est décidée)
 
 1. **Rafale : ré-armement lent, frappe rapide, clés espacées** (2.1,

@@ -354,7 +354,8 @@ def main(sortie=None):
     os.makedirs(sortie, exist_ok=True)
     catalogue = []
     import peints  # textures peintes (dragon, éclair) : peints.py
-    for nom, (fn, mode, role) in list(FORMES.items()) + list(peints.PEINTS.items()):
+    import dessins  # textures dessinées pour meshes (traits, lames, encre) : dessins.py
+    for nom, (fn, mode, role) in list(FORMES.items()) + list(peints.PEINTS.items()) + list(dessins.DESSINS.items()):
         im = fn()
         im.save(os.path.join(sortie, f"{nom}.png"))
         catalogue.append({"nom": nom, "fichier": f"{nom}.png", "grille": "Static", "resolution": max(im.size), "mode": mode,

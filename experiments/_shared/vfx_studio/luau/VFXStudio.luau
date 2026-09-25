@@ -336,6 +336,10 @@ function VFXStudio.jouer(rec, repere, opts)
 		end
 		sm.Parent = p
 		table.insert(miseAJour, function(t)
+			if L.cadence then
+				-- animé « en 2 » (12 i/s) comme un dessin animé ; même calcul que l'aperçu
+				t = L.t0 + math.floor((t - L.t0) * L.cadence + 1e-6) / L.cadence
+			end
 			local a = (t - L.t0) / L.duree
 			if a < 0 or a > 1 then
 				p.Transparency = 1
@@ -356,7 +360,16 @@ function VFXStudio.jouer(rec, repere, opts)
 			local c = colAt(L.color, a)
 			local br = L.brightness or 1
 			sm.VertexColor = Vector3.new(c[1] * br, c[2] * br, c[3] * br)
-			if L.texture then
+			if L.images then
+				-- suite d'images (érosion du trait dessiné) : on change TextureId,
+				-- comme les flipbooks de meshes (Pew, DevForum partie 3)
+				local n, de = #L.images, L.images_de or 0
+				local k = 0
+				if a >= de then
+					k = math.min(n - 1, math.floor((a - de) / math.max(1e-6, 1 - de) * n))
+				end
+				sm.TextureId = texture(L.images[k + 1])
+			elseif L.texture then
 				-- défilement en U quantifié sur les `nv` variantes décalées de la
 				-- texture (formes.py) ; l'aperçu quantifie pareil. Le défilement
 				-- en V n'est pas reproduit (critique.py le signale).
