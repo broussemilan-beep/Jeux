@@ -882,3 +882,27 @@ Porte franchie (v12 : 0 critère sur 4). Bandes à 0,1 s :
 Vu à la bande et corrigé avant de livrer : 2 s de plan vide et sombre dans
 la conséquence (le dragon sortait du cadre) -> il s'envole en grand arc
 visible, puis plan moyen sur les deux corps.
+
+### v13c (2026-09-25) : revue sans Milan + planches dessinées
+
+**Revue sans indication** (« revois, il y a des problèmes, je veux voir si
+tu vois sans moi ») : douze défauts trouvés plan par plan et corrigés,
+liste dans `../_shared/animator_brain/RETOURS.md`. Les principaux : à la
+fusion, c'est le MUSEAU (6 studs devant l'os) qui touche le poing, éclat
+d'or, le dragon s'engouffre, le poing garde le feu ; la tête naît derrière
+l'attaquant, pas devant ; victime en contre-plongée (ciel derrière) ; flash
+quand elle est avalée ; atterrissage à côté de la colonne de feu ; dernier
+plan de côté ; cadrages qui coupaient l'attaquant ; en Luau le dragon 3D
+ignorait sa transparence. Avant/après :
+`../../captures/verification/2026-09-25-v13c-revue-sans-milan-avant-apres.png`.
+
+**Planches plein écran redessinées** (Milan : tourbillon et rouge « trop
+peinture, pas dessiné », soleil « bonne idée, à faire beaucoup mieux ») :
+formes tracées (lames effilées cernées, traits du feu, lignes de vitesse),
+silhouette du soleil = notre modèle (`dragon_silhouette_demo`) ; le
+tourbillon est carré. Fiche : `../_shared/animator_brain/corpus/fiches/PLEIN_ECRAN.md` ;
+avant/après : `../../captures/verification/2026-09-25-v13c-planches-dessinees-avant-apres.png`.
+Refaire : `python3 scripts/build_planches.py <rendu_gueule.png> <rendu_silhouette.png>`.
+Roblox : réimporter `output/planches/spirale_*.png`, `rouge_*.png`,
+`soleil.png` (mêmes noms) dans `DragonFist.CONFIG.PLANCHE_IDS`.
+

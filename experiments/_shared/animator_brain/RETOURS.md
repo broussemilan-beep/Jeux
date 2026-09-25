@@ -687,3 +687,22 @@ cerveau, voir la fin de l'entrée.
   Apprentissages : CARNET 4b.26. Planche avant/après :
   `captures/verification/2026-09-25-v13c-revue-sans-milan-avant-apres.png`.
 
+- **2026-09-25, v13 (lecteur, plein écran) -> les planches (Milan, 3
+  captures f453, f513, f548)** : « ces 2 plans [tourbillon, rouge] je les
+  trouve trop PEINTURE, et pas dessiné ; pas obligé de les remplacer à part
+  si tu peux faire mieux. Le 3e [soleil] tu peux faire beaucoup mieux, mais
+  j'aime l'idée, bonne créativité. »
+  - Cause (lue dans `build_planches.py`) : tourbillon et rouge venaient d'un
+    champ de BRUIT lisse coupé en paliers de couleur : des taches aux bords
+    mous. Le soleil : un ruban générique à épines, pas notre dragon.
+  - Refait (fiche `corpus/fiches/PLEIN_ECRAN.md`) : chaque forme TRACÉE
+    (lames effilées en dents de scie, cernées d'encre plus épaisse côté
+    ombre, traits du feu dedans, lignes de vitesse) ; rouge = le dragon a
+    plongé à l'horizon (dôme de langues de feu, lignes qui convergent, sol
+    noir fissuré de lave) ; soleil = silhouette de NOTRE modèle rendu au
+    labo (gueule ouverte, crinière, pattes) avec liseré de contre-jour,
+    rayons en triangles, trame de points. Le tourbillon est carré (le
+    lecteur et Roblox le tournent dans un carré : en 16:9 il était recadré
+    x2, et étiré en jeu).
+  - Avant/après : `captures/verification/2026-09-25-v13c-planches-dessinees-avant-apres.png`.
+

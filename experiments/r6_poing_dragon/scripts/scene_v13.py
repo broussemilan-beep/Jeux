@@ -282,7 +282,9 @@ def planches_sequence():
         {"duree": 0.3, "images": ["gueule_encre"], "echelle": [[0, 1.12], [1, 1.0]], "secousse": 0.018},
         {"duree": 0.2, "images": ["gueule_inverse"], "echelle": [[0, 1.0], [1, 1.04]], "secousse": 0.03},
         {"duree": 0.83, "images": ["spirale_0", "spirale_1", "spirale_2"], "cadence": 12,
-         "rotation": [[0, 0], [1, 150]], "echelle": [[0, 1.25], [1, 1.7]]},
+         # (planches dessinées v13c, carrées : à x1,25-1,7 on ne voyait que le cœur
+         # blanc, délavé) -> x1,0-1,25, les lames de feu restent dans le cadre
+         "rotation": [[0, 0], [1, 150]], "echelle": [[0, 1.0], [1, 1.2]]},
         {"duree": 0.72, "images": ["rouge_0", "rouge_1"], "cadence": 12, "echelle": [[0, 1.0], [1, 1.12]]},
         # (1er essai 0,28 s : 4 images du vrai décor passaient avant le blanc)
         {"duree": 0.4, "images": ["soleil"], "echelle": [[0, 1.02], [1, 1.12]]},

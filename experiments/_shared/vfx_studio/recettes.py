@@ -645,7 +645,30 @@ def dragon_gueule_demo():
     return r
 
 
+
+def dragon_silhouette_demo():
+    """v13c : le dragon qui PLONGE, de profil, sur le ciel seul (pas de sol
+    dans le cadre). Sert de silhouette à la planche « soleil »
+    (build_planches.py, fiches/PLEIN_ECRAN.md §2.3) : c'est NOTRE dragon
+    (crinière, cornes, moustaches, gueule) et pas un ruban générique."""
+    import numpy as np
+    pts = []
+    for u in np.linspace(0, 1, 48):
+        x = -5.5 + 13.0 * u
+        y = 15.5 + 8.0 * u + 2.4 * np.sin(2 * np.pi * u * 1.15)
+        z = 0.6 * np.sin(2 * np.pi * u * 0.8)
+        pts.append([round(float(x), 3), round(float(y) + 4.0, 3), round(float(z), 3)])
+    imgs = [[0.0, pts], [2.0, pts]]
+    L = serpent(imgs, 0.0, 2.0, naissance=0.001, echelle=1.0, tete=False,
+                machoire=[[0, 42], [1, 42]], nom="dragon_silhouette")
+    r = recette("dragon_silhouette_demo", [L], titre="Dragon : silhouette de la planche soleil")
+    r["cameras"] = {"profil": {"oeil": [0.2, 12.0, 30.0], "cible": [0.2, 21.6, 0.0], "fov": 36},
+                    "large": {"oeil": [9, 26, 26], "cible": [0, 23, 0], "fov": 55},
+                    "jeu": {"oeil": [1.75, 26, 30], "cible": [1.75, 23, 0], "fov": 70}}
+    return r
+
 RECETTES = {"orbe_impact": orbe_impact, "impact_m1": impact_m1, "dragon_gueule_demo": dragon_gueule_demo,
+            "dragon_silhouette_demo": dragon_silhouette_demo,
             "dragon_impact_aerien": dragon_impact_aerien, "dragon_plongee": dragon_plongee,
             "dragon_aura_demo": dragon_aura_demo, "dessin_tornade": dessin_tornade,
             "dessin_jaillissements": dessin_jaillissements}

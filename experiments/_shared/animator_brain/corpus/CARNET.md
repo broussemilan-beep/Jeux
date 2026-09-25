@@ -676,6 +676,16 @@ tous visibles en regardant chaque plan en entier à 0,1 s en se demandant
   plan du regard) donnaient des images quasi identiques ; la vraie cause
   était le chemin du dragon (devant lui, côté caméra), pas la caméra.
 
+**4b.27 « Peint » contre « dessiné », c'est la MÉTHODE, pas le nombre de
+tons** (retour de Milan sur les planches v13). Un champ de bruit lisse
+coupé en 5 paliers donne des bords mous et aléatoires : ça se lit comme une
+peinture posterisée, même en aplats nets. Le dessin, c'est des formes
+voulues une à une : une ligne médiane, une largeur qui finit en POINTE, un
+trait qui cerne (plus épais côté ombre), des traits de détail à l'intérieur,
+des lignes de vitesse qui vont quelque part. Et une silhouette « maison »
+(notre modèle rendu) dit plus qu'une forme générique à épines. Vérifier
+aussi comment le lecteur AFFICHE l'image (carré tourné = recadrage x2).
+
 ## 5. Pistes à essayer (classées, aucune n'est décidée)
 
 1. **Rafale : ré-armement lent, frappe rapide, clés espacées** (2.1,

@@ -94,6 +94,12 @@ Demande de Milan : « VFX de qualité dessin, pas du cube ou cartoon » ;
 - **Recette `dragon_gueule_demo`** : le dragon face caméra, gueule
   ouverte ; sert de modèle à la carte manga (`r6_poing_dragon/scripts/
   build_planches.py`).
+- **Recette `dragon_silhouette_demo`** (v13c) : le dragon qui plonge, de
+  profil, sur le ciel seul ; sa silhouette est celle de la planche
+  « soleil ».
+- **Dragon 3D en Luau : fondu et partie visible** (v13c) : `VFXStudio.luau`
+  respecte maintenant `transparency` et `tete_visible`/`queue_visible`
+  comme l'aperçu (il restait opaque en jeu) ; test dans `test_vfxstudio.luau`.
 - **Beams : fondu dans le temps** (`transparency_temps`) désormais joué
   aussi par `VFXStudio.luau` (NumberSequence recalculée à chaque image).
 - **Impacts de rafale** : un trait de pinceau en arc (mesh `arc_trait`,
