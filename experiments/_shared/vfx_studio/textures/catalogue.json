@@ -1,0 +1,115 @@
+{
+ "textures": [
+  {
+   "nom": "croissant",
+   "fichier": "croissant.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "trace d'un coup, coupe, vent (VelocityPerpendicular ou mesh)"
+  },
+  {
+   "nom": "eclat",
+   "fichier": "eclat.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "étincelle acérée orientée (VelocityParallel)"
+  },
+  {
+   "nom": "etoile4",
+   "fichier": "etoile4.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "étoile à 4 branches (flash cel, scintillement)"
+  },
+  {
+   "nom": "anneau",
+   "fichier": "anneau.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "onde de choc en trait fin"
+  },
+  {
+   "nom": "flash",
+   "fichier": "flash.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "éclat de contact 1-2 images"
+  },
+  {
+   "nom": "ligne_vitesse",
+   "fichier": "ligne_vitesse.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "ligne de vitesse effilée"
+  },
+  {
+   "nom": "bruit_energie",
+   "fichier": "bruit_energie.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "texture qui défile (Beam / mesh), raccord"
+  },
+  {
+   "nom": "arc_vent",
+   "fichier": "arc_vent.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "arc de vent strié (air)"
+  },
+  {
+   "nom": "ruban",
+   "fichier": "ruban.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "Trail / Beam / anneau : cœur brillant, bords doux"
+  },
+  {
+   "nom": "halo",
+   "fichier": "halo.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "lueur douce autour d'un point chaud (accompagne une forme nette)"
+  },
+  {
+   "nom": "fumee_cel",
+   "fichier": "fumee_cel_4x4.png",
+   "grille": "Grid4x4",
+   "images": 16,
+   "resolution": 1024,
+   "marge_px": 8,
+   "mode": "à teinter",
+   "role": "bouffée de fumée cel 2 tons, OneShot"
+  },
+  {
+   "nom": "feu_cel",
+   "fichier": "feu_cel_4x4.png",
+   "grille": "Grid4x4",
+   "images": 16,
+   "resolution": 1024,
+   "marge_px": 8,
+   "mode": "peint",
+   "role": "feu cel à contour, OneShot"
+  },
+  {
+   "nom": "flamme_aura",
+   "fichier": "flamme_aura_4x4.png",
+   "grille": "Grid4x4",
+   "images": 16,
+   "resolution": 1024,
+   "marge_px": 8,
+   "mode": "à teinter",
+   "role": "flamme d'aura à pointes, Loop"
+  }
+ ],
+ "rbxassetid": {}
+}
