@@ -29,7 +29,40 @@ import sys
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(HERE, "..", "output")
+OUT = os.environ.get("DRAGON_OUT_DIR") or os.path.join(HERE, "..", "output")
+
+# v8 (2026-09-25, CARNET.md §2.1, §2.1c, §1.5 ; demande de Milan : « travaille
+# bien les poses et placement ») -- réglages de la RAFALE, en variantes :
+# - timing "v8" : ré-armement LENT (retour direct vers l'armé suivant),
+#   armé tenu vivant, frappe en 4 f dont UN intervalle PRÈS DE L'ARMÉ (30 %
+#   du trajet à c-2), segments LINEAR jusqu'au contact (pas d'amorti vers la
+#   pose de frappe : firytwig, Dong Chang, Wimshurst), dépassement du CORPS à
+#   c+2, extension tenue ;
+# - amp : amplitude des poses (lacet d'armé et de contact, bascule, bassin),
+#   x1 = v7 ; variantes x1,4 et x1,8 (« trop », protocole Dave Hand) ;
+# - libre : bras libre TIRÉ en arrière au contact des coups forts (Wimshurst :
+#   il lance la rotation des hanches) au lieu de rester en garde ;
+# - eparse : fenêtre d'export en clés posées seules (TSB : clé toutes les
+#   2-4 f, Linear), au lieu d'une clé par image cuite.
+# DRAGON_RAFALE="v8,1.4,libre,eparse" (env) ; défaut = production v8 ;
+# DRAGON_RAFALE="v7" rejoue la v7 à l'identique.
+def _rafale_cfg():
+    r = {"timing": "v7", "amp": 1.0, "libre": False, "eparse": None}
+    # production v8 (choisie le 2026-09-25 parmi A / B / B2 / C : B2, voir README v8)
+    spec = os.environ.get("DRAGON_RAFALE", "v8,1.4,libre,eparse")
+    for tok in [t.strip() for t in spec.split(",") if t.strip()]:
+        if tok in ("v7", "v8"):
+            r["timing"] = tok
+        elif tok == "libre":
+            r["libre"] = True
+        elif tok == "eparse":
+            r["eparse"] = (0, 110)
+        else:
+            r["amp"] = float(tok)
+    return r
+
+
+RAFALE = _rafale_cfg()
 sys.path.insert(0, os.path.join(HERE, "..", "..", "_shared"))
 
 from animator_brain import v222_rig as V  # noqa: E402
@@ -489,6 +522,10 @@ def attacker_keys(vw, rig):
     # garde haute de l'autre bras pendant le coup : a hauteur de poitrine
     # (au visage, l'IK du V2.22 hausserait l'epaule -- sonde LECONS.md 11)
     FACE = {"L": ("a", (18, -16, 2.3)), "R": ("a", (-18, -16, 2.3))}
+    if RAFALE["amp"] > 1.0:
+        # v8 : bascule poussée -> la garde « au visage » hausse l'épaule du bras
+        # libre (crochet, f64-66 de l'essai B) : garde à la poitrine, plus basse
+        FACE = {"L": ("a", (18, -26, 2.2)), "R": ("a", (-18, -26, 2.2))}
     # le controle IK de la main est interpole EN LIGNE DROITE entre deux cles :
     # de derriere a devant, il frolerait l'epaule (qui remonte). On passe
     # donc par des cles en ARC autour du pivot (cote, bras bas).
@@ -521,19 +558,42 @@ def attacker_keys(vw, rig):
         return np.asarray(c["MasterControl"]["location"], float)
 
     plans = []
+    amp = RAFALE["amp"]
     for i, (c, s, kind) in enumerate(HITS):
         dist, az, wind, yaw, lean, low, xl = PLAN[kind]
+        # v8 : poses poussées (lacet d'armé et de contact, bascule ; bassin à
+        # moitié : il est borné par la règle d'affaissement)
+        # Pousser n'est pas tout gonfler (essai B/C du 2026-09-25) : le lacet de
+        # CONTACT multiplié fait traverser le bras devant le corps (IK : 0,30 stud
+        # d'écart au direct et à la fente) ; l'enroulement de la fente éloigne le
+        # pied avant de sa cible (0,75). On pousse donc là où les refs le
+        # montrent : l'ARMÉ (torse enroulé), la BASCULE vers la cible au contact
+        # (tout le corps dans le coup), le bassin ; le lacet de contact à peine.
+        lunge_k = 0.0 if kind == "body" else 1.0   # fente : armé déjà manga (-70) ; on pousse sa bascule
+        wind = wind * (1 + lunge_k * (amp - 1))
+        lean = lean * amp
+        yaw = yaw * (1 + 0.3 * (amp - 1))
+        low = low * (1 + 0.5 * (amp - 1))
         o = "L" if s == "R" else "R"
         # hauteur du pivot d'epaule dans la posture de contact -> cible a cette
         # hauteur (bras a -2 a -3 deg, comme les pros)
-        probe = {"root": ((0.0, 0.0, 0.0), (0, 0, 0)), "pelvis": ((0, -low, 0), (lean, yaw, 0)), "chest": (0, 0.15, 0)}
+        # v8 : RACINE penchée vers la cible (le tangage du bassin, torse tourné,
+        # penche DE CÔTÉ : cardan, v7) -- SEULEMENT pour la fente finale. Mesuré
+        # (2026-09-25) : les M1 de TSB ne penchent que ~12° au contact (8/31/17/-14,
+        # pack 2-14), notre rafale est déjà à 12-16° ; pencher plus faisait
+        # descendre le torse (posture 0,31 > 0,24) et hausser l'épaule. Le « corps
+        # à l'horizontale » des tutos vaut pour un coup lourd (Collateral Ruin 23°).
+        rrx = {"chest": 0, "plexus": 0, "ribs": 0, "body": 18}[kind] * (amp - 1) / 0.4
+        probe = {"root": ((0.0, 0.0, 0.0), (-rrx, 0, 0)), "pelvis": ((0, -low, 0), (lean, yaw, 0)), "chest": (0, 0.15, 0)}
         solve_pose(rig, probe)
         y_sh = float(torso_pivot(V.current_parts(rig), s)[1])
         tgt = target_h(c, y_sh - 0.1, xl)
-        contact = {"root": ((0.0, 0.0, 0.0), (0, 0, 0)), "pelvis": ((0, -low, 0), (lean, yaw, 0)),
+        contact = {"root": ((0.0, 0.0, 0.0), (-rrx, 0, 0)), "pelvis": ((0, -low, 0), (lean, yaw, 0)),
                    "chest": (0, 0.15, 0), "fitp": (s, tuple(tgt), dist, az), "look": head(c),
                    "hands": {s: ("w", tuple(tgt)), o: (("a", (150 if o == "R" else -150, -25, 2.1)) if kind == "chest"
-                                                        else FACE[o])}}
+                                                        else (("a", (140 if o == "R" else -140, -45, 2.0))
+                                                              if RAFALE["libre"] and kind in ("plexus", "ribs", "body")
+                                                              else FACE[o]))}}
         croot = presolve(contact)
         # appuis : pied avant (G) sous/juste derriere le bassin au contact, pied
         # arriere (D) 0,8 derriere ; tournes de la moitie du lacet de contact.
@@ -598,58 +658,127 @@ def attacker_keys(vw, rig):
             pc, pfeet, proot = prev
             (_m, (fx0, fz0)) = pfeet["L"]
             (_m, (bx0, bz0)), (_m2, (bx1, bz1)) = pfeet["R"], feet["R"]
-        if lunge:
-            # pied arriere d'abord (pendant la recuperation), puis armement sur
-            # le pied arriere, pied avant leve
-            add(c - 13, body(0.5 * (back(proot, 0.3) + back(croot, 0.95)), 0.1, 0.3 * wind, -2, c - 13, mid_arm,
-                             {"L": pfeet["L"], "R": ("w", (0.5 * (bx0 + bx1), 0.45, 0.5 * (bz0 + bz1)))}))
-            lifted = {"L": ("w", (0.5 * (fx0 + fx1), 0.4, 0.5 * (fz0 + fz1))), "R": feet["R"]}
-            add(c - 9, body(back(croot, 0.95), 0.25, wind, 3, c - 9, chamber,
-                            {"L": ("w", (0.7 * fx0 + 0.3 * fx1, 0.3, 0.7 * fz0 + 0.3 * fz1)), "R": feet["R"]}))
-            add(c - 5, body(back(croot, 0.6), 0.38, 0.7 * wind + 0.3 * yaw, 0.2 * lean, c - 5, a5, lifted))
-            add(c - 2, body(back(croot, 0.15), 0.5, 0.25 * wind + 0.75 * yaw, 0.7 * lean, c - 2, a3, feet))
-        else:
-            if prev is not None:
-                # le PAS, pendant la recuperation du coup precedent : pied avant
-                # leve a mi-chemin, puis pied arriere qui suit, reposes avant l'armement
-                mid_root = 0.5 * (back(proot, 0.3) + back(croot, BACK))
-                add(c - 13, body(mid_root, 0.03, 0.5 * wind, -3, c - 13, mid_arm,
-                                 {"L": ("w", (0.5 * (fx0 + fx1), 0.32, 0.5 * (fz0 + fz1))), "R": pfeet["R"]}))
-                add(c - 10, body(back(croot, BACK), 0.03, 0.85 * wind, 2, c - 10, chamber,
-                                 {"L": feet["L"], "R": ("w", (0.5 * (bx0 + bx1), 0.5, 0.5 * (bz0 + bz1)))}))
-            # armement : torse au-dessus du pied arriere, TENU
-            add(c - 7, body(back(croot, BACK), 0.03, wind, 3, c - 7, chamber, feet))
-            # la hanche et le torse partent, la main suit en arc (cote puis devant),
-            # et finit a L'HORIZONTALE
-            add(c - 5, body(back(croot, 0.4), 0.5 * low, 0.7 * wind + 0.3 * yaw, 0.2 * lean, c - 5, a5, feet))
-            add(c - 3, body(back(croot, MID), 0.8 * low, 0.35 * wind + 0.65 * yaw, 0.6 * lean, c - 3, a3, feet))
-        add(c, contact, "LINEAR")
-        # poussee : le poing accompagne la victime qui recule, le corps aussi
-        t3 = target(c + 3, kind)
-        push = np.clip(t3 - tgt, -0.18, 0.18)
-        push[1] = 0.0
-        # (le poing suit le CORPS, pas la victime : si elle recule plus loin
-        # que la poussee, le bras resterait tendu hors de portee -> epaule haussee)
-        # et si la victime se plie VERS le poing (plexus), le poing recule
-        # avec sa surface au lieu d'y entrer
-        fist3 = tgt + push
-        surf3 = target_h(c + 3, float(tgt[1]), PLAN[kind][6])
-        if surf3[2] > fist3[2] - 0.02:
-            # ... et le corps recule d'autant : bras a la meme distance de
-            # l'epaule (sinon main trop pres -> l'IK hausse l'epaule)
-            fist3 = surf3 + np.array([0.0, 0.0, 0.04])
-            push = fist3 - tgt
+        if RAFALE["timing"] == "v8":
+            # v8 : ARMÉ atteint à c-10 (retour direct depuis l'extension du coup
+            # précédent : ~11 f de ré-armement, lent), TENU vivant jusqu'à c-4
+            # (le buste s'enroule encore un peu : anticipation), UN intervalle à
+            # c-2 PRÈS DE L'ARMÉ (30 % du trajet), contact à c. Segments c-4 ->
+            # c-2 -> c en LINEAR : aucun amorti vers la pose de frappe.
+            wind2 = wind * 1.08
+            rrx = -contact["root"][1][0]
+            tl = lambda k: (-rrx * k, 0, 0)  # noqa: E731
+            ch_root = back(croot, 0.95 if lunge else BACK * (1 + 0.5 * (amp - 1)))
+            if lunge:
+                if prev is not None:
+                    add(c - 13, body(0.5 * (back(proot, 0.3) + ch_root), 0.1, 0.4 * wind, -2, c - 13, mid_arm,
+                                     {"L": pfeet["L"], "R": ("w", (0.5 * (bx0 + bx1), 0.45, 0.5 * (bz0 + bz1)))}))
+                kf = 0.5 if amp > 1.0 else 0.3      # pose poussée : pied avant déjà à mi-chemin
+                add(c - 10, body(ch_root, 0.25, wind, 3, c - 10, chamber,
+                                 {"L": ("w", ((1 - kf) * fx0 + kf * fx1, 0.3, (1 - kf) * fz0 + kf * fz1)), "R": feet["R"]}))
+                # tenue : genou avant levé (pied en l'air), buste qui s'enroule encore
+                add(c - 4, body(back(croot, 0.9), 0.3, wind2, 4, c - 4, chamber,
+                                {"L": ("w", (0.5 * (fx0 + fx1), 0.45, 0.5 * (fz0 + fz1))), "R": feet["R"]}), "LINEAR")
+                # intervalle près de l'armé ; le pied avant se pose juste avant le contact
+                add(c - 2, body(back(croot, 0.6), 0.4, 0.7 * wind + 0.3 * yaw, 0.3 * lean, c - 2, a5,
+                                {"L": ("w", (0.2 * fx0 + 0.8 * fx1, 0.12, 0.2 * fz0 + 0.8 * fz1)), "R": feet["R"]}, rr=tl(0.3)),
+                    "LINEAR")
+            else:
+                if prev is not None:
+                    mid_root = 0.5 * (back(proot, 0.3) + ch_root)
+                    # placement large (pose poussée) : le pied arrière ACCOMPAGNE (petit
+                    # pas glissé) au lieu de rester cloué hors de portée (essai B : 0,36)
+                    rb = ("w", (0.7 * bx0 + 0.3 * bx1, 0.15, 0.7 * bz0 + 0.3 * bz1)) if amp > 1.0 else pfeet["R"]
+                    add(c - 13, body(mid_root, 0.03, 0.45 * wind, -3, c - 13, mid_arm,
+                                     {"L": ("w", (0.5 * (fx0 + fx1), 0.32, 0.5 * (fz0 + fz1))), "R": rb}))
+                    add(c - 10, body(ch_root, 0.03, wind, 2, c - 10, chamber,
+                                     {"L": feet["L"], "R": ("w", (0.3 * bx0 + 0.7 * bx1, 0.3, 0.3 * bz0 + 0.7 * bz1))}))
+                else:
+                    add(c - 7, body(ch_root, 0.03, wind, 3, c - 7, chamber, feet))
+                add(c - 4, body(back(ch_root, 0.05), 0.05, wind2, 4, c - 4, chamber, feet), "LINEAR")
+                add(c - 2, body(back(croot, 0.7 * BACK), 0.3 * low, 0.7 * wind + 0.3 * yaw, 0.2 * lean, c - 2, a5, feet,
+                                rr=tl(0.3)), "LINEAR")
+            add(c, contact, "LINEAR")
+            t3 = target(c + 3, kind)
+            push = np.clip(t3 - tgt, -0.18, 0.18)
             push[1] = 0.0
-        add(c + 3, body(croot + push, low, 1.1 * yaw, 1.1 * lean, c + 3,
-                        {s: ("w", tuple(fist3)), o: contact["hands"][o]}, feet))
-        # recuperation : torse revient entre les appuis, garde basse ; le bras
-        # arriere repasse par le cote
-        # extension TENUE (refs : le coup part en 2-3 f, l'extension dure)
-        add(c + 6, body(croot + push, 0.9 * low, 1.05 * yaw, lean, c + 6,
-                        {s: ("w", tuple(fist3)), o: contact["hands"][o]}, feet))
-        add(c + 8, body(back(croot, 0.1), 0.8 * low, 0.7 * yaw, 0.5 * lean, c + 8,
-                        {s: side(s, 30, -15, 2.15), o: side(o, 90, -35, 2.15) if kind == "chest" else GUARD()[o]}, feet))
-        add(c + 10, body(back(croot, 0.3), max(0.03, 0.5 * low), 0.35 * yaw, -4, c + 10, GUARD(), feet))
+            fist3 = tgt + push
+            surf3 = target_h(c + 3, float(tgt[1]), PLAN[kind][6])
+            if surf3[2] > fist3[2] - 0.02:
+                fist3 = surf3 + np.array([0.0, 0.0, 0.04])
+                push = fist3 - tgt
+                push[1] = 0.0
+            # DÉPASSEMENT du corps (le membre qui frappe est tenu) : firytwig
+            # « hold or overshoot the attacking limb », Babbitt « montrer le résultat »
+            ov = 1 + 0.2 / amp            # dépassement : moins fort si la pose est déjà poussée
+            add(c + 2, body(croot + push, low, (1 + 0.15 / amp) * yaw, ov * lean, c + 2,
+                            {s: ("w", tuple(fist3)), o: contact["hands"][o]}, feet, rr=tl(1.1)))
+            # extension TENUE, le corps revient un peu (réaction égale et opposée)
+            # (le poing recule AVEC le corps : bras tendu seul -> l'IK hausse l'épaule, f45 de l'essai A)
+            react = np.array([0.0, 0.0, 0.05])
+            add(c + 5, body(croot + push + react, 0.95 * low, 1.05 * yaw, lean, c + 5,
+                            {s: ("w", tuple(fist3 + np.array([0.0, 0.0, 0.12]))), o: contact["hands"][o]}, feet,
+                            rr=tl(0.8)))
+            # retour : lent, par le côté (arc), vers l'armé suivant -- sauf après le dernier coup
+            if i == len(plans) - 1:
+                add(c + 9, body(back(croot, 0.1), 0.8 * low, 0.7 * yaw, 0.5 * lean, c + 9,
+                                {s: side(s, 30, -15, 2.15), o: GUARD()[o]}, feet))
+                add(c + 12, body(back(croot, 0.3), max(0.03, 0.5 * low), 0.35 * yaw, -4, c + 12, GUARD(), feet))
+            else:
+                add(c + 9, body(back(croot, 0.15), 0.7 * low, 0.6 * yaw, 0.4 * lean, c + 9,
+                                {s: side(s, 40, -20, 2.15), o: GUARD()[o]}, feet, rr=tl(0.3)))
+        else:
+            if lunge:
+                # pied arriere d'abord (pendant la recuperation), puis armement sur
+                # le pied arriere, pied avant leve
+                add(c - 13, body(0.5 * (back(proot, 0.3) + back(croot, 0.95)), 0.1, 0.3 * wind, -2, c - 13, mid_arm,
+                                 {"L": pfeet["L"], "R": ("w", (0.5 * (bx0 + bx1), 0.45, 0.5 * (bz0 + bz1)))}))
+                lifted = {"L": ("w", (0.5 * (fx0 + fx1), 0.4, 0.5 * (fz0 + fz1))), "R": feet["R"]}
+                add(c - 9, body(back(croot, 0.95), 0.25, wind, 3, c - 9, chamber,
+                                {"L": ("w", (0.7 * fx0 + 0.3 * fx1, 0.3, 0.7 * fz0 + 0.3 * fz1)), "R": feet["R"]}))
+                add(c - 5, body(back(croot, 0.6), 0.38, 0.7 * wind + 0.3 * yaw, 0.2 * lean, c - 5, a5, lifted))
+                add(c - 2, body(back(croot, 0.15), 0.5, 0.25 * wind + 0.75 * yaw, 0.7 * lean, c - 2, a3, feet))
+            else:
+                if prev is not None:
+                    # le PAS, pendant la recuperation du coup precedent : pied avant
+                    # leve a mi-chemin, puis pied arriere qui suit, reposes avant l'armement
+                    mid_root = 0.5 * (back(proot, 0.3) + back(croot, BACK))
+                    add(c - 13, body(mid_root, 0.03, 0.5 * wind, -3, c - 13, mid_arm,
+                                     {"L": ("w", (0.5 * (fx0 + fx1), 0.32, 0.5 * (fz0 + fz1))), "R": pfeet["R"]}))
+                    add(c - 10, body(back(croot, BACK), 0.03, 0.85 * wind, 2, c - 10, chamber,
+                                     {"L": feet["L"], "R": ("w", (0.5 * (bx0 + bx1), 0.5, 0.5 * (bz0 + bz1)))}))
+                # armement : torse au-dessus du pied arriere, TENU
+                add(c - 7, body(back(croot, BACK), 0.03, wind, 3, c - 7, chamber, feet))
+                # la hanche et le torse partent, la main suit en arc (cote puis devant),
+                # et finit a L'HORIZONTALE
+                add(c - 5, body(back(croot, 0.4), 0.5 * low, 0.7 * wind + 0.3 * yaw, 0.2 * lean, c - 5, a5, feet))
+                add(c - 3, body(back(croot, MID), 0.8 * low, 0.35 * wind + 0.65 * yaw, 0.6 * lean, c - 3, a3, feet))
+            add(c, contact, "LINEAR")
+            # poussee : le poing accompagne la victime qui recule, le corps aussi
+            t3 = target(c + 3, kind)
+            push = np.clip(t3 - tgt, -0.18, 0.18)
+            push[1] = 0.0
+            # (le poing suit le CORPS, pas la victime : si elle recule plus loin
+            # que la poussee, le bras resterait tendu hors de portee -> epaule haussee)
+            # et si la victime se plie VERS le poing (plexus), le poing recule
+            # avec sa surface au lieu d'y entrer
+            fist3 = tgt + push
+            surf3 = target_h(c + 3, float(tgt[1]), PLAN[kind][6])
+            if surf3[2] > fist3[2] - 0.02:
+                # ... et le corps recule d'autant : bras a la meme distance de
+                # l'epaule (sinon main trop pres -> l'IK hausse l'epaule)
+                fist3 = surf3 + np.array([0.0, 0.0, 0.04])
+                push = fist3 - tgt
+                push[1] = 0.0
+            add(c + 3, body(croot + push, low, 1.1 * yaw, 1.1 * lean, c + 3,
+                            {s: ("w", tuple(fist3)), o: contact["hands"][o]}, feet))
+            # recuperation : torse revient entre les appuis, garde basse ; le bras
+            # arriere repasse par le cote
+            # extension TENUE (refs : le coup part en 2-3 f, l'extension dure)
+            add(c + 6, body(croot + push, 0.9 * low, 1.05 * yaw, lean, c + 6,
+                            {s: ("w", tuple(fist3)), o: contact["hands"][o]}, feet))
+            add(c + 8, body(back(croot, 0.1), 0.8 * low, 0.7 * yaw, 0.5 * lean, c + 8,
+                            {s: side(s, 30, -15, 2.15), o: side(o, 90, -35, 2.15) if kind == "chest" else GUARD()[o]}, feet))
+            add(c + 10, body(back(croot, 0.3), max(0.03, 0.5 * low), 0.35 * yaw, -4, c + 10, GUARD(), feet))
         prev = (c, feet, croot)
     add(108, body(back(plans[-1][5], 0.3), 0.3, -12, -5, 108, GUARD(), plans[-1][6]))
 

@@ -123,6 +123,20 @@ def main(blend):
     keep = [f / M.FPS for _n, f in M.MARKERS] + [c / M.FPS for c, _s, _k in M.HITS]
     att_r = X.reduce_keyframes(att, keep_times=keep)
     vic_r = X.reduce_keyframes(vic, keep_times=keep)
+    if M.RAFALE.get("eparse"):
+        # v8 : dans la fenêtre de la rafale, on n'exporte que les poses posées
+        # (clé toutes les 2-5 f, Linear dans Roblox), comme TSB (CARNET §2.1c)
+        f0, f1 = M.RAFALE["eparse"]
+        posees = set()
+        for o in [a.primary, a.internal] + list(a.holders.values()):
+            ad = getattr(o, "animation_data", None)
+            if ad and ad.action:
+                posees |= {int(round(k.co[0])) for fc in M.V._fcurves(ad.action) for k in fc.keyframe_points}
+        fr = lambda t: int(round(t * M.FPS))  # noqa: E731
+        att_r = [(t, w) for t, w in att_r if not (f0 < fr(t) < f1)] + [(f / M.FPS, aw[f]) for f in sorted(posees)
+                                                                       if f0 < f < f1]
+        att_r.sort(key=lambda x: x[0])
+        rep["rafale_cles_posees"] = sorted(f for f in posees if f0 < f < f1)
     X.write_kfseq(att_r, pa, "PoingDuDragon_Attaquant", priority=4, markers=marks)
     X.write_kfseq(vic_r, pv, "PoingDuDragon_Victime", priority=4)
     rep["aller_retour_max"] = max(max(v[0] for v in X.roundtrip_error(p, fr).values())

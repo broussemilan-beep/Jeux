@@ -533,3 +533,76 @@ Fiche : `FICHE_V7.md`. Décision de Milan : aucun coup de pied.
     la rafale n'a presque pas changé ; la bascule reste sous TSB.
 - Je baisse de 0,2 par rapport à l'estimation de la fiche (8,0) après avoir vu
   la caméra de jeu.
+
+## v8 (2026-09-25) : la rafale refaite (timing, poses, placement)
+
+Demande de Milan : « lance, mais travaille bien les poses et le placement,
+avec ce que tu as appris ». Sources :
+- `../_shared/animator_brain/corpus/CARNET.md` §2.1-2.8 ;
+- la relecture de ses refs (`RELECTURE_REFS_ANIMATION_2026-09-25.md`) ;
+- les tutos (firytwig, Dong Chang, Wimshurst, Williams).
+
+**Le défaut mesuré.** Dans la v7, le poing se ré-armait aussi vite qu'il
+frappait. Le rapport vitesse à la frappe / vitesse pendant la préparation
+valait 0,55-1,49, contre 2,3-3,7 sur les M1 de TSB, même enchaînés. La
+cause :
+- le ré-armement tenait en ~6 images (garde c+10 -> armé c-10 du coup
+  suivant) ;
+- la frappe s'étalait sur 7 images, avec une arrivée amortie (Bézier c-3 -> c).
+
+| | v7 | v8 |
+|---|---|---|
+| **timing d'un coup** | armé tenu 3 f, frappe 7 f amortie, retour à la garde puis ré-armement en ~6 f | retour **direct et lent** vers l'armé suivant (~11 f) ; armé **tenu vivant** c-10 -> c-4 (le buste s'enroule encore) ; frappe en 4 f avec **un seul intervalle près de l'armé** (c-2, 30 % du trajet) ; segments **Linear** jusqu'au contact, sans amorti ; **dépassement du corps** à c+2 ; extension tenue |
+| **export rafale** | une clé par image cuite depuis l'IK (103 clés sur f1-109) | **poses posées seules** (34 clés, Linear), comme TSB (clé toutes les 2-4 f) |
+| **armé** | lacet d'armé | lacet d'armé x1,4 (torse plus enroulé) |
+| **bras libre au contact** | garde au visage (direct, crochet, fente) | **tiré en arrière** au direct, au crochet et à la fente : il lance la rotation (Wimshurst) et sort de la silhouette du torse |
+| **fente finale** | torse droit | **racine penchée** vers la cible (+18°), diagonale du pied arrière au poing |
+| **garde du bras libre** | au visage | à la poitrine (au visage, avec la bascule, elle haussait l'épaule) |
+| **pas** | pied arrière cloué | le pied arrière **accompagne** un placement large (petit pas glissé) |
+
+**Comment on a choisi.** Quatre variantes, construites dans le vrai
+rig et jugées sur les mêmes critères (`scripts/planche_rafale.py`,
+`scripts/regard_v7_vs_tsb.py`, `scripts/tutos_vs_tsb.py`, `check_rules.py`,
+lecteur à vitesse réelle) :
+- **A** : timing seul. 13/13 règles.
+- **B** : timing + poses x1,4. Premier essai « tout gonflé » : le bras
+  traversait le corps, contact raté de 0,30 stud, pied avant hors de portée
+  (0,75), épaule haussée. Refait en poussant seulement l'armé, le bras
+  libre et la fente. Puis 13/13.
+- **B2** : B + bras libre tiré aussi au crochet (en garde haute, il
+  masquait le torse en profil). 13/13. **Retenu.**
+- **C** : x1,8, « trop » (protocole Dave Hand). Fente presque horizontale,
+  la plus manga. Mais le pied avant flotte à 0,2 stud au contact et la
+  posture dépasse la règle (0,263 > 0,24). Écarté.
+
+**Mesures (v7 -> v8).**
+- Contraste du poing, 3D : h1 0,71 -> 1,44 ; h2 1,49 -> 2,33 ; h3 0,55 ->
+  1,93 ; h4 1,26 -> 2,63. TSB M1-M4 : 2,3-4,7.
+- Contraste à l'écran, caméra de jeu : 0,40-0,61 -> 1,22-1,81.
+- Amplitude du lacet du torse : 53-116° -> 67-133° (TSB 77-111°).
+- Bascule des coups légers : inchangée, à dessein. Les M1 TSB ne penchent
+  que ~12° ; pencher plus faisait descendre le torse (règle « posture
+  droite », retour v1).
+- Règles 13/13. Contacts à 0,05 stud. Épaule max +0,031 (seuil 0,088).
+  Sens 11/11.
+
+**Preuves** (`captures/verification/`) :
+- `2026-09-25-rafale-v8-poses-v7-contre-v8.png` (armé | contact |
+  extension, de profil) ;
+- `2026-09-25-rafale-v8-vitesse-reelle-v7-contre-v8.png` (lecteur,
+  caméra ciné, direct et fente) ;
+- `2026-09-25-rafale-v8-contraste-v7-v8-tsb.png`.
+
+Vidéo : `output/poing_du_dragon_v8_rafale_v7_contre_v8.mp4`. v7 à gauche,
+v8 à droite, ciné en haut, jeu en bas. Vitesse réelle, puis ralentie x0,5.
+
+**Ce qui n'a pas changé, et ce qui reste à juger.**
+- Coup chargé, aérien, effets, cartes, caméra : inchangés.
+- Les problèmes vus au regard vitesse réelle y restent : contact recouvert
+  par les cartes, charge floue sous la caméra qui bouge. Ce sont les pistes
+  suivantes du carnet.
+- **Point à juger par Milan** : la fente v8 plonge au point qu'on voit le
+  dessus du torse. C'est le côté « un peu trop », voulu.
+- En caméra de jeu (de dos), la différence se voit surtout au rythme :
+  armé tenu, puis frappe sèche. Les poses se lisent mieux en ciné et de
+  profil.

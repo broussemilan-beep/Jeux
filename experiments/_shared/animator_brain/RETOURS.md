@@ -415,3 +415,19 @@ cerveau, voir la fin de l'entrée.
   - **Sikasisi** (non vérifiable) : calques dans l'outil officiel TSB, une
     traînée + une seule onde forte à l'impact, lancer / téléport au-dessus.
     C'est une confirmation, pas une nouveauté.
+
+- **2026-09-25, rafale v8** (`r6_poing_dragon/README.md` §v8).
+  - **Timing.** Ré-armement lent, armé tenu vivant, frappe en 4 f avec un
+    intervalle près de l'armé, Linear sans amorti, dépassement du corps,
+    clés posées seules à l'export.
+  - **Poses.** Armé plus enroulé, bras libre tiré en arrière au contact,
+    fente penchée.
+  - **Choix.** Quatre variantes (A, B, B2, C) jugées dans le vrai rig ; B2
+    retenue.
+  - **Mesures.** Contraste du poing 0,55-1,49 -> 1,44-2,63 (TSB 2,3-4,7).
+    Règles 13/13.
+  - **Deux leçons** (CARNET §2.7, §2.8) :
+    - pousser n'est pas tout gonfler : le lacet de contact multiplié
+      faisait rater le contact ;
+    - mesurer la réf avant de pousser : les M1 TSB ne penchent que ~12°, le
+      « corps à l'horizontale » vaut pour un coup lourd.

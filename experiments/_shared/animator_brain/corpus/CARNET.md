@@ -243,6 +243,33 @@ d'après.** *Extrait* (Sakurai « Follow-Throughs Make the Impact », Cooper).
 - Projection : 0,8 s sur le résultat.
 - Le paiement d'un coup peut être le personnage (attitude), pas le coup.
 
+**2.7 Pousser une pose, ce n'est pas tout gonfler.** *Essayé*
+(rafale v8, 2026-09-25, `r6_poing_dragon/scripts/dragon_clip.py`, RAFALE).
+- Premier essai : amplitude x1,4 appliquée à tout (lacet d'armé, lacet de
+  contact, bascule, bassin). Résultat :
+  - le bras qui frappe doit traverser devant le corps : l'IK rate le
+    contact (0,30 stud) ;
+  - le pied avant de la fente n'atteint plus sa place (0,75) ;
+  - l'épaule monte.
+- Ce qui marche, c'est de pousser **là où les refs montrent l'exagération** :
+  - l'ARMÉ (torse enroulé) ;
+  - le BRAS LIBRE tiré en arrière au contact (direct, crochet, fente) :
+    deux lignes nettes, et il sort de la silhouette du torse ;
+  - la BASCULE de la fente seule (racine penchée).
+- Le lacet de contact reste à peu près inchangé : c'est lui qui aligne le
+  bras sur la cible.
+
+**2.8 Mesurer la réf avant de pousser : la bascule des M1.** *Mesuré chez
+nous.*
+- Au contact, les M1 de TSB ne penchent vers la cible que de 8/31/17/-14°
+  (pack 2-14°). Notre rafale est déjà à 12-16°.
+- Le « corps presque à l'horizontale » des tutos (myloe, firytwig) vaut
+  pour un coup lourd isolé (Collateral Ruin 23°, fente finale).
+- Pencher les coups légers faisait descendre le torse (posture 0,31 > 0,24,
+  retour de Milan v1 « accroupi ») et hausser l'épaule.
+- Même piège qu'en §2.1b : transposer la mauvaise référence. Un tuto de
+  démonstration n'est pas une M1 de jeu.
+
 ## 3. La 3D qui imite l'anime
 
 **3.1 Perspective forcée : avancer le bras, pas élargir le FOV.** *Texte
