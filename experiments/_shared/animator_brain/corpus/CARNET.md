@@ -119,6 +119,24 @@ nous* (`tutos/gemini_visuel_2026-09-25.md`).
   3. chiffres ensuite, pour vérifier et éviter les pièges.
 - Une règle qui échoue est un signal à regarder, pas un veto.
 
+**1.10 La réf TSB : pour départager APRÈS, à l'œil, jamais comme règle.**
+*Demande de Milan (2026-09-25).*
+- Le fichier officiel TSB (de Milan, non versionné) contient
+  13 animations :
+  - M1-M4 ;
+  - Collateral Ruin (2,1 s), Stoic Bomb (4,7 s), Swift Sweep ;
+  - Ultimate1 (10 s), Ultimate2 (2,9 s) ;
+  - WallComboPlayer / WallComboVictim.
+- Ordre de travail pour une technique :
+  1. construire la NÔTRE d'abord (refs de Milan, carnet, jugement), sans
+     regarder l'animation TSB équivalente, pour ne pas la recopier ;
+  2. puis rendre la nôtre et la TSB la plus proche CÔTE À CÔTE, même rig
+     R6, même caméra, synchronisées sur le contact ;
+  3. départager à l'œil, pose par pose.
+- TSB est une référence, pas un plafond : on peut faire mieux, et « ne
+  pas faire comme TSB » n'est pas un défaut en soi. Les mesures sur TSB
+  restent des repères situés (§1.2, §2.8), pas des seuils.
+
 ## 2. Le coup et l'impact
 
 **2.1 Lent contre rapide.** *Texte vérifié* (Williams) : « go just a
