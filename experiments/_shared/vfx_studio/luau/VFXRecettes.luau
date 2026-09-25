@@ -41,32 +41,38 @@ return {
 					son = "naissance_orbe",
 					t0 = 0,
 					volume = 0.45,
+					duree = 0.4,
 				},
 				{
 					son = "aspiration",
 					t0 = 0,
 					volume = 0.55,
+					duree = 0.3,
 				},
 				{
 					son = "souffle_projectile",
 					t0 = 0.3,
 					volume = 0.75,
+					duree = 0.44,
 				},
 				{
 					son = "impact_lourd",
 					t0 = 0.8,
 					volume = 0.85,
 					impact = true,
+					duree = 0.6,
 				},
 				{
 					son = "grondement",
 					t0 = 0.81,
 					volume = 0.5,
+					duree = 1.6,
 				},
 				{
 					son = "vent_arc",
 					t0 = 0.83,
 					volume = 0.35,
+					duree = 0.28,
 				},
 			},
 			couches = {
@@ -815,6 +821,7 @@ return {
 					son = "fouet_m1",
 					t0 = 0.07,
 					volume = 0.5,
+					duree = 0.1,
 				},
 				{
 					son = "frappe_m1",
@@ -822,6 +829,7 @@ return {
 					volume = 0.9,
 					impact = true,
 					vide = 0.025,
+					duree = 0.22,
 				},
 			},
 			couches = {
@@ -1000,6 +1008,516 @@ return {
 					{1, 0.7, 0},
 				},
 				seuil = 0.75,
+				taille = 2,
+			},
+		},
+		dragon_impact_aerien = {
+			nom = "dragon_impact_aerien",
+			titre = "Dragon : contact aérien",
+			duree = 1.89,
+			graine = 5,
+			sons = {
+				{
+					son = "impact_lourd",
+					t0 = 0.2,
+					volume = 0.9,
+					impact = true,
+					duree = 0.6,
+				},
+			},
+			couches = {
+				{
+					type = "particules",
+					nom = "flash",
+					t0 = 0.2,
+					ancre = {
+						pos = {0, 6, -3},
+						dir = {0, -1, -0.3},
+						coup = {0, -0.9, -0.4},
+					},
+					texture = "flash",
+					emit = 1,
+					lifetime = {0.07, 0.07},
+					size = {
+						{0, 9.9, 0},
+						{1, 13.2, 0},
+					},
+					transparency = {
+						{0, 0, 0},
+						{0.6, 0.2, 0},
+						{1, 1, 0},
+					},
+					color = {
+						{
+							0,
+							{1, 0.9647, 0.8627},
+						},
+						{
+							1,
+							{1, 0.9647, 0.8627},
+						},
+					},
+					light_emission = 1,
+					rotation = {0, 360},
+					zoffset = 2,
+					squash = {
+						{0, 0, 0},
+						{1, 0, 0},
+					},
+					speed = {0, 0},
+					rotspeed = {0, 0},
+					spread = {0, 0},
+					accel = {0, 0, 0},
+				},
+				{
+					type = "particules",
+					nom = "etoile",
+					t0 = 0.2,
+					ancre = {
+						pos = {0, 6, -3},
+						dir = {0, -1, -0.3},
+						coup = {0, -0.9, -0.4},
+					},
+					texture = "etoile4",
+					emit = 1,
+					lifetime = {0.16, 0.16},
+					size = {
+						{0, 15.4, 0},
+						{1, 4.4, 0},
+					},
+					transparency = {
+						{0, 0, 0},
+						{1, 1, 0},
+					},
+					color = {
+						{
+							0,
+							{1, 0.9647, 0.8627},
+						},
+						{
+							1,
+							{1, 0.9647, 0.8627},
+						},
+					},
+					light_emission = 1,
+					zoffset = 2.5,
+					squash = {
+						{0, 0, 0},
+						{1, 0, 0},
+					},
+					speed = {0, 0},
+					rotation = {0, 0},
+					rotspeed = {0, 0},
+					spread = {0, 0},
+					accel = {0, 0, 0},
+				},
+				{
+					type = "mesh",
+					nom = "dome",
+					t0 = 0.21,
+					duree = 0.32,
+					ancre = {
+						pos = {0, 6, -3},
+						dir = {0, -1, -0.3},
+						coup = {0, -0.9, -0.4},
+					},
+					mesh = "dome",
+					texture = "bruit_energie",
+					defilement = {0.8, 0},
+					echelle = {
+						{
+							0,
+							{0.66, 0.66, 0.66},
+						},
+						{
+							0.35,
+							{4.95, 4.95, 4.95},
+						},
+						{
+							1,
+							{7.15, 7.15, 7.15},
+						},
+					},
+					transparency = {
+						{0, 0.05, 0},
+						{0.5, 0.45, 0},
+						{1, 1, 0},
+					},
+					color = {
+						{
+							0,
+							{1, 0.9647, 0.8627},
+						},
+						{
+							1,
+							{1, 0.9647, 0.8627},
+						},
+					},
+					bord = 1,
+					light_emission = 1,
+					orientation = "coup",
+				},
+				{
+					type = "particules",
+					nom = "eclats",
+					t0 = 0.2,
+					ancre = {
+						pos = {0, 6, -3},
+						dir = {0, -1, -0.3},
+						coup = {0, -0.9, -0.4},
+					},
+					texture = "eclat",
+					emit = 28,
+					lifetime = {0.22, 0.45},
+					speed = {44, 82.5},
+					spread = {180, 180},
+					drag = 7,
+					orientation = "VelocityParallel",
+					size = {
+						{0, 2.42, 0.66},
+						{1, 0.22, 0},
+					},
+					transparency = {
+						{0, 0, 0},
+						{0.7, 0.1, 0},
+						{1, 1, 0},
+					},
+					color = {
+						{
+							0,
+							{1, 0.9647, 0.8627},
+						},
+						{
+							1,
+							{1, 0.7725, 0.2392},
+						},
+					},
+					light_emission = 1,
+					squash = {
+						{0, 0, 0},
+						{1, 0, 0},
+					},
+					rotation = {0, 0},
+					rotspeed = {0, 0},
+					accel = {0, 0, 0},
+				},
+				{
+					type = "particules",
+					nom = "feu",
+					t0 = 0.21,
+					ancre = {
+						pos = {0, 6, -3},
+						dir = {0, -1, -0.3},
+						coup = {0, -0.9, -0.4},
+					},
+					texture = "feu_cel",
+					emit = 14,
+					flipbook = {
+						grille = 4,
+						mode = "OneShot",
+					},
+					lifetime = {0.35, 0.6},
+					speed = {17.6, 30.8},
+					spread = {180, 180},
+					drag = 6,
+					accel = {0, 4, 0},
+					size = {
+						{0, 3.52, 0.88},
+						{1, 6.05, 1.1},
+					},
+					transparency = {
+						{0, 0, 0},
+						{1, 0, 0},
+					},
+					color = {
+						{
+							0,
+							{1, 1, 1},
+						},
+						{
+							1,
+							{1, 1, 1},
+						},
+					},
+					light_emission = 0,
+					rotation = {0, 360},
+					rotspeed = {-60, 60},
+					forme = {
+						sphere = 0.66,
+					},
+					squash = {
+						{0, 0, 0},
+						{1, 0, 0},
+					},
+				},
+				{
+					type = "mesh",
+					nom = "vent_1",
+					t0 = 0.22,
+					duree = 0.3,
+					ancre = {
+						pos = {0, 6, -3},
+						dir = {0, -1, -0.3},
+						coup = {0, -0.9, -0.4},
+					},
+					mesh = "croissant_3d",
+					texture = "bruit_energie",
+					defilement = {2.2, 0},
+					echelle = {
+						{
+							0,
+							{2.42, 2.42, 2.42},
+						},
+						{
+							1,
+							{7.15, 7.15, 7.15},
+						},
+					},
+					transparency = {
+						{0, 0.1, 0},
+						{0.7, 0.4, 0},
+						{1, 1, 0},
+					},
+					color = {
+						{
+							0,
+							{1, 0.9647, 0.8627},
+						},
+						{
+							1,
+							{1, 0.9647, 0.8627},
+						},
+					},
+					rotation_vitesse = 520,
+					rotation = 0,
+					inclinaison = {18, 0, 8},
+					decalage = {0, 0.66, 0},
+					light_emission = 1,
+					orientation = "coup",
+				},
+				{
+					type = "mesh",
+					nom = "vent_2",
+					t0 = 0.25,
+					duree = 0.3,
+					ancre = {
+						pos = {0, 6, -3},
+						dir = {0, -1, -0.3},
+						coup = {0, -0.9, -0.4},
+					},
+					mesh = "croissant_3d",
+					texture = "bruit_energie",
+					defilement = {-2, 0},
+					echelle = {
+						{
+							0,
+							{3.08, 3.08, 3.08},
+						},
+						{
+							1,
+							{8.25, 8.25, 8.25},
+						},
+					},
+					transparency = {
+						{0, 0.2, 0},
+						{0.7, 0.5, 0},
+						{1, 1, 0},
+					},
+					color = {
+						{
+							0,
+							{1, 0.9647, 0.8627},
+						},
+						{
+							1,
+							{1, 0.9647, 0.8627},
+						},
+					},
+					rotation_vitesse = -460,
+					rotation = 140,
+					inclinaison = {-24, 0, -12},
+					decalage = {0, 1.32, 0},
+					light_emission = 1,
+					orientation = "coup",
+				},
+				{
+					type = "particules",
+					nom = "fumee",
+					t0 = 0.24,
+					ancre = {
+						pos = {0, 6, -3},
+						dir = {0, -1, -0.3},
+						coup = {0, -0.9, -0.4},
+					},
+					texture = "fumee_cel",
+					emit = 12,
+					flipbook = {
+						grille = 4,
+						mode = "OneShot",
+					},
+					lifetime = {1, 1.6},
+					speed = {7.7, 14.3},
+					spread = {180, 55},
+					drag = 2.2,
+					accel = {0, 2.5, 0},
+					size = {
+						{0, 4.4, 1.1},
+						{1, 8.8, 1.65},
+					},
+					transparency = {
+						{0, 0, 0},
+						{1, 0, 0},
+					},
+					color = {
+						{
+							0,
+							{1, 1, 1},
+						},
+						{
+							1,
+							{0.7255, 0.7059, 0.6824},
+						},
+					},
+					light_emission = 0,
+					rotation = {0, 360},
+					forme = {
+						sphere = 1.1,
+					},
+					squash = {
+						{0, 0, 0},
+						{1, 0, 0},
+					},
+					rotspeed = {0, 0},
+				},
+			},
+			bloom = {
+				intensite = {
+					{0, 0.6, 0},
+					{1, 0.6, 0},
+				},
+				seuil = 0.8,
+				taille = 2,
+			},
+		},
+		dragon_plongee = {
+			nom = "dragon_plongee",
+			titre = "Dragon : sillage de la plongée",
+			duree = 0.92,
+			graine = 5,
+			sons = {
+				{
+					son = "souffle_projectile",
+					t0 = 0.07,
+					volume = 0.8,
+					duree = 0.44,
+				},
+			},
+			couches = {
+				{
+					type = "trail",
+					nom = "sillage",
+					t0 = 0.2,
+					t1 = 0.57,
+					ancre = {
+						chemin = {
+							{0.2, 0, 14, -2},
+							{0.237, 0.03, 13.69857, -2.3},
+							{0.274, 0.06, 13.08625, -2.6},
+							{0.311, 0.09, 12.25186, -2.9},
+							{0.348, 0.12, 11.23002, -3.2},
+							{0.385, 0.15, 10.04148, -3.5},
+							{0.422, 0.18, 8.70064, -3.8},
+							{0.459, 0.21, 7.21831, -4.1},
+							{0.496, 0.24, 5.60298, -4.4},
+							{0.533, 0.27, 3.8616, -4.7},
+							{0.57, 0.3, 2, -5},
+						},
+					},
+					lifetime = 0.3,
+					largeur = {
+						{0, 1.5, 0},
+						{1, 0, 0},
+					},
+					texture = "ruban",
+					transparency = {
+						{0, 0, 0},
+						{1, 1, 0},
+					},
+					color = {
+						{
+							0,
+							{1, 0.9647, 0.8627},
+						},
+						{
+							1,
+							{1, 0.7725, 0.2392},
+						},
+					},
+					light_emission = 1,
+				},
+				{
+					type = "particules",
+					nom = "lignes",
+					t0 = 0.2,
+					ancre = {
+						chemin = {
+							{0.2, 0, 14, -2},
+							{0.237, 0.03, 13.69857, -2.3},
+							{0.274, 0.06, 13.08625, -2.6},
+							{0.311, 0.09, 12.25186, -2.9},
+							{0.348, 0.12, 11.23002, -3.2},
+							{0.385, 0.15, 10.04148, -3.5},
+							{0.422, 0.18, 8.70064, -3.8},
+							{0.459, 0.21, 7.21831, -4.1},
+							{0.496, 0.24, 5.60298, -4.4},
+							{0.533, 0.27, 3.8616, -4.7},
+							{0.57, 0.3, 2, -5},
+						},
+					},
+					texture = "eclat",
+					rate = 70,
+					duree_emission = 0.37,
+					lifetime = {0.12, 0.2},
+					speed = {-30, -18},
+					spread = {12, 12},
+					orientation = "VelocityParallel",
+					size = {
+						{0, 1.6, 0},
+						{1, 0.3, 0},
+					},
+					squash = {
+						{0, 1.3, 0},
+						{1, 1.3, 0},
+					},
+					transparency = {
+						{0, 0.1, 0},
+						{1, 1, 0},
+					},
+					color = {
+						{
+							0,
+							{1, 1, 1},
+						},
+						{
+							1,
+							{1, 1, 1},
+						},
+					},
+					light_emission = 1,
+					forme = {
+						sphere = 0.9,
+					},
+					rotation = {0, 0},
+					rotspeed = {0, 0},
+					accel = {0, 0, 0},
+				},
+			},
+			bloom = {
+				intensite = {
+					{0, 0.6, 0},
+					{1, 0.6, 0},
+				},
+				seuil = 0.8,
 				taille = 2,
 			},
 		},

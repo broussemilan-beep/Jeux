@@ -187,7 +187,7 @@ end
 -- 2. secousse caméra = aperçu, instant par instant
 for nom, rec in pairs(DATA.recettes) do
 	local ecart = 0
-	for _, x in ipairs(REFS.secousse[nom]) do
+	for _, x in ipairs(REFS.secousse[nom] or {}) do
 		local d = VFXStudio.secousse(rec, x[1])
 		ecart = math.max(ecart, math.abs(d.X - x[2]), math.abs(d.Y - x[3]), math.abs(d.Z - x[4]))
 	end
@@ -210,8 +210,8 @@ for nom, rec in pairs(DATA.recettes) do
 	local positionsProjectile = {}
 	local transparenceHorsBornes = false
 	local refBloom, refFlash = {}, {}
-	for _, x in ipairs(REFS.bloom[nom]) do refBloom[math.floor(x[1] * 60 + 0.5)] = x[2] end
-	for _, x in ipairs(REFS.flash[nom]) do refFlash[math.floor(x[1] * 60 + 0.5)] = x[2] end
+	for _, x in ipairs(REFS.bloom[nom] or {}) do refBloom[math.floor(x[1] * 60 + 0.5)] = x[2] end
+	for _, x in ipairs(REFS.flash[nom] or {}) do refFlash[math.floor(x[1] * 60 + 0.5)] = x[2] end
 	local fin = math.ceil(h.Duree * 60) + 2
 	for i = 0, fin do
 		TEMPS = i / 60

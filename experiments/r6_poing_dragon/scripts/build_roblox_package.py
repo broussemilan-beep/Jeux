@@ -7,6 +7,8 @@ Package Roblox pret a glisser dans Studio : output/PoingDuDragon.rbxmx
       Folder Animations        PoingDuDragon_Attaquant (markers) + PoingDuDragon_Victime
       ModuleScript DragonFist      (luau/DragonFist.luau)
       ModuleScript DragonFistData  (genere ici depuis staging.json)
+      ModuleScript VFXStudio   (studio VFX : moteur d'execution des recettes)
+      ModuleScript VFXRecettes (studio VFX : recettes compilees + table des assets)
       Script Demo              RunContext = Client : rejoue la technique en boucle
 
 Genere d'abord luau/DragonFistData.luau (camera, evenements, positions de
@@ -31,6 +33,10 @@ sys.path.insert(0, HERE)
 # briques generiques du package M1 (generation de rig R6, relecture), reutilisees telles quelles
 sys.path.insert(0, os.path.join(HERE, "..", "..", "r6_m1_v222", "scripts"))
 import build_roblox_package as P  # noqa: E402
+
+VS = os.path.join(HERE, "..", "..", "_shared", "vfx_studio")
+sys.path.insert(0, VS)
+import compile_roblox as C  # noqa: E402
 
 SCENE = json.load(open(os.path.join(OUT, "scene.json")))
 STAGING = json.load(open(os.path.join(OUT, "staging.json")))
@@ -78,6 +84,9 @@ def write_data_module():
     fa, fv = final_positions()
     cam = [{"f": f, "eye": eye, "look": look, "fov": fov, "cut": mode == "cut"} for f, eye, look, fov, mode in STAGING["camera"]]
     events = sorted(STAGING["events"], key=lambda e: e["frame"])
+    # studio VFX : chaque recette est compilée pour Roblox (séquences 0-1 à
+    # 20 points, couleurs 0-1, durées des sons) par le compilateur du studio
+    events = [dict(e, recette=C.compiler(e["recette"])) if e["kind"] == "studio" else e for e in events]
     whip = next(e["frame"] for e in events if e["kind"] == "whip")
     body = (
         "--!nonstrict\n"
@@ -115,6 +124,10 @@ def build():
     P.copy_kfs(anims, os.path.join(OUT, "dragon_victime.rbxmx"), 0)
     P.script_item(folder, "ModuleScript", "DragonFist", os.path.join(LUAU, "DragonFist.luau"))
     P.script_item(folder, "ModuleScript", "DragonFistData", data_path)
+    # studio VFX : moteur d'exécution + assets (textures / sons -> rbxassetid)
+    C.main()
+    P.script_item(folder, "ModuleScript", "VFXStudio", os.path.join(VS, "luau", "VFXStudio.luau"))
+    P.script_item(folder, "ModuleScript", "VFXRecettes", os.path.join(VS, "luau", "VFXRecettes.luau"))
     P.script_item(folder, "Script", "Demo", os.path.join(LUAU, "Demo.client.luau"), run_context=2)
     tree = ET.ElementTree(root)
     ET.indent(tree, space="  ")
@@ -130,6 +143,6 @@ if __name__ == "__main__":
     print(json.dumps(rep, indent=1, ensure_ascii=False, default=str))
     ok = rep["referents_uniques"] and rep["pose_repos_coherente_max_ecart"] < 1e-6 and all(rep["sens"].values()) \
         and rep["animations"] == {"PoingDuDragon_Attaquant": len(SCENE["markers"]), "PoingDuDragon_Victime": 0} \
-        and rep["demo_run_context_client"] and len(rep["scripts"]) == 3
+        and rep["demo_run_context_client"] and len(rep["scripts"]) == 5
     print("PACKAGE OK" if ok else "PACKAGE KO", "->", p, os.path.getsize(p) // 1024, "Ko")
     sys.exit(0 if ok else 1)

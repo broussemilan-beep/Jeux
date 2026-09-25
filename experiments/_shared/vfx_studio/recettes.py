@@ -34,7 +34,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 
-def impact_couches(ancre="impact", coup=(0, 0, -1), palette=("#fff4d6", "#ffb23e", "#ff5a1f"), echelle=1.0, t0=0.0):
+def impact_couches(ancre="impact", coup=(0, 0, -1), palette=("#fff4d6", "#ffb23e", "#ff5a1f"), echelle=1.0, t0=0.0, sol=True):
     """Explosion d'impact en couches (registre « monde 3D ») :
     flash -> onde (dôme + anneau au sol) -> éclats -> feu cel -> croissants
     de vent -> fumée qui reste. Timings tirés des refs (Stagnant Rage, 449,
@@ -42,7 +42,7 @@ def impact_couches(ancre="impact", coup=(0, 0, -1), palette=("#fff4d6", "#ffb23e
     feu 0,3-0,6 s, vent 0,3 s, fumée 1-1,6 s."""
     blanc, chaud, fonce = palette
     s = echelle
-    return [
+    couches = [
         # 1. flash : étoile à 4 branches + cœur, 1-2 images
         {"type": "particules", "nom": "flash", "t0": t0, "ancre": ancre, "texture": "flash", "emit": 1,
          "lifetime": [0.07, 0.07], "size": [[0, 9 * s], [1, 12 * s]], "transparency": [[0, 0], [0.6, 0.2], [1, 1]],
@@ -87,6 +87,14 @@ def impact_couches(ancre="impact", coup=(0, 0, -1), palette=("#fff4d6", "#ffb23e
          "transparency": [[0, 0], [1, 0]], "color": [[0, "#ffffff"], [1, "#b9b4ae"]], "light_emission": 0,
          "rotation": [0, 360], "forme": {"sphere": 1.0 * s}},
     ]
+    if not sol:
+        # EN L'AIR : pas d'anneau ni de vague au sol ; le dôme devient une
+        # coquille orientée dans le sens du coup
+        couches = [c for c in couches if c["nom"] not in ("anneau_sol", "vague")]
+        for c in couches:
+            if c["nom"] in ("dome", "vent_1", "vent_2"):
+                c["orientation"] = "coup"
+    return couches
 
 
 def orbe_impact():
@@ -183,7 +191,138 @@ def impact_m1():
     }
 
 
-RECETTES = {"orbe_impact": orbe_impact, "impact_m1": impact_m1}
+# ============================================================ POING DU DRAGON
+# Briques paramétrées, appelées par r6_poing_dragon/scripts/staging.py avec
+# les positions de la scène (repère de l'attaquant au lancement, -Z devant).
+# Palette du Dragon : or + or profond + blanc chaud (CARNET §4b.2).
+DRAGON = ("#fff6dc", "#ffc53d", "#ff8a1f")
+
+
+def impact_palier(pos, coup, tier=1, palette=DRAGON, t0=0.0, echelle=1.0):
+    """Impact de la rafale, proportionnel au coup (CARNET §4b.4, hiérarchie
+    v6) : tier 1 = étoile 2 images + anneau fin + petit croissant + éclats ;
+    tier 2 = + dôme court, croissant de vent, plus d'éclats. Rend (couches,
+    sons) ; les temps sont relatifs au début de la recette."""
+    blanc, chaud, _f = palette
+    anc = {"pos": list(pos), "dir": list(coup), "coup": list(coup)}
+    s = echelle
+    c = [
+        {"type": "particules", "nom": "etoile", "t0": t0, "ancre": anc, "texture": "etoile4", "emit": 1,
+         "lifetime": [2 / 60, 2 / 60] if tier == 1 else [0.08, 0.08], "size": [[0, 3.4 * s], [1, 2.4 * s]], "color": "#ffffff",
+         "light_emission": 1, "zoffset": 1},
+        {"type": "particules", "nom": "anneau", "t0": t0, "ancre": anc, "texture": "anneau", "emit": 1,
+         "lifetime": [0.12, 0.12], "size": [[0, 0.6 * s], [1, 4.6 * s]], "transparency": [[0, 0], [1, 1]],
+         "color": blanc, "light_emission": 1},
+        {"type": "particules", "nom": "croissant", "t0": max(0.0, t0 - 1 / 60), "ancre": anc, "texture": "croissant",
+         "emit": 1, "lifetime": [0.09, 0.09], "size": [[0, 2.6 * s], [1, 3.2 * s]], "transparency": [[0, 0.1], [1, 1]],
+         "color": "#ffffff", "light_emission": 1, "rotation": [-100, -80]},
+        {"type": "particules", "nom": "eclats", "t0": t0, "ancre": anc, "texture": "eclat", "emit": 6 if tier == 1 else 14,
+         "lifetime": [0.1, 0.2], "speed": [24 * s, 38 * s], "spread": [55, 55], "drag": 8, "orientation": "VelocityParallel",
+         "size": [[0, 1.0 * s], [1, 0.1]], "color": [[0, "#ffffff"], [1, chaud]], "light_emission": 1},
+    ]
+    sons = [{"son": "fouet_m1", "t0": round(max(0.0, t0 - 0.13), 4), "volume": 0.45},
+            {"son": "frappe_m1", "t0": t0, "volume": 0.85, "impact": True, "vide": 0.025}]
+    if tier >= 2:
+        c += [
+            {"type": "mesh", "nom": "dome", "t0": t0, "duree": 0.2, "ancre": anc, "mesh": "dome", "orientation": "coup",
+             "texture": "bruit_energie", "defilement": [1.2, 0], "echelle": [[0, 0.4 * s], [0.4, 1.8 * s], [1, 2.4 * s]],
+             "transparency": [[0, 0.1], [0.5, 0.5], [1, 1]], "color": blanc, "bord": 1.0, "light_emission": 1},
+            {"type": "mesh", "nom": "vent", "t0": t0 + 0.01, "duree": 0.22, "ancre": anc, "mesh": "croissant_3d",
+             "orientation": "coup", "texture": "bruit_energie", "defilement": [2.2, 0],
+             "echelle": [[0, 1.2 * s], [1, 3.6 * s]], "transparency": [[0, 0.1], [0.7, 0.4], [1, 1]], "color": blanc,
+             "rotation_vitesse": 480, "light_emission": 1},
+        ]
+        sons.append({"son": "impact_lourd", "t0": t0, "volume": 0.35, "hauteur": 1.25})
+    return c, sons
+
+
+def sillage(chemin, palette=DRAGON, largeur=1.4, fumee=False, t_fin=None, lignes=True):
+    """Le VFX d'AIR (CARNET §4b.3 : l'air vend la vitesse) : un ruban qui suit
+    un chemin (poing qui plonge, victime projetée), des lignes de vitesse
+    semées DERRIÈRE (vitesse négative le long du mouvement), et en option de
+    la fumée qui reste en l'air."""
+    blanc, chaud, fonce = palette
+    t0, t1 = chemin[0][0], t_fin if t_fin is not None else chemin[-1][0]
+    anc = {"chemin": chemin}
+    c = [{"type": "trail", "nom": "sillage", "t0": t0, "t1": t1, "ancre": anc, "lifetime": 0.3,
+          "largeur": [[0, largeur], [1, 0]], "texture": "ruban", "transparency": [[0, 0], [1, 1]],
+          "color": [[0, blanc], [1, chaud]], "light_emission": 1}]
+    if lignes:
+        # « éclat » étiré (Squash) : ligne_vitesse est dessinée à l'horizontale,
+        # et VelocityParallel aligne le HAUT de la texture sur la vitesse (1er
+        # essai : des tirets en travers du mouvement)
+        c.append({"type": "particules", "nom": "lignes", "t0": t0, "ancre": anc, "texture": "eclat",
+                  "rate": 70, "duree_emission": t1 - t0, "lifetime": [0.12, 0.2], "speed": [-30, -18],
+                  "spread": [12, 12], "orientation": "VelocityParallel", "size": [[0, 1.6], [1, 0.3]],
+                  "squash": [[0, 1.3], [1, 1.3]],
+                  "transparency": [[0, 0.1], [1, 1]], "color": "#ffffff", "light_emission": 1,
+                  "forme": {"sphere": 0.9}})
+    if fumee:
+        c.append({"type": "particules", "nom": "fumee_sillage", "t0": t0, "ancre": anc, "texture": "fumee_cel",
+                  "rate": 28, "duree_emission": t1 - t0, "flipbook": {"grille": 4, "mode": "OneShot"},
+                  "lifetime": [0.6, 1.0], "speed": [0.5, 2], "spread": [180, 180], "drag": 2,
+                  "size": [[0, 1.8, 0.4], [1, 3.6, 0.6]], "transparency": [[0, 0], [1, 0]],
+                  "color": [[0, "#ffffff"], [1, "#b9b4ae"]], "light_emission": 0, "rotation": [0, 360]})
+    return c
+
+
+def fin_couche(L):
+    if L["type"] == "particules":
+        return L["t0"] + L.get("duree_emission", 0) + L["lifetime"][1]
+    if L["type"] == "trail":
+        return L["t1"] + L.get("lifetime", 0.3)
+    return L["t0"] + L.get("duree", 0)
+
+
+_DUREES_SONS = None
+
+
+def duree_son(nom):
+    """Durée du WAV (sons/catalogue.json, écrit par sons.py)."""
+    global _DUREES_SONS
+    if _DUREES_SONS is None:
+        cat = json.load(open(os.path.join(HERE, "sons", "catalogue.json")))
+        _DUREES_SONS = {x["nom"]: x["duree"] for x in cat["sons"]}
+    return _DUREES_SONS[nom]
+
+
+def recette(nom, couches, sons=(), duree=None, bloom=None, titre=None):
+    """Assemble une recette ; la durée couvre la dernière couche ET le
+    dernier son (sinon le moteur Roblox détruit les Sound en nettoyant)."""
+    fin = max([fin_couche(L) for L in couches] + [s["t0"] + duree_son(s["son"]) / s.get("hauteur", 1) for s in sons] + [0.0])
+    return {"nom": nom, "titre": titre or nom, "duree": round(duree or fin + 0.05, 3), "graine": 5, "couches": couches,
+            "sons": list(sons), **({"bloom": bloom} if bloom else {})}
+
+
+def souffle_avant(t_contact, volume=0.8, vide=0.06, duree_son=0.44):
+    """Le souffle qui ARRIVE sur le contact, coupé `vide` s avant (le vide
+    avant l'impact, ECOUTE_REFS_SFX)."""
+    return {"son": "souffle_projectile", "t0": round(max(0.0, t_contact - vide - duree_son), 4), "volume": volume}
+
+
+def dragon_impact_aerien():
+    """Aperçu labo du contact aérien du Dragon (en l'air, poing vers le bas)."""
+    anc = {"pos": [0, 6, -3], "dir": [0, -1, -0.3], "coup": [0, -0.9, -0.4]}
+    c = impact_couches(anc, palette=DRAGON, echelle=1.1, t0=0.2, sol=False)
+    r = recette("dragon_impact_aerien", c, [{"son": "impact_lourd", "t0": 0.2, "volume": 0.9, "impact": True}],
+                titre="Dragon : contact aérien")
+    r["cameras"] = {"large": {"oeil": [12, 7, 6], "cible": [0, 5, -3], "fov": 50},
+                    "jeu": {"oeil": [1.75, 7.5, 9], "cible": [1.75, 5.5, -6], "fov": 70}}
+    return r
+
+
+def dragon_plongee():
+    """Aperçu labo du sillage de la plongée : le poing descend de 12 studs en
+    0,37 s."""
+    ch = [[0.2 + 0.37 * k / 10, 0.3 * k / 10, 14 - 12 * (k / 10) ** 1.6, -2 - 3 * k / 10] for k in range(11)]
+    r = recette("dragon_plongee", sillage(ch, largeur=1.5), [souffle_avant(ch[-1][0])],
+                titre="Dragon : sillage de la plongée")
+    r["cameras"] = {"large": {"oeil": [14, 8, 8], "cible": [0, 7, -3], "fov": 50}}
+    return r
+
+
+RECETTES = {"orbe_impact": orbe_impact, "impact_m1": impact_m1,
+            "dragon_impact_aerien": dragon_impact_aerien, "dragon_plongee": dragon_plongee}
 
 
 def toutes():

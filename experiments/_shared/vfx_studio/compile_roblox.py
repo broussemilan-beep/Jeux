@@ -150,6 +150,7 @@ def compiler(rec):
         v.update({"type": "mesh", "t0": p["t0"], "duree": p["t1"] - p["t0"], "ancre": "projectile"})
         p["visuel"] = couche(v)
         out["projectile"] = p
+    out["sons"] = [dict(x, duree=recettes.duree_son(x["son"])) for x in rec.get("sons", [])]
     b = rec.get("bloom") or {}
     out["bloom"] = {"intensite": nseq(b.get("intensite", 0.6)), "seuil": b.get("seuil", 0.8), "taille": b.get("taille", 2)}
     return out

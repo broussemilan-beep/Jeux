@@ -224,6 +224,15 @@ end
 -- Dimensions : medianes du corpus VFX (pack 100 Combat VFX) x scale.
 
 local function impact(ctx, ev)
+	-- studio VFX : le visuel est joué par la recette (événement « studio ») ;
+	-- l'impact ne garde que le hitstop, la secousse et le punch-in de FOV
+	if ev.studio then
+		if ev.hitstop > 0 then
+			ctx.hitstop(ev.hitstop)
+		end
+		ctx.shake(ev.shake, if ev.name == "impact" then 10 else 6 * math.min(1.2, ev.scale))
+		return
+	end
 	local cfg = DragonFist.CONFIG
 	local pos = DragonFist.toWorld(ctx.start, ev.pos)
 	local dir = DragonFist.dirToWorld(ctx.start, ev.dir)
@@ -307,15 +316,32 @@ local function impact(ctx, ev)
 	ctx.shake(ev.shake, if ev.name == "impact" then 10 else 6 * math.min(1.2, s))
 end
 
+-- Un SEUL Highlight, créé au lancement puis allumé / éteint : en créer un
+-- par coup provoque des pics de coût (doc officielle Highlight, défaut noté
+-- dans RETOURS 2026-09-25). Un jeton évite qu'un flash plus ancien éteigne
+-- un flash plus récent.
 local function bodyFlash(ctx, ev)
-	local h = Instance.new("Highlight")
-	h.Adornee = ctx.attacker
+	local h = ctx.highlight
 	h.FillColor = color3(ev.color)
-	h.FillTransparency = 0
-	h.OutlineTransparency = 1
-	h.DepthMode = Enum.HighlightDepthMode.Occluded
-	h.Parent = ctx.fx
-	Debris:AddItem(h, ev.frames / 60)
+	h.Enabled = true
+	ctx.flashToken += 1
+	local token = ctx.flashToken
+	task.delay(ev.frames / 60, function()
+		if ctx.flashToken == token then
+			h.Enabled = false
+		end
+	end)
+end
+
+-- Studio VFX (experiments/_shared/vfx_studio) : la recette compilée est
+-- jouée par VFXStudio dans le repère de la scène (origine au sol sous le
+-- HumanoidRootPart au lancement), en temps réel depuis sa frame.
+local function studio(ctx, ev)
+	if not ctx.vfx then
+		return
+	end
+	local h = ctx.vfx.jouer(ev.recette, ctx.start * CFrame.new(0, -DragonFist.ROOT_Y, 0), { parent = ctx.fx, bloom = false })
+	table.insert(ctx.studioHandles, h)
 end
 
 local function groundBurst(ctx, ev)
@@ -770,12 +796,33 @@ function DragonFist.play(attacker: Model, victim: Model, animations: Folder, dat
 
 	local binds = {}
 	local shakes = {}
+	-- studio VFX : modules voisins dans le package (absents : les impacts
+	-- restent sans visuel, la technique tourne quand même)
+	local vfx
+	local vfxMod, dataMod = script.Parent:FindFirstChild("VFXStudio"), script.Parent:FindFirstChild("VFXRecettes")
+	if vfxMod then
+		vfx = require(vfxMod)
+		if dataMod then
+			vfx.configurer(require(dataMod).assets)
+		end
+	end
+	local highlight = Instance.new("Highlight")
+	highlight.Adornee = attacker
+	highlight.FillTransparency = 0
+	highlight.OutlineTransparency = 1
+	highlight.DepthMode = Enum.HighlightDepthMode.Occluded
+	highlight.Enabled = false
+	highlight.Parent = fx
 	local ctx
 	ctx = {
 		start = start,
 		attacker = attacker,
 		victim = victim,
 		fx = fx,
+		vfx = vfx,
+		studioHandles = {},
+		highlight = highlight,
+		flashToken = 0,
 		cleanup = {},
 		kept = {},
 		hitstop = function(d: number)
@@ -822,6 +869,7 @@ function DragonFist.play(attacker: Model, victim: Model, animations: Folder, dat
 		embers = embers,
 		dust_trail = dustTrail,
 		dome = dome,
+		studio = studio,
 	}
 	local mangaEv, whiteEv
 	for _, e in data.EVENTS do

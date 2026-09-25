@@ -99,6 +99,7 @@
         <button type="button" id="optFx" aria-pressed="true">Effets 3D</button>
         <button type="button" id="optScreen" aria-pressed="true">Effets écran</button>
         <button type="button" id="optStop" aria-pressed="true">Hitstops</button>
+        <button type="button" id="optSon" aria-pressed="false" title="Les mêmes WAV que dans Roblox (studio VFX)">Son</button>
       </div>
     </div>
   </div>
@@ -110,6 +111,7 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>/*__MOTEUR_VFX__*/</script>
 <script>
 (function () {
   "use strict";
@@ -637,8 +639,24 @@
     });
   }
 
+  // ---- STUDIO VFX : impacts, air et son joués par les recettes du studio
+  // (vfx_studio/lab/moteur.js), les mêmes que le labo et que le moteur Roblox
+  // VFXStudio.luau. Temps interne = secondes RÉELLES depuis le déclenchement.
+  VFX.loadTextures(D.vfx.textures); VFX.loadMeshes(D.vfx.meshes); VFX.variantes = D.vfx.variantes;
+  const studios = E.filter((e) => e.kind === "studio").map((ev) => {
+    const eff = VFX.Effet(ev.recette, scene);
+    return { ev, eff, objs: eff.couches.map((c) => c.obj) };
+  });
+  on((tr, fa, sa, sv, cam) => {
+    for (const st of studios) {
+      const age = tr - realTimeOf(st.ev.frame), actif = useFx && age >= 0 && age <= st.eff.duree;
+      for (const o of st.objs) o.visible = actif;
+      if (actif) { cam.updateMatrixWorld(); st.eff.update(age, cam); }
+    }
+  });
+
   for (const ev of E) {
-    if (ev.kind === "impact") makeImpact(ev);
+    if (ev.kind === "impact") { if (!ev.studio) makeImpact(ev); }
     else if (ev.kind === "ground_burst") makeGroundBurst(ev);
     else if (ev.kind === "aura") makeAura(ev);
     else if (ev.kind === "fist_glow") makeFistGlow(ev);
@@ -853,18 +871,51 @@
     ["Temps suspendu", 200, 256, "#a17a1f"], ["Plongée", 256, 288, "#b8861b"], ["Impact", 288, 334, "#e0e0e0"], ["Révélation", 334, 490, "#3a3d47"], ["Retour", 490, END, "#2b2e36"]];
   const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   let tr = reduce ? realTimeOf(230) : 0, playing = !reduce, speed = 1, last = performance.now();
+  // ---- SON (WebAudio) : les sons des recettes studio, à leur temps réel
+  let actx = null, tampons = {}, sources = [], sonActif = false;
+  const SONS = [];
+  for (const st of studios) for (const so of st.ev.recette.sons || []) SONS.push({ so, t: () => realTimeOf(st.ev.frame) + so.t0 });
+  async function initSon() {
+    actx = new (window.AudioContext || window.webkitAudioContext)();
+    for (const [nom, uri] of Object.entries(D.vfx.sons || {})) {
+      const bin = Uint8Array.from(atob(uri.split(",")[1]), (c) => c.charCodeAt(0));
+      tampons[nom] = await actx.decodeAudioData(bin.buffer);
+    }
+  }
+  function couperSons() { for (const x of sources) { try { x.stop(); } catch (e) {} } sources = []; }
+  function planifierSons() {
+    couperSons();
+    if (!sonActif || !actx || !playing) return;
+    const now = actx.currentTime;
+    for (const { so, t } of SONS) {
+      const b = tampons[so.son]; if (!b) continue;
+      const h = so.hauteur || 1, t0 = t(), dur = b.duration / h;
+      if (t0 + dur <= tr) continue;
+      const src = actx.createBufferSource(); src.buffer = b; src.playbackRate.value = h * speed;
+      const g = actx.createGain(); g.gain.value = so.volume == null ? 1 : so.volume;
+      src.connect(g).connect(actx.destination);
+      src.start(now + Math.max(0, (t0 - tr) / speed), Math.max(0, (tr - t0) * h));
+      sources.push(src);
+    }
+  }
+  document.getElementById("optSon").addEventListener("click", async (e) => {
+    sonActif = !sonActif; e.currentTarget.setAttribute("aria-pressed", String(sonActif));
+    if (sonActif && !actx) await initSon();
+    if (actx && actx.state === "suspended") await actx.resume();
+    planifierSons();
+  });
   const hud = document.getElementById("hud"), scrub = document.getElementById("scrub"), head = document.getElementById("playhead"), playBtn = document.getElementById("play");
-  function setPlaying(p) { playing = p; playBtn.textContent = p ? "Pause" : "Lecture"; }
+  function setPlaying(p) { playing = p; playBtn.textContent = p ? "Pause" : "Lecture"; if (typeof planifierSons === "function") planifierSons(); }
   setPlaying(playing);
   playBtn.addEventListener("click", () => setPlaying(!playing));
   document.getElementById("prev").addEventListener("click", () => { setPlaying(false); tr = realTimeOf(Math.max(0, Math.round(animFrame(tr)) - 1)); });
   document.getElementById("next").addEventListener("click", () => { setPlaying(false); tr = realTimeOf(Math.min(END, Math.round(animFrame(tr)) + 1)) + 1e-4; });
-  document.querySelectorAll(".speed").forEach((b) => b.addEventListener("click", () => { speed = parseFloat(b.dataset.speed); document.querySelectorAll(".speed").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); }));
+  document.querySelectorAll(".speed").forEach((b) => b.addEventListener("click", () => { speed = parseFloat(b.dataset.speed); planifierSons(); document.querySelectorAll(".speed").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); }));
   document.querySelectorAll(".cam").forEach((b) => b.addEventListener("click", () => setCam(b.dataset.cam)));
   function toggle(id, fn) { const b = document.getElementById(id); b.addEventListener("click", () => { const v = b.getAttribute("aria-pressed") !== "true"; b.setAttribute("aria-pressed", String(v)); fn(v); }); }
   toggle("optFx", (v) => { useFx = v; });
   toggle("optScreen", (v) => { useScreen = v; });
-  toggle("optStop", (v) => { const fa = animFrame(tr); useStop = v; tr = realTimeOf(fa); buildTimeline(); });
+  toggle("optStop", (v) => { const fa = animFrame(tr); useStop = v; tr = realTimeOf(fa); buildTimeline(); planifierSons(); });
   scrub.addEventListener("input", () => { setPlaying(false); tr = (scrub.value / 1000) * total(); });
   function buildTimeline() {
     const T = total(), bands = document.getElementById("bands"), marks = document.getElementById("marks");
@@ -913,12 +964,12 @@
   }
   function frame(now) {
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
-    if (playing) { tr += dt * speed; if (tr > total()) tr = 0; }
+    if (playing) { tr += dt * speed; if (tr > total()) { tr = 0; planifierSons(); } }
     render();
     requestAnimationFrame(frame);
   }
   // crochets de verification (captures automatiques)
-  window.__dragon = { seekFrame: (f) => { setPlaying(false); tr = realTimeOf(f) + 1e-4; render(); }, seekReal: (t) => { setPlaying(false); tr = t; render(); }, setCam, realTimeOf, total };
+  window.__dragon = { sons: () => ({ planifies: sources.length, decodes: Object.keys(tampons).length, total: SONS.length }), seekFrame: (f) => { setPlaying(false); tr = realTimeOf(f) + 1e-4; render(); }, seekReal: (t) => { setPlaying(false); tr = t; render(); }, setCam, realTimeOf, total };
   requestAnimationFrame(frame);
 })();
 </script>

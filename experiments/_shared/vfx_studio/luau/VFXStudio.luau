@@ -206,6 +206,19 @@ function VFXStudio.jouer(rec, repere, opts)
 			return monde(P.a), repere:VectorToWorldSpace(Vector3.new(0, 1, 0)), (monde(P.a) - monde(P.de)).Unit
 		end
 		anc = anc or {}
+		if anc.chemin then
+			-- ancre qui SUIT un chemin {{t, x, y, z}, ...} (poing, victime projetée)
+			local c = anc.chemin
+			local i = 1
+			while i < #c - 1 and c[i + 1][1] <= t do
+				i += 1
+			end
+			local a, b = c[i], c[math.min(i + 1, #c)]
+			local u = if b[1] > a[1] then math.clamp((t - a[1]) / (b[1] - a[1]), 0, 1) else 0
+			local pa, pb = monde({ a[2], a[3], a[4] }), monde({ b[2], b[3], b[4] })
+			local d = pb - pa
+			return pa:Lerp(pb, u), (if d.Magnitude > 1e-6 then d.Unit else Vector3.new(0, 1, 0)), dirMonde(anc.coup or { 0, 0, -1 })
+		end
 		return monde(anc.pos or { 0, 0, 0 }), dirMonde(anc.dir or { 0, 1, 0 }), dirMonde(anc.coup or { 0, 0, -1 })
 	end
 
@@ -283,9 +296,11 @@ function VFXStudio.jouer(rec, repere, opts)
 		if L.gel ~= false then
 			table.insert(emetteurs, pe) -- une couche peut refuser le gel (halo qui suit l'orbe)
 		end
-		if L.ancre == "projectile" then
+		if L.ancre == "projectile" or (type(L.ancre) == "table" and L.ancre.chemin) then
+			-- l'émetteur SUIT son ancre ; les particules déjà émises gardent leur
+			-- vitesse de naissance (comportement natif de Roblox)
 			table.insert(miseAJour, function(t)
-				local pp, dd = resolve("projectile", math.min(t, P.t1))
+				local pp, dd = resolve(L.ancre, if L.ancre == "projectile" then math.min(t, P.t1) else t)
 				p.CFrame = repereY(pp, dd)
 			end)
 		end
@@ -448,6 +463,8 @@ function VFXStudio.jouer(rec, repere, opts)
 		ev(L.t0, function()
 			s:Play()
 		end)
+		-- le nettoyage attend la fin du son (durée écrite par compile_roblox)
+		finMax = math.max(finMax, L.t0 + (L.duree or 2) / (L.hauteur or 1))
 	end
 
 	-- ------------------------------------------------------- couches

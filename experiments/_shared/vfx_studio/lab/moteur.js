@@ -98,6 +98,16 @@
       if (anc === "projectile") return { pos: A.projectilePos(t), dir: A.projectileDir(t) };
       if (anc === "impact") return { pos: A.impact.clone(), dir: new T.Vector3(0, 1, 0), coup: A.impactDir.clone() };
       const o = anc || {};
+      if (o.chemin) {                          // ancre qui SUIT un chemin [[t, x, y, z], ...] (poing, victime)
+        const c = o.chemin;
+        let i = 0;
+        while (i < c.length - 2 && c[i + 1][0] <= t) i++;
+        const a = c[i], b = c[Math.min(i + 1, c.length - 1)];
+        const u = b[0] > a[0] ? Math.min(1, Math.max(0, (t - a[0]) / (b[0] - a[0]))) : 0;
+        const pa = new T.Vector3(a[1], a[2], a[3]), pb = new T.Vector3(b[1], b[2], b[3]);
+        const d = pb.clone().sub(pa);
+        return { pos: pa.clone().lerp(pb, u), dir: d.lengthSq() > 1e-9 ? d.normalize() : new T.Vector3(0, 1, 0), coup: v3(o.coup || [0, 0, -1]).normalize() };
+      }
       return { pos: v3(o.pos || [0, 0, 0]), dir: v3(o.dir || [0, 1, 0]).normalize(), coup: v3(o.coup || [0, 0, -1]).normalize() };
     };
     return A;
@@ -197,7 +207,10 @@
     function state(p, t, anc) {
       const age = (t - p.tb) * (L.timescale || 1);
       if (age < 0 || age > p.life) return null;
-      const B = basis(anc.dir);
+      // direction de NAISSANCE (Roblox : une particule émise garde sa vitesse
+      // d'émission, même si l'émetteur tourne ensuite) ; bloquée à l'ancre :
+      // elle suit l'ancre
+      const B = basis(L.bloque_a_l_ancre ? anc.dir : p.dir0);
       // direction : écart (SpreadAngle) autour de l'axe d'émission
       const d = B.y.clone().applyAxisAngle(B.z, p.ax).applyAxisAngle(B.x, p.ay).normalize();
       const v0 = d.multiplyScalar(p.speed);
@@ -225,7 +238,7 @@
           const p = P[i];
           const tt = gel ? gel(t, p.tb) : t;
           if (tt < p.tb || tt > p.tb + p.life / (L.timescale || 1)) continue;
-          if (!p.anc0) p.anc0 = anchors.resolve(L.ancre, p.tb).pos;
+          if (!p.anc0) { const a0 = anchors.resolve(L.ancre, p.tb); p.anc0 = a0.pos; p.dir0 = a0.dir; }
           const anc = anchors.resolve(L.ancre, tt);
           const s = state(p, tt, anc);
           if (!s) continue;

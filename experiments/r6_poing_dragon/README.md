@@ -698,3 +698,43 @@ Saitama »).
     - le visage R6 souriant apparaît dans le plan obari ;
     - en caméra de jeu, la plongée reste un bloc vu de dos ;
     - l'armé n'est tenu que 0,5 s.
+
+## v10 (2026-09-25) : les VFX et le SON passent au studio VFX
+
+L'animation ne change pas (v9, mise en pause après le 7,7 de Milan). Ce qui
+change : les effets et le son, faits avec le studio VFX
+(`../_shared/vfx_studio/`), qui a UNE recette par effet, jouée à
+l'identique par le labo, par ce lecteur et par le moteur Roblox
+`VFXStudio.luau`.
+
+| moment | avant (v9) | maintenant (recettes studio) | son |
+|---|---|---|---|
+| rafale, coups 1-3 (tier 1) | éclat + anneau codés à la main | étoile 2 images, anneau fin, petit croissant, éclats orientés | fouet 8 f avant, frappe sèche au contact |
+| coup 4 (tier 2) | + halo, étincelles | + dôme court, croissant de vent 3D qui tourne | + coup grave léger |
+| coup chargé | impact + dôme + souffle | contact tier 2 ; APRÈS les cartes, explosion cel dans l'axe du coup (feu peint, fumée 2 tons, vent) + anneau et vague au sol ; la victime projetée laisse un **sillage d'air** et de fumée | craquement au contact, **silence pendant le noir**, boum + grondement quand les cartes tombent |
+| arme de l'aérien | — | (l'aura reste celle de v9) | aspiration + tonalité d'énergie |
+| plongée | — | **sillage d'air** sur le trajet du poing (ruban + lignes de vitesse semées derrière) | souffle qui monte, coupé 60 ms avant le contact |
+| contact aérien | impact codé à la main | explosion EN L'AIR (sans couches au sol, dôme orienté dans le sens du coup) | impact lourd |
+| impact au sol | impact + dôme | explosion complète : onde en dôme, anneau, vague à dents, feu, fumée | impact lourd plus grave + long grondement |
+
+Gardés de v9 (pas encore refaits) : aura, poing qui brille, dragon de fumée,
+cratère, braises, planches manga, écran blanc, cartes.
+
+**Réglé à l'œil sur les captures** : 1er essai aux échelles 1,1 (contact
+aérien), 2,1 (sol) et 1,3 (explosion du coup chargé) ; la caméra obari est à
+1,5 stud du contact et le feu cel à 2,1 fait 11 studs par particule, donc
+l'effet avalait le cadre et cachait les corps. Échelles retenues : 0,55 / 1,4
+/ 0,9.
+
+**Roblox.** `DragonFist.luau` joue chaque événement « studio » avec
+`VFXStudio.jouer(recette, repère de la scène)` ; les événements « impact »
+ne gardent que hitstop, secousse et punch-in. Le flash du corps utilise un
+seul `Highlight` créé au lancement (en créer un par coup provoque des pics de
+coût). Le package contient `VFXStudio` et `VFXRecettes` ; les 9 recettes du
+Dragon passent le banc de test Luau du studio
+(`../_shared/vfx_studio/luau/run_test.py --recettes …`, 107 contrôles).
+Textures et sons n'ont pas encore d'identifiant Roblox : ils sont listés comme
+manquants (repli : texture intégrée de Roblox, aucun son).
+
+**Lecteur.** Bouton « Son » : les mêmes WAV qu'en jeu, placés au temps réel
+(hitstops compris). Vidéo avec son : `scripts/video_son.py`.

@@ -32,6 +32,9 @@ sys.path.insert(0, HERE)
 
 from animator_brain import roblox_export as X  # noqa: E402
 
+sys.path.insert(0, os.path.join(HERE, "..", "..", "_shared", "vfx_studio"))
+import recettes as R  # noqa: E402  (studio VFX : les MÊMES recettes que le labo et le moteur Roblox)
+
 SCENE = json.load(open(os.path.join(OUT, "scene.json")))
 FPS = SCENE["fps"]
 END = SCENE["end_f"]
@@ -235,7 +238,6 @@ def events(aw, vw):
     g = p.copy()
     g[1] = 0.05
     ev(u + 1, "ground_burst", pos=v3(g), color=GOLD, scale=1.4)
-    ev(u + 1, "dome", pos=v3(g), radius=5.0, frames=22, color=GOLD)
     ev(170, "ground_burst", pos=v3([aw[170]["Torso"][1][0], 0.05, aw[170]["Torso"][1][2]]), color=WHITE, scale=1.2)
     ev(196, "whip", frames=12)
     if SCENE.get("aerien", "v8") == "v8":
@@ -261,10 +263,101 @@ def events(aw, vw):
     # l'impact au sol se VOIT : gel de 0,16 s puis onde de choc en dome
     ev(imf, "impact", pos=v3(ground + [0, 0.6, 0]), dir=[0, -1, 0], scale=2.4, color=GOLD, hitstop=0.16, shake=1.0,
        name="impact", tier=3)
-    ev(imf, "dome", pos=v3(ground), radius=11.0, frames=40, color=GOLD)
     ev(imf, "smoke_cloud", pos=v3(ground), radius=9.0, frames=END - imf, color="#7d7468")
     ev(imf, "embers", pos=v3(ground), frames=END - imf, color=GOLD_DEEP)
+    # studio VFX : les impacts sont désormais joués par ses recettes ; les
+    # événements « impact » gardent hitstop, secousse et punch-in de FOV
+    for e in E:
+        if e["kind"] == "impact":
+            e["studio"] = True
+    E += studio_events(aw, vw, E)
     return E
+
+
+def temps_reel(E):
+    """Temps réel d'une frame (s), hitstops compris : même calcul que
+    realTimeOf() du lecteur (un hitstop à la frame fs compte pour f > fs)."""
+    stops = sorted((e["frame"], e["hitstop"]) for e in E if e["kind"] == "impact" and e.get("hitstop", 0) > 0)
+    return lambda f: f / FPS + sum(h for fs, h in stops if fs < f)
+
+
+def studio_events(aw, vw, E):
+    """Événements « studio » : une recette du studio VFX (vfx_studio/recettes.py)
+    jouée au temps RÉEL de sa frame, dans le repère de la scène. Le temps
+    interne d'une recette est en secondes réelles depuis son déclenchement
+    (les effets continuent pendant les hitstops, comme en jeu). Une recette
+    peut commencer AVANT son contact (le souffle qui arrive) : `avance` frames."""
+    rt = temps_reel(E)
+    out = []
+
+    def studio(f_contact, nom, construire, avance=0):
+        f0 = max(0, f_contact - avance)
+        t_c = round(rt(f_contact) - rt(f0), 4)
+        couches, sons = construire(t_c, lambda f: round(rt(f) - rt(f0), 4))
+        rec = R.recette(f"dragon_{nom}", couches, sons)
+        out.append(dict(frame=f0, kind="studio", name=nom, recette=rec))
+
+    def chemin(track, part, fa, fb, rel, tete=True):
+        return [[rel(f)] + v3(tip(track[f], part) if tete else track[f][part][1]) for f in range(fa, fb + 1)]
+
+    # 1. RAFALE : palier 1 (hits 1-3) et 2 (h4), le fouet 8 f avant le contact
+    tiers = [1, 1, 1, 2]
+    for i, (c, sd, _k) in enumerate(HITS):
+        p = tip(aw[c], "Right Arm" if sd == "R" else "Left Arm")
+        d = impact_dir(aw, c, sd)
+        studio(c, f"hit{i + 1}", lambda tc, rel, p=p, d=d, i=i: R.impact_palier(v3(p), v3(d), tier=tiers[i], t0=tc,
+                                                                               echelle=0.8 + 0.25 * SCENE["hit_scale"][i]),
+               avance=8)
+    # 2. COUP CHARGÉ : craquement au contact, SILENCE pendant le noir, boum
+    #    quand les cartes tombent ; l'explosion du monde sort du blanc, dans
+    #    l'axe du coup ; la victime projetée laisse un sillage d'air et de fumée
+    u = SCENE["upper_f"]
+    p = tip(aw[u], "Right Arm")
+    d = impact_dir(aw, u, "R")
+
+    def coup_charge(tc, rel):
+        c, sons = R.impact_palier(v3(p), v3(d), tier=2, t0=tc, echelle=1.2)
+        t_ex = rel(u + 1)                      # après le gel des cartes (0,43 s)
+        anc = {"pos": v3(p + 1.6 * d), "dir": v3(d), "coup": v3(d)}
+        c += R.impact_couches(anc, palette=R.DRAGON, echelle=0.9, t0=t_ex, sol=False)
+        g = p + 1.6 * d
+        g[1] = 0.0
+        c += [L for L in R.impact_couches({"pos": v3(g)}, palette=R.DRAGON, echelle=1.3, t0=t_ex) if L["nom"] in ("anneau_sol", "vague")]
+        c += R.sillage(chemin(vw, "Torso", u + 1, 170, rel, tete=False), largeur=2.2, fumee=True)
+        sons = [x for x in sons if x["son"] != "impact_lourd"] + [
+            {"son": "impact_lourd", "t0": round(tc + 0.15, 4), "volume": 1.0, "impact": True, "vide": 0.08},
+            {"son": "grondement", "t0": round(tc + 0.16, 4), "volume": 0.7},
+            {"son": "vent_arc", "t0": t_ex, "volume": 0.5},
+        ]
+        return c, sons
+    studio(u, "coup_charge", coup_charge, avance=8)
+    # 3. AÉRIEN : l'arme s'allume (son d'énergie), la plongée laisse un sillage
+    #    d'air, le souffle est coupé 60 ms avant le contact, contact EN L'AIR
+    studio(226, "arme", lambda tc, rel: ([], [{"son": "aspiration", "t0": 0.0, "volume": 0.5},
+                                                {"son": "naissance_orbe", "t0": 0.02, "volume": 0.4}]))
+    sf = SCENE["strike_f"]
+
+    def plongee(tc, rel):
+        return R.sillage(chemin(aw, "Right Arm", 256, sf, rel), largeur=1.6), [R.souffle_avant(tc, volume=0.8)]
+    # le souffle (0,44 s) dure plus que la plongée (22 f = 0,37 s) : la recette
+    # démarre 12 f avant l'élan pour qu'il arrive sur le contact sans le couvrir
+    studio(sf, "plongee", plongee, avance=sf - 256 + 12)
+    ps, ds = tip(aw[sf], "Right Arm"), impact_dir(aw, sf, "R")
+    studio(sf, "contact_aerien", lambda tc, rel: (
+        R.impact_couches({"pos": v3(ps), "dir": v3(ds), "coup": v3(ds)}, palette=R.DRAGON, echelle=0.55, t0=tc, sol=False),
+        [{"son": "impact_lourd", "t0": tc, "volume": 0.8, "impact": True}]))
+    # échelles vues à l'écran (1er essai 1,1 / 2,1 / 1,3) : la caméra obari est
+    # à 1,5 stud du contact et le feu cel à 2,1 fait 11 studs par particule,
+    # l'effet avalait tout le cadre et cachait les corps
+    # 4. IMPACT AU SOL : le plus gros (escalade), son plus grave, grondement long
+    imf = SCENE["impact_f"]
+    gr = tip(aw[imf], "Right Arm")
+    gr[1] = 0.0
+    studio(imf, "impact_sol", lambda tc, rel: (
+        R.impact_couches({"pos": v3(gr)}, palette=R.DRAGON, echelle=1.4, t0=tc),
+        [{"son": "impact_lourd", "t0": tc, "volume": 1.0, "hauteur": 0.8, "impact": True, "vide": 0.03},
+         {"son": "grondement", "t0": round(tc + 0.01, 4), "volume": 0.9, "hauteur": 0.85}]))
+    return out
 
 
 def main():
