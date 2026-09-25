@@ -63,6 +63,13 @@ def _rafale_cfg():
 
 
 RAFALE = _rafale_cfg()
+
+
+# v9 (2026-09-25) : le COUP FINAL AERIEN, concu depuis la fiche de conception
+# (animator_brain/corpus/fiches/COUP_CHARGE.md) : grammaire du Serious Punch
+# (calme tenu -> armé violent -> poing VERS L'OBJECTIF -> cartes -> blanc).
+# DRAGON_FINAL="v8" rejoue l'aerien v8 a l'identique ; "v9a" / "v9b" = variantes.
+FINAL = os.environ.get("DRAGON_FINAL", "v8")
 sys.path.insert(0, os.path.join(HERE, "..", "..", "_shared"))
 
 from animator_brain import v222_rig as V  # noqa: E402
@@ -287,6 +294,28 @@ def _solve_pose_once(rig, p):
             ctrl, part = table[s]
             if mode == "a":
                 v = arm_point(V.current_parts(rig), s, *v)
+                mode = "w"
+            if mode == "d":
+                # v9 : membre dans une DIRECTION monde depuis son pivot (epaule
+                # ou hanche) : on pose la silhouette telle qu'on la veut vue,
+                # sans passer par les axes locaux des controles
+                dvec, dist = v
+                w_ = V.current_parts(rig)
+                if key == "hands":
+                    piv = torso_pivot(w_, s)
+                else:
+                    r_, p_ = w_["Torso"]
+                    piv = p_ + r_ @ np.array([0.5 if s == "R" else -0.5, -1.0, 0.0])
+                dvec = np.asarray(dvec, float)
+                v = piv + dist * dvec / max(1e-6, np.linalg.norm(dvec))
+                mode = "w"
+            if mode == "t":
+                # v9 : main a `dist` du pivot d'epaule, dans la direction d'un
+                # point (bras qui VISE ou qui FRAPPE un point du monde)
+                tgt, dist = v
+                piv = torso_pivot(V.current_parts(rig), s)
+                d = np.asarray(tgt, float) - piv
+                v = piv + dist * d / max(1e-6, np.linalg.norm(d))
                 mode = "w"
             if mode in ("w", "rw", "g", "rg"):
                 if mode == "rw":
@@ -885,25 +914,10 @@ def attacker_keys(vw, rig):
                 "feet": {"L": ("c", (0.0, 0.95 * k, 1.35 * k)), "R": ("c", (0.1, -1.15 * k, 0.55 * k))},
                 "look": head(f),
                 "hands": {"R": ("w", (1.2, y + 4.5 + 0.2 * k, ax_z + back)), "L": ("w", (-0.55, y + 1.6, ax_z - 2.5))}}
-    add(APEX_F, cocked(APEX_F, 13.2, -40, 4, 1.9, 0.85))
-    add(SUSPEND_END_F, cocked(SUSPEND_END_F, 13.7, -55, 8, 2.3, 1.0), "BEZIER")
-    # PLONGEE : bascule en avant, poing vers le bas, contact en l'air
-    tgt = target(STRIKE_F, "chest")
-    add(266, {"root": ((0.0, 12.4, ax_z - 0.4), (-45, 0, 0)), "fit": ("R", tgt, (0.3, 3.2, 1.6), (1, 1, 1)), "pelvis": ((0, 0, 0), (-10, -20, 0)), "chest": (0, 0.3, 0),
-              "feet": {"L": ("c", (0.0, 0.2, 0.6)), "R": ("c", (0.0, -0.5, 0.3))}, "look": head(266),
-              "hands": {"R": ("rw", (1.15, 1.9, 1.5)), "L": ("rw", (-1.2, 2.7, 0.5))}})
-    add(STRIKE_F, {"root": ((0.0, tgt[1] + 1.2, tgt[2] + 1.6), (-68, 0, 0)), "pelvis": ((0, 0, 0), (-8, 26, 0)),
-                   "fit": ("R", tgt, (0.35, 1.55, 0.95), (1, 1, 1)),
-                   "chest": (0, 0.2, 0), "feet": {"L": ("c", (0.0, -0.3, 0.2)), "R": ("c", (0.0, -0.6, 0.0))},
-                   "look": head(STRIKE_F),
-                   "hands": {"R": ("w", tuple(tgt)), "L": ("w", (-1.3, tgt[1] + 3.2, tgt[2] + 3.0))}}, "LINEAR")
-    for f, rot, off in ((280, -62, (0.38, 1.7, 0.7)), (281, -59, (0.39, 1.75, 0.6)), (282, -55, (0.4, 1.8, 0.5)),
-                        (285, -42, (0.45, 1.65, 0.6))):
-        tg = target(f, "chest")
-        add(f, {"root": ((0.0, tg[1] + 1.0, tg[2] + 1.5), (rot, 0, 0)), "pelvis": ((0, 0, 0), (-12, 22, 0)),
-                "fit": ("R", tg, off, (1, 1, 1)), "chest": (0, 0.25, 0),
-                "feet": {"L": ("c", (0.0, 0.0, 0.3)), "R": ("c", (0.0, -0.4, 0.1))}, "look": tuple(tg),
-                "hands": {"R": ("w", tuple(tg)), "L": ("rw", (-1.4, 2.4, 0.6))}}, "LINEAR")
+    if FINAL != "v8":
+        aerien_v9(add, vw, head, target, FINAL)
+    else:
+        aerien_v8(add, vw, head, target, cocked, ax_z)
     # ECRASEMENT : atterrissage en garde basse, poing sur la victime au sol
     tg = target(IMPACT_F, "chest")
     zc2 = tg[2] + 1.35
@@ -926,6 +940,114 @@ def attacker_keys(vw, rig):
                             hands={"L": ("w", (-1.3, 2.2, zc2 - 0.3)), "R": ("w", (1.35, 2.15, zc2 - 0.2))}))
     return K
 
+
+def aerien_v8(add, vw, head, target, cocked, ax_z):
+    """L'aerien v1-v8, inchange (DRAGON_FINAL=v8)."""
+    add(APEX_F, cocked(APEX_F, 13.2, -40, 4, 1.9, 0.85))
+    add(SUSPEND_END_F, cocked(SUSPEND_END_F, 13.7, -55, 8, 2.3, 1.0), "BEZIER")
+    # PLONGEE : bascule en avant, poing vers le bas, contact en l'air
+    tgt = target(STRIKE_F, "chest")
+    add(266, {"root": ((0.0, 12.4, ax_z - 0.4), (-45, 0, 0)), "fit": ("R", tgt, (0.3, 3.2, 1.6), (1, 1, 1)), "pelvis": ((0, 0, 0), (-10, -20, 0)), "chest": (0, 0.3, 0),
+              "feet": {"L": ("c", (0.0, 0.2, 0.6)), "R": ("c", (0.0, -0.5, 0.3))}, "look": head(266),
+              "hands": {"R": ("rw", (1.15, 1.9, 1.5)), "L": ("rw", (-1.2, 2.7, 0.5))}})
+    add(STRIKE_F, {"root": ((0.0, tgt[1] + 1.2, tgt[2] + 1.6), (-68, 0, 0)), "pelvis": ((0, 0, 0), (-8, 26, 0)),
+                   "fit": ("R", tgt, (0.35, 1.55, 0.95), (1, 1, 1)),
+                   "chest": (0, 0.2, 0), "feet": {"L": ("c", (0.0, -0.3, 0.2)), "R": ("c", (0.0, -0.6, 0.0))},
+                   "look": head(STRIKE_F),
+                   "hands": {"R": ("w", tuple(tgt)), "L": ("w", (-1.3, tgt[1] + 3.2, tgt[2] + 3.0))}}, "LINEAR")
+    for f, rot, off in ((280, -62, (0.38, 1.7, 0.7)), (281, -59, (0.39, 1.75, 0.6)), (282, -55, (0.4, 1.8, 0.5)),
+                        (285, -42, (0.45, 1.65, 0.6))):
+        tg = target(f, "chest")
+        add(f, {"root": ((0.0, tg[1] + 1.0, tg[2] + 1.5), (rot, 0, 0)), "pelvis": ((0, 0, 0), (-12, 22, 0)),
+                "fit": ("R", tg, off, (1, 1, 1)), "chest": (0, 0.25, 0),
+                "feet": {"L": ("c", (0.0, 0.0, 0.3)), "R": ("c", (0.0, -0.4, 0.1))}, "look": tuple(tg),
+                "hands": {"R": ("w", tuple(tg)), "L": ("rw", (-1.4, 2.4, 0.6))}}, "LINEAR")
+
+
+
+def aerien_v9(add, vw, head, target, variant):
+    """v9 : le coup final aerien, concu depuis la fiche de conception
+    `animator_brain/corpus/fiches/COUP_CHARGE.md` (Serious Punch TSB revu
+    image par image, planche OPM, Deku, repro obari, retours de Milan v1-v8).
+
+    - CALME (200-224) : a l'apex, presque immobile, bras relaches, il regarde
+      la victime. Le contraste calme -> violence fait la puissance.
+    - ARME (224-256) : en 6 f, buste qui TOURNE (epaule droite en arriere),
+      poing arme DERRIERE (a : a la hanche / b : haut derriere l'epaule),
+      genou avant leve, l'autre bras VISE la victime ; tenue VIVANTE.
+    - FRAPPE (256-278) : le CORPS bascule d'abord, le poing traine (fouet,
+      Wimshurst) ; le bras s'etend en 3 f VERS la victime ; puis tout le
+      corps fonce le long de l'axe, poing devant : la camera est chez la
+      victime, le poing grossit jusqu'a remplir le cadre (obari).
+    Le poing est TOUJOURS au-dessus de la victime et va vers elle : il ne
+    part jamais d'en bas (retour de Milan v7)."""
+    b = variant.endswith("b")
+    Vt = lambda f: np.asarray(vw[f]["Torso"][1], float)  # noqa: E731
+    chest = lambda f: np.asarray(target(f, "chest"), float)  # noqa: E731
+    # attaquant au-dessus et en retrait de la victime : l'axe du coup PLONGE
+    # (~60 deg sous l'horizontale) ; epaule droite a ~6,3 studs de la cible
+    HOV = np.array([0.0, 5.6, 2.8])
+
+    def sh_at(f, lift=0.0):
+        return Vt(f) + HOV + np.array([1.0, 0.5 + lift, 0.0])
+
+    look = lambda f: tuple(head(f))  # noqa: E731
+    # 1. CALME
+    for f, lift, lk in ((APEX_F, 0.0, -6), (212, 0.12, -8), (224, 0.18, -9)):
+        add(f, {"root": ((0.0, 0.0, 0.0), (lk, 0, 0)), "pelvis": ((0, 0, 0), (0, -4, 0)), "chest": (0, 0.1, 0),
+                "fit": ("R", tuple(sh_at(f, lift)), (0, 0, 0), (1, 1, 1)),
+                "feet": {"L": ("c", (0.0, 0.3, 0.35)), "R": ("c", (0.0, 0.0, 0.05))},
+                "hands": {"R": ("a", (110, -72, 1.9)), "L": ("a", (-110, -72, 1.9))},
+                "look": look(f)})
+    # 2. ARME : depart en 6 f (pas d'amorti vers la pose), depassement, tenue vivante
+    # 2e essai (tour de la pose a 8 angles) : le 1er etait un tas -- bras qui
+    # vise la victime juste en dessous = bras qui PEND ; genou « leve » parti
+    # en ARRIERE (axes locaux du controle). Les membres sont maintenant poses
+    # en directions MONDE : une silhouette ouverte en K dans le plan du coup
+    # (lue de profil), le poing arme sort a droite du corps (lu de dos).
+    # a : poing arme BAS derriere (a la hanche, Serious Punch) ;
+    # b : poing arme HAUT derriere l'epaule (planche Xoaterz « akin to TSB »)
+    fist = (0.4, -0.25, 1.0) if not b else (0.4, 0.75, 0.75)
+
+    def arme(f, yaw, twist, lean, lift, wig=(0.0, 0.0)):
+        fd = np.asarray(fist) + np.array([wig[0], wig[1], 0.0]) * 0.03
+        return {"root": ((0.0, 0.0, 0.0), (lean, yaw, 4)), "pelvis": ((0, 0, 0), (0, twist, 0)), "chest": (0, 0.3, 0),
+                "fit": ("R", tuple(sh_at(f, lift)), (0, 0, 0), (1, 1, 1)),
+                "feet": {"L": ("d", ((0.05, -0.3, -1.0), 2.0)), "R": ("d", ((0.1, -0.75, 1.0), 2.0))},
+                "hands": {"R": ("d", (tuple(fd), 2.0)), "L": ("d", ((-0.15, -0.75, -1.0), 2.0))},
+                "look": look(f)}
+    add(226, arme(226, -8, -12, -14, 0.2), "LINEAR")           # 1 image de depart : le buste part d'abord
+    add(230, arme(230, -26, -46, -32, 0.26))                   # depasse
+    add(234, arme(234, -24, -41, -29, 0.24))
+    for f, w in ((240, (4, 3)), (246, (-3, 2)), (251, (2, -1))):
+        add(f, arme(f, -24, -41 - 1.0 * (f - 234) / 6, -29, 0.24, w))
+    add(SUSPEND_END_F, arme(SUSPEND_END_F, -25, -45, -31, 0.26), "LINEAR")
+    # 3. FRAPPE
+    s0 = sh_at(SUSPEND_END_F, 0.26)
+    ax = chest(STRIKE_F) - s0
+    ax = ax / np.linalg.norm(ax)
+    reach = 2.0
+
+    def dive(f, gap, yaw, twist, pitch, hand_r, hand_l, legs):
+        tgt = chest(f)
+        return {"root": ((0.0, 0.0, 0.0), (pitch, yaw, 0)), "pelvis": ((0, 0, 0), (-8, twist, 0)), "chest": (0, 0.2, 0),
+                "fit": ("R", tuple(tgt - ax * (reach + gap)), (0, 0, 0), (1, 1, 1)),
+                "feet": legs, "hands": {"R": hand_r, "L": hand_l}, "look": tuple(tgt)}
+    trail = {"L": ("c", (0.0, -0.3, 0.2)), "R": ("c", (0.0, -0.6, 0.0))}
+    # le corps bascule vers la victime, le poing reste derriere
+    add(260, dive(260, 3.9, -18, -30, -52, ("a", (172, -8, 2.0)), ("t", (tuple(chest(260)), 2.0)),
+                  {"L": ("c", (0.0, 0.6, 0.8)), "R": ("c", (0.0, -0.8, 0.3))}), "LINEAR")
+    # le bras s'etend VERS la victime en 3 f, le bras libre est tire en arriere
+    for f, gap in ((263, 3.5), (270, 1.9), (STRIKE_F, 0.0)):
+        add(f, dive(f, gap, 18, 26, -64, ("t", (tuple(chest(f)), reach)), ("a", (-150, -35, 1.9)), trail), "LINEAR")
+    # le poing reste dans la victime pendant qu'elle tombe (comme la v8)
+    for f, rot, off in ((280, -62, (0.38, 1.7, 0.7)), (281, -59, (0.39, 1.75, 0.6)), (282, -55, (0.4, 1.8, 0.5)),
+                        (285, -42, (0.45, 1.65, 0.6))):
+        tg = target(f, "chest")
+        add(f, {"root": ((0.0, tg[1] + 1.0, tg[2] + 1.5), (rot, 0, 0)), "pelvis": ((0, 0, 0), (-12, 22, 0)),
+                "fit": ("R", tg, off, (1, 1, 1)), "chest": (0, 0.25, 0),
+                "feet": {"L": ("c", (0.0, 0.0, 0.3)), "R": ("c", (0.0, -0.4, 0.1))}, "look": tuple(tg),
+                "hands": {"R": ("w", tuple(tg)), "L": ("rw", (-1.4, 2.4, 0.6))}}, "LINEAR")
 
 # ---------------------------------------------------------------------
 
@@ -1018,7 +1140,7 @@ def main(blend):
             if bad:
                 print(f"  {side} f{f}: {bad}")
     json.dump({"distance": D, "fps": FPS, "end_f": END_F, "markers": MARKERS, "impact_f": IMPACT_F,
-               "strike_f": STRIKE_F, "hits": HITS, "upper_f": UPPER_F, "final_f": UPPER_F, "final_side": "R", "white": WHITE_F, "reveal_f": REVEAL_F,
+               "strike_f": STRIKE_F, "hits": HITS, "upper_f": UPPER_F, "final_f": UPPER_F, "final_side": "R", "aerien": FINAL, "white": WHITE_F, "reveal_f": REVEAL_F,
                "manga_f": MANGA_F, "hit_hitstop": HIT_HITSTOP, "hit_shake": HIT_SHAKE, "hit_scale": HIT_SCALE,
                "residus": report}, open(os.path.join(OUT, "scene.json"), "w"), indent=1)
     return a, b, aw, vw

@@ -132,14 +132,36 @@ def camera_keys(aw, vw):
     add(166, [a[0] + 9.0, 1.2, a[2] - 1.0], A(166) + [0, 1.6, -0.8], 54, "cut")
     add(172, [a[0] + 8.5, 1.8, a[2] - 2.4], mid(172) + [0, 1.0, 0], 56)
     add(196, mid(196) + [12.0, 1.0, 3.5], mid(196), 56)
-    # 4. WHIP PAN (12 f) vers le plan large en plongee du temps suspendu
-    add(208, A(208) + [5.4, 4.2, 7.2], A(208) + [0, -0.4, -0.8], 50)
-    add(254, A(254) + [4.6, 3.4, 6.2], A(254) + [0, -0.2, -0.8], 46)
-    # 5. plongee : dolly en contre-plongee depuis sous la victime
-    add(258, Vt(258) + [6.8, -2.4, 2.2], A(258), 48, "cut")
-    add(272, Vt(272) + [5.8, -1.6, 1.8], A(272) + [0, -1.0, 0], 44)
     c = tip(aw[SCENE["strike_f"]], "Right Arm")
-    add(SCENE["strike_f"], c + [3.6, 1.0, 3.2], c, 42)
+    if SCENE.get("aerien", "v8") == "v8":
+        # 4. WHIP PAN (12 f) vers le plan large en plongee du temps suspendu
+        add(208, A(208) + [5.4, 4.2, 7.2], A(208) + [0, -0.4, -0.8], 50)
+        add(254, A(254) + [4.6, 3.4, 6.2], A(254) + [0, -0.2, -0.8], 46)
+        # 5. plongee : dolly en contre-plongee depuis sous la victime
+        add(258, Vt(258) + [6.8, -2.4, 2.2], A(258), 48, "cut")
+        add(272, Vt(272) + [5.8, -1.6, 1.8], A(272) + [0, -1.0, 0], 44)
+        add(SCENE["strike_f"], c + [3.6, 1.0, 3.2], c, 42)
+    else:
+        # v9 (fiche COUP_CHARGE.md, grammaire du Serious Punch) :
+        # 4. le whip pan arrive sur le CALME : plan moyen de FACE, fixe,
+        #    legerement en contre-plongee (il domine), presque rien ne bouge
+        add(208, A(208) + [1.6, -1.2, -9.4], A(208) + [0, 0.1, 0], 40)
+        add(227, A(227) + [1.5, -1.1, -9.0], A(227) + [0, 0.1, 0], 40)
+        # 5. coupe SUR L'ACTION (milieu du depart) : l'arme, corps entier, de
+        #    PROFIL cote du poing arme, un peu en contre-plongee. Le bras qui
+        #    vise la victime part sur le cote du cadre, jamais vers l'objectif
+        #    (1er essai de face : il cachait tout, repro/README.md lecon 5)
+        add(228, A(234) + [8.4, -1.2, -1.5], A(234) + [0, -0.2, -0.7], 46, "cut")
+        add(255, A(255) + [7.4, -1.05, -1.3], A(255) + [0, -0.2, -0.7], 44)
+        # 6. OBARI : la camera est chez la victime, a cote d'elle (jamais entre
+        #    l'objectif et le poing) ; le poing vient VERS l'objectif et
+        #    grossit jusqu'a remplir le cadre ; la visee suit le poing et la tete
+        eye = Vt(SCENE["strike_f"]) + [-1.1, 1.3, -0.2]
+        for f in (256, 260, 263, 266, 270, 274, SCENE["strike_f"]):
+            fist = tip(aw[f], "Right Arm")
+            add(f, eye, fist * 0.55 + h(f) * 0.45, 78, "cut" if f == 256 else "smooth")
+        # 7. la chute, de cote (coupe apres le gel du contact)
+        add(SCENE["strike_f"] + 1, c + [7.5, 0.5, 4.0], c + [0, -3.0, 0], 50, "cut")
     imp = tip(aw[SCENE["impact_f"]], "Right Arm")
     add(SCENE["impact_f"], imp + [6.0, 2.6, 5.0], imp + [0, 0.6, 0], 46)
     # v2 (LECONS.md 3) : on RESTE sur l'impact 10 f, en reculant pour voir
@@ -214,8 +236,13 @@ def events(aw, vw):
     ev(u + 1, "dome", pos=v3(g), radius=5.0, frames=22, color=GOLD)
     ev(170, "ground_burst", pos=v3([aw[170]["Torso"][1][0], 0.05, aw[170]["Torso"][1][2]]), color=WHITE, scale=1.2)
     ev(196, "whip", frames=12)
-    ev(200, "aura", who="attaquant", frames=56, color=GOLD, intensity=1.0)
-    ev(206, "fist_glow", who="attaquant", side="R", frames=72, color=GOLD)
+    if SCENE.get("aerien", "v8") == "v8":
+        ev(200, "aura", who="attaquant", frames=56, color=GOLD, intensity=1.0)
+        ev(206, "fist_glow", who="attaquant", side="R", frames=72, color=GOLD)
+    else:
+        # v9 : le CALME n'a pas d'aura ; elle s'allume avec l'arme
+        ev(226, "aura", who="attaquant", frames=30, color=GOLD, intensity=1.0)
+        ev(228, "fist_glow", who="attaquant", side="R", frames=50, color=GOLD)
     ev(236, "dragon", who="attaquant", side="R", frames=52, color=GOLD, smoke=SMOKE)
     sf = SCENE["strike_f"]
     p = tip(aw[sf], "Right Arm")
