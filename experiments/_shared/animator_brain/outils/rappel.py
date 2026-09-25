@@ -38,6 +38,9 @@ CONCEPTS = {
     "pose": ["pose", "silhouette", "torsion", "lacet", "bascule", "bras libre", "armé", "fente", "ligne",
              "exager", "exagér", "pousser"],
     "aerien": ["aerien", "aérien", "en l'air", "plongee", "plongée", "suspendu", "saut", "vers le bas"],
+    "vfx": ["vfx", "effet", "effets", "particule", "particleemitter", "beam", "trail", "trainee", "traînée",
+            "aura", "etincelle", "étincelle", "onde", "fumee", "fumée", "debris", "débris", "smear", "halo",
+            "cratere", "cratère", "flipbook", "shader", "texture"],
     "victime": ["victime", "reaction", "réaction", "recul", "encaisse"],
 }
 
