@@ -50,8 +50,9 @@ def construire():
     tex = nt.nodes.new("ShaderNodeTexImage")
     tex.image = bpy.data.images.load(os.path.join(HERE, "dragon_atlas.png"))
     nt.links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
-    bsdf.inputs["Metallic"].default_value = 0.55
-    bsdf.inputs["Roughness"].default_value = 0.32
+    # v13 : dessin, pas métal (les deux tons sont peints dans la texture)
+    bsdf.inputs["Metallic"].default_value = 0.0
+    bsdf.inputs["Roughness"].default_value = 1.0
     me.materials.append(mat)
     # armature
     arm = bpy.data.armatures.new("Squelette")
@@ -67,6 +68,14 @@ def construire():
         b = arm.edit_bones.new(nom)
         b.head, b.tail = (x, 0, 0), (x + 0.3, 0, 0)
         b.parent = racine
+    # v13 : MÂCHOIRE (os NB+1), à la charnière, enfant de Racine comme les
+    # autres (le moteur calcule son repère depuis celui de la tête)
+    if d.get("machoire"):
+        cx, cy, cz = d["machoire"]["charniere"]
+        b = arm.edit_bones.new("Machoire")
+        b.head, b.tail = (cx, -cz, cy), (cx - 0.3, -cz, cy)
+        b.parent = racine
+        noms.append("Machoire")
     bpy.ops.object.mode_set(mode="OBJECT")
     # poids
     groupes = [ob.vertex_groups.new(name=n) for n in noms]

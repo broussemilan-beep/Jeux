@@ -288,12 +288,14 @@ VERT_OFA = "#6dff8a"   # vert One For All (Izuku)
 
 
 def serpent(images, t0, duree, largeur=None, naissance=0.25, mort=None, tete=True, vitesse=1.5, taille_tete=(4.4, 2.2),
-            couleur="#ffffff", modele="dragon", echelle=0.7):
+            couleur="#ffffff", modele="dragon", echelle=0.7, machoire=None, nom="dragon"):
     """Corps de DRAGON (fiches/AURA_DRAGON.md) : `images` = [[t, [[x,y,z]...]]]
     (t en temps de RECETTE, pas relatif à t0 : piège de la v10a)
     (tête en premier), temps relatifs à la recette. Naît de la tête vers la
     queue en `naissance` (fraction de la durée) ; `mort` = (début, "tete" |
-    "queue") : se dissout depuis ce bout-là."""
+    "queue") : se dissout depuis ce bout-là. `machoire` = [[a, degrés], ...]
+    (a = temps normalisé de la couche) : ouverture de la gueule (v13 : il
+    rugit, il MORD) ; absent = l'angle modélisé."""
     tete_v = [[0, 0], [1, 0]]
     queue_v = [[0, 0.02], [naissance, 1], [1, 1]]
     if mort:
@@ -302,7 +304,7 @@ def serpent(images, t0, duree, largeur=None, naissance=0.25, mort=None, tete=Tru
             tete_v = [[0, 0], [debut, 0], [1, 1]]
         else:
             queue_v = [[0, 0.02], [min(naissance, debut * 0.99), 1], [debut, 1], [1, 0]]
-    L = {"type": "serpent", "nom": "dragon", "t0": t0, "duree": duree, "images": images, "texture": "dragon_ecailles",
+    L = {"type": "serpent", "nom": nom, "t0": t0, "duree": duree, "images": images, "texture": "dragon_ecailles",
          "largeur": largeur or [[0, 1.3], [0.08, 1.5], [0.5, 1.1], [0.85, 0.6], [1, 0.1]], "vitesse_texture": vitesse,
          "tete_visible": tete_v, "queue_visible": queue_v, "light_emission": 0, "color": couleur}
     if modele:
@@ -312,6 +314,10 @@ def serpent(images, t0, duree, largeur=None, naissance=0.25, mort=None, tete=Tru
         # abscisse (0-1) de chaque os le long du corps : Tete puis la colonne
         d = json.load(open(os.path.join(HERE, "modeles", f"{modele}.json")))
         L["os_s"] = [0.0] + [round(x / d["longueur"], 4) for x in d["os_x"]]
+        if d.get("machoire"):
+            L["charniere"], L["machoire_repos"] = d["machoire"]["charniere"], d["machoire"]["repos"]
+        if machoire:
+            L["machoire"] = [[round(float(a), 4), round(float(v), 2)] for a, v in machoire]
     if tete:
         L["tete"] = {"texture": "dragon_tete", "texture_miroir": "dragon_tete_miroir", "taille": list(taille_tete), "cou": 0.1}
     return L
@@ -418,7 +424,9 @@ def dragon_aura_demo():
     imgs = [[round(k / 30, 3), spirale([0, 1, 0], [0, 1, 0], 2.4, 6.5, 1.3, 28, phase=0.9 * k / 30, rayon_fin=1.6)]
             for k in range(0, 61)]
     # (éclairs verts retirés : Milan voulait la POSE d'Izuku, pas ses éclairs)
-    c = [serpent(imgs, 0.0, 2.0, naissance=0.3, mort=(0.8, "queue"))]
+    # v13 : la gueule rugit (s'ouvre), puis MORD (claque en 2 images)
+    c = [serpent(imgs, 0.0, 2.0, naissance=0.3, mort=(0.8, "queue"),
+                 machoire=[[0, 8], [0.25, 8], [0.4, 46], [0.6, 58], [0.63, 4], [1, 4]])]
     c += flammes_corps(c[0])
     r = recette("dragon_aura_demo", c, titre="Dragon : aura (démo)")
     r["cameras"] = {"large": {"oeil": [11, 6, 9], "cible": [0, 3.5, 0], "fov": 50},

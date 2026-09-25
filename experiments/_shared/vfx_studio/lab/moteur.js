@@ -193,20 +193,35 @@
     const xs = [0].concat(D.os_x);                 // os 0 = Tete (au cou), puis la colonne
     const grp = new T.Group();
     const bones = xs.map((x) => { const b = new T.Bone(); b.position.set(x * k, 0, 0); grp.add(b); return b; });
+    // v13 : os « Machoire » (dernier), rigide, charnière au fond de la gueule ;
+    // repos = angle modélisé (D.machoire.repos), piloté par L.machoire
+    const MJ = D.machoire;
+    let jaw = null;
+    if (MJ) { jaw = new T.Bone(); jaw.position.set(MJ.charniere[0] * k, MJ.charniere[1] * k, MJ.charniere[2] * k); grp.add(jaw); bones.push(jaw); }
     grp.updateMatrixWorld(true);
     const skel = new T.Skeleton(bones);
-    // v2 : métal 0,55 + émissif fort = une statue jaune uniforme (écailles
-    // et crinière brune noyées) ; Roblox rend un MeshPart texturé sans
-    // émission -> matériau plus mat, émission faible (le feu autour fait la
-    // lumière, flammes_corps)
-    const mat = new T.MeshStandardMaterial({ map: TEX[L.modele + "_atlas"], metalness: 0.25, roughness: 0.45,
-      emissive: new T.Color(0.12, 0.06, 0.0), transparent: true });
+    // v13 (Milan, v12 VFX 2-4/10 : « qualité dessin, pas cartoon ») : plus de
+    // PBR (v12 : une statue d'or éclairée). Non éclairé : les deux tons sont
+    // PEINTS dans la texture (comme sur Roblox, où l'on ne peut pas
+    // ombrer en cel) ; l'aperçu ajoute seulement un léger ton d'ombre cel et
+    // un liseré de contre-jour clair (anime), jamais de dégradé
+    const mat = new T.MeshBasicMaterial({ map: TEX[L.modele + "_atlas"], transparent: true });
+    mat.onBeforeCompile = (sh) => {
+      sh.vertexShader = "varying vec3 vNc;\n" + sh.vertexShader.replace("#include <begin_vertex>",
+        "#include <begin_vertex>\n vNc = normalize(normalMatrix * objectNormal);");   // objectNormal déjà « skinné » (skinnormal_vertex)
+      sh.fragmentShader = "varying vec3 vNc;\n" + sh.fragmentShader.replace("#include <map_fragment>",
+        "#include <map_fragment>\n{ vec3 n = normalize(vNc); float l = dot(n, normalize(vec3(-0.35, 0.8, 0.45)));\n" +
+        "  diffuseColor.rgb *= l > -0.15 ? 1.0 : 0.84;\n" +
+        "  float rim = 1.0 - abs(n.z); diffuseColor.rgb = mix(diffuseColor.rgb, vec3(1.0, 0.96, 0.78), rim > 0.86 && l > -0.2 ? 0.5 : 0.0); }");
+    };
     const mesh = new T.SkinnedMesh(geo, mat);
     mesh.bind(skel);
     mesh.frustumCulled = false;
-    const contourMat = new T.MeshBasicMaterial({ color: 0x3a1a06, side: T.BackSide, transparent: true });
+    // contour d'ENCRE (coque inversée) : épaisseur proportionnelle à l'échelle
+    // (v12 : 0,018 x k -> un fil invisible sur un dragon de 30 studs)
+    const contourMat = new T.MeshBasicMaterial({ color: 0x2a1204, side: T.BackSide, transparent: true });
     contourMat.onBeforeCompile = (sh) => {
-      sh.vertexShader = sh.vertexShader.replace("#include <begin_vertex>", "#include <begin_vertex>\n transformed += normal * " + (0.018 * k).toFixed(4) + ";");
+      sh.vertexShader = sh.vertexShader.replace("#include <begin_vertex>", "#include <begin_vertex>\n transformed += normal * " + (0.034 * k).toFixed(4) + ";");
     };
     const contour = new T.SkinnedMesh(geo, contourMat);
     contour.bind(skel); contour.frustumCulled = false;
@@ -225,6 +240,12 @@
           bones[i].position.copy(f.p);
           bones[i].quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(X, Y, Z));
         });
+        if (jaw) {
+          // repère de la tête * charnière * rotation autour de Z (+ = ouvre)
+          const ang = (L.machoire ? seq(L.machoire, a) : MJ.repos) - MJ.repos;
+          jaw.quaternion.copy(bones[0].quaternion).multiply(new T.Quaternion().setFromAxisAngle(new T.Vector3(0, 0, 1), ang * Math.PI / 180));
+          jaw.position.set(MJ.charniere[0] * k, MJ.charniere[1] * k, MJ.charniere[2] * k).applyQuaternion(bones[0].quaternion).add(bones[0].position);
+        }
         const vis = s1 - s0 > 0.01 && glob > 0;
         mesh.visible = contour.visible = vis;
         mat.opacity = contourMat.opacity = glob;

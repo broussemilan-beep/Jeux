@@ -546,6 +546,9 @@ function VFXStudio.jouer(rec, repere, opts)
 				table.insert(os_, { b = b, s = sN })
 			end
 		end
+		-- v13 : os « Machoire » (charnière au fond de la gueule) : repère de la
+		-- tête * charnière * rotation autour de Z (+ = la gueule s'ouvre)
+		local mach = if L.charniere then m:FindFirstChild("Machoire", true) else nil
 		table.insert(miseAJour, function(t)
 			local a = (t - L.t0) / L.duree
 			local actif = a >= 0 and a <= 1
@@ -562,6 +565,15 @@ function VFXStudio.jouer(rec, repere, opts)
 				local p, tg, up = repereA(R, sN)
 				local voulu = CFrame.fromMatrix(p, -tg, up) * o.b.CFrame.Rotation
 				o.b.Transform = (part.CFrame * o.b.CFrame):Inverse() * voulu
+			end
+			if mach then
+				local p, tg, up = repereA(R, math.clamp(0, s0, math.max(s0, s1)))
+				local k = L.echelle or 1
+				local c = L.charniere
+				local ang = (if L.machoire then seq(L.machoire, a) else L.machoire_repos) - L.machoire_repos
+				local voulu = CFrame.fromMatrix(p, -tg, up) * CFrame.new(c[1] * k, c[2] * k, c[3] * k)
+					* CFrame.Angles(0, 0, math.rad(ang)) * mach.CFrame.Rotation
+				mach.Transform = (part.CFrame * mach.CFrame):Inverse() * voulu
 			end
 		end)
 		finMax = math.max(finMax, L.t0 + L.duree)

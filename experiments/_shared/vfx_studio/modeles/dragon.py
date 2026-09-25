@@ -38,16 +38,19 @@ L = 14.0          # longueur du corps
 NB = 24           # os de colonne
 ATLAS = 2048
 
-# pastilles (v de 0.78 à 1 ; 8 colonnes) : nom -> (couleur haut, couleur bas)
+# pastilles (v de 0.78 à 1 ; 8 colonnes) : nom -> (ton clair, ton d'ombre).
+# v13 (Milan : « VFX de qualité dessin, pas cartoon » ; refs Goku d514ee70,
+# Dragon Ball Rage) : DEUX TONS francs, plus de dégradé (le dégradé faisait
+# une statue éclairée) ; yeux CYAN (accent complémentaire de l'or).
 PASTILLES = {
-    "or": ((255, 214, 92), (206, 128, 24)),
-    "or_fonce": ((226, 150, 38), (150, 80, 14)),
-    "creme": ((255, 246, 214), (226, 196, 140)),
-    "brun": ((196, 86, 26), (84, 30, 8)),
-    "blanc": ((255, 255, 250), (220, 214, 200)),
-    "rouge": ((170, 24, 18), (90, 8, 8)),
-    "oeil": ((255, 236, 90), (230, 150, 20)),
-    "noir": ((34, 14, 6), (20, 8, 4)),
+    "or": ((255, 212, 64), (232, 138, 28)),
+    "or_fonce": ((236, 150, 36), (168, 76, 14)),
+    "creme": ((255, 244, 200), (238, 192, 116)),
+    "brun": ((160, 58, 14), (96, 30, 6)),
+    "blanc": ((255, 255, 250), (226, 220, 206)),
+    "rouge": ((196, 30, 22), (118, 10, 10)),
+    "oeil": ((170, 255, 255), (40, 214, 255)),
+    "noir": ((30, 12, 4), (18, 6, 2)),
 }
 NOMS = list(PASTILLES)
 
@@ -183,6 +186,10 @@ def rotz(a):
     return np.array([[c, -s, 0], [s, c, 0], [0, 0, 1.0]])
 
 
+CHARNIERE = np.array([-0.9, 0.12, 0])   # charnière de la mâchoire (repère du modèle, avant l'échelle de tête)
+MACHOIRE_REPOS = 20.0                    # angle d'ouverture de la mâchoire MODÉLISÉE (degrés) ; os à l'identité
+
+
 def construire():
     M = Piece()
     TETE = -1   # liaison : os de tête (rigide)
@@ -288,13 +295,14 @@ def construire():
         M.ajoute(P, UV, F, TETE)
         P, UV, F = ellipsoide((-3.93, 0.5, cote * 0.2), (0.07, 0.06, 0.07), 8, 6, pastille="noir")
         M.ajoute(P, UV, F, TETE)
-    charn = np.array([-0.9, 0.12, 0])
-    ouv = math.radians(32)
+    charn = CHARNIERE
+    ouv = math.radians(MACHOIRE_REPOS)
     Rm = rotz(ouv)     # rotation de la mâchoire inférieure (vers le bas, autour de Z)
+    MACH = -2          # liaison : os « Machoire » (v13 : la gueule s'ouvre et MORD)
     # langue
     P, UV, F = loft([charn + Rm @ (np.array([x, 0.02, 0]) - charn) for x in np.linspace(-1.4, -3.0, 8)],
                     np.linspace(0.28, 0.14, 8), [0.07] * 8, n=10, uvf=lambda i, a, p: uv_pastille("rouge", 0.95))
-    M.ajoute(P, UV, F, TETE)
+    M.ajoute(P, UV, F, MACH)
     # mâchoire inférieure (ouverte) : dessus rouge (gencive), menton doré
     xs_j = np.linspace(-0.9, -3.45, 16)
     cj, lwj, lhj = [], [], []
@@ -306,7 +314,7 @@ def construire():
     axes = [(Rm @ np.array([0, 1.0, 0]), np.array([0, 0, 1.0]))] * len(cj)
     P, UV, F = loft(cj, lwj, lhj, n=20, axes=axes, ex=3.0, ventre=1.0,
                     uvf=lambda i, a, p: uv_pastille("rouge" if math.sin(a) > 0.55 else "or", 0.5 + 0.5 * math.sin(a)))
-    M.ajoute(P, UV, F, TETE)
+    M.ajoute(P, UV, F, MACH)
     # crocs : rangée du haut (vers le bas), gros crocs devant ; du bas (vers le haut)
     for cote in (1, -1):
         for k, x in enumerate(np.linspace(-1.6, -3.6, 8)):
@@ -325,7 +333,7 @@ def construire():
             up = Rm @ np.array([0, 1.0, 0])
             P, UV, F = tube([base, base + up * ln * 0.6, base + up * ln + np.array([0.02, 0, 0])],
                             [0.065 if gros else 0.045, 0.035, 0.008], 6, uv=uv_pastille("blanc", 0.7))
-            M.ajoute(P, UV, F, TETE)
+            M.ajoute(P, UV, F, MACH)
     # yeux + arcades (en colère : l'arcade descend vers l'avant)
     for cote in (1, -1):
         P, UV, F = ellipsoide((-1.55, 0.68, cote * 0.55), (0.24, 0.15, 0.1), 12, 8, pastille="oeil",
@@ -379,7 +387,7 @@ def construire():
         base = charn + Rm @ (np.array([-2.6 + 0.25 * k, -0.35, 0.1 * (k - 1.5)]) - charn)
         pts = bezier(base, base + np.array([0.1, -0.3, 0]), base + np.array([0.4, -0.6, 0]), base + np.array([0.8, -0.8, 0.05 * k]), 7)
         P, UV, F = tube(pts, np.linspace(0.1, 0.01, 7), 6, uv_h=lambda s, j: uv_pastille("brun", 0.9 - 0.8 * s))
-        M.ajoute(P, UV, F, TETE)
+        M.ajoute(P, UV, F, MACH)
     for cote in (1, -1):
         for k in range(3):
             base = np.array([-0.9 + 0.25 * k, -0.2, cote * 0.62])
@@ -404,12 +412,15 @@ def os_colonne():
 
 
 def poids(M):
-    """os 0 = Tete (rigide), os 1..NB = colonne à x_i ; 2 influences max."""
+    """os 0 = Tete (rigide), os 1..NB = colonne à x_i, os NB+1 = Machoire
+    (rigide) ; 2 influences max."""
     xs = os_colonne()
     idx, w = [], []
     for b in M.B:
         if b == -1:
             idx.append([0, 0, 0, 0]); w.append([1, 0, 0, 0]); continue
+        if b == -2:
+            idx.append([NB + 1, 0, 0, 0]); w.append([1, 0, 0, 0]); continue
         x = min(max(b, 0.0), L)
         f = x / L * (NB - 1)
         i0 = int(min(NB - 2, math.floor(f)))
@@ -422,71 +433,82 @@ def poids(M):
 
 
 def atlas(chemin):
-    """Texture : bande du corps (écailles) + pastilles en dégradé.
+    """Texture DESSINÉE (v13) : bande du corps + pastilles à deux tons.
 
-    v2 (retour Milan, « pas du tout premium ») : 1re version = 70 x 16
-    écailles de 0,2 stud, des traits de 5 px -> invisibles à l'écran (le corps
-    se lisait comme un tube jaune uni). Écailles d'environ 0,5 stud, PEINTES
-    en volume (bord libre foncé vers la queue, reflet clair vers la tête),
-    dos orange profond, flancs or, ventre crème en plaques."""
-    W = H = ATLAS
-    im = Image.new("RGB", (W, H), (230, 170, 50))
+    v2 : écailles peintes en VOLUME (dégradés) -> une statue d'or (Milan :
+    VFX 2-4/10). v13, d'après le dragon d'or du film (d514ee70) et Dragon
+    Ball Rage : aplats francs (flanc clair, bas de flanc à l'ombre, arête
+    dorsale brun-orange), ÉCAILLES en TRAIT d'encre brun (arcs en U ouverts
+    vers la tête, pas de relief), plaques de ventre crème cernées de brun,
+    quelques reflets clairs en trait. Dessinée à 2x puis réduite (trait net,
+    bords lissés)."""
+    S = 2
+    W = H = ATLAS * S
+    im = Image.new("RGB", (W, H), (255, 206, 64))
     d = ImageDraw.Draw(im)
-    hb = int(0.78 * H)     # hauteur de la bande du corps (v = angle autour de la colonne)
-
-    def teinte(a):
-        # angle a : 0 = côté +Z, 0.25 = dos, 0.5 = côté -Z, 0.75 = ventre
-        dos = math.cos(2 * math.pi * (a - 0.25))       # 1 au dos, -1 au ventre
-        k = max(0.0, dos)
-        flanc, dos_c = (255, 204, 74), (206, 104, 18)
-        return tuple(int(flanc[i] + (dos_c[i] - flanc[i]) * k ** 1.3) for i in range(3))
-
-    for yy in range(hb):
-        d.line([(0, yy), (W, yy)], fill=teinte(yy / hb))
-    n_long, n_tour = 28, 10
-    pas_x, pas_y = W / n_long, hb / n_tour
+    hb = int(0.78 * H)     # hauteur de la bande du corps (y = angle autour de la colonne)
+    ENCRE = (86, 34, 8)
+    CLAIR, OMBRE, ARETE = (255, 208, 66), (232, 138, 28), (192, 86, 18)
     ventre = (0.655, 0.845)
-    # de la queue vers la tête : le bord libre (arrondi, vers la queue) de
-    # chaque écaille recouvre la base de la suivante
-    for i in range(n_long + 1, -2, -1):
-        for j in range(-1, n_tour + 1):
+
+    def zone(a):
+        a = a % 1.0
+        if 0.19 < a < 0.31:
+            return ARETE
+        if ventre[0] <= a <= ventre[1]:
+            return None
+        if 0.5 < a < ventre[0] or a > ventre[1] + 0.0:
+            return OMBRE
+        return CLAIR
+    for yy in range(hb):
+        c = zone(yy / hb)
+        if c:
+            d.line([(0, yy), (W, yy)], fill=c)
+    # écailles en TRAIT : rangées décalées, arc en U (bord libre vers la queue)
+    # (1er essai 34 x 12, arcs de 160° : des « ) » isolées, pas des écailles)
+    # -> moins d'écailles, plus grandes, arcs de 180° qui se touchent : un
+    # feston continu d'une rangée à l'autre
+    n_long, n_tour = 26, 8
+    pas_x, pas_y = W / n_long, hb / n_tour
+    for i in range(-1, n_long + 2):
+        for j in range(n_tour):
             a = ((j + 0.5) / n_tour) % 1.0
-            if ventre[0] - 0.03 < a < ventre[1] + 0.03:
+            if zone(a) in (None, ARETE):
                 continue
             x = (i + 0.5 * (j % 2)) * pas_x
             y = (j + 0.5) * pas_y
-            base = teinte(a)
-            rx, ry = pas_x * 1.4, pas_y * 0.64    # le bord arrondi couvre la base (corde) de la voisine
-            fonce = tuple(int(c * 0.42) for c in base)
-            moyen = tuple(int(c * 0.8) for c in base)
-            clair = tuple(min(255, int(c * 1.12 + 30)) for c in base)
-            d.pieslice([x - rx, y - ry, x + rx, y + ry], -90, 90, fill=fonce)
-            d.pieslice([x - rx * 0.88, y - ry * 0.86, x + rx * 0.88, y + ry * 0.86], -90, 90, fill=moyen)
-            d.pieslice([x - rx * 0.7, y - ry * 0.7, x + rx * 0.62, y + ry * 0.62], -90, 90, fill=base)
-            d.ellipse([x + rx * 0.3, y - ry * 0.42, x + rx * 0.5, y - ry * 0.12], fill=clair)
-    # plaques de ventre crème (0,35 stud)
+            rx, ry = pas_x * 0.55, pas_y * 0.56
+            d.arc([x - rx, y - ry, x + rx, y + ry], -90, 90, fill=ENCRE, width=5 * S)
+            if zone(a) == CLAIR and (i + j) % 3 == 0:     # reflet en trait, pas partout
+                d.arc([x - rx * 0.62, y - ry * 0.55, x + rx * 0.62, y + ry * 0.55], -60, -15,
+                      fill=(255, 246, 180), width=3 * S)
+    # ventre et arête PAR-DESSUS les écailles (elles débordaient sur l'arête)
+    # ventre : plaques crème, moitié basse de chaque plaque à l'ombre, traits bruns
     y0, y1 = int(ventre[0] * hb), int(ventre[1] * hb)
-    d.rectangle([0, y0, W, y1], fill=(255, 238, 196))
-    for i in range(0, 41):
-        x = i * W / 40
-        d.rectangle([x - 5, y0, x + 5, y1], fill=(196, 140, 70))
-        d.rectangle([x + 5, y0, x + 14, y1], fill=(255, 250, 228))
-    d.rectangle([0, y0 - 8, W, y0 + 4], fill=(120, 56, 10))
-    d.rectangle([0, y1 - 4, W, y1 + 8], fill=(120, 56, 10))
-    # arête dorsale brun-rouge (les nageoires y sont plantées)
+    d.rectangle([0, y0, W, y1], fill=(255, 240, 190))
+    ym = int((ventre[0] + 0.62 * (ventre[1] - ventre[0])) * hb)
+    d.rectangle([0, ym, W, y1], fill=(240, 196, 120))
+    n_pl = 44
+    for i in range(n_pl + 1):
+        x = i * W / n_pl
+        d.line([(x, y0), (x + 10 * S, y1)], fill=ENCRE, width=5 * S)
+    d.rectangle([0, y0 - 5 * S, W, y0 + 3 * S], fill=ENCRE)
+    d.rectangle([0, y1 - 3 * S, W, y1 + 5 * S], fill=ENCRE)
+    # arête dorsale : bande sombre + trait central
     yd = int(0.25 * hb)
-    d.rectangle([0, yd - 34, W, yd + 34], fill=(150, 62, 16))
-    d.rectangle([0, yd - 8, W, yd + 8], fill=(110, 40, 10))
-    # pastilles en dégradé vertical (haut clair -> bas foncé)
+    d.rectangle([0, int(0.19 * hb), W, int(0.31 * hb)], fill=ARETE)
+    d.rectangle([0, yd - 6 * S, W, yd + 6 * S], fill=(120, 44, 10))
+    for yb in (int(0.19 * hb), int(0.31 * hb)):
+        d.rectangle([0, yb - 3 * S, W, yb + 3 * S], fill=ENCRE)
+    # pastilles à DEUX TONS (clair au-dessus de h = 0,45, ombre dessous)
     n = len(NOMS)
+    ys = int((0.80 + 0.18 * 0.55) * H)
     for k, nom in enumerate(NOMS):
         haut, bas = PASTILLES[nom]
         x0, x1 = int(k * W / n), int((k + 1) * W / n)
-        for yy in range(hb, H):
-            f = (yy - hb) / (H - hb)
-            col = tuple(int(haut[i] + (bas[i] - haut[i]) * f) for i in range(3))
-            d.line([(x0, yy), (x1, yy)], fill=col)
-    im = im.filter(ImageFilter.SMOOTH)
+        d.rectangle([x0, hb, x1, ys], fill=haut)
+        d.rectangle([x0, ys, x1, H], fill=bas)
+    im = im.resize((ATLAS, ATLAS), Image.LANCZOS)
     im.save(chemin)
 
 
@@ -496,9 +518,10 @@ TETE_ECHELLE = 1.35   # Shenron : la tête domine le cou (1er rendu : tête trop
 def main(dossier=HERE):
     M = construire()
     P = np.asarray(M.P, float)
-    tete = np.array([b == -1 for b in M.B])
+    tete = np.array([b in (-1, -2) for b in M.B])
     pivot = np.array([0.3, 0.1, 0.0])
     P[tete] = pivot + (P[tete] - pivot) * TETE_ECHELLE
+    charn = pivot + (CHARNIERE - pivot) * TETE_ECHELLE
     F = np.asarray(M.F, int)
     N = normales(P, F)
     idx, w = poids(M)
@@ -506,7 +529,9 @@ def main(dossier=HERE):
     data = {"longueur": L, "os_x": os_colonne(), "positions": np.round(P, 4).ravel().tolist(),
             "normales": np.round(N, 3).ravel().tolist(), "uv": np.round(np.asarray(M.UV), 4).ravel().tolist(),
             "indices": F.ravel().tolist(), "os_indices": np.asarray(idx).ravel().tolist(),
-            "os_poids": np.round(np.asarray(w), 4).ravel().tolist(), "triangles": int(len(F))}
+            "os_poids": np.round(np.asarray(w), 4).ravel().tolist(), "triangles": int(len(F)),
+            # os NB+1 : mâchoire, charnière (repère du modèle), angle modélisé
+            "machoire": {"charniere": np.round(charn, 4).tolist(), "repos": MACHOIRE_REPOS}}
     json.dump(data, open(os.path.join(dossier, "dragon.json"), "w"))
     print("dragon :", len(P), "sommets,", len(F), "triangles (limite Roblox 20 000)")
     return M, data

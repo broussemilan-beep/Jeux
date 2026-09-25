@@ -393,6 +393,12 @@ if DATA.recettes.dragon_aura_demo then
 		b.Transform = CFrame.new(0, 0, 0)
 		b.Parent = modele
 	end
+	-- v13 : os de mâchoire, repos lui aussi tourné quelconque
+	local mj = nouvelle("Bone")
+	mj.Name = "Machoire"
+	mj.CFrame = CFrame.new(L.charniere[1], L.charniere[2], L.charniere[3]) * CFrame.Angles(0.3, 0, 1.1)
+	mj.Transform = CFrame.new(0, 0, 0)
+	mj.Parent = modele
 	VFXStudio.configurer({ modeles = { dragon = modele } })
 	local h = VFXStudio.jouer(rec, CFrame.new(5, 0, -3), { manuel = true })
 	local t = 1.0
@@ -415,6 +421,23 @@ if DATA.recettes.dragon_aura_demo then
 	local m12 = clone.CFrame * os12.CFrame * os12.Transform
 	local rot = m12.Rotation * os12.CFrame.Rotation:Inverse()
 	ok(math.abs(rot.UpVector.Magnitude - 1) < 1e-6, "dragon 3D : repère d'os orthonormé")
+	-- mâchoire : la charnière reste sur la tête, l'ouverture = angle voulu - repos
+	local function machoire(tt)
+		h._etape(tt)
+		local mm = clone:FindFirstChild("Machoire", true)
+		local jm = clone.CFrame * mm.CFrame * mm.Transform * mm.CFrame.Rotation:Inverse()
+		local tm = clone.CFrame * tete.CFrame * tete.Transform * tete.CFrame.Rotation:Inverse()
+		local k = L.echelle or 1
+		local attendu = tm * CFrame.new(L.charniere[1] * k, L.charniere[2] * k, L.charniere[3] * k)
+		local rel = tm.Rotation:Inverse() * jm.Rotation
+		local x = rel.RightVector      -- rotation autour de Z : l'axe X tourne dans le plan XY
+		return (jm.Position - attendu.Position).Magnitude, math.deg(math.atan2(x.Y, x.X))
+	end
+	local e1, ang1 = machoire(0.6 * L.duree)      -- a = 0,6 : 58°
+	local e2, ang2 = machoire(0.7 * L.duree)      -- après la claque : 4°
+	ok(e1 < 1e-5 and e2 < 1e-5, string.format("dragon 3D : charnière de la mâchoire sur la tête (écart %.1e)", math.max(e1, e2)))
+	ok(math.abs(ang1 - (58 - L.machoire_repos)) < 0.05 and math.abs(ang2 - (4 - L.machoire_repos)) < 0.05,
+		string.format("dragon 3D : la gueule s'ouvre (%.1f°) puis claque (%.1f°), repos %.0f°", ang1, ang2, L.machoire_repos))
 	h.Annuler()
 	VFXStudio.configurer({ modeles = {} })
 end
