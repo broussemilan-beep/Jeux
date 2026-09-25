@@ -294,3 +294,28 @@ cerveau, voir la fin de l'entrée.
     (2 images manga) : le poing vient VERS le lecteur, raccourci ; il est
     énorme au premier plan, et le corps est petit derrière. C'est le coup
     chargé de Saitama.
+
+- **2026-09-25, nouvel outil de regard (`outils/regard.py`) : ce que l'œil
+  retient à vitesse réelle.** Il fait la moyenne des images sur ~90 ms, puis
+  une vignette tous les 83 ms, en petite taille. Appliqué au tuto punch
+  (référence) et à notre v7 (charge + coup chargé, caméra ciné et jeu).
+  Preuve : `captures/verification/2026-09-25-regard-vitesse-reelle-tuto-vs-v7.png`.
+  - **Tuto** : alternance nette entre des poses TENUES, nettes (charge,
+    pose d'après), et des passages flous d'1-2 vignettes. L'image est
+    « vue » 90 % du temps.
+  - **v7 caméra ciné : 43 % seulement.**
+    - La charge est floue presque tout du long : le wiggle et la caméra qui
+      avance bougent en même temps, donc il n'y a jamais de pose nette.
+    - **Le contact v7 n'est JAMAIS vu** : il passe dans un flou, puis les
+      cartes (noir, étoile, silhouettes, blanc) le recouvrent aussitôt.
+    - Après les cartes, le plan large bouge (caméra + victime), donc il est
+      flou lui aussi.
+  - **v7 caméra de jeu : 60 %**, mais le perso fait ~1/10 de l'image.
+  - **Explication directe de « je vois aucun changement »** : les deux
+    poses changées en v7 sont soit floues, soit cachées. Aucune vérification
+    faite en v7 ne pouvait le voir (planches figées, poses isolées).
+  - Apprentissage (pas une règle) : une pose qu'on veut montrer doit être
+    tenue NETTE à l'écran (caméra et corps quasi immobiles ensemble) assez
+    longtemps pour être retenue. Les cartes d'impact doivent venir APRÈS
+    qu'on a vu le contact, pas à sa place. Le wiggle ne doit pas se cumuler
+    avec un mouvement de caméra.
