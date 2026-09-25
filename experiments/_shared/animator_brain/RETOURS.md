@@ -554,3 +554,20 @@ cerveau, voir la fin de l'entrée.
   - **Pour la reprise** : voir `corpus/fiches/COUP_CHARGE.md` §7.
   - **Décision** : animation en pause, chantier VFX ensuite (proposition de
     Milan).
+
+- **2026-09-25, ouverture du chantier VFX (demande de Milan, animation en
+  pause).**
+  - **Méthode** : ses 27 pistes, explorées en 5 recherches parallèles (code
+    cloné et lu), plus un inventaire de ce que le dépôt savait déjà (51
+    fichiers). Points clés vérifiés à la main. Digestion dans
+    `corpus/fiches/VFX.md`, rapports dans `corpus/recherche/vfx_2026-09-25/`.
+  - **Ce qui ressort** :
+    - notre VFX est « 5 à 7 fois moins dense » que le pack pro, sans
+      flipbook, sans Beam, sans gel au hitstop, sans son ;
+    - la doc officielle et le dump de l'API sont désormais lisibles hors
+      ligne, et servent de référence de vérité ;
+    - le pipeline de flipbooks Blender marche ici, par Cycles CPU ;
+    - plusieurs recettes communautaires sont fausses : on ne recopie jamais
+      sans vérifier.
+  - **Défaut de performance trouvé dans notre module** : le Highlight est
+    recréé à chaque coup, ce qui provoque des pics de coût (doc officielle).
