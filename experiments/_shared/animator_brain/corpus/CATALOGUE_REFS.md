@@ -105,8 +105,8 @@ dragon ». Étudiées dans `fiches/AURA_DRAGON.md`.
 |---|---|---|
 | ef27f9e2-image.jpg | e92ac0d7bab8dedf | Affiche du film DBZ 13 : Goku SSJ3 poing levé, dragon doré gueule ouverte au-dessus. |
 | 1a567c2f-image.jpg | 6a96118684045841 | Illustration : le dragon s'enroule en spirale derrière Goku, flammes, éclairs blancs, traînée d'encre. |
-| 656d965b-image.gif | f254bee59fbe663b | Goku poing levé vers le ciel, TENU 2 s, rayons de lumière dans les nuages (l'invocation). |
-| d514ee70-image.gif | 7a2b4ae8801394c5 | Le Poing du Dragon : poing vers l'objectif sur éclatement radial, blanc, explosion, tourbillon de feu, le dragon sort du tourbillon (tête en très gros plan). |
+| 656d965b-image.gif | f254bee59fbe663b | Goku poing levé vers le ciel, TENU 2 s, rayons de lumière dans les nuages (l'invocation). Relu à 0,1 s : `RELECTURE_LAST_BREATH_GOKU_2026-09-25.md` §4. |
+| d514ee70-image.gif | 7a2b4ae8801394c5 | Le Poing du Dragon : poing vers l'objectif sur éclatement radial, blanc, explosion, tourbillon de feu, le dragon sort du tourbillon (tête en très gros plan). Relu à 0,1 s : `RELECTURE_LAST_BREATH_GOKU_2026-09-25.md` §4. |
 | 09a83af0-image.jpg | 50c7d71304f14e3f | Manga MHA : Deku, POING GÉANT vers le lecteur (raccourci extrême), corps en diagonale derrière, hachures de vitesse. Pose à mélanger avec Goku (2026-09-25). |
 | 37b6bf9a-image.webp = 0ca551a4 | ea7afcc9b89f6fcd | Deku couleur (déjà au catalogue) : bras tendu vers le lecteur, épaule en avant, tête basse derrière le poing, autre bras rentré. |
 
@@ -150,7 +150,7 @@ Envoyées par Milan sans texte, après les images de Suiryu. Étudiées dans
 | 2ka3-cCuHXg (.mp4) | 1f2730537200abf0 | Black Flash « sneak » de Gojo (Sorcerers BG) : 6 s de champ/contrechamp, noir à traits cyan, blanc à silhouette qui rapetisse. |
 | RhsY24ct-vQ (.mp4) | 9a8d936b2f59ea60 | Sunrise Finisher (concept TSB) : minuscule / très gros plans, coupe retardée, bulle rayée, explosion « soleil ». |
 | pXqH8vOZ8X8 (.mp4) | aa476239e9f6b2bc | Thunder Dragon (vitrine) : jaillissement de pointes, pilier qui change de couleur à chaque image. |
-| 4e0sX6p8-30 (.mp4) | 2dc5991318003b95 | TSB, animations abandonnées (5 min) : rig lettré F/B/L/R, storyboards, dragon « Last Breath » v1-v3 (serpent Blender, tête vers la caméra, plein écran de feu). |
+| 4e0sX6p8-30 (.mp4) | 2dc5991318003b95 | TSB, animations abandonnées (5 min) : rig lettré F/B/L/R, storyboards, dragon « Last Breath » v1-v3 (serpent Blender, tête vers la caméra, plein écran de feu). Last Breath relu à 0,1 s : `RELECTURE_LAST_BREATH_GOKU_2026-09-25.md`. |
 | 10 sous-titres .vtt | - | Tutos : explosion J8uIGox3xfU, pilier _EciT4WQizk, slash zlKdwujvP2A, capacités anime Q0mXhHCW2OM, flipbooks TdU0A8etl1o (+ 2 basiques, 3 sans parole). |
 | TdU0A8etl1o (.mp4, 2e archive c0038a4c) | bab3237b54c3ff0c | Tuto flipbooks (12 min) : feu→fumée réaliste 8x8, place de démo Roblox (« ground smash » : débris en flipbook), exemples de la communauté. |
 
