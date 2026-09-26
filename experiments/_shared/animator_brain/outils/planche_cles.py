@@ -88,7 +88,7 @@ def cles_rbxmx(path):
                 poses[nm] = cf
         frames.append((t, poses))
     frames.sort(key=lambda f: f[0])
-    return {"name": os.path.basename(path), "frames": frames}
+    return {"name": os.path.basename(path), "frames": frames}  # nos exports : Linear partout
 
 
 def _monde_a(mondes, t):
@@ -98,7 +98,7 @@ def _monde_a(mondes, t):
 
 def analyser(seq, avant=(0.0, 0.0, -1.0)):
     from animator_brain import corpus as C
-    mondes = C.resample_linear(seq["frames"], FPS)
+    mondes = C.resample_linear(seq["frames"], FPS, easing=seq.get("easing"))
     cles = []
     t_prec = None
     for t, poses in seq["frames"]:
@@ -183,6 +183,13 @@ def planche(seq, sortie, avant=(0.0, 0.0, -1.0), maxi=24):
             if p in poses:
                 xx = x0 + (x1 - x0) * (t * FPS) / n
                 d.line([(xx, yy), (xx, yy + 14)], fill=(120, 200, 255), width=2)
+    for tm, nm, _v in seq.get("markers", []):
+        xx = x0 + (x1 - x0) * (tm * FPS) / n
+        d.line([(xx, yr + 18), (xx, yr + 22 + 6 * 19)], fill=(255, 90, 200), width=1)
+        d.text((xx + 2, yr + 8), nm[:14], fill=(255, 120, 210))
+    nconst = sum(1 for v in seq.get("easing", {}).values() if v[0] == 1)
+    if nconst:
+        d.text((W - 360, yr), f"{nconst} poses Constant (tenue sèche jusqu'à la clé suivante)", fill=(255, 150, 150))
     for s in range(0, int(duree) + 1):
         xx = x0 + (x1 - x0) * (s * FPS) / n
         d.text((xx, yr + 22 + 6 * 19), f"{s}s", fill=(150, 150, 150))
@@ -235,8 +242,10 @@ def main():
         return
     seq = cles_rbxm(a.rbxm, a.nom) if a.rbxm else cles_rbxmx(a.rbxmx)
     _im, cles = planche(seq, a.sortie, avant, a.max)
+    for tm, nm, v in seq.get("markers", []):
+        print(f"marqueur i{int(round(tm * FPS)):4d} {nm} {v}")
     if a.json:
-        json.dump({"nom": seq["name"], "cles": cles}, open(a.json, "w"), ensure_ascii=False, indent=1)
+        json.dump({"nom": seq["name"], "marqueurs": seq.get("markers", []), "cles": cles}, open(a.json, "w"), ensure_ascii=False, indent=1)
     for c in cles:
         p = c["pose"]
         print(f"i{c['image60']:4d} (+{c['ecart_images'] if c['ecart_images'] is not None else '-':>3}) "

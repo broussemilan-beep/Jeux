@@ -234,7 +234,7 @@ def mondes_rbxm(path, nom, fps=60):
     from animator_brain import corpus as C
     for s in C.load_rbxm_sequences(path):
         if s["name"] == nom:
-            return C.resample_linear(s["frames"], fps)
+            return C.resample_linear(s["frames"], fps, easing=s.get("easing"))
     raise KeyError(nom)
 
 

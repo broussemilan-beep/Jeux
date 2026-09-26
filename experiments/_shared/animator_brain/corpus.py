@@ -32,6 +32,14 @@ def load_rbxm_sequences(path):
     ext = R.parse_prop_extended(ch, cl, {("Pose", "CFrame"): "cframe"})
     cfr = ext[("Pose", "CFrame")]
     parent = R.parse_prnt_chunk(ch)
+    # EasingStyle / EasingDirection des Pose (Enum) et KeyframeMarker :
+    # ignorés jusqu'au 2026-09-26 (chantier 4 : 67 poses Constant du combo
+    # au mur TSB interpolées à tort ; 35 marqueurs hitreg / VFX jamais lus).
+    en = R.parse_enum_and_vector2(ch, cl)
+    ease_style = en.get(("Pose", "EasingStyle"), {})
+    ease_dir = en.get(("Pose", "EasingDirection"), {})
+    mk_name = props.get(("KeyframeMarker", "Name"), {})
+    mk_val = props.get(("KeyframeMarker", "Value"), {})
     seq_names = props[("KeyframeSequence", "Name")]
     kf_time = props[("Keyframe", "Time")]
     pose_name = props[("Pose", "Name")]
@@ -65,12 +73,22 @@ def load_rbxm_sequences(path):
             # studs/s). Trouvé par l'analyse géométrique du 2026-09-26.
             continue
         seqs[s]["kf"][kf][1][nm] = (np.array(rot, float).reshape(3, 3), np.array(pos, float))
+        seqs[s].setdefault("ease", {})[(kf_time[kf], nm)] = (int(ease_style.get(pr, 0)), int(ease_dir.get(pr, 0)))
+    for mk, nm in mk_name.items():
+        kf = ancestor_in(mk, kf_time)
+        s = ancestor_in(kf, seq_names) if kf is not None else None
+        if s is not None:
+            seqs[s].setdefault("markers", []).append((float(kf_time[kf]), nm, mk_val.get(mk, "")))
     out = []
     for s in seqs.values():
         frames = sorted(s["kf"].values(), key=lambda f: f[0])
         zero = {nm: round(float(np.mean(np.array(ws) == 0.0)), 3) for nm, ws in s.get("w", {}).items()}
         out.append({"name": s["name"], "loop": s["loop"], "priority": s["priority"], "frames": frames,
-                    "poids_nul_fraction": zero})
+                    "poids_nul_fraction": zero,
+                    # {(temps, part): (PoseEasingStyle, PoseEasingDirection)} ; style 0 Linear, 1 Constant,
+                    # 2 Elastic, 3 Cubic, 4 Bounce, 5 CubicV2 ; s'applique au segment qui PART de cette clé
+                    "easing": s.get("ease", {}),
+                    "markers": sorted(s.get("markers", []))})
     out.sort(key=lambda d: d["name"])
     return out
 
@@ -85,7 +103,7 @@ def resolve_world(frames, root=(np.eye(3), np.array([0.0, 3.0, 0.0]))):
     return [(t, X.solve(p, root=root)) for t, p in frames]
 
 
-def resample_linear(frames, fps=60, root=(np.eye(3), np.array([0.0, 3.0, 0.0]))):
+def resample_linear(frames, fps=60, root=(np.eye(3), np.array([0.0, 3.0, 0.0])), easing=None):
     """Clés ÉPARSES (chaque part n'a de Pose qu'aux clés où elle bouge, comme
     dans les animations TSB) -> CFrames monde échantillonnées à `fps`, par
     interpolation LINÉAIRE par part entre ses propres clés (EasingStyle
@@ -109,12 +127,32 @@ def resample_linear(frames, fps=60, root=(np.eye(3), np.array([0.0, 3.0, 0.0])))
                 t0, r0, p0 = ks[j]
                 t1, r1, p1 = ks[j + 1]
                 u = (t - t0) / (t1 - t0) if t1 > t0 else 1.0
+                if easing:
+                    u = _ease(u, easing.get((t0, part), (0, 0)))
                 T[part] = (X._slerp_rot(r0, r1, u), p0 + (p1 - p0) * u)
             else:
                 k = ks[j] if ks[j][0] <= t else ks[0]
                 T[part] = (k[1], k[2])
         out.append((t, X.solve(T, root=root)))
     return out
+
+
+def _ease(u, style_dir):
+    """Easing d'une Pose sur son segment sortant. Constant (1) : tenue
+    jusqu'à la clé suivante. Cubic (3) / CubicV2 (5) : cubique (sens :
+    0 In, 1 Out, 2 InOut, convention PoseEasingDirection de Roblox, non
+    vérifiée dans Studio). Elastic / Bounce : approchés par Linear (à
+    signaler, aucun cas dans nos fichiers au 2026-09-26)."""
+    st, di = style_dir
+    if st == 1:
+        return 0.0 if u < 1.0 else 1.0
+    if st in (3, 5):
+        if di == 0:
+            return u ** 3
+        if di == 1:
+            return 1 - (1 - u) ** 3
+        return 4 * u ** 3 if u < 0.5 else 1 - (-2 * u + 2) ** 3 / 2
+    return u
 
 
 def euler_xyz_deg(r):
