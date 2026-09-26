@@ -249,3 +249,49 @@ le côté, pas derrière » + « épaule droite reculée par le buste ».
 
 Prédiction v5 : **7,8/10**.
 
+
+## 11. v6 : le poing chargé MESURÉ sur les refs (après la v5 notée 7,5)
+
+Milan, 2026-09-26 09:15 (milan_verbatim 4482e3800f2a0523) : « analyse
+visuellement, géométriquement […] c'est une brique importante qui te
+manque ». Les cinq versions précédentes traduisaient des MOTS en clés. Ici,
+chaque nombre vient d'une mesure : `corpus/poses/sources/*.json`
+(reconstruction 3D R6 des refs par rendu-comparaison avec
+`outils/geo_pose.py`, chaque résultat contre-vérifié par un ou deux
+contradicteurs ; données R6 exactes TSB et pack). Statut : mesuré, avec les
+incertitudes notées dans les sources.
+
+### Ce que les refs montrent (mesuré)
+| phase | refs (mesuré) | v5 | v6 |
+|---|---|---|---|
+| tenue : bras | Pew 3,9-4,3 s : les DEUX bras tendus DEVANT la poitrine, presque parallèles, poings hauteur menton, écartés comme les épaules ; rien derrière (6 hypothèses concurrentes rejetées) | poings écartés sous les épaules, bras gauche DERRIÈRE (az torse -118), poing droit à la ceinture | deux bras devant le torse (az torse +14 / -24), poings à hauteur de menton |
+| tenue : buste | penché ~20° ; tourné (Pew 4,6 s : -64 à -81° par rapport au coup) | lacet -66, penché 28 | lacet -72, penché 20 |
+| fin de tenue | Pew 4,4-4,6 s : le bras gauche s'ouvre sur le côté et vers le bas (-35 / -26) ; le droit sort devant-droite du buste (+39 / -10) | - | idem (image 256 -> 267) |
+| détente | le buste se dévisse vers sa gauche (~60-80°), le bras monte à l'horizontale et vient devant ; vitesse croissante | vitesse rapide / lente / crochet de 2 images (1,35 stud/i) | vitesse qui ne fait que croître (0,34 -> 0,47 -> 0,52 -> 0,75 stud/i), 16 images |
+| contact | bras horizontal à hauteur d'épaule, buste presque de face (Pew lacet ~+12 ; TSB 0 ± 25) | buste +42 (épaule jetée) | buste +16, bras -2° |
+| appuis | pas d'écart extrême ; le pied avant avance | - | pas en 3 temps (pied levé, posé, arrière qui suit) ; plus bas -0,073 stud |
+
+### Cadrage (mesuré : `nous_v5_ce_que_milan_voit.json`)
+En v5, pendant 1,6 s : jamais le corps entier ni les pieds, contre-plongée,
+bras de garde 2,5 fois plus gros que le poing chargé, coup en 0,2 s. Les
+refs : plan LARGE en plongée (0,75-1 s), tenue plein cadre (Pew face à la
+poitrine, ~6 studs, 22° au-dessus), puis gros plan du poing armé. v6 :
+large de côté face à sa poitrine, la victime au fond (186-226) ; tenue plein
+cadre (227-250) ; gros plan du poing armé (251-266) ; départ du coup de
+face-droite (267-278) ; poing de 3/4 (279-283). Victime visible pendant la
+charge, masquée pendant le coup (caméra près d'elle).
+
+### Ce qui reste incertain (dit, pas caché)
+- La direction du coup chez Pew n'est pas mesurable (pas de victime) : le
+  lacet de tenue par rapport à la cible vient de Pew 4,6 s et de TSB.
+- TSB / SP2 (la même animation) arment le bras droit plus HAUT derrière
+  l'épaule, buste penché ~43° (confiance 0,5-0,7). La v6 suit Pew (les
+  captures envoyées par Milan) et sa phrase « dans aucune le bras est tendu
+  derrière ». Si Milan trouve la charge trop « devant », la piste TSB
+  (poing haut derrière l'épaule, pas tendu) est la suivante à essayer.
+- Le rassemblement de Pew (2,7-3,5 s) n'a pas été reconstruit (analyse
+  coupée par un redémarrage).
+
+Preuves : `captures/verification/2026-09-26-un-seul-coup-v5-contre-v6-poing-charge.png`
+(v5 / v6 aux mêmes caméras, descripteurs) ; `…-v6-plans-charge-et-coup.png`
+(le lecteur) ; vidéo `…-v6-scene-complete-avec-son.mp4`.

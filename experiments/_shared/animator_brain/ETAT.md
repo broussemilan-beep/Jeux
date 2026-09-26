@@ -45,7 +45,7 @@ savoir où on en était sans l'historique de conversation.)
 
 Chantiers, dans cet ordre de livraison :
 
-1. **Poing chargé géométrique -> v6 d'« Un seul coup »** : mesures R6
+1. **Poing chargé géométrique -> v6 d'« Un seul coup » (LIVRÉE, fiche §11, prédiction 7,9)** : mesures R6
    exactes des anims TSB + pack, reconstruction 3D de chaque ref par
    rendu-comparaison (`outils/geo_pose.py`), notre v5 mesurée, vérification
    adverse ; puis synthèse -> fiche UN_SEUL_COUP §11 -> v6 -> preuves.

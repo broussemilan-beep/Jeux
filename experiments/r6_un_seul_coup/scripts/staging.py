@@ -89,21 +89,34 @@ def camera_keys(aw, vw):
     #    destination hors champ à gauche (le sillage y file)
     add(M["depart"], [8.4, 1.8, 0.9], [0.0, 2.4, 0.9], 46, "cut")
     add(M["charge"] - 1, [9.0, 2.0, 1.2], [0.0, 2.0, 0.9], 48)
-    # 4. LA CHARGE (v3 : de face / profil côté poitrine ; v4 ci-dessous) (il se met de
-    #    profil, poitrine vers +x) : on voit l'arc se tendre, les deux bras
-    #    alignés (poing derrière à gauche, l'autre bras vers la victime à
-    #    droite) ; poussée lente pendant la tenue
-    a = A(214)
-    #    v5 (comparaison aux refs, fiche §9 a) : GROS PLAN bas, de face, entre
-    #    lui et la victime (elle est derrière la caméra : hors champ) ; le
-    #    perso remplit l'image ; poussée lente pendant la tenue
-    #    (1er essai à 3,6 studs de face-gauche : le bras gauche ouvert vers la caméra couvrait tout)
-    add(M["charge"], a + [0.9, -1.0, -4.6], a + [0.0, 0.25, 0.0], 56, "cut")
-    add(M["frappe"], a + [0.8, -0.95, -3.9], a + [0.0, 0.3, 0.0], 54)
-    # 5. DÉPART DU COUP (§9 d) : gros plan de face-droite, on voit le buste se
-    #    dérouler et le bras passer en travers
-    add(M["frappe"] + 1, a + [2.3, -0.7, -3.0], a + [0.2, 0.2, -0.6], 58, "cut")
-    add(278, a + [2.0, -0.6, -3.3], a + [0.1, 0.25, -1.0], 58)
+    # 4. LA CHARGE v6 : trois tailles de plan, comme les refs (mesuré :
+    #    corpus/poses/sources/nous_v5_ce_que_milan_voit.json). En v5, pendant
+    #    1,6 s on ne voyait ni le corps entier ni les pieds, et le bras de
+    #    garde dominait le cadre. Ici : (a) LARGE, corps entier et ombre, en
+    #    plongée, face à sa poitrine (le buste est tourné vers +x) ; (b) tenue
+    #    PLEIN CADRE face à la poitrine (Pew : ~6 studs, 22° au-dessus) ;
+    #    (c) GROS PLAN du poing armé dans le tourbillon, poing héros du cadre.
+    up = np.array([0.0, 1.0, 0.0])
+    t_ch = A(232)
+    h = np.array([0.95, 0.0, -0.12]); h /= np.linalg.norm(h)  # de côté, face à sa poitrine ; la victime au fond à gauche
+    #    (1er essai (0,8 ; -0,6) : la victime bouchait le premier plan)
+
+    def orb(c, dist, el, hh=h):
+        e = np.radians(el)
+        return c + dist * (np.cos(e) * hh + np.sin(e) * up)
+    add(M["charge"], orb(t_ch, 10.5, 26), t_ch + [0.0, -0.6, 0.0], 44, "cut")
+    add(226, orb(t_ch, 9.2, 24), t_ch + [0.0, -0.5, 0.0], 44)
+    add(227, orb(t_ch, 6.6, 22), t_ch + [0.0, 0.6, 0.0], 50, "cut")
+    add(250, orb(t_ch, 5.9, 21), t_ch + [0.0, 0.65, 0.0], 50)
+    fist_a = tip(aw[262], "Right Arm")
+    h2 = np.array([0.35, 0.0, -0.94]); h2 /= np.linalg.norm(h2)
+    add(251, orb(fist_a, 3.9, 15, h2) + [0.4, 0.0, 0.0], fist_a * 0.55 + A(262) * 0.45 + [0.0, 0.3, 0.0], 55, "cut")
+    add(M["frappe"] - 1, orb(fist_a, 3.5, 14, h2) + [0.4, 0.0, 0.0], fist_a * 0.55 + A(262) * 0.45 + [0.0, 0.3, 0.0], 55)
+    # 5. DÉPART DU COUP : de face-droite, plan moyen ; le buste se dévisse,
+    #    le bras monte et vient vers nous (Pew 4,6 -> 5,0 s)
+    a = A(M["frappe"])
+    add(M["frappe"], a + [3.4, 0.3, -3.6], a + [0.2, 0.3, -1.2], 54, "cut")
+    add(278, a + [3.2, 0.3, -4.4], a + [0.1, 0.3, -1.8], 54)
     # 6. LE POING de 3/4 (§9 e) : caméra à côté du point touché, sur le côté :
     #    poing + avant-bras + épaule, dans le tourbillon (victime masquée)
     tg = np.asarray(SCENE["contact_tgt"], float)
@@ -227,7 +240,7 @@ def events(aw, vw):
     ev(lf, "secousse", fin=lf + 22, amp=0.3)
     ev(CF, "secousse", fin=CF + 150, amp=0.45)
     ev(CF, "souffle_sol", pos=v3([tip(aw[CF], "Right Arm")[0], 0.05, tip(aw[CF], "Right Arm")[2]]))
-    ev(M["charge"], "cacher_victime", debut=470, pov=[M["charge"], CF])  # v5 : hors champ (caméra à sa place)
+    ev(M["charge"], "cacher_victime", debut=470, pov=[M["frappe"], CF])  # v6 : visible pendant la charge (plans de côté), masquée pendant le coup (caméra près d'elle)
     ev(END - 20, "fondu_noir", fin=END)
     return E
 

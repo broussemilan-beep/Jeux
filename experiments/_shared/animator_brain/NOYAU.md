@@ -18,8 +18,9 @@ TOUTE session. Le détail vit dans les fiches ; un détail perdu se RECHERCHE
 
 ## Où on en est
 - Production active : « Un seul coup » (Serious Punch R6),
-  `experiments/r6_un_seul_coup/`. v5 notée 7,5 ; v6 en cours (poing chargé
-  refait d'après les poses MESURÉES des refs, `corpus/poses/`).
+  `experiments/r6_un_seul_coup/`. v5 notée 7,5 ; v6 livrée (poing chargé
+  refait d'après les poses MESURÉES des refs, `corpus/poses/`, fiche §11) ;
+  prédiction 7,9, en attente de Milan.
 - Fiche active : `corpus/fiches/UN_SEUL_COUP.md`.
 - Chantiers : 1 v6 ; 2 audit fait (`corpus/recherche/AUDIT_CERVEAU_2026-09-26.md`) ;
   3 réorganisation (`corpus/recherche/PLAN_REORGANISATION_2026-09-26.md`) ;

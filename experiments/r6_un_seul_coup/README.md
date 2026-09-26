@@ -132,3 +132,25 @@ python3 video_son.py <mp4> 30      # vidéo avec son (~8 min)
 - La tenue des ~450 CornerWedge + ~700 boules de nuages (option
   `CONFIG.NUAGES`), et les sons : importer les WAV du studio
   (`_shared/vfx_studio/sons/*.wav`) et remplir `CONFIG.SOUND_IDS`.
+
+## v6 : le poing chargé MESURÉ (Milan sur la v5 : 7,5, « analyse géométriquement »)
+
+Plus de mots traduits en clés : les poses des refs ont été reconstruites en
+3D R6 et mesurées (`_shared/animator_brain/outils/geo_pose.py`,
+`corpus/poses/sources/`, fiche UN_SEUL_COUP §11), chaque résultat
+contre-vérifié.
+- Tenue : les deux poings DEVANT la poitrine, parallèles, hauteur de menton,
+  buste tourné -72°, penché 20° (Pew 3,9-4,3 s, comparé à caméra identique).
+- Fin de tenue : bras gauche qui s'ouvre bas sur le côté, bras droit
+  devant-droite du buste (Pew 4,6 s).
+- Détente de 16 images : le buste se dévisse, le bras monte à l'horizontale,
+  vitesse du poing qui ne fait que croître ; un vrai pas (pied avant levé).
+- Contact : buste presque de face (+16° au lieu de +42°), bras à plat.
+- Caméra : large de côté (corps entier, pieds, victime au fond), tenue plein
+  cadre face à la poitrine, gros plan du poing armé, départ de face-droite.
+- `verify_export.py` : les contrôles de STYLE sont devenus des mesures
+  (`mesures_pose`) sans verdict ; restent vrai/faux les contrôles
+  techniques. Sol : plus bas -0,073 stud ; contact 0,05 ; SENS OK ; PACKAGE OK.
+
+Avant/après : `captures/verification/2026-09-26-un-seul-coup-v5-contre-v6-poing-charge.png`,
+`…-v6-plans-charge-et-coup.png`. Prédiction 7,9 (biais mesuré déduit).

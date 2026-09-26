@@ -44,8 +44,8 @@ DEPART_F = 156              # il se ramasse (plan serré sur ses jambes)
 LANCE_F = 170               # il PART : le sol casse sous lui, il est là-bas en 3 images
 ARRIVEE_F = 173
 CHARGE_F = 186              # coupe : il est déjà devant la victime et CHARGE son poing
-TENUE_F = 222               # buste enroulé, poing au plus loin derrière ; tenue qui tremble
-FRAPPE_F = 271              # départ du coup
+TENUE_F = 232               # v6 : tenue, les deux poings devant la poitrine, buste tourné
+FRAPPE_F = 267              # départ du coup (v6 : détente de 16 i, Pew 4,6 -> 5,0 s)
 CONTACT_F = 283
 INVERSE_F = (283, 291)      # 2 images inversées (2 x 4 i)
 BLANC_F = (291, 321)        # blanc 0,2 s puis dissolution 0,3 s
@@ -162,54 +162,84 @@ def attacker_keys(vw, rig):
                 "feet": garde_pieds, "auto_low": True, "look": head(f),
                 "hands": {"R": ("a", (22, -30, 2.0)), "L": ("a", (-14, -26, 2.0))}}
 
-    def arc(f, k=1.0, low=0.52, wig=(0.0, 0.0), extra=0.0):
-        """v5 (Milan, 2026-09-26, refs remises : Pew face / dos, TSB face) :
-        « dans aucune le bras est tendu derrière ; le poing ne part pas de
-        l'arrière : l'arrière vient du BUSTE qui tourne ; et la pose des jambes
-        est un peu trop abusée ». Donc : le bras qui charge reste sur le CÔTÉ du
-        corps, poing à la hanche / au flanc, pointé vers l'avant-bas PAR RAPPORT
-        AU BUSTE (mode "a" : azimut / élévation relatifs au torse) ; c'est la
-        torsion du buste qui recule l'épaule droite. L'autre bras s'ouvre sur le
-        côté, presque à plat (Pew). Jambes : garde modérée, genoux fléchis.
-        (v3 / v4 : bras tendu droit vers l'arrière, v4 : accroupi extrême.)"""
+    def charge(f, k=1.0, low=0.52, wig=(0.0, 0.0, 0.0), extra=0.0, ouvre=0.0):
+        """v6 : la charge d'après les poses MESURÉES des refs (fiche
+        UN_SEUL_COUP §11 ; corpus/poses/sources/recon_pew_tenue.json,
+        recon_pew_depart.json, recon_sp2.json, recon_anime.json ; vérifiées
+        par contradicteurs), plus des mots.
+        Tenue (Pew 3,9-4,3 s, captures de Milan 9388f709 / 27b0a39e) : les
+        DEUX bras tendus DEVANT la poitrine, presque parallèles, poings à
+        hauteur de menton ; buste penché ~20° ; rien derrière le torse. Le
+        « recul » vient du buste tourné (~-65° par rapport au coup, Pew 4,6 s) :
+        les poings se retrouvent sur SON côté droit.
+        `ouvre` (0 -> 1, fin de tenue, Pew 4,4-4,6 s) : le bras gauche s'ouvre
+        sur le côté, le bras droit sort devant-droite du buste (az +40, el
+        -10) : c'est l'armé d'où part le coup.
+        (v5 : poings écartés sous les épaules, poing à la ceinture, bras gauche
+        DERRIÈRE : silhouette en X de face, 7,5.)"""
         kk = min(k, 1.0)
-        tw = -8 - 34 * k - extra                 # le BUSTE tourne : épaule droite en arrière
+        tw = -8 - 42 * k - extra - wig[2]         # le BUSTE tourne vers sa droite
         ry = -18 * kk
-        wr = np.array([wig[0], wig[1]]) * 1.2
-        return {"root": ((0.0, 0.0, za), (0, ry, 0)), "pelvis": ((0, -(0.45 + (low - 0.45) * k) - 0.004 * extra, 0), (-8 - 12 * k, tw, 0)),
-                "chest": (0, 0.1 + 0.12 * kk, 0), "feet": arc_pieds if k > 0.5 else garde_pieds, "auto_low": True,
+        o = float(np.clip(ouvre, 0.0, 1.0))
+        # TENUE : les deux bras PARALLÈLES dans l'axe du buste (direction
+        # monde, mode "d" : le mode "a" + l'IK de l'épaule donnait un V, puis un
+        # bras vertical quand on compensait) ; bras ~horizontaux, le gauche un
+        # peu plus haut (Pew : ~+10 et ~+20 dans le monde)
+        lac = np.radians(-10.0 - 60.0 * kk)
+        fwd = np.array([-np.sin(lac), 0.0, -np.cos(lac)])
+        rgt = np.cross(fwd, [0.0, 1.0, 0.0])
+
+        def dirv(el, dz=0.0):
+            e, a_ = np.radians(el), np.radians(dz)
+            h = np.cos(a_) * fwd + np.sin(a_) * rgt
+            return tuple(float(x) for x in (np.cos(e) * h + np.sin(e) * np.array([0.0, 1.0, 0.0])))
+        if o <= 0.0:
+            # poings à hauteur de menton, écartés à la largeur des épaules (Pew 9388, comparé à caméra identique)
+            mains = {"R": ("d", (dirv(20 + wig[1], 9 + wig[0]), 2.0)), "L": ("d", (dirv(27 - 0.6 * wig[1], -9 - 0.6 * wig[0]), 2.0))}
+        else:
+            r_az, r_el = np.array([0.0, 8.0]) + o * np.array([40.0, -18.0])
+            l_az, l_el = np.array([0.0, 20.0]) + o * np.array([-55.0, -50.0])   # bras gauche bas sur le côté (Pew 4,6 : -35 / -26), pas en croix
+            mains = {"R": ("a", (float(r_az), float(r_el), 2.0)), "L": ("a", (float(l_az), float(l_el), 2.0))}
+        if kk < 1.0:     # en montée depuis la garde : directions mêlées à celles de la garde
+            g = {"R": ("a", (22.0, -30.0, 2.0)), "L": ("a", (-14.0, -26.0, 2.0))}
+            if kk < 0.6:
+                mains = g
+        return {"root": ((0.0, 0.0, za), (0, ry, 0)),
+                "pelvis": ((0, -(0.45 + (low - 0.45) * k) - 0.004 * extra, 0), (-8 - 6 * k - 0.3 * wig[1], tw, 0)),
+                "chest": (0, 0.1 + 0.08 * kk, 0), "feet": arc_pieds if k > 0.5 else garde_pieds, "auto_low": True,
                 "look": head(f),
-                # les deux bras OUVERTS sur les côtés, presque à plat (Pew de
-                # face : un bras à gauche, un à droite, aucun derrière) : le poing
-                # droit sur SON côté droit, l'épaule reculée par le buste
-                "hands": {"R": ("d", ((1.0, -0.3 + 0.02 * wr[1], -0.15 + 0.02 * wr[0]), 1.95)),
-                          "L": ("d", ((-0.9, -0.2, -0.35), 2.0))}}
+                "hands": mains}
     add(ARRIVEE_F, garde(ARRIVEE_F, low=0.62), "LINEAR")
     add(CHARGE_F, garde(CHARGE_F, low=0.52))
     add(CHARGE_F + 3, garde(CHARGE_F + 3, low=0.55))
-    # l'arc se tend en 0,4 s (lent au début, il accélère), dépasse, se pose
-    add(200, arc(200, 0.55))
-    add(208, arc(208, 1.08))
-    add(214, arc(214, 1.0))
-    # tenue qui TREMBLE ; la torsion et la compression montent encore
-    for f, w, ex in ((226, (3, 2), 2), (238, (-2, 3), 4), (250, (2, -2), 6), (260, (-3, -1), 7)):
-        add(f, arc(f, 1.0, wig=w, extra=ex))
-    # dernière compression (4 i) : il se tasse encore et tire le poing un peu plus loin
-    add(266, arc(266, 1.0, extra=10))
-    add(FRAPPE_F, arc(FRAPPE_F, 1.0, extra=11), "LINEAR")
+    # la charge monte en 0,4 s : les bras montent DEVANT pendant que le buste
+    # tourne (lent au début, il accélère), dépasse, se pose
+    add(200, charge(200, 0.5))
+    add(210, charge(210, 1.08))
+    add(216, charge(216, 1.0))
+    # tenue VIVANTE (0,6 s) : le buste respire et tourne encore un peu, les
+    # poings tremblent assez pour se voir (v5 : ±0,07 stud, invisible)
+    for f, w in ((224, (3, 2, 1.5)), (232, (-3, 3, 2.5)), (240, (3, -2, 3.5)), (248, (-2, -3, 4.5))):
+        add(f, charge(f, 1.0, wig=w))
+    # fin de tenue : le bras gauche s'ouvre sur le côté, le droit sort
+    # devant-droite ; dernière torsion (Pew 4,4-4,6 s)
+    add(256, charge(256, 1.0, extra=5, ouvre=0.45))
+    add(FRAPPE_F, charge(FRAPPE_F, 1.0, extra=9, ouvre=1.0), "LINEAR")
 
     # FRAPPE : le bassin et le buste tournent d'abord (le poing traîne,
     # fouet), l'épaule droite passe DEVANT, le bras part à PLAT ; contact
     # exact sur la POITRINE, à hauteur d'épaule
     s_ = "R"
-    low, lean, yaw = 0.22, -5, 42
+    # v6 : buste presque de FACE au contact (Pew 5,0 s : lacet ~+12 ; TSB
+    # 5,87 s : 0 ± 25) ; la v5 passait à +42 (épaule jetée devant, crochet)
+    low, lean, yaw = 0.26, -6, 16
     probe = {"root": ((0.0, 0.0, 0.0), (0, 0, 0)), "pelvis": ((0, -low, 0), (lean, yaw, 0)), "chest": (0, 0.06, 0)}
     M.solve_pose(rig, probe)
     y_sh = float(M.torso_pivot(V.current_parts(rig), s_)[1])
     r, p = vw[CONTACT_F]["Torso"]
     t = float(np.clip((y_sh + 0.1 - p[1] - r[1, 2] * -0.55) / max(r[1, 1], 0.3), -0.75, 0.75))
     tgt = p + r @ np.array([0.0, t, -0.55])
-    hikite = ("a", (-150, -30, 2.0))
+    hikite = ("a", (-120, -35, 2.0))   # v6 : bras gauche ouvert derrière-bas (TSB -120 / -40)
     contact = {"root": ((0.0, 0.0, 0.0), (0, 0, 0)), "pelvis": ((0, -low, 0), (lean, yaw, 0)), "chest": (0, 0.06, 0),
                "fitp": (s_, tuple(tgt), 2.15, -4), "look": tuple(tgt + np.array([0.0, 0.5, -2.0])),
                "hands": {s_: ("w", tuple(tgt)), "L": hikite}}
@@ -220,18 +250,33 @@ def attacker_keys(vw, rig):
     cfeet = {"L": ("g", (croot[0] + lx, croot[2] + lz)), "R": ("g", (croot[0] + rx, croot[2] + rz))}
     contact["feet"] = cfeet
     contact["auto_low"] = True
-    # DÉTENTE (12 i) : la racine et le bassin déroulent d'abord, le poing
-    # traîne derrière (fouet), puis il passe à PLAT à hauteur d'épaule
-    add(275, {"root": ((0.0, 0.0, 0.5 * (za + croot[2])), (0, -8, 0)), "pelvis": ((0, -0.5, 0), (-14, -18, 0)),
+    # DÉTENTE v6 (16 i, Pew 4,6 -> 5,0 s ; TSB 5,6 -> 5,8 s) : c'est le BUSTE
+    # qui se dévisse vers sa gauche et entraîne le bras tendu comme un rayon ;
+    # le bras monte jusqu'à l'horizontale et vient DEVANT le torse (az torse
+    # +40 -> 0). Vitesse qui ne fait que croître jusqu'au contact (v5 : rapide,
+    # lent, puis crochet de 2 images).
+    # appui qui passe de la charge à la frappe : clé intermédiaire résolue
+    # (sans elle, une jambe passait 0,29 stud sous le sol à 268-269)
+    # le PAS de la détente (v6) : le pied avant se lève et avance, le pied
+    # arrière pivote puis suit (1er essai : les deux pieds glissaient de
+    # 1,6 stud en 2 images, et une jambe passait sous le sol)
+    aL, aR = np.array(arc_pieds["L"][1]), np.array(arc_pieds["R"][1])
+    cL, cR = np.array(cfeet["L"][1]), np.array(cfeet["R"][1])
+    mL = aL + 0.5 * (cL - aL)
+    pas_269 = {"L": ("w", (float(mL[0]), 0.6, float(mL[1]))), "R": ("g", tuple(float(x) for x in aR))}
+    pas_272 = {"L": ("g", tuple(float(x) for x in cL)), "R": ("g", tuple(float(x) for x in aR + 0.45 * (cR - aR)))}
+    add(269, {"root": ((0.0, 0.0, za + 0.08 * (croot[2] - za)), (0, -16, 0)), "pelvis": ((0, -0.52, 0), (-13, -52, 0)),
+              "chest": (0, 0.16, 0), "feet": pas_269, "auto_low": True,
+              "hands": {"R": ("a", (38, -9, 2.0)), "L": ("a", (-65, -30, 2.0))}, "look": head(269)}, "LINEAR")
+    add(272, {"root": ((0.0, 0.0, za + 0.25 * (croot[2] - za)), (0, -14, 0)), "pelvis": ((0, -0.47, 0), (-12, -40, 0)),
+              "chest": (0, 0.14, 0), "feet": pas_272, "auto_low": True,
+              "hands": {"R": ("a", (36, -8, 2.0)), "L": ("a", (-80, -30, 2.0))}, "look": head(272)}, "LINEAR")
+    add(277, {"root": ((0.0, 0.0, za + 0.55 * (croot[2] - za)), (0, -8, 0)), "pelvis": ((0, -0.42, 0), (-11, -22, 0)),
+              "chest": (0, 0.1, 0), "feet": cfeet, "auto_low": True,
+              "hands": {"R": ("a", (20, -3, 2.05)), "L": ("a", (-110, -25, 2.0))}, "look": tuple(tgt)}, "LINEAR")
+    add(280, {"root": ((0.0, 0.0, za + 0.85 * (croot[2] - za)), (0, -3, 0)), "pelvis": ((0, -0.36, 0), (-9, -8, 0)),
               "chest": (0, 0.08, 0), "feet": cfeet, "auto_low": True,
-              "hands": {"R": ("d", ((0.85, -0.2, -0.55), 2.0)), "L": ("d", ((-0.8, -0.25, 0.3), 2.0))},
-              "look": head(275)}, "LINEAR")
-    add(279, {"root": ((0.0, 0.0, croot[2] + 0.15), (0, 0, 0)), "pelvis": ((0, -0.48, 0), (-12, 8, 0)),
-              "chest": (0, 0.08, 0), "feet": cfeet, "auto_low": True,
-              "hands": {"R": ("a", (75, -4, 2.05)), "L": ("a", (-120, -25, 2.0))}, "look": tuple(tgt)}, "LINEAR")
-    add(281, {"root": ((0.0, 0.0, croot[2] + 0.05), (0, 0, 0)), "pelvis": ((0, -0.33, 0), (-6, 28, 0)),
-              "chest": (0, 0.07, 0), "feet": cfeet, "auto_low": True,
-              "hands": {"R": ("d", ((-0.05, 0.1, -1.0), 2.05)), "L": hikite}, "look": tuple(tgt)}, "LINEAR")
+              "hands": {"R": ("a", (16, -2, 2.05)), "L": ("a", (-115, -35, 2.0))}, "look": tuple(tgt)}, "LINEAR")
     add(CONTACT_F, contact, "LINEAR")
     # suite : l'épaule passe encore un peu devant, puis l'EXTENSION est TENUE,
     # bras à plat vers l'horizon (la victime est partie)
