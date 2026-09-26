@@ -64,6 +64,16 @@ hanches -1,05, caméra de sa droite un peu de face (tour à 8 caméras). Coup
 toujours à plat. Avant/après :
 `captures/verification/2026-09-26-un-seul-coup-v3-contre-v4-pose-de-charge.png`.
 
+## v5 : le poing ne part pas de l'arrière (Milan)
+
+« Dans aucune ref le bras est tendu derrière ; l'arrière vient du buste qui
+tourne ; les jambes sont trop abusées. » v5 : les deux poings de part et
+d'autre du corps (bras ouverts sur les côtés), buste tourné, jambes en garde ;
+charge en gros plan bas de face (victime hors champ), départ du coup en gros
+plan, poing de 3/4 avec l'épaule dans le tourbillon. Contrôle d'export :
+poing sur le côté pas derrière + épaule reculée par le buste. Avant/après :
+`captures/verification/2026-09-26-un-seul-coup-v4-contre-v5-charge-depart-poing.png`.
+
 ## Chaîne (réutilise celle du Poing du Dragon)
 
 ```bash

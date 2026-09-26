@@ -33,7 +33,11 @@ savoir où on en était sans l'historique de conversation.)
   `2026-09-26-un-seul-coup-v3-scene-complete-avec-son.mp4`) -> « aucun
   changement » : c'est la POSE de charge -> **v4** : charge RAMASSÉE (buste
   courbé 57°, tête basse, bras écartés sous le buste ; fiche §8 ; vidéo
-  `2026-09-26-un-seul-coup-v4-scene-complete-avec-son.mp4`). Prédiction 7,6.
+  `2026-09-26-un-seul-coup-v4-scene-complete-avec-son.mp4`) -> comparaison
+  aux refs (fiche §9) -> « le bras n'est jamais tendu derrière, c'est le buste
+  qui tourne ; jambes trop abusées » -> **v5** : poings sur les côtés, buste
+  tourné, gros plans (fiche §10 ; vidéo
+  `2026-09-26-un-seul-coup-v5-scene-complete-avec-son.mp4`). Prédiction 7,8.
 - **Prochaine étape** : le retour de Milan sur « Un seul coup » ; il veut
   encore 1-2 animations ici avant de passer sur Roblox Studio (il dira quand).
 
