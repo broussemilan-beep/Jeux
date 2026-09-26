@@ -197,3 +197,28 @@ sont pour la CHARGE, jamais pour l'arrivée du coup (CARNET 2.9).
 
 Prédiction v4 : **7,6/10**.
 
+## 9. Comparaison visuelle v4 contre les refs (demandée par Milan, 2026-09-26)
+
+Planche 4 phases x (Pew, TSB SP1, TSB SP2, nous v4) + notre charge vue sous
+l'angle de chaque ref + les 4 images anime. La planche contient des images
+des refs : elle n'est PAS versionnée (règle des refs) ; ce qui suit en est
+la lecture.
+
+| phase | refs | nous v4 | écart |
+|---|---|---|---|
+| 1. il arme | TSB 4,6 : fente, GENOU AVANT LEVÉ haut (lanceur), bras qui arme derrière l'épaule ; Pew 3,4 / SP2 4,2 : il se tasse, buste courbé | il se tasse, bras qui s'écartent | pas de genou levé ; tassement lisible |
+| 2. charge tenue | caméra COLLÉE et basse, le perso remplit 70-90 % de l'image ; SP2 4,5 et TSB 4,9 : buste tourné au point qu'on voit son CÔTÉ / DOS, bras qui charge CACHÉ derrière ; Pew 4,2 : courbé, bras écartés | vu de loin (~8 studs, le perso ~40 % de l'image), de sa poitrine, bras bien écartés ; jambe de la victime dans le cadre | cadrage trop LARGE ; torsion pas assez forte (on voit la poitrine, pas le côté/dos) |
+| 3. départ | le bras passe À PLAT EN TRAVERS devant le buste qui tourne, en gros plan (TSB 5,2), fumée qui naît (Pew 4,8) | coupe sur le regard de la victime : l'attaquant est loin, on ne voit pas le buste tourner | la rotation du coup n'est pas montrée |
+| 4. poing vers l'objectif | poing + avant-bras en 3/4, l'épaule derrière, TOURBILLON de fumée autour | un carré rouge plat qui remplit l'image, pas d'épaule, peu de fumée | poing de face pur (illisible), sans fumée |
+
+Sous l'angle des refs (caméra basse de face), notre charge est masquée par la
+jambe de la victime : chez les refs la victime n'est jamais dans le plan de
+la charge.
+
+**Pistes (non décidées, à montrer à Milan)** : (a) charge en GROS PLAN bas,
+victime hors champ ; (b) torsion poussée jusqu'à montrer le côté/dos, bras
+qui charge caché ; (c) option TSB : genou avant levé pendant l'armé ; (d)
+montrer le départ du coup en gros plan (buste qui tourne, bras en travers)
+avant le plan de la victime ; (e) plan du poing en 3/4 avec l'épaule et un
+tourbillon de fumée.
+
