@@ -285,6 +285,8 @@ def poids_fichier(p, hist):
         w = 1.3
     elif b.startswith("corpus/fiches/"):
         w = 1.2
+    elif b == "corpus/etude_c4/SYNTHESE.md":
+        w = 1.2   # le cours du chantier 4 (vérifié, contrôlé) ; les notes brutes gardent 1.0
     elif b in ("NOYAU.md", "ETAT.md", "RETOURS.md"):
         w = 1.1
     elif b.startswith("corpus/recherche/"):
@@ -938,13 +940,18 @@ def rappel(req, maxi=20, court_=False, exclus=()):
                 total += 1
             if total >= maxi:
                 reste = ordre[ordre.index((p, us)) + 1:]
+                # les 15 premiers, plus tout fichier HISTORIQUE (rétrogradé, jamais caché)
+                montres = [(q, v) for i, (q, v) in enumerate(reste)
+                           if i < 15 or any(u.entree and u.entree.hist for u in v)]
                 if reste:
                     # rétrogradés ou coupés par la limite, jamais cachés : au moins leur nom et leurs lignes
                     P(f"   ... (limite {maxi} atteinte ; --max pour plus) ; aussi dans : " + " ; ".join(
                         f"{rel_b(q) if q.startswith(BRAIN) else rel(q)} ({len(v)}"
                         f"{', HISTORIQUE' if any(u.entree and u.entree.hist for u in v) else ''} : "
                         f"l.{', '.join(str(u.ligne) for u in sorted(v, key=lambda u: -u.score)[:3])})"
-                        for q, v in reste))
+                        for q, v in montres)
+                        + (f" ; et {len(reste) - len(montres)} autre(s) fichier(s) (--max pour tout voir)"
+                           if len(reste) > len(montres) else ""))
                 break
     # 11. CONTREDIT en dernier
     cn = [u for u in unites_md + unites_js if u.niveau and u.marque]

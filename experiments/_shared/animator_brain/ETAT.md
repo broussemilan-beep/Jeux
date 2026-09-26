@@ -86,6 +86,14 @@ Chantiers, dans cet ordre de livraison :
    brutes dans le scratchpad (`c4/notes/`), synthèse versionnée ensuite.
    Non couvert à ce tour : les tutos VFX pure (particules, flipbooks),
    déjà étudiés le 2026-09-25.
+   **Fait (2026-09-26)** : 12 notes vérifiées dans `corpus/etude_c4/`,
+   synthèse contrôlée `corpus/etude_c4/SYNTHESE.md` (cours en 9 chapitres,
+   38 lectures démenties, mes erreurs d'œil, la v6 relue avec 6 constats
+   mesurés et 7 hypothèses, 3 exercices « pouvoir refaire ») ; 7 dépôts
+   de Milan pour les yeux : `corpus/recherche/depots_yeux_2026-09-26/`.
+   Suite : les exercices (refaire TSB M1 de zéro ; prédiction à l'aveugle
+   au cadrage de jeu), puis les briques d'yeux retenues (côte à côte à
+   vitesse réelle calé sur le contact, questions oui/non à l'aveugle).
 
 Scripts des analyses (hors dépôt, session) : `wf_mesure.js`, `wf_audit.js`,
 `wf_hermes.js` dans le dossier scratchpad `poing/`.

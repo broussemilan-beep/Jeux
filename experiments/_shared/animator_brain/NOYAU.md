@@ -26,7 +26,8 @@ TOUTE session. Le détail vit dans les fiches ; un détail perdu se RECHERCHE
   3 réorganisation (`corpus/recherche/PLAN_REORGANISATION_2026-09-26.md`) ;
   4 EN COURS (2026-09-26) : se renourrir de tout le contenu envoyé
   (apprendre, comprendre, pouvoir refaire, affiner l'œil ; « pas combler
-  des trous »). Notes : ETAT §1b.
+  des trous »). Étude faite : `corpus/etude_c4/SYNTHESE.md` (le cours ;
+  chaque apprentissage marqué JEU ou CINÉ) ; reste les exercices.
 
 ## Ce que Milan a répété (ses mots exacts : `corpus/milan_verbatim.jsonl`)
 - « Il frappe vers le bas » : 6 fois (Dragon v3-v7, Un seul coup v1). Au
