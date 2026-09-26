@@ -810,3 +810,14 @@ cerveau, voir la fin de l'entrée.
     `captures/verification/2026-09-26-un-seul-coup-v2-contre-v3-poing-charge.png`.
     Prédiction 7,8.
 
+- **2026-09-26, « Un seul coup » v3 (Milan)** : « je vois aucun changement,
+  je ne sais pas si c'est un bug ou si on n'a toujours pas compris ».
+  - Pas un bug (images v2 / v3 à 3,9 s : écart moyen 42/255). Question posée :
+    réponse « la pose de charge ».
+  - Refs revues en grand (Pew, TSB, SP2) : la charge est RAMASSÉE (buste
+    courbé, tête basse, genoux très pliés), la v3 était debout bras en croix.
+    v4 : buste 57°, hanches -1,05, bras écartés sous le buste, caméra de sa
+    droite (tour à 8 caméras). Fiche §8, CARNET 2.10 (complété). Avant/après :
+    `captures/verification/2026-09-26-un-seul-coup-v3-contre-v4-pose-de-charge.png`.
+    Prédiction 7,6.
+

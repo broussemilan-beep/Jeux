@@ -155,36 +155,44 @@ def attacker_keys(vw, rig):
     chest_v = lambda f: np.asarray(vw[f]["Torso"][1], float) + np.array([0.0, 0.3, 0.55])  # noqa: E731
     garde_pieds = {"L": ("g", (-0.7, za - 0.8)), "R": ("g", (0.8, za + 0.7))}
     # appuis de l'arc tendu : de profil (pied gauche vers elle, droit derrière)
-    arc_pieds = {"L": ("g", (-0.35, za - 1.35)), "R": ("g", (0.45, za + 1.3))}
+    arc_pieds = {"L": ("g", (-0.85, za - 1.05)), "R": ("g", (0.95, za + 0.95))}
 
     def garde(f, low=0.5, i="BEZIER"):
         return {"root": ((0.0, 0.0, za), (0, 0, 0)), "pelvis": ((0, -low, 0), (-8, -10, 0)), "chest": (0, 0.08, 0),
                 "feet": garde_pieds, "auto_low": True, "look": head(f),
                 "hands": {"R": ("a", (22, -30, 2.0)), "L": ("a", (-14, -26, 2.0))}}
 
-    def arc(f, k=1.0, low=0.85, wig=(0.0, 0.0), extra=0.0):
-        """k : 0 = garde -> 1 = arc tendu (au-delà : dépassement) ; extra : torsion de plus (tension)"""
-        tw = -8 - 42 * k - extra                 # torsion du buste (bassin), en plus de la racine
-        ry = -48 * min(k, 1.0)                   # la racine tourne : il se met de profil
-        back = np.array([0.12, -0.04, 1.0]) + np.array([wig[0], wig[1], 0.0]) * 0.04
-        front = np.array([-0.12, -0.08, -1.0])
-        return {"root": ((0.0, 0.0, za), (0, ry, 0)), "pelvis": ((0, -low, 0), (-14 * min(k, 1.0), tw, 0)),
-                "chest": (0, 0.1, 0), "feet": arc_pieds if k > 0.5 else garde_pieds, "auto_low": True,
+    def arc(f, k=1.0, low=1.05, wig=(0.0, 0.0), extra=0.0):
+        """v4 (Milan : « la pose de charge » n'est pas la bonne ; refs Pew 2,9-4,6 s,
+        TSB 4,6-5,1 s, SP2 4,2-4,8 s) : il se RAMASSE comme un ressort écrasé --
+        genoux très pliés, buste COURBÉ en avant (~45°), tête basse, poing ramené
+        derrière À HAUTEUR DE HANCHE, l'autre bras bas vers l'avant. (v3 : presque
+        debout, buste 17°, bras en croix à l'horizontale : « aucun changement »)
+        k : 0 = garde -> 1 = ramassé ; extra : torsion et compression de plus"""
+        kk = min(k, 1.0)
+        tw = -10 - 30 * k - extra                # torsion du buste (bassin), en plus de la racine
+        ry = -32 * kk                            # la racine tourne un peu : épaule droite en arrière
+        # bras écartés le long des épaules, sous le buste courbé (Pew 4,2 s) :
+        # le poing derrière, un peu bas ; l'autre bras devant-gauche, presque à plat
+        back = np.array([0.3, -0.25, 1.0]) + np.array([wig[0], wig[1], 0.0]) * 0.04
+        front = np.array([-0.65, -0.3, -0.7])
+        return {"root": ((0.0, 0.0, za), (0, ry, 0)), "pelvis": ((0, -(0.5 + (low - 0.5) * k) - 0.01 * extra, 0), (-8 - 36 * k, tw, 0)),
+                "chest": (0, 0.1 + 0.25 * kk, 0), "feet": arc_pieds if k > 0.5 else garde_pieds, "auto_low": True,
                 "look": head(f),
                 "hands": {"R": ("d", (tuple(back), 2.0)), "L": ("d", (tuple(front), 2.0))}}
     add(ARRIVEE_F, garde(ARRIVEE_F, low=0.62), "LINEAR")
     add(CHARGE_F, garde(CHARGE_F, low=0.52))
     add(CHARGE_F + 3, garde(CHARGE_F + 3, low=0.55))
     # l'arc se tend en 0,4 s (lent au début, il accélère), dépasse, se pose
-    add(200, arc(200, 0.55, low=0.7))
-    add(208, arc(208, 1.08, low=0.9))
-    add(214, arc(214, 1.0, low=0.86))
+    add(200, arc(200, 0.55))
+    add(208, arc(208, 1.08))
+    add(214, arc(214, 1.0))
     # tenue qui TREMBLE ; la torsion et la compression montent encore
-    for f, w, ex, lw in ((226, (3, 2), 2, 0.87), (238, (-2, 3), 4, 0.88), (250, (2, -2), 6, 0.9), (260, (-3, -1), 7, 0.9)):
-        add(f, arc(f, 1.0, low=lw, wig=w, extra=ex))
+    for f, w, ex in ((226, (3, 2), 2), (238, (-2, 3), 4), (250, (2, -2), 6), (260, (-3, -1), 7)):
+        add(f, arc(f, 1.0, wig=w, extra=ex))
     # dernière compression (4 i) : il se tasse encore et tire le poing un peu plus loin
-    add(266, arc(266, 1.0, low=0.96, extra=10))
-    add(FRAPPE_F, arc(FRAPPE_F, 1.0, low=0.96, extra=11), "LINEAR")
+    add(266, arc(266, 1.0, extra=10))
+    add(FRAPPE_F, arc(FRAPPE_F, 1.0, extra=11), "LINEAR")
 
     # FRAPPE : le bassin et le buste tournent d'abord (le poing traîne,
     # fouet), l'épaule droite passe DEVANT, le bras part à PLAT ; contact
@@ -210,11 +218,11 @@ def attacker_keys(vw, rig):
     contact["auto_low"] = True
     # DÉTENTE (12 i) : la racine et le bassin déroulent d'abord, le poing
     # traîne derrière (fouet), puis il passe à PLAT à hauteur d'épaule
-    add(275, {"root": ((0.0, 0.0, 0.5 * (za + croot[2])), (0, -22, 0)), "pelvis": ((0, -0.7, 0), (-10, -30, 0)),
+    add(275, {"root": ((0.0, 0.0, 0.5 * (za + croot[2])), (0, -18, 0)), "pelvis": ((0, -0.8, 0), (-26, -28, 0)),
               "chest": (0, 0.08, 0), "feet": cfeet, "auto_low": True,
-              "hands": {"R": ("d", ((0.5, -0.05, 0.85), 2.0)), "L": ("d", ((-0.3, -0.1, -0.9), 2.0))},
+              "hands": {"R": ("d", ((0.55, -0.3, 0.8), 2.0)), "L": ("d", ((-0.35, -0.35, -0.85), 2.0))},
               "look": head(275)}, "LINEAR")
-    add(279, {"root": ((0.0, 0.0, croot[2] + 0.15), (0, 0, 0)), "pelvis": ((0, -0.42, 0), (-7, 8, 0)),
+    add(279, {"root": ((0.0, 0.0, croot[2] + 0.15), (0, 0, 0)), "pelvis": ((0, -0.48, 0), (-12, 8, 0)),
               "chest": (0, 0.08, 0), "feet": cfeet, "auto_low": True,
               "hands": {"R": ("a", (75, -4, 2.05)), "L": ("a", (-120, -25, 2.0))}, "look": tuple(tgt)}, "LINEAR")
     add(281, {"root": ((0.0, 0.0, croot[2] + 0.05), (0, 0, 0)), "pelvis": ((0, -0.33, 0), (-6, 28, 0)),

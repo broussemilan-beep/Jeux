@@ -177,3 +177,23 @@ le T se lit, la victime dans le cadre.
 Prédiction v3 : **7,8/10** (le mouvement est celui du clip ; incertain :
 est-ce la bonne lecture de « charger » pour lui, et la détente de 12 i).
 
+## 8. v4 : la POSE de charge (Milan sur la v3 : « je vois aucun changement »)
+
+Pas un bug (les fichiers v2 / v3 diffèrent) : Milan précise que c'est **la
+pose de charge**. Revue en grand, sous plusieurs angles : Pew 2,95 / 3,4 /
+4,2 / 4,6 s, TSB 4,6-5,1 s, SP2 4,2-4,8 s. Ce que les trois font et que la
+v3 ne faisait pas : il se **RAMASSE comme un ressort écrasé** -- genoux très
+pliés (hanches presque aux genoux), **buste COURBÉ en avant**, **tête basse**,
+bras écartés SOUS le buste (poing derrière un peu bas, l'autre bras devant).
+La v3 : presque debout (buste 17°), tête droite, bras en croix à hauteur
+d'épaule -> un bonhomme debout bras écartés, pas une charge.
+
+v4 : buste courbé 57° pendant la charge, hanches à -1,05, tête basse ; bras
+écartés sous le buste ; la charge est filmée de SA droite, un peu de face,
+en contre-plongée (l'angle de Pew face-gauche essayé : le bras avant cachait
+le corps ramassé ; choisi avec le tour à 8 caméras de la pose). Le coup
+reste à plat (buste 7°, bras -5°, poing 3,4 studs) : le bas et le courbé
+sont pour la CHARGE, jamais pour l'arrivée du coup (CARNET 2.9).
+
+Prédiction v4 : **7,6/10**.
+

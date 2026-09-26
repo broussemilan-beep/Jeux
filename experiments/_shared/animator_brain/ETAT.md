@@ -30,7 +30,10 @@ savoir où on en était sans l'historique de conversation.)
   départ ultra rapide validé ; le POING CHARGÉ n'est toujours pas le
   mouvement qu'il veut -> clip reçu (Pew + TSB) -> **v3** : le poing chargé
   en arc tendu (fiche §7, CARNET 2.10 ; vidéo
-  `2026-09-26-un-seul-coup-v3-scene-complete-avec-son.mp4`). Prédiction 7,8.
+  `2026-09-26-un-seul-coup-v3-scene-complete-avec-son.mp4`) -> « aucun
+  changement » : c'est la POSE de charge -> **v4** : charge RAMASSÉE (buste
+  courbé 57°, tête basse, bras écartés sous le buste ; fiche §8 ; vidéo
+  `2026-09-26-un-seul-coup-v4-scene-complete-avec-son.mp4`). Prédiction 7,6.
 - **Prochaine étape** : le retour de Milan sur « Un seul coup » ; il veut
   encore 1-2 animations ici avant de passer sur Roblox Studio (il dira quand).
 

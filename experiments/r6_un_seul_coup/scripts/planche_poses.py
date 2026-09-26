@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.join(HERE, "..", "..", "_shared", "animator_brain", "
 import coup_clip as C  # noqa: E402
 import moon  # noqa: E402
 
-FRAMES = [186, 200, 208, 214, 250, 266, 271, 275, 279, 281, 283]
+FRAMES = [186, 200, 214, 250, 266, 275, 279, 283]
 
 
 def main(blend, out, frames=FRAMES):
@@ -28,8 +28,8 @@ def main(blend, out, frames=FRAMES):
         w = [aw[f]]
         side = moon.render(w, eye=c + np.array([9.0, 0.0, 0.0]), target=c + np.array([0, -0.8, 0.0]), fov=45,
                            size=(W, H), title=f"f{f} profil")
-        tq = moon.render(w, eye=c + np.array([5.0, 0.0, -7.0]), target=c + np.array([0, -0.6, 0]), fov=45,
-                         size=(W, H), title=f"f{f} 3/4 face")
+        tq = moon.render(w, eye=c + np.array([-5.0, -1.2, -7.0]), target=c + np.array([0, -0.6, 0]), fov=45,
+                         size=(W, H), title=f"f{f} face-gauche bas (Pew)")
         rows.append((side, tq))
     cols = 3
     n = len(rows)

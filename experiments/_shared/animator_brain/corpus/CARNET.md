@@ -337,6 +337,11 @@ bras vers la cible) -> tenue qui tremble -> tout se déroule à 180°. En R6,
 où le bras ne plie pas, c'est l'alignement des DEUX bras qui dit « chargé ».
 Un poing déjà derrière qui recule de 0,6 stud ne charge rien : ce qui se
 voit, c'est le TRAJET (devant -> derrière) et la ROTATION du buste.
+  - Corrigé par Milan sur la v3 (« aucun changement ») : l'arc tendu
+    DEBOUT ne se lit pas comme une charge. La charge des refs est RAMASSÉE :
+    genoux très pliés, buste courbé (~45-60°), tête basse, bras écartés sous
+    le buste. Une pose se regarde en grand et sous plusieurs angles avant de
+    la décrire ; mes mots (« arc », « T ») venaient de 2 vignettes.
 
 ## 3. La 3D qui imite l'anime
 

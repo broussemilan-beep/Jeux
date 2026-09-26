@@ -89,14 +89,19 @@ def camera_keys(aw, vw):
     #    destination hors champ à gauche (le sillage y file)
     add(M["depart"], [8.4, 1.8, 0.9], [0.0, 2.4, 0.9], 46, "cut")
     add(M["charge"] - 1, [9.0, 2.0, 1.2], [0.0, 2.0, 0.9], 48)
-    # 4. LA CHARGE (v3) : de face / profil côté poitrine (il se met de
+    # 4. LA CHARGE (v3 : de face / profil côté poitrine ; v4 ci-dessous) (il se met de
     #    profil, poitrine vers +x) : on voit l'arc se tendre, les deux bras
     #    alignés (poing derrière à gauche, l'autre bras vers la victime à
     #    droite) ; poussée lente pendant la tenue
     a = A(214)
     #    (1er cadrage à 7 studs : jambes coupées, victime qui mangeait le cadre)
-    add(M["charge"], a + [10.5, 0.2, -0.6], a + [0.0, -0.1, -2.0], 42, "cut")
-    add(M["frappe"], a + [8.6, 0.0, -0.6], a + [0.0, 0.0, -1.9], 40)
+    #    v4 : l'angle de Pew (3,9-4,6 s) : de face à gauche, en contre-plongée,
+    #    le buste courbé vient vers nous, bras écartés, tête basse
+    #    (essai à l'angle de Pew, face-gauche : le bras avant cachait le corps
+    #    ramassé et la jambe de la victime mangeait le cadre ; le tour à 8
+    #    caméras de la pose : c'est de SA DROITE, un peu de face, qu'elle se lit)
+    add(M["charge"], a + [8.2, -1.0, -4.2], a + [0.0, -0.4, -1.0], 40, "cut")
+    add(M["frappe"], a + [6.6, -1.0, -3.4], a + [0.0, -0.4, -0.9], 38)
     # 6. FRAPPE : REGARD DE LA VICTIME (elle est masquée) ; la caméra est à
     #    hauteur du point touché : le poing arrive À PLAT dans l'objectif
     tg = np.asarray(SCENE["contact_tgt"], float)

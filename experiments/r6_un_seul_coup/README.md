@@ -55,6 +55,15 @@ plat. Caméra de face côté poitrine. Contrôles d'export inchangés et tous OK
 (coup à plat : buste 7°, bras -5°, poing 3,4 studs). Avant/après :
 `captures/verification/2026-09-26-un-seul-coup-v2-contre-v3-poing-charge.png`.
 
+## v4 : la pose de charge (Milan sur la v3 : « aucun changement »)
+
+C'était la POSE : la v3 chargeait debout, bras en croix. Les refs (Pew,
+TSB, SP2, revues en grand) chargent RAMASSÉES : genoux très pliés, buste
+courbé en avant, tête basse, bras écartés sous le buste. v4 : buste 57°,
+hanches -1,05, caméra de sa droite un peu de face (tour à 8 caméras). Coup
+toujours à plat. Avant/après :
+`captures/verification/2026-09-26-un-seul-coup-v3-contre-v4-pose-de-charge.png`.
+
 ## Chaîne (réutilise celle du Poing du Dragon)
 
 ```bash
