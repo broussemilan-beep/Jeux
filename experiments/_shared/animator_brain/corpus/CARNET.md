@@ -714,6 +714,22 @@ de clés, plus loin, plus lentes. Et le montage suit : des plans de
 0,3-0,6 s dont l'échelle saute font le même effet haché qu'un dragon trop
 rapide ; un plan qui SUIT le sujet vaut mieux que trois coupes.
 
+**4b.31 Une ligne jusqu'à l'horizon se filme de 3/4 haut, pas dans son axe**
+(« Un seul coup », 2026-09-26, vu à 0,1 s). De dos dans l'axe du sillon, la
+perspective le referme : il semblait s'arrêter à 60 studs alors qu'il en
+faisait 470. De 3/4 haut, il file en DIAGONALE jusqu'à l'horizon (c'est ce
+que montrait déjà la 2e image inversée). Et la destruction doit GRANDIR
+avec la distance (le V s'ouvre, les roches passent de 2 à 20 studs) : à
+taille constante, vue de loin, il ne restait qu'un trait de fumée.
+
+**4b.32 Un événement ne se lit que s'il arrive PENDANT le plan qui le
+montre** (même scène). Les nuages se fendaient 3 s trop tôt, dans un plan
+qui ne voyait pas le ciel ; le plan au-dessus des nuages montrait une fente
+déjà ouverte, donc rien. Calé sur le début de ce plan (+0,1 s), on voit le
+ciel s'ouvrir et le sillon apparaître dedans. Pareil pour le plan « regard
+de la victime » : la caméra prend SA place, donc on la masque (1er essai à
+côté d'elle : son torse bleu couvrait la moitié de l'image).
+
 ## 5. Pistes à essayer (classées, aucune n'est décidée)
 
 1. **Rafale : ré-armement lent, frappe rapide, clés espacées** (2.1,

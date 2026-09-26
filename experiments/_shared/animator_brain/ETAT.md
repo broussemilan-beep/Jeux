@@ -19,9 +19,14 @@ savoir où on en était sans l'historique de conversation.)
 - **Question ouverte de Milan** : passer sur Roblox Studio (plugin, ses
   stocks de VFX, suivre des tutos de A à Z). Analyse :
   `corpus/recherche/STUDIO_FREIN_2026-09-26.md`.
-- **Prochaine étape** : choisir la nouvelle cinématique parmi les 3
-  propositions de `PROPOSITIONS_CINEMATIQUE_2026-09-26.md`, puis écrire sa
-  fiche dans `corpus/fiches/` AVANT toute clé.
+- **Cinématique en cours : « Un seul coup »** (Serious Punch ; proposition 1,
+  choisie par Milan le 2026-09-26). Fiche `corpus/fiches/UN_SEUL_COUP.md` ;
+  production `experiments/r6_un_seul_coup/` (README) ; vidéo
+  `captures/verification/2026-09-26-un-seul-coup-scene-complete-avec-son.mp4` ;
+  lecteur https://claude.ai/artifact/NhbCvzUSuGwqc4BSvcEYpE. Prédiction 7,8,
+  en attente de la note de Milan.
+- **Prochaine étape** : le retour de Milan sur « Un seul coup » ; il veut
+  encore 1-2 animations ici avant de passer sur Roblox Studio (il dira quand).
 
 ## 2. Démarrer une session sur cette piste (ordre)
 

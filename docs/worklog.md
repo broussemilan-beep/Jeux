@@ -5824,3 +5824,13 @@ mais mid haut ») ; analyse « notre studio comme frein / passage sur Roblox
 Studio » : `corpus/recherche/STUDIO_FREIN_2026-09-26.md` ; 3 propositions
 de cinématique : `PROPOSITIONS_CINEMATIQUE_2026-09-26.md` (choix de Milan
 attendu).
+
+## 2026-09-26 — Cinématique « Un seul coup » (Serious Punch R6)
+
+Choisie par Milan (« Vazy 1 »). Point d'entrée inchangé :
+`experiments/_shared/animator_brain/ETAT.md`. Fiche
+`corpus/fiches/UN_SEUL_COUP.md` (refs relues à 0,1 s), production
+`experiments/r6_un_seul_coup/` (anim 2 rigs V2.22, lecteur, package Roblox
+`UnSeulCoup.rbxmx` + module Luau, test de sens SENS OK). Preuves :
+`captures/verification/2026-09-26-un-seul-coup-*`. Prédiction 7,8, en
+attente de la note de Milan.

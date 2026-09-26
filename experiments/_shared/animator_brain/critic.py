@@ -178,7 +178,13 @@ def reflect(write=True):
     # d'animation : une note tiree vers le bas par les VFX (v12 : 4, alors que
     # l'animation du perso vaut 7,7) fausserait tout le modele
     graded = [n for n in notes if n.get("note_milan") is not None and n["axe_animation"]]
-    lines = ["# Reflexion du critique", ""]
+    # (la bannière HISTORIQUE est réécrite à chaque génération : sans elle,
+    # chaque exécution l'effaçait -- trouvé le 2026-09-26)
+    lines = ["# Reflexion du critique", "",
+             "> **HISTORIQUE (daté).** Ce document n'est plus un protocole à suivre. Point",
+             "> d'entrée actuel de la piste animation : `ETAT.md` ; apprentissages vivants :",
+             "> `corpus/CARNET.md` ; conception : `corpus/fiches/`. (Audit mémoire du",
+             "> 2026-09-26.)", "", ""]
     lines += ["## Mes predictions contre les notes de Milan, PAR AXE", ""] + biais_predictions(notes, hyp) + [""]
     # 1. predictions (avec les poids d'AVANT l'apprentissage) contre notes reelles
     lines.append("## Predictions contre notes de Milan (poids avant apprentissage)")

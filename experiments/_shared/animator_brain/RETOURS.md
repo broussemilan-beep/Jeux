@@ -773,3 +773,9 @@ cerveau, voir la fin de l'entrée.
     externes ou retirés exprès). Données : 17 notes valides, critic OK.
   - Propositions : `PROPOSITIONS_CINEMATIQUE_2026-09-26.md`.
 
+- **2026-09-26, « Vazy 1 » (Milan)** : nouvelle cinématique = proposition 1,
+  « Un seul coup » (Serious Punch). Refs relues à 0,1 s (TSB, SP2, Pew) ->
+  fiche `corpus/fiches/UN_SEUL_COUP.md` écrite avant toute clé -> production
+  `experiments/r6_un_seul_coup/`. Relue à 0,1 s avant de montrer : 7
+  défauts trouvés et corrigés (README, « Corrigé en regardant ») ; appris :
+  CARNET 4b.31, 4b.32. Prédiction 7,8.
