@@ -260,80 +260,80 @@
    [
     200,
     {
-     "feet.L": 0.0002,
-     "feet.R": 0.0002,
-     "hands.R": 0.0001,
+     "feet.L": 0.0001,
+     "feet.R": 0.0001,
+     "hands.R": 0.0,
      "hands.L": 0.0
     }
    ],
    [
     208,
     {
-     "feet.L": 0.0004,
-     "feet.R": 0.0002,
+     "feet.L": 0.0,
+     "feet.R": 0.0001,
      "hands.R": 0.0,
-     "hands.L": 0.0001
+     "hands.L": 0.0
     }
    ],
    [
     214,
     {
-     "feet.L": 0.0004,
-     "feet.R": 0.0002,
+     "feet.L": 0.0,
+     "feet.R": 0.0001,
      "hands.R": 0.0,
-     "hands.L": 0.0001
+     "hands.L": 0.0
     }
    ],
    [
     226,
     {
-     "feet.L": 0.0004,
+     "feet.L": 0.0,
      "feet.R": 0.0001,
      "hands.R": 0.0,
-     "hands.L": 0.0001
+     "hands.L": 0.0
     }
    ],
    [
     238,
     {
-     "feet.L": 0.0004,
-     "feet.R": 0.0002,
+     "feet.L": 0.0,
+     "feet.R": 0.0001,
      "hands.R": 0.0,
-     "hands.L": 0.0001
+     "hands.L": 0.0
     }
    ],
    [
     250,
     {
-     "feet.L": 0.0005,
+     "feet.L": 0.0,
      "feet.R": 0.0001,
      "hands.R": 0.0,
-     "hands.L": 0.0001
+     "hands.L": 0.0
     }
    ],
    [
     260,
     {
-     "feet.L": 0.0005,
-     "feet.R": 0.0002,
+     "feet.L": 0.0,
+     "feet.R": 0.0001,
      "hands.R": 0.0,
-     "hands.L": 0.0001
+     "hands.L": 0.0
     }
    ],
    [
     266,
     {
-     "feet.L": 0.0005,
-     "feet.R": 0.0002,
+     "feet.L": 0.0,
+     "feet.R": 0.0001,
      "hands.R": 0.0,
-     "hands.L": 0.0001
+     "hands.L": 0.0
     }
    ],
    [
     271,
     {
-     "feet.L": 0.0005,
-     "feet.R": 0.0002,
+     "feet.L": 0.0,
+     "feet.R": 0.0001,
      "hands.R": 0.0,
      "hands.L": 0.0
     }
@@ -343,7 +343,7 @@
     {
      "feet.L": 0.0,
      "feet.R": 0.0,
-     "hands.R": 0.0001,
+     "hands.R": 0.0,
      "hands.L": 0.0
     }
    ],

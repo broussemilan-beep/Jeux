@@ -359,10 +359,12 @@
     // tourbillon de fumée autour du poing (armé -> contact)
     if (fa >= tourEv.frame && fa <= tourEv.fin + 30) {
       const p = bout(sa, iRA), a = (fa - tourEv.frame) / FPS, fin = clamp((fa - tourEv.fin) / 30, 0, 1);
-      for (let k = 0; k < 16; k++) {
-        const ang = k / 16 * Math.PI * 2 + a * 11 + hash(k) * 0.6, rr = (0.7 + 0.5 * hash(k + 5)) * (1 + 0.8 * a) * (1 + 2 * fin);
-        puff(p.x + Math.cos(ang) * rr, p.y + Math.sin(ang) * rr * 0.8, p.z + 0.6 * (hash(k + 9) - 0.2), 0.9 + 0.5 * a + 1.5 * fin,
-          0.55 * smooth(0, 0.15, a) * (1 - fin), k % 3 ? "#8d8a86" : "#e6e1d8", k);
+      // v5 (fiche §9 e) : au départ du coup le tourbillon GROSSIT et serre le poing
+      const coup = smooth(tourEv.fin - 14, tourEv.fin - 2, fa), n = 16 + Math.round(12 * coup);
+      for (let k = 0; k < n; k++) {
+        const ang = k / n * Math.PI * 2 + a * (11 + 14 * coup) + hash(k) * 0.6, rr = (0.7 + 0.5 * hash(k + 5)) * (1 + 0.8 * a) * (1 + 2 * fin) * (1 - 0.25 * coup);
+        puff(p.x + Math.cos(ang) * rr, p.y + Math.sin(ang) * rr * 0.8, p.z + 0.6 * (hash(k + 9) - 0.2), (0.9 + 0.5 * a) * (1 - 0.35 * coup) + 1.5 * fin,
+          (0.55 - 0.1 * coup) * smooth(0, 0.15, a) * (1 - fin), k % 3 ? "#8d8a86" : "#e6e1d8", k);
       }
     }
     // souffle au sol au contact : anneau de poussière qui s'étale

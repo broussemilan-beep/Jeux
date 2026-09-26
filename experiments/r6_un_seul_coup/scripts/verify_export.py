@@ -96,7 +96,14 @@ def main(blend):
         "bras_a_plat_pendant_la_tenue": bool(max(abs(elev(wa(f))) for f in range(C.CONTACT_F + 3, C.REDRESSE_F[0], 10)) < 12.0),
         "buste_presque_droit_au_contact": bool(penche(wa(C.CONTACT_F)) < 22.0),
         "poing_a_hauteur_de_poitrine": bool(V.limb_tip(wa(C.CONTACT_F), "Right Arm")[1] > 3.2),
-        "poing_derriere_pendant_la_charge": bool(V.limb_tip(wa(C.TENUE_F), "Right Arm")[2] > wa(C.TENUE_F)["Torso"][1][2] + 0.6),
+        # v5 (Milan : « dans aucune ref le bras est tendu derrière ; l'arrière
+        # vient du buste qui tourne ») : poing sur SON CÔTÉ, pas derrière, et
+        # épaule droite reculée par la torsion du buste
+        "poing_sur_le_cote_pas_derriere_pendant_la_charge": bool(
+            V.limb_tip(wa(C.TENUE_F), "Right Arm")[0] > wa(C.TENUE_F)["Torso"][1][0] + 1.2
+            and V.limb_tip(wa(C.TENUE_F), "Right Arm")[2] < wa(C.TENUE_F)["Torso"][1][2] + 0.8),
+        "epaule_droite_reculee_par_le_buste": bool(
+            (wa(C.TENUE_F)["Right Arm"][1] - wa(C.TENUE_F)["Left Arm"][1])[2] > 0.8),
         "poing_devant_au_contact": bool(V.limb_tip(wa(C.CONTACT_F), "Right Arm")[2] < wa(C.CONTACT_F)["Torso"][1][2] - 1.5),
         "poing_a_hauteur_d_epaule": bool(abs(V.limb_tip(wa(C.CONTACT_F), "Right Arm")[1]
                                              - wa(C.CONTACT_F)["Right Arm"][1][1]) < 0.9),

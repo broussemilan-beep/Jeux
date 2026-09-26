@@ -94,21 +94,26 @@ def camera_keys(aw, vw):
     #    alignés (poing derrière à gauche, l'autre bras vers la victime à
     #    droite) ; poussée lente pendant la tenue
     a = A(214)
-    #    (1er cadrage à 7 studs : jambes coupées, victime qui mangeait le cadre)
-    #    v4 : l'angle de Pew (3,9-4,6 s) : de face à gauche, en contre-plongée,
-    #    le buste courbé vient vers nous, bras écartés, tête basse
-    #    (essai à l'angle de Pew, face-gauche : le bras avant cachait le corps
-    #    ramassé et la jambe de la victime mangeait le cadre ; le tour à 8
-    #    caméras de la pose : c'est de SA DROITE, un peu de face, qu'elle se lit)
-    add(M["charge"], a + [8.2, -1.0, -4.2], a + [0.0, -0.4, -1.0], 40, "cut")
-    add(M["frappe"], a + [6.6, -1.0, -3.4], a + [0.0, -0.4, -0.9], 38)
-    # 6. FRAPPE : REGARD DE LA VICTIME (elle est masquée) ; la caméra est à
-    #    hauteur du point touché : le poing arrive À PLAT dans l'objectif
+    #    v5 (comparaison aux refs, fiche §9 a) : GROS PLAN bas, de face, entre
+    #    lui et la victime (elle est derrière la caméra : hors champ) ; le
+    #    perso remplit l'image ; poussée lente pendant la tenue
+    #    (1er essai à 3,6 studs de face-gauche : le bras gauche ouvert vers la caméra couvrait tout)
+    add(M["charge"], a + [0.9, -1.0, -4.6], a + [0.0, 0.25, 0.0], 56, "cut")
+    add(M["frappe"], a + [0.8, -0.95, -3.9], a + [0.0, 0.3, 0.0], 54)
+    # 5. DÉPART DU COUP (§9 d) : gros plan de face-droite, on voit le buste se
+    #    dérouler et le bras passer en travers
+    add(M["frappe"] + 1, a + [2.3, -0.7, -3.0], a + [0.2, 0.2, -0.6], 58, "cut")
+    add(278, a + [2.0, -0.6, -3.3], a + [0.1, 0.25, -1.0], 58)
+    # 6. LE POING de 3/4 (§9 e) : caméra à côté du point touché, sur le côté :
+    #    poing + avant-bras + épaule, dans le tourbillon (victime masquée)
     tg = np.asarray(SCENE["contact_tgt"], float)
-    eye = tg + np.array([-0.25, 0.2, -0.6])
-    for f in (M["frappe"] + 1, 276, 279, CF - 1):
-        fist = tip(aw[f], "Right Arm")
-        add(f, eye, fist * 0.6 + Hd(f) * 0.4, 70, "cut" if f == M["frappe"] + 1 else "smooth")
+    #    (1er essai à 1,5 stud : le tourbillon remplissait l'image de blanc)
+    eye = tg + np.array([-2.3, 0.45, 0.2])
+    for f in (279, 281, CF - 1):
+        w = aw[f]
+        fist = tip(w, "Right Arm")
+        sh = w["Right Arm"][1]
+        add(f, eye, fist * 0.55 + sh * 0.45, 62, "cut" if f == 279 else "smooth")
     # 7. images inversées : 1re = la fente de 3/4 au contact (le plan
     #    « poing vers l'objectif » donnait une image noire aux 2/3) ;
     #    2e = plan large, la ligne vers l'horizon
@@ -222,7 +227,7 @@ def events(aw, vw):
     ev(lf, "secousse", fin=lf + 22, amp=0.3)
     ev(CF, "secousse", fin=CF + 150, amp=0.45)
     ev(CF, "souffle_sol", pos=v3([tip(aw[CF], "Right Arm")[0], 0.05, tip(aw[CF], "Right Arm")[2]]))
-    ev(M["charge"], "cacher_victime", debut=470, pov=[M["frappe"] + 1, CF])
+    ev(M["charge"], "cacher_victime", debut=470, pov=[M["charge"], CF])  # v5 : hors champ (caméra à sa place)
     ev(END - 20, "fondu_noir", fin=END)
     return E
 

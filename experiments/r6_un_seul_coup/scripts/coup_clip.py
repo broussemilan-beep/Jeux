@@ -155,31 +155,35 @@ def attacker_keys(vw, rig):
     chest_v = lambda f: np.asarray(vw[f]["Torso"][1], float) + np.array([0.0, 0.3, 0.55])  # noqa: E731
     garde_pieds = {"L": ("g", (-0.7, za - 0.8)), "R": ("g", (0.8, za + 0.7))}
     # appuis de l'arc tendu : de profil (pied gauche vers elle, droit derrière)
-    arc_pieds = {"L": ("g", (-0.85, za - 1.05)), "R": ("g", (0.95, za + 0.95))}
+    arc_pieds = {"L": ("g", (-0.7, za - 0.95)), "R": ("g", (0.8, za + 0.8))}
 
     def garde(f, low=0.5, i="BEZIER"):
         return {"root": ((0.0, 0.0, za), (0, 0, 0)), "pelvis": ((0, -low, 0), (-8, -10, 0)), "chest": (0, 0.08, 0),
                 "feet": garde_pieds, "auto_low": True, "look": head(f),
                 "hands": {"R": ("a", (22, -30, 2.0)), "L": ("a", (-14, -26, 2.0))}}
 
-    def arc(f, k=1.0, low=1.05, wig=(0.0, 0.0), extra=0.0):
-        """v4 (Milan : « la pose de charge » n'est pas la bonne ; refs Pew 2,9-4,6 s,
-        TSB 4,6-5,1 s, SP2 4,2-4,8 s) : il se RAMASSE comme un ressort écrasé --
-        genoux très pliés, buste COURBÉ en avant (~45°), tête basse, poing ramené
-        derrière À HAUTEUR DE HANCHE, l'autre bras bas vers l'avant. (v3 : presque
-        debout, buste 17°, bras en croix à l'horizontale : « aucun changement »)
-        k : 0 = garde -> 1 = ramassé ; extra : torsion et compression de plus"""
+    def arc(f, k=1.0, low=0.52, wig=(0.0, 0.0), extra=0.0):
+        """v5 (Milan, 2026-09-26, refs remises : Pew face / dos, TSB face) :
+        « dans aucune le bras est tendu derrière ; le poing ne part pas de
+        l'arrière : l'arrière vient du BUSTE qui tourne ; et la pose des jambes
+        est un peu trop abusée ». Donc : le bras qui charge reste sur le CÔTÉ du
+        corps, poing à la hanche / au flanc, pointé vers l'avant-bas PAR RAPPORT
+        AU BUSTE (mode "a" : azimut / élévation relatifs au torse) ; c'est la
+        torsion du buste qui recule l'épaule droite. L'autre bras s'ouvre sur le
+        côté, presque à plat (Pew). Jambes : garde modérée, genoux fléchis.
+        (v3 / v4 : bras tendu droit vers l'arrière, v4 : accroupi extrême.)"""
         kk = min(k, 1.0)
-        tw = -10 - 30 * k - extra                # torsion du buste (bassin), en plus de la racine
-        ry = -32 * kk                            # la racine tourne un peu : épaule droite en arrière
-        # bras écartés le long des épaules, sous le buste courbé (Pew 4,2 s) :
-        # le poing derrière, un peu bas ; l'autre bras devant-gauche, presque à plat
-        back = np.array([0.3, -0.25, 1.0]) + np.array([wig[0], wig[1], 0.0]) * 0.04
-        front = np.array([-0.65, -0.3, -0.7])
-        return {"root": ((0.0, 0.0, za), (0, ry, 0)), "pelvis": ((0, -(0.5 + (low - 0.5) * k) - 0.01 * extra, 0), (-8 - 36 * k, tw, 0)),
-                "chest": (0, 0.1 + 0.25 * kk, 0), "feet": arc_pieds if k > 0.5 else garde_pieds, "auto_low": True,
+        tw = -8 - 34 * k - extra                 # le BUSTE tourne : épaule droite en arrière
+        ry = -18 * kk
+        wr = np.array([wig[0], wig[1]]) * 1.2
+        return {"root": ((0.0, 0.0, za), (0, ry, 0)), "pelvis": ((0, -(0.45 + (low - 0.45) * k) - 0.004 * extra, 0), (-8 - 12 * k, tw, 0)),
+                "chest": (0, 0.1 + 0.12 * kk, 0), "feet": arc_pieds if k > 0.5 else garde_pieds, "auto_low": True,
                 "look": head(f),
-                "hands": {"R": ("d", (tuple(back), 2.0)), "L": ("d", (tuple(front), 2.0))}}
+                # les deux bras OUVERTS sur les côtés, presque à plat (Pew de
+                # face : un bras à gauche, un à droite, aucun derrière) : le poing
+                # droit sur SON côté droit, l'épaule reculée par le buste
+                "hands": {"R": ("d", ((1.0, -0.3 + 0.02 * wr[1], -0.15 + 0.02 * wr[0]), 1.95)),
+                          "L": ("d", ((-0.9, -0.2, -0.35), 2.0))}}
     add(ARRIVEE_F, garde(ARRIVEE_F, low=0.62), "LINEAR")
     add(CHARGE_F, garde(CHARGE_F, low=0.52))
     add(CHARGE_F + 3, garde(CHARGE_F + 3, low=0.55))
@@ -218,9 +222,9 @@ def attacker_keys(vw, rig):
     contact["auto_low"] = True
     # DÉTENTE (12 i) : la racine et le bassin déroulent d'abord, le poing
     # traîne derrière (fouet), puis il passe à PLAT à hauteur d'épaule
-    add(275, {"root": ((0.0, 0.0, 0.5 * (za + croot[2])), (0, -18, 0)), "pelvis": ((0, -0.8, 0), (-26, -28, 0)),
+    add(275, {"root": ((0.0, 0.0, 0.5 * (za + croot[2])), (0, -8, 0)), "pelvis": ((0, -0.5, 0), (-14, -18, 0)),
               "chest": (0, 0.08, 0), "feet": cfeet, "auto_low": True,
-              "hands": {"R": ("d", ((0.55, -0.3, 0.8), 2.0)), "L": ("d", ((-0.35, -0.35, -0.85), 2.0))},
+              "hands": {"R": ("d", ((0.85, -0.2, -0.55), 2.0)), "L": ("d", ((-0.8, -0.25, 0.3), 2.0))},
               "look": head(275)}, "LINEAR")
     add(279, {"root": ((0.0, 0.0, croot[2] + 0.15), (0, 0, 0)), "pelvis": ((0, -0.48, 0), (-12, 8, 0)),
               "chest": (0, 0.08, 0), "feet": cfeet, "auto_low": True,

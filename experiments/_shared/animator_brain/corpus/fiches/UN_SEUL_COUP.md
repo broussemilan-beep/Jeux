@@ -222,3 +222,30 @@ montrer le départ du coup en gros plan (buste qui tourne, bras en travers)
 avant le plan de la victime ; (e) plan du poing en 3/4 avec l'épaule et un
 tourbillon de fumée.
 
+## 10. v5 : « le poing ne part pas de l'arrière » (Milan, en arrêtant la v5 en cours)
+
+Ses mots : « je pense que tu fais partir le poing de l'arrière, ou de l'armé
+à l'arrière ; l'arrière est engagé par le BUSTE qui tourne ; de plus la pose
+des jambes est un peu trop abusée. Dans aucune des refs le bras est tendu
+derrière. » (refs remises : Pew de face / de dos, TSB de face.)
+
+Ce que j'avais fait de la v3 à la v4 : bras qui charge tendu droit vers
+l'arrière (+Z), accroupi extrême (v4 : hanches -1,05, buste 57°), genou levé
+(essai v5 abandonné). Ce que montrent les refs de face : les DEUX poings de
+part et d'autre du corps, bras ouverts presque à plat sur les CÔTÉS ; le
+buste tourne un peu, c'est lui qui recule l'épaule droite ; jambes en garde,
+genoux fléchis, rien d'extrême.
+
+**v5** : bras droit sur SON côté droit (direction monde (1, -0,3, -0,15)),
+bras gauche ouvert à gauche ; buste tourné (racine -18°, bassin -42°), penché
+~28° ; jambes en garde (hanches -0,52). Les 5 points de la comparaison :
+(a) charge en GROS PLAN bas de face, victime hors champ (masquée : la caméra
+est à sa place) ; (b) remplacé par le point de Milan (le buste recule
+l'épaule, le bras reste sur le côté) ; (c) genou levé ESSAYÉ puis retiré
+(« jambes trop abusées ») ; (d) départ du coup en gros plan (le buste se
+déroule, le bras passe en travers) ; (e) poing de 3/4 avec l'épaule, dans
+un tourbillon qui serre le poing. Contrôle d'export remplacé : « poing sur
+le côté, pas derrière » + « épaule droite reculée par le buste ».
+
+Prédiction v5 : **7,8/10**.
+

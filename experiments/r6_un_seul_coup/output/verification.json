@@ -8,20 +8,20 @@
  "translation_tete_max": 0.00012,
  "aller_retour_max": 5.685902922862834e-14,
  "cles": {
-  "attaquant": 112,
+  "attaquant": 109,
   "victime": 59,
   "frames": 751
  },
  "ecart_max_reduction_studs": 0.0158,
  "taille_fichiers_ko": [
-  718,
+  699,
   380
  ],
  "mesures_coup": {
   "bras_elev_contact": -5.5,
   "buste_penche_contact": 7.3,
   "poing_y_contact": 3.37,
-  "buste_penche_charge": 56.9,
+  "buste_penche_charge": 28.2,
   "bras_elev_tenue": [
    -3.2,
    -3.2,
@@ -42,7 +42,8 @@
   "bras_a_plat_pendant_la_tenue": true,
   "buste_presque_droit_au_contact": true,
   "poing_a_hauteur_de_poitrine": true,
-  "poing_derriere_pendant_la_charge": true,
+  "poing_sur_le_cote_pas_derriere_pendant_la_charge": true,
+  "epaule_droite_reculee_par_le_buste": true,
   "poing_devant_au_contact": true,
   "poing_a_hauteur_d_epaule": true,
   "victime_ejectee_loin_devant": true,
