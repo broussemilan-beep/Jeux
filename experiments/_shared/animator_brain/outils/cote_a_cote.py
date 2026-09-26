@@ -4,8 +4,8 @@ CÔTE À CÔTE à VITESSE RÉELLE, calé sur le CONTACT, avec le son.
 Pourquoi il existe (2026-09-26, chantier « nouveaux yeux », SYNTHESE_YEUX
 rang 1) : le cerveau regardait des IMAGES une par une et des planches, pas le
 mouvement à la vitesse où Milan le voit, au cadrage où il le voit, à côté de
-la version d'avant (faiblesses 1, 3 et 5 ; motif « je vois aucun changement »,
-4 fois). Milan juge en regardant la vidéo avec le son : cet outil met les
+la version d'avant (faiblesses 1, 3 et 5 ; motif `aucun_changement`,
+4 fois : « Je vois aucun changement je t’avoue »...). Milan juge en regardant la vidéo avec le son : cet outil met les
 versions l'une à côté de l'autre dans ces conditions.
 
 Deux modes :

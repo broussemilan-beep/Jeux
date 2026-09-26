@@ -3,8 +3,9 @@ IMPACT : où le poing arrive SUR la victime, avec quelle pente, et ce que font
 les pieds plantés. Des chiffres affichés, jamais un verdict.
 
 Pourquoi il existe (2026-09-26, chantier « nouveaux yeux », SYNTHESE_YEUX
-rangs 5 et 7) : Milan a dit SIX fois « il frappe vers le bas » (motif
-`vers_le_bas`, corpus/motifs.json), et le cerveau n'avait pas UN chiffre pour
+rangs 5 et 7) : le motif `vers_le_bas` (7 citations dans corpus/motifs.json
+au 2026-09-26 ; ses mots exacts, par ex. « le perso frappait vers le bas »,
+« les coup parte tjrs du bas »), et le cerveau n'avait pas UN chiffre pour
 le vérifier sur la victime elle-même : on mesurait le bras de l'attaquant
 seul, dans son repère. Et la mesure du glissement des pieds existait déjà
 (`audit.contact_report`) sans être appelée sur « Un seul coup ».

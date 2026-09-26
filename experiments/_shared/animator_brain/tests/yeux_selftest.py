@@ -7,7 +7,8 @@ connue », SYNTHESE_YEUX piège 5).
 - geo_pose.profondeur_ambigue : bras pointé sur l'objectif = ambigu ; le même
   bras vu de profil = pas ambigu ; bras croisé devant la poitrine vu de face =
   lisible, devant ; bras derrière le dos vu de face = lisible, derrière ;
-  miroir sans recouvrement = ambigu ;
+  bras au repos collés au torse vus de face = à côté (pas « derrière » par la
+  seule perspective) ; les mêmes de 3/4 = proche devant, loin derrière ;
 - moon.render(faces=True) : de face on voit F (rouge) au centre du torse, de
   dos B (bleu), de dessus U (cyan) ; la couleur par membre reste inchangée
   sans l'option ;
@@ -78,6 +79,14 @@ def t_profondeur():
     haut_ = G.camera_orbite((0, 3, 0), 90, 80, 12)        # bras tendu devant, vu de dessus-côté
     p = G.profondeur_ambigue(w, G.camera_orbite((0, 3, 0), 0, 0, 12))
     cas("profondeur : les seuils sont rendus avec le résultat", "_seuils" in p and "axe_visee" in p["_seuils"])
+    w = G.pose({})                                        # bras au repos, collés aux flancs, vus de face
+    p = G.profondeur_ambigue(w, face)
+    cas("profondeur : bras au repos collés au torse, vus de face = à côté (pas « derrière » par la perspective)",
+        p["BD"]["lecture"] == "à côté" and p["BG"]["lecture"] == "à côté", G.resume_profondeur(p))
+    p = G.profondeur_ambigue(w, G.camera_orbite((0, 3, 0), 35, 0, 12))
+    cas("profondeur : les mêmes bras de 3/4 = bras proche devant, bras loin derrière (lisibles)",
+        (p["BD"]["lecture"], p["BD"]["ordre_3d"], p["BG"]["lecture"], p["BG"]["ordre_3d"])
+        == ("lisible", "devant", "lisible", "derrière"), G.resume_profondeur(p))
     w = G.pose({"RA": (90, 0)})                           # bras tendu sur le côté, vu de face
     p = G.profondeur_ambigue(w, face)
     cas("profondeur : bras sur le côté vu de face = à côté", p["BD"]["lecture"] == "à côté", G.resume_profondeur(p))

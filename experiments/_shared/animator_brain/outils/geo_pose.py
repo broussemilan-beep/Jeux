@@ -246,11 +246,21 @@ def cote_a_cote(ref_png, mondes, cam, sortie=None, titre="", alpha=0.5):
 #               comparant leurs profondeurs le long du rayon (« au niveau du »
 #               si elles se chevauchent) ; vérité 3D que NOUS connaissons pour
 #               nos anims, pas ce que montre l'image ;
-#   ecart       distance entre les surfaces (studs) : le long des rayons là
-#               où ils se recouvrent, sinon en profondeur (0 si « au niveau du »)
+#   ecart       là où ils se recouvrent : écart de profondeur entre les
+#               SURFACES VUES (premier point touché par le rayon, torse contre
+#               membre ; médiane sur quelques rayons) ; sinon écart en
+#               profondeur entre les deux blocs (0 si « au niveau du ») ;
 #   recouvrement part de l'aire à l'écran de cette moitié bout qui recouvre
 #               le torse (polygones projetés exacts, pas de pixels ; la moitié
 #               épaule/hanche est exclue : son attache recouvre toujours) ;
+#   recouvrement_sans_perspective  la même part en projection parallèle à
+#               l'axe de visée. Correction du 2026-09-26 (relecture) : un bras
+#               au repos COLLÉ au flanc du torse, vu de face, recouvre le torse
+#               d'une fine lamelle due à la seule perspective (7 % à 12 studs,
+#               plus de près) et sortait « lisible, derrière » ; s'il est
+#               derrière, collé (jeu entre les blocs < `contact`) et que ce
+#               recouvrement sans perspective est sous `recouvrement`, il est
+#               rendu « à côté » ;
 #   lecture     « lisible » : elle recouvre le torse et en est séparée en
 #               profondeur : l'image montre qui passe devant (sur nos blocs
 #               à couleur plate, le recouvrement se voit) ;
@@ -358,6 +368,12 @@ def _boite(w, part, moitie_bout=False):
 
 def _entree(oeil, dirn, boite):
     """Distance (le long de dirn) où le rayon entre dans la boîte, ou None."""
+    es = _entree_sortie(oeil, dirn, boite)
+    return None if es is None else es[0]
+
+
+def _entree_sortie(oeil, dirn, boite):
+    """(entrée, sortie) du rayon dans la boîte (distances le long de dirn), ou None."""
     R, c, h = boite
     o, dd = R.T @ (oeil - c), R.T @ dirn
     t0, t1 = -np.inf, np.inf
@@ -368,7 +384,7 @@ def _entree(oeil, dirn, boite):
             continue
         a, b = (-h[i] - o[i]) / dd[i], (h[i] - o[i]) / dd[i]
         t0, t1 = max(t0, min(a, b)), min(t1, max(a, b))
-    return float(t0) if t1 >= max(t0, 0.0) else None
+    return (float(t0), float(t1)) if t1 >= max(t0, 0.0) else None
 
 
 def profondeur_ambigue(monde, camera, seuils=None):
@@ -401,24 +417,39 @@ def profondeur_ambigue(monde, camera, seuils=None):
         raisons = []
         if axe >= s["axe_visee"]:
             raisons.append(f"presque dans l'axe de visée ({axe:.2f})")
+        # recouvrement SANS perspective (projection parallèle à l'axe de visée) :
+        # un bloc collé contre le flanc du torse (bras au repos vu de face)
+        # recouvre le torse d'une fine lamelle due à la seule perspective ; il
+        # est À CÔTÉ, pas derrière (correction du 2026-09-26, relecture)
+        pm_o = _enveloppe([(float(x @ r), float(x @ u)) for x in _coins(monde, part, moitie_bout=True) - oeil])
+        pt_o = _enveloppe([(float(x @ r), float(x @ u)) for x in _coins(monde, "Torso") - oeil])
+        am_o = _aire(pm_o)
+        rec_o = _aire(_intersection(pm_o, pt_o)) / am_o if am_o > 1e-12 else 0.0
+        a_cote_colle = False
         if rec >= s["recouvrement"]:
             # là où les deux se recouvrent à l'écran : qui le rayon touche-t-il d'abord ?
             cx = sum(p[0] for p in inter) / len(inter)
             cy = sum(p[1] for p in inter) / len(inter)
-            ecarts = []
+            ecarts, jeux = [], []
             for px, py in [(cx, cy)] + [(cx + 0.8 * (p[0] - cx), cy + 0.8 * (p[1] - cy)) for p in inter]:
                 dirn = f + px * r + py * u
                 dirn = dirn / np.linalg.norm(dirn)
-                tt = _entree(oeil, dirn, _boite(monde, "Torso"))
-                tm = _entree(oeil, dirn, _boite(monde, part, moitie_bout=True))
-                if tt is not None and tm is not None:
-                    ecarts.append(tt - tm)
+                et = _entree_sortie(oeil, dirn, _boite(monde, "Torso"))
+                em = _entree_sortie(oeil, dirn, _boite(monde, part, moitie_bout=True))
+                if et is not None and em is not None:
+                    ecarts.append(et[0] - em[0])
+                    # jeu entre les deux blocs le long du rayon : sortie du
+                    # premier -> entrée du second (0 : collés ; < 0 : ils se traversent)
+                    jeux.append(et[0] - em[1] if em[0] < et[0] else em[0] - et[1])
             g = float(np.median(ecarts)) if ecarts else 0.0
             ecart = abs(g)
             ordre = "devant" if g > 0 else "derrière"
-            if not ecarts or ecart < s["contact"] or (min(ecarts) < 0 < max(ecarts)):
+            jeu = float(np.median(jeux)) if jeux else None
+            if ordre == "derrière" and ecarts and jeu is not None and jeu < s["contact"] and rec_o < s["recouvrement"]:
+                a_cote_colle, ordre, ecart = True, "au niveau du", 0.0
+            elif not ecarts or ecart < s["contact"] or (min(ecarts) < 0 < max(ecarts)):
                 raisons.append(f"recouvre le torse ({rec:.0%} de sa moitié bout) au contact "
-                               f"({ecart * 100:.0f} cm entre les surfaces)")
+                               f"({ecart * 100:.0f} cm entre les surfaces vues)")
         else:
             pt_ = (_coins(monde, "Torso") - oeil) @ ray
             pm = (_coins(monde, part, moitie_bout=True) - oeil) @ ray
@@ -434,13 +465,14 @@ def profondeur_ambigue(monde, camera, seuils=None):
                 raisons.append(f"{ordre} le torse ({ecart:.2f} stud) sans le recouvrir : le miroir donnerait le même dessin")
         if raisons:
             lecture = "ambigu"
-        elif rec >= s["recouvrement"]:
+        elif rec >= s["recouvrement"] and not a_cote_colle:
             lecture = "lisible"
         else:
             lecture = "à côté"
         dz = ecart if ordre == "derrière" else -ecart
         out[k] = {"axe_visee": round(axe, 2), "vers_camera": bool(d @ ray < 0), "dz": round(dz, 2),
-                  "recouvrement": round(float(rec), 2), "ordre_3d": ordre, "lecture": lecture, "raisons": raisons}
+                  "recouvrement": round(float(rec), 2),
+                  "recouvrement_sans_perspective": round(float(rec_o), 2), "ordre_3d": ordre, "lecture": lecture, "raisons": raisons}
     return out
 
 

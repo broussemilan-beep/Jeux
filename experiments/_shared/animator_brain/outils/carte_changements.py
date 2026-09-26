@@ -3,11 +3,12 @@ CARTE DES CHANGEMENTS entre deux exports d'une même scène, écrite en MOTS DE
 CORPS, phase par phase. Ceci mesure le CHANGEMENT, pas la QUALITÉ.
 
 Pourquoi elle existe (2026-09-26, chantier « nouveaux yeux », SYNTHESE_YEUX
-rang 3) : Milan a dit QUATRE fois « je vois aucun changement » (motif
-`aucun_changement`). Le cerveau annonçait des versions « refaites » sans
+rang 3) : Milan a dit QUATRE fois ne pas voir de changement (motif
+`aucun_changement` ; par ex. « Je vois aucun changement je t’avoue »,
+« je vois pas trop de dif avec la v4 »). Le cerveau annonçait des versions « refaites » sans
 savoir ce qui avait vraiment bougé, ni où, ni si ça se voyait depuis la caméra
 du plan. Et une différence de pixels ne suit pas ce que Milan perçoit (v2 -> v3
-« aucun changement » change autant de pixels que v4 -> v5 « un peu mieux »,
+« aucun changement » change autant de pixels que v4 -> v5 « c un peux mieux »,
 SYNTHESE_YEUX §6).
 
 Ce qu'elle mesure :
@@ -45,7 +46,7 @@ git : `--demo-un-seul-coup`), confrontée aux mots de Milan, sans forcer :
   4-10 % à la frappe ; pose au contact identique (0,00 stud) ;
 - v3 -> v4 : 9-18 % en charge (buste 33° plus penché) ; ses mots sur la v4
   ne disent pas s'il a vu le changement (aucun test possible) ;
-- v4 -> v5 (« un peu mieux mais c'est pas bon encore ») : 16-40 % en charge,
+- v4 -> v5 (« c un peux mieux mais c pas bon encore ») : 16-40 % en charge,
   26-58 % à la frappe, une coupe ajoutée (i279) ;
 - v5 -> v6 (« c trjs pas bon », puis « le placement du bras sur tout ») :
   15-42 % en charge, deux coupes ajoutées ; main gauche passée de derrière à
@@ -369,7 +370,7 @@ MOTS_MILAN = {  # mots EXACTS (corpus/milan_verbatim.jsonl, motifs.json), pour l
     "v2": "départ ultra rapide validé ; « tjrs pas pour le poing chargé je pense que tu capte pas le truck de poing chargé » (7/10)",
     "v3": "« Je vois aucun changement je ne sais si c un bug ou si on ne sait tjrs pas compris »",
     "v4": "« dans aucune le bras est tendu derrière » ; « le pose des jambe est un peu  trop abusé »",
-    "v5": "« c'est un peu mieux mais c'est pas bon encore » (7,5)",
+    "v5": "« Bon je te met 7,5 c un peux mieux mais c pas bon encore »",
     "v6": "« c trjs pas bon » ; puis « Ce qui était tues pas bon c le placement du bras sur tout »",
 }
 
