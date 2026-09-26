@@ -1,5 +1,8 @@
 # `animator_brain` — le cerveau d'animateur R6 / Roblox
 
+> Ce README documente le CODE du cerveau (mesures de mouvement, rig).
+> Pour la carte complète, l'état et l'ordre de lecture : `ETAT.md`.
+
 Né d'un retour direct de Milan (2026-09-23) : *« pourquoi tout a l'air
 mécanique dans tes rendus ? »*, suivi de *« sois vraiment minutieux, le
 projet derrière c'est un cerveau d'animateur Roblox »*.

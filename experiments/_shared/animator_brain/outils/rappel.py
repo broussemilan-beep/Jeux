@@ -53,6 +53,8 @@ CONCEPTS = {
                "tête de dragon", "violet", "last breath", "morsure", "mange", "gueule", "machoire", "mâchoire",
                "invocation", "dragon d'or"],
     "victime": ["victime", "reaction", "réaction", "recul", "encaisse"],
+    "studio": ["roblox studio", "plugin", "mcp", "stock vfx", "stocks de vfx", "tuto de a a z", "frein",
+               "capture_screenshot", "moon animator", "vfx forge", "creator store"],
     "allure": ["allure", "allure.py", "vitesse du dragon", "dans tous les sens", "trop rapide", "virage",
                "majestueux", "rythme", "enchainement", "enchaînement", "serpent", "corps par seconde"],
 }
@@ -65,7 +67,9 @@ def norm(s):
 
 def termes(req):
     r = norm(req)
-    out = {r}
+    # (audit du 2026-09-26 : une requête de plusieurs mots hors des familles
+    # ne cherchait que la phrase exacte -> rien) -> aussi chaque mot >= 5 lettres
+    out = {r} | {w for w in re.split(r"[^a-z0-9']+", r) if len(w) >= 5}
     for nom, syn in CONCEPTS.items():
         fam = [norm(x) for x in syn] + [norm(nom)]
         if any(t in r or r in t for t in fam):
@@ -101,11 +105,32 @@ def main(req, maxi=60):
     for ligne in open(cat, encoding="utf-8"):
         if ligne.startswith("|") and motif.search(norm(ligne)) and "---" not in ligne:
             print("  " + ligne.strip()[:230])
+    # (audit du 2026-09-26 : classés au nombre BRUT de lignes trouvées, les
+    # longs README passaient devant les fiches de conception -- la mémoire
+    # DIGÉRÉE -- ; « plein écran » ne sortait pas PLEIN_ECRAN.md) -> les
+    # fiches d'abord, puis les outils, puis les passages classés à la
+    # DENSITÉ (lignes trouvées / racine du nombre de lignes)
+    fiches = os.path.join(BRAIN, "corpus", "fiches")
+    print("\n== Fiches de conception (à lire AVANT de concevoir) ==")
+    sc = []
+    for f in sorted(os.listdir(fiches)):
+        txt = norm(open(os.path.join(fiches, f), encoding="utf-8").read())
+        n = len(motif.findall(txt)) / max(1.0, len(txt) / 4000) + (20 if motif.search(norm(f.replace("_", " ")[:-3])) else 0)
+        if n:
+            sc.append((round(n, 1), f))
+    for n, f in sorted(sc, reverse=True):
+        print(f"  corpus/fiches/{f} ({n})")
+    print("\n== Outils ==")
+    for f in sorted(os.listdir(HERE)):
+        if f.endswith(".py") and f != "rappel.py":
+            doc = norm(open(os.path.join(HERE, f), encoding="utf-8").read()[:1500])
+            if motif.search(doc) or motif.search(norm(f)):
+                print(f"  outils/{f}")
     print("\n== Passages (fichier : ligne) ==")
     total = 0
     scores = []
     for p in fichiers():
-        if p == cat:
+        if p == cat or p.startswith(fiches):
             continue
         try:
             lignes = open(p, encoding="utf-8").read().splitlines()
@@ -113,10 +138,11 @@ def main(req, maxi=60):
             continue
         hits = [(i + 1, l) for i, l in enumerate(lignes) if motif.search(norm(l))]
         if hits:
-            scores.append((len(hits), p, hits))
+            poids = 1.5 if p.endswith(("CARNET.md", "RETOURS.md", "ETAT.md")) else 1.0
+            scores.append((round(poids * len(hits) / max(1.0, len(lignes)) ** 0.5, 3), p, hits))
     for n, p, hits in sorted(scores, reverse=True):
         rel = os.path.relpath(p, ROOT)
-        print(f"-- {rel} ({n})")
+        print(f"-- {rel} ({len(hits)} lignes, densité {n})")
         for i, l in hits[:4]:
             print(f"   {i}: {l.strip()[:170]}")
             total += 1

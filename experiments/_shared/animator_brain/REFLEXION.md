@@ -1,5 +1,11 @@
 # Reflexion du critique
 
+> **HISTORIQUE (daté).** Ce document n'est plus un protocole à suivre. Point
+> d'entrée actuel de la piste animation : `ETAT.md` ; apprentissages vivants :
+> `corpus/CARNET.md` ; conception : `corpus/fiches/`. (Audit mémoire du
+> 2026-09-26.)
+
+
 ## Mes predictions contre les notes de Milan, PAR AXE
 
 - technique : biais moyen +0.3 sur 4 note(s) (v5 7.2->6.8, v6 7.8->7, v8 7.4->7.5, v9 7.9->7.7)

@@ -752,3 +752,24 @@ cerveau, voir la fin de l'entrée.
     cratère (lecteur + Roblox).
   - Avant/après : `captures/verification/2026-09-25-v13e-rythme-bugs-polissage-avant-apres.png`.
 
+- **2026-09-26, v13e -> 8/10 (Milan)** : « c'est pas premium mais c'est mid
+  haut ». Questions : notre studio est-il un frein ? Le passage sur Roblox
+  Studio aidera-t-il (plugin, ses stocks de VFX, suivre un tuto de A à Z) ?
+  Puis : vérifier que la mémoire et le cerveau sont bien organisés, et
+  proposer 3 cinématiques.
+  - Réponse Studio : `corpus/recherche/STUDIO_FREIN_2026-09-26.md`.
+  - **Audit mémoire** (trouvé et corrigé) : (1) aucun point d'entrée pour
+    cette piste -- `docs/worklog.md` n'en parlait pas, une nouvelle session
+    ne savait pas où on en était -> `ETAT.md` (état, ordre de lecture,
+    carte, commandes), pointé par CLAUDE.md et le worklog ; (2) deux
+    protocoles de lecture contradictoires (LECONS.md contre CLAUDE.md) et 6
+    documents du 24/09 encore présentés comme vivants -> marqués HISTORIQUE ;
+    (3) `rappel.py` classait au volume : les longs README passaient devant
+    les fiches (« plein écran » ne sortait pas PLEIN_ECRAN.md) -> fiches
+    d'abord, outils, passages à la densité, recherche mot à mot ; (4) les
+    auto-tests du rig échouaient faute d'arguments non documentés -> passent
+    (« DEUX RIGS OK », « CHAINE V2.22 -> ROBLOX OK »), usage dans ETAT.md.
+    Liens : sur 272 alertes, 4 vraies références introuvables (fichiers
+    externes ou retirés exprès). Données : 17 notes valides, critic OK.
+  - Propositions : `PROPOSITIONS_CINEMATIQUE_2026-09-26.md`.
+

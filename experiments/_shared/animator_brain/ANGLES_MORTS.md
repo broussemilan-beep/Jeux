@@ -1,5 +1,11 @@
 # Angles morts : ce qui manquait dans la direction et le développement
 
+> **HISTORIQUE (daté).** Ce document n'est plus un protocole à suivre. Point
+> d'entrée actuel de la piste animation : `ETAT.md` ; apprentissages vivants :
+> `corpus/CARNET.md` ; conception : `corpus/fiches/`. (Audit mémoire du
+> 2026-09-26.)
+
+
 Prise de recul du 2026-09-24, à la demande de Milan : « pose-toi et vois si,
 dans le développement ou la direction, il ne manque pas des choses évidentes
 ou non, car c'est déjà arrivé sur la traduction que tu avais faite du

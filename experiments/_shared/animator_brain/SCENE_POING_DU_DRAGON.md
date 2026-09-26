@@ -1,5 +1,11 @@
 # Proposition : « Poing du Dragon », une technique ultime complète (2026-09-24)
 
+> **HISTORIQUE (daté).** Ce document n'est plus un protocole à suivre. Point
+> d'entrée actuel de la piste animation : `ETAT.md` ; apprentissages vivants :
+> `corpus/CARNET.md` ; conception : `corpus/fiches/`. (Audit mémoire du
+> 2026-09-26.)
+
+
 Réponse à *« tu penses pouvoir faire une animation plus poussée ? Va
 re-analyser mes refs et imagine une scène que tu pourrais produire »*.
 

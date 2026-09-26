@@ -11,7 +11,9 @@ section 1 — notamment : suppression de la cape/écharpe) ;
 Démarrage de session : lire le mandat en entier, puis `docs/worklog.md`
 (dernière entrée = où on en est, quoi de branché, prochain pas).
 
-Animation (cerveau `experiments/_shared/animator_brain/`) : avant toute
+Animation (cerveau `experiments/_shared/animator_brain/`) : **point d'entrée
+de la piste animation / VFX / cinématiques : `experiments/_shared/animator_brain/ETAT.md`**
+(où on en est, ordre de lecture, carte du cerveau, commandes). Avant toute
 technique ou relecture de références, lancer
 `python3 experiments/_shared/animator_brain/outils/rappel.py "<concept>"`
 et chercher chaque fichier de ref dans `corpus/CATALOGUE_REFS.md` (la

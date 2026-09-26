@@ -1,5 +1,11 @@
 # Cerveau d'animateur — audit honnête et plan (2026-09-23)
 
+> **HISTORIQUE (daté).** Ce document n'est plus un protocole à suivre. Point
+> d'entrée actuel de la piste animation : `ETAT.md` ; apprentissages vivants :
+> `corpus/CARNET.md` ; conception : `corpus/fiches/`. (Audit mémoire du
+> 2026-09-26.)
+
+
 Demande de Milan : *« fais un plan/audit de ce qu'on vient de comprendre, regarde
 s'il faut aller plus loin. Sincèrement tout le travail jusqu'ici c'est assez bof,
 pareil pour le dernier trou noir. »* Deux outils sont cités :

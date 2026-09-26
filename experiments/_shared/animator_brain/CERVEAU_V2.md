@@ -1,5 +1,11 @@
 # Cerveau v2 : juger, réfléchir, se corriger
 
+> **HISTORIQUE (daté).** Ce document n'est plus un protocole à suivre. Point
+> d'entrée actuel de la piste animation : `ETAT.md` ; apprentissages vivants :
+> `corpus/CARNET.md` ; conception : `corpus/fiches/`. (Audit mémoire du
+> 2026-09-26.)
+
+
 Demande de Milan (2026-09-24), après la v4 du Poing du Dragon :
 
 > « Stop régler petit à petit et rajouter du jugement au cerveau, c'est le but

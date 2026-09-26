@@ -1,5 +1,11 @@
 # Leçons apprises par le cerveau
 
+> **HISTORIQUE (daté).** Ce document n'est plus un protocole à suivre. Point
+> d'entrée actuel de la piste animation : `ETAT.md` ; apprentissages vivants :
+> `corpus/CARNET.md` ; conception : `corpus/fiches/`. (Audit mémoire du
+> 2026-09-26.)
+
+
 Chaque leçon vient d'un **retour réel** (Milan, ou une erreur trouvée en
 revue). Elle est rattachée à une **mesure** qui la vérifie automatiquement
 (`rules.py`) et, quand c'est possible, à une **cible de conception** lue
