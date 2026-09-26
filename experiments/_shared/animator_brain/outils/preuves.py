@@ -212,7 +212,12 @@ def executer_et_enregistrer(production, kind, portee, entrees, fonction, command
     tee = _Tee(sys.stdout)
     ancien, sys.stdout = sys.stdout, tee
     try:
-        res = fonction()
+        try:
+            res = fonction()
+        except SystemExit as ex:
+            if ex.code not in (None, 0):
+                raise
+            res = None                  # sys.exit(0) : fin normale, pas un échec (relecture 2026-09-26)
     except BaseException as ex:
         sys.stdout = ancien
         if kind == "technique":

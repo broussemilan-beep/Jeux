@@ -146,37 +146,52 @@ def _ease(u, style_dir):
       PoseEasingStyle     0 Linear, 1 Constant, 2 Elastic, 3 Cubic,
                           4 Bounce, 5 CubicV2 ;
       PoseEasingDirection 0 In, 1 Out, 2 InOut.
-    SENS (corrigé le 2026-09-26) : la doc de PoseEasingDirection dit « for
-    legacy compatibility reasons, the use of In and Out are backwards from
-    how these terms are used by most other animation tools and by
-    TweenService ». Confirmé par le DevForum (« Animation cubic easing
-    direction reversed », 449068, 2020-02-02 : une Pose Cubic « In » se
-    comporte en jeu comme un « Out » ; réponse de Roblox en 2021 : pas de
-    correction possible sans casser les anims existantes). Donc, pour une
-    Pose : In (0) = départ RAPIDE, arrivée lente (Out de TweenService,
-    1-(1-u)^3) ; Out (1) = départ lent, arrivée rapide (u^3) ; InOut (2)
-    symétrique, non concerné. Avant cette date, _ease appliquait le sens
-    TweenService (inversé) : aucun effet sur nos mesures, les fichiers TSB
-    et du pack n'ont AUCUNE Pose Cubic (compté le 2026-09-26 : TSB 3250
-    Linear + 67 Constant ; pack 5056 Linear).
+
+    SENS, corrigé le 2026-09-26 (sources lues ce jour-là) :
+    - Cubic (3), style DÉPRÉCIÉ : le sens est inversé EN JEU. La doc de
+      PoseEasingDirection dit « for legacy compatibility reasons, the use of
+      In and Out are backwards from how these terms are used by most other
+      animation tools and by TweenService » (lu dans un extrait de recherche) ;
+      DevForum « Animation cubic easing direction reversed » (/t/449068) :
+      post d'origine du 2020-02-02 (une Pose Cubic « In » se comporte comme
+      un « Out ») ; #66, BloxSoMeta (staff), 2022-05-04 : « we have made the
+      decision for now to preserve the reversed behavior for compatibility ».
+      Donc Pose Cubic In (0) = départ RAPIDE, arrivée lente (1-(1-u)^3) ;
+      Out (1) = départ lent, arrivée rapide (u^3).
+    - CubicV2 (5) : le CORRECTIF. #85, BloxSoMeta, 2024-10-10 : « CubicV2 has
+      the same behavior as Cubic inside the ACE, but reverses the direction
+      in the engine to match » ; PoseEasingStyle.yaml (creator-docs, cité dans
+      corpus/tutos/rapport_roblox_web.md §2.1) : « Use CubicV2 going forward,
+      Cubic has a bug where the direction is reversed between the editor and
+      runtime ». Donc CubicV2 suit le sens de l'éditeur et de TweenService :
+      In (0) = départ lent (u^3) ; Out (1) = départ rapide (1-(1-u)^3).
+      (La 1re version du 2026-09-26 supposait CubicV2 inversé comme Cubic :
+      faux d'après #85, corrigé à la relecture.)
+    - InOut (2) : symétrique, non concerné.
+    Avant cette date, _ease appliquait le sens TweenService aux deux styles.
+    Aucun effet sur nos mesures : les fichiers TSB et du pack n'ont AUCUNE
+    Pose Cubic ni CubicV2 (compté le 2026-09-26 avec load_rbxm_sequences :
+    TSB 3250 Linear + 67 Constant ; pack 5056 Linear).
 
     RESTE À VÉRIFIER DANS STUDIO (quand Milan dira d'y passer) :
-    - CubicV2 (5) : ajouté vers 2024 (courbes de l'éditeur de graphe) ;
-      l'inversion est supposée la même que Cubic (la phrase de la doc porte
-      sur l'Enum de direction, pas sur un style), non vérifié ;
-    - Constant (1) : tenue puis saut à la clé suivante, supposé indépendant
-      de la direction ; un script de contournement du DevForum (449068
-      #70) inverse aussi la direction des Poses Constant : à vérifier ;
+    - le sens de CubicV2 et de Cubic en jeu (ex. rotation de 90° sur 30
+      images, In puis Out, rapport_roblox_web.md §6) ;
+    - Constant (1) : ici, tenue puis saut à la clé suivante, quelle que soit
+      la direction ; or le script de contournement du DevForum (449068 #70,
+      2022-10-19) inverse AUSSI la direction des Poses Constant : le sens
+      pourrait compter (TSB a 67 Poses Constant, direction In) ;
     - Elastic (2) / Bounce (4) : approchés par Linear (aucun cas dans nos
       fichiers au 2026-09-26)."""
     st, di = style_dir
     if st == 1:
         return 0.0 if u < 1.0 else 1.0
     if st in (3, 5):
-        if di == 0:                     # Pose « In » = Out de TweenService
-            return 1 - (1 - u) ** 3
-        if di == 1:                     # Pose « Out » = In de TweenService
+        if st == 3:                     # Cubic : sens inversé en jeu (hérité)
+            di = {0: 1, 1: 0}.get(di, di)
+        if di == 0:                     # In (sens TweenService) : départ lent
             return u ** 3
+        if di == 1:                     # Out (sens TweenService) : départ rapide
+            return 1 - (1 - u) ** 3
         return 4 * u ** 3 if u < 0.5 else 1 - (-2 * u + 2) ** 3 / 2
     return u
 

@@ -191,10 +191,13 @@ def main(blend):
     # « technique » écrite par ce script, AVANT l'éventuel arrêt, avec
     # l'empreinte des fichiers dont elle dépend (périmée s'ils changent).
     # passe = sens Roblox + interpolation (le contrôle bloquant du script)
-    # ET aller-retour moteur < 0,001 stud ; contacts et sol : valeurs à lire.
+    # ET aller-retour moteur < 0,001 stud ET sol (aucun coin sous -0,1 stud,
+    # tolérance annoncée en tête de ce script ; le sol est un contrôle
+    # technique du NOYAU, relecture adverse du 2026-09-26). Contacts : valeurs.
     sys.path.insert(0, os.path.join(HERE, "..", "..", "_shared", "animator_brain", "outils"))
     import preuves as PR  # noqa: E402
-    tech_ok = all(sens.values()) and rep["aller_retour_max"] < 1e-3
+    tech_ok = (all(sens.values()) and rep["aller_retour_max"] < 1e-3
+               and min(rep["sol"].values()) > -0.1)
     PR.enregistrer_preuve(
         "r6_poing_dragon", "technique", "scene", "passe" if tech_ok else "echoue",
         [pa, pv, os.path.join(HERE, "dragon_clip.py"), X.__file__],

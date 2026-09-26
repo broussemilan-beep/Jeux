@@ -51,13 +51,27 @@ eux-mêmes :
 **Reste ouvert.**
 - La relance du Dragon a réécrit `dragon_attaquant.rbxmx` avec des écarts
   en virgule flottante.
-  - Taille des écarts : 131 valeurs sur 28 621 diffèrent, de 5e-8 à
-    3,3e-5 au plus. `dragon_victime.rbxmx` diffère à ~1e-15.
+  - Taille des écarts (recompté à la relecture) : sur 28 621 valeurs
+    numériques, 16 619 diffèrent du fichier committé avant ; 131 de plus de
+    1e-9 (de 1,5e-9 à 3,3e-5 au plus), les autres de 6e-10 au plus.
+    `dragon_victime.rbxmx` diffère à ~2e-15 au plus.
   - Ces écarts viennent de la cuisson Blender (float32), pas du code :
     deux relances ici donnent les mêmes octets, et l'ancien export
     appliqué aux mêmes cadres aussi.
   - Conséquence : si ces fichiers ne sont pas committés avec la ligne de
     preuve, celle-ci se lira « périmée ».
+- **« passe » ne couvre pas le sol** (relu à la relecture) : la ligne du
+  Dragon porte `sol` = -0,16 (attaquant) et -0,143 (victime), alors que la
+  docstring du script annonce « aucun coin de partie sous le sol
+  (> 0,1 stud) ». Ces valeurs étaient déjà dans `verification.json` avant ce
+  chantier (même valeur au commit 0412648) : pas une régression, mais un
+  écart au-delà de la tolérance écrite par le script lui-même, que le
+  statut « passe » ne signale pas. Même chose pour
+  `ecart_max_reduction_studs` = 0,55 stud (poses éparses de la rafale,
+  voulues). À trancher : mettre le sol dans « passe » (le NOYAU le range
+  parmi les contrôles techniques) ferait passer le Dragon en « echoue ».
+- `r6_poing_dragon/scripts/check_rules.py` n'est PAS branché : il passe les
+  règles de style apprises (`rules.py`), pas un contrôle technique.
 - `r6_hit_combo` et `r6_battle_throne` ont deux scripts du même type.
   - `statut` ne montre que la dernière ligne ;
   - `statut --tout` montre l'historique.
@@ -142,16 +156,29 @@ tous passent) :
   reversed » (devforum.roblox.com/t/449068, 2020-02-02) montre qu'une Pose
   Cubic « In » se comporte en jeu comme un « Out ». InOut, Elastic et
   Bounce ne sont pas concernés.
-  - Roblox a répondu en octobre 2021 : pas de correction possible sans
-    casser les anims existantes.
-  - Le fil « Keyframe easing direction is inverted » (/t/2630212, 2023)
+  - #56 (2021-10-01, INT_L, qui cite une réponse du staff) : « no easy
+    solution that would guarantee that we do not break existing
+    animations » ; #66 (2022-05-04, BloxSoMeta, staff) : « we have made the
+    decision for now to preserve the reversed behavior for compatibility ».
+  - **#85 (2024-10-10, BloxSoMeta, staff) : le correctif, CubicV2.**
+    « CubicV2 has the same behavior as Cubic inside the ACE, but reverses
+    the direction in the engine to match. » Et « The original "Cubic" style
+    is now considered deprecated ». Même chose dans `PoseEasingStyle.yaml`
+    (cité dans `corpus/tutos/rapport_roblox_web.md` §2.1).
+  - Le fil « Keyframe easing direction is inverted » (/t/2630212, 2023-10-04)
     signale la même inversion entre l'aperçu de l'éditeur et le jeu.
 - **Notre ancien `_ease`** appliquait le sens de TweenService, donc
   inversé.
 
-**Fait.** `_ease` a été corrigé : une Pose « In » (0) part vite et arrive
-lentement (1-(1-u)³), une Pose « Out » (1) fait l'inverse (u³). Les
-sources et les points ouverts sont notés dans la doc de la fonction.
+**Fait.** `_ease` a été corrigé, style par style :
+- **Cubic (3)** : sens inversé en jeu. Une Pose « In » (0) part vite et
+  arrive lentement (1-(1-u)³), une Pose « Out » (1) fait l'inverse (u³).
+- **CubicV2 (5)** : sens de l'éditeur et de TweenService. « In » (0) part
+  lentement (u³), « Out » (1) part vite.
+- **Correction de la relecture** : la 1re version inversait aussi CubicV2.
+  C'était faux d'après le post #85 ci-dessus.
+
+Les sources et les points ouverts sont notés dans la doc de la fonction.
 
 **Preuve d'absence d'effet passé.** Les fichiers pros ne contiennent
 AUCUNE Pose Cubic (comptées le 2026-09-26) :
@@ -162,9 +189,26 @@ Aucune mesure déjà faite ne change donc. Nos exports écrivent tous
 Linear (0), ce qui ne dépend pas du sens.
 
 **Reste à vérifier dans Studio.**
-- **CubicV2 (5)** : ajouté vers 2024. L'inversion est SUPPOSÉE la même
-  que pour Cubic, car la phrase de la doc porte sur l'Enum de direction.
+- **CubicV2 (5)** : ajouté le 2024-10-10. D'après #85, il n'est PAS
+  inversé en jeu. Pas encore vu en jeu : faire le test de
+  `rapport_roblox_web.md` §6 (rotation de 90° sur 30 images, In puis Out).
 - **Constant (1)** : supposé indépendant du sens. Pourtant, un script de
   contournement du DevForum (449068 #70) inverse aussi la direction des
-  Poses Constant.
+  Poses Constant (2022-10-19). Or TSB a 67 Poses Constant, en direction
+  In : si le sens compte, nos mesures de ces 67 poses pourraient changer.
 - **Elastic et Bounce** : toujours approchés par Linear.
+
+## Relecture adverse (2026-09-26)
+
+- **Revérifié en relançant** : l'auto-test des marqueurs (16 contrôles), les
+  statuts du registre et `croissance` ; les empreintes des 16 lignes sont
+  égales aux fichiers actuels (aucune preuve périmée). Les comptes d'easing
+  des fichiers pros (3 250 + 67 ; 5 056) ont été recomptés avec
+  `load_rbxm_sequences` : identiques.
+- **Corrigé** : le sens de CubicV2 dans `_ease` (voir §3) ; l'attribution
+  de la réponse de 2021 (relayée par un utilisateur, la décision du staff
+  date de 2022) ; le compte des écarts du Dragon (§1) ; l'écart de sol
+  masqué par « passe » est maintenant écrit (§1, à trancher).
+- **Sources** lues à la relecture : le fil DevForum 449068 (pages 1 à 4,
+  posts #66, #70 et #85) et le fil 2630212. La doc create.roblox.com et le
+  dépôt GitHub `Roblox/creator-docs` restent bloqués ici.
