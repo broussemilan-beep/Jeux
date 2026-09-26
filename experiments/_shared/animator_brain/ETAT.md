@@ -41,6 +41,27 @@ savoir où on en était sans l'historique de conversation.)
 - **Prochaine étape** : le retour de Milan sur « Un seul coup » ; il veut
   encore 1-2 animations ici avant de passer sur Roblox Studio (il dira quand).
 
+## 1b. Chantiers en cours (2026-09-26, après la v5 notée 7,5)
+
+Trois chantiers lancés en même temps, dans cet ordre de livraison :
+
+1. **Poing chargé géométrique -> v6 d'« Un seul coup »** : mesures R6
+   exactes des anims TSB + pack, reconstruction 3D de chaque ref par
+   rendu-comparaison (`outils/geo_pose.py`), notre v5 mesurée, vérification
+   adverse ; puis synthèse -> fiche UN_SEUL_COUP §11 -> v6 -> preuves.
+   Déjà fait : `verify_export.py` n'a plus de règles de style en vrai/faux
+   (mesures de pose sans verdict).
+2. **Audit du cerveau** (« appris pour de vrai ou à moitié ? ») : 8 lecteurs
+   (tutos, refs, manga/principes, code, retours, productions, outils pros,
+   règles gravées) + contradicteurs -> `corpus/recherche/AUDIT_CERVEAU_2026-09-26.md`.
+3. **Réorganisation du cerveau inspirée de Hermes Agent** (Nous Research,
+   MIT ; cloné en lecture dans `/home/user/nousresearch/hermes-agent`) :
+   mémoire bornée, compétences qui s'améliorent, curateur, preuves,
+   rappel -> plan proposé à Milan, puis appliqué.
+
+Scripts des analyses (hors dépôt, session) : `wf_mesure.js`, `wf_audit.js`,
+`wf_hermes.js` dans le dossier scratchpad `poing/`.
+
 ## 2. Démarrer une session sur cette piste (ordre)
 
 1. ce fichier ;
