@@ -19,7 +19,7 @@ TOUTE session. Le détail vit dans les fiches ; un détail perdu se RECHERCHE
 ## Où on en est
 - Production active : « Un seul coup » (Serious Punch R6),
   `experiments/r6_un_seul_coup/`. v5 notée 7,5 ; v6 (poses MESURÉES des
-  refs, fiche §11) : « c trjs pas bon ». Milan arrête l'itération sur ce
+  refs, UN_SEUL_COUP §11) : « c trjs pas bon ». Milan arrête l'itération sur ce
   coup et demande le chantier 4 : apprendre l'animation au sens large.
 - Fiche active : `corpus/fiches/UN_SEUL_COUP.md`.
 - Chantiers : 1 v6 ; 2 audit fait (`corpus/recherche/AUDIT_CERVEAU_2026-09-26.md`) ;

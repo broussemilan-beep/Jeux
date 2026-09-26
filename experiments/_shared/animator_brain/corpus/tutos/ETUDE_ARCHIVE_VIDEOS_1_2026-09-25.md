@@ -2,8 +2,8 @@
 
 `9755a706-videos_archive_part1.zip` (sha1 ef7c636001f0248d) : 7 vidéos
 (640x360, sans son) + 10 sous-titres de tutos (sans les vidéos). Consigne
-de Milan : « il y aura des choses à prendre pour l'animation, pas que les
-VFX ». Méthode : bande à pas fixe de 0,1 s (`outils/durees.py`), planche
+de Milan (2026-09-25 17:36) : « dans les vidéo il y aura des choses aussi à
+prendre pour l’animation etc etc pas que VFX ». Méthode : bande à pas fixe de 0,1 s (`outils/durees.py`), planche
 de tenues (`planche_ref.py`), pics d'effet (`planche_vfx.py`), lecture
 image par image ; vidéo de 5 min : une image / 2 s puis 1 / s sur les
 passages du dragon. Transcriptions : lues en entier. Rien des œuvres

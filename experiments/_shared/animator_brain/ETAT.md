@@ -35,7 +35,8 @@ savoir où on en était sans l'historique de conversation.)
   courbé 57°, tête basse, bras écartés sous le buste ; fiche UN_SEUL_COUP §8 ; vidéo
   `2026-09-26-un-seul-coup-v4-scene-complete-avec-son.mp4`) -> comparaison
   aux refs (fiche UN_SEUL_COUP §9) -> « le bras n'est jamais tendu derrière, c'est le buste
-  qui tourne ; jambes trop abusées » -> **v5** : poings sur les côtés, buste
+  qui tourne ; jambes trop abusées » (paraphrase, pas ses mots ; les siens : 2026-09-26 09:04,
+  `corpus/milan_verbatim.jsonl`) -> **v5** : poings sur les côtés, buste
   tourné, gros plans (fiche UN_SEUL_COUP §10 ; vidéo
   `2026-09-26-un-seul-coup-v5-scene-complete-avec-son.mp4`). Prédiction 7,8.
 - **Prochaine étape** : le retour de Milan sur « Un seul coup » ; il veut
@@ -98,12 +99,12 @@ Chantiers, dans cet ordre de livraison :
 **Nettoyage du cerveau (2026-09-26, avant les exercices)** : citations de
 Milan remplacées par ses mots exacts datés (ou marquées comme paraphrase,
 sans guillemets) ; une ligne « Statut : » sur chaque entrée du CARNET et chaque
-section de fiche ; garde-fous annoncés mais absents du code corrigés
-(annoncés, absents du code au 2026-09-26) ; les lectures démenties de
+section de fiche ; contrôles d'export annoncés mais retirés du code : phrases corrigées (annoncé, absent du code au 2026-09-26); les lectures démenties de
 `corpus/etude_c4/SYNTHESE.md` §2 marquées CONTREDIT sur place ; textes
 COLLÉS de `corpus/milan_verbatim.jsonl` corrigés dans
 `corpus/milan_verbatim_corrections.jsonl` (appliqué par `outils/motifs.py`,
-`outils/lint_cerveau.py`, `outils/amorce.py`). `python3 outils/lint_cerveau.py`
+`outils/lint_cerveau.py`, `outils/amorce.py` ; lisent encore le brut au
+2026-09-26 : `outils/rappel.py`, `outils/deplacer.py`, `outils/revue.py`). `python3 outils/lint_cerveau.py`
 pour le compte à jour.
 
 Scripts des analyses (hors dépôt, session) : `wf_mesure.js`, `wf_audit.js`,

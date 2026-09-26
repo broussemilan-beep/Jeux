@@ -1,10 +1,9 @@
 # Carnet d'apprentissage (pas des règles)
 
-Demande de Milan (2026-09-25 07:45, milan_verbatim 18c384378ac6f629) :
-« rajoute encor plus de tuto le but apprebdre et nourrir pas forcement
-combler de trou […] reflechir si des trick peuvent des pepites utiles mais
-sa doit pas dveneir des regles mais de l’apprentissage , enfr le but c que
-on sois hyper fort polybalrbt ».
+Demande de Milan (2026-09-25 07:45, milan_verbatim 18c384378ac6f629) : « rajoute
+encor plus de tuto le but apprebdre et nourrir pas forcement combler de trou […]
+reflechir si des trick peuvent des pepites utiles mais sa doit pas dveneir des
+regles mais de l’apprentissage , enfr le but c que on sois hyper fort polybalrbt ».
 
 Ce carnet est la **mémoire de ce que j'ai appris et pas encore prouvé
 chez nous**. Il n'est lu par aucun contrôle automatique (`rules.py`,
@@ -17,15 +16,7 @@ que si un essai chez nous et un retour de Milan la confirment.
 - **extrait** : résumé de moteur de recherche, indice seulement ;
 - **mesuré chez nous** : j'ai mesuré la chose sur nos fichiers et sur une
   référence dans les mêmes conditions ;
-- **essayé** : on l'a réellement appliqué, avec le résultat ;
-- **vu** (dans les refs ou à l'écran) : regardé, pas mesuré ;
-- **retour de Milan** : ses mots (exacts, `corpus/milan_verbatim.jsonl`) ;
-- **déduit** : raisonnement à partir d'autres entrées, rien de regardé ni
-  de mesuré pour ce point précis ;
-- **non établi** : piste, plan ou proposition, pas encore vérifié ;
-- **CONTREDIT** : lecture démentie, gardée pour la trace avec la lecture
-  vérifiée (nettoyage du 2026-09-26 : chaque entrée porte une ligne
-  « Statut : »).
+- **essayé** : on l'a réellement appliqué, avec le résultat ; et aussi (nettoyage du 2026-09-26, une ligne « Statut : » par entrée) **vu** (regardé dans les refs ou à l'écran, pas mesuré), **retour de Milan** (ses mots exacts, `corpus/milan_verbatim.jsonl`), **déduit** (raisonnement, rien de regardé ni de mesuré pour ce point), **non établi** (piste, plan), **CONTREDIT** (lecture démentie, gardée pour la trace avec la lecture vérifiée).
 
 Sources complètes : `corpus/recherche/` (roblox, jugement, anime3d du
 2026-09-25), `corpus/tutos/`, `corpus/TUTOS_ANIMATION.md`.
@@ -330,15 +321,12 @@ nous.*
 **2.9 « Il frappe vers le bas » : c'est la HAUTEUR DU POING AU CONTACT et
 la bascule du buste, pas l'angle du bras** (Milan, « Un seul coup » v1, 2e
 fois après le Poing du Dragon). Bras mesuré « à plat » à -6° par rapport au
-bras, mais buste penché de 40° et poing à 2,5 studs : l'image dit « il plonge
-vers le bas-ventre ». Une pose de l'APPROCHE (fente très basse, torse
-horizontal, TSB) collée au CONTACT. Garde-fou annoncé ici (buste < 22°,
-bras < 12°, poing au contact > 3,2 studs, victime debout) : annoncé, absent
-du code au 2026-09-26 (retiré de `verify_export.py` d'Un seul coup en
-6f0539e : ces grandeurs y sont MESURÉES sans verdict, `mesures_coup` et
-`mesures_pose`). Le bas et le penché servent à l'élan et à la charge
-(Gon), jamais à l'arrivée du coup droit (Saitama manga : à plat, épaule
-devant).
+bras, mais buste penché de 40° et poing à 2,5 studs : l'image dit « il plonge vers le bas-ventre ».
+Une pose de l'APPROCHE (fente très basse, torse horizontal, TSB) collée au CONTACT. Garde-fou annoncé ici (buste < 22°, bras < 12°,
+poing au contact > 3,2 studs, victime debout) : annoncé, absent du code au 2026-09-26 (retiré de
+`verify_export.py` d'Un seul coup en 6f0539e : ces grandeurs y sont MESURÉES sans verdict, `mesures_coup`
+et `mesures_pose`). Le bas et le penché servent à l'élan et à la charge (Gon), jamais à l'arrivée du coup
+droit (Saitama manga : à plat, épaule devant).
 - Statut : mesuré (pose de la v1 d'Un seul coup : bras -6°, buste 40°, poing à 2,5 studs) et retour de Milan (2026-09-26 08:14 : « autre problème qui revient un peu a quand dans poing du dragon le perso frappait vers le bas ») . Que le bas ne serve jamais à l'arrivée du coup droit est déduit du manga Saitama (lu), pas mesuré sur les refs. Le titre « Il frappe vers le bas » est mon résumé du motif (`outils/motifs.py vers_le_bas`), pas ses mots.
 
 **2.10 Le poing chargé : mesuré sur les refs le 2026-09-26, voir
@@ -361,7 +349,7 @@ bras vers la cible) -> tenue qui tremble -> tout se déroule à 180°. En R6,
 où le bras ne plie pas, c'est l'alignement des DEUX bras qui dit « chargé ».
 Un poing déjà derrière qui recule de 0,6 stud ne charge rien : ce qui se
 voit, c'est le TRAJET (devant -> derrière) et la ROTATION du buste.
-  - [CONTREDIT en partie v4 -> « jambes trop abusées », 2026-09-26]
+  - [CONTREDIT en partie v4 -> Milan, 2026-09-26 09:04 : « le pose des jambe est un peu trop abusé »]
     Corrigé par Milan sur la v3 (« aucun changement ») : l'arc tendu
     DEBOUT ne se lit pas comme une charge. La charge des refs est RAMASSÉE :
     genoux très pliés, buste courbé (~45-60°), tête basse, bras écartés sous
@@ -483,7 +471,7 @@ vérifié* (slides Eiserloh, GDC 2016) :
   décroissance exponentielle. Côté Luau, `math.random`, donc non déterministe.
 - Ce bruit blanc rend chaque image différente de la précédente : c'est
   exactement ce que `regard.py` compte comme « jamais vu ». Il pourrait
-  expliquer une part de « caméra ciné un peu trop abusée » (Milan, v6).
+  expliquer une part de « en cinéma peut être un peu trop abusé mais léger » (Milan, Dragon v6, 2026-09-24 20:01).
 - **À essayer** : variantes rotation seule + bruit lisse contre l'actuel,
   même dose, jugées en regard vitesse réelle. Ne pas changer sans les
   comparer.
@@ -718,7 +706,7 @@ pic, temps plein écran, plus longue plage plein écran, conséquence ; seuil
 présenter un ultime qui n'en a pas le temps (v12 : 0,1 s de plein écran).
 Rétro-test : la vidéo v12 échoue aux 4 critères (effet au pic 0,33 contre
 0,70 ; plein écran 0 contre 0,66 s ; conséquence 0 contre 3,4 s), ce qui
-colle au 4/10 de Milan ; le juge l'aurait arrêtée avant de la montrer. [CONTREDIT 2026-09-26 : un score automatique ne suffit pas à juger : AnimationBench donne 4-5/5 à la v6 rejetée (mieux que TSB M1), et le même changement de temps d'écran a reçu « aucun changement » puis « un peu mieux », voir corpus/recherche/depots_yeux_2026-09-26/SYNTHESE_YEUX.md §0 et corpus/recherche/depots_yeux_2026-09-26/SYNTHESE_YEUX.md §6]
+colle au 4/10 de Milan ; le juge l'aurait arrêtée avant de la montrer. [CONTREDIT 2026-09-26 : un score automatique ne suffit pas à juger : AnimationBench donne 4-5/5 à la v6 rejetée (mieux que TSB M1), et le même changement de temps d'écran a reçu de Milan « Je vois aucun changement » (v3, 2026-09-26 08:46) puis « c un peux mieux mais c pas bon encore » (v5, 2026-09-26 09:15), voir corpus/recherche/depots_yeux_2026-09-26/SYNTHESE_YEUX.md §0 et corpus/recherche/depots_yeux_2026-09-26/SYNTHESE_YEUX.md §6]
 - Statut : mesuré (`outils/juge.py`, 6 ultimes, rétro-test sur la v12) ; le seuil 0,8 x médiane est posé par moi, et ne vaut pas pour le style sans plein écran (4b.29).
 
 **4b.26 Relire SA scène comme un spectateur, plan par plan, sans Milan**
@@ -860,7 +848,7 @@ Méthode pour chacune :
   rigides. Garde-fou annoncé : `outils/corps_bras.py` sur chaque production,
   et la pelure d'oignon du TORSE (pas seulement du poing) avant de montrer ;
   annoncé, absent du code au 2026-09-26 (l'outil existe, aucune production
-  ne l'appelle : à lancer à la main, NOYAU « outils de vigilance jamais
+  ne l'appelle, ni directement ni par `outils/rapport_regard.py` : à lancer à la main, NOYAU « outils de vigilance jamais
   relancés »).
 - Je traduis les mots de Milan en ma propre étiquette et je perds son sens :
   pour lui, « coup final » = le coup aérien depuis la v7 ; j'avais mélangé

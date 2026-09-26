@@ -346,7 +346,10 @@ def verifier_citations(doc, msgs, sig, stats, colles=()):
                 stats["citations_marquees_paraphrase"] += 1
                 continue                         # marquée « (paraphrase, pas ses mots) » : pas une citation
             avant = sans_noms_de_fichier(texte[max(0, m.start() - 250):m.start()])
-            k = avant.lower().rfind("milan")
+            # « Ses mots : « … » » attribue aussi (relecture adverse du 2026-09-26 : trois citations
+            # d'UN_SEUL_COUP en orthographe corrigée passaient sous « Ses mots », sans « Milan » avant)
+            sm = [x.start() for x in re.finditer(r"ses mots\s*(?:\([^()]{0,60}\))?\s*:", avant, re.I)]
+            k = max(avant.lower().rfind("milan"), sm[-1] if sm else -1)
             # attribuée si « Milan » précède SANS fin de phrase entre les deux (« Milan : « a » ; « b » » oui ;
             # « (Milan, v1). L'image dit « … » » non : c'est notre phrase)
             attribuee = (k >= 0 and not re.search(r"[.!?]\s+[A-ZÉÈÀ(]", avant[k:])) or \

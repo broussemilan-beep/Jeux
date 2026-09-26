@@ -3,9 +3,10 @@
 > Ce README documente le CODE du cerveau (mesures de mouvement, rig).
 > Pour la carte complète, l'état et l'ordre de lecture : `ETAT.md`.
 
-Né d'un retour direct de Milan (2026-09-23) : *« pourquoi tout a l'air
-mécanique dans tes rendus ? »*, suivi de *« sois vraiment minutieux, le
-projet derrière c'est un cerveau d'animateur Roblox »*.
+Né d'un retour direct de Milan (2026-09-23 18:55) : *« Mais là on discute
+mais pq tout à l’aire mécanique dans tes rendues ? »*, suivi de (18:57)
+*« Go et sois vraiment minucieux dans ta construction, le projet derrière tu
+crée un cerveau d’animateur Roblox . »*.
 
 La réponse honnête : jusque-là, **chaque vérification portait sur des images
 fixes** (captures, poses). Or ce qui rend une animation mécanique se trouve

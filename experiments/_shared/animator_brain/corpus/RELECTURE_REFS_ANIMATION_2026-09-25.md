@@ -1,7 +1,7 @@
 # Relecture de toutes les refs de Milan, sous l'angle ANIMATION (2026-09-25)
 
-Demande de Milan : « va revoir toutes les GIF et vidéos de référence en
-termes d'animation, pour réapprendre ».
+Demande de Milan (2026-09-25 08:27) : « va revoir toute les gif et vidéo de
+référence en terme d’animation etc pour re apprendre ».
 
 ## Méthode
 

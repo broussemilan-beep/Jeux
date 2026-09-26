@@ -15,7 +15,7 @@ fichiers jamais versionnés, voir `../CATALOGUE_REFS.md`) :
   comme un spectateur), 4b.28 (conditions du spectateur), 4b.29 (Roblox
   premium : de la 3D, pas de planches 2D), 4b.30 (lent / tenu + 1 à 3 coups
   rapides ; moins de coupes, un plan qui suit) ;
-- RETOURS : 7,85 puis 8 (« pas premium mais mid haut ») ; « trop peinture »,
+- RETOURS : 7,85 puis 8 (2026-09-26 07:13 : « c pas premium mais c’est mid haut ») ; « trop peinture »,
   planches retirées ; « le dragon va dans tous les sens ».
 
 ## 1. Ce que les trois refs font, à 0,1 s
@@ -124,13 +124,13 @@ sprites doux plutôt que « dessinées »).
 
 ## 6. v2 (retour de Milan sur la v1, 2026-09-26)
 
-Ses mots : « la scène où le perso réduit la distance, je veux que tu la
-changes : ça doit être comme si le perso allait ultra vite, donc tu casses le
-sol de son point de départ, puis la scène apparaît avec le moment où le perso
-charge son poing et frappe la victime ; autre problème qui revient un peu,
-comme dans le Poing du Dragon : le perso frappait vers le bas. Le perso
-charge son poing, il l'arme en le ramenant à l'arrière et en tournant son
-buste. » Refs ajoutées (catalogue) : Gon accroupi poing à la hanche (HxH),
+Ses mots (2026-09-26 08:14) : « la scène ou le perso réduit la distance je veux
+que tu la change ça doit être comme si le perso allez ultra vite donc tu casse
+le sol de son point de départ puis la scène apparaît avec le moment où le perso
+charge son poing et frappe la victime , autre problème qui revient un peu a
+quand dans poing du dragon le perso frappait vers le bas . Va revoir les refs
+mais en gros le perso charge son poing , il arme son poing le ramenant à
+l’arrière et en tournant son bust . » Refs ajoutées (catalogue) : Gon accroupi poing à la hanche (HxH),
 Saitama manga coup à plat, Saitama de dos buste tordu, poing rouge (OPM).
 
 **Mesuré sur la v1 (pas vu à l'œil avant lui)** : au contact le buste était
@@ -232,12 +232,13 @@ montrer le départ du coup en gros plan (buste qui tourne, bras en travers)
 avant le plan de la victime ; (e) plan du poing en 3/4 avec l'épaule et un
 tourbillon de fumée.
 
-## 10. v5 : « le poing ne part pas de l'arrière » (Milan, en arrêtant la v5 en cours)
+## 10. v5 : le poing ne part pas de l'arrière (Milan, en arrêtant la v5 en cours ; titre en paraphrase, pas ses mots)
 
-Ses mots : « je pense que tu fais partir le poing de l'arrière, ou de l'armé
-à l'arrière ; l'arrière est engagé par le BUSTE qui tourne ; de plus la pose
-des jambes est un peu trop abusée. Dans aucune des refs le bras est tendu
-derrière. » (refs remises : Pew de face / de dos, TSB de face.)
+Ses mots (2026-09-26 09:04) : « je pense tu fais partir le poing de l’arrière
+ou de l’arme à l’arrière , arrière qui est engager par le juste tourne de plus
+le pose des jambe est un peu trop abusé . Je t’ai remis les ref pour que tu
+vois dans aucune le bras est tendu derrière . » (« le juste tourne » : lu
+comme « le buste tourne », ma lecture.) (refs remises : Pew de face / de dos, TSB de face.)
 
 Ce que j'avais fait de la v3 à la v4 : bras qui charge tendu droit vers
 l'arrière (+Z), accroupi extrême (v4 : hanches -1,05, buste 57°), genou levé
@@ -252,7 +253,7 @@ bras gauche ouvert à gauche ; buste tourné (racine -18°, bassin -42°), pench
 (a) charge en GROS PLAN bas de face, victime hors champ (masquée : la caméra
 est à sa place) ; (b) remplacé par le point de Milan (le buste recule
 l'épaule, le bras reste sur le côté) ; (c) genou levé ESSAYÉ puis retiré
-(« jambes trop abusées ») ; (d) départ du coup en gros plan (le buste se
+(Milan, 2026-09-26 09:04 : « le pose des jambe est un peu trop abusé ») ; (d) départ du coup en gros plan (le buste se
 déroule, le bras passe en travers) ; (e) poing de 3/4 avec l'épaule, dans
 un tourbillon qui serre le poing. Contrôle d'export remplacé (v5) : « poing sur
 le côté, pas derrière » + « épaule droite reculée par le buste » ; annoncé,
@@ -315,7 +316,7 @@ Preuves : `captures/verification/2026-09-26-un-seul-coup-v5-contre-v6-poing-char
 
 ## 12. Retour de Milan sur la v6 (2026-09-26)
 
-*Statut : retour de Milan (2026-09-26, ses mots ci-dessous).*
+*Statut : retour de Milan sur la v6, celle du poing chargé mesuré au §11 (2026-09-26, ses mots ci-dessous).*
 
 « c trjs pas bon » (11:33), puis, après la synthèse du chantier 4 : « Ce qui
 était tues pas bon c le placement du bras sur tout mais tes pistes sont

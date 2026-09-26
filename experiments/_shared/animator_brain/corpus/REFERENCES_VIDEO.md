@@ -68,7 +68,7 @@ ressemblent pas, et le style est **manga, donc volontairement exagéré**.
 ## IMPACT HAVEN : mesures (24 sept.)
 
 Short Roblox « IMPACT HAVEN » (@mariigamesreal), envoyé par Milan comme
-référence « niveau AAA, mais encore différent ». Capture d'écran à 60 i/s
+référence (2026-09-24 13:59 : « Voilà une ref niveau AAA aussi mais ça c encore différent »). Capture d'écran à 60 i/s
 d'une source à 30 i/s. Mesures automatiques sur la zone de jeu (luminance,
 image par image, de 1,7 à 10,2 s).
 

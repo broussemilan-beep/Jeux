@@ -956,13 +956,21 @@ def rappel(req, maxi=20, court_=False, exclus=()):
     # 11. CONTREDIT en dernier
     cn = [u for u in unites_md + unites_js if u.niveau and u.marque]
     if cn:
-        # d'abord les lectures démenties par Milan (marques dans le cerveau), puis les réfutations des vérificateurs
-        cn.sort(key=lambda u: (u.genre != "md", -u.score))
+        # d'abord les lectures démenties par Milan (marques dans le cerveau), puis les réfutations des vérificateurs.
+        # 2026-09-26 (nettoyage : ~55 marques CONTREDIT posées d'un coup, dans les études et tutos aussi) :
+        # les fichiers VIVANTS (CARNET, fiches, CATALOGUE, ETAT) passent avant les études, 14 marques du
+        # cerveau au plus, PLUS 3 réfutations des vérificateurs réservées (sinon les marques les cachent).
+        def vivant(u):
+            return os.path.basename(u.src) in ("CARNET.md", "CATALOGUE_REFS.md", "ETAT.md", "NOYAU.md") \
+                or os.sep + "fiches" + os.sep in u.src
+        cn.sort(key=lambda u: (u.genre != "md", not vivant(u), -u.score))
         P("\n== CONTREDIT / réfuté (gardé pour la trace, affiché en dernier) ==")
-        # 2026-09-26 (nettoyage du cerveau : ~50 marques CONTREDIT posées d'un coup) : 14 marques du
-        # cerveau au plus, PLUS 3 réfutations des vérificateurs réservées (sinon les marques les cachent)
         cn_md = [u for u in cn if u.genre == "md"]
-        cn = cn_md[:14] + [u for u in cn if u.genre != "md"][:3]
+        cn_js = [u for u in cn if u.genre != "md"]
+        if len(cn_md) > 14 or len(cn_js) > 3:
+            P(f"({len(cn_md)} marques du cerveau, {len(cn_js)} réfutations : les 14 et 3 premières ; "
+              f"les autres : grep -rn CONTREDIT corpus/)")
+        cn = cn_md[:14] + cn_js[:3]
         for u in cn:
             ln, t = meilleure_ligne(u, Q)
             lieu = ou(u) if u.genre == "json" else (f"{rel_b(u.src)}:{ln}" if u.src.startswith(BRAIN) else f"{rel(u.src)}:{ln}")
