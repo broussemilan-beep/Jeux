@@ -57,8 +57,14 @@ def load_rbxm_sequences(path):
         if s is None:
             continue
         pos, rot, _rid = cfr[pr]
-        seqs[s]["kf"][kf][1][nm] = (np.array(rot, float).reshape(3, 3), np.array(pos, float))
         seqs[s].setdefault("w", {}).setdefault(nm, []).append(float(pose_weight.get(pr, 1.0)))
+        if float(pose_weight.get(pr, 1.0)) == 0.0:
+            # Pose de poids 0 = simple conteneur de hiérarchie (l'Animator ne
+            # l'applique pas). La prendre pour une clé ramenait le Torso à
+            # l'identité sur M4 / WallComboPlayer (fausses pointes à 150
+            # studs/s). Trouvé par l'analyse géométrique du 2026-09-26.
+            continue
+        seqs[s]["kf"][kf][1][nm] = (np.array(rot, float).reshape(3, 3), np.array(pos, float))
     out = []
     for s in seqs.values():
         frames = sorted(s["kf"].values(), key=lambda f: f[0])

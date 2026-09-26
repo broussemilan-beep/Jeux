@@ -81,7 +81,8 @@ def descripteurs(w, avant=(0.0, 0.0, -1.0)):
     """Pose monde {part: (R, p)} -> nombres dans le repère du coup.
 
     buste.lacet : + = le torse a tourné vers SA gauche (épaule droite qui
-      recule, poitrine qui s'ouvre vers la gauche du coup) ;
+      AVANCE, comme au contact d'un direct du droit) ; - = tourné vers sa
+      droite (épaule droite qui RECULE, comme à l'armé) ;
     buste.penche_avant : + = penché vers l'avant de SON torse ;
     buste.penche_cote : + = penché vers sa droite ;
     bras.X.torse = (az, el) dans les axes du torse ; bras.X.coup = (az, el)
@@ -140,6 +141,23 @@ def resume(d):
 
 
 # ------------------------------------------------------------ 2. reconstruire
+def _oriente(d, roulis=0.0):
+    """Rotation (axes du torse) qui amène l'axe du membre (-Y, pivot -> bout)
+    sur d par la rotation MINIMALE depuis le repos, puis tourne de `roulis`
+    autour de d. Corrigé le 2026-09-26 : la 1re version passait par moon.aim,
+    dont le roulis arbitraire faisait tourner le bloc autour de son axe ; comme
+    le pivot R6 est au coin de l'épaule (pas sur l'axe), le bras se décalait
+    jusqu'à 1 stud (repos (0,-90) : centre à x = 0,5 au lieu de 1,5). Trouvé
+    par un vérificateur adverse de la reconstruction TSB."""
+    d = np.asarray(d, float) / np.linalg.norm(d)
+    r = M._align(np.array([0.0, -1.0, 0.0]), d)
+    if roulis:
+        a = np.radians(roulis)
+        K = np.array([[0, -d[2], d[1]], [d[2], 0, -d[0]], [-d[1], d[0], 0]])
+        r = (np.eye(3) + np.sin(a) * K + (1 - np.cos(a)) * (K @ K)) @ r
+    return r
+
+
 def pose(p):
     """Paramètres -> monde R6 (pour reconstruire une image de ref).
 
@@ -159,7 +177,7 @@ def pose(p):
         if v is None or (isinstance(v, tuple) and v and v[0] == "pied"):
             continue
         roul = v[2] if len(v) > 2 else 0.0
-        q[part] = (M.aim(az_el_vers_dir(v[0], v[1]), roul), np.zeros(3))
+        q[part] = (_oriente(az_el_vers_dir(v[0], v[1]), roul), np.zeros(3))
     th = p.get("tete")
     if th is not None:
         q["Head"] = (M.E(th[0], -th[1], 0.0), np.zeros(3))
