@@ -1,0 +1,1499 @@
+{
+ "label": "pro:tsb-ultimes",
+ "kind": "pro",
+ "resultat": {
+  "source": "Fichier /root/.claude/uploads/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/b64ecce0-tsb_anim.rbxm, séquences Ultimate1 (602 i), Ultimate2 (174 i), Stoic Bomb (284 i), Collateral Ruin (129 i), Swift Sweep (97 i), échantillonnées à 60 i/s, racine fixe, le perso regarde -Z. Dossier de travail : /tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/pro_tsb_ult/ (tous les nombres sont dans coups.json et fourchettes.json).\n\nCORRECTION IMPORTANTE, faite avant toute mesure. G.mondes_rbxm (donc corpus.load_rbxm_sequences) garde les Pose de Weight = 0. Ce sont des conteneurs vides que l'Animation Editor pose au-dessus d'un bras clé seul, avec un CFrame identité. Sur Torso, elles représentent 42,6 % des poses de U1 et existent aussi dans SB, CR et SS (aucune ne touche un bras, une jambe ou la tête). resample_linear les prend pour des clés, et le buste retombe au neutre à chacune de ces images. Exemple : U1 f470 donne brut lacet 0 / hanche 3,00, corrigé +27 / 2,49. Écart maximal brut/corrigé sur le lacet : U1 72°, SB 177°, CR 96°, SS 44° ; U2 n'est pas touché (cuit image par image). J'ai écrit lecteur.py, qui filtre Weight = 0 puis appelle le même C.resample_linear. geo_pose.py n'est pas modifié. Hypothèse forte mais non vérifiée dans Studio : l'Animator ignore aussi ces poses. Les clés de poids 1 s'enchaînent sans à-coup, ce qui va dans ce sens. Les mesures de corpus/ETUDE_TSB.md (bascule, tenues) ont été faites avec l'ancien lecteur et sont peut-être biaisées ; je ne les ai pas refaites.\n\nAutres limites :\n- Interpolation supposée linéaire : EasingStyle n'est pas décodé par rbxm_reader (ETUDE_TSB indique 98 % Linear).\n- Les translations des Pose passent par X.solve, non vérifié dans Studio. Indice qu'il est juste : dans CR à f60, les deux poings sont à 0,21 stud l'un de l'autre (prise à deux mains cohérente).\n- Aucun hitbox dans le fichier : les images de contact sont déduites (pic de vitesse, extension, passage devant).\n- Aucune de ces 5 animations n'est le Serious Punch de Saitama. Le catalogue le dit, et je l'ai vérifié sur le GIF 48244687 (planche gif_serious_punch_planche.png) : le perso y est très accroupi à 3 s, alors que U1 reste debout (hanche ≥ 2,49). Ce sont les ultimes et compétences d'un autre perso, et AUCUNE ne contient de direct chargé classique.",
+  "coups": [
+   {
+    "anim": "Ultimate1",
+    "type_de_coup": "PAS une frappe : mise en garde lente. Le poing est ramené à la hanche (armé tenu 142 i), puis le bras droit se tend devant à hauteur d'épaule pendant que le corps RECULE de 1,5 stud.",
+    "bras_frappeur": "RA (bras droit)",
+    "temps": {
+     "fps": 60,
+     "geste_prealable_poing_leve_devant": "f190-256",
+     "ramene_a_la_hanche": "f258-290 (32 i), lacet -6 -> -16",
+     "tenue_armee": "f290-432 (142 i, poing < 1,2 studs/s, micro-dérive : le poing descend de 0,07)",
+     "arme": 432,
+     "depart": 434,
+     "acceleration_buste": 446,
+     "contact_extension": 496,
+     "depart_a_contact_f": 62,
+     "vitesse_max_rel": "12,6 studs/s à f492",
+     "creux_hanche": "2,49 à f470",
+     "tenue_apres": "f498-556 (58 i)",
+     "retour": "f560-600"
+    },
+    "descripteurs_arme": {
+     "avant": [
+      -0.1282,
+      0,
+      -0.9918
+     ],
+     "hanche": 2.766,
+     "buste": {
+      "lacet": -25.3,
+      "penche_avant": 1.9,
+      "penche_cote": -1.7
+     },
+     "bras": {
+      "RA": {
+       "torse": [
+        11.7,
+        -19.2
+       ],
+       "coup": [
+        37.7,
+        -20.7
+       ]
+      },
+      "LA": {
+       "torse": [
+        -38.8,
+        -79.9
+       ],
+       "coup": [
+        -12.3,
+        -82.5
+       ]
+      }
+     },
+     "poing": {
+      "RA": [
+       0.11,
+       1.87,
+       -0.45
+      ],
+      "LA": [
+       0.64,
+       -1.45,
+       -0.99
+      ]
+     },
+     "pieds": {
+      "RL": [
+       -0.18,
+       0.78,
+       -2.89
+      ],
+      "LL": [
+       0.42,
+       -0.46,
+       -2.84
+      ]
+     },
+     "epaules": {
+      "recul_droite": 1.75
+     },
+     "tete": {
+      "torse": [
+       -11.9,
+       -10.9
+      ],
+      "coup": [
+       13.7,
+       -13.1
+      ]
+     },
+     "pivot_epaule_decale_torse(dr,ht,av)": {
+      "RA": [
+       0.08,
+       -0.1,
+       -0.29
+      ],
+      "LA": [
+       0.04,
+       0,
+       -0.11
+      ]
+     },
+     "poing_axes_torse(dr,ht,av)": {
+      "RA": [
+       1.63,
+       -0.47,
+       0.91
+      ],
+      "LA": [
+       -1.61,
+       -0.94,
+       -0.01
+      ]
+     },
+     "haut_du_bras_axes_torse(dr,ht,av)": {
+      "RA": [
+       1.24,
+       0.19,
+       -0.94
+      ],
+      "LA": [
+       -1.39,
+       1.03,
+       -0.28
+      ]
+     },
+     "note": "lacet -18 dans le repère -Z ; à f300 le pivot d'épaule D est reculé de 0,66"
+    },
+    "descripteurs_contact": {
+     "avant": [
+      -0.1282,
+      0,
+      -0.9918
+     ],
+     "hanche": 2.631,
+     "buste": {
+      "lacet": 60.5,
+      "penche_avant": -8.5,
+      "penche_cote": -0.8
+     },
+     "bras": {
+      "RA": {
+       "torse": [
+        29.5,
+        13
+       ],
+       "coup": [
+        -29.9,
+        20.7
+       ]
+      },
+      "LA": {
+       "torse": [
+        -31.3,
+        10.5
+       ],
+       "coup": [
+        -93,
+        17.3
+       ]
+      }
+     },
+     "poing": {
+      "RA": [
+       2.23,
+       0,
+       0.38
+      ],
+      "LA": [
+       -1.37,
+       -1.45,
+       0.25
+      ]
+     },
+     "pieds": {
+      "RL": [
+       0.91,
+       0.34,
+       -2.72
+      ],
+      "LL": [
+       -0.53,
+       -0.5,
+       -2.66
+      ]
+     },
+     "epaules": {
+      "recul_droite": -1.88
+     },
+     "tete": {
+      "torse": [
+       50.6,
+       -20.9
+      ],
+      "coup": [
+       -11.8,
+       -14.7
+      ]
+     },
+     "pivot_epaule_decale_torse(dr,ht,av)": {
+      "RA": [
+       -0.05,
+       -0.24,
+       -0.08
+      ],
+      "LA": [
+       0.16,
+       -0.2,
+       -0.55
+      ]
+     },
+     "poing_axes_torse(dr,ht,av)": {
+      "RA": [
+       1.95,
+       0.19,
+       1.14
+      ],
+      "LA": [
+       -1.9,
+       0.19,
+       0.62
+      ]
+     },
+     "haut_du_bras_axes_torse(dr,ht,av)": {
+      "RA": [
+       0.99,
+       -0.26,
+       -0.55
+      ],
+      "LA": [
+       -0.88,
+       -0.18,
+       -1.06
+      ]
+     }
+    },
+    "trajet_du_poing": "ARC horizontal à hauteur de hanche, qui tourne autour du torse : du flanc droit (dr +1,87) jusque devant (av +2,07, dr 0) entre f446 et f472. Le poing plonge ensuite un peu (ht -0,98 à f488), puis REMONTE à hauteur d'épaule (+0,38) en 8 i (f488-496) : profil en L. Rectitude 0,55, balayage horizontal -87°. Le BUSTE fait presque tout : Δlacet +86°, alors que l'az du bras dans les axes du torse ne bouge que de +18° (il compense pour garder le poing sur l'axe) et son el de +32°. Dans le monde, le poing n'avance que de 0,4 stud : le torse recule de 1,5 et le pied G recule de 2,4 (garde pied droit devant).",
+    "lecture": "L'armé, c'est le poing RAMENÉ À LA HANCHE, pas derrière. Le bloc bras est presque horizontal, il pointe VERS L'AVANT dans les axes du torse (az +12, el -19), et il est glissé en arrière le long du flanc par une translation du pivot d'épaule (-0,29 à -0,66). Résultat : poing à côté de la hanche (axes du torse : av +0,91, ht -0,47), et haut du bloc (le « coude ») 0,94 DERRIÈRE le dos. Buste à peine tourné (-18°, penché +2°), autre bras pendant, légère flexion (hanche 2,77). Silhouette compacte vue de face : un petit carré vert à la hanche droite. À l'extension, le buste est tourné de +68° (épaule droite devant), le bras tendu converge vers l'axe (coup az -30 à -37) avec le poing pile devant à hauteur d'épaule, et l'autre bras est rejeté à l'horizontale sur le côté gauche (coup az -93, épaule G reculée de 0,55). Réserve : c'est un geste lent de mise en scène d'ultime, pas un coup.",
+    "image": "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/pro_tsb_ult/planche_U1_direct_droit_lent.png ; trajet_U1_direct_droit_lent.png ; u1_survol.png"
+   },
+   {
+    "anim": "Ultimate2",
+    "type_de_coup": "Revers horizontal du bras GAUCHE (balayage) armé EN TRAVERS de la poitrine. Nature exacte incertaine (geste de mise en scène ou frappe).",
+    "bras_frappeur": "LA (bras gauche)",
+    "temps": {
+     "fps": 60,
+     "construction_arme": "f72-93 (21 i) : buste +15 -> -16, bras en travers",
+     "tenue": "f91-94 (3-4 i, < 2,5 studs/s), après une entrée amortie depuis f84",
+     "arme": 93,
+     "depart": 95,
+     "passage_devant": "f101 (19,5 studs/s, encore en accélération)",
+     "contact_retenu": "f109 = vitesse max (42 studs/s rel.), poing sur le côté gauche",
+     "depart_a_contact_f": 14,
+     "arret": "f119",
+     "tenue_apres": "f119-171"
+    },
+    "descripteurs_arme": {
+     "avant": [
+      0,
+      0,
+      -1
+     ],
+     "hanche": 2.993,
+     "buste": {
+      "lacet": -15.5,
+      "penche_avant": 7.3,
+      "penche_cote": -1.9
+     },
+     "bras": {
+      "RA": {
+       "torse": [
+        174.1,
+        -79.1
+       ],
+       "coup": [
+        -174,
+        -71.7
+       ]
+      },
+      "LA": {
+       "torse": [
+        49.2,
+        2.1
+       ],
+       "coup": [
+        64.5,
+        -1.2
+       ]
+      }
+     },
+     "poing": {
+      "RA": [
+       -0.95,
+       1.3,
+       -0.86
+      ],
+      "LA": [
+       1.78,
+       1.05,
+       0.74
+      ]
+     },
+     "pieds": {
+      "RL": [
+       0.46,
+       0.62,
+       -2.8
+      ],
+      "LL": [
+       -0.9,
+       -0.65,
+       -2.86
+      ]
+     },
+     "epaules": {
+      "recul_droite": 1.24
+     },
+     "tete": {
+      "torse": [
+       -13.4,
+       -28.2
+      ],
+      "coup": [
+       2,
+       -35.7
+      ]
+     },
+     "pivot_epaule_decale_torse(dr,ht,av)": {
+      "RA": [
+       0,
+       -0.05,
+       0.05
+      ],
+      "LA": [
+       0.53,
+       -0.07,
+       0.82
+      ]
+     },
+     "poing_axes_torse(dr,ht,av)": {
+      "RA": [
+       1.47,
+       -0.97,
+       -0.45
+      ],
+      "LA": [
+       0.57,
+       0.97,
+       1.89
+      ]
+     },
+     "haut_du_bras_axes_torse(dr,ht,av)": {
+      "RA": [
+       1.43,
+       0.99,
+       -0.08
+      ],
+      "LA": [
+       -0.94,
+       0.9,
+       0.58
+      ]
+     }
+    },
+    "descripteurs_contact": {
+     "f109_vitesse_max": {
+      "avant": [
+       0,
+       0,
+       -1
+      ],
+      "hanche": 2.761,
+      "buste": {
+       "lacet": 30.8,
+       "penche_avant": 16.9,
+       "penche_cote": -6
+      },
+      "bras": {
+       "RA": {
+        "torse": [
+         -0.9,
+         -85.4
+        ],
+        "coup": [
+         124.4,
+         -76.5
+        ]
+       },
+       "LA": {
+        "torse": [
+         -48.6,
+         -18.6
+        ],
+        "coup": [
+         -85.1,
+         -33.5
+        ]
+       }
+      },
+      "poing": {
+       "RA": [
+        0.68,
+        1.41,
+        -0.88
+       ],
+       "LA": [
+        -0.27,
+        -2.69,
+        -0.57
+       ]
+      },
+      "pieds": {
+       "RL": [
+        0.36,
+        0.61,
+        -2.89
+       ],
+       "LL": [
+        -0.94,
+        -0.37,
+        -2.66
+       ]
+      },
+      "epaules": {
+       "recul_droite": -1.35
+      },
+      "tete": {
+       "torse": [
+        28.2,
+        -6.8
+       ],
+       "coup": [
+        -0.5,
+        -18.8
+       ]
+      },
+      "pivot_epaule_decale_torse(dr,ht,av)": {
+       "RA": [
+        -0.02,
+        -0.03,
+        0.09
+       ],
+       "LA": [
+        -0.14,
+        -0.42,
+        0.4
+       ]
+      },
+      "poing_axes_torse(dr,ht,av)": {
+       "RA": [
+        1.47,
+        -1.03,
+        0.12
+       ],
+       "LA": [
+        -2.46,
+        0.03,
+        1.27
+       ]
+      }
+     },
+     "f101_passage_devant_resume": "lacet +5, penché +14, LA torse (+45,+2), poing LA [2.10, 0.04, 0.48], épaule D reculée +0.26, hanche 2.87"
+    },
+    "trajet_du_poing": "Arc HORIZONTAL qui descend un peu : de l'avant-droite (av +1,78, dr +1,05, ht +0,74) vers la gauche puis l'arrière-gauche (f119 : av -2,59, dr -0,42). Il passe pile devant à f101 et va le plus vite sur le côté gauche (f109). Rectitude 0,83 et balayage -126° d'f93 à f109 ; -200° jusqu'à f119. C'est surtout le BRAS qui travaille : az torse +49 -> -49 (-98°) jusqu'à f109 et -104 à l'arrêt, contre Δlacet +46° (+84° jusqu'à l'arrêt). Hauteur du poing -1,31 ; hanche 2,99 -> 2,76.",
+    "lecture": "Pour un revers, l'armé met le poing du côté OPPOSÉ, en travers de la poitrine, à hauteur d'épaule (axes du torse : dr +0,57, ht +0,97, av +1,89). Le pivot d'épaule gauche est avancé de 0,82 et rentré vers le centre de 0,53 : l'épaule elle-même avance pour croiser. Le buste est contre-tourné de seulement -16°. L'autre bras pend légèrement en arrière (torse az +174, el -79), la tête baisse (-28°). La tenue est courte (3-4 i) et arrive amortie. Vu de face, l'avant-bras bleu forme une barre horizontale devant le haut du torse.",
+    "image": "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/pro_tsb_ult/planche_U2_revers_gauche.png ; trajet_U2_revers_gauche.png"
+   },
+   {
+    "anim": "Collateral Ruin",
+    "type_de_coup": "Frappe tournoyante à DEUX MAINS jointes (type lancer de marteau / batte). Seul vrai coup chargé rapide des 5 animations.",
+    "bras_frappeur": "RA + LA joints (pivot d'épaule G translaté de +1,85 à +2,2 vers la droite pour ramener la main gauche contre la droite)",
+    "temps": {
+     "fps": 60,
+     "transition_d_entree": "f0-14 (l'anim démarre en pose, lacet -60)",
+     "contre_rotation": "f14-48 (34 i) : lacet -30 -> -153",
+     "arme_buste_max": 48,
+     "tenue_mobile": "f48-61 (13 i à environ 3 studs/s ; le buste revient déjà de -153 à -130 et se redresse, penché +34 -> +11)",
+     "depart": 61,
+     "deroule_lent": "f61-73 (12 i, 4 -> 20 studs/s ; le buste tourne de +80° pendant que le bras RECULE de +32° dans les axes du torse : traînée)",
+     "poing_le_plus_en_arriere": 67,
+     "claquage": "f73-77 (4 i) : 20 -> 111 studs/s",
+     "contact": 77,
+     "depart_a_contact_f": 16,
+     "vitesse_max": "110,6 studs/s rel. à f76",
+     "suite": "vrille continue d'environ 1,3 tour jusqu'à f96 (les poings repassent devant à f88-91), puis bascule latérale (côté +70°) et accroupi final (hanche 1,97 à f112)"
+    },
+    "descripteurs_arme": {
+     "avant": [
+      0.2014,
+      0,
+      -0.9795
+     ],
+     "hanche": 2.525,
+     "buste": {
+      "lacet": -141.3,
+      "penche_avant": 33.6,
+      "penche_cote": -10.9
+     },
+     "bras": {
+      "RA": {
+       "torse": [
+        80.6,
+        -11.5
+       ],
+       "coup": [
+        -135,
+        -7.2
+       ]
+      },
+      "LA": {
+       "torse": [
+        68.5,
+        10.5
+       ],
+       "coup": [
+        -157.4,
+        4.1
+       ]
+      }
+     },
+     "poing": {
+      "RA": [
+       -1.75,
+       -1.87,
+       0.68
+      ],
+      "LA": [
+       -2.92,
+       -0.15,
+       0.29
+      ]
+     },
+     "pieds": {
+      "RL": [
+       -1.1,
+       0.54,
+       -2.6
+      ],
+      "LL": [
+       1.78,
+       0.08,
+       -2.58
+      ]
+     },
+     "epaules": {
+      "recul_droite": -0.73
+     },
+     "tete": {
+      "torse": [
+       -31.2,
+       -13
+      ],
+      "coup": [
+       99.9,
+       -45.5
+      ]
+     },
+     "pivot_epaule_decale_torse(dr,ht,av)": {
+      "RA": [
+       0.05,
+       -0.37,
+       -0.24
+      ],
+      "LA": [
+       1.85,
+       -0.13,
+       1.18
+      ]
+     },
+     "poing_axes_torse(dr,ht,av)": {
+      "RA": [
+       2.63,
+       0.26,
+       -0.21
+      ],
+      "LA": [
+       2.15,
+       1.13,
+       1.66
+      ]
+     },
+     "haut_du_bras_axes_torse(dr,ht,av)": {
+      "RA": [
+       0.69,
+       0.66,
+       -0.53
+      ],
+      "LA": [
+       0.32,
+       0.77,
+       0.94
+      ]
+     },
+     "f60_mains_jointes": "lacet -118 penché +11 ; RA torse (+93,-13), LA torse (+138,-5) ; poings [-2.00,-1.32,1.01] et [-1.99,-1.11,0.99], soit 0,21 d'écart ; dans les axes du torse : dr +2,54, ht +0,34, av -0,42"
+    },
+    "descripteurs_contact": {
+     "avant": [
+      0.2014,
+      0,
+      -0.9795
+     ],
+     "hanche": 2.639,
+     "buste": {
+      "lacet": 46.7,
+      "penche_avant": 39.5,
+      "penche_cote": -15.1
+     },
+     "bras": {
+      "RA": {
+       "torse": [
+        50.2,
+        4.8
+       ],
+       "coup": [
+        2,
+        -12.8
+       ]
+      },
+      "LA": {
+       "torse": [
+        108,
+        -4.9
+       ],
+       "coup": [
+        53.4,
+        16.3
+       ]
+      }
+     },
+     "poing": {
+      "RA": [
+       3.09,
+       0,
+       0.05
+      ],
+      "LA": [
+       2.47,
+       0.78,
+       0.42
+      ]
+     },
+     "pieds": {
+      "RL": [
+       -0.58,
+       1.62,
+       -1.31
+      ],
+      "LL": [
+       -0.45,
+       -0.2,
+       -2.82
+      ]
+     },
+     "epaules": {
+      "recul_droite": 0.18
+     },
+     "tete": {
+      "torse": [
+       -22.2,
+       3
+      ],
+      "coup": [
+       -75.3,
+       -37.4
+      ]
+     },
+     "pivot_epaule_decale_torse(dr,ht,av)": {
+      "RA": [
+       0.2,
+       -0.16,
+       0.87
+      ],
+      "LA": [
+       1.94,
+       -0.22,
+       0.77
+      ]
+     },
+     "poing_axes_torse(dr,ht,av)": {
+      "RA": [
+       2.48,
+       0.9,
+       1.61
+      ],
+      "LA": [
+       2.5,
+       0.54,
+       0.6
+      ]
+     },
+     "haut_du_bras_axes_torse(dr,ht,av)": {
+      "RA": [
+       0.95,
+       0.73,
+       0.33
+      ],
+      "LA": [
+       0.6,
+       0.71,
+       1.22
+      ]
+     }
+    },
+    "trajet_du_poing": "GRAND ARC HORIZONTAL autour du torse, rayon qui grandit de 1,8 à 3,1. Le poing part de l'arrière-gauche à hauteur d'épaule (ht +0,7 à +1,0), longe le dos (il recule encore jusqu'à f67 : traînée), puis balaie devant et descend à hauteur du centre du torse (ht +0,05). Rectitude 0,53, balayage -227°. Le BUSTE fait presque tout : Δlacet +188°, contre -30° net pour l'az du bras dans les axes du torse. Le détail : le bras traîne de +46° (+81 -> +127) pendant le déroulé lent, puis claque de -77° en 4 i (+127 -> +50) pendant que le buste fait +81° sur les mêmes 4 i. Le bout du poing avance de 4,84 le long du coup. Le corps avance de 1,2 stud, le pied D quitte le sol pendant la vrille (1,3 stud de haut au contact), pivot sur le pied G.",
+    "lecture": "Ici l'arrière est entièrement porté par le BUSTE : lacet -141 à -153, presque le dos à la cible, penché +34, appuis larges décalés (2,9 studs, pied G devant), hanche 2,52. Dans les axes du torse, les bras ne sont PAS derrière : ils sont sur le côté droit du torse (az +81 à +93 pour RA, poings à dr +2,5 et av -0,2 à -0,4, c'est-à-dire à peine en arrière du plan du torse), à hauteur d'épaule (ht +0,3 / +1,0 dans le repère du coup), les deux mains jointes. C'est la pose « batte armée sur l'épaule », et la tête regarde vers la cible (coup az +100 à l'armé). Le déroulé tient trois temps : tenue mobile (13 i), déroulé lent avec bras qui traîne (12 i), claquage (4 i).",
+    "image": "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/pro_tsb_ult/planche_CR_vrille_deux_mains.png ; trajet_CR_vrille_deux_mains.png"
+   },
+   {
+    "anim": "Stoic Bomb",
+    "type_de_coup": "Pas de frappe du poing. Charge = bras croisés en X tenus pendant la chute ; impact = atterrissage du corps.",
+    "bras_frappeur": "RA et LA croisés (symétrique)",
+    "temps": {
+     "fps": 60,
+     "saut": "f9-12 (torse téléporté à y=147)",
+     "salto": "f12-27",
+     "formation_du_X": "f24-57 (33 i)",
+     "tenue_X": "f57-250 (193 i), avec une descente lente en vol de f90 à f204 (7 studs en 114 i)",
+     "arme_retenu": 150,
+     "depart_chute_finale": 207,
+     "contact_sol": 216,
+     "depart_a_contact_f": 9,
+     "ouverture_des_bras": "f252-283 (31 i, 11 studs/s max)"
+    },
+    "descripteurs_arme": {
+     "avant": [
+      0,
+      0,
+      -1
+     ],
+     "hanche": 5.682,
+     "buste": {
+      "lacet": -5.5,
+      "penche_avant": 2.3,
+      "penche_cote": 0.7
+     },
+     "bras": {
+      "RA": {
+       "torse": [
+        -86.6,
+        11.7
+       ],
+       "coup": [
+        -80.6,
+        12.2
+       ]
+      },
+      "LA": {
+       "torse": [
+        79.4,
+        20.6
+       ],
+       "coup": [
+        84.2,
+        19.5
+       ]
+      }
+     },
+     "poing": {
+      "RA": [
+       1.43,
+       -0.89,
+       0.47
+      ],
+      "LA": [
+       1.2,
+       0.91,
+       0.6
+      ]
+     },
+     "pieds": {
+      "RL": [
+       0.06,
+       0.42,
+       -2.88
+      ],
+      "LL": [
+       -0.2,
+       -0.37,
+       -2.95
+      ]
+     },
+     "epaules": {
+      "recul_droite": -0.09
+     },
+     "tete": {
+      "torse": [
+       -7.8,
+       -15.7
+      ],
+      "coup": [
+       -2.6,
+       -17.9
+      ]
+     },
+     "pivot_epaule_decale_torse(dr,ht,av)": {
+      "RA": [
+       -0.64,
+       -0.53,
+       0.79
+      ],
+      "LA": [
+       0.6,
+       -0.76,
+       0.77
+      ]
+     },
+     "poing_axes_torse(dr,ht,av)": {
+      "RA": [
+       -1.03,
+       0.51,
+       1.31
+      ],
+      "LA": [
+       0.78,
+       0.66,
+       1.26
+      ]
+     },
+     "haut_du_bras_axes_torse(dr,ht,av)": {
+      "RA": [
+       0.93,
+       0.11,
+       1.2
+      ],
+      "LA": [
+       -1.06,
+       -0.04,
+       0.92
+      ]
+     },
+     "note": "hanche = altitude du vol, sans sens de flexion ici"
+    },
+    "descripteurs_contact": {
+     "avant": [
+      0,
+      0,
+      -1
+     ],
+     "hanche": 2.603,
+     "buste": {
+      "lacet": -28.7,
+      "penche_avant": 14.8,
+      "penche_cote": -4.4
+     },
+     "bras": {
+      "RA": {
+       "torse": [
+        -88,
+        14.1
+       ],
+       "coup": [
+        -56.9,
+        9
+       ]
+      },
+      "LA": {
+       "torse": [
+        77.7,
+        19.7
+       ],
+       "coup": [
+        100.3,
+        19.9
+       ]
+      }
+     },
+     "poing": {
+      "RA": [
+       1.7,
+       -0.27,
+       0.13
+      ],
+      "LA": [
+       0.91,
+       1.33,
+       0.34
+      ]
+     },
+     "pieds": {
+      "RL": [
+       -0.7,
+       0.29,
+       -2.78
+      ],
+      "LL": [
+       0.64,
+       -0.43,
+       -2.78
+      ]
+     },
+     "epaules": {
+      "recul_droite": 0.63
+     },
+     "tete": {
+      "torse": [
+       -10.5,
+       -16.5
+      ],
+      "coup": [
+       18.3,
+       -31.8
+      ]
+     },
+     "pivot_epaule_decale_torse(dr,ht,av)": {
+      "RA": [
+       -0.64,
+       -0.55,
+       0.79
+      ],
+      "LA": [
+       0.6,
+       -0.76,
+       0.77
+      ]
+     },
+     "poing_axes_torse(dr,ht,av)": {
+      "RA": [
+       -1.02,
+       0.55,
+       1.28
+      ],
+      "LA": [
+       0.78,
+       0.64,
+       1.3
+      ]
+     },
+     "haut_du_bras_axes_torse(dr,ht,av)": {
+      "RA": [
+       0.92,
+       0.06,
+       1.21
+      ],
+      "LA": [
+       -1.06,
+       -0.03,
+       0.9
+      ]
+     }
+    },
+    "trajet_du_poing": "Les poings sont immobiles dans les axes du torse du début à la fin de la tenue ; c'est le corps qui descend. À l'atterrissage (f210-216), le buste tourne de -23° et plonge de +13°, puis +32° à f225, avec une hanche à 2,50. Ensuite, ouverture lente des bras vers l'avant-bas (f252-282 : RA torse -88 -> -28, el +14 -> -61).",
+    "lecture": "C'est la charge d'ultime la plus longue (193 i), et elle est COMPACTE : les avant-bras sont croisés en X devant la poitrine (axes du torse : av +1,26 à +1,31, ht +0,5 à +0,66, dr ±0,8 à 1,0), bras presque horizontaux (el +12 à +21). Les pivots d'épaule sont translatés de 0,6 vers le centre, 0,77 vers l'avant et 0,53 à 0,76 vers le bas : les épaules se ferment. Buste droit, tête baissée (-16°). La silhouette fait un bloc, sans aucun membre qui dépasse.",
+    "image": "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/pro_tsb_ult/planche_SB_bombe_bras_en_X.png ; trajet_SB_bombe_bras_en_X.png"
+   },
+   {
+    "anim": "Swift Sweep",
+    "type_de_coup": "Balayage + coup de pied en vrille (jambes). Pas de coup de poing : les bras suivent passivement la vrille.",
+    "bras_frappeur": "aucun (RA mesuré pour mémoire) ; frappe à la jambe gauche",
+    "temps": {
+     "fps": 60,
+     "anticipation": "f0-6 : le buste tourne de +16° DANS le sens de la vrille (pas de contre-rotation)",
+     "vrille": "f8-26 : lacet +28 -> -107 (environ 225°), bras 30-37 studs/s",
+     "balayage_jambe_G": "f20-43, pic 77 studs/s à f30",
+     "coup_de_pied": "pic 166 studs/s à f52, buste retourné (penché -161°, lacet mal défini)",
+     "arme": 6,
+     "contact_retenu": 30,
+     "depart_a_contact_f": 23
+    },
+    "descripteurs_arme": {
+     "avant": [
+      0,
+      0,
+      -1
+     ],
+     "hanche": 2.822,
+     "buste": {
+      "lacet": 16.1,
+      "penche_avant": 4.3,
+      "penche_cote": 1.5
+     },
+     "bras": {
+      "RA": {
+       "torse": [
+        105,
+        -78.3
+       ],
+       "coup": [
+        110.5,
+        -77.9
+       ]
+      },
+      "LA": {
+       "torse": [
+        -66.8,
+        -78.2
+       ],
+       "coup": [
+        -104,
+        -77.6
+       ]
+      }
+     },
+     "poing": {
+      "RA": [
+       0.23,
+       1.75,
+       -0.9
+      ],
+      "LA": [
+       -0.26,
+       -1.76,
+       -0.84
+      ]
+     },
+     "pieds": {
+      "RL": [
+       -0.02,
+       0.44,
+       -2.9
+      ],
+      "LL": [
+       0.17,
+       -0.38,
+       -2.88
+      ]
+     },
+     "epaules": {
+      "recul_droite": -0.54
+     },
+     "tete": {
+      "torse": [
+       16.9,
+       -2.4
+      ],
+      "coup": [
+       0.8,
+       -7
+      ]
+     }
+    },
+    "descripteurs_contact": {
+     "avant": [
+      0,
+      0,
+      -1
+     ],
+     "hanche": 1.881,
+     "buste": {
+      "lacet": 20.5,
+      "penche_avant": -16.2,
+      "penche_cote": 41.3
+     },
+     "bras": {
+      "RA": {
+       "torse": [
+        136.8,
+        -27.6
+       ],
+       "coup": [
+        137.7,
+        -63.6
+       ]
+      },
+      "LA": {
+       "torse": [
+        -16.3,
+        -51.7
+       ],
+       "coup": [
+        -62.5,
+        -17.6
+       ]
+      }
+     },
+     "poing": {
+      "RA": [
+       -0.41,
+       1.73,
+       -1.55
+      ],
+      "LA": [
+       0.08,
+       -1.69,
+       0.62
+      ]
+     },
+     "pieds": {
+      "RL": [
+       0.01,
+       0.35,
+       -1.98
+      ],
+      "LL": [
+       0.6,
+       -3.22,
+       -0.91
+      ]
+     },
+     "epaules": {
+      "recul_droite": -1.04
+     },
+     "tete": {
+      "torse": [
+       21.8,
+       -3.4
+      ],
+      "coup": [
+       -6.3,
+       -0.8
+      ]
+     },
+     "note": "lacet +20 = une vrille complète (+364° déroulés) ; pied G à 3,2 studs sur le côté"
+    },
+    "trajet_du_poing": "Cercle complet (balayage -339°, rectitude 0,08) : c'est une vrille, pas une frappe.",
+    "lecture": "Hors sujet pour le poing. Une seule chose à retenir : quand le coup est une vrille qui mène le corps, il n'y a pas de contre-rotation d'armé (0 à +16° dans le sens du coup). Les pivots de hanche sont translatés jusqu'à 2,07 studs.",
+    "image": "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/pro_tsb_ult/planche_SS_balayage_vrille.png ; trajet_SS_balayage_vrille.png"
+   }
+  ],
+  "comment_les_pros_arment_en_r6": "Mesuré sur 4 armés TSB : U1 poing à la hanche, U2 revers, CR à deux mains, SB bras en X. Réserve : aucune de ces animations n'est un direct chargé du type Serious Punch.\n\n1. LE BRAS N'EST JAMAIS DERRIÈRE DANS LES AXES DU TORSE. Az torse du bras armé : +12 (U1, devant), +49 (U2, en travers de la poitrine), +68 à +93 (CR, sur le côté), ±80 à 87 (SB, croisés devant). Jamais 180. Le seul +127 apparaît pendant la traînée du déroulé de CR, pas à l'armé. Élévation -19 à +21 : bras entre horizontal et un peu bas, jamais pendant, jamais levé. Dans les axes du torse, le poing armé reste au niveau du plan du torse ou devant (av -0,42 à +1,89), sur le côté ou en travers (dr jusqu'à 2,6), de la hanche (ht -0,47) à l'épaule (ht +1,0).\n\n2. LE « DERRIÈRE » VIENT DU BUSTE. Dans le repère du coup, le poing n'est derrière que dans CR, et c'est parce que le buste est contre-tourné de -141 à -153° (presque le dos à la cible, penché +34°). Les armés à un bras sur place tournent peu : -16° (U2) à -18/-25° (U1), penché +2 à +7°. Pendant la détente, le buste porte la majeure partie du balayage : Δlacet +86° (U1) et +188° (CR), contre +18° et -30° net pour le bras. U2 est l'exception, piloté par le bras (-98° contre +46°).\n\n3. LA BRIQUE QUI NOUS MANQUE : ILS TRANSLATENT L'ÉPAULE. Le pivot d'épaule est déplacé (position du Pose.CFrame) sur 57 à 97 % des images de bras.\n- U1 : épaule reculée de 0,3 à 0,66. Le bloc bras pointe VERS L'AVANT, glissé le long du flanc ; poing à la hanche, haut du bloc (le « coude ») 0,94 derrière le dos. Avec un bras rigide, c'est ainsi qu'on lit « coude tiré en arrière ».\n- U2 : épaule avancée de 0,82 et rentrée de 0,53, pour croiser.\n- CR : main gauche amenée de 1,85 à 2,2 contre la droite, les poings à 0,21 d'écart.\n- SB : épaules fermées (0,6 vers le centre, 0,77 vers l'avant, 0,5 à 0,76 vers le bas).\nNi G.pose (pas de paramètre de translation) ni G.descripteurs (rien pour la mesurer) ne gèrent ça. J'ai ajouté ces mesures dans epaule.py de mon dossier.\n\n4. L'AUTRE BRAS NE S'ÉCARTE PAS. Il pend (U1 el -80, U2 el -79), rejoint le bras qui frappe (CR) ou se croise avec lui (SB). Écart entre les poings à l'armé : 0,21 à 3,4 chez TSB, contre 5,17 pour notre v5 (bras écartés en croix). Au contact de U1, l'autre bras se rejette à l'horizontale sur le côté (coup az -93, épaule reculée de 0,55).\n\n5. LES JAMBES BOUGENT PEU. Hanche 2,52 à 2,99 à l'armé (0 à 0,5 de flexion) ; appuis décalés (CR 2,9 studs, pied G devant). Pendant la détente, la hanche plonge de 0,23 à 0,28 (U1 2,77 -> 2,49 ; U2 2,99 -> 2,76), sauf pour la vrille où elle remonte (CR 2,46 -> 2,65) et où le pied arrière décolle.\n\n6. LA DÉTENTE EST UN ARC HORIZONTAL AUTOUR DU TORSE, pas une ligne droite. Rectitude 0,53 à 0,83, balayage -87 à -227°. Le poing reste à hauteur de hanche ou d'épaule, et ne monte qu'à la toute fin (U1 : +0,83 en 8 i). Rythme de CR : tenue mobile (13 i à environ 3 studs/s, le buste revient déjà), déroulé lent avec bras qui traîne (12 i), puis claquage en 4 i jusqu'à 111 studs/s.\n\nCOMPARAISON AVEC v5 (reconstruite avec G.pose, jambes non reproduites, poing à 0,4 près ; image comparaison_armes_v5_vs_tsb.png). v5 tourne le buste de -65° avec un bras pointé devant et horizontal. Sans translation, le bras dépasse donc à l'horizontale sur le côté, pendant que l'autre bras part en arrière-bas. Or aucun armé TSB ne sort un bras tendu sur le côté à longueur de bras avec l'autre bras écarté : leur pose d'armé est rentrée (poing à la hanche, en travers, joint ou croisé). C'est une hypothèse de lecture, non validée par Milan.",
+  "fourchettes": {
+   "note": "Valeurs dans le repère du coup sauf mention. U1 = garde lente (pas une frappe), U2 = revers, CR = vrille à deux mains, SB = bras en X. SS (jambes) est exclu. Fichier complet : /tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/pro_tsb_ult/fourchettes.json",
+   "lacet_arme_deg": {
+    "un_bras_sur_place": [
+     -25,
+     -16
+    ],
+    "deux_mains_vrille": [
+     -153,
+     -141
+    ],
+    "SB": -6
+   },
+   "lacet_contact_deg": {
+    "U1": 60,
+    "U2_pic": 31,
+    "U2_passage_devant": 5,
+    "CR": 47,
+    "SB": -29
+   },
+   "delta_lacet_arme_contact_deg": {
+    "U2": 46,
+    "U1": 86,
+    "CR": 188
+   },
+   "penche_avant_arme_deg": [
+    2,
+    34
+   ],
+   "penche_avant_contact_deg": [
+    -8,
+    40
+   ],
+   "bras_frappeur_torse_arme_az_el": {
+    "U1": [
+     12,
+     -19
+    ],
+    "U2": [
+     49,
+     2
+    ],
+    "CR_RA": [
+     81,
+     -12
+    ],
+    "CR_RA_f60": [
+     93,
+     -13
+    ],
+    "SB": [
+     [
+      -87,
+      12
+     ],
+     [
+      79,
+      21
+     ]
+    ],
+    "fourchette_az": [
+     12,
+     93
+    ],
+    "fourchette_el": [
+     -19,
+     21
+    ],
+    "jamais_derriere_az180": true
+   },
+   "bras_frappeur_torse_contact_az_el": {
+    "U1": [
+     30,
+     13
+    ],
+    "U2": [
+     -49,
+     -19
+    ],
+    "CR": [
+     50,
+     5
+    ]
+   },
+   "poing_arme_repere_coup_av_dr_ht": {
+    "U1": [
+     0.11,
+     1.87,
+     -0.45
+    ],
+    "U2": [
+     1.78,
+     1.05,
+     0.74
+    ],
+    "CR_f48": [
+     -1.75,
+     -1.87,
+     0.68
+    ],
+    "CR_f60": [
+     -2,
+     -1.32,
+     1.01
+    ],
+    "SB": [
+     1.43,
+     -0.89,
+     0.47
+    ]
+   },
+   "poing_arme_axes_torse_dr_ht_av": {
+    "U1": [
+     1.63,
+     -0.47,
+     0.91
+    ],
+    "U2": [
+     0.57,
+     0.97,
+     1.89
+    ],
+    "CR_f60": [
+     2.54,
+     0.34,
+     -0.42
+    ],
+    "SB": [
+     -1.03,
+     0.51,
+     1.31
+    ],
+    "fourchette_av": [
+     -0.42,
+     1.89
+    ],
+    "fourchette_ht": [
+     -0.47,
+     1
+    ]
+   },
+   "haut_du_bras_coude_axes_torse_av": {
+    "U1": -0.94,
+    "CR": [
+     -0.53,
+     -0.33
+    ],
+    "U2": 0.58,
+    "SB": [
+     0.92,
+     1.2
+    ]
+   },
+   "pivot_epaule_translation_studs": {
+    "U1": [
+     0.29,
+     0.66
+    ],
+    "U2": 0.97,
+    "CR_main_G": [
+     2.2,
+     2.35
+    ],
+    "SB": [
+     1.1,
+     1.24
+    ],
+    "part_des_images_bras_avec_plus_de_0p25": [
+     0.57,
+     0.97
+    ]
+   },
+   "epaules_recul_droite": {
+    "arme": {
+     "U1": 1.75,
+     "U2": 1.24,
+     "CR": -0.73,
+     "SB": -0.09
+    },
+    "contact": {
+     "U1": -1.88,
+     "U2": -1.35,
+     "CR": 0.18,
+     "SB": 0.63
+    },
+    "attention": "métrique ambiguë quand |lacet| > 90° et avec les translations d'épaule"
+   },
+   "hanche": {
+    "arme": [
+     2.52,
+     2.99
+    ],
+    "contact": [
+     2.6,
+     2.76
+    ],
+    "creux_detente": {
+     "U1": 2.49,
+     "U2": 2.75
+    }
+   },
+   "ecart_entre_poings_arme": {
+    "TSB": [
+     0.21,
+     3.4
+    ],
+    "v5": 5.17
+   },
+   "images_60fps": {
+    "construction_arme": [
+     21,
+     34
+    ],
+    "tenue": {
+     "U2": 3,
+     "CR_mobile": 13,
+     "U1": 142,
+     "SB": 193
+    },
+    "depart_a_contact": {
+     "U2": 14,
+     "CR": 16,
+     "SB": 9,
+     "U1_lent": 62
+    },
+    "claquage_CR": 4
+   },
+   "vitesse_max_poing_rel_studs_s": {
+    "U1": 12.6,
+    "U2": 42,
+    "CR": 110.6
+   },
+   "trajet": {
+    "rectitude": [
+     0.53,
+     0.83
+    ],
+    "balayage_horizontal_deg": [
+     -227,
+     -87
+    ],
+    "delta_az_bras_torse_deg": {
+     "U1": 18,
+     "U2": -98,
+     "CR_net": -30,
+     "CR_trainee_puis_claquage": [
+      46,
+      -77
+     ]
+    }
+   },
+   "v5_pour_comparaison": {
+    "lacet_tenue": [
+     -67,
+     -60
+    ],
+    "penche": 28,
+    "RA_torse": [
+     [
+      5,
+      -6
+     ],
+     [
+      20,
+      -10
+     ]
+    ],
+    "LA_torse": [
+     -118,
+     -36
+    ],
+    "poing_RA": [
+     -0.5,
+     2.5,
+     -0.1
+    ],
+    "hanche": 2.36
+   }
+  }
+ },
+ "verifications": [
+  {
+   "verdict": "corrige",
+   "affirmations": [
+    {
+     "affirmation": "Correctif Weight = 0 : ces poses sont des conteneurs vides (CFrame identité). Elles concernent Torso à 42,6 % dans U1, et aussi SB, CR et SS ; U2 n'est pas touché. Écarts de lacet brut/corrigé : U1 72°, SB 177°, CR 96°, SS 44°.",
+     "statut": "confirme",
+     "preuve": "poids.py (lecture rbxm indépendante) : les poses de poids 0 sont uniquement HumanoidRootPart (100 %) et Torso (U1 55/129 = 42,6 %, SB 12, CR 3, SS 1, U2 0). Toutes sont identité et ont des enfants, aucune ne porte sur un bras, une jambe ou la tête. Écarts max recalculés : 72,4 / 0 / 176,7 / 96,2 / 44,3°. Avec le lecteur brut, on obtient des pics artefacts : U1 158 studs/s alors que le max corrigé est 12,6. corpus/README.md décrit déjà Weight 0 = « une autre animation mène ». Seul point non vérifié : le comportement dans Studio."
+    },
+    {
+     "affirmation": "U1, RA, armé à f432 : lacet -25,3, penché +1,9, RA torse (+11,7, -19,2), poing [0,11, 1,87, -0,45], hanche 2,77 ; pivot d'épaule reculé de 0,29 (0,66 à f300).",
+     "statut": "confirme",
+     "preuve": "Recalcul (epaule.py) identique au centième près, avec avant = (-0,128, 0, -0,992). Pivot [0,08, -0,10, -0,29] à f432 et [0,04, -0,19, -0,66] à f300."
+    },
+    {
+     "affirmation": "U1 : f432 est l'image d'armé maximal.",
+     "statut": "refute",
+     "preuve": "Dans le repère du coup de l'agent, le buste le plus contre-tourné et le poing le plus en arrière tombent à f361-370 (lacet -33,0 à f361, poing avant -0,12 à f370). À f432, on a lacet -25,3 et poing avant +0,11. f432 est la FIN de la tenue (départ), pas l'armé max. La tenue est vivante : lacet -23 → -33 → -25."
+    },
+    {
+     "affirmation": "U1 : tenue f290-432 (142 i), poing < 1,2 studs/s, micro-dérive où le poing descend de 0,07.",
+     "statut": "refute",
+     "preuve": "Durée confirmée, mais la vitesse relative max dans la tenue est de 1,77 studs/s (à f388). Dérive f290→f432 : +0,24 vers l'avant, +0,11 à droite, -0,04 en hauteur. Ce n'est pas une descente de 0,07."
+    },
+    {
+     "affirmation": "U1 contact à f496, vitesse max 12,6 studs/s à f492 ; Δlacet +86, Δaz bras torse +18, Δel +32 ; torse qui recule de 1,5, pied G qui recule de 2,4.",
+     "statut": "confirme",
+     "preuve": "Vitesses : 12,5-12,6 de f489 à f492, 10,3 de f493 à f496, puis 2,1 à f497. Δlacet 85,8, Δaz 17,8, Δel 32,2. Torse -1,51 le long du coup, pied G -2,46."
+    },
+    {
+     "affirmation": "U1 : dans le monde, le poing n'avance que de 0,4 stud.",
+     "statut": "refute",
+     "preuve": "Mesuré de f432 à f496 : +0,62 stud le long du coup (+0,83 depuis f366). Le relatif au torse fait +2,12. Écart mineur, la conclusion (le recul du corps annule l'avancée) tient."
+    },
+    {
+     "affirmation": "U1 : haut du bloc bras (le « coude ») à 0,94 DERRIÈRE le dos.",
+     "statut": "refute",
+     "preuve": "-0,94 est mesuré depuis le PLAN CENTRAL du torse (axes torse av -0,94). La face dorsale est à -0,5 : le bloc dépasse donc de 0,44 derrière le dos (0,78 à f300). Le rendu planche_0 (vue « sa droite » et « dos ») montre bien le haut du bloc vert qui sort derrière le dos, sur une plus petite longueur."
+    },
+    {
+     "affirmation": "U2, LA : armé à f93, lacet -15,5, LA torse (+49,2, +2,1), poing axes torse (0,57, 0,97, 1,89), pivot G avancé de 0,82 et rentré de 0,53. Pic à f109 (42 studs/s), Δlacet +46, Δaz -98.",
+     "statut": "confirme",
+     "preuve": "Recalcul identique : pivot [0,53, -0,07, 0,82], vitesse max 42,0 à f109, Δlacet 46,3, Δaz -97,8. Rendu planche_1 vu de face : barre bleue horizontale en travers du haut du torse."
+    },
+    {
+     "affirmation": "U2 : tenue de 3-4 i à l'armé.",
+     "statut": "incertain",
+     "preuve": "Il n'y a pas de plateau. La vitesse du poing suit un V : 2,7 / 2,1 / 1,4 / 1,1 / 2,2 de f90 à f94, puis 3,6 et 5,1. C'est un minimum de vitesse amorti, pas une tenue."
+    },
+    {
+     "affirmation": "CR : armé à f48 avec lacet -141,3, penché +33,6, RA torse (+80,6, -11,5), hanche 2,52 ; mains jointes à f60 (0,21 d'écart), pivot G translaté de 1,85 à 2,2 ; contact f77 ; 110,6 studs/s à f76 ; Δlacet +188, Δaz net -30.",
+     "statut": "confirme",
+     "preuve": "Recalcul identique avec avant = (0,201, 0, -0,980). Pivot LA [1,85, -0,13, 1,18] à f48 et [2,2, -0,38, 0,71] à f60. Δlacet 188,0, Δaz -30,4. Rendu planche_1/planche_2 : buste retourné, bras sur le flanc droit du torse."
+    },
+    {
+     "affirmation": "CR : lacet d'armé « -141 à -153 » (fourchette).",
+     "statut": "refute",
+     "preuve": "Ce n'est pas une fourchette : c'est la MÊME image f48 exprimée dans deux repères (-141,3 dans le repère du coup, -152,9 dans le repère -Z). Le mélange de repères revient ailleurs : les temps « -30 -> -153 », « -6 -> -16 » et la note « -18 » sont dans le repère -Z, les descripteurs dans le repère du coup (décalage de 7,4° pour U1 et de 11,6° pour CR)."
+    },
+    {
+     "affirmation": "CR : à l'armé, la tête regarde vers la cible (coup az +100).",
+     "statut": "refute",
+     "preuve": "Dans le repère du coup, az 0 = la cible. tete.coup = (+99,9, -45,5) veut dire que la tête regarde à 100° sur le côté droit, piquée vers le bas. Elle est contre-tournée de 31° par rapport au torse (torse az -31), mais elle ne regarde PAS la cible."
+    },
+    {
+     "affirmation": "SB : bras croisés en X tenus f57-250, pivots translatés (0,6 vers le centre, 0,77 vers l'avant, 0,53 à 0,76 vers le bas), descente de 7 studs de f90 à f204.",
+     "statut": "confirme",
+     "preuve": "RA torse az entre -88,4 et -86,4, el entre +11,3 et +14,8 de f57 à f250. Pivots RA [-0,64, -0,53, 0,79] et LA [0,6, -0,76, 0,77]. Hanche 10,89 → 3,59. Rendu planche_2 : X vu de face."
+    },
+    {
+     "affirmation": "Le pivot d'épaule est translaté sur 57 à 97 % des images de bras.",
+     "statut": "refute",
+     "preuve": "Vrai seulement pour le bras qui fait le geste (U1 RA 0,57, U2 LA 0,90, SB 0,94-0,96, CR 0,87-0,97). L'autre bras n'est translaté que sur 23 % des images dans U1 (LA) et 13 % dans U2 (RA)."
+    },
+    {
+     "affirmation": "epaules.recul_droite d'armé : U1 1,75, U2 1,24 (l'épaule droite recule fortement).",
+     "statut": "refute",
+     "preuve": "G.descripteurs mesure le HAUT du bloc bras (haut()), pas le pivot d'épaule. Quand le bras pointe devant, le haut du bloc dépasse de 0,5 derrière le pivot. Mesuré sur les vrais pivots : U1 f432 1,03 (0,85 sans translation), U1 f300 1,48 au lieu de 2,22, U2 1,12, CR -0,87 au lieu de -0,73. Même biais sur les chiffres v5 : 1,74 à f240."
+    },
+    {
+     "affirmation": "Conclusion 1 : dans les axes du torse, le bras armé n'est jamais derrière (az 12 à 93, el -19 à +21).",
+     "statut": "confirme",
+     "preuve": "Vrai aux images mesurées. Mais ce critère NE DISTINGUE PAS v5 de TSB : v5 a déjà RA torse az +5..+20, el -6..-10 (v5_descripteurs.txt f214-260), presque la même direction que U1 (+12, -19). Ce qui distingue vraiment les deux : lacet -65 (v5) contre -25/-33 (U1), penché +28 contre +2, poing plus bas et plus près du corps (pivot translaté ; U1 axes torse ht -0,47, av 0,91), autre bras qui pend au lieu d'être écarté (v5 LA az -117, el -36)."
+    },
+    {
+     "affirmation": "Aucune des 5 animations n'est un direct chargé du type Serious Punch ; U1 est un geste lent (max 12,6 studs/s).",
+     "statut": "confirme",
+     "preuve": "Vitesse max corrigée de tous les membres dans U1 ≤ 13,4 studs/s. CATALOGUE_REFS.md ligne 37 : tsb_anim.rbxm ne contient PAS le Serious Punch. Généraliser ces 4 armés à un direct chargé reste donc une hypothèse."
+    },
+    {
+     "affirmation": "Chiffres v5 cités pour la comparaison (lacet -60/-67, penché 28, RA torse (5..20, -6..-10), LA (-118, -36), hanche 2,36) et écart entre poings TSB 0,21 à 3,4.",
+     "statut": "confirme",
+     "preuve": "v5_descripteurs.txt lignes f214, f240 et f260 conformes. Écart U1 f432 = 3,40, CR f60 = 0,21."
+    }
+   ],
+   "corrections": "Tous les chiffres recalculés avec les deux lecteurs (brut G.mondes_rbxm et filtré Weight = 0) retombent sur ceux de l'agent. Le correctif Weight = 0 est justifié par la structure du fichier : poses identité, toujours avec des enfants, jamais sur un membre. Seul point non vérifié : le comportement dans Studio. À corriger :\n1) U1 : l'armé maximal est à f361-370 (lacet -33, poing avant -0,12), pas à f432 (-25, +0,11). f432 est la fin d'une tenue vivante où le lacet oscille de 9°.\n2) U1, tenue : vitesse max 1,77 (et non < 1,2) ; dérive de +0,24 vers l'avant (et non une descente de 0,07).\n3) U1 : le poing avance de 0,62 dans le monde, pas de 0,4. Le « coude » est à 0,94 derrière le centre du torse, soit 0,44 derrière le dos.\n4) CR : la tête NE regarde PAS la cible. Coup az +100 = côté droit, piquée à -45°.\n5) Repères mélangés : « -141 à -153 » désigne la même image f48 dans deux repères ; les temps sont dans le repère -Z, les descripteurs dans le repère du coup.\n6) epaules.recul_droite (outil geo_pose) mesure le haut du bloc bras, pas l'épaule. Recul réel des pivots : U1 1,03 au lieu de 1,75. Le même biais touche les chiffres v5.\n7) La translation d'épaule est très fréquente (57 à 97 % des images) seulement sur le bras qui fait le geste ; l'autre bras n'est translaté que sur 13-23 % des images.\n8) U2 : aucune vraie tenue, juste un minimum de vitesse amorti (1,1 studs/s).\n9) Point clé pour v6 : « bras jamais derrière dans les axes du torse » est vrai, mais v5 le respecte déjà (RA torse az +5..+20 contre +12 pour U1). Ce qui sépare v5 de TSB : lacet (-65 contre -25/-33), penché (+28 contre +2), poing plus bas et rentré via la translation du pivot, et autre bras qui pend au lieu d'être écarté.\nRéserve inchangée : aucune de ces animations n'est un direct chargé.\nHors vérification : la question de Milan « Encore combien de temps ? » s'adresse à l'orchestrateur ; ce vérificateur ne peut pas y répondre.",
+   "images": [
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_pro_tsb_ultimes_recalcul/planche_0.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_pro_tsb_ultimes_recalcul/planche_1.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_pro_tsb_ultimes_recalcul/planche_2.png"
+   ]
+  }
+ ]
+}

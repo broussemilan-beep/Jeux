@@ -1,0 +1,1603 @@
+{
+ "label": "pro:pack-battleground",
+ "kind": "pro",
+ "resultat": {
+  "source": "/root/.claude/uploads/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/4b059cba-battleground_animation_pack_v1.0.1.rbxm. Séquences analysées : [2] M1_1, M1_2, M1_3, M1_4, [3] Uppercut, Downslam V1, Downslam V2, lues avec G.mondes_rbxm à 60 i/s (M1 et Downslam déjà cuites à 60 i/s, Uppercut à 70 i/s puis rééchantillonné en 50 images). La racine (HRP) est fixe et le mouvement du corps passe par le Torso. Pour chaque coup : le bras frappeur est repéré par les pics de vitesse du bout du bras (G.bout). « avant » = direction horizontale centre du torse → poing au contact. Armé = poing le plus reculé, torse le plus contre-tourné et creux de vitesse. Contact = allonge maximale ou chute de vitesse. Aucun marqueur de frappe n'a été lu : le chargeur ne lit pas les KeyframeMarker, et je n'ai pas vérifié s'il y en a. Vérification des poses : les jambes des M1_1 à M1_4 et de l'Uppercut ne sont PAS clées (poids 0 dans 100 % des poses, rotation 0°). Elles suivent le torse en bloc (lacet du pied = lacet du torse, mesuré). Seuls les deux Downslam clent les jambes (72 à 95°). Tous les fichiers sont dans /tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/pro_pack/geo_mesure/ : analyse.json (descripteurs complets et trajets), normalise_droitier.json, timing.txt, tableau_par_image.txt, planche_pro_pack.png, zoom_armes.png, bandes *_strip.png et les scripts. Attention : d'autres fichiers que je n'ai pas écrits (coups.json, row_*.png, scan2.*) sont apparus dans pro_pack/ pendant le travail. Un autre agent écrit probablement dans le même dossier, d'où la copie de mes livrables dans geo_mesure/.",
+  "coups": [
+   {
+    "anim": "[2] M1_1",
+    "bras_frappeur": "RA (droit)",
+    "type_de_coup": "crochet droit balayé à l'horizontale (swing), qui continue en travers après le contact",
+    "temps": {
+     "fps": 60,
+     "prepa_debut": 0,
+     "arme": 10,
+     "tenue_images": 0,
+     "lacher_debut": 10,
+     "contact": 15,
+     "duree_arme_images": 10,
+     "lacher_vers_contact_images": 5,
+     "vmax_image": 14,
+     "vmax_studs_s": 102,
+     "poing_immobile_des": 23,
+     "tenue_finale_images": 16,
+     "fin": 39,
+     "note": "Contact = allonge maximale (f15-16, pas de chute nette de vitesse : balayage). Le poing continue jusqu'à f22."
+    },
+    "descripteurs_arme": {
+     "avant": [
+      0.3564,
+      0,
+      -0.9343
+     ],
+     "avant_deg_a_sa_droite": 20.9,
+     "hanche": 2.951,
+     "buste": {
+      "lacet": -77.5,
+      "penche_avant": 3.9,
+      "penche_cote": -12.6
+     },
+     "bras": {
+      "RA": {
+       "torse": [
+        57.5,
+        14.6
+       ],
+       "coup": [
+        131.1,
+        22.7
+       ]
+      },
+      "LA": {
+       "torse": [
+        -73.4,
+        -1.1
+       ],
+       "coup": [
+        3.6,
+        -14.3
+       ]
+      }
+     },
+     "poing": {
+      "RA": [
+       -1.99,
+       -0.13,
+       1.01
+      ],
+      "LA": [
+       2.99,
+       -0.04,
+       -0.14
+      ]
+     },
+     "pieds": {
+      "RL": [
+       -1.15,
+       0.06,
+       -2.81
+      ],
+      "LL": [
+       -0.2,
+       -0.17,
+       -3.03
+      ]
+     },
+     "epaules": {
+      "recul_droite": 1.83
+     },
+     "tete": {
+      "torse": [
+       -84.9,
+       -9.8
+      ],
+      "coup": [
+       -8.7,
+       -22.6
+      ]
+     }
+    },
+    "descripteurs_contact": {
+     "avant": [
+      0.3564,
+      0,
+      -0.9343
+     ],
+     "hanche": 2.894,
+     "buste": {
+      "lacet": 31.8,
+      "penche_avant": 13.4,
+      "penche_cote": -6
+     },
+     "bras": {
+      "RA": {
+       "torse": [
+        18.3,
+        11.4
+       ],
+       "coup": [
+        -15.2,
+        0.4
+       ]
+      },
+      "LA": {
+       "torse": [
+        -18.5,
+        5.5
+       ],
+       "coup": [
+        -50.9,
+        -9
+       ]
+      }
+     },
+     "poing": {
+      "RA": [
+       2.85,
+       0,
+       0.6
+      ],
+      "LA": [
+       -0.43,
+       -2.36,
+       -0.62
+      ]
+     },
+     "pieds": {
+      "RL": [
+       -0.15,
+       1.04,
+       -2.85
+      ],
+      "LL": [
+       -0.7,
+       0.21,
+       -2.95
+      ]
+     },
+     "epaules": {
+      "recul_droite": -2.6
+     },
+     "tete": {
+      "torse": [
+       1.7,
+       -3.6
+      ],
+      "coup": [
+       -29.7,
+       -16.8
+      ]
+     }
+    },
+    "trajet_du_poing": "Arc horizontal autour du corps, du dos vers l'avant en passant par la droite : 184° balayés, rayon de 1,27 à 2,85, longueur 6,08 pour une corde de 4,84 (rectitude 0,80), écart max à la corde 1,42, descend de 0,46. Lacet +109° contre -39° pour le bras dans le torse : le torse fait environ 74 % du trajet, le bras 26 % (même sens). Le torse n'avance pas (-0,02).",
+    "lecture": "Armé en pose d'« archer » : tout le corps pivote de -78° (-98° si l'on prend -Z comme avant). Le poing droit est 2,0 DERRIÈRE le centre du torse, dans l'axe du dos (latéral -0,13), haut (+1,0, hauteur de tête). Dans les axes du torse, le bras droit pointe devant-côté et un peu vers le haut (az +58, el +15), pas vers l'arrière. Le bras gauche est tendu sur la cible (az torse -73, el -1, coup az +4, poing 3,0 devant). La tête est contre-tournée de -85° dans le torse, ce qui garde le regard sur la cible (coup -9°, menton -23°). Au contact : lacet +32, bras az +18 el +11, poing 2,85 devant à +0,6 ; le bras gauche est ramené le long du flanc gauche.",
+    "image": "geo_mesure/planche_pro_pack.png ligne 1 (armé face / sa droite / 3/4 haut, contact idem, trajet vu de dessus et en 3/4) ; geo_mesure/zoom_armes.png ligne 3 ; geo_mesure/m11_strip.png"
+   },
+   {
+    "anim": "[2] M1_2",
+    "bras_frappeur": "LA (gauche)",
+    "type_de_coup": "direct gauche (miroir d'un direct droit), avec un pop d'une image à la fin",
+    "temps": {
+     "fps": 60,
+     "prepa_debut": 0,
+     "arme": 4,
+     "tenue_images": 1,
+     "lacher_debut": 5,
+     "contact": 11,
+     "duree_arme_images": 4,
+     "lacher_vers_contact_images": 6,
+     "vmax_image": 11,
+     "vmax_studs_s": 127,
+     "part_du_trajet_derniere_image": 0.3,
+     "poing_immobile_des": 13,
+     "tenue_contact_images": 26,
+     "fin": 39,
+     "note": "Le clip part de la pose finale de M1_1, déjà enroulée (lacet +45) : 4 images d'armé suffisent. Le torse recule de 0,58 (f0 à f9) puis se fend de 0,37 au contact."
+    },
+    "descripteurs_arme": {
+     "avant": [
+      -0.0524,
+      0,
+      -0.9986
+     ],
+     "avant_deg_a_sa_droite": -3,
+     "hanche": 2.938,
+     "buste": {
+      "lacet": 59.5,
+      "penche_avant": 16.2,
+      "penche_cote": -3.9
+     },
+     "bras": {
+      "RA": {
+       "torse": [
+        -46.8,
+        32.3
+       ],
+       "coup": [
+        -102.6,
+        18.1
+       ]
+      },
+      "LA": {
+       "torse": [
+        -66.7,
+        5.6
+       ],
+       "coup": [
+        -126.5,
+        -4.3
+       ]
+      }
+     },
+     "poing": {
+      "RA": [
+       1.21,
+       -1.34,
+       0.58
+      ],
+      "LA": [
+       -2.26,
+       -0.45,
+       0.14
+      ]
+     },
+     "pieds": {
+      "RL": [
+       0.18,
+       1.06,
+       -2.84
+      ],
+      "LL": [
+       -0.69,
+       0.57,
+       -2.91
+      ]
+     },
+     "epaules": {
+      "recul_droite": -2.7
+     },
+     "tete": {
+      "torse": [
+       61.5,
+       -20.3
+      ],
+      "coup": [
+       8.2,
+       -23.9
+      ]
+     }
+    },
+    "descripteurs_contact": {
+     "avant": [
+      -0.0524,
+      0,
+      -0.9986
+     ],
+     "hanche": 2.911,
+     "buste": {
+      "lacet": -75,
+      "penche_avant": 15.5,
+      "penche_cote": 1.3
+     },
+     "bras": {
+      "RA": {
+       "torse": [
+        15.6,
+        20.5
+       ],
+       "coup": [
+        90.1,
+        5.2
+       ]
+      },
+      "LA": {
+       "torse": [
+        -72.5,
+        -0.6
+       ],
+       "coup": [
+        2.1,
+        -4
+       ]
+      }
+     },
+     "poing": {
+      "RA": [
+       -1.38,
+       1.22,
+       0.05
+      ],
+      "LA": [
+       3.34,
+       0,
+       0.53
+      ]
+     },
+     "pieds": {
+      "RL": [
+       -0.63,
+       -0.66,
+       -2.9
+      ],
+      "LL": [
+       0.34,
+       -0.92,
+       -2.88
+      ]
+     },
+     "epaules": {
+      "recul_droite": 2.73
+     },
+     "tete": {
+      "torse": [
+       -61.2,
+       -19
+      ],
+      "coup": [
+       8.2,
+       -24.6
+      ]
+     }
+    },
+    "trajet_du_poing": "Demi-cercle horizontal du dos vers l'avant par la gauche : 169° balayés, rectitude 0,82, écart max 1,39, monte de 0,36. Le poing longe le corps (rayon min 1,49 à f10), puis POP de +2,1 studs en une seule image (126 studs/s, 30 % du trajet). Lacet -134,5° contre -5,8° pour le bras dans le torse : environ 100 % du trajet vient du torse.",
+    "lecture": "Armé : torse tourné de +60 (épaule gauche reculée de 2,7). Le bras gauche est côté avant-latéral du torse, quasi horizontal (az -67, el +6), ce qui place le poing 2,26 DERRIÈRE le centre, presque dans l'axe (latéral -0,45), à hauteur d'épaule (+0,14). L'autre bras (droit) est devant la poitrine (az -47, el +32, poing 1,2 devant). Tête à +61° dans le torse, regard sur la cible. Au contact : lacet -75 (épaule gauche devant). Le bras (az -72, el -1) prolonge la ligne d'épaules ; poing 3,34 devant à +0,53. Le poing droit est ramené DERRIÈRE (-1,38 / +1,22), déjà armé pour le coup suivant.",
+    "image": "geo_mesure/planche_pro_pack.png ligne 2 ; geo_mesure/zoom_armes.png ligne 4 ; geo_mesure/m12_strip.png"
+   },
+   {
+    "anim": "[2] M1_3",
+    "bras_frappeur": "LA (gauche), plié en travers de la poitrine",
+    "type_de_coup": "coup court de l'avant-bras gauche en travers de la poitrine (revers ou coude ? identité NON vérifiée ; allonge max 1,33, ce n'est pas un direct)",
+    "temps": {
+     "fps": 60,
+     "prepa_debut": 0,
+     "arme": 9,
+     "tenue_images": 0,
+     "lacher_debut": 10,
+     "contact": 15,
+     "duree_arme_images": 9,
+     "lacher_vers_contact_images": 5,
+     "vmax_image": 13,
+     "vmax_studs_s": 48,
+     "poing_immobile_des": 16,
+     "fin": 39,
+     "note": "Contact choisi à la chute de vitesse (10 puis 2). La direction horizontale du poing au contact est à +45° de la cible frontale, donc descripteurs calculés avec avant à +45° (choix de méthode discutable pour ce coup)."
+    },
+    "descripteurs_arme": {
+     "avant": [
+      0.7045,
+      0,
+      -0.7097
+     ],
+     "avant_deg_a_sa_droite": 44.8,
+     "hanche": 2.856,
+     "buste": {
+      "lacet": -76.9,
+      "penche_avant": 12,
+      "penche_cote": 0.9
+     },
+     "bras": {
+      "RA": {
+       "torse": [
+        27.3,
+        26.8
+       ],
+       "coup": [
+        102.5,
+        15.6
+       ]
+      },
+      "LA": {
+       "torse": [
+        75.2,
+        6.1
+       ],
+       "coup": [
+        151.4,
+        2.1
+       ]
+      }
+     },
+     "poing": {
+      "RA": [
+       -1.42,
+       0.79,
+       0.31
+      ],
+      "LA": [
+       -0.44,
+       1.25,
+       0.42
+      ]
+     },
+     "pieds": {
+      "RL": [
+       -0.59,
+       -0.51,
+       -2.94
+      ],
+      "LL": [
+       0.39,
+       -0.73,
+       -2.93
+      ]
+     },
+     "epaules": {
+      "recul_droite": 2.32
+     },
+     "tete": {
+      "torse": [
+       -90,
+       -25.8
+      ],
+      "coup": [
+       -18.6,
+       -24.3
+      ]
+     }
+    },
+    "descripteurs_contact": {
+     "avant": [
+      0.7045,
+      0,
+      -0.7097
+     ],
+     "hanche": 2.938,
+     "buste": {
+      "lacet": -28.4,
+      "penche_avant": 6.4,
+      "penche_cote": -4.6
+     },
+     "bras": {
+      "RA": {
+       "torse": [
+        28.7,
+        27.1
+       ],
+       "coup": [
+        53.6,
+        23.5
+       ]
+      },
+      "LA": {
+       "torse": [
+        72,
+        -2
+       ],
+       "coup": [
+        100.2,
+        0.4
+       ]
+      }
+     },
+     "poing": {
+      "RA": [
+       -0.83,
+       1.51,
+       0.43
+      ],
+      "LA": [
+       1.17,
+       0,
+       0.24
+      ]
+     },
+     "pieds": {
+      "RL": [
+       -0.64,
+       0.49,
+       -2.93
+      ],
+      "LL": [
+       -0.17,
+       -0.39,
+       -3.01
+      ]
+     },
+     "epaules": {
+      "recul_droite": 3.45
+     },
+     "tete": {
+      "torse": [
+       -66.8,
+       -17.3
+      ],
+      "coup": [
+       -40.2,
+       -23.9
+      ]
+     }
+    },
+    "trajet_du_poing": "Court arc horizontal de -109° : longueur 2,84, rectitude 0,86, rayon de 0,98 à 1,33. Lacet +48,5° contre -3° pour le bras dans le torse : environ 94 % du trajet vient du torse. Le torse avance de 0,31.",
+    "lecture": "Le bras gauche est replié EN TRAVERS de la poitrine (az +72 à +84, el -6 à +6 dans le torse), le torse passe de -67 à -122 (f9) puis revient à -72. Ce clip compte surtout pour ce qu'il montre du bras droit : il reste ARMÉ, figé dans le torse pendant les 40 images (az +27 à +34, el +22 à +28, poing -1,4 à -1,8 derrière, 0,1 à 0,46 de haut). C'est le seul poing tenu armé du pack, prêt pour M1_4. En jeu, cela n'est vrai que si les clips s'enchaînent en entier (non vérifié).",
+    "image": "geo_mesure/planche_pro_pack.png ligne 3 ; geo_mesure/m13_strip.png"
+   },
+   {
+    "anim": "[2] M1_4",
+    "bras_frappeur": "RA (droit)",
+    "type_de_coup": "direct droit plein corps, rotation totale du buste de 159° : le plus proche d'un Serious Punch",
+    "temps": {
+     "fps": 60,
+     "prepa_debut": 0,
+     "arme": 6,
+     "tenue_images": 0,
+     "lacher_debut": 7,
+     "contact": 16,
+     "duree_arme_images": 6,
+     "lacher_vers_contact_images": 9,
+     "vmax_image": 13,
+     "vmax_studs_s": 63,
+     "ralenti_avant_contact": "3 images (49, 30, 10 studs/s), pas de pop",
+     "poing_immobile_des": 21,
+     "tenue_contact_images": 21,
+     "fin": 42,
+     "note": "Le poing droit est armé depuis M1_2 f11 et pendant tout M1_3. L'armé propre à M1_4 n'est qu'un ré-enroulement de 7° (lacet -76 à -83 en repère -Z) pendant que le bras s'ouvre (az +32 à +43). Le torse recule de 0,35 puis se fend de 0,61."
+    },
+    "descripteurs_arme": {
+     "avant": [
+      -0.0517,
+      0,
+      -0.9987
+     ],
+     "avant_deg_a_sa_droite": -3,
+     "hanche": 2.88,
+     "buste": {
+      "lacet": -86,
+      "penche_avant": 7.2,
+      "penche_cote": -6.2
+     },
+     "bras": {
+      "RA": {
+       "torse": [
+        42.7,
+        16
+       ],
+       "coup": [
+        125.7,
+        14.7
+       ]
+      },
+      "LA": {
+       "torse": [
+        59.4,
+        0.1
+       ],
+       "coup": [
+        144.8,
+        1.7
+       ]
+      }
+     },
+     "poing": {
+      "RA": [
+       -1.47,
+       -0.07,
+       0.41
+      ],
+      "LA": [
+       -0.12,
+       1.78,
+       0.44
+      ]
+     },
+     "pieds": {
+      "RL": [
+       -0.84,
+       -0.31,
+       -2.91
+      ],
+      "LL": [
+       0.15,
+       -0.39,
+       -3.01
+      ]
+     },
+     "epaules": {
+      "recul_droite": 1.86
+     },
+     "tete": {
+      "torse": [
+       -65.3,
+       -16.9
+      ],
+      "coup": [
+       18.7,
+       -25.4
+      ]
+     }
+    },
+    "descripteurs_contact": {
+     "avant": [
+      -0.0517,
+      0,
+      -0.9987
+     ],
+     "hanche": 2.973,
+     "buste": {
+      "lacet": 72.8,
+      "penche_avant": 15.9,
+      "penche_cote": -2
+     },
+     "bras": {
+      "RA": {
+       "torse": [
+        64.4,
+        5
+       ],
+       "coup": [
+        -9.3,
+        -0.2
+       ]
+      },
+      "LA": {
+       "torse": [
+        -12,
+        32.9
+       ],
+       "coup": [
+        -84.4,
+        17
+       ]
+      }
+     },
+     "poing": {
+      "RA": [
+       2.96,
+       0,
+       0.57
+      ],
+      "LA": [
+       -1.24,
+       -1.17,
+       0.08
+      ]
+     },
+     "pieds": {
+      "RL": [
+       0.33,
+       0.96,
+       -2.87
+      ],
+      "LL": [
+       -0.62,
+       0.67,
+       -2.9
+      ]
+     },
+     "epaules": {
+      "recul_droite": -2.41
+     },
+     "tete": {
+      "torse": [
+       69.4,
+       -21
+      ],
+      "coup": [
+       2.8,
+       -23.9
+      ]
+     }
+    },
+    "trajet_du_poing": "Demi-cercle HORIZONTAL de 183° autour du corps, du dos vers l'avant par la droite (latéral max +1,57 à f11) : rayon de 1,37 à 2,96, longueur 6,44 pour une corde de 5,05 (rectitude 0,78), écart max 1,74, niveau constant (+0,25). Lacet +159° ; le bras s'OUVRE de +22° dans le torse (az +43 à +64) et descend de 11°. Le torse fait donc 118 % du trajet et le bras -16 % (sens opposé : il s'aligne sur la ligne d'épaules). Lacet image par image : -86, -82, -70, -47, -14, +22, +51, +69, +76, +76, +73.",
+    "lecture": "Armé : quasi de profil (lacet -86), épaule droite reculée de 1,86. Le bras droit est dans le quart avant-droit du torse, un peu levé (az +43, el +16). Le poing est 1,47 DERRIÈRE le centre, exactement dans l'axe du dos (latéral -0,07), à hauteur d'épaule (+0,41). Le bras gauche est replié EN TRAVERS de la poitrine (az +59, el 0 ; poing 1,8 à droite du centre). La tête est à -65° dans le torse, regard presque sur la cible (+19°, menton -25°). Buste peu penché (+7), hanche 2,88. Les jambes, non clées, sont portées par le torse ; pieds alignés sur l'axe du coup, pied droit 1,0 derrière. Au contact : lacet +73 (dos visible depuis sa droite). Le bras (az +64, el +5) prolonge la ligne d'épaules ; poing 2,96 devant à +0,57, horizontal (coup el -0,2). Le bras gauche part derrière et en haut (az -12, el +33).",
+    "image": "geo_mesure/planche_pro_pack.png ligne 4 ; geo_mesure/zoom_armes.png lignes 1 et 2 (armé et contact, face / sa droite / derrière / 3/4 haut) ; geo_mesure/m14_strip.png"
+   },
+   {
+    "anim": "[3] Uppercut",
+    "bras_frappeur": "RA (droit)",
+    "type_de_coup": "uppercut droit en boucle (plonge puis remonte), depuis un accroupi",
+    "temps": {
+     "fps": 60,
+     "prepa_debut": 0,
+     "arme": 14,
+     "tenue_images": 1,
+     "lacher_debut": 14,
+     "contact": 21,
+     "duree_arme_images": 14,
+     "lacher_vers_contact_images": 7,
+     "vmax_image": 19,
+     "vmax_studs_s": 94,
+     "sommet_du_poing": 25,
+     "fin": 49,
+     "note": "Contact choisi à l'avant max (2,68 à f21 ; allonge max 2,76 à f20). Le poing continue de monter jusqu'à f25 (+2,97). Source à 70 i/s rééchantillonnée à 60."
+    },
+    "descripteurs_arme": {
+     "avant": [
+      0.0362,
+      0,
+      -0.9993
+     ],
+     "avant_deg_a_sa_droite": 2.1,
+     "hanche": 2.325,
+     "buste": {
+      "lacet": -66.4,
+      "penche_avant": 23,
+      "penche_cote": -33.7
+     },
+     "bras": {
+      "RA": {
+       "torse": [
+        43.2,
+        -33.5
+       ],
+       "coup": [
+        124,
+        -23.2
+       ]
+      },
+      "LA": {
+       "torse": [
+        -26.5,
+        8.5
+       ],
+       "coup": [
+        36.1,
+        -26.3
+       ]
+      }
+     },
+     "poing": {
+      "RA": [
+       -1.81,
+       0.94,
+       0.86
+      ],
+      "LA": [
+       2.24,
+       0.2,
+       -0.95
+      ]
+     },
+     "pieds": {
+      "RL": [
+       -2.19,
+       -0.02,
+       -2.11
+      ],
+      "LL": [
+       -1.49,
+       -0.55,
+       -2.59
+      ]
+     },
+     "epaules": {
+      "recul_droite": 1.57
+     },
+     "tete": {
+      "torse": [
+       -16.1,
+       18.2
+      ],
+      "coup": [
+       42.9,
+       -13.8
+      ]
+     }
+    },
+    "descripteurs_contact": {
+     "avant": [
+      0.0362,
+      0,
+      -0.9993
+     ],
+     "hanche": 2.905,
+     "buste": {
+      "lacet": 30.8,
+      "penche_avant": 7.3,
+      "penche_cote": -4.2
+     },
+     "bras": {
+      "RA": {
+       "torse": [
+        -8.5,
+        34
+       ],
+       "coup": [
+        -41.2,
+        26.2
+       ]
+      },
+      "LA": {
+       "torse": [
+        -51.4,
+        -19.2
+       ],
+       "coup": [
+        -83.9,
+        -27
+       ]
+      }
+     },
+     "poing": {
+      "RA": [
+       2.69,
+       0,
+       1.01
+      ],
+      "LA": [
+       -0.24,
+       -2.27,
+       -0.48
+      ]
+     },
+     "pieds": {
+      "RL": [
+       0.05,
+       0.81,
+       -2.93
+      ],
+      "LL": [
+       -0.47,
+       -0.04,
+       -3
+      ]
+     },
+     "epaules": {
+      "recul_droite": -1.77
+     },
+     "tete": {
+      "torse": [
+       11.5,
+       -2
+      ],
+      "coup": [
+       -19,
+       -8.3
+      ]
+     }
+    },
+    "trajet_du_poing": "Boucle : derrière et haut, puis plonge de 1,1 sur le côté droit (poing à -0,37 à f18), puis remonte de 1,8 vers l'avant. 153° balayés, rectitude 0,69, écart max 2,27. Lacet +97°, bras -52° en az et +68° en élévation dans le torse (le seul coup où le bras bouge beaucoup dans le torse) : torse environ 59 %, bras environ 31 % en azimut, plus la levée. Le torse remonte de 0,58 et avance de 0,53.",
+    "lecture": "Armé accroupi (hanche 2,33), buste penché +23 et incliné de -34 vers la gauche (épaule droite haute), lacet -66. Dans le torse, le bras est devant-droit et vers le BAS (az +43, el -34). À cause de l'inclinaison, le poing se retrouve pourtant derrière et à hauteur d'épaule (-1,81 / +0,94 / +0,86). Le bras gauche est devant et bas (poing 2,24 devant, -0,95). Les jambes, non clées, suivent le penché du torse : pieds à 1,5-2,2 derrière, y entre -0,27 et +0,21. C'est un artefact, pas un choix de jambes.",
+    "image": "geo_mesure/planche_pro_pack.png ligne 5 ; geo_mesure/up_strip.png"
+   },
+   {
+    "anim": "[3] Downslam V1",
+    "bras_frappeur": "RA+LA (marteau à deux mains)",
+    "type_de_coup": "marteau à deux mains par-dessus la tête vers le sol",
+    "temps": {
+     "fps": 60,
+     "prepa_debut": 0,
+     "arme": 14,
+     "tenue_images": 2,
+     "lacher_debut": 15,
+     "contact": 25,
+     "duree_arme_images": 14,
+     "lacher_vers_contact_images": 10,
+     "vmax_image": 20,
+     "vmax_studs_s": 95,
+     "arrivee": "amortie (48, 24, 7 studs/s)",
+     "poing_immobile_des": 26,
+     "fin": 65
+    },
+    "descripteurs_arme": {
+     "avant": [
+      0.0743,
+      0,
+      -0.9972
+     ],
+     "avant_deg_a_sa_droite": 4.3,
+     "hanche": 2.963,
+     "buste": {
+      "lacet": 8.5,
+      "penche_avant": -47.8,
+      "penche_cote": -16.3
+     },
+     "bras": {
+      "RA": {
+       "torse": [
+        -136.8,
+        35
+       ],
+       "coup": [
+        -146.6,
+        -7.9
+       ]
+      },
+      "LA": {
+       "torse": [
+        167.6,
+        50.1
+       ],
+       "coup": [
+        172.2,
+        3.4
+       ]
+      }
+     },
+     "poing": {
+      "RA": [
+       -2.25,
+       0.38,
+       0.85
+      ],
+      "LA": [
+       -2.16,
+       -1.03,
+       0.69
+      ]
+     },
+     "pieds": {
+      "RL": [
+       0.41,
+       0.64,
+       -2.43
+      ],
+      "LL": [
+       1.55,
+       -1.08,
+       -1.83
+      ]
+     },
+     "epaules": {
+      "recul_droite": 0.41
+     },
+     "tete": {
+      "torse": [
+       6.7,
+       -6.7
+      ],
+      "coup": [
+       2.1,
+       42
+      ]
+     }
+    },
+    "descripteurs_contact": {
+     "avant": [
+      0.0743,
+      0,
+      -0.9972
+     ],
+     "hanche": 1.899,
+     "buste": {
+      "lacet": -19.5,
+      "penche_avant": 84.4,
+      "penche_cote": -78.7
+     },
+     "bras": {
+      "RA": {
+       "torse": [
+        -26.4,
+        40.9
+       ],
+       "coup": [
+        -29.9,
+        -39.1
+       ]
+      },
+      "LA": {
+       "torse": [
+        37.3,
+        41.4
+       ],
+       "coup": [
+        27.4,
+        -31
+       ]
+      }
+     },
+     "poing": {
+      "RA": [
+       1.78,
+       0.39,
+       -1.7
+      ],
+      "LA": [
+       2.21,
+       -0.39,
+       -1.59
+      ]
+     },
+     "pieds": {
+      "RL": [
+       -0.44,
+       0.93,
+       -1.97
+      ],
+      "LL": [
+       -0.22,
+       -1.14,
+       -1.95
+      ]
+     },
+     "epaules": {
+      "recul_droite": 0.25
+     },
+     "tete": {
+      "torse": [
+       5.3,
+       12.4
+      ],
+      "coup": [
+       17.2,
+       -71
+      ]
+     }
+    },
+    "trajet_du_poing": "Grand arc VERTICAL par-dessus la tête : les poings montent de +0,7 puis tombent de 3,6 jusqu'au sol. Rectitude 0,59-0,62, écart max 2,8-3,0. Tangage du buste +132° (-48 à +84) ; les bras tournent aussi de +110° / -130° dans le torse. Hanche -1,06 (2,96 à 1,90).",
+    "lecture": "Armé : buste CAMBRÉ en arrière (-48), lacet presque nul, les deux bras au-dessus et derrière la tête, poings 2,2 derrière à +0,7 / +0,85 ; tenue d'environ 2 images. Les jambes sont clées (72 à 84°). Au contact, le lacet (-19,5) et le côté (-79) ne sont PAS fiables : le buste est quasi horizontal (penché +84) et le repère lacet/côté dégénère.",
+    "image": "geo_mesure/planche_pro_pack.png ligne 6 ; geo_mesure/dv1_strip.png"
+   },
+   {
+    "anim": "[3] Downslam V2",
+    "bras_frappeur": "RA (droit), vers le sol",
+    "type_de_coup": "coup de poing droit dans le sol, lâcher en 2 images",
+    "temps": {
+     "fps": 60,
+     "prepa_debut": 0,
+     "arme": 13,
+     "tenue_images": 0,
+     "lacher_debut": 13,
+     "contact": 15,
+     "duree_arme_images": 13,
+     "lacher_vers_contact_images": 2,
+     "vmax_image": 15,
+     "vmax_studs_s": 155,
+     "arret": "sec (7 studs/s juste après)",
+     "poing_immobile_des": 17,
+     "fin": 65,
+     "note": "f8-f13 : approche lente (19 à 27 studs/s), pas une tenue."
+    },
+    "descripteurs_arme": {
+     "avant": [
+      0.773,
+      0,
+      -0.6343
+     ],
+     "avant_deg_a_sa_droite": 50.6,
+     "hanche": 2.084,
+     "buste": {
+      "lacet": -21.4,
+      "penche_avant": 18.3,
+      "penche_cote": -79.3
+     },
+     "bras": {
+      "RA": {
+       "torse": [
+        22.1,
+        -8.3
+       ],
+       "coup": [
+        33.8,
+        1.9
+       ]
+      },
+      "LA": {
+       "torse": [
+        -44.3,
+        0.4
+       ],
+       "coup": [
+        4.4,
+        -60.9
+       ]
+      }
+     },
+     "poing": {
+      "RA": [
+       1.21,
+       0.43,
+       1.7
+      ],
+      "LA": [
+       -0.29,
+       -0.48,
+       -2.02
+      ]
+     },
+     "pieds": {
+      "RL": [
+       -0.86,
+       1.85,
+       -1.47
+      ],
+      "LL": [
+       -0.51,
+       -0.58,
+       -2.15
+      ]
+     },
+     "epaules": {
+      "recul_droite": -0.81
+     },
+     "tete": {
+      "torse": [
+       -4.5,
+       -41.1
+      ],
+      "coup": [
+       65.4,
+       -24.4
+      ]
+     }
+    },
+    "descripteurs_contact": {
+     "avant": [
+      0.773,
+      0,
+      -0.6343
+     ],
+     "hanche": 1.796,
+     "buste": {
+      "lacet": 102.7,
+      "penche_avant": 69.5,
+      "penche_cote": 77
+     },
+     "bras": {
+      "RA": {
+       "torse": [
+        15.2,
+        -8.6
+       ],
+       "coup": [
+        -83,
+        -86.7
+       ]
+      },
+      "LA": {
+       "torse": [
+        -54.7,
+        4.1
+       ],
+       "coup": [
+        -126.7,
+        -16.8
+       ]
+      }
+     },
+     "poing": {
+      "RA": [
+       1.58,
+       0,
+       -1.81
+      ],
+      "LA": [
+       -1.56,
+       -1.26,
+       0.82
+      ]
+     },
+     "pieds": {
+      "RL": [
+       -1.04,
+       1.91,
+       -1.37
+      ],
+      "LL": [
+       -0.51,
+       -0.73,
+       -1.87
+      ]
+     },
+     "epaules": {
+      "recul_droite": -1.98
+     },
+     "tete": {
+      "torse": [
+       -2.6,
+       -39.7
+      ],
+      "coup": [
+       163.8,
+       -56.5
+      ]
+     }
+    },
+    "trajet_du_poing": "Quasi droit vers le bas en 2 images (rectitude 0,92, chute de 3,79). Roulis du buste de -79 à +77 (156°) plus lacet +124° ; le bras est FIGÉ dans le torse (Δaz -7°, Δel 0°) : 100 % du trajet vient du torse.",
+    "lecture": "Le bras levé au-dessus de la tête vient du ROULIS du buste (côté -79), pas du bras : dans le torse il reste devant-droit à l'horizontale (az +22, el -8). Le poing est au-dessus (+1,7) et devant (1,2). La frappe est un basculement du bloc torse et bras. Au contact, lacet et côté sont peu fiables (buste presque couché). La direction horizontale du poing (+51°) n'est pas une visée : le coup va au sol.",
+    "image": "geo_mesure/planche_pro_pack.png ligne 7 ; geo_mesure/dv2_strip.png"
+   }
+  ],
+  "comment_les_pros_arment_en_r6": "Mesuré sur M1_1, M1_2 et M1_4 (les trois poings horizontaux) et confirmé par l'Uppercut et Downslam V2. Valeurs ramenées à un droitier.\n\n1) BRAS FRAPPEUR : il ne pointe JAMAIS derrière dans les axes du torse. À l'armé, il est dans le quart avant-latéral du côté qui frappe : az torse +43 à +67 (crochet +58), el +6 à +16, légèrement au-dessus de l'horizontale. Ce n'est ni en travers, ni devant plein, ni derrière.\n\n2) C'EST LE TORSE QUI FAIT L'« ARRIÈRE » : lacet de -60 à -86 (crochet -78, soit -98 avec -Z comme avant). Le perso est presque de profil et présente l'épaule opposée à la cible ; l'épaule frappeuse est reculée de 1,8 à 2,7. Résultat géométrique : le poing est 1,5 à 2,3 DERRIÈRE le centre du torse, dans l'axe du dos (latéral -0,13 à +0,45), à hauteur d'épaule (+0,14 à +1,0 ; le pivot de l'épaule est à +0,5). Vu de la cible, le poing est caché derrière le corps. Buste peu penché (+4 à +16).\n\n3) L'AUTRE BRAS est DEVANT, jamais derrière : soit tendu sur la cible (M1_1 : az -73, el -1, poing 3,0 devant, bras de visée « archer »), soit replié en travers de la poitrine (M1_4 : az +59, el 0), soit devant la poitrine (M1_2 : az +47, el +32 en miroir). Au contact, il repasse derrière (poing de -0,4 à -1,4) : les deux bras restent quasi fixes dans le torse, c'est la rotation qui les échange.\n\n4) TÊTE contre-tournée de 61 à 85° par rapport au torse : le regard reste sur la cible (±20°), menton baissé d'environ 23°.\n\n5) JAMBES : NON clées dans les M1 et l'Uppercut (poids 0, rotation 0 dans toutes les poses). Elles suivent le torse en bloc (lacet des pieds = lacet du torse) : tout le corps pivote sur la racine et les pieds glissent (jusqu'à 2,2 studs dans M1_4). Hanche de 2,88 à 2,95 (genoux quasi droits). Les pieds finissent alignés sur l'axe du coup, pied arrière environ 1,0 derrière, écart latéral 0,25 au plus. Le torse recule de 0 à 0,58 pendant l'armé et se fend de 0,2 à 0,6 au lâcher. Seuls les Downslam clent les jambes.\n\n6) LÂCHER : le torse tourne de 109 à 159° en 5 à 9 images. Le bras reste presque figé dans le torse (Δaz de -6 à +22° pour les directs, -39° pour le crochet) : 74 à 118 % du trajet du poing vient du lacet. Dans M1_4, le bras s'ouvre même vers la ligne d'épaules. Le poing décrit un DEMI-CERCLE HORIZONTAL autour du corps : 169 à 184° balayés, du dos vers l'avant en passant par le côté qui frappe, rectitude 0,78 à 0,82, hauteur constante à ±0,5. Ce n'est pas une ligne droite.\n\n7) CONTACT : torse sur-tourné de +73 à +75 (épaule frappeuse devant, écart d'épaules -2,4 à -2,7). Le bras (az +64 à +72, el -1 à +5) prolonge la ligne d'épaules ; poing 3,0 à 3,3 devant, horizontal, à hauteur d'épaule (+0,53 à +0,57).\n\n8) TEMPS à 60 i/s : armé de 4 à 10 images ; aucune tenue dans les M1 (0 à 1 image) ; lâcher de 5 à 9 images, soit avec un pop d'une image (M1_2 : 30 % du trajet, 126 studs/s), soit avec un ralenti de 3 images (M1_4) ; pose de contact tenue 16 à 26 images. Le seul poing tenu armé est le bras droit pendant tout M1_3 : az +27 à +34, el +22 à +28, lacet -67 à -122, 40 images.\n\nÉCART AVEC NOTRE v5 (tenue 226-260) : bras DEVANT le torse et vers le bas (az +5 à +20, el -6 à -9) avec un lacet de -62 à -70. Le poing est donc SUR LE CÔTÉ (2,5 à droite, seulement 0,5 derrière), à hauteur du centre du torse (-0,1). L'autre bras est derrière et en bas (az -115, el -35), le buste penché +28, la hanche à 2,37. Recette pro : bras plus latéral (+45 à +60) et plus haut (+10 à +16), torse plus tourné (-80 à -90), buste presque droit, autre bras devant ; on obtient un poing derrière le dos à hauteur d'épaule.\n\nRÉSERVES :\n- Ce sont des M1 légers ; aucun ne montre de charge longue.\n- Les contacts des coups balayés (M1_1, Uppercut) sont pris à l'allonge maximale (aucun marqueur lu).\n- L'identité de M1_3 (revers ou coude) n'est pas vérifiée.\n- Pour les Downslam, lacet et côté au contact ne sont pas fiables (buste quasi horizontal).\n- En jeu, les jambes non clées peuvent être pilotées par l'idle ou la marche (non vérifié).",
+  "fourchettes": {
+   "convention": "Valeurs ramenées à un droitier (M1_2 en miroir). « avant » = direction du poing au contact. Studs depuis le centre du torse. 60 i/s.",
+   "famille_poings_horizontaux": "M1_1 (crochet), M1_2 (direct G en miroir), M1_4 (direct D)",
+   "lacet_arme": [
+    -86,
+    -60
+   ],
+   "lacet_arme_repere_moins_Z": [
+    -98,
+    -62
+   ],
+   "lacet_contact": {
+    "directs": [
+     73,
+     75
+    ],
+    "crochet": 32
+   },
+   "delta_lacet_lacher": [
+    109,
+    159
+   ],
+   "penche_avant_arme": [
+    4,
+    16
+   ],
+   "penche_avant_contact": [
+    13,
+    16
+   ],
+   "penche_cote_arme": [
+    -13,
+    4
+   ],
+   "bras_frappeur_torse_arme": {
+    "az": [
+     43,
+     67
+    ],
+    "el": [
+     6,
+     16
+    ]
+   },
+   "bras_frappeur_torse_contact": {
+    "directs_az": [
+     64,
+     72
+    ],
+    "directs_el": [
+     -1,
+     5
+    ],
+    "crochet_az_el": [
+     18,
+     11
+    ]
+   },
+   "bras_frappeur_coup_arme": {
+    "az": [
+     126,
+     131
+    ],
+    "el": [
+     -4,
+     23
+    ]
+   },
+   "delta_az_bras_dans_torse_au_lacher": {
+    "directs": [
+     -6,
+     22
+    ],
+    "crochet": -39
+   },
+   "part_du_trajet_due_au_lacet_pct": [
+    74,
+    118
+   ],
+   "poing_arme": {
+    "avant": [
+     -2.26,
+     -1.47
+    ],
+    "droite": [
+     -0.13,
+     0.45
+    ],
+    "haut": [
+     0.14,
+     1.01
+    ]
+   },
+   "poing_contact": {
+    "avant": [
+     2.85,
+     3.34
+    ],
+    "droite": 0,
+    "haut": [
+     0.53,
+     0.6
+    ]
+   },
+   "autre_bras_arme": {
+    "vers_cible": [
+     -73,
+     -1
+    ],
+    "en_travers": [
+     59,
+     0
+    ],
+    "devant_poitrine": [
+     47,
+     32
+    ]
+   },
+   "autre_poing_contact_avant": [
+    -1.38,
+    -0.43
+   ],
+   "epaule_frappeuse_reculee_arme": [
+    1.83,
+    2.7
+   ],
+   "epaule_frappeuse_contact": [
+    -2.73,
+    -2.41
+   ],
+   "hanche_arme": [
+    2.88,
+    2.95
+   ],
+   "hanche_contact": [
+    2.89,
+    2.97
+   ],
+   "tete_az_dans_torse_arme": [
+    -85,
+    -61
+   ],
+   "tete_coup_arme": {
+    "az": [
+     -9,
+     19
+    ],
+    "el": [
+     -25,
+     -23
+    ]
+   },
+   "torse_recul_pendant_arme": [
+    0,
+    0.58
+   ],
+   "torse_fente_au_lacher": [
+    0.2,
+    0.61
+   ],
+   "pieds": "non clés, alignés sur l'axe du coup ; pied arrière environ 1,0 derrière, écart latéral ≤ 0,25 ; glissent avec la rotation (jusqu'à 2,2)",
+   "trajet_poing": {
+    "angle_balaye_deg": [
+     169,
+     184
+    ],
+    "rectitude": [
+     0.78,
+     0.82
+    ],
+    "ecart_max_a_la_corde": [
+     1.39,
+     1.74
+    ],
+    "delta_hauteur": [
+     -0.46,
+     0.36
+    ]
+   },
+   "images": {
+    "arme": [
+     4,
+     10
+    ],
+    "tenue": [
+     0,
+     1
+    ],
+    "lacher_vers_contact": [
+     5,
+     9
+    ],
+    "tenue_apres_contact": [
+     16,
+     26
+    ]
+   },
+   "vitesse_max_poing_studs_s": [
+    63,
+    127
+   ],
+   "bras_droit_tenu_arme_pendant_M1_3": {
+    "az": [
+     27,
+     34
+    ],
+    "el": [
+     22,
+     28
+    ],
+    "lacet": [
+     -122,
+     -67
+    ],
+    "poing_avant": [
+     -1.77,
+     -1.4
+    ],
+    "poing_droite": [
+     -0.47,
+     1.12
+    ],
+    "poing_haut": [
+     0.11,
+     0.46
+    ],
+    "duree_images": 40
+   },
+   "uppercut": {
+    "hanche_arme": 2.33,
+    "penche_avant_arme": 23,
+    "penche_cote_arme": -34,
+    "lacet_arme": -66,
+    "bras_torse_arme": [
+     43,
+     -34
+    ],
+    "lacet_contact": 31,
+    "bras_torse_contact": [
+     -8,
+     34
+    ],
+    "arme_images": 14,
+    "lacher_images": 7
+   },
+   "downslams": {
+    "V1_penche_arme": -48,
+    "V1_penche_contact": 84,
+    "V1_hanche": [
+     2.96,
+     1.9
+    ],
+    "V1_lacher_images": 10,
+    "V2_cote_arme": -79,
+    "V2_cote_contact": 77,
+    "V2_bras_torse_fixe": [
+     22,
+     -8
+    ],
+    "V2_lacher_images": 2,
+    "V2_hanche": [
+     2.08,
+     1.8
+    ]
+   },
+   "tous_les_coups": {
+    "duree_arme_images": [
+     4,
+     14
+    ],
+    "lacher_vers_contact_images": [
+     2,
+     10
+    ],
+    "hanche_arme": [
+     2.08,
+     2.96
+    ]
+   },
+   "v5_pour_comparaison_tenue_226_260": {
+    "lacet": [
+     -67,
+     -62
+    ],
+    "penche_avant": 28,
+    "bras_droit_torse_az": [
+     5,
+     20
+    ],
+    "bras_droit_torse_el": [
+     -9,
+     -6
+    ],
+    "poing_droit": {
+     "avant": [
+      -0.62,
+      -0.43
+     ],
+     "droite": [
+      2.42,
+      2.56
+     ],
+     "haut": [
+      -0.15,
+      -0.01
+     ]
+    },
+    "bras_gauche_torse": {
+     "az": [
+      -119,
+      -115
+     ],
+     "el": [
+      -37,
+      -35
+     ]
+    },
+    "poing_gauche": [
+     1.71,
+     -2.05,
+     0.03
+    ],
+    "epaule_D_reculee": [
+     1.66,
+     1.83
+    ],
+    "hanche": [
+     2.35,
+     2.37
+    ]
+   }
+  }
+ },
+ "verifications": [
+  {
+   "verdict": "corrige",
+   "affirmations": [
+    {
+     "affirmation": "Les descripteurs à l'armé et au contact de M1_1 (f10/f15), M1_2 (f4/f11), M1_4 (f6/f16) et de l'Uppercut (f14/f21) sont exacts.",
+     "statut": "confirme",
+     "preuve": "Recalcul indépendant avec G.mondes_rbxm, puis G.descripteurs et l'avant pris au contact. Exemples : M1_4 f6 lacet -86,0, RA torse (42,7 ; 16,0), poing (-1,47 ; -0,07 ; 0,41) ; M1_1 f10 lacet -77,5, RA (57,5 ; 14,6), poing (-1,99 ; -0,13 ; 1,01) ; M1_2 f4 lacet +59,5, LA (-66,7 ; 5,6), poing (-2,26 ; -0,45 ; 0,14) ; Uppercut f14 lacet -66,4, RA (43,2 ; -33,5). Tous identiques au dixième près (s5_detache.py, table_par_image.txt)."
+    },
+    {
+     "affirmation": "Le signe du lacet est bien lu : négatif = torse tourné vers sa droite, épaule droite reculée.",
+     "statut": "confirme",
+     "preuve": "M1_4 f6 : l'avant du torse vaut (0,98 ; -0,13 ; -0,12) dans le monde, donc il pointe vers +X, sa droite. L'épaule droite est reculée de +1,86. Pour M1_1 on a -77,5 et +1,83. Au contact de M1_4, la caméra de face voit le bras vert venir droit sur elle (planche_M1_4.png)."
+    },
+    {
+     "affirmation": "Images d'armé retenues : M1_1 f10, M1_2 f4, M1_4 f6, Uppercut f14.",
+     "statut": "confirme",
+     "preuve": "M1_1 f10 : lacet extrême -98,4 dans le repère -Z et creux de vitesse (5,0). M1_2 f4 : lacet +62,5 et poing à -2,28. Uppercut f14 : creux à 5,7. Réserve sur M1_4 : f6 est l'extrême du lacet, mais le poing le plus reculé est en f0 (-1,71 contre -1,47). Le clip démarre déjà armé, ce que l'agent signale lui-même (« ré-enroulement de 7° »)."
+    },
+    {
+     "affirmation": "Les temps à 60 i/s sont justes : armé, lâcher vers contact, vitesse max, pop de M1_2, ralenti de M1_4, Uppercut à 70 i/s ramené à 50 images.",
+     "statut": "confirme",
+     "preuve": "M1_1 : pic à 101,7 studs/s en f14, allonge max 2,91 en f15. M1_2 : saut de 126,6 studs/s de f10 à f11 (+2,11 studs). M1_4 : 63,4 en f13 puis 49,7 / 30,1 / 10,6. Uppercut : pic à 94,1 en f19 ; la source dure 0,8143 s avec des pas de 0,0143, soit 50 images. Lacet de M1_4 f6 à f16, ramené à l'avant : -86, -82, -70, -47, -14, +22, +51, +69, +76, +75, +73."
+    },
+    {
+     "affirmation": "Dans les axes du torse, le bras frappeur pointe devant-côté à l'armé (az +43 à +67, el +6 à +16), jamais derrière.",
+     "statut": "confirme",
+     "preuve": "Vrai pour la DIRECTION du bloc : M1_4 (42,7 ; 16,0), M1_1 (57,5 ; 14,6), M1_2 en miroir (-66,7 ; 5,6). C'est pourtant une description incomplète : voir l'affirmation suivante."
+    },
+    {
+     "affirmation": "Le poing derrière le dos, dans l'axe du corps, vient du torse qui tourne, le bras restant une rotation rigide autour de l'épaule (« c'est le torse qui fait l'arrière »).",
+     "statut": "refute",
+     "preuve": "Les Pose.CFrame des bras contiennent de GROSSES TRANSLATIONS : |pos| monte jusqu'à 1,72 stud dans M1_4 et 1,62 dans M1_1 (translations_poses.txt). Le point d'attache du bras est décollé de l'épaule de 1,43 (M1_1), 1,33 (M1_2), 1,64 (M1_4) et 0,84 (Uppercut) à l'armé. Dans les axes du torse (avant, droite, haut), ce décalage vaut (-1,18 ; -0,15 ; -0,79), (-0,97 ; +0,33 en miroir ; -0,86) et (-1,06 ; -0,54 ; -1,13) : bras RECULÉ d'environ 1,0 à 1,2, BAISSÉ de 0,8 à 1,1 et rentré vers le dos. Si on rattache le bras avec les mêmes rotations, le poing passe de (-1,47 ; -0,07 ; 0,41) à (-1,80 ; +1,15 ; +1,45) pour M1_4, et de (-1,99 ; -0,13 ; 1,01) à (-1,70 ; +1,07 ; +1,74) pour M1_1 : 1,1 plus à droite et 0,7 à 1,0 plus haut. Vu à l'écran (zoom_detachement.png, vue arrière-droite haute) : dans le vrai, le bras vert est plaqué bas contre le dos, à mi-torse ; rattaché, il sort à hauteur de tête. L'Idle a des bras attachés (0,00 à 0,04), donc c'est un choix délibéré pour les coups."
+    },
+    {
+     "affirmation": "74 à 118 % du trajet du poing vient du lacet et le bras reste quasi figé dans le torse.",
+     "statut": "refute",
+     "preuve": "Découpage image par image de la longueur du trajet, par Shapley sur 3 facteurs (s6_decomp.py) : torse (rotation et translation) 54 % pour M1_1, 59 % pour M1_2, 75 % pour M1_4, 54 % pour l'Uppercut ; translation du bras 30 / 28 / 34 / 18 % ; rotation du bras 16 / 13 / -9 / 28 %. Dans M1_4, le décalage du bras passe de (-1,06 ; -0,54 ; -1,13) à (+0,45 ; +0,34 ; -0,18) dans les axes du torse, soit 1,5 stud poussé vers l'avant. Au contact, le décalage (0,59 à 0,98, vers l'avant) ajoute 0,4 à 0,8 d'allonge : le poing est à 2,96–3,34 alors qu'un bras rattaché le mettrait à 2,03–2,52."
+    },
+    {
+     "affirmation": "M1_2 : « environ 100 % du trajet vient du torse » (bras Δaz -5,8°).",
+     "statut": "refute",
+     "preuve": "Le Δ net cache un aller-retour : l'az du bras gauche dans le torse passe de -66,7 (f4) à -38,7 (f10), puis à -72,5 (f11). Le pop de la dernière image est un claquement du bras de 34° plus une translation (1,16 → 0,92), alors que le lacet ne bouge que de -63,7 à -72,0. Sur tout le trajet : torse 59 %, translation 28 %, rotation 13 %."
+    },
+    {
+     "affirmation": "Recette pro avec les rotations seules (bras az +45 à +60, el +10 à +16, lacet -80 à -90, buste droit) : on obtient un poing derrière le dos à hauteur d'épaule.",
+     "statut": "refute",
+     "preuve": "G.pose, qui n'a pas de translation, appliqué à ces valeurs donne un poing en (-2,0 ; +1,27 à +1,33 ; +0,17 à +0,88) (s10_recette.py) : derrière, mais 1,3 à DROITE. Vu de la cible, il dépasse donc de la silhouette, alors que les pros l'ont dans l'axe du dos (latéral -0,07 à -0,13), caché. Cette silhouette ne se reproduit pas sans translation du bras."
+    },
+    {
+     "affirmation": "Jambes de M1_1 à M1_4 et de l'Uppercut : non clées (poids 0 dans 100 % des poses, rotation 0) ; les deux Downslam clent les jambes.",
+     "statut": "confirme",
+     "preuve": "poids_nul_fraction vaut 1,0, et rotation et translation max valent 0,00 pour Right/Left Leg dans les 5 clips. Downslam V1 : jambes à 71,6 et 83,6° ; V2 : 55,7 et 94,7°. Le comportement de Roblox en jeu avec Weight 0 n'est pas vérifié."
+    },
+    {
+     "affirmation": "Downslam V2 : le bras est figé dans le torse, 100 % du trajet vient du torse.",
+     "statut": "refute",
+     "preuve": "En rotation, oui (az 22 → 15, el -8 → -9). Mais la translation du bras droit passe de (-0,61 ; 0,07 ; -0,21) en f13 à (+0,18 ; -0,08 ; +0,11) en f15 : 0,8 stud de décalage en 2 images, sur une chute de 3,8. Le bras n'est pas figé à 100 %."
+    },
+    {
+     "affirmation": "Chiffres de v5 pendant la tenue 226-260 : lacet -62 à -67, penché +28, RA az +5 à +20 et el -6 à -9, poing droit (-0,43 à -0,62 ; 2,42 à 2,56 ; -0,15 à -0,01), hanche 2,35 à 2,37.",
+     "statut": "confirme",
+     "preuve": "Lignes 226, 240 et 260 de v5_descripteurs.txt identiques. Nuance : « l'autre bras est derrière » n'est vrai que dans les axes du torse (az -115). Dans le repère du coup, le poing gauche de v5 est 1,7 DEVANT (1,70 à 1,72 ; -2,0 ; 0,03)."
+    },
+    {
+     "affirmation": "M1_3 : le bras droit reste armé, figé dans le torse pendant 40 images (az +27 à +34, el +22 à +28).",
+     "statut": "incertain",
+     "preuve": "Rotation confirmée : az 27,2 à 33,6 et el 21,5 à 27,7 dans ma table. En revanche, je n'ai pas mesuré sa translation dans M1_3 : dire qu'il est « figé » n'est vérifié qu'en rotation."
+    }
+   ],
+   "corrections": "Tous les nombres rapportés se reproduisent exactement : descripteurs, images d'armé et de contact, temps, signe du lacet. En revanche, l'interprétation centrale passe à côté d'une brique géométrique : les pros ne gardent PAS le bras R6 accroché à l'épaule. Leurs Pose.CFrame de bras portent des translations (|pos| jusqu'à 1,72 stud).\n\nÀ l'ARMÉ, le bras frappeur est décollé de l'épaule de 1,3 à 1,6 stud (Uppercut 0,84). Dans les axes du torse (avant, droite, haut), le décalage vaut environ -1,0 à -1,2 en avant (il est reculé), -0,8 à -1,1 en haut (il est baissé), et il est rentré vers le dos (0,15 à 0,5). C'est ce décalage qui place le poing derrière le dos, dans l'axe du corps (latéral environ 0), à mi-hauteur.\n\nAu CONTACT, le bras est poussé vers l'avant (+0,45 à +0,9), ce qui ajoute 0,4 à 0,8 d'allonge : poing à 2,96–3,34 au lieu de 2,03–2,52 rattaché.\n\nRépartition du trajet du poing : torse 54 à 75 %, translation du bras 18 à 34 %, rotation du bras -9 à 28 %. Ce n'est pas « 74 à 118 % par le lacet ».\n\nLa recette en rotations seules (lacet -80 à -90, bras az +45 à +60, el +10 à +16) donne avec G.pose un poing 1,3 à DROITE, qui dépasse de la silhouette vue de la cible. Elle ne reproduit pas la pose pro.\n\nRecette corrigée :\n- torse de profil, lacet -78 à -86 ;\n- rotation du bras devant-côté (az +43 à +58, el +15) ;\n- ET translation du bras vers l'arrière, le bas et l'intérieur (environ 1,1 / 1,0 / 0,3), lâchée vers l'avant (+0,5 à +0,9) pendant la rotation du lâcher ;\n- l'autre bras est lui aussi translaté vers l'avant d'environ 0,85 (M1_4).\n\nL'Idle a des bras attachés (0,00–0,04) : c'est une technique propre aux coups.\n\nAutres corrections :\n- M1_2 : le pop final est un claquement du bras de 34° plus une translation, pas du torse.\n- Downslam V2 : le bras bouge de 0,8 stud par translation.\n- v5 : son poing gauche est 1,7 DEVANT dans le repère du coup.\n\nÀ faire côté outils : G.descripteurs et G.pose ignorent la translation des bras. Il faudrait au minimum ajouter aux descripteurs un « décollement d'épaule » (avant, droite, haut dans les axes du torse), sinon toute comparaison avec les pros est faussée.\n\nNon vérifié :\n- la direction du décalage repose sur la convention de X.solve (Part1 = Part0·C0·T·C1⁻¹, translation dans le repère de C0) ; sa norme, elle, vaut |Pose.CFrame.Position| brute et ne dépend d'aucune convention ;\n- l'application en jeu dans Studio ;\n- le support des translations de bras par notre exporteur V2.22 ;\n- la translation du bras droit dans M1_3.",
+   "images": [
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_pro_pack_battleground_recalcul/zoom_detachement.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_pro_pack_battleground_recalcul/planche_M1_4.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_pro_pack_battleground_recalcul/planche_M1_1.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_pro_pack_battleground_recalcul/planche_M1_2.png"
+   ]
+  }
+ ]
+}

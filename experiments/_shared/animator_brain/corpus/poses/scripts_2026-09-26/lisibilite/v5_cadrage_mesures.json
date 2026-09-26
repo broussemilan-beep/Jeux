@@ -1,0 +1,349 @@
+{
+ "186": {
+  "cam_v5_orbite(az,el,dist,fov)": [
+   14.6,
+   -12.7,
+   4.92,
+   56.0
+  ],
+  "cadrage": {
+   "haut_perso_pct": 107,
+   "larg_perso_pct": 72,
+   "dans_cadre_pct": {
+    "Torso": 100,
+    "Head": 100,
+    "Right Arm": 100,
+    "Left Arm": 100,
+    "Right Leg": 88,
+    "Left Leg": 50
+   },
+   "pieds_visibles": false
+  },
+  "aires": {
+   "brasD_pct": 8.5,
+   "brasG_pct": 9.2,
+   "jambes_pct": 12.5,
+   "torse_tete_pct": 8.8
+  },
+  "lisib_vs_garde173": {
+   "deplacement_poing_ecran_pct": 3.0,
+   "deplacement_epaule_ecran_pct": 1.8,
+   "bras_D_visible_longueur": 0.53,
+   "ligne_epaules_visible": 1.0,
+   "axe_du_coup_visible": 0.32,
+   "epaule_recul_3d": 0.0,
+   "poing_recul_3d": 0.0,
+   "poing_depl_3d": 0.1
+  }
+ },
+ "200": {
+  "cam_v5_orbite(az,el,dist,fov)": [
+   13.2,
+   -13.2,
+   4.69,
+   55.7
+  ],
+  "cadrage": {
+   "haut_perso_pct": 117,
+   "larg_perso_pct": 83,
+   "dans_cadre_pct": {
+    "Torso": 100,
+    "Head": 100,
+    "Right Arm": 100,
+    "Left Arm": 100,
+    "Right Leg": 88,
+    "Left Leg": 50
+   },
+   "pieds_visibles": false
+  },
+  "aires": {
+   "brasD_pct": 6.8,
+   "brasG_pct": 10.4,
+   "jambes_pct": 12.8,
+   "torse_tete_pct": 10.9
+  },
+  "lisib_vs_garde173": {
+   "deplacement_poing_ecran_pct": 15.8,
+   "deplacement_epaule_ecran_pct": 1.1,
+   "bras_D_visible_longueur": 0.93,
+   "ligne_epaules_visible": 0.91,
+   "axe_du_coup_visible": 0.32,
+   "epaule_recul_3d": 0.38,
+   "poing_recul_3d": 1.49,
+   "poing_depl_3d": 1.86
+  }
+ },
+ "214": {
+  "cam_v5_orbite(az,el,dist,fov)": [
+   11.2,
+   -12.5,
+   4.56,
+   55.3
+  ],
+  "cadrage": {
+   "haut_perso_pct": 118,
+   "larg_perso_pct": 81,
+   "dans_cadre_pct": {
+    "Torso": 100,
+    "Head": 100,
+    "Right Arm": 100,
+    "Left Arm": 100,
+    "Right Leg": 88,
+    "Left Leg": 62
+   },
+   "pieds_visibles": false
+  },
+  "aires": {
+   "brasD_pct": 5.9,
+   "brasG_pct": 12.3,
+   "jambes_pct": 12.7,
+   "torse_tete_pct": 9.7
+  },
+  "lisib_vs_garde173": {
+   "deplacement_poing_ecran_pct": 11.4,
+   "deplacement_epaule_ecran_pct": 2.1,
+   "bras_D_visible_longueur": 0.91,
+   "ligne_epaules_visible": 0.69,
+   "axe_du_coup_visible": 0.33,
+   "epaule_recul_3d": 0.78,
+   "poing_recul_3d": 1.82,
+   "poing_depl_3d": 2.09
+  }
+ },
+ "250": {
+  "cam_v5_orbite(az,el,dist,fov)": [
+   11.1,
+   -12.6,
+   4.29,
+   54.5
+  ],
+  "cadrage": {
+   "haut_perso_pct": 130,
+   "larg_perso_pct": 86,
+   "dans_cadre_pct": {
+    "Torso": 100,
+    "Head": 100,
+    "Right Arm": 100,
+    "Left Arm": 100,
+    "Right Leg": 88,
+    "Left Leg": 50
+   },
+   "pieds_visibles": false
+  },
+  "aires": {
+   "brasD_pct": 6.3,
+   "brasG_pct": 15.5,
+   "jambes_pct": 13.6,
+   "torse_tete_pct": 10.5
+  },
+  "lisib_vs_garde173": {
+   "deplacement_poing_ecran_pct": 7.0,
+   "deplacement_epaule_ecran_pct": 3.8,
+   "bras_D_visible_longueur": 0.9,
+   "ligne_epaules_visible": 0.63,
+   "axe_du_coup_visible": 0.35,
+   "epaule_recul_3d": 0.94,
+   "poing_recul_3d": 2.01,
+   "poing_depl_3d": 2.21
+  }
+ },
+ "270": {
+  "cam_v5_orbite(az,el,dist,fov)": [
+   11.0,
+   -12.6,
+   4.15,
+   54.0
+  ],
+  "cadrage": {
+   "haut_perso_pct": 138,
+   "larg_perso_pct": 87,
+   "dans_cadre_pct": {
+    "Torso": 100,
+    "Head": 100,
+    "Right Arm": 100,
+    "Left Arm": 100,
+    "Right Leg": 62,
+    "Left Leg": 50
+   },
+   "pieds_visibles": false
+  },
+  "aires": {
+   "brasD_pct": 6.3,
+   "brasG_pct": 17.5,
+   "jambes_pct": 13.8,
+   "torse_tete_pct": 10.7
+  },
+  "lisib_vs_garde173": {
+   "deplacement_poing_ecran_pct": 4.7,
+   "deplacement_epaule_ecran_pct": 5.1,
+   "bras_D_visible_longueur": 0.87,
+   "ligne_epaules_visible": 0.57,
+   "axe_du_coup_visible": 0.36,
+   "epaule_recul_3d": 1.09,
+   "poing_recul_3d": 2.01,
+   "poing_depl_3d": 2.2
+  }
+ },
+ "272": {
+  "cam_v5_orbite(az,el,dist,fov)": [
+   39.6,
+   -10.7,
+   3.72,
+   58.0
+  ],
+  "cadrage": {
+   "haut_perso_pct": 142,
+   "larg_perso_pct": 93,
+   "dans_cadre_pct": {
+    "Torso": 100,
+    "Head": 88,
+    "Right Arm": 75,
+    "Left Arm": 100,
+    "Right Leg": 62,
+    "Left Leg": 62
+   },
+   "pieds_visibles": false
+  },
+  "aires": {
+   "brasD_pct": 15.9,
+   "brasG_pct": 7.8,
+   "jambes_pct": 14.2,
+   "torse_tete_pct": 17.1
+  }
+ },
+ "276": {
+  "cam_v5_orbite(az,el,dist,fov)": [
+   47.2,
+   -12.6,
+   3.3,
+   58.0
+  ],
+  "cadrage": {
+   "haut_perso_pct": 222,
+   "larg_perso_pct": 119,
+   "dans_cadre_pct": {
+    "Torso": 100,
+    "Head": 88,
+    "Right Arm": 62,
+    "Left Arm": 100,
+    "Right Leg": 50,
+    "Left Leg": 50
+   },
+   "pieds_visibles": false
+  },
+  "aires": {
+   "brasD_pct": 22.3,
+   "brasG_pct": 0.5,
+   "jambes_pct": 17.0,
+   "torse_tete_pct": 17.8
+  }
+ },
+ "278": {
+  "cam_v5_orbite(az,el,dist,fov)": [
+   50.0,
+   -13.0,
+   3.13,
+   58.0
+  ],
+  "cadrage": {
+   "haut_perso_pct": 312,
+   "larg_perso_pct": 126,
+   "dans_cadre_pct": {
+    "Torso": 100,
+    "Head": 75,
+    "Right Arm": 38,
+    "Left Arm": 100,
+    "Right Leg": 25,
+    "Left Leg": 50
+   },
+   "pieds_visibles": false
+  },
+  "aires": {
+   "brasD_pct": 20.9,
+   "brasG_pct": 0.0,
+   "jambes_pct": 13.7,
+   "torse_tete_pct": 20.5
+  }
+ },
+ "279": {
+  "cam_v5_orbite(az,el,dist,fov)": [
+   -40.3,
+   20.7,
+   3.75,
+   62.0
+  ],
+  "cadrage": {
+   "haut_perso_pct": 194,
+   "larg_perso_pct": 204,
+   "dans_cadre_pct": {
+    "Torso": 88,
+    "Head": 100,
+    "Right Arm": 100,
+    "Left Arm": 25,
+    "Right Leg": 75,
+    "Left Leg": 50
+   },
+   "pieds_visibles": false
+  },
+  "aires": {
+   "brasD_pct": 3.0,
+   "brasG_pct": 3.4,
+   "jambes_pct": 5.2,
+   "torse_tete_pct": 27.2
+  }
+ },
+ "281": {
+  "cam_v5_orbite(az,el,dist,fov)": [
+   -40.0,
+   18.4,
+   3.68,
+   62.0
+  ],
+  "cadrage": {
+   "haut_perso_pct": 266,
+   "larg_perso_pct": 132,
+   "dans_cadre_pct": {
+    "Torso": 50,
+    "Head": 62,
+    "Right Arm": 100,
+    "Left Arm": 12,
+    "Right Leg": 25,
+    "Left Leg": 25
+   },
+   "pieds_visibles": false
+  },
+  "aires": {
+   "brasD_pct": 9.4,
+   "brasG_pct": 0.2,
+   "jambes_pct": 1.9,
+   "torse_tete_pct": 28.4
+  }
+ },
+ "282": {
+  "cam_v5_orbite(az,el,dist,fov)": [
+   -36.8,
+   18.3,
+   3.51,
+   62.0
+  ],
+  "cadrage": {
+   "haut_perso_pct": 293,
+   "larg_perso_pct": 141,
+   "dans_cadre_pct": {
+    "Torso": 50,
+    "Head": 62,
+    "Right Arm": 100,
+    "Left Arm": 0,
+    "Right Leg": 38,
+    "Left Leg": 25
+   },
+   "pieds_visibles": false
+  },
+  "aires": {
+   "brasD_pct": 12.5,
+   "brasG_pct": 0.0,
+   "jambes_pct": 1.3,
+   "torse_tete_pct": 25.8
+  }
+ }
+}
