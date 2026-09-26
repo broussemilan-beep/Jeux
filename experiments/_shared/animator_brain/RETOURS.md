@@ -890,3 +890,21 @@ cerveau, voir la fin de l'entrée.
     les animateurs placent le rig, etc.), sans chercher à boucher un trou
     précis. Le but : pouvoir ensuite corriger, expliquer, améliorer,
     suggérer, créer.
+
+- **2026-09-26, question de Milan pendant le chantier 4** : « es que ut
+  trouve que notre cerveau et toi avait de bon yeux ? dans le sens la tu
+  travailles le jugement mais que ut vois bien ce que tu juges ou es que ce
+  peut te permettre de mieux juger ? je le redis on ne sait jamais tsb est
+  très bien masi faut uasis distinguer quelque chose on fais bcp de
+  cinématique et ya bcp de ref qui sont en vision jeux donc dif notamment
+  comme les M1 M2 M3 au cas ou je le dis »
+  - À inscrire dans la synthèse du chantier 4 : chaque apprentissage porte
+    son registre, JEU (caméra du joueur, haut du corps sur la course,
+    coup court qui s'enchaîne, lisible de n'importe quel angle : M1-M4,
+    pack) ou CINÉMATIQUE (caméra écrite, pose trichée pour UN plan, corps
+    entier, tenues, coupes : ultimes, nos scènes), ou les deux. Ne pas
+    transférer un chiffre de jeu dans une cinématique sans le dire.
+  - Réponse sur les yeux : voir le message du jour (limites : je regarde
+    des images, pas du mouvement à vitesse réelle ; la profondeur 2D -> 3D
+    m'a trompé sur Pew et SP2 ; je juge nos anims sur planches et chiffres
+    plus que sur la vidéo au cadrage réel).
