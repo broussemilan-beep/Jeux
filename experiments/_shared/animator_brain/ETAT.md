@@ -43,7 +43,7 @@ savoir où on en était sans l'historique de conversation.)
 
 ## 1b. Chantiers en cours (2026-09-26, après la v5 notée 7,5)
 
-Trois chantiers lancés en même temps, dans cet ordre de livraison :
+Chantiers, dans cet ordre de livraison :
 
 1. **Poing chargé géométrique -> v6 d'« Un seul coup »** : mesures R6
    exactes des anims TSB + pack, reconstruction 3D de chaque ref par
@@ -58,6 +58,14 @@ Trois chantiers lancés en même temps, dans cet ordre de livraison :
    MIT ; cloné en lecture dans `/home/user/nousresearch/hermes-agent`) :
    mémoire bornée, compétences qui s'améliorent, curateur, preuves,
    rappel -> plan proposé à Milan, puis appliqué.
+
+4. **Se renourrir réellement de TOUT le contenu envoyé** (demande de Milan,
+   à faire une fois 1-3 finis, avec la nouvelle organisation) : toutes ses
+   refs (vidéos, GIF, images, manga, captures) et tous les tutos, relus pour
+   de vrai. Quatre buts : apprendre ; comprendre ; pouvoir REFAIRE (chaque
+   technique ou pose clé reproduite en R6 et mesurée avec `geo_pose`, à côté
+   de la ref) ; affiner l'œil critique (prédire ce qu'on voit, puis comparer).
+   Ce qui en sort reste des apprentissages, pas des règles.
 
 Scripts des analyses (hors dépôt, session) : `wf_mesure.js`, `wf_audit.js`,
 `wf_hermes.js` dans le dossier scratchpad `poing/`.
