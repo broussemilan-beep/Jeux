@@ -26,8 +26,9 @@ savoir où on en était sans l'historique de conversation.)
   lecteur https://claude.ai/artifact/NhbCvzUSuGwqc4BSvcEYpE. v1 : retour
   de Milan (départ trop lent, « frappait vers le bas ») -> **v2** (départ en
   3 images, sol cassé, charge buste qui tourne, coup à plat ; vidéo
-  `2026-09-26-un-seul-coup-v2-scene-complete-avec-son.mp4`). Prédiction 8,0,
-  en attente de sa note.
+  `2026-09-26-un-seul-coup-v2-scene-complete-avec-son.mp4`) -> **7/10** :
+  départ ultra rapide validé ; le POING CHARGÉ n'est toujours pas le
+  mouvement qu'il veut. Il envoie un clip : le relire à 0,1 s AVANT toute clé.
 - **Prochaine étape** : le retour de Milan sur « Un seul coup » ; il veut
   encore 1-2 animations ici avant de passer sur Roblox Studio (il dira quand).
 

@@ -792,3 +792,15 @@ cerveau, voir la fin de l'entrée.
     -5°, poing 3,4) ; 5 nouveaux contrôles d'export ; CARNET 2.9.
   - Avant/après : `captures/verification/2026-09-26-un-seul-coup-v1-contre-v2-depart-charge-coup.png`.
 
+- **2026-09-26, « Un seul coup » v2 -> 7/10 (Milan)** : « il n'y a pas le
+  mouvement que je veux ; le moment ultra rapide, très bien ; mais toujours
+  pas le poing chargé : je pense que tu ne captes pas le truc du poing
+  chargé, je vais te clipper pour que tu te concentres sur ça ».
+  - Prédiction 8,0 : surestimée d'1 point, sur le point même que Milan
+    répète depuis le Poing du Dragon v4 (COUP_CHARGE §1). Le départ est
+    validé ; le MOUVEMENT du poing chargé (pas seulement sa pose ni sa
+    hauteur) reste à comprendre.
+  - En attente de son clip : le relire à 0,1 s (pose ET mouvement : d'où part
+    le poing, comment le corps charge, le rythme charge -> départ -> coup)
+    avant de toucher une clé.
+
