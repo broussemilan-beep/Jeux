@@ -36,7 +36,7 @@ moindre clé.
 
 **Ce qui revient depuis le début** :
 - le BUSTE qui tourne pour charger ;
-- le poing armé DERRIÈRE ;
+- ~~le poing armé DERRIÈRE~~ [CONTREDIT par Milan le 2026-09-26 09:04 : « dans aucune le bras est tendu derrière » ; c'est le BUSTE qui tourne qui met le poing en arrière, voir CARNET 2.10] ;
 - les jambes pliées ;
 - l'autre bras placé ;
 - un coup qui va DROIT, jamais de bas en haut ;

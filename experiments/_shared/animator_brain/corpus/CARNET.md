@@ -329,7 +329,19 @@ poitrine est la cible). Le bas et le penché servent à l'élan et à la charge
 (Gon), jamais à l'arrivée du coup droit (Saitama manga : à plat, épaule
 devant).
 
-**2.10 Le poing chargé est un ARC QU'ON TEND, pas une pose** (Milan, clip
+**2.10 Le poing chargé : mesuré sur les refs le 2026-09-26, voir
+`corpus/poses/` et la fiche UN_SEUL_COUP §11** (en attendant la synthèse :
+les DEUX bras sont DEVANT le torse chez Pew pendant la tenue, le recul vient
+du buste qui tourne ; aucune ref ne tend le bras derrière).
+- Statut : mesuré (reconstruction 3D + vérificateurs adverses) ; lectures
+  ci-dessous CONTREDITES.
+- Source : Milan, 2026-09-26 09:04 (milan_verbatim bbef1dc35f95e2c0) : « je
+  pense tu fais partir le poing de l'arrière ou de l'arme à l'arrière,
+  arrière qui est engager par le [buste qui] tourne […] dans aucune le bras
+  est tendu derrière ».
+- Anciennes lectures (gardées pour la trace, ne plus appliquer) :
+  - [CONTREDIT v3 -> « aucun changement », puis v4] « Le poing chargé est un
+    ARC QU'ON TEND, pas une pose » (Milan, clip
 Pew + TSB, après 7/10 : « tu ne captes pas le truc du poing chargé »).
 Garde -> il s'enfonce et tourne jusqu'au profil -> les deux bras
 s'alignent tendus sur la ligne des épaules (poing loin derrière, l'autre
@@ -337,7 +349,8 @@ bras vers la cible) -> tenue qui tremble -> tout se déroule à 180°. En R6,
 où le bras ne plie pas, c'est l'alignement des DEUX bras qui dit « chargé ».
 Un poing déjà derrière qui recule de 0,6 stud ne charge rien : ce qui se
 voit, c'est le TRAJET (devant -> derrière) et la ROTATION du buste.
-  - Corrigé par Milan sur la v3 (« aucun changement ») : l'arc tendu
+  - [CONTREDIT en partie v4 -> « jambes trop abusées », 2026-09-26]
+    Corrigé par Milan sur la v3 (« aucun changement ») : l'arc tendu
     DEBOUT ne se lit pas comme une charge. La charge des refs est RAMASSÉE :
     genoux très pliés, buste courbé (~45-60°), tête basse, bras écartés sous
     le buste. Une pose se regarde en grand et sous plusieurs angles avant de

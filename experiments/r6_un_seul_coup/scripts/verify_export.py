@@ -100,7 +100,7 @@ def main(blend):
     # du coup) à lire à côté des fourchettes mesurées sur les refs (fiche
     # UN_SEUL_COUP §11) ; seuls les contrôles techniques restent en vrai/faux.
     rep["mesures_pose"] = {nom: G.descripteurs(wa(f)) for nom, f in (
-        ("garde", C.ARRIVEE_F), ("charge", C.CHARGE_F), ("tenue", C.TENUE_F), ("detente", C.FRAPPE_F),
+        ("garde", C.ARRIVEE_F), ("debut_charge", C.CHARGE_F), ("tenue", C.TENUE_F), ("detente", C.FRAPPE_F),
         ("contact", C.CONTACT_F), ("tenue_du_coup", C.CONTACT_F + 6))}
     # contrôles TECHNIQUES : orientation des rigs, placement de la scène,
     # contact réellement devant, interpolation exportée
