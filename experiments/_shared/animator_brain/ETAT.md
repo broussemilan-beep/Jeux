@@ -28,7 +28,9 @@ savoir où on en était sans l'historique de conversation.)
   3 images, sol cassé, charge buste qui tourne, coup à plat ; vidéo
   `2026-09-26-un-seul-coup-v2-scene-complete-avec-son.mp4`) -> **7/10** :
   départ ultra rapide validé ; le POING CHARGÉ n'est toujours pas le
-  mouvement qu'il veut. Il envoie un clip : le relire à 0,1 s AVANT toute clé.
+  mouvement qu'il veut -> clip reçu (Pew + TSB) -> **v3** : le poing chargé
+  en arc tendu (fiche §7, CARNET 2.10 ; vidéo
+  `2026-09-26-un-seul-coup-v3-scene-complete-avec-son.mp4`). Prédiction 7,8.
 - **Prochaine étape** : le retour de Milan sur « Un seul coup » ; il veut
   encore 1-2 animations ici avant de passer sur Roblox Studio (il dira quand).
 

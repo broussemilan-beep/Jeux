@@ -803,4 +803,10 @@ cerveau, voir la fin de l'entrée.
   - En attente de son clip : le relire à 0,1 s (pose ET mouvement : d'où part
     le poing, comment le corps charge, le rythme charge -> départ -> coup)
     avant de toucher une clé.
+  - **Clip reçu (5 captures)** : Pew 2,9-5,0 s relu à 0,1-0,2 s -> le poing
+    chargé = un arc qu'on tend (fiche UN_SEUL_COUP §7, CARNET 2.10) -> v3 :
+    garde -> s'enfonce + tourne au profil + bras alignés tendus -> tenue qui
+    tremble -> détente. Avant/après :
+    `captures/verification/2026-09-26-un-seul-coup-v2-contre-v3-poing-charge.png`.
+    Prédiction 7,8.
 

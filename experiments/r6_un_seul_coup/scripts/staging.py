@@ -89,13 +89,14 @@ def camera_keys(aw, vw):
     #    destination hors champ à gauche (le sillage y file)
     add(M["depart"], [8.4, 1.8, 0.9], [0.0, 2.4, 0.9], 46, "cut")
     add(M["charge"] - 1, [9.0, 2.0, 1.2], [0.0, 2.0, 0.9], 48)
-    # 4. LA CHARGE : il est déjà devant la victime ; profil côté poing armé,
-    #    un peu derrière : on voit le buste TOURNER et le poing partir en
-    #    arrière ; poussée lente (1,4 s)
-    a = A(M["charge"] + 36)
-    #    (1er essai à 5 studs : le poing sortait du cadre, la pose ne se lisait pas en entier)
-    add(M["charge"], a + [7.6, -0.2, 3.2], a + [0.0, 0.3, -1.4], 44, "cut")
-    add(M["frappe"], a + [6.2, -0.3, 2.5], a + [0.0, 0.4, -1.2], 42)
+    # 4. LA CHARGE (v3) : de face / profil côté poitrine (il se met de
+    #    profil, poitrine vers +x) : on voit l'arc se tendre, les deux bras
+    #    alignés (poing derrière à gauche, l'autre bras vers la victime à
+    #    droite) ; poussée lente pendant la tenue
+    a = A(214)
+    #    (1er cadrage à 7 studs : jambes coupées, victime qui mangeait le cadre)
+    add(M["charge"], a + [10.5, 0.2, -0.6], a + [0.0, -0.1, -2.0], 42, "cut")
+    add(M["frappe"], a + [8.6, 0.0, -0.6], a + [0.0, 0.0, -1.9], 40)
     # 6. FRAPPE : REGARD DE LA VICTIME (elle est masquée) ; la caméra est à
     #    hauteur du point touché : le poing arrive À PLAT dans l'objectif
     tg = np.asarray(SCENE["contact_tgt"], float)

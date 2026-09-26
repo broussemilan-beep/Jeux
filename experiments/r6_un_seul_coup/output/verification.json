@@ -1,27 +1,27 @@
 {
  "contact": 0.05,
  "sol": {
-  "plus_bas_attaquant": -0.088,
+  "plus_bas_attaquant": -0.081,
   "plus_bas_victime": -0.011,
   "images_attaquant_sous_0.1": []
  },
  "translation_tete_max": 0.00012,
  "aller_retour_max": 5.685902922862834e-14,
  "cles": {
-  "attaquant": 93,
+  "attaquant": 113,
   "victime": 59,
   "frames": 751
  },
- "ecart_max_reduction_studs": 0.0177,
+ "ecart_max_reduction_studs": 0.0158,
  "taille_fichiers_ko": [
-  597,
+  725,
   380
  ],
  "mesures_coup": {
   "bras_elev_contact": -5.5,
   "buste_penche_contact": 7.3,
   "poing_y_contact": 3.37,
-  "buste_penche_charge": 12.0,
+  "buste_penche_charge": 17.8,
   "bras_elev_tenue": [
    -3.2,
    -3.2,

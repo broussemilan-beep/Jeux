@@ -28,6 +28,7 @@ Saitama, le GIF et l'anime TSB ».
 | b5d718f5-image.jpg | 2a5a532ccca5e290 | One Punch Man (manga) : Saitama, le coup À PLAT vers le lecteur, épaule en avant, lignes de vitesse. | idem |
 | 793721de-image.jpg | 1d95cf63c9296ba2 | One Punch Man : Saitama de dos, appuis larges, buste tordu, dans un tourbillon (la charge vue de dos). | idem |
 | d2fda413-image.jpg | b83359433025e5dd | One Punch Man (anime) : le poing ROUGE qui part droit, traînées, Saitama en ombre, œil qui brille. | idem |
+| 6c517cb3 / 27f110ee / 9388f709 / 27b0a39e / a54fe910 (.png, captures d'écran) | - | Clip de Milan sur le POING CHARGÉ : Serious Punch de Pew (lvB-wTylH3Y, 2,9-4,5 s : accroupi, de profil, bras alignés tendus, tête rentrée) + Saitama TSB de dos. | `fiches/UN_SEUL_COUP.md` §7, CARNET 2.10 |
 | 33393716-image.jpg | 815c6323115a7435 | Anime style Baki : charge BASSE et LARGE, lumière dorée du sol. | `ETUDE_NOTES_BRUTES.md` « Images fixes » |
 | (sakuga) 162980 | — | OPM #12, Saitama contre Boros, « LA référence Saitama ». | `ETUDE_NOTES_BRUTES.md`, `refs/sakugabooru/` |
 | (sakuga) 194936 | — | OPM #01, Saitama contre un géant : le coup MONTE, caméra sous le poing. | `ETUDE_VISUELLE.md` « coup qui part d'en bas » |

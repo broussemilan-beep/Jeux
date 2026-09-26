@@ -148,3 +148,32 @@ l'approche.
 
 Prédiction v2 : **8,0/10**.
 
+## 7. v3 : le POING CHARGÉ (clip de Milan, 2026-09-26, v2 notée 7/10)
+
+« Le moment ultra rapide, très bien ; mais toujours pas le poing chargé, tu ne
+captes pas le truc. » Son clip : 4 captures du Serious Punch de Pew (2,9 -
+5,0 s de lvB-wTylH3Y, relues à 0,1-0,2 s) + Saitama de TSB (de dos).
+
+**Ce que je n'avais pas compris** : le poing chargé est un MOUVEMENT d'arc
+qu'on tend, pas une pose.
+1. Il est en garde, face à elle.
+2. Il s'ENFONCE (genoux très pliés) et TOURNE jusqu'à être de profil,
+   presque dos à elle (Saitama TSB : on voit son dos) ;
+3. les DEUX BRAS S'ALIGNENT sur la ligne des épaules, tendus : le poing
+   droit loin derrière, l'autre bras vers la victime (Pew 3,9-4,5 : un T
+   couché, bien lisible en R6 où un bras ne plie pas) ; la tête rentre ;
+4. tenue ~0,8 s qui tremble (la tension monte) ;
+5. tout se DÉROULE d'un coup (180°) : le bras qui visait revient, le poing
+   part à plat.
+La v2 avait le poing déjà derrière dès l'arrivée (0,6 stud de recul en
+1,4 s) et le buste de face (-66°) : pas d'arc, donc pas de charge.
+
+**v3** : garde à l'arrivée (0,2 s, vue après la coupe) -> l'arc se tend en
+0,4 s (racine -48°, bassin -50°, bras alignés à ±180°, s'enfonce de 0,85)
+avec dépassement -> tenue qui tremble (torsion +7°, compression) ->
+dernière compression 4 i -> détente 12 i. Caméra de face côté poitrine :
+le T se lit, la victime dans le cadre.
+
+Prédiction v3 : **7,8/10** (le mouvement est celui du clip ; incertain :
+est-ce la bonne lecture de « charger » pour lui, et la détente de 12 i).
+

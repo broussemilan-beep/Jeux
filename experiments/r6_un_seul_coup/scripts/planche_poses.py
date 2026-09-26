@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.join(HERE, "..", "..", "_shared", "animator_brain", "
 import coup_clip as C  # noqa: E402
 import moon  # noqa: E402
 
-FRAMES = [156, 170, 173, 186, 200, 222, 252, 271, 275, 279, 281, 283, 300, 660]
+FRAMES = [186, 200, 208, 214, 250, 266, 271, 275, 279, 281, 283]
 
 
 def main(blend, out, frames=FRAMES):

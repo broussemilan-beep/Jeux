@@ -45,6 +45,16 @@ droit, poing à hauteur de poitrine, poing derrière pendant la charge).
 Avant/après : `captures/verification/2026-09-26-un-seul-coup-v1-contre-v2-depart-charge-coup.png` ;
 vidéo `2026-09-26-un-seul-coup-v2-scene-complete-avec-son.mp4`.
 
+## v3 : le poing chargé (clip de Milan ; v2 notée 7/10)
+
+La charge est refaite en ARC QU'ON TEND (fiche §7) : garde à l'arrivée ->
+il s'enfonce et tourne jusqu'au profil, les deux bras s'alignent tendus
+(poing loin derrière, l'autre bras vers la victime) en 0,4 s -> tenue qui
+tremble (3,55-4,43 s) -> dernière compression -> détente 12 i, poing à
+plat. Caméra de face côté poitrine. Contrôles d'export inchangés et tous OK
+(coup à plat : buste 7°, bras -5°, poing 3,4 studs). Avant/après :
+`captures/verification/2026-09-26-un-seul-coup-v2-contre-v3-poing-charge.png`.
+
 ## Chaîne (réutilise celle du Poing du Dragon)
 
 ```bash

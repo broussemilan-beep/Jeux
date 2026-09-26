@@ -329,6 +329,15 @@ poitrine est la cible). Le bas et le penché servent à l'élan et à la charge
 (Gon), jamais à l'arrivée du coup droit (Saitama manga : à plat, épaule
 devant).
 
+**2.10 Le poing chargé est un ARC QU'ON TEND, pas une pose** (Milan, clip
+Pew + TSB, après 7/10 : « tu ne captes pas le truc du poing chargé »).
+Garde -> il s'enfonce et tourne jusqu'au profil -> les deux bras
+s'alignent tendus sur la ligne des épaules (poing loin derrière, l'autre
+bras vers la cible) -> tenue qui tremble -> tout se déroule à 180°. En R6,
+où le bras ne plie pas, c'est l'alignement des DEUX bras qui dit « chargé ».
+Un poing déjà derrière qui recule de 0,6 stud ne charge rien : ce qui se
+voit, c'est le TRAJET (devant -> derrière) et la ROTATION du buste.
+
 ## 3. La 3D qui imite l'anime
 
 **3.1 Perspective forcée : avancer le bras, pas élargir le FOV.** *Texte
