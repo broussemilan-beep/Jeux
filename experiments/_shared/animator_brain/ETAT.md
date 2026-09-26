@@ -75,6 +75,17 @@ Chantiers, dans cet ordre de livraison :
    technique ou pose clé reproduite en R6 et mesurée avec `geo_pose`, à côté
    de la ref) ; affiner l'œil critique (prédire ce qu'on voit, puis comparer).
    Ce qui en sort reste des apprentissages, pas des règles.
+   **Lancé le 2026-09-26** après la v6 (« c trjs pas bon ») : 12 lecteurs
+   en 3 groupes, chacun suivi d'un vérificateur adverse. A : données
+   exactes des pros (TSB 13 anims, pack 19) vues clé par clé avec le nouvel
+   outil `outils/planche_cles.py`, dont un exercice d'œil à l'aveugle
+   (Stoic Bomb : prédire depuis la vidéo, puis ouvrir les clés). B : tutos
+   (méthode de travail, pro contre noob, critiques du DevForum, techniques
+   anime). C : vidéos TSB (dont les anims abandonnées sans effets), clips
+   de jeux, GIF, images fixes et le goût de Milan d'après ses mots. Notes
+   brutes dans le scratchpad (`c4/notes/`), synthèse versionnée ensuite.
+   Non couvert à ce tour : les tutos VFX pure (particules, flipbooks),
+   déjà étudiés le 2026-09-25.
 
 Scripts des analyses (hors dépôt, session) : `wf_mesure.js`, `wf_audit.js`,
 `wf_hermes.js` dans le dossier scratchpad `poing/`.

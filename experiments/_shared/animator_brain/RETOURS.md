@@ -874,3 +874,19 @@ cerveau, voir la fin de l'entrée.
   - Preuves : `captures/verification/2026-09-26-un-seul-coup-v5-contre-v6-poing-charge.png`,
     `...-v6-plans-charge-et-coup.png`, `...-v6-scene-complete-avec-son.mp4` ;
     registre `corpus/preuves.jsonl` (technique : passe ; mesures de pose).
+
+- **2026-09-26, Milan sur la v6** : « c trjs pas bon et je préfère que tu
+  ailles faire le chnatier 4 pour voir si tu comprends par toi même . juste
+  ne chercher pas forcément a combler des trou ou quelque chose en
+  particulier tu te nourri pou apprendre comprendre l'animation et grace a
+  ce tu pourra corriger faire comprendre améliorer même donner des usggestion
+  créé etc . sur otut gros point comment les animatons sont faite ou il
+  place les rig etc c vrmt apprendre dans le sesn large »
+  - Pas de note. Mesurer les poses des refs n'a pas suffi : six versions du
+    poing chargé, toujours « pas bon ». Le problème n'est pas une pose de
+    plus, c'est la compréhension de l'animation elle-même.
+  - Décision de Milan : on arrête d'itérer sur le coup ; chantier 4 au sens
+    LARGE : apprendre l'animation (comment les animations sont faites, où
+    les animateurs placent le rig, etc.), sans chercher à boucher un trou
+    précis. Le but : pouvoir ensuite corriger, expliquer, améliorer,
+    suggérer, créer.

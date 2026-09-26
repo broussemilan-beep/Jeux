@@ -18,14 +18,15 @@ TOUTE session. Le détail vit dans les fiches ; un détail perdu se RECHERCHE
 
 ## Où on en est
 - Production active : « Un seul coup » (Serious Punch R6),
-  `experiments/r6_un_seul_coup/`. v5 notée 7,5 ; v6 livrée (poing chargé
-  refait d'après les poses MESURÉES des refs, `corpus/poses/`, fiche §11) ;
-  prédiction 7,9, en attente de Milan.
+  `experiments/r6_un_seul_coup/`. v5 notée 7,5 ; v6 (poses MESURÉES des
+  refs, fiche §11) : « c trjs pas bon ». Milan arrête l'itération sur ce
+  coup et demande le chantier 4 : apprendre l'animation au sens large.
 - Fiche active : `corpus/fiches/UN_SEUL_COUP.md`.
 - Chantiers : 1 v6 ; 2 audit fait (`corpus/recherche/AUDIT_CERVEAU_2026-09-26.md`) ;
   3 réorganisation (`corpus/recherche/PLAN_REORGANISATION_2026-09-26.md`) ;
-  4 se renourrir de tout le contenu envoyé (apprendre, comprendre,
-  pouvoir refaire, affiner l'œil).
+  4 EN COURS (2026-09-26) : se renourrir de tout le contenu envoyé
+  (apprendre, comprendre, pouvoir refaire, affiner l'œil ; « pas combler
+  des trous »). Notes : ETAT §1b.
 
 ## Ce que Milan a répété (ses mots exacts : `corpus/milan_verbatim.jsonl`)
 - « Il frappe vers le bas » : 6 fois (Dragon v3-v7, Un seul coup v1). Au
