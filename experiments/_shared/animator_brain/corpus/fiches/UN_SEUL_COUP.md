@@ -295,3 +295,16 @@ charge, masquée pendant le coup (caméra près d'elle).
 Preuves : `captures/verification/2026-09-26-un-seul-coup-v5-contre-v6-poing-charge.png`
 (v5 / v6 aux mêmes caméras, descripteurs) ; `…-v6-plans-charge-et-coup.png`
 (le lecteur) ; vidéo `…-v6-scene-complete-avec-son.mp4`.
+
+
+## 12. Retour de Milan sur la v6 (2026-09-26)
+
+« c trjs pas bon » (11:33), puis, après la synthèse du chantier 4 : « Ce qui
+était tues pas bon c le placement du bras sur tout mais tes pistes sont
+inteeessant ». Le défaut principal est donc le PLACEMENT DU BRAS (pas la
+tête, pas le montage, qui restent des pistes). Avant toute v7 : relire le
+placement des bras de la v6 (charge, détente, contact) contre ce que les
+pros font vraiment avec les bras en R6 (`corpus/etude_c4/SYNTHESE.md` §0.10,
+§1(b) ; A1, A4, B1, B3 : translation des membres, bras qui se retire, 2e bras
+non miroir). Pas de v7 sans son accord : il a demandé d'abord l'état de la
+partie recherche et technique.

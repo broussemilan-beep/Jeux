@@ -908,3 +908,18 @@ cerveau, voir la fin de l'entrée.
     des images, pas du mouvement à vitesse réelle ; la profondeur 2D -> 3D
     m'a trompé sur Pew et SP2 ; je juge nos anims sur planches et chiffres
     plus que sur la vidéo au cadrage réel).
+
+- **2026-09-26, Milan précise la v6 (après la synthèse du chantier 4)** :
+  « Ce qui était tues pas bon c le placement du bras sur tout mais tes pistes
+  sont inteeessant . Avant de continue es que toute la partie rechercher
+  optimisation et technique est fini ? »
+  - Ce qui ne va pas dans la v6 : SURTOUT le placement du bras. La synthèse
+    (`corpus/etude_c4/SYNTHESE.md` §4) ne l'avait pas mis en tête : ses
+    constats mesurés portaient sur la tête, la vitesse, l'arrêt groupé, le
+    montage et la pose d'après ; seule H2 (moment fermé, bras gauche
+    rejeté) touchait aux bras. À relire avec ce qu'on sait des pros : bras
+    translatés de 0,3 à 1,7 stud (A4, B3), bras qui se retire aussi vite que
+    le poing (A1), 2e bras jamais en miroir (C4), et sa plainte constante
+    sur la trajectoire (« du bas », « de derrière »).
+  - Il demande si toute la partie recherche / optimisation / technique est
+    finie avant de continuer : état fait le jour même (réponse du jour).
