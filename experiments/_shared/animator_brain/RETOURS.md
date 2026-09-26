@@ -923,3 +923,11 @@ cerveau, voir la fin de l'entrée.
     sur la trajectoire (« du bas », « de derrière »).
   - Il demande si toute la partie recherche / optimisation / technique est
     finie avant de continuer : état fait le jour même (réponse du jour).
+
+- **2026-09-26, Milan (pendant les chantiers techniques)** : « Avant le m1
+  fais serious punch comme il faut avec tes nvl futur capacité »
+  - Ordre changé : après le nettoyage, les nouveaux yeux et la technique,
+    on refait d'abord « Un seul coup » (v7), en commençant par le placement
+    du bras (son retour du jour), jugé avec les nouveaux outils (côte à
+    côte à vitesse réelle, carte des changements, questions à l'aveugle,
+    profondeur, hauteur d'impact) ; l'exercice M1 vient après.
