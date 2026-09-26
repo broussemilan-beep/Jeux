@@ -821,3 +821,27 @@ cerveau, voir la fin de l'entrée.
     `captures/verification/2026-09-26-un-seul-coup-v3-contre-v4-pose-de-charge.png`.
     Prédiction 7,6.
 
+
+- **2026-09-26, « Un seul coup » v4 (Milan, en arrêtant les 5 points de la
+  comparaison)** : « je pense que tu fais partir le poing de l'arrière, ou de
+  l'armé à l'arrière ; l'arrière est engagé par le buste qui tourne ; de plus
+  la pose des jambes est un peu trop abusée. Dans aucune ref le bras est tendu
+  derrière. » (refs remises.)
+  - v5 : poings de part et d'autre du corps, buste tourné (lacet -60 à -71°),
+    penché 28°, jambes en garde, charge en très gros plan. Fiche §10.
+    Prédiction 7,8.
+
+- **2026-09-26, « Un seul coup » v5 -> 7,5/10 (Milan)** : « c'est un peu
+  mieux mais c'est pas bon encore. Je te mets en ultra le temps que tu
+  comprennes : analyse visuellement, géométriquement, etc. C'est une brique
+  importante qui te manque. Je ne sais pas comment te l'expliquer : essaie de
+  te nourrir, toi et le cerveau, et de mieux comprendre. »
+  - Prédiction 7,8 : surestimée de 0,3.
+  - Diagnostic de départ : cinq versions du poing chargé traduisaient des MOTS
+    (« arrière », « buste qui tourne », « sur le côté ») en clés, sans jamais
+    savoir où étaient VRAIMENT les membres dans les refs. Nouvel outil
+    `outils/geo_pose.py` (mesurer une pose en nombres d'animateur,
+    reconstruire une image de ref par rendu-comparaison, comparer depuis la
+    même caméra) ; analyse complète en cours (données R6 exactes des
+    animations TSB + pack, reconstruction de chaque ref, vérification
+    adverse). Suite : fiche UN_SEUL_COUP §11.
