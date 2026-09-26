@@ -1,0 +1,105 @@
+{
+ "clip": "gemini_soleil",
+ "sha1_16": "3a87f65bdec67a4a",
+ "duree_s": 10.0,
+ "resolution": [
+  1280,
+  720
+ ],
+ "zone_analysee": [
+  0,
+  5,
+  160,
+  89
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 41.7,
+  "lecture": "en 2 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 0,
+  "part_du_temps": 0.0,
+  "plus_longue_ms": 0
+ },
+ "energie": {
+  "mediane": 10.55,
+  "pic_p95": 28.89,
+  "contraste_p95_sur_mediane": 2.74,
+  "part_rapide": 0.048
+ },
+ "impacts": {
+  "nombre": 1,
+  "par_seconde": 0.1,
+  "ecart_median_s": null,
+  "cartes": [
+   {
+    "t_s": 4.083,
+    "type": "silhouette",
+    "duree_ms": 333
+   }
+  ],
+  "profil_autour": {
+   "approche": 14.16,
+   "0,1 s avant": 11.9,
+   "0,1 s apres": 3.6,
+   "tenue_avant_choc": false,
+   "explosion_apres": false
+  }
+ },
+ "coupes": {
+  "nombre": 2,
+  "t_s": [
+   3.583,
+   4.417
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.16,
+  "decalage_p95_pct": 2.49
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 8.08,
+  "secondes_de_mouvement": 7.3,
+  "vitesse_sujet_p90": 2.249,
+  "pics": 80,
+  "part_des_pics_qui_montent": 0.38,
+  "deviation_trajectoire_mediane": 0.44,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#1b2d32",
+   "part": 0.235
+  },
+  {
+   "hex": "#bbbcb4",
+   "part": 0.206
+  },
+  {
+   "hex": "#706b5e",
+   "part": 0.171
+  },
+  {
+   "hex": "#97938d",
+   "part": 0.158
+  },
+  {
+   "hex": "#4d463d",
+   "part": 0.131
+  },
+  {
+   "hex": "#e5e2cd",
+   "part": 0.1
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 17,
+  "termes": {
+   "contraste_de_temps": 0.35,
+   "tenues_presentes": 0.0,
+   "impacts_rythmes": 0.07
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/sheets/gemini_soleil.png"
+}

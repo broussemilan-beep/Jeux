@@ -1,0 +1,217 @@
+{
+ "clip": "impact_haven",
+ "sha1_16": "efbddd20845ba72e",
+ "duree_s": 11.35,
+ "resolution": [
+  888,
+  1920
+ ],
+ "zone_analysee": [
+  0,
+  61,
+  160,
+  258
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 33.3,
+  "lecture": "en 2 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 3,
+  "part_du_temps": 0.103,
+  "plus_longue_ms": 567
+ },
+ "energie": {
+  "mediane": 5.99,
+  "pic_p95": 31.64,
+  "contraste_p95_sur_mediane": 5.28,
+  "part_rapide": 0.048
+ },
+ "impacts": {
+  "nombre": 22,
+  "par_seconde": 1.94,
+  "ecart_median_s": 0.367,
+  "cartes": [
+   {
+    "t_s": 1.85,
+    "type": "blanc",
+    "duree_ms": 100
+   },
+   {
+    "t_s": 2.383,
+    "type": "silhouette",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 2.85,
+    "type": "silhouette",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 3.15,
+    "type": "silhouette",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 3.45,
+    "type": "silhouette",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 3.85,
+    "type": "silhouette",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 4.35,
+    "type": "silhouette",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 4.85,
+    "type": "silhouette",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 5.183,
+    "type": "silhouette",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 5.55,
+    "type": "silhouette",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 5.817,
+    "type": "silhouette",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 6.35,
+    "type": "noir",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 6.85,
+    "type": "silhouette",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 7.183,
+    "type": "noir",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 7.517,
+    "type": "silhouette",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 7.817,
+    "type": "silhouette",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 8.317,
+    "type": "silhouette",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 8.817,
+    "type": "silhouette",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 9.15,
+    "type": "silhouette",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 9.483,
+    "type": "silhouette",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 9.85,
+    "type": "blanc",
+    "duree_ms": 167
+   },
+   {
+    "t_s": 10.083,
+    "type": "noir",
+    "duree_ms": 650
+   },
+   {
+    "t_s": 10.967,
+    "type": "silhouette",
+    "duree_ms": 383
+   }
+  ],
+  "profil_autour": {
+   "approche": 2.24,
+   "0,1 s avant": 0.71,
+   "0,1 s apres": 4.28,
+   "tenue_avant_choc": true,
+   "explosion_apres": true
+  }
+ },
+ "coupes": {
+  "nombre": 4,
+  "t_s": [
+   1.95,
+   9.617,
+   10.017,
+   10.05
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.41,
+  "decalage_p95_pct": 3.01
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 5.59,
+  "secondes_de_mouvement": 3.4,
+  "vitesse_sujet_p90": 5.797,
+  "pics": 26,
+  "part_des_pics_qui_montent": 0.23,
+  "deviation_trajectoire_mediane": 0.798,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#0a0c12",
+   "part": 0.249
+  },
+  {
+   "hex": "#4f9dd9",
+   "part": 0.228
+  },
+  {
+   "hex": "#697791",
+   "part": 0.2
+  },
+  {
+   "hex": "#88b2cb",
+   "part": 0.148
+  },
+  {
+   "hex": "#afcfe0",
+   "part": 0.114
+  },
+  {
+   "hex": "#515565",
+   "part": 0.061
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 77,
+  "termes": {
+   "contraste_de_temps": 1.0,
+   "tenues_presentes": 0.34,
+   "impacts_rythmes": 1.0
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/sheets/impact_haven.png"
+}

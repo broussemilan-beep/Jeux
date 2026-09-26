@@ -1,0 +1,149 @@
+{
+ "clip": "sakugabooru_sakuga_165486",
+ "sha1_16": "785e634d0beca07e",
+ "duree_s": 54.1,
+ "resolution": [
+  852,
+  480
+ ],
+ "zone_analysee": [
+  0,
+  0,
+  160,
+  88
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 9,
+  "part_du_temps": 0.055,
+  "plus_longue_ms": 800
+ },
+ "energie": {
+  "mediane": 8.64,
+  "pic_p95": 39.51,
+  "contraste_p95_sur_mediane": 4.57,
+  "part_rapide": 0.011
+ },
+ "impacts": {
+  "nombre": 3,
+  "par_seconde": 0.06,
+  "ecart_median_s": 19.2,
+  "cartes": [
+   {
+    "t_s": 11.433,
+    "type": "noir",
+    "duree_ms": 283
+   },
+   {
+    "t_s": 11.767,
+    "type": "noir",
+    "duree_ms": 117
+   },
+   {
+    "t_s": 46.833,
+    "type": "noir",
+    "duree_ms": 800
+   },
+   {
+    "t_s": 49.833,
+    "type": "silhouette",
+    "duree_ms": 50
+   }
+  ],
+  "profil_autour": {
+   "approche": 2.72,
+   "0,1 s avant": 1.86,
+   "0,1 s apres": 13.12,
+   "tenue_avant_choc": false,
+   "explosion_apres": true
+  }
+ },
+ "coupes": {
+  "nombre": 21,
+  "t_s": [
+   3.167,
+   5.167,
+   7.5,
+   9.717,
+   11.717,
+   11.883,
+   12.1,
+   16.383,
+   17.6,
+   19.733,
+   29.233,
+   33.2,
+   35.917,
+   37.7,
+   40.167,
+   40.25,
+   47.75,
+   49.883,
+   49.917,
+   50.0,
+   50.85
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.3,
+  "decalage_p95_pct": 8.06
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 3.94,
+  "secondes_de_mouvement": 25.15,
+  "vitesse_sujet_p90": 4.417,
+  "pics": 218,
+  "part_des_pics_qui_montent": 0.24,
+  "deviation_trajectoire_mediane": 0.72,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#1c1a18",
+   "part": 0.212
+  },
+  {
+   "hex": "#747166",
+   "part": 0.191
+  },
+  {
+   "hex": "#a9a998",
+   "part": 0.18
+  },
+  {
+   "hex": "#5b4841",
+   "part": 0.169
+  },
+  {
+   "hex": "#3f3a32",
+   "part": 0.164
+  },
+  {
+   "hex": "#a8df89",
+   "part": 0.084
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 47,
+  "termes": {
+   "contraste_de_temps": 0.88,
+   "tenues_presentes": 0.18,
+   "impacts_rythmes": 0.04
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_165486.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 165486,
+  "tags": "animated background_animation creatures debris effects fabric fighting fire hair impact_frames kekkai_sensen kekkai_sensen_series liquid morphing running smears smoke yutaka_nakamura yutapon_cubes",
+  "score": 5892,
+  "source_oeuvre": "#01 (BD)",
+  "url": "https://www.sakugabooru.com/post/show/165486",
+  "requete": "fighting impact_frames",
+  "pourquoi": "impacts de combat (cartes d'impact, tenue avant le choc)"
+ }
+}

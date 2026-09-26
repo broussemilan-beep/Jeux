@@ -1,0 +1,127 @@
+{
+ "clip": "sakugabooru_sakuga_239831",
+ "sha1_16": "10ad21361ebec86c",
+ "duree_s": 25.4,
+ "resolution": [
+  854,
+  480
+ ],
+ "zone_analysee": [
+  0,
+  0,
+  160,
+  79
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 9,
+  "part_du_temps": 0.097,
+  "plus_longue_ms": 1133
+ },
+ "energie": {
+  "mediane": 9.64,
+  "pic_p95": 83.47,
+  "contraste_p95_sur_mediane": 8.66,
+  "part_rapide": 0.022
+ },
+ "impacts": {
+  "nombre": 3,
+  "par_seconde": 0.12,
+  "ecart_median_s": 9.55,
+  "cartes": [
+   {
+    "t_s": 6.133,
+    "type": "noir",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 15.183,
+    "type": "noir",
+    "duree_ms": 167
+   },
+   {
+    "t_s": 25.233,
+    "type": "noir",
+    "duree_ms": 167
+   }
+  ],
+  "profil_autour": {
+   "approche": 15.17,
+   "0,1 s avant": 11.4,
+   "0,1 s apres": 19.79,
+   "tenue_avant_choc": false,
+   "explosion_apres": true
+  }
+ },
+ "coupes": {
+  "nombre": 4,
+  "t_s": [
+   6.0,
+   20.017,
+   24.267,
+   24.317
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.18,
+  "decalage_p95_pct": 22.01
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 19.85,
+  "secondes_de_mouvement": 10.83,
+  "vitesse_sujet_p90": 3.694,
+  "pics": 215,
+  "part_des_pics_qui_montent": 0.27,
+  "deviation_trajectoire_mediane": 0.459,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#000109",
+   "part": 0.284
+  },
+  {
+   "hex": "#e5b49d",
+   "part": 0.204
+  },
+  {
+   "hex": "#c97d6b",
+   "part": 0.16
+  },
+  {
+   "hex": "#681b11",
+   "part": 0.122
+  },
+  {
+   "hex": "#e0c9b8",
+   "part": 0.116
+  },
+  {
+   "hex": "#150e12",
+   "part": 0.114
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 58,
+  "termes": {
+   "contraste_de_temps": 1.0,
+   "tenues_presentes": 0.32,
+   "impacts_rythmes": 0.08
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_239831.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 239831,
+  "tags": "animated black_and_white castlevania castlevania_season_1 castlevania_series creatures effects fire samuel_deats spencer_wan western",
+  "score": 1443,
+  "source_oeuvre": "OP (BD)",
+  "url": "https://www.sakugabooru.com/post/show/239831",
+  "requete": "western",
+  "pourquoi": "animation occidentale (Arcane, Avatar...)"
+ }
+}

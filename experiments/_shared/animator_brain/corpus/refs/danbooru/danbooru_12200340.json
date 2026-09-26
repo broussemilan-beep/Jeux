@@ -1,0 +1,119 @@
+{
+ "clip": "danbooru_danbooru_12200340",
+ "sha1_16": "db23c3ab6a921a3c",
+ "duree_s": 30.33,
+ "resolution": [
+  1920,
+  1080
+ ],
+ "zone_analysee": [
+  0,
+  0,
+  160,
+  90
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 33.3,
+  "lecture": "en 2 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 4,
+  "part_du_temps": 0.056,
+  "plus_longue_ms": 967
+ },
+ "energie": {
+  "mediane": 10.95,
+  "pic_p95": 39.44,
+  "contraste_p95_sur_mediane": 3.6,
+  "part_rapide": 0.007
+ },
+ "impacts": {
+  "nombre": 1,
+  "par_seconde": 0.03,
+  "ecart_median_s": null,
+  "cartes": [
+   {
+    "t_s": 27.4,
+    "type": "blanc",
+    "duree_ms": 100
+   }
+  ],
+  "profil_autour": {
+   "approche": 38.65,
+   "0,1 s avant": 28.44,
+   "0,1 s apres": 3.25,
+   "tenue_avant_choc": false,
+   "explosion_apres": false
+  }
+ },
+ "coupes": {
+  "nombre": 5,
+  "t_s": [
+   17.8,
+   17.833,
+   27.167,
+   27.233,
+   27.5
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.4,
+  "decalage_p95_pct": 10.08
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 3.05,
+  "secondes_de_mouvement": 20.33,
+  "vitesse_sujet_p90": 2.59,
+  "pics": 151,
+  "part_des_pics_qui_montent": 0.22,
+  "deviation_trajectoire_mediane": 0.943,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#4bcce3",
+   "part": 0.253
+  },
+  {
+   "hex": "#67484e",
+   "part": 0.234
+  },
+  {
+   "hex": "#e8f4d6",
+   "part": 0.188
+  },
+  {
+   "hex": "#d49289",
+   "part": 0.127
+  },
+  {
+   "hex": "#5299a0",
+   "part": 0.1
+  },
+  {
+   "hex": "#dbcfa4",
+   "part": 0.098
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 34,
+  "termes": {
+   "contraste_de_temps": 0.6,
+   "tenues_presentes": 0.19,
+   "impacts_rythmes": 0.02
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/danbooru_danbooru_12200340.png",
+ "source": {
+  "nom": "danbooru",
+  "id": 12200340,
+  "tags": "3girls 6+boys animated antennae apple apple_slice arm_behind_head arthropod_boy audible_music audible_speech banknote barefoot barnacle_boy beard bicorne black_gloves black_hair black_jacket black_pants blank_eyes blonde_hair bloodshot_eyes blowhole blue_eyes blue_gloves blue_pants blue_scarf blue_shirt blue_sky bottle bowl brook_(one_piece) brook_(one_piece)_(cosplay) brown_hat brown_necktie brown_robe brown_sandals brown_shirt buck_teeth butterfly_net cane charlotte_linlin charlotte_linlin_(cosplay) chicken_nuggets clarinet clenched_hands closed_mouth cloud collared_shirt colored_sclera commentary commercial company_name copyright_logo copyright_name copyright_notice cosplay crab_boy crossed_arms crown curtains dancing day east-west_crossover elbow_gloves emphasis_lines english_audio english_commentary epaulettes explosion extra_legs eyelashes eyewear_on_head facial_hair fangs fingernails fins fish_girl flag flaming_foot floral_print_pants flower food franky_(one_piece) franky_(one_piece)_(cosplay) french_fries fruit frying_pan furry gary_(spongebob) gear_fifth ghost glasses gloves goatee gold_crown green_gloves green_hair green_necktie green_shirt grin guitar hair_over_one_eye hammer hand_net happy_meal hat hat_on_back highres holding holding_butterfly_net holding_cane holding_guitar holding_hammer holding_instrument holding_money holding_spatula holding_tray holding_unworn_clothes holding_unworn_hat impact_frames index_finger_raised instrument island jacket jacket_on_shoulders jellyfish jinbe_(one_piece) jinbe_(one_piece)_(cosplay) kicking koby_(one_piece) koby_(one_piece)_(cosplay) large_nose larry_the_lobster light_rays lips lipstick lobster_boy logo long_hair long_nose long_sleeves looping_animation lying makeup marshall_d._teach marshall_d._teach_(cosplay) mcdonald's mermaid_man milk milk_bottle missing_tooth money monkey_d._garp monkey_d._garp_(cosplay) monkey_d._luffy monkey_d._luffy_(cosplay) moss mr._krabs mrs._puff multiple_boys multiple_girls muscular muscular_male musical_note nami_(one_piece) nami_(one_piece)_(cosplay) necktie nico_robin nico_robin_(cosplay) octopus_boy official_art old old_man on_back one-eyed one_eye_closed one_piece open_clothes open_jacket open_mouth orange_hair outdoors oversized_food oversized_object palm_tree pants parody patrick_star pearl_krabs pectorals perfume_bottle pet_bowl photo_inset pink_flower pink_hair pink_hat pink_lips pirate_costume pirate_hat plank plankton_(spongebob) promotional_art purple_aura purple_scarf rectangular_pupils red_eyes red_jacket red_pants robe roronoa_zoro roronoa_zoro_(cosplay) round_eyewear sandals sandy_cheeks sanji_(one_piece) sanji_(one_piece)_(cosplay) saw scarf scratches second-party_source serving_dome shirt shoes short_hair short_sleeves skeleton sky smile smitty_werbenjagermanjensen smoke snail sound spatula spongebob_squarepants spongebob_squarepants_(series) spraying squidward_tentacles squirrel_girl stitches straw_hat teeth tentacles the_flying_dutchman_(spongebob) toes tongue tony_tony_chopper tony_tony_chopper_(cosplay) toon_(style) toy tray tree twirling_hat unworn_hat unworn_headwear usopp usopp_(cosplay) video water waves whale_girl white-framed_eyewear white_hair white_hat white_jacket white_shoes wrench yellow_scarf yellow_sclera",
+  "score": 12,
+  "source_oeuvre": "mcdonald's one_piece spongebob_squarepants_(series)",
+  "artiste": "",
+  "url": "https://danbooru.donmai.us/posts/12200340",
+  "requete": "impact_frames",
+  "pourquoi": "cartes d'impact"
+ }
+}

@@ -1,0 +1,109 @@
+{
+ "clip": "sakugabooru_sakuga_234966",
+ "sha1_16": "33a76d54a664081e",
+ "duree_s": 33.62,
+ "resolution": [
+  854,
+  480
+ ],
+ "zone_analysee": [
+  0,
+  0,
+  160,
+  63
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 0,
+  "part_du_temps": 0.0,
+  "plus_longue_ms": 0
+ },
+ "energie": {
+  "mediane": 13.19,
+  "pic_p95": 40.0,
+  "contraste_p95_sur_mediane": 3.03,
+  "part_rapide": 0.02
+ },
+ "impacts": {
+  "nombre": 1,
+  "par_seconde": 0.03,
+  "ecart_median_s": null,
+  "cartes": [
+   {
+    "t_s": 33.367,
+    "type": "noir",
+    "duree_ms": 50
+   }
+  ],
+  "profil_autour": null
+ },
+ "coupes": {
+  "nombre": 2,
+  "t_s": [
+   31.533,
+   32.033
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.22,
+  "decalage_p95_pct": 2.89
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 6.66,
+  "secondes_de_mouvement": 28.52,
+  "vitesse_sujet_p90": 1.427,
+  "pics": 299,
+  "part_des_pics_qui_montent": 0.35,
+  "deviation_trajectoire_mediane": 0.59,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#bfaaa0",
+   "part": 0.232
+  },
+  {
+   "hex": "#32225d",
+   "part": 0.218
+  },
+  {
+   "hex": "#f0e7e2",
+   "part": 0.171
+  },
+  {
+   "hex": "#5d5b87",
+   "part": 0.15
+  },
+  {
+   "hex": "#9f676b",
+   "part": 0.146
+  },
+  {
+   "hex": "#acdcd6",
+   "part": 0.082
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 20,
+  "termes": {
+   "contraste_de_temps": 0.44,
+   "tenues_presentes": 0.0,
+   "impacts_rythmes": 0.02
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_234966.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 234966,
+  "tags": "akihiro_ota animated background_animation character_acting debris effects fabric hair impact_frames lightning morphing one_piece shinya_ohira smoke wind",
+  "score": 3860,
+  "source_oeuvre": "#1072",
+  "url": "https://www.sakugabooru.com/post/show/234966",
+  "requete": "animated order:score",
+  "pourquoi": "curiosite : le meilleur de l'animation, toutes categories"
+ }
+}

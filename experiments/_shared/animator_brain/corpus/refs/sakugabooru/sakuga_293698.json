@@ -1,0 +1,110 @@
+{
+ "clip": "sakugabooru_sakuga_293698",
+ "sha1_16": "43f4b9e3795f0959",
+ "duree_s": 15.52,
+ "resolution": [
+  640,
+  480
+ ],
+ "zone_analysee": [
+  0,
+  8,
+  160,
+  119
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 1,
+  "part_du_temps": 0.054,
+  "plus_longue_ms": 833
+ },
+ "energie": {
+  "mediane": 9.15,
+  "pic_p95": 47.88,
+  "contraste_p95_sur_mediane": 5.23,
+  "part_rapide": 0.025
+ },
+ "impacts": {
+  "nombre": 0,
+  "par_seconde": 0.0,
+  "ecart_median_s": null,
+  "cartes": [],
+  "profil_autour": null
+ },
+ "coupes": {
+  "nombre": 9,
+  "t_s": [
+   3.5,
+   4.967,
+   5.883,
+   5.917,
+   5.967,
+   6.05,
+   6.083,
+   11.433,
+   13.05
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.48,
+  "decalage_p95_pct": 13.59
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 5.84,
+  "secondes_de_mouvement": 8.9,
+  "vitesse_sujet_p90": 5.209,
+  "pics": 85,
+  "part_des_pics_qui_montent": 0.26,
+  "deviation_trajectoire_mediane": 0.986,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#232530",
+   "part": 0.208
+  },
+  {
+   "hex": "#121b23",
+   "part": 0.187
+  },
+  {
+   "hex": "#2b3439",
+   "part": 0.16
+  },
+  {
+   "hex": "#acafa6",
+   "part": 0.157
+  },
+  {
+   "hex": "#9a9c95",
+   "part": 0.146
+  },
+  {
+   "hex": "#686a67",
+   "part": 0.143
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 51,
+  "termes": {
+   "contraste_de_temps": 1.0,
+   "tenues_presentes": 0.18,
+   "impacts_rythmes": 0.0
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_293698.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 293698,
+  "tags": "animated background_animation effects explosions fighting flcl flcl_series impact_frames running shinji_otsuka smears smoke yoh_yoshinari",
+  "score": 3750,
+  "source_oeuvre": "#05 (BD) ",
+  "url": "https://www.sakugabooru.com/post/show/293698",
+  "requete": "fighting impact_frames",
+  "pourquoi": "impacts de combat (cartes d'impact, tenue avant le choc)"
+ }
+}

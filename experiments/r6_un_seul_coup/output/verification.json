@@ -1,0 +1,451 @@
+{
+ "contact": 0.05,
+ "sol": {
+  "plus_bas_attaquant": -0.073,
+  "plus_bas_victime": -0.011,
+  "images_attaquant_sous_0.1": []
+ },
+ "translation_tete_max": 0.00012,
+ "aller_retour_max": 2.855518655359675e-14,
+ "cles": {
+  "attaquant": 115,
+  "victime": 59,
+  "frames": 751
+ },
+ "ecart_max_reduction_studs": 0.0151,
+ "taille_fichiers_ko": [
+  738,
+  380
+ ],
+ "mesures_coup": {
+  "bras_elev_contact": -10.0,
+  "buste_penche_contact": 8.3,
+  "poing_y_contact": 3.33,
+  "buste_penche_charge": 21.6,
+  "bras_elev_tenue": [
+   -6.7,
+   -6.7,
+   -6.6,
+   -6.6,
+   -6.8,
+   -6.9,
+   -6.6,
+   -6.5,
+   -6.6
+  ]
+ },
+ "mesures_pose": {
+  "garde": {
+   "hanche": 2.365,
+   "buste": {
+    "lacet": -10.0,
+    "penche_avant": 11.0,
+    "penche_cote": -0.0
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      17.6,
+      -31.7
+     ],
+     "coup": [
+      30.3,
+      -42.1
+     ]
+    },
+    "LA": {
+     "torse": [
+      -8.9,
+      -28.4
+     ],
+     "coup": [
+      -0.1,
+      -39.3
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     1.39,
+     1.92,
+     -0.51
+    ],
+    "LA": [
+     2.06,
+     -1.09,
+     -0.39
+    ]
+   },
+   "pieds": {
+    "RL": [
+     -0.85,
+     0.77,
+     -1.75
+    ],
+    "LL": [
+     0.65,
+     -0.73,
+     -2.27
+    ]
+   },
+   "epaules": {
+    "recul_droite": 0.41
+   },
+   "tete": {
+    "torse": [
+     -11.7,
+     26.0
+    ],
+    "coup": [
+     -0.9,
+     15.2
+    ]
+   }
+  },
+  "debut_charge": {
+   "hanche": 2.465,
+   "buste": {
+    "lacet": -10.0,
+    "penche_avant": 11.0,
+    "penche_cote": -0.0
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      17.6,
+      -31.7
+     ],
+     "coup": [
+      30.3,
+      -42.1
+     ]
+    },
+    "LA": {
+     "torse": [
+      -8.9,
+      -28.4
+     ],
+     "coup": [
+      -0.1,
+      -39.3
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     1.39,
+     1.92,
+     -0.51
+    ],
+    "LA": [
+     2.06,
+     -1.09,
+     -0.39
+    ]
+   },
+   "pieds": {
+    "RL": [
+     -0.85,
+     0.77,
+     -1.88
+    ],
+    "LL": [
+     0.65,
+     -0.73,
+     -2.37
+    ]
+   },
+   "epaules": {
+    "recul_droite": 0.41
+   },
+   "tete": {
+    "torse": [
+     -11.3,
+     21.6
+    ],
+    "coup": [
+     -0.7,
+     10.7
+    ]
+   }
+  },
+  "tenue": {
+   "hanche": 2.422,
+   "buste": {
+    "lacet": -70.5,
+    "penche_avant": 21.6,
+    "penche_cote": -0.0
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      11.9,
+      18.4
+     ],
+     "coup": [
+      81.8,
+      -2.8
+     ]
+    },
+    "LA": {
+     "torse": [
+      -17.0,
+      20.2
+     ],
+     "coup": [
+      54.6,
+      -0.6
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     -0.44,
+     2.3,
+     1.24
+    ],
+    "LA": [
+     1.83,
+     1.45,
+     1.32
+    ]
+   },
+   "pieds": {
+    "RL": [
+     -0.9,
+     0.51,
+     -1.88
+    ],
+    "LL": [
+     0.85,
+     -0.99,
+     -2.07
+    ]
+   },
+   "epaules": {
+    "recul_droite": 1.41
+   },
+   "tete": {
+    "torse": [
+     -82.9,
+     15.8
+    ],
+    "coup": [
+     -7.0,
+     12.0
+    ]
+   }
+  },
+  "detente": {
+   "hanche": 2.391,
+   "buste": {
+    "lacet": -77.0,
+    "penche_avant": 20.7,
+    "penche_cote": 0.0
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      39.0,
+      -8.7
+     ],
+     "coup": [
+      120.0,
+      -24.4
+     ]
+    },
+    "LA": {
+     "torse": [
+      -48.3,
+      -25.8
+     ],
+     "coup": [
+      18.2,
+      -38.3
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     -1.83,
+     2.15,
+     0.12
+    ],
+    "LA": [
+     2.62,
+     0.6,
+     -0.53
+    ]
+   },
+   "pieds": {
+    "RL": [
+     -0.87,
+     0.52,
+     -1.85
+    ],
+    "LL": [
+     0.88,
+     -0.98,
+     -2.0
+    ]
+   },
+   "epaules": {
+    "recul_droite": 2.05
+   },
+   "tete": {
+    "torse": [
+     -88.6,
+     13.5
+    ],
+    "coup": [
+     -6.9,
+     12.1
+    ]
+   }
+  },
+  "contact": {
+   "hanche": 2.731,
+   "buste": {
+    "lacet": 16.0,
+    "penche_avant": 8.3,
+    "penche_cote": -0.0
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      12.1,
+      -1.9
+     ],
+     "coup": [
+      -3.7,
+      -10.0
+     ]
+    },
+    "LA": {
+     "torse": [
+      -108.4,
+      -42.9
+     ],
+     "coup": [
+      -131.2,
+      -39.9
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     2.49,
+     0.79,
+     0.59
+    ],
+    "LA": [
+     -1.39,
+     -2.12,
+     -0.65
+    ]
+   },
+   "pieds": {
+    "RL": [
+     -1.26,
+     1.02,
+     -2.12
+    ],
+    "LL": [
+     0.7,
+     -0.81,
+     -2.49
+    ]
+   },
+   "epaules": {
+    "recul_droite": -0.9
+   },
+   "tete": {
+    "torse": [
+     27.2,
+     9.0
+    ],
+    "coup": [
+     10.8,
+     1.7
+    ]
+   }
+  },
+  "tenue_du_coup": {
+   "hanche": 2.678,
+   "buste": {
+    "lacet": 20.0,
+    "penche_avant": 10.3,
+    "penche_cote": -0.0
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      18.2,
+      3.0
+     ],
+     "coup": [
+      -1.7,
+      -6.7
+     ]
+    },
+    "LA": {
+     "torse": [
+      -135.5,
+      -50.6
+     ],
+     "coup": [
+      -162.6,
+      -42.8
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     2.43,
+     0.85,
+     0.89
+    ],
+    "LA": [
+     -1.94,
+     -1.21,
+     -0.57
+    ]
+   },
+   "pieds": {
+    "RL": [
+     -1.37,
+     1.03,
+     -2.06
+    ],
+    "LL": [
+     0.59,
+     -0.8,
+     -2.44
+    ]
+   },
+   "epaules": {
+    "recul_droite": -0.99
+   },
+   "tete": {
+    "torse": [
+     21.9,
+     9.8
+    ],
+    "coup": [
+     1.5,
+     0.3
+    ]
+   }
+  }
+ },
+ "sens_roblox": {
+  "attaquant_regarde_moins_z": true,
+  "victime_face_a_l_attaquant": true,
+  "attaquant_devant_la_victime_des_la_charge": true,
+  "poing_devant_au_contact": true,
+  "victime_ejectee_loin_devant": true,
+  "attaquant_debout_a_la_fin": true,
+  "interpolation_lineaire_attaquant": true,
+  "interpolation_lineaire_victime": true
+ }
+}

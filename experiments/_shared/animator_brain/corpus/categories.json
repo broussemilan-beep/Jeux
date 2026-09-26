@@ -1,0 +1,2915 @@
+{
+ "attente": {
+  "n": 2,
+  "fragile": true,
+  "exemples": [
+   "[1] Idle",
+   "[5] Block Idle"
+  ],
+  "mesures": {
+   "audit.arrets simultanes": {
+    "mediane": 0.042,
+    "min": 0.0,
+    "max": 0.083,
+    "n": 2
+   },
+   "audit.correlation vitesses G/D Right Arm/Left Arm": {
+    "mediane": 0.834,
+    "min": 0.699,
+    "max": 0.969,
+    "n": 2
+   },
+   "audit.correlation vitesses G/D Right Leg/Left Leg": {
+    "mediane": 0.956,
+    "min": 0.911,
+    "max": 1.0,
+    "n": 2
+   },
+   "audit.desequilibre (CdM hors appui)": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 2
+   },
+   "audit.discontinuites de vitesse hors snaps declares": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 2
+   },
+   "audit.glissement pied Left Leg": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 2
+   },
+   "audit.glissement pied Right Leg": {
+    "mediane": 0.002,
+    "min": 0.0,
+    "max": 0.003,
+    "n": 2
+   },
+   "audit.holds morts": {
+    "mediane": 0.507,
+    "min": 0.015,
+    "max": 1.0,
+    "n": 2
+   },
+   "audit.miroir quasi exact Right Arm/Left Arm": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 2
+   },
+   "audit.miroir quasi exact Right Leg/Left Leg": {
+    "mediane": 0.5,
+    "min": 0.0,
+    "max": 1.0,
+    "n": 2
+   },
+   "audit.overlap retard median Head <- Torso": {
+    "mediane": -4.0,
+    "min": -4.0,
+    "max": -4.0,
+    "n": 1
+   },
+   "audit.overlap retard median Left Arm <- Torso": {
+    "mediane": -5.5,
+    "min": -5.5,
+    "max": -5.5,
+    "n": 1
+   },
+   "audit.overlap retard median Left Leg <- Torso": {
+    "mediane": 1.0,
+    "min": 1.0,
+    "max": 1.0,
+    "n": 1
+   },
+   "audit.overlap retard median Right Arm <- Torso": {
+    "mediane": -5.5,
+    "min": -5.5,
+    "max": -5.5,
+    "n": 1
+   },
+   "audit.overlap retard median Right Leg <- Torso": {
+    "mediane": 0.5,
+    "min": 0.5,
+    "max": 0.5,
+    "n": 1
+   },
+   "audit.overlap sync Head <- Torso": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 1
+   },
+   "audit.overlap sync Left Arm <- Torso": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 1
+   },
+   "audit.overlap sync Left Leg <- Torso": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 1
+   },
+   "audit.overlap sync Right Arm <- Torso": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 1
+   },
+   "audit.overlap sync Right Leg <- Torso": {
+    "mediane": 1.0,
+    "min": 1.0,
+    "max": 1.0,
+    "n": 1
+   },
+   "audit.planarite Head": {
+    "mediane": 1.0,
+    "min": 1.0,
+    "max": 1.0,
+    "n": 1
+   },
+   "audit.planarite Torso": {
+    "mediane": 1.0,
+    "min": 1.0,
+    "max": 1.0,
+    "n": 1
+   },
+   "timing.affaissement_torse_studs.max": {
+    "mediane": 0.032,
+    "min": 0.0,
+    "max": 0.064,
+    "n": 2
+   },
+   "timing.affaissement_torse_studs.median": {
+    "mediane": 0.024,
+    "min": 0.0,
+    "max": 0.047,
+    "n": 2
+   },
+   "timing.decalage_epaule_vertical_studs.bas_max": {
+    "mediane": -0.139,
+    "min": -0.244,
+    "max": -0.033,
+    "n": 2
+   },
+   "timing.decalage_epaule_vertical_studs.haut_max": {
+    "mediane": -0.056,
+    "min": -0.15,
+    "max": 0.037,
+    "n": 2
+   },
+   "timing.decalage_epaule_vertical_studs.median": {
+    "mediane": -0.097,
+    "min": -0.198,
+    "max": 0.005,
+    "n": 2
+   },
+   "timing.deplacement_torse_studs.x": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 2
+   },
+   "timing.deplacement_torse_studs.y": {
+    "mediane": 0.015,
+    "min": 0.0,
+    "max": 0.03,
+    "n": 2
+   },
+   "timing.deplacement_torse_studs.z": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 2
+   },
+   "timing.duree_s": {
+    "mediane": 0.979,
+    "min": 0.857,
+    "max": 1.1,
+    "n": 2
+   },
+   "timing.energie.contraste_pic_sur_mediane": {
+    "mediane": 1.59,
+    "min": 1.56,
+    "max": 1.62,
+    "n": 2
+   },
+   "timing.energie.fraction_quasi_tenue": {
+    "mediane": 0.049,
+    "min": 0.0,
+    "max": 0.098,
+    "n": 2
+   },
+   "timing.energie.fraction_rapide": {
+    "mediane": 0.632,
+    "min": 0.607,
+    "max": 0.657,
+    "n": 2
+   },
+   "timing.energie.mediane_deg_s": {
+    "mediane": 12.75,
+    "min": 1.7,
+    "max": 23.8,
+    "n": 2
+   },
+   "timing.energie.pic_deg_s": {
+    "mediane": 19.9,
+    "min": 2.7,
+    "max": 37.1,
+    "n": 2
+   },
+   "timing.mains_vitesse_max_studs_s.Left Arm": {
+    "mediane": 0.15,
+    "min": 0.0,
+    "max": 0.3,
+    "n": 2
+   },
+   "timing.mains_vitesse_max_studs_s.Right Arm": {
+    "mediane": 0.15,
+    "min": 0.0,
+    "max": 0.3,
+    "n": 2
+   },
+   "timing.membres.Head.amplitude_vs_debut_deg": {
+    "mediane": 1.3,
+    "min": 1.3,
+    "max": 1.3,
+    "n": 1
+   },
+   "timing.membres.Head.amplitude_vs_repos_deg": {
+    "mediane": 4.1,
+    "min": 4.1,
+    "max": 4.1,
+    "n": 1
+   },
+   "timing.membres.Head.pic_a_s": {
+    "mediane": 0.017,
+    "min": 0.017,
+    "max": 0.017,
+    "n": 1
+   },
+   "timing.membres.Head.vitesse_max_deg_s": {
+    "mediane": 7.0,
+    "min": 7.0,
+    "max": 7.0,
+    "n": 1
+   },
+   "timing.membres.Left Arm.amplitude_vs_debut_deg": {
+    "mediane": 0.95,
+    "min": 0.3,
+    "max": 1.6,
+    "n": 2
+   },
+   "timing.membres.Left Arm.amplitude_vs_repos_deg": {
+    "mediane": 92.1,
+    "min": 6.1,
+    "max": 178.1,
+    "n": 2
+   },
+   "timing.membres.Left Arm.pic_a_s": {
+    "mediane": 0.068,
+    "min": 0.05,
+    "max": 0.086,
+    "n": 2
+   },
+   "timing.membres.Left Arm.vitesse_max_deg_s": {
+    "mediane": 6.65,
+    "min": 1.7,
+    "max": 11.6,
+    "n": 2
+   },
+   "timing.membres.Left Leg.amplitude_vs_debut_deg": {
+    "mediane": 1.5,
+    "min": 1.5,
+    "max": 1.5,
+    "n": 1
+   },
+   "timing.membres.Left Leg.amplitude_vs_repos_deg": {
+    "mediane": 7.6,
+    "min": 7.6,
+    "max": 7.6,
+    "n": 1
+   },
+   "timing.membres.Left Leg.pic_a_s": {
+    "mediane": 0.667,
+    "min": 0.667,
+    "max": 0.667,
+    "n": 1
+   },
+   "timing.membres.Left Leg.vitesse_max_deg_s": {
+    "mediane": 6.8,
+    "min": 6.8,
+    "max": 6.8,
+    "n": 1
+   },
+   "timing.membres.Right Arm.amplitude_vs_debut_deg": {
+    "mediane": 0.95,
+    "min": 0.2,
+    "max": 1.7,
+    "n": 2
+   },
+   "timing.membres.Right Arm.amplitude_vs_repos_deg": {
+    "mediane": 89.8,
+    "min": 5.8,
+    "max": 173.8,
+    "n": 2
+   },
+   "timing.membres.Right Arm.pic_a_s": {
+    "mediane": 0.275,
+    "min": 0.1,
+    "max": 0.45,
+    "n": 2
+   },
+   "timing.membres.Right Arm.vitesse_max_deg_s": {
+    "mediane": 3.8,
+    "min": 1.0,
+    "max": 6.6,
+    "n": 2
+   },
+   "timing.membres.Right Leg.amplitude_vs_debut_deg": {
+    "mediane": 1.1,
+    "min": 1.1,
+    "max": 1.1,
+    "n": 1
+   },
+   "timing.membres.Right Leg.amplitude_vs_repos_deg": {
+    "mediane": 9.9,
+    "min": 9.9,
+    "max": 9.9,
+    "n": 1
+   },
+   "timing.membres.Right Leg.pic_a_s": {
+    "mediane": 0.65,
+    "min": 0.65,
+    "max": 0.65,
+    "n": 1
+   },
+   "timing.membres.Right Leg.vitesse_max_deg_s": {
+    "mediane": 5.8,
+    "min": 5.8,
+    "max": 5.8,
+    "n": 1
+   },
+   "timing.membres.Torso.amplitude_vs_debut_deg": {
+    "mediane": 1.0,
+    "min": 1.0,
+    "max": 1.0,
+    "n": 1
+   },
+   "timing.membres.Torso.amplitude_vs_repos_deg": {
+    "mediane": 3.9,
+    "min": 3.9,
+    "max": 3.9,
+    "n": 1
+   },
+   "timing.membres.Torso.pic_a_s": {
+    "mediane": 0.633,
+    "min": 0.633,
+    "max": 0.633,
+    "n": 1
+   },
+   "timing.membres.Torso.vitesse_max_deg_s": {
+    "mediane": 4.5,
+    "min": 4.5,
+    "max": 4.5,
+    "n": 1
+   },
+   "timing.n_frames": {
+    "mediane": 64.0,
+    "min": 61.0,
+    "max": 67.0,
+    "n": 2
+   },
+   "timing.poses_cles_par_s": {
+    "mediane": 2.075,
+    "min": 1.82,
+    "max": 2.33,
+    "n": 2
+   },
+   "timing.torse_vitesse_max_studs_s": {
+    "mediane": 0.05,
+    "min": 0.0,
+    "max": 0.1,
+    "n": 2
+   },
+   "timing.translation_articulation_max_studs.Head": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 1
+   },
+   "timing.translation_articulation_max_studs.Left Arm": {
+    "mediane": 0.62,
+    "min": 0.033,
+    "max": 1.207,
+    "n": 2
+   },
+   "timing.translation_articulation_max_studs.Left Leg": {
+    "mediane": 0.141,
+    "min": 0.141,
+    "max": 0.141,
+    "n": 1
+   },
+   "timing.translation_articulation_max_studs.Right Arm": {
+    "mediane": 0.592,
+    "min": 0.039,
+    "max": 1.146,
+    "n": 2
+   },
+   "timing.translation_articulation_max_studs.Right Leg": {
+    "mediane": 0.138,
+    "min": 0.138,
+    "max": 0.138,
+    "n": 1
+   }
+  }
+ },
+ "deplacement": {
+  "n": 4,
+  "fragile": false,
+  "exemples": [
+   "[3] Backdash",
+   "[3] Forward Dash",
+   "[3] Sidedash_L",
+   "[3] Sidedash_R"
+  ],
+  "mesures": {
+   "audit.arrets simultanes": {
+    "mediane": 0.5,
+    "min": 0.0,
+    "max": 1.0,
+    "n": 4
+   },
+   "audit.correlation vitesses G/D Right Arm/Left Arm": {
+    "mediane": 0.898,
+    "min": 0.622,
+    "max": 0.948,
+    "n": 4
+   },
+   "audit.correlation vitesses G/D Right Leg/Left Leg": {
+    "mediane": 0.796,
+    "min": 0.1,
+    "max": 0.919,
+    "n": 4
+   },
+   "audit.desequilibre (CdM hors appui)": {
+    "mediane": 0.094,
+    "min": 0.0,
+    "max": 0.5,
+    "n": 4
+   },
+   "audit.discontinuites de vitesse hors snaps declares": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 2.0,
+    "n": 4
+   },
+   "audit.glissement pied Left Leg": {
+    "mediane": 0.032,
+    "min": 0.0,
+    "max": 0.291,
+    "n": 4
+   },
+   "audit.glissement pied Right Leg": {
+    "mediane": 0.067,
+    "min": 0.0,
+    "max": 0.179,
+    "n": 4
+   },
+   "audit.holds morts": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 4
+   },
+   "audit.miroir quasi exact Right Arm/Left Arm": {
+    "mediane": 0.061,
+    "min": 0.051,
+    "max": 0.12,
+    "n": 4
+   },
+   "audit.miroir quasi exact Right Leg/Left Leg": {
+    "mediane": 0.061,
+    "min": 0.051,
+    "max": 0.12,
+    "n": 4
+   },
+   "audit.overlap retard median Head <- Torso": {
+    "mediane": 0.25,
+    "min": -1.0,
+    "max": 0.5,
+    "n": 4
+   },
+   "audit.overlap retard median Left Arm <- Torso": {
+    "mediane": 0.5,
+    "min": -2.5,
+    "max": 1.5,
+    "n": 4
+   },
+   "audit.overlap retard median Left Leg <- Torso": {
+    "mediane": -0.25,
+    "min": -5.0,
+    "max": 0.5,
+    "n": 4
+   },
+   "audit.overlap retard median Right Arm <- Torso": {
+    "mediane": 0.5,
+    "min": -2.75,
+    "max": 1.0,
+    "n": 4
+   },
+   "audit.overlap retard median Right Leg <- Torso": {
+    "mediane": 0.0,
+    "min": -2.5,
+    "max": 0.5,
+    "n": 4
+   },
+   "audit.overlap sync Head <- Torso": {
+    "mediane": 1.0,
+    "min": 0.0,
+    "max": 1.0,
+    "n": 4
+   },
+   "audit.overlap sync Left Arm <- Torso": {
+    "mediane": 0.75,
+    "min": 0.0,
+    "max": 1.0,
+    "n": 4
+   },
+   "audit.overlap sync Left Leg <- Torso": {
+    "mediane": 1.0,
+    "min": 0.0,
+    "max": 1.0,
+    "n": 4
+   },
+   "audit.overlap sync Right Arm <- Torso": {
+    "mediane": 0.5,
+    "min": 0.0,
+    "max": 1.0,
+    "n": 4
+   },
+   "audit.overlap sync Right Leg <- Torso": {
+    "mediane": 1.0,
+    "min": 0.0,
+    "max": 1.0,
+    "n": 4
+   },
+   "audit.planarite Head": {
+    "mediane": 0.968,
+    "min": 0.859,
+    "max": 0.978,
+    "n": 4
+   },
+   "audit.planarite Torso": {
+    "mediane": 0.868,
+    "min": 0.828,
+    "max": 0.973,
+    "n": 4
+   },
+   "timing.affaissement_torse_studs.max": {
+    "mediane": 0.463,
+    "min": 0.207,
+    "max": 0.756,
+    "n": 4
+   },
+   "timing.affaissement_torse_studs.median": {
+    "mediane": 0.091,
+    "min": 0.0,
+    "max": 0.382,
+    "n": 4
+   },
+   "timing.decalage_epaule_vertical_studs.bas_max": {
+    "mediane": -0.417,
+    "min": -0.922,
+    "max": -0.385,
+    "n": 4
+   },
+   "timing.decalage_epaule_vertical_studs.haut_max": {
+    "mediane": 0.087,
+    "min": 0.038,
+    "max": 0.839,
+    "n": 4
+   },
+   "timing.decalage_epaule_vertical_studs.median": {
+    "mediane": -0.038,
+    "min": -0.095,
+    "max": 0.124,
+    "n": 4
+   },
+   "timing.deplacement_torse_studs.x": {
+    "mediane": 0.52,
+    "min": 0.03,
+    "max": 0.92,
+    "n": 4
+   },
+   "timing.deplacement_torse_studs.y": {
+    "mediane": 0.485,
+    "min": 0.21,
+    "max": 2.04,
+    "n": 4
+   },
+   "timing.deplacement_torse_studs.z": {
+    "mediane": 0.12,
+    "min": 0.0,
+    "max": 0.28,
+    "n": 4
+   },
+   "timing.duree_s": {
+    "mediane": 0.75,
+    "min": 0.533,
+    "max": 1.233,
+    "n": 4
+   },
+   "timing.energie.contraste_pic_sur_mediane": {
+    "mediane": 2.41,
+    "min": 2.34,
+    "max": 12.57,
+    "n": 4
+   },
+   "timing.energie.fraction_quasi_tenue": {
+    "mediane": 0.121,
+    "min": 0.04,
+    "max": 0.678,
+    "n": 4
+   },
+   "timing.energie.fraction_rapide": {
+    "mediane": 0.263,
+    "min": 0.085,
+    "max": 0.273,
+    "n": 4
+   },
+   "timing.energie.mediane_deg_s": {
+    "mediane": 1289.3,
+    "min": 560.9,
+    "max": 1814.2,
+    "n": 4
+   },
+   "timing.energie.pic_deg_s": {
+    "mediane": 3755.3,
+    "min": 3016.2,
+    "max": 7049.3,
+    "n": 4
+   },
+   "timing.mains_vitesse_max_studs_s.Left Arm": {
+    "mediane": 42.0,
+    "min": 19.7,
+    "max": 87.6,
+    "n": 4
+   },
+   "timing.mains_vitesse_max_studs_s.Right Arm": {
+    "mediane": 39.75,
+    "min": 19.7,
+    "max": 82.3,
+    "n": 4
+   },
+   "timing.membres.Head.amplitude_vs_debut_deg": {
+    "mediane": 36.6,
+    "min": 22.9,
+    "max": 54.6,
+    "n": 4
+   },
+   "timing.membres.Head.amplitude_vs_repos_deg": {
+    "mediane": 36.6,
+    "min": 22.9,
+    "max": 54.6,
+    "n": 4
+   },
+   "timing.membres.Head.pic_a_s": {
+    "mediane": 0.4,
+    "min": 0.083,
+    "max": 1.033,
+    "n": 4
+   },
+   "timing.membres.Head.vitesse_max_deg_s": {
+    "mediane": 363.45,
+    "min": 220.7,
+    "max": 1442.4,
+    "n": 4
+   },
+   "timing.membres.Left Arm.amplitude_vs_debut_deg": {
+    "mediane": 111.25,
+    "min": 46.1,
+    "max": 178.1,
+    "n": 4
+   },
+   "timing.membres.Left Arm.amplitude_vs_repos_deg": {
+    "mediane": 111.25,
+    "min": 46.1,
+    "max": 178.1,
+    "n": 4
+   },
+   "timing.membres.Left Arm.pic_a_s": {
+    "mediane": 0.1,
+    "min": 0.083,
+    "max": 0.183,
+    "n": 4
+   },
+   "timing.membres.Left Arm.vitesse_max_deg_s": {
+    "mediane": 691.3,
+    "min": 387.8,
+    "max": 1740.2,
+    "n": 4
+   },
+   "timing.membres.Left Leg.amplitude_vs_debut_deg": {
+    "mediane": 47.0,
+    "min": 36.8,
+    "max": 70.3,
+    "n": 4
+   },
+   "timing.membres.Left Leg.amplitude_vs_repos_deg": {
+    "mediane": 47.0,
+    "min": 36.8,
+    "max": 70.3,
+    "n": 4
+   },
+   "timing.membres.Left Leg.pic_a_s": {
+    "mediane": 0.083,
+    "min": 0.067,
+    "max": 0.7,
+    "n": 4
+   },
+   "timing.membres.Left Leg.vitesse_max_deg_s": {
+    "mediane": 541.8,
+    "min": 382.8,
+    "max": 1179.7,
+    "n": 4
+   },
+   "timing.membres.Right Arm.amplitude_vs_debut_deg": {
+    "mediane": 111.25,
+    "min": 46.1,
+    "max": 178.7,
+    "n": 4
+   },
+   "timing.membres.Right Arm.amplitude_vs_repos_deg": {
+    "mediane": 111.25,
+    "min": 46.1,
+    "max": 178.7,
+    "n": 4
+   },
+   "timing.membres.Right Arm.pic_a_s": {
+    "mediane": 0.1,
+    "min": 0.083,
+    "max": 0.75,
+    "n": 4
+   },
+   "timing.membres.Right Arm.vitesse_max_deg_s": {
+    "mediane": 815.75,
+    "min": 387.8,
+    "max": 1371.8,
+    "n": 4
+   },
+   "timing.membres.Right Leg.amplitude_vs_debut_deg": {
+    "mediane": 61.85,
+    "min": 36.8,
+    "max": 102.2,
+    "n": 4
+   },
+   "timing.membres.Right Leg.amplitude_vs_repos_deg": {
+    "mediane": 61.85,
+    "min": 36.8,
+    "max": 102.2,
+    "n": 4
+   },
+   "timing.membres.Right Leg.pic_a_s": {
+    "mediane": 0.375,
+    "min": 0.067,
+    "max": 0.717,
+    "n": 4
+   },
+   "timing.membres.Right Leg.vitesse_max_deg_s": {
+    "mediane": 811.45,
+    "min": 462.6,
+    "max": 2079.6,
+    "n": 4
+   },
+   "timing.membres.Torso.amplitude_vs_debut_deg": {
+    "mediane": 56.8,
+    "min": 44.8,
+    "max": 179.3,
+    "n": 4
+   },
+   "timing.membres.Torso.amplitude_vs_repos_deg": {
+    "mediane": 56.8,
+    "min": 44.8,
+    "max": 179.3,
+    "n": 4
+   },
+   "timing.membres.Torso.pic_a_s": {
+    "mediane": 0.167,
+    "min": 0.067,
+    "max": 0.717,
+    "n": 4
+   },
+   "timing.membres.Torso.vitesse_max_deg_s": {
+    "mediane": 689.3,
+    "min": 434.9,
+    "max": 1870.6,
+    "n": 4
+   },
+   "timing.n_frames": {
+    "mediane": 46.0,
+    "min": 33.0,
+    "max": 75.0,
+    "n": 4
+   },
+   "timing.phases.action_f60": {
+    "mediane": 10.5,
+    "min": 9.0,
+    "max": 23.0,
+    "n": 4
+   },
+   "timing.phases.anticipation_f60": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 34.0,
+    "n": 4
+   },
+   "timing.phases.fraction_anticipation": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.586,
+    "n": 4
+   },
+   "timing.phases.fraction_recuperation": {
+    "mediane": 0.704,
+    "min": 0.207,
+    "max": 0.719,
+    "n": 4
+   },
+   "timing.phases.recuperation_ou_tenue_f60": {
+    "mediane": 23.0,
+    "min": 12.0,
+    "max": 51.0,
+    "n": 4
+   },
+   "timing.poses_cles_par_s": {
+    "mediane": 1.87,
+    "min": 1.62,
+    "max": 2.07,
+    "n": 4
+   },
+   "timing.torse_vitesse_max_studs_s": {
+    "mediane": 9.6,
+    "min": 2.9,
+    "max": 13.9,
+    "n": 4
+   },
+   "timing.translation_articulation_max_studs.Head": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 4
+   },
+   "timing.translation_articulation_max_studs.Left Arm": {
+    "mediane": 0.855,
+    "min": 0.664,
+    "max": 1.025,
+    "n": 4
+   },
+   "timing.translation_articulation_max_studs.Left Leg": {
+    "mediane": 0.888,
+    "min": 0.666,
+    "max": 1.281,
+    "n": 4
+   },
+   "timing.translation_articulation_max_studs.Right Arm": {
+    "mediane": 0.938,
+    "min": 0.664,
+    "max": 1.248,
+    "n": 4
+   },
+   "timing.translation_articulation_max_studs.Right Leg": {
+    "mediane": 0.798,
+    "min": 0.666,
+    "max": 1.527,
+    "n": 4
+   }
+  }
+ },
+ "frappe_legere": {
+  "n": 4,
+  "fragile": false,
+  "exemples": [
+   "[2] M1_1",
+   "[2] M1_2",
+   "[2] M1_3",
+   "[2] M1_4"
+  ],
+  "mesures": {
+   "audit.correlation vitesses G/D Right Arm/Left Arm": {
+    "mediane": 0.838,
+    "min": 0.733,
+    "max": 0.966,
+    "n": 4
+   },
+   "audit.correlation vitesses G/D Right Leg/Left Leg": {
+    "mediane": 0.744,
+    "min": 0.472,
+    "max": 0.898,
+    "n": 4
+   },
+   "audit.desequilibre (CdM hors appui)": {
+    "mediane": 0.026,
+    "min": 0.0,
+    "max": 0.125,
+    "n": 4
+   },
+   "audit.discontinuites de vitesse hors snaps declares": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 4
+   },
+   "audit.glissement pied Left Leg": {
+    "mediane": 0.211,
+    "min": 0.029,
+    "max": 0.28,
+    "n": 4
+   },
+   "audit.glissement pied Right Leg": {
+    "mediane": 0.292,
+    "min": 0.0,
+    "max": 0.456,
+    "n": 4
+   },
+   "audit.holds morts": {
+    "mediane": 0.036,
+    "min": 0.0,
+    "max": 0.125,
+    "n": 4
+   },
+   "audit.miroir quasi exact Right Arm/Left Arm": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.025,
+    "n": 4
+   },
+   "audit.miroir quasi exact Right Leg/Left Leg": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.05,
+    "n": 4
+   },
+   "audit.overlap retard median Head <- Torso": {
+    "mediane": 0.0,
+    "min": -0.25,
+    "max": 0.25,
+    "n": 4
+   },
+   "audit.overlap retard median Left Arm <- Torso": {
+    "mediane": 0.625,
+    "min": -1.75,
+    "max": 1.5,
+    "n": 4
+   },
+   "audit.overlap retard median Left Leg <- Torso": {
+    "mediane": 0.0,
+    "min": -1.5,
+    "max": 2.25,
+    "n": 4
+   },
+   "audit.overlap retard median Right Arm <- Torso": {
+    "mediane": -0.375,
+    "min": -1.5,
+    "max": 1.0,
+    "n": 4
+   },
+   "audit.overlap retard median Right Leg <- Torso": {
+    "mediane": 0.5,
+    "min": -0.5,
+    "max": 1.25,
+    "n": 4
+   },
+   "audit.overlap sync Head <- Torso": {
+    "mediane": 1.0,
+    "min": 1.0,
+    "max": 1.0,
+    "n": 4
+   },
+   "audit.overlap sync Left Arm <- Torso": {
+    "mediane": 0.25,
+    "min": 0.0,
+    "max": 1.0,
+    "n": 4
+   },
+   "audit.overlap sync Left Leg <- Torso": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 1.0,
+    "n": 4
+   },
+   "audit.overlap sync Right Arm <- Torso": {
+    "mediane": 0.5,
+    "min": 0.0,
+    "max": 1.0,
+    "n": 4
+   },
+   "audit.overlap sync Right Leg <- Torso": {
+    "mediane": 0.75,
+    "min": 0.0,
+    "max": 1.0,
+    "n": 4
+   },
+   "audit.planarite Head": {
+    "mediane": 0.988,
+    "min": 0.948,
+    "max": 0.993,
+    "n": 4
+   },
+   "audit.planarite Torso": {
+    "mediane": 0.988,
+    "min": 0.97,
+    "max": 0.999,
+    "n": 4
+   },
+   "timing.affaissement_torse_studs.max": {
+    "mediane": 0.137,
+    "min": 0.12,
+    "max": 0.218,
+    "n": 4
+   },
+   "timing.affaissement_torse_studs.median": {
+    "mediane": 0.06,
+    "min": 0.0,
+    "max": 0.094,
+    "n": 4
+   },
+   "timing.decalage_epaule_vertical_studs.bas_max": {
+    "mediane": -1.283,
+    "min": -1.326,
+    "max": -1.145,
+    "n": 4
+   },
+   "timing.decalage_epaule_vertical_studs.haut_max": {
+    "mediane": -0.174,
+    "min": -0.233,
+    "max": 0.038,
+    "n": 4
+   },
+   "timing.decalage_epaule_vertical_studs.median": {
+    "mediane": -0.872,
+    "min": -0.916,
+    "max": -0.589,
+    "n": 4
+   },
+   "timing.deplacement_torse_studs.x": {
+    "mediane": 0.19,
+    "min": 0.06,
+    "max": 0.26,
+    "n": 4
+   },
+   "timing.deplacement_torse_studs.y": {
+    "mediane": 0.15,
+    "min": 0.08,
+    "max": 0.25,
+    "n": 4
+   },
+   "timing.deplacement_torse_studs.z": {
+    "mediane": 0.505,
+    "min": 0.31,
+    "max": 0.64,
+    "n": 4
+   },
+   "timing.duree_s": {
+    "mediane": 0.65,
+    "min": 0.65,
+    "max": 0.7,
+    "n": 4
+   },
+   "timing.energie.contraste_pic_sur_mediane": {
+    "mediane": 13.905,
+    "min": 4.67,
+    "max": 20.64,
+    "n": 4
+   },
+   "timing.energie.fraction_quasi_tenue": {
+    "mediane": 0.637,
+    "min": 0.475,
+    "max": 0.698,
+    "n": 4
+   },
+   "timing.energie.fraction_rapide": {
+    "mediane": 0.237,
+    "min": 0.14,
+    "max": 0.275,
+    "n": 4
+   },
+   "timing.energie.mediane_deg_s": {
+    "mediane": 265.8,
+    "min": 213.8,
+    "max": 1498.5,
+    "n": 4
+   },
+   "timing.energie.pic_deg_s": {
+    "mediane": 4332.3,
+    "min": 2535.1,
+    "max": 7001.6,
+    "n": 4
+   },
+   "timing.mains_vitesse_max_studs_s.Left Arm": {
+    "mediane": 67.15,
+    "min": 64.6,
+    "max": 84.8,
+    "n": 4
+   },
+   "timing.mains_vitesse_max_studs_s.Right Arm": {
+    "mediane": 68.35,
+    "min": 18.3,
+    "max": 83.2,
+    "n": 4
+   },
+   "timing.mecanique_frappe.bras_elevation_deg": {
+    "mediane": -3.3,
+    "min": -19.7,
+    "max": 0.1,
+    "n": 4
+   },
+   "timing.mecanique_frappe.poing_hauteur_aller_vs_epaule": {
+    "mediane": -0.02,
+    "min": -0.28,
+    "max": 0.08,
+    "n": 4
+   },
+   "timing.mecanique_frappe.poing_hauteur_studs": {
+    "mediane": 3.445,
+    "min": 2.53,
+    "max": 3.59,
+    "n": 4
+   },
+   "timing.mecanique_frappe.poing_montee_finale_studs": {
+    "mediane": 0.035,
+    "min": 0.0,
+    "max": 0.22,
+    "n": 4
+   },
+   "timing.mecanique_frappe.portee_studs": {
+    "mediane": 3.05,
+    "min": 2.89,
+    "max": 3.34,
+    "n": 4
+   },
+   "timing.mecanique_frappe.transfert_poids_studs": {
+    "mediane": 0.01,
+    "min": 0.0,
+    "max": 0.74,
+    "n": 4
+   },
+   "timing.membres.Head.amplitude_vs_debut_deg": {
+    "mediane": 99.8,
+    "min": 31.1,
+    "max": 152.4,
+    "n": 4
+   },
+   "timing.membres.Head.amplitude_vs_repos_deg": {
+    "mediane": 83.9,
+    "min": 65.2,
+    "max": 95.6,
+    "n": 4
+   },
+   "timing.membres.Head.pic_a_s": {
+    "mediane": 0.2,
+    "min": 0.133,
+    "max": 0.25,
+    "n": 4
+   },
+   "timing.membres.Head.vitesse_max_deg_s": {
+    "mediane": 1606.15,
+    "min": 329.5,
+    "max": 1688.2,
+    "n": 4
+   },
+   "timing.membres.Left Arm.amplitude_vs_debut_deg": {
+    "mediane": 141.4,
+    "min": 99.3,
+    "max": 167.2,
+    "n": 4
+   },
+   "timing.membres.Left Arm.amplitude_vs_repos_deg": {
+    "mediane": 167.2,
+    "min": 141.2,
+    "max": 179.4,
+    "n": 4
+   },
+   "timing.membres.Left Arm.pic_a_s": {
+    "mediane": 0.075,
+    "min": 0.05,
+    "max": 0.233,
+    "n": 4
+   },
+   "timing.membres.Left Arm.vitesse_max_deg_s": {
+    "mediane": 1687.35,
+    "min": 649.7,
+    "max": 2954.6,
+    "n": 4
+   },
+   "timing.membres.Right Arm.amplitude_vs_debut_deg": {
+    "mediane": 81.15,
+    "min": 31.4,
+    "max": 177.7,
+    "n": 4
+   },
+   "timing.membres.Right Arm.amplitude_vs_repos_deg": {
+    "mediane": 150.5,
+    "min": 120.4,
+    "max": 178.4,
+    "n": 4
+   },
+   "timing.membres.Right Arm.pic_a_s": {
+    "mediane": 0.083,
+    "min": 0.05,
+    "max": 0.217,
+    "n": 4
+   },
+   "timing.membres.Right Arm.vitesse_max_deg_s": {
+    "mediane": 648.8,
+    "min": 303.5,
+    "max": 2079.3,
+    "n": 4
+   },
+   "timing.membres.Torso.amplitude_vs_debut_deg": {
+    "mediane": 110.8,
+    "min": 55.1,
+    "max": 154.0,
+    "n": 4
+   },
+   "timing.membres.Torso.amplitude_vs_repos_deg": {
+    "mediane": 90.85,
+    "min": 76.2,
+    "max": 122.2,
+    "n": 4
+   },
+   "timing.membres.Torso.pic_a_s": {
+    "mediane": 0.2,
+    "min": 0.133,
+    "max": 0.233,
+    "n": 4
+   },
+   "timing.membres.Torso.vitesse_max_deg_s": {
+    "mediane": 1704.9,
+    "min": 701.5,
+    "max": 1932.7,
+    "n": 4
+   },
+   "timing.n_frames": {
+    "mediane": 40.0,
+    "min": 40.0,
+    "max": 43.0,
+    "n": 4
+   },
+   "timing.phases.action_f60": {
+    "mediane": 10.0,
+    "min": 9.0,
+    "max": 18.0,
+    "n": 4
+   },
+   "timing.phases.anticipation_f60": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 10.0,
+    "n": 4
+   },
+   "timing.phases.fraction_anticipation": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.256,
+    "n": 4
+   },
+   "timing.phases.fraction_recuperation": {
+    "mediane": 0.644,
+    "min": 0.513,
+    "max": 0.769,
+    "n": 4
+   },
+   "timing.phases.recuperation_ou_tenue_f60": {
+    "mediane": 26.0,
+    "min": 20.0,
+    "max": 30.0,
+    "n": 4
+   },
+   "timing.poses_cles_par_s": {
+    "mediane": 3.08,
+    "min": 2.86,
+    "max": 3.08,
+    "n": 4
+   },
+   "timing.torse_vitesse_max_studs_s": {
+    "mediane": 7.35,
+    "min": 4.8,
+    "max": 8.6,
+    "n": 4
+   },
+   "timing.translation_articulation_max_studs.Head": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 4
+   },
+   "timing.translation_articulation_max_studs.Left Arm": {
+    "mediane": 1.32,
+    "min": 1.209,
+    "max": 1.381,
+    "n": 4
+   },
+   "timing.translation_articulation_max_studs.Right Arm": {
+    "mediane": 1.618,
+    "min": 1.443,
+    "max": 1.718,
+    "n": 4
+   }
+  }
+ },
+ "frappe_lourde": {
+  "n": 3,
+  "fragile": false,
+  "exemples": [
+   "[3] Downslam V1",
+   "[3] Downslam V2",
+   "[3] Uppercut"
+  ],
+  "mesures": {
+   "audit.arrets simultanes": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.333,
+    "n": 3
+   },
+   "audit.correlation vitesses G/D Right Arm/Left Arm": {
+    "mediane": 0.42,
+    "min": -0.014,
+    "max": 0.811,
+    "n": 3
+   },
+   "audit.correlation vitesses G/D Right Leg/Left Leg": {
+    "mediane": 0.875,
+    "min": 0.866,
+    "max": 0.967,
+    "n": 3
+   },
+   "audit.desequilibre (CdM hors appui)": {
+    "mediane": 0.623,
+    "min": 0.255,
+    "max": 0.685,
+    "n": 3
+   },
+   "audit.discontinuites de vitesse hors snaps declares": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 4.0,
+    "n": 3
+   },
+   "audit.glissement pied Left Leg": {
+    "mediane": 0.424,
+    "min": 0.187,
+    "max": 0.691,
+    "n": 3
+   },
+   "audit.glissement pied Right Leg": {
+    "mediane": 0.178,
+    "min": 0.021,
+    "max": 0.525,
+    "n": 3
+   },
+   "audit.holds morts": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 3
+   },
+   "audit.miroir quasi exact Right Arm/Left Arm": {
+    "mediane": 0.061,
+    "min": 0.052,
+    "max": 0.076,
+    "n": 3
+   },
+   "audit.miroir quasi exact Right Leg/Left Leg": {
+    "mediane": 0.167,
+    "min": 0.103,
+    "max": 0.212,
+    "n": 3
+   },
+   "audit.overlap retard median Head <- Torso": {
+    "mediane": -2.0,
+    "min": -3.0,
+    "max": -1.29,
+    "n": 3
+   },
+   "audit.overlap retard median Left Arm <- Torso": {
+    "mediane": 0.0,
+    "min": -0.5,
+    "max": 0.43,
+    "n": 3
+   },
+   "audit.overlap retard median Left Leg <- Torso": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.25,
+    "n": 3
+   },
+   "audit.overlap retard median Right Arm <- Torso": {
+    "mediane": 1.0,
+    "min": -0.5,
+    "max": 1.29,
+    "n": 3
+   },
+   "audit.overlap retard median Right Leg <- Torso": {
+    "mediane": 0.0,
+    "min": -0.43,
+    "max": 1.75,
+    "n": 3
+   },
+   "audit.overlap sync Head <- Torso": {
+    "mediane": 0.333,
+    "min": 0.0,
+    "max": 0.333,
+    "n": 3
+   },
+   "audit.overlap sync Left Arm <- Torso": {
+    "mediane": 0.333,
+    "min": 0.0,
+    "max": 0.667,
+    "n": 3
+   },
+   "audit.overlap sync Left Leg <- Torso": {
+    "mediane": 1.0,
+    "min": 0.333,
+    "max": 1.0,
+    "n": 3
+   },
+   "audit.overlap sync Right Arm <- Torso": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.667,
+    "n": 3
+   },
+   "audit.overlap sync Right Leg <- Torso": {
+    "mediane": 0.667,
+    "min": 0.5,
+    "max": 1.0,
+    "n": 3
+   },
+   "audit.planarite Head": {
+    "mediane": 0.819,
+    "min": 0.686,
+    "max": 0.927,
+    "n": 3
+   },
+   "audit.planarite Torso": {
+    "mediane": 0.958,
+    "min": 0.754,
+    "max": 0.959,
+    "n": 3
+   },
+   "timing.affaissement_torse_studs.max": {
+    "mediane": 1.265,
+    "min": 0.719,
+    "max": 1.314,
+    "n": 3
+   },
+   "timing.affaissement_torse_studs.median": {
+    "mediane": 0.569,
+    "min": 0.043,
+    "max": 0.74,
+    "n": 3
+   },
+   "timing.decalage_epaule_vertical_studs.bas_max": {
+    "mediane": -0.707,
+    "min": -0.816,
+    "max": -0.121,
+    "n": 3
+   },
+   "timing.decalage_epaule_vertical_studs.haut_max": {
+    "mediane": 0.511,
+    "min": 0.309,
+    "max": 0.744,
+    "n": 3
+   },
+   "timing.decalage_epaule_vertical_studs.median": {
+    "mediane": -0.072,
+    "min": -0.262,
+    "max": 0.098,
+    "n": 3
+   },
+   "timing.deplacement_torse_studs.x": {
+    "mediane": 0.32,
+    "min": 0.06,
+    "max": 0.37,
+    "n": 3
+   },
+   "timing.deplacement_torse_studs.y": {
+    "mediane": 1.26,
+    "min": 0.98,
+    "max": 1.31,
+    "n": 3
+   },
+   "timing.deplacement_torse_studs.z": {
+    "mediane": 0.8,
+    "min": 0.66,
+    "max": 0.91,
+    "n": 3
+   },
+   "timing.duree_s": {
+    "mediane": 1.083,
+    "min": 0.814,
+    "max": 1.083,
+    "n": 3
+   },
+   "timing.energie.contraste_pic_sur_mediane": {
+    "mediane": 3.9,
+    "min": 2.49,
+    "max": 4.97,
+    "n": 3
+   },
+   "timing.energie.fraction_quasi_tenue": {
+    "mediane": 0.288,
+    "min": 0.034,
+    "max": 0.409,
+    "n": 3
+   },
+   "timing.energie.fraction_rapide": {
+    "mediane": 0.227,
+    "min": 0.061,
+    "max": 0.276,
+    "n": 3
+   },
+   "timing.energie.mediane_deg_s": {
+    "mediane": 1466.8,
+    "min": 1213.6,
+    "max": 1511.4,
+    "n": 3
+   },
+   "timing.energie.pic_deg_s": {
+    "mediane": 5715.1,
+    "min": 3026.8,
+    "max": 7508.4,
+    "n": 3
+   },
+   "timing.mains_vitesse_max_studs_s.Left Arm": {
+    "mediane": 70.3,
+    "min": 46.2,
+    "max": 81.8,
+    "n": 3
+   },
+   "timing.mains_vitesse_max_studs_s.Right Arm": {
+    "mediane": 84.3,
+    "min": 82.5,
+    "max": 84.6,
+    "n": 3
+   },
+   "timing.mecanique_frappe.bras_elevation_deg": {
+    "mediane": -7.5,
+    "min": -42.0,
+    "max": 18.7,
+    "n": 3
+   },
+   "timing.mecanique_frappe.poing_hauteur_aller_vs_epaule": {
+    "mediane": -0.69,
+    "min": -0.98,
+    "max": 1.58,
+    "n": 3
+   },
+   "timing.mecanique_frappe.poing_hauteur_studs": {
+    "mediane": 1.7,
+    "min": 1.56,
+    "max": 3.54,
+    "n": 3
+   },
+   "timing.mecanique_frappe.poing_montee_finale_studs": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 1.45,
+    "n": 3
+   },
+   "timing.mecanique_frappe.portee_studs": {
+    "mediane": 2.57,
+    "min": 1.8,
+    "max": 2.71,
+    "n": 3
+   },
+   "timing.mecanique_frappe.transfert_poids_studs": {
+    "mediane": 0.84,
+    "min": 0.33,
+    "max": 0.92,
+    "n": 3
+   },
+   "timing.membres.Head.amplitude_vs_debut_deg": {
+    "mediane": 33.6,
+    "min": 20.4,
+    "max": 60.9,
+    "n": 3
+   },
+   "timing.membres.Head.amplitude_vs_repos_deg": {
+    "mediane": 33.6,
+    "min": 20.4,
+    "max": 60.9,
+    "n": 3
+   },
+   "timing.membres.Head.pic_a_s": {
+    "mediane": 0.271,
+    "min": 0.067,
+    "max": 0.45,
+    "n": 3
+   },
+   "timing.membres.Head.vitesse_max_deg_s": {
+    "mediane": 511.7,
+    "min": 279.0,
+    "max": 592.0,
+    "n": 3
+   },
+   "timing.membres.Left Arm.amplitude_vs_debut_deg": {
+    "mediane": 117.9,
+    "min": 116.4,
+    "max": 178.8,
+    "n": 3
+   },
+   "timing.membres.Left Arm.amplitude_vs_repos_deg": {
+    "mediane": 117.9,
+    "min": 116.4,
+    "max": 178.8,
+    "n": 3
+   },
+   "timing.membres.Left Arm.pic_a_s": {
+    "mediane": 0.2,
+    "min": 0.143,
+    "max": 0.717,
+    "n": 3
+   },
+   "timing.membres.Left Arm.vitesse_max_deg_s": {
+    "mediane": 844.3,
+    "min": 672.8,
+    "max": 1349.0,
+    "n": 3
+   },
+   "timing.membres.Left Leg.amplitude_vs_debut_deg": {
+    "mediane": 89.15,
+    "min": 83.6,
+    "max": 94.7,
+    "n": 2
+   },
+   "timing.membres.Left Leg.amplitude_vs_repos_deg": {
+    "mediane": 89.15,
+    "min": 83.6,
+    "max": 94.7,
+    "n": 2
+   },
+   "timing.membres.Left Leg.pic_a_s": {
+    "mediane": 0.291,
+    "min": 0.25,
+    "max": 0.333,
+    "n": 2
+   },
+   "timing.membres.Left Leg.vitesse_max_deg_s": {
+    "mediane": 1812.55,
+    "min": 1233.6,
+    "max": 2391.5,
+    "n": 2
+   },
+   "timing.membres.Right Arm.amplitude_vs_debut_deg": {
+    "mediane": 158.2,
+    "min": 90.6,
+    "max": 173.9,
+    "n": 3
+   },
+   "timing.membres.Right Arm.amplitude_vs_repos_deg": {
+    "mediane": 158.2,
+    "min": 90.6,
+    "max": 173.9,
+    "n": 3
+   },
+   "timing.membres.Right Arm.pic_a_s": {
+    "mediane": 0.133,
+    "min": 0.067,
+    "max": 0.329,
+    "n": 3
+   },
+   "timing.membres.Right Arm.vitesse_max_deg_s": {
+    "mediane": 1532.2,
+    "min": 882.5,
+    "max": 1846.0,
+    "n": 3
+   },
+   "timing.membres.Right Leg.amplitude_vs_debut_deg": {
+    "mediane": 63.65,
+    "min": 55.7,
+    "max": 71.6,
+    "n": 2
+   },
+   "timing.membres.Right Leg.amplitude_vs_repos_deg": {
+    "mediane": 63.65,
+    "min": 55.7,
+    "max": 71.6,
+    "n": 2
+   },
+   "timing.membres.Right Leg.pic_a_s": {
+    "mediane": 0.291,
+    "min": 0.25,
+    "max": 0.333,
+    "n": 2
+   },
+   "timing.membres.Right Leg.vitesse_max_deg_s": {
+    "mediane": 1703.8,
+    "min": 1423.4,
+    "max": 1984.2,
+    "n": 2
+   },
+   "timing.membres.Torso.amplitude_vs_debut_deg": {
+    "mediane": 99.0,
+    "min": 73.2,
+    "max": 100.8,
+    "n": 3
+   },
+   "timing.membres.Torso.amplitude_vs_repos_deg": {
+    "mediane": 99.0,
+    "min": 73.2,
+    "max": 100.8,
+    "n": 3
+   },
+   "timing.membres.Torso.pic_a_s": {
+    "mediane": 0.286,
+    "min": 0.25,
+    "max": 0.333,
+    "n": 3
+   },
+   "timing.membres.Torso.vitesse_max_deg_s": {
+    "mediane": 1416.2,
+    "min": 1077.4,
+    "max": 2085.7,
+    "n": 3
+   },
+   "timing.n_frames": {
+    "mediane": 66.0,
+    "min": 58.0,
+    "max": 66.0,
+    "n": 3
+   },
+   "timing.phases.action_f60": {
+    "mediane": 20.0,
+    "min": 14.0,
+    "max": 48.0,
+    "n": 3
+   },
+   "timing.phases.anticipation_f60": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 15.0,
+    "n": 3
+   },
+   "timing.phases.fraction_anticipation": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.231,
+    "n": 3
+   },
+   "timing.phases.fraction_recuperation": {
+    "mediane": 0.554,
+    "min": 0.018,
+    "max": 0.692,
+    "n": 3
+   },
+   "timing.phases.recuperation_ou_tenue_f60": {
+    "mediane": 36.0,
+    "min": 0.9,
+    "max": 45.0,
+    "n": 3
+   },
+   "timing.poses_cles_par_s": {
+    "mediane": 4.62,
+    "min": 1.23,
+    "max": 4.62,
+    "n": 3
+   },
+   "timing.torse_vitesse_max_studs_s": {
+    "mediane": 10.9,
+    "min": 10.5,
+    "max": 12.7,
+    "n": 3
+   },
+   "timing.translation_articulation_max_studs.Head": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 3
+   },
+   "timing.translation_articulation_max_studs.Left Arm": {
+    "mediane": 1.263,
+    "min": 1.118,
+    "max": 1.409,
+    "n": 3
+   },
+   "timing.translation_articulation_max_studs.Left Leg": {
+    "mediane": 1.644,
+    "min": 1.599,
+    "max": 1.69,
+    "n": 2
+   },
+   "timing.translation_articulation_max_studs.Right Arm": {
+    "mediane": 1.059,
+    "min": 0.798,
+    "max": 1.61,
+    "n": 3
+   },
+   "timing.translation_articulation_max_studs.Right Leg": {
+    "mediane": 1.745,
+    "min": 1.686,
+    "max": 1.804,
+    "n": 2
+   }
+  }
+ },
+ "garde_touchee": {
+  "n": 1,
+  "fragile": true,
+  "exemples": [
+   "[5] Block Hit"
+  ],
+  "mesures": {
+   "audit.correlation vitesses G/D Right Arm/Left Arm": {
+    "mediane": 1.0,
+    "min": 1.0,
+    "max": 1.0,
+    "n": 1
+   },
+   "audit.correlation vitesses G/D Right Leg/Left Leg": {
+    "mediane": 1.0,
+    "min": 1.0,
+    "max": 1.0,
+    "n": 1
+   },
+   "audit.desequilibre (CdM hors appui)": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 1
+   },
+   "audit.discontinuites de vitesse hors snaps declares": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 1
+   },
+   "audit.glissement pied Left Leg": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 1
+   },
+   "audit.glissement pied Right Leg": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 1
+   },
+   "audit.holds morts": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 1
+   },
+   "audit.miroir quasi exact Right Arm/Left Arm": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 1
+   },
+   "audit.miroir quasi exact Right Leg/Left Leg": {
+    "mediane": 1.0,
+    "min": 1.0,
+    "max": 1.0,
+    "n": 1
+   },
+   "timing.affaissement_torse_studs.max": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 1
+   },
+   "timing.affaissement_torse_studs.median": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 1
+   },
+   "timing.decalage_epaule_vertical_studs.bas_max": {
+    "mediane": -0.244,
+    "min": -0.244,
+    "max": -0.244,
+    "n": 1
+   },
+   "timing.decalage_epaule_vertical_studs.haut_max": {
+    "mediane": -0.15,
+    "min": -0.15,
+    "max": -0.15,
+    "n": 1
+   },
+   "timing.decalage_epaule_vertical_studs.median": {
+    "mediane": -0.198,
+    "min": -0.198,
+    "max": -0.198,
+    "n": 1
+   },
+   "timing.deplacement_torse_studs.x": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 1
+   },
+   "timing.deplacement_torse_studs.y": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 1
+   },
+   "timing.deplacement_torse_studs.z": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 1
+   },
+   "timing.duree_s": {
+    "mediane": 0.2,
+    "min": 0.2,
+    "max": 0.2,
+    "n": 1
+   },
+   "timing.energie.contraste_pic_sur_mediane": {
+    "mediane": 7.96,
+    "min": 7.96,
+    "max": 7.96,
+    "n": 1
+   },
+   "timing.energie.fraction_quasi_tenue": {
+    "mediane": 0.8,
+    "min": 0.8,
+    "max": 0.8,
+    "n": 1
+   },
+   "timing.energie.fraction_rapide": {
+    "mediane": 0.133,
+    "min": 0.133,
+    "max": 0.133,
+    "n": 1
+   },
+   "timing.energie.mediane_deg_s": {
+    "mediane": 56.1,
+    "min": 56.1,
+    "max": 56.1,
+    "n": 1
+   },
+   "timing.energie.pic_deg_s": {
+    "mediane": 446.7,
+    "min": 446.7,
+    "max": 446.7,
+    "n": 1
+   },
+   "timing.mains_vitesse_max_studs_s.Left Arm": {
+    "mediane": 5.0,
+    "min": 5.0,
+    "max": 5.0,
+    "n": 1
+   },
+   "timing.mains_vitesse_max_studs_s.Right Arm": {
+    "mediane": 6.3,
+    "min": 6.3,
+    "max": 6.3,
+    "n": 1
+   },
+   "timing.membres.Left Arm.amplitude_vs_debut_deg": {
+    "mediane": 3.1,
+    "min": 3.1,
+    "max": 3.1,
+    "n": 1
+   },
+   "timing.membres.Left Arm.amplitude_vs_repos_deg": {
+    "mediane": 178.1,
+    "min": 178.1,
+    "max": 178.1,
+    "n": 1
+   },
+   "timing.membres.Left Arm.pic_a_s": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 1
+   },
+   "timing.membres.Left Arm.vitesse_max_deg_s": {
+    "mediane": 193.0,
+    "min": 193.0,
+    "max": 193.0,
+    "n": 1
+   },
+   "timing.membres.Right Arm.amplitude_vs_debut_deg": {
+    "mediane": 3.9,
+    "min": 3.9,
+    "max": 3.9,
+    "n": 1
+   },
+   "timing.membres.Right Arm.amplitude_vs_repos_deg": {
+    "mediane": 177.6,
+    "min": 177.6,
+    "max": 177.6,
+    "n": 1
+   },
+   "timing.membres.Right Arm.pic_a_s": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 1
+   },
+   "timing.membres.Right Arm.vitesse_max_deg_s": {
+    "mediane": 253.6,
+    "min": 253.6,
+    "max": 253.6,
+    "n": 1
+   },
+   "timing.n_frames": {
+    "mediane": 15.0,
+    "min": 15.0,
+    "max": 15.0,
+    "n": 1
+   },
+   "timing.phases.action_f60": {
+    "mediane": 0.9,
+    "min": 0.9,
+    "max": 0.9,
+    "n": 1
+   },
+   "timing.phases.anticipation_f60": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 1
+   },
+   "timing.phases.fraction_anticipation": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 1
+   },
+   "timing.phases.fraction_recuperation": {
+    "mediane": 0.925,
+    "min": 0.925,
+    "max": 0.925,
+    "n": 1
+   },
+   "timing.phases.recuperation_ou_tenue_f60": {
+    "mediane": 11.1,
+    "min": 11.1,
+    "max": 11.1,
+    "n": 1
+   },
+   "timing.poses_cles_par_s": {
+    "mediane": 5.0,
+    "min": 5.0,
+    "max": 5.0,
+    "n": 1
+   },
+   "timing.torse_vitesse_max_studs_s": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 1
+   },
+   "timing.translation_articulation_max_studs.Left Arm": {
+    "mediane": 1.215,
+    "min": 1.215,
+    "max": 1.215,
+    "n": 1
+   },
+   "timing.translation_articulation_max_studs.Right Arm": {
+    "mediane": 1.152,
+    "min": 1.152,
+    "max": 1.152,
+    "n": 1
+   }
+  }
+ },
+ "locomotion": {
+  "n": 2,
+  "fragile": true,
+  "exemples": [
+   "[1] Run",
+   "[1] Walk"
+  ],
+  "mesures": {
+   "audit.arrets simultanes": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 2
+   },
+   "audit.correlation vitesses G/D Right Arm/Left Arm": {
+    "mediane": 0.958,
+    "min": 0.915,
+    "max": 1.0,
+    "n": 2
+   },
+   "audit.correlation vitesses G/D Right Leg/Left Leg": {
+    "mediane": 0.409,
+    "min": 0.335,
+    "max": 0.483,
+    "n": 2
+   },
+   "audit.desequilibre (CdM hors appui)": {
+    "mediane": 0.298,
+    "min": 0.167,
+    "max": 0.429,
+    "n": 2
+   },
+   "audit.discontinuites de vitesse hors snaps declares": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 2
+   },
+   "audit.glissement pied Left Leg": {
+    "mediane": 0.333,
+    "min": 0.0,
+    "max": 0.665,
+    "n": 2
+   },
+   "audit.glissement pied Right Leg": {
+    "mediane": 0.333,
+    "min": 0.0,
+    "max": 0.665,
+    "n": 2
+   },
+   "audit.holds morts": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 2
+   },
+   "audit.miroir quasi exact Right Arm/Left Arm": {
+    "mediane": 0.017,
+    "min": 0.0,
+    "max": 0.033,
+    "n": 2
+   },
+   "audit.miroir quasi exact Right Leg/Left Leg": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 2
+   },
+   "audit.overlap retard median Head <- Torso": {
+    "mediane": -0.5,
+    "min": -0.5,
+    "max": -0.5,
+    "n": 2
+   },
+   "audit.overlap retard median Left Arm <- Torso": {
+    "mediane": -0.875,
+    "min": -2.25,
+    "max": 0.5,
+    "n": 2
+   },
+   "audit.overlap retard median Left Leg <- Torso": {
+    "mediane": 0.5,
+    "min": 0.0,
+    "max": 1.0,
+    "n": 2
+   },
+   "audit.overlap retard median Right Arm <- Torso": {
+    "mediane": -0.875,
+    "min": -2.25,
+    "max": 0.5,
+    "n": 2
+   },
+   "audit.overlap retard median Right Leg <- Torso": {
+    "mediane": 0.5,
+    "min": 0.0,
+    "max": 1.0,
+    "n": 2
+   },
+   "audit.overlap sync Head <- Torso": {
+    "mediane": 0.666,
+    "min": 0.333,
+    "max": 1.0,
+    "n": 2
+   },
+   "audit.overlap sync Left Arm <- Torso": {
+    "mediane": 0.334,
+    "min": 0.0,
+    "max": 0.667,
+    "n": 2
+   },
+   "audit.overlap sync Left Leg <- Torso": {
+    "mediane": 0.666,
+    "min": 0.333,
+    "max": 1.0,
+    "n": 2
+   },
+   "audit.overlap sync Right Arm <- Torso": {
+    "mediane": 0.334,
+    "min": 0.0,
+    "max": 0.667,
+    "n": 2
+   },
+   "audit.overlap sync Right Leg <- Torso": {
+    "mediane": 0.666,
+    "min": 0.333,
+    "max": 1.0,
+    "n": 2
+   },
+   "audit.planarite Head": {
+    "mediane": 0.95,
+    "min": 0.899,
+    "max": 1.0,
+    "n": 2
+   },
+   "audit.planarite Torso": {
+    "mediane": 0.883,
+    "min": 0.821,
+    "max": 0.946,
+    "n": 2
+   },
+   "timing.affaissement_torse_studs.max": {
+    "mediane": 0.297,
+    "min": 0.169,
+    "max": 0.426,
+    "n": 2
+   },
+   "timing.affaissement_torse_studs.median": {
+    "mediane": 0.226,
+    "min": 0.102,
+    "max": 0.351,
+    "n": 2
+   },
+   "timing.decalage_epaule_vertical_studs.bas_max": {
+    "mediane": -0.165,
+    "min": -0.176,
+    "max": -0.155,
+    "n": 2
+   },
+   "timing.decalage_epaule_vertical_studs.haut_max": {
+    "mediane": -0.045,
+    "min": -0.105,
+    "max": 0.015,
+    "n": 2
+   },
+   "timing.decalage_epaule_vertical_studs.median": {
+    "mediane": -0.103,
+    "min": -0.137,
+    "max": -0.068,
+    "n": 2
+   },
+   "timing.deplacement_torse_studs.x": {
+    "mediane": 0.015,
+    "min": 0.0,
+    "max": 0.03,
+    "n": 2
+   },
+   "timing.deplacement_torse_studs.y": {
+    "mediane": 0.155,
+    "min": 0.15,
+    "max": 0.16,
+    "n": 2
+   },
+   "timing.deplacement_torse_studs.z": {
+    "mediane": 0.185,
+    "min": 0.07,
+    "max": 0.3,
+    "n": 2
+   },
+   "timing.duree_s": {
+    "mediane": 0.817,
+    "min": 0.65,
+    "max": 0.983,
+    "n": 2
+   },
+   "timing.energie.contraste_pic_sur_mediane": {
+    "mediane": 1.75,
+    "min": 1.71,
+    "max": 1.79,
+    "n": 2
+   },
+   "timing.energie.fraction_quasi_tenue": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 2
+   },
+   "timing.energie.fraction_rapide": {
+    "mediane": 0.575,
+    "min": 0.55,
+    "max": 0.6,
+    "n": 2
+   },
+   "timing.energie.mediane_deg_s": {
+    "mediane": 1496.95,
+    "min": 641.9,
+    "max": 2352.0,
+    "n": 2
+   },
+   "timing.energie.pic_deg_s": {
+    "mediane": 2655.3,
+    "min": 1099.6,
+    "max": 4211.0,
+    "n": 2
+   },
+   "timing.mains_vitesse_max_studs_s.Left Arm": {
+    "mediane": 22.65,
+    "min": 7.9,
+    "max": 37.4,
+    "n": 2
+   },
+   "timing.mains_vitesse_max_studs_s.Right Arm": {
+    "mediane": 22.65,
+    "min": 7.9,
+    "max": 37.4,
+    "n": 2
+   },
+   "timing.membres.Head.amplitude_vs_debut_deg": {
+    "mediane": 32.9,
+    "min": 32.7,
+    "max": 33.1,
+    "n": 2
+   },
+   "timing.membres.Head.amplitude_vs_repos_deg": {
+    "mediane": 18.85,
+    "min": 16.7,
+    "max": 21.0,
+    "n": 2
+   },
+   "timing.membres.Head.pic_a_s": {
+    "mediane": 0.391,
+    "min": 0.3,
+    "max": 0.483,
+    "n": 2
+   },
+   "timing.membres.Head.vitesse_max_deg_s": {
+    "mediane": 128.5,
+    "min": 109.5,
+    "max": 147.5,
+    "n": 2
+   },
+   "timing.membres.Left Arm.amplitude_vs_debut_deg": {
+    "mediane": 115.15,
+    "min": 50.6,
+    "max": 179.7,
+    "n": 2
+   },
+   "timing.membres.Left Arm.amplitude_vs_repos_deg": {
+    "mediane": 91.6,
+    "min": 36.0,
+    "max": 147.2,
+    "n": 2
+   },
+   "timing.membres.Left Arm.pic_a_s": {
+    "mediane": 0.458,
+    "min": 0.183,
+    "max": 0.733,
+    "n": 2
+   },
+   "timing.membres.Left Arm.vitesse_max_deg_s": {
+    "mediane": 643.35,
+    "min": 153.9,
+    "max": 1132.8,
+    "n": 2
+   },
+   "timing.membres.Left Leg.amplitude_vs_debut_deg": {
+    "mediane": 117.15,
+    "min": 86.6,
+    "max": 147.7,
+    "n": 2
+   },
+   "timing.membres.Left Leg.amplitude_vs_repos_deg": {
+    "mediane": 67.35,
+    "min": 45.8,
+    "max": 88.9,
+    "n": 2
+   },
+   "timing.membres.Left Leg.pic_a_s": {
+    "mediane": 0.508,
+    "min": 0.2,
+    "max": 0.817,
+    "n": 2
+   },
+   "timing.membres.Left Leg.vitesse_max_deg_s": {
+    "mediane": 789.3,
+    "min": 404.7,
+    "max": 1173.9,
+    "n": 2
+   },
+   "timing.membres.Right Arm.amplitude_vs_debut_deg": {
+    "mediane": 115.0,
+    "min": 50.6,
+    "max": 179.4,
+    "n": 2
+   },
+   "timing.membres.Right Arm.amplitude_vs_repos_deg": {
+    "mediane": 91.6,
+    "min": 36.0,
+    "max": 147.2,
+    "n": 2
+   },
+   "timing.membres.Right Arm.pic_a_s": {
+    "mediane": 0.384,
+    "min": 0.25,
+    "max": 0.517,
+    "n": 2
+   },
+   "timing.membres.Right Arm.vitesse_max_deg_s": {
+    "mediane": 643.35,
+    "min": 153.9,
+    "max": 1132.8,
+    "n": 2
+   },
+   "timing.membres.Right Leg.amplitude_vs_debut_deg": {
+    "mediane": 116.4,
+    "min": 75.8,
+    "max": 157.0,
+    "n": 2
+   },
+   "timing.membres.Right Leg.amplitude_vs_repos_deg": {
+    "mediane": 67.35,
+    "min": 45.8,
+    "max": 88.9,
+    "n": 2
+   },
+   "timing.membres.Right Leg.pic_a_s": {
+    "mediane": 0.425,
+    "min": 0.317,
+    "max": 0.533,
+    "n": 2
+   },
+   "timing.membres.Right Leg.vitesse_max_deg_s": {
+    "mediane": 788.2,
+    "min": 404.1,
+    "max": 1172.3,
+    "n": 2
+   },
+   "timing.membres.Torso.amplitude_vs_debut_deg": {
+    "mediane": 34.2,
+    "min": 33.1,
+    "max": 35.3,
+    "n": 2
+   },
+   "timing.membres.Torso.amplitude_vs_repos_deg": {
+    "mediane": 32.2,
+    "min": 21.0,
+    "max": 43.4,
+    "n": 2
+   },
+   "timing.membres.Torso.pic_a_s": {
+    "mediane": 0.242,
+    "min": 0.167,
+    "max": 0.317,
+    "n": 2
+   },
+   "timing.membres.Torso.vitesse_max_deg_s": {
+    "mediane": 145.6,
+    "min": 106.0,
+    "max": 185.2,
+    "n": 2
+   },
+   "timing.n_frames": {
+    "mediane": 50.0,
+    "min": 40.0,
+    "max": 60.0,
+    "n": 2
+   },
+   "timing.poses_cles_par_s": {
+    "mediane": 1.28,
+    "min": 1.02,
+    "max": 1.54,
+    "n": 2
+   },
+   "timing.torse_vitesse_max_studs_s": {
+    "mediane": 2.05,
+    "min": 1.2,
+    "max": 2.9,
+    "n": 2
+   },
+   "timing.translation_articulation_max_studs.Head": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 2
+   },
+   "timing.translation_articulation_max_studs.Left Arm": {
+    "mediane": 0.676,
+    "min": 0.402,
+    "max": 0.951,
+    "n": 2
+   },
+   "timing.translation_articulation_max_studs.Left Leg": {
+    "mediane": 1.202,
+    "min": 0.839,
+    "max": 1.565,
+    "n": 2
+   },
+   "timing.translation_articulation_max_studs.Right Arm": {
+    "mediane": 0.676,
+    "min": 0.402,
+    "max": 0.951,
+    "n": 2
+   },
+   "timing.translation_articulation_max_studs.Right Leg": {
+    "mediane": 1.202,
+    "min": 0.839,
+    "max": 1.564,
+    "n": 2
+   }
+  }
+ },
+ "reaction": {
+  "n": 3,
+  "fragile": false,
+  "exemples": [
+   "[4] Hit 1",
+   "[4] Hit 2",
+   "[4] Hit 3"
+  ],
+  "mesures": {
+   "audit.correlation vitesses G/D Right Arm/Left Arm": {
+    "mediane": 0.951,
+    "min": 0.661,
+    "max": 1.0,
+    "n": 3
+   },
+   "audit.correlation vitesses G/D Right Leg/Left Leg": {
+    "mediane": 1.0,
+    "min": 1.0,
+    "max": 1.0,
+    "n": 3
+   },
+   "audit.desequilibre (CdM hors appui)": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 3
+   },
+   "audit.discontinuites de vitesse hors snaps declares": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 3
+   },
+   "audit.glissement pied Left Leg": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 3
+   },
+   "audit.glissement pied Right Leg": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 3
+   },
+   "audit.holds morts": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 3
+   },
+   "audit.miroir quasi exact Right Arm/Left Arm": {
+    "mediane": 0.412,
+    "min": 0.133,
+    "max": 0.429,
+    "n": 3
+   },
+   "audit.miroir quasi exact Right Leg/Left Leg": {
+    "mediane": 1.0,
+    "min": 1.0,
+    "max": 1.0,
+    "n": 3
+   },
+   "audit.overlap retard median Head <- Torso": {
+    "mediane": -1.0,
+    "min": -1.0,
+    "max": -1.0,
+    "n": 1
+   },
+   "audit.overlap retard median Left Arm <- Torso": {
+    "mediane": -0.75,
+    "min": -1.0,
+    "max": -0.5,
+    "n": 2
+   },
+   "audit.overlap retard median Left Leg <- Torso": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 2
+   },
+   "audit.overlap retard median Right Arm <- Torso": {
+    "mediane": 0.0,
+    "min": -1.0,
+    "max": 1.0,
+    "n": 2
+   },
+   "audit.overlap retard median Right Leg <- Torso": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 2
+   },
+   "audit.overlap sync Head <- Torso": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 1
+   },
+   "audit.overlap sync Left Arm <- Torso": {
+    "mediane": 0.5,
+    "min": 0.0,
+    "max": 1.0,
+    "n": 2
+   },
+   "audit.overlap sync Left Leg <- Torso": {
+    "mediane": 1.0,
+    "min": 1.0,
+    "max": 1.0,
+    "n": 2
+   },
+   "audit.overlap sync Right Arm <- Torso": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 2
+   },
+   "audit.overlap sync Right Leg <- Torso": {
+    "mediane": 1.0,
+    "min": 1.0,
+    "max": 1.0,
+    "n": 2
+   },
+   "audit.planarite Head": {
+    "mediane": 0.984,
+    "min": 0.977,
+    "max": 1.0,
+    "n": 3
+   },
+   "audit.planarite Torso": {
+    "mediane": 0.984,
+    "min": 0.96,
+    "max": 0.988,
+    "n": 3
+   },
+   "timing.affaissement_torse_studs.max": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.039,
+    "n": 3
+   },
+   "timing.affaissement_torse_studs.median": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.028,
+    "n": 3
+   },
+   "timing.decalage_epaule_vertical_studs.bas_max": {
+    "mediane": 0.035,
+    "min": 0.03,
+    "max": 0.035,
+    "n": 3
+   },
+   "timing.decalage_epaule_vertical_studs.haut_max": {
+    "mediane": 0.038,
+    "min": 0.038,
+    "max": 0.038,
+    "n": 3
+   },
+   "timing.decalage_epaule_vertical_studs.median": {
+    "mediane": 0.037,
+    "min": 0.036,
+    "max": 0.037,
+    "n": 3
+   },
+   "timing.deplacement_torse_studs.x": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.03,
+    "n": 3
+   },
+   "timing.deplacement_torse_studs.y": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.04,
+    "n": 3
+   },
+   "timing.deplacement_torse_studs.z": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 3
+   },
+   "timing.duree_s": {
+    "mediane": 0.233,
+    "min": 0.217,
+    "max": 0.267,
+    "n": 3
+   },
+   "timing.energie.contraste_pic_sur_mediane": {
+    "mediane": 2.35,
+    "min": 1.53,
+    "max": 2.45,
+    "n": 3
+   },
+   "timing.energie.fraction_quasi_tenue": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.071,
+    "n": 3
+   },
+   "timing.energie.fraction_rapide": {
+    "mediane": 0.286,
+    "min": 0.267,
+    "max": 0.824,
+    "n": 3
+   },
+   "timing.energie.mediane_deg_s": {
+    "mediane": 961.7,
+    "min": 794.9,
+    "max": 1056.3,
+    "n": 3
+   },
+   "timing.energie.pic_deg_s": {
+    "mediane": 1870.7,
+    "min": 1468.7,
+    "max": 2588.9,
+    "n": 3
+   },
+   "timing.mains_vitesse_max_studs_s.Left Arm": {
+    "mediane": 17.7,
+    "min": 14.0,
+    "max": 27.1,
+    "n": 3
+   },
+   "timing.mains_vitesse_max_studs_s.Right Arm": {
+    "mediane": 11.8,
+    "min": 9.5,
+    "max": 31.1,
+    "n": 3
+   },
+   "timing.membres.Head.amplitude_vs_debut_deg": {
+    "mediane": 26.8,
+    "min": 24.3,
+    "max": 42.6,
+    "n": 3
+   },
+   "timing.membres.Head.amplitude_vs_repos_deg": {
+    "mediane": 26.8,
+    "min": 24.3,
+    "max": 42.6,
+    "n": 3
+   },
+   "timing.membres.Head.pic_a_s": {
+    "mediane": 0.017,
+    "min": 0.017,
+    "max": 0.033,
+    "n": 3
+   },
+   "timing.membres.Head.vitesse_max_deg_s": {
+    "mediane": 536.3,
+    "min": 486.2,
+    "max": 1058.8,
+    "n": 3
+   },
+   "timing.membres.Left Arm.amplitude_vs_debut_deg": {
+    "mediane": 25.6,
+    "min": 19.4,
+    "max": 38.0,
+    "n": 3
+   },
+   "timing.membres.Left Arm.amplitude_vs_repos_deg": {
+    "mediane": 25.6,
+    "min": 19.4,
+    "max": 38.0,
+    "n": 3
+   },
+   "timing.membres.Left Arm.pic_a_s": {
+    "mediane": 0.05,
+    "min": 0.033,
+    "max": 0.233,
+    "n": 3
+   },
+   "timing.membres.Left Arm.vitesse_max_deg_s": {
+    "mediane": 335.2,
+    "min": 327.4,
+    "max": 761.0,
+    "n": 3
+   },
+   "timing.membres.Right Arm.amplitude_vs_debut_deg": {
+    "mediane": 28.8,
+    "min": 27.4,
+    "max": 39.4,
+    "n": 3
+   },
+   "timing.membres.Right Arm.amplitude_vs_repos_deg": {
+    "mediane": 28.8,
+    "min": 27.4,
+    "max": 39.4,
+    "n": 3
+   },
+   "timing.membres.Right Arm.pic_a_s": {
+    "mediane": 0.05,
+    "min": 0.017,
+    "max": 0.233,
+    "n": 3
+   },
+   "timing.membres.Right Arm.vitesse_max_deg_s": {
+    "mediane": 463.0,
+    "min": 384.9,
+    "max": 787.6,
+    "n": 3
+   },
+   "timing.membres.Torso.amplitude_vs_debut_deg": {
+    "mediane": 27.1,
+    "min": 24.0,
+    "max": 36.3,
+    "n": 3
+   },
+   "timing.membres.Torso.amplitude_vs_repos_deg": {
+    "mediane": 27.1,
+    "min": 24.0,
+    "max": 36.3,
+    "n": 3
+   },
+   "timing.membres.Torso.pic_a_s": {
+    "mediane": 0.05,
+    "min": 0.0,
+    "max": 0.083,
+    "n": 3
+   },
+   "timing.membres.Torso.vitesse_max_deg_s": {
+    "mediane": 646.8,
+    "min": 564.0,
+    "max": 720.8,
+    "n": 3
+   },
+   "timing.n_frames": {
+    "mediane": 15.0,
+    "min": 14.0,
+    "max": 17.0,
+    "n": 3
+   },
+   "timing.phases.action_f60": {
+    "mediane": 12.0,
+    "min": 11.0,
+    "max": 13.0,
+    "n": 3
+   },
+   "timing.phases.anticipation_f60": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 3
+   },
+   "timing.phases.fraction_anticipation": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 3
+   },
+   "timing.phases.fraction_recuperation": {
+    "mediane": 0.077,
+    "min": 0.071,
+    "max": 0.313,
+    "n": 3
+   },
+   "timing.phases.recuperation_ou_tenue_f60": {
+    "mediane": 1.0,
+    "min": 1.0,
+    "max": 5.0,
+    "n": 3
+   },
+   "timing.poses_cles_par_s": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 4.29,
+    "n": 3
+   },
+   "timing.torse_vitesse_max_studs_s": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.9,
+    "n": 3
+   },
+   "timing.translation_articulation_max_studs.Head": {
+    "mediane": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 3
+   },
+   "timing.translation_articulation_max_studs.Left Arm": {
+    "mediane": 0.038,
+    "min": 0.038,
+    "max": 0.038,
+    "n": 3
+   },
+   "timing.translation_articulation_max_studs.Right Arm": {
+    "mediane": 0.037,
+    "min": 0.037,
+    "max": 0.037,
+    "n": 3
+   }
+  }
+ }
+}

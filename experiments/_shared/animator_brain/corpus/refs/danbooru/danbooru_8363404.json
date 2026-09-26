@@ -1,0 +1,93 @@
+{
+ "clip": "danbooru_danbooru_8363404",
+ "sha1_16": "25b6f393b92a4276",
+ "duree_s": 0.23,
+ "resolution": [
+  460,
+  560
+ ],
+ "zone_analysee": [
+  1,
+  1,
+  158,
+  186
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 33.3,
+  "lecture": "en 2 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 0,
+  "part_du_temps": 0.0,
+  "plus_longue_ms": 0
+ },
+ "energie": {
+  "mediane": 36.09,
+  "pic_p95": 53.26,
+  "contraste_p95_sur_mediane": 1.48,
+  "part_rapide": 0.429
+ },
+ "impacts": {
+  "nombre": 0,
+  "par_seconde": 0.0,
+  "ecart_median_s": null,
+  "cartes": [],
+  "profil_autour": null
+ },
+ "coupes": {
+  "nombre": 0,
+  "t_s": []
+ },
+ "camera": {
+  "decalage_median_pct": 0.44,
+  "decalage_p95_pct": 5.44
+ },
+ "mouvement": null,
+ "palette": [
+  {
+   "hex": "#faf7f9",
+   "part": 0.296
+  },
+  {
+   "hex": "#f8eae0",
+   "part": 0.269
+  },
+  {
+   "hex": "#55454e",
+   "part": 0.21
+  },
+  {
+   "hex": "#d9c3b5",
+   "part": 0.162
+  },
+  {
+   "hex": "#f8f9f8",
+   "part": 0.035
+  },
+  {
+   "hex": "#fcfbfa",
+   "part": 0.028
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 0,
+  "termes": {
+   "contraste_de_temps": 0.0,
+   "tenues_presentes": 0.0,
+   "impacts_rythmes": 0.0
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/danbooru_danbooru_8363404.png",
+ "source": {
+  "nom": "danbooru",
+  "id": 8363404,
+  "tags": "1girl 1other animal_ear_headphones animal_ears animated apron attacking_viewer black_dress blonde_hair blue_archive blue_ribbon cat_ear_headphones cat_ears cheek_squash cm_yang commentary_request dress fake_animal_ears grabbing_another's_face hair_ribbon halo head_grab headphones maid_apron maid_headdress meme momoi_(blue_archive) momoi_(maid)_(blue_archive) pink_eyes pink_halo pink_ribbon pov pov_cheek_grabbing_(meme) pov_hands punching punching_viewer rapid_punches ribbon video white_apron white_background",
+  "score": 63,
+  "source_oeuvre": "blue_archive",
+  "artiste": "cm_yang",
+  "url": "https://danbooru.donmai.us/posts/8363404",
+  "requete": "punching",
+  "pourquoi": "coups de poing animes"
+ }
+}

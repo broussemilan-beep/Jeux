@@ -1,0 +1,3171 @@
+[
+ {
+  "id": "M1",
+  "anim": "M1",
+  "membre": "LA",
+  "type": "poing",
+  "avant_vecteur": [
+   -0.131,
+   0.0,
+   -0.991
+  ],
+  "avant_az_deg_depuis_-Z_vers_+X": -7.5,
+  "images": {
+   "arme_max_poing_le_plus_recule": 0,
+   "contre_rotation_max_buste": 0,
+   "depart_detente": 6,
+   "pic_vitesse": 10,
+   "contact": 9
+  },
+  "vitesse_pic_studs_s": 72.9,
+  "vitesses_depart_a_contact": [
+   14.8,
+   66.9,
+   69.4,
+   72.6,
+   72.9
+  ],
+  "derive_moyenne_arme_a_depart_studs_s": 15.1,
+  "tenue_images_<4studs/s": [],
+  "durees_images_60": {
+   "arme_a_depart (derive lente)": 6,
+   "tenue": 0,
+   "depart_a_contact": 3,
+   "arme_a_contact": 9
+  },
+  "trajet": {
+   "corde": 4.09,
+   "longueur": 4.99,
+   "rectitude_corde_sur_longueur": 0.82,
+   "ecart_max_a_la_corde": 1.18,
+   "deplacement_poing_(avant,droite,haut)": [
+    3.56,
+    2.0,
+    -0.3
+   ],
+   "az_poing_autour_du_torse_deg": [
+    -107.0,
+    -101.0,
+    -95.0,
+    -89.0,
+    -84.0,
+    -78.0,
+    -73.0,
+    -47.0,
+    -24.0,
+    0.0
+   ],
+   "delta_lacet_buste": -84.4,
+   "delta_az_bras_torse": 16.7,
+   "delta_el_bras_torse": 21.6,
+   "delta_az_bras_coup": 98.3,
+   "delta_az_depart_contact_torse": 33.0,
+   "delta_lacet_depart_contact": -42.0
+  },
+  "desc_arme": {
+   "hanche": 2.82,
+   "buste": {
+    "lacet": 40.6,
+    "penche_avant": 0.0,
+    "penche_cote": 5.0
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      37.6,
+      -61.6
+     ],
+     "coup": [
+      -11.2,
+      -64.4
+     ]
+    },
+    "LA": {
+     "torse": [
+      -32.8,
+      -8.4
+     ],
+     "coup": [
+      -74.0,
+      -5.7
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     1.74,
+     0.85,
+     -0.76
+    ],
+    "LA": [
+     -0.62,
+     -1.99,
+     0.82
+    ]
+   },
+   "pieds": {
+    "RL": [
+     0.15,
+     0.18,
+     -3.03
+    ],
+    "LL": [
+     -0.49,
+     -0.58,
+     -2.95
+    ]
+   },
+   "epaules": {
+    "recul_droite": -2.06
+   },
+   "tete": {
+    "torse": [
+     41.2,
+     -17.0
+    ],
+    "coup": [
+     -0.7,
+     -20.2
+    ]
+   }
+  },
+  "desc_contre_rotation_max": {
+   "hanche": 2.82,
+   "buste": {
+    "lacet": 40.6,
+    "penche_avant": 0.0,
+    "penche_cote": 5.0
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      37.6,
+      -61.6
+     ],
+     "coup": [
+      -11.2,
+      -64.4
+     ]
+    },
+    "LA": {
+     "torse": [
+      -32.8,
+      -8.4
+     ],
+     "coup": [
+      -74.0,
+      -5.7
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     1.74,
+     0.85,
+     -0.76
+    ],
+    "LA": [
+     -0.62,
+     -1.99,
+     0.82
+    ]
+   },
+   "pieds": {
+    "RL": [
+     0.15,
+     0.18,
+     -3.03
+    ],
+    "LL": [
+     -0.49,
+     -0.58,
+     -2.95
+    ]
+   },
+   "epaules": {
+    "recul_droite": -2.06
+   },
+   "tete": {
+    "torse": [
+     41.2,
+     -17.0
+    ],
+    "coup": [
+     -0.7,
+     -20.2
+    ]
+   }
+  },
+  "desc_depart": {
+   "hanche": 2.622,
+   "buste": {
+    "lacet": -1.8,
+    "penche_avant": 15.7,
+    "penche_cote": -0.3
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      26.8,
+      -21.9
+     ],
+     "coup": [
+      32.9,
+      -35.5
+     ]
+    },
+    "LA": {
+     "torse": [
+      -49.1,
+      9.5
+     ],
+     "coup": [
+      -46.6,
+      -1.2
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     1.15,
+     2.05,
+     -0.06
+    ],
+    "LA": [
+     0.64,
+     -2.08,
+     0.83
+    ]
+   },
+   "pieds": {
+    "RL": [
+     -0.83,
+     0.49,
+     -2.89
+    ],
+    "LL": [
+     -0.8,
+     -0.51,
+     -2.89
+    ]
+   },
+   "epaules": {
+    "recul_droite": -0.52
+   },
+   "tete": {
+    "torse": [
+     -13.7,
+     -10.8
+    ],
+    "coup": [
+     -13.1,
+     -26.1
+    ]
+   }
+  },
+  "desc_contact": {
+   "hanche": 2.691,
+   "buste": {
+    "lacet": -43.8,
+    "penche_avant": -3.2,
+    "penche_cote": -18.6
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      41.6,
+      -14.0
+     ],
+     "coup": [
+      87.3,
+      0.9
+     ]
+    },
+    "LA": {
+     "torse": [
+      -16.1,
+      13.2
+     ],
+     "coup": [
+      24.3,
+      10.5
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     -1.18,
+     1.76,
+     0.32
+    ],
+    "LA": [
+     2.83,
+     0.0,
+     0.65
+    ]
+   },
+   "pieds": {
+    "RL": [
+     -0.88,
+     1.14,
+     -2.68
+    ],
+    "LL": [
+     -0.21,
+     0.46,
+     -3.0
+    ]
+   },
+   "epaules": {
+    "recul_droite": 2.31
+   },
+   "tete": {
+    "torse": [
+     -33.5,
+     -7.5
+    ],
+    "coup": [
+     14.3,
+     -14.5
+    ]
+   }
+  },
+  "translation_membre_(droite,haut,avant)_axes_torse": {
+   "arme": [
+    0.17,
+    0.05,
+    -0.26
+   ],
+   "depart": [
+    0.31,
+    0.04,
+    -0.27
+   ],
+   "contact": [
+    0.04,
+    -0.05,
+    0.85
+   ]
+  },
+  "translation_autre_bras": {
+   "arme": [
+    -0.0,
+    0.0,
+    -0.0
+   ],
+   "depart": [
+    0.0,
+    0.0,
+    -0.0
+   ],
+   "contact": [
+    -0.19,
+    -0.29,
+    -0.37
+   ]
+  },
+  "decomposition_arme_a_contact_(avant,droite,haut)": {
+   "torse_translation": [
+    0.11,
+    0.0,
+    -0.13
+   ],
+   "torse_rotation": [
+    2.66,
+    1.06,
+    -0.79
+   ],
+   "membre_rotation": [
+    -0.07,
+    0.23,
+    0.69
+   ],
+   "membre_translation": [
+    0.86,
+    0.7,
+    -0.07
+   ],
+   "total": [
+    3.56,
+    2.0,
+    -0.3
+   ]
+  },
+  "decomposition_depart_a_contact_(avant,droite,haut)": {
+   "torse_translation": [
+    -0.11,
+    -0.03,
+    0.07
+   ],
+   "torse_rotation": [
+    1.17,
+    0.64,
+    -0.56
+   ],
+   "membre_rotation": [
+    0.05,
+    0.82,
+    0.49
+   ],
+   "membre_translation": [
+    0.97,
+    0.62,
+    -0.11
+   ],
+   "total": [
+    2.08,
+    2.05,
+    -0.11
+   ]
+  },
+  "decomposition_arme_a_depart_(avant,droite,haut)": {
+   "torse_translation": [
+    0.23,
+    0.03,
+    -0.2
+   ],
+   "torse_rotation": [
+    1.65,
+    0.04,
+    -0.43
+   ],
+   "membre_rotation": [
+    -0.37,
+    -0.27,
+    0.44
+   ],
+   "membre_translation": [
+    -0.02,
+    0.14,
+    -0.0
+   ],
+   "total": [
+    1.48,
+    -0.06,
+    -0.19
+   ]
+  },
+  "resume": {
+   "arme": "hanche 2.82 | buste lacet +41 penché +0 côté +5 | RA torse az +38 el -62 (coup az -11 el -64) poing [1.74, 0.85, -0.76] | LA torse az -33 el -8 (coup az -74 el -6) poing [-0.62, -1.99, 0.82] | épaule D reculée -2.06",
+   "depart": "hanche 2.62 | buste lacet -2 penché +16 côté -0 | RA torse az +27 el -22 (coup az +33 el -36) poing [1.15, 2.05, -0.06] | LA torse az -49 el +10 (coup az -47 el -1) poing [0.64, -2.08, 0.83] | épaule D reculée -0.52",
+   "contact": "hanche 2.69 | buste lacet -44 penché -3 côté -19 | RA torse az +42 el -14 (coup az +87 el +1) poing [-1.18, 1.76, 0.32] | LA torse az -16 el +13 (coup az +24 el +10) poing [2.83, 0.0, 0.65] | épaule D reculée +2.31"
+  }
+ },
+ {
+  "id": "M2",
+  "anim": "M2",
+  "membre": "RA",
+  "type": "poing",
+  "avant_vecteur": [
+   0.268,
+   0.0,
+   -0.963
+  ],
+  "avant_az_deg_depuis_-Z_vers_+X": 15.6,
+  "images": {
+   "arme_max_poing_le_plus_recule": 0,
+   "contre_rotation_max_buste": 0,
+   "depart_detente": 7,
+   "pic_vitesse": 10,
+   "contact": 10
+  },
+  "vitesse_pic_studs_s": 80.4,
+  "vitesses_depart_a_contact": [
+   23.1,
+   78.3,
+   79.2,
+   80.4,
+   15.0
+  ],
+  "derive_moyenne_arme_a_depart_studs_s": 17.7,
+  "tenue_images_<4studs/s": [],
+  "durees_images_60": {
+   "arme_a_depart (derive lente)": 7,
+   "tenue": 0,
+   "depart_a_contact": 3,
+   "arme_a_contact": 10
+  },
+  "trajet": {
+   "corde": 5.23,
+   "longueur": 6.03,
+   "rectitude_corde_sur_longueur": 0.87,
+   "ecart_max_a_la_corde": 1.16,
+   "deplacement_poing_(avant,droite,haut)": [
+    4.96,
+    -1.59,
+    0.48
+   ],
+   "az_poing_autour_du_torse_deg": [
+    129.0,
+    126.0,
+    122.0,
+    116.0,
+    110.0,
+    103.0,
+    94.0,
+    85.0,
+    52.0,
+    24.0,
+    -0.0
+   ],
+   "delta_lacet_buste": 74.3,
+   "delta_az_bras_torse": -13.2,
+   "delta_el_bras_torse": 48.3,
+   "delta_az_bras_coup": -95.3,
+   "delta_az_depart_contact_torse": -20.2,
+   "delta_lacet_depart_contact": 38.9
+  },
+  "desc_arme": {
+   "hanche": 2.699,
+   "buste": {
+    "lacet": -49.5,
+    "penche_avant": -2.2,
+    "penche_cote": -7.7
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      35.4,
+      -15.7
+     ],
+     "coup": [
+      86.2,
+      -9.5
+     ]
+    },
+    "LA": {
+     "torse": [
+      52.0,
+      -35.8
+     ],
+     "coup": [
+      103.4,
+      -28.4
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     -1.22,
+     1.52,
+     0.11
+    ],
+    "LA": [
+     0.72,
+     1.0,
+     -0.19
+    ]
+   },
+   "pieds": {
+    "RL": [
+     -0.61,
+     0.66,
+     -2.9
+    ],
+    "LL": [
+     0.15,
+     0.02,
+     -3.04
+    ]
+   },
+   "epaules": {
+    "recul_droite": 2.48
+   },
+   "tete": {
+    "torse": [
+     -46.4,
+     -8.4
+    ],
+    "coup": [
+     4.5,
+     -12.3
+    ]
+   }
+  },
+  "desc_contre_rotation_max": {
+   "hanche": 2.699,
+   "buste": {
+    "lacet": -49.5,
+    "penche_avant": -2.2,
+    "penche_cote": -7.7
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      35.4,
+      -15.7
+     ],
+     "coup": [
+      86.2,
+      -9.5
+     ]
+    },
+    "LA": {
+     "torse": [
+      52.0,
+      -35.8
+     ],
+     "coup": [
+      103.4,
+      -28.4
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     -1.22,
+     1.52,
+     0.11
+    ],
+    "LA": [
+     0.72,
+     1.0,
+     -0.19
+    ]
+   },
+   "pieds": {
+    "RL": [
+     -0.61,
+     0.66,
+     -2.9
+    ],
+    "LL": [
+     0.15,
+     0.02,
+     -3.04
+    ]
+   },
+   "epaules": {
+    "recul_droite": 2.48
+   },
+   "tete": {
+    "torse": [
+     -46.4,
+     -8.4
+    ],
+    "coup": [
+     4.5,
+     -12.3
+    ]
+   }
+  },
+  "desc_depart": {
+   "hanche": 2.699,
+   "buste": {
+    "lacet": -14.1,
+    "penche_avant": 19.9,
+    "penche_cote": 6.8
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      42.4,
+      22.0
+     ],
+     "coup": [
+      55.8,
+      3.0
+     ]
+    },
+    "LA": {
+     "torse": [
+      -36.3,
+      -52.8
+     ],
+     "coup": [
+      -51.5,
+      -60.8
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     0.17,
+     1.96,
+     0.83
+    ],
+    "LA": [
+     1.27,
+     -1.43,
+     -0.7
+    ]
+   },
+   "pieds": {
+    "RL": [
+     -1.04,
+     -0.09,
+     -2.86
+    ],
+    "LL": [
+     -0.76,
+     -1.05,
+     -2.75
+    ]
+   },
+   "epaules": {
+    "recul_droite": 1.62
+   },
+   "tete": {
+    "torse": [
+     -27.3,
+     -6.5
+    ],
+    "coup": [
+     -15.8,
+     -21.0
+    ]
+   }
+  },
+  "desc_contact": {
+   "hanche": 2.699,
+   "buste": {
+    "lacet": 24.8,
+    "penche_avant": 31.9,
+    "penche_cote": -5.9
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      22.2,
+      32.6
+     ],
+     "coup": [
+      -9.1,
+      3.8
+     ]
+    },
+    "LA": {
+     "torse": [
+      -24.9,
+      9.6
+     ],
+     "coup": [
+      -52.2,
+      -21.2
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     3.09,
+     -0.0,
+     0.59
+    ],
+    "LA": [
+     -0.18,
+     -1.86,
+     0.06
+    ]
+   },
+   "pieds": {
+    "RL": [
+     -1.09,
+     1.34,
+     -2.5
+    ],
+    "LL": [
+     -1.55,
+     0.46,
+     -2.57
+    ]
+   },
+   "epaules": {
+    "recul_droite": -2.44
+   },
+   "tete": {
+    "torse": [
+     15.7,
+     2.3
+    ],
+    "coup": [
+     -7.5,
+     -27.0
+    ]
+   }
+  },
+  "translation_membre_(droite,haut,avant)_axes_torse": {
+   "arme": [
+    -0.24,
+    0.0,
+    -0.51
+   ],
+   "depart": [
+    -0.35,
+    -0.21,
+    -0.38
+   ],
+   "contact": [
+    -0.28,
+    0.26,
+    1.2
+   ]
+  },
+  "translation_autre_bras": {
+   "arme": [
+    0.18,
+    -0.15,
+    0.06
+   ],
+   "depart": [
+    0.18,
+    -0.15,
+    0.06
+   ],
+   "contact": [
+    0.17,
+    -0.59,
+    -0.65
+   ]
+  },
+  "decomposition_arme_a_contact_(avant,droite,haut)": {
+   "torse_translation": [
+    0.66,
+    -0.07,
+    0.0
+   ],
+   "torse_rotation": [
+    2.3,
+    0.09,
+    -0.3
+   ],
+   "membre_rotation": [
+    0.58,
+    -0.87,
+    1.46
+   ],
+   "membre_translation": [
+    1.41,
+    -0.73,
+    -0.68
+   ],
+   "total": [
+    4.96,
+    -1.59,
+    0.48
+   ]
+  },
+  "decomposition_depart_a_contact_(avant,droite,haut)": {
+   "torse_translation": [
+    0.31,
+    0.03,
+    0.0
+   ],
+   "torse_rotation": [
+    1.41,
+    -0.9,
+    0.15
+   ],
+   "membre_rotation": [
+    0.05,
+    -0.42,
+    0.05
+   ],
+   "membre_translation": [
+    1.46,
+    -0.65,
+    -0.43
+   ],
+   "total": [
+    3.23,
+    -1.94,
+    -0.24
+   ]
+  },
+  "decomposition_arme_a_depart_(avant,droite,haut)": {
+   "torse_translation": [
+    0.34,
+    -0.1,
+    -0.0
+   ],
+   "torse_rotation": [
+    0.97,
+    0.36,
+    -0.58
+   ],
+   "membre_rotation": [
+    0.33,
+    0.21,
+    1.53
+   ],
+   "membre_translation": [
+    0.08,
+    -0.12,
+    -0.23
+   ],
+   "total": [
+    1.72,
+    0.35,
+    0.72
+   ]
+  },
+  "resume": {
+   "arme": "hanche 2.70 | buste lacet -50 penché -2 côté -8 | RA torse az +35 el -16 (coup az +86 el -10) poing [-1.22, 1.52, 0.11] | LA torse az +52 el -36 (coup az +103 el -28) poing [0.72, 1.0, -0.19] | épaule D reculée +2.48",
+   "depart": "hanche 2.70 | buste lacet -14 penché +20 côté +7 | RA torse az +42 el +22 (coup az +56 el +3) poing [0.17, 1.96, 0.83] | LA torse az -36 el -53 (coup az -52 el -61) poing [1.27, -1.43, -0.7] | épaule D reculée +1.62",
+   "contact": "hanche 2.70 | buste lacet +25 penché +32 côté -6 | RA torse az +22 el +33 (coup az -9 el +4) poing [3.09, -0.0, 0.59] | LA torse az -25 el +10 (coup az -52 el -21) poing [-0.18, -1.86, 0.06] | épaule D reculée -2.44"
+  }
+ },
+ {
+  "id": "M3",
+  "anim": "M3",
+  "membre": "LA",
+  "type": "poing",
+  "avant_vecteur": [
+   -0.052,
+   0.0,
+   -0.999
+  ],
+  "avant_az_deg_depuis_-Z_vers_+X": -3.0,
+  "images": {
+   "arme_max_poing_le_plus_recule": 0,
+   "contre_rotation_max_buste": 0,
+   "depart_detente": 6,
+   "pic_vitesse": 7,
+   "contact": 8
+  },
+  "vitesse_pic_studs_s": 70.5,
+  "vitesses_depart_a_contact": [
+   20.8,
+   70.5,
+   65.5,
+   27.3
+  ],
+  "derive_moyenne_arme_a_depart_studs_s": 20.5,
+  "tenue_images_<4studs/s": [],
+  "durees_images_60": {
+   "arme_a_depart (derive lente)": 6,
+   "tenue": 0,
+   "depart_a_contact": 2,
+   "arme_a_contact": 8
+  },
+  "trajet": {
+   "corde": 3.88,
+   "longueur": 4.32,
+   "rectitude_corde_sur_longueur": 0.9,
+   "ecart_max_a_la_corde": 0.71,
+   "deplacement_poing_(avant,droite,haut)": [
+    3.58,
+    1.43,
+    -0.42
+   ],
+   "az_poing_autour_du_torse_deg": [
+    -125.0,
+    -115.0,
+    -105.0,
+    -95.0,
+    -84.0,
+    -74.0,
+    -63.0,
+    -23.0,
+    0.0
+   ],
+   "delta_lacet_buste": -110.1,
+   "delta_az_bras_torse": 2.8,
+   "delta_el_bras_torse": 24.5,
+   "delta_az_bras_coup": 112.0,
+   "delta_az_depart_contact_torse": 11.9,
+   "delta_lacet_depart_contact": -18.6
+  },
+  "desc_arme": {
+   "hanche": 2.774,
+   "buste": {
+    "lacet": 48.5,
+    "penche_avant": 17.6,
+    "penche_cote": 10.0
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      -40.1,
+      -18.9
+     ],
+     "coup": [
+      -94.9,
+      -25.3
+     ]
+    },
+    "LA": {
+     "torse": [
+      -32.6,
+      -8.2
+     ],
+     "coup": [
+      -83.7,
+      -17.6
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     1.29,
+     -0.99,
+     -0.32
+    ],
+    "LA": [
+     -1.06,
+     -1.5,
+     0.22
+    ]
+   },
+   "pieds": {
+    "RL": [
+     -0.61,
+     0.69,
+     -2.9
+    ],
+    "LL": [
+     -1.32,
+     -0.0,
+     -2.74
+    ]
+   },
+   "epaules": {
+    "recul_droite": -2.71
+   },
+   "tete": {
+    "torse": [
+     44.9,
+     1.5
+    ],
+    "coup": [
+     -1.2,
+     -17.6
+    ]
+   }
+  },
+  "desc_contre_rotation_max": {
+   "hanche": 2.774,
+   "buste": {
+    "lacet": 48.5,
+    "penche_avant": 17.6,
+    "penche_cote": 10.0
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      -40.1,
+      -18.9
+     ],
+     "coup": [
+      -94.9,
+      -25.3
+     ]
+    },
+    "LA": {
+     "torse": [
+      -32.6,
+      -8.2
+     ],
+     "coup": [
+      -83.7,
+      -17.6
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     1.29,
+     -0.99,
+     -0.32
+    ],
+    "LA": [
+     -1.06,
+     -1.5,
+     0.22
+    ]
+   },
+   "pieds": {
+    "RL": [
+     -0.61,
+     0.69,
+     -2.9
+    ],
+    "LL": [
+     -1.32,
+     -0.0,
+     -2.74
+    ]
+   },
+   "epaules": {
+    "recul_droite": -2.71
+   },
+   "tete": {
+    "torse": [
+     44.9,
+     1.5
+    ],
+    "coup": [
+     -1.2,
+     -17.6
+    ]
+   }
+  },
+  "desc_depart": {
+   "hanche": 2.774,
+   "buste": {
+    "lacet": -43.0,
+    "penche_avant": 17.2,
+    "penche_cote": -12.7
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      -22.4,
+      4.3
+     ],
+     "coup": [
+      19.2,
+      -16.3
+     ]
+    },
+    "LA": {
+     "torse": [
+      -41.7,
+      -15.3
+     ],
+     "coup": [
+      -2.0,
+      -36.0
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     0.46,
+     1.43,
+     0.5
+    ],
+    "LA": [
+     0.68,
+     -1.31,
+     -0.32
+    ]
+   },
+   "pieds": {
+    "RL": [
+     -1.38,
+     0.25,
+     -2.7
+    ],
+    "LL": [
+     -0.75,
+     -0.51,
+     -2.9
+    ]
+   },
+   "epaules": {
+    "recul_droite": 0.42
+   },
+   "tete": {
+    "torse": [
+     -29.9,
+     4.6
+    ],
+    "coup": [
+     11.5,
+     -16.3
+    ]
+   }
+  },
+  "desc_contact": {
+   "hanche": 2.849,
+   "buste": {
+    "lacet": -61.6,
+    "penche_avant": -1.5,
+    "penche_cote": -20.4
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      6.7,
+      3.9
+     ],
+     "coup": [
+      66.5,
+      7.5
+     ]
+    },
+    "LA": {
+     "torse": [
+      -29.8,
+      16.3
+     ],
+     "coup": [
+      28.3,
+      6.8
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     -0.63,
+     1.29,
+     1.13
+    ],
+    "LA": [
+     2.52,
+     0.0,
+     -0.28
+    ]
+   },
+   "pieds": {
+    "RL": [
+     -1.3,
+     0.78,
+     -2.64
+    ],
+    "LL": [
+     -0.47,
+     0.34,
+     -2.98
+    ]
+   },
+   "epaules": {
+    "recul_droite": 2.2
+   },
+   "tete": {
+    "torse": [
+     -46.9,
+     0.6
+    ],
+    "coup": [
+     16.6,
+     -13.2
+    ]
+   }
+  },
+  "translation_membre_(droite,haut,avant)_axes_torse": {
+   "arme": [
+    0.29,
+    -0.63,
+    -0.79
+   ],
+   "depart": [
+    0.73,
+    0.07,
+    -1.04
+   ],
+   "contact": [
+    -0.13,
+    -0.07,
+    0.01
+   ]
+  },
+  "translation_autre_bras": {
+   "arme": [
+    0.03,
+    -0.16,
+    0.23
+   ],
+   "depart": [
+    0.29,
+    -0.39,
+    -0.31
+   ],
+   "contact": [
+    0.08,
+    -0.42,
+    -0.56
+   ]
+  },
+  "decomposition_arme_a_contact_(avant,droite,haut)": {
+   "torse_translation": [
+    0.0,
+    -0.07,
+    0.07
+   ],
+   "torse_rotation": [
+    2.73,
+    0.99,
+    -0.81
+   ],
+   "membre_rotation": [
+    -0.05,
+    0.1,
+    -0.08
+   ],
+   "membre_translation": [
+    0.9,
+    0.41,
+    0.4
+   ],
+   "total": [
+    3.58,
+    1.43,
+    -0.42
+   ]
+  },
+  "decomposition_depart_a_contact_(avant,droite,haut)": {
+   "torse_translation": [
+    0.0,
+    -0.07,
+    0.07
+   ],
+   "torse_rotation": [
+    0.37,
+    0.43,
+    -0.31
+   ],
+   "membre_rotation": [
+    0.29,
+    0.3,
+    0.76
+   ],
+   "membre_translation": [
+    1.17,
+    0.57,
+    -0.4
+   ],
+   "total": [
+    1.84,
+    1.24,
+    0.12
+   ]
+  },
+  "decomposition_arme_a_depart_(avant,droite,haut)": {
+   "torse_translation": [
+    0.0,
+    0.0,
+    -0.0
+   ],
+   "torse_rotation": [
+    2.43,
+    0.34,
+    -0.65
+   ],
+   "membre_rotation": [
+    -0.49,
+    -0.35,
+    -0.7
+   ],
+   "membre_translation": [
+    -0.2,
+    0.2,
+    0.81
+   ],
+   "total": [
+    1.74,
+    0.19,
+    -0.54
+   ]
+  },
+  "resume": {
+   "arme": "hanche 2.77 | buste lacet +48 penché +18 côté +10 | RA torse az -40 el -19 (coup az -95 el -25) poing [1.29, -0.99, -0.32] | LA torse az -33 el -8 (coup az -84 el -18) poing [-1.06, -1.5, 0.22] | épaule D reculée -2.71",
+   "depart": "hanche 2.77 | buste lacet -43 penché +17 côté -13 | RA torse az -22 el +4 (coup az +19 el -16) poing [0.46, 1.43, 0.5] | LA torse az -42 el -15 (coup az -2 el -36) poing [0.68, -1.31, -0.32] | épaule D reculée +0.42",
+   "contact": "hanche 2.85 | buste lacet -62 penché -2 côté -20 | RA torse az +7 el +4 (coup az +66 el +8) poing [-0.63, 1.29, 1.13] | LA torse az -30 el +16 (coup az +28 el +7) poing [2.52, 0.0, -0.28] | épaule D reculée +2.20"
+  }
+ },
+ {
+  "id": "M4",
+  "anim": "M4",
+  "membre": "RL",
+  "type": "pied",
+  "avant_vecteur": [
+   0.232,
+   0.0,
+   -0.973
+  ],
+  "avant_az_deg_depuis_-Z_vers_+X": 13.4,
+  "images": {
+   "arme_max_poing_le_plus_recule": 0,
+   "contre_rotation_max_buste": 0,
+   "depart_detente": 12,
+   "pic_vitesse": 13,
+   "contact": 13
+  },
+  "vitesse_pic_studs_s": 88.5,
+  "vitesses_depart_a_contact": [
+   27.7,
+   88.5,
+   29.7
+  ],
+  "derive_moyenne_arme_a_depart_studs_s": 23.6,
+  "tenue_images_<4studs/s": [],
+  "durees_images_60": {
+   "arme_a_depart (derive lente)": 12,
+   "tenue": 0,
+   "depart_a_contact": 1,
+   "arme_a_contact": 13
+  },
+  "trajet": {
+   "corde": 5.21,
+   "longueur": 6.19,
+   "rectitude_corde_sur_longueur": 0.84,
+   "ecart_max_a_la_corde": 0.8,
+   "deplacement_poing_(avant,droite,haut)": [
+    3.97,
+    -0.88,
+    3.27
+   ],
+   "az_poing_autour_du_torse_deg": [
+    128.0,
+    110.0,
+    93.0,
+    80.0,
+    69.0,
+    60.0,
+    52.0,
+    44.0,
+    36.0,
+    29.0,
+    18.0,
+    4.0,
+    -8.0,
+    0.0
+   ],
+   "delta_lacet_buste": 79.5
+  },
+  "desc_arme": {
+   "hanche": 2.862,
+   "buste": {
+    "lacet": -44.5,
+    "penche_avant": -2.6,
+    "penche_cote": -12.0
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      41.2,
+      -4.1
+     ],
+     "coup": [
+      85.9,
+      5.8
+     ]
+    },
+    "LA": {
+     "torse": [
+      -44.2,
+      12.3
+     ],
+     "coup": [
+      -1.0,
+      5.7
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     -1.16,
+     1.45,
+     0.8
+    ],
+    "LA": [
+     2.2,
+     -1.06,
+     -0.12
+    ]
+   },
+   "pieds": {
+    "RL": [
+     -0.69,
+     0.88,
+     -2.83
+    ],
+    "LL": [
+     0.01,
+     0.19,
+     -3.04
+    ]
+   },
+   "epaules": {
+    "recul_droite": 1.51
+   },
+   "tete": {
+    "torse": [
+     -50.9,
+     -3.9
+    ],
+    "coup": [
+     -4.8,
+     -11.4
+    ]
+   }
+  },
+  "desc_contre_rotation_max": {
+   "hanche": 2.862,
+   "buste": {
+    "lacet": -44.5,
+    "penche_avant": -2.6,
+    "penche_cote": -12.0
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      41.2,
+      -4.1
+     ],
+     "coup": [
+      85.9,
+      5.8
+     ]
+    },
+    "LA": {
+     "torse": [
+      -44.2,
+      12.3
+     ],
+     "coup": [
+      -1.0,
+      5.7
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     -1.16,
+     1.45,
+     0.8
+    ],
+    "LA": [
+     2.2,
+     -1.06,
+     -0.12
+    ]
+   },
+   "pieds": {
+    "RL": [
+     -0.69,
+     0.88,
+     -2.83
+    ],
+    "LL": [
+     0.01,
+     0.19,
+     -3.04
+    ]
+   },
+   "epaules": {
+    "recul_droite": 1.51
+   },
+   "tete": {
+    "torse": [
+     -50.9,
+     -3.9
+    ],
+    "coup": [
+     -4.8,
+     -11.4
+    ]
+   }
+  },
+  "desc_depart": {
+   "hanche": 3.328,
+   "buste": {
+    "lacet": 12.1,
+    "penche_avant": -32.5,
+    "penche_cote": -5.8
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      142.6,
+      -37.0
+     ],
+     "coup": [
+      101.6,
+      -54.3
+     ]
+    },
+    "LA": {
+     "torse": [
+      17.5,
+      -18.8
+     ],
+     "coup": [
+      6.6,
+      13.6
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     -0.33,
+     2.02,
+     -0.95
+    ],
+    "LA": [
+     1.54,
+     -1.09,
+     1.28
+    ]
+   },
+   "pieds": {
+    "RL": [
+     2.0,
+     -0.29,
+     -0.54
+    ],
+    "LL": [
+     0.62,
+     -0.17,
+     -2.85
+    ]
+   },
+   "epaules": {
+    "recul_droite": -0.29
+   },
+   "tete": {
+    "torse": [
+     -12.7,
+     -22.6
+    ],
+    "coup": [
+     -21.9,
+     8.4
+    ]
+   }
+  },
+  "desc_contact": {
+   "hanche": 3.236,
+   "buste": {
+    "lacet": 35.0,
+    "penche_avant": -41.5,
+    "penche_cote": -22.8
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      131.1,
+      -41.6
+     ],
+     "coup": [
+      59.7,
+      -42.3
+     ]
+    },
+    "LA": {
+     "torse": [
+      8.1,
+      -25.6
+     ],
+     "coup": [
+      -19.7,
+      18.1
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     0.74,
+     2.1,
+     -0.57
+    ],
+    "LA": [
+     0.85,
+     -1.72,
+     1.17
+    ]
+   },
+   "pieds": {
+    "RL": [
+     3.33,
+     0.0,
+     0.06
+    ],
+    "LL": [
+     0.66,
+     -0.11,
+     -2.82
+    ]
+   },
+   "epaules": {
+    "recul_droite": -0.93
+   },
+   "tete": {
+    "torse": [
+     3.3,
+     -25.9
+    ],
+    "coup": [
+     -24.1,
+     17.1
+    ]
+   }
+  },
+  "translation_membre_(droite,haut,avant)_axes_torse": {
+   "arme": [
+    0.0,
+    0.0,
+    -0.0
+   ],
+   "depart": [
+    0.06,
+    1.22,
+    0.65
+   ],
+   "contact": [
+    0.23,
+    0.03,
+    0.66
+   ]
+  },
+  "translation_autre_bras": null,
+  "decomposition_arme_a_contact_(avant,droite,haut)": {
+   "torse_translation": [
+    -0.05,
+    0.0,
+    0.37
+   ],
+   "torse_rotation": [
+    2.95,
+    -0.78,
+    0.8
+   ],
+   "membre_rotation": [
+    0.6,
+    -0.02,
+    1.59
+   ],
+   "membre_translation": [
+    0.47,
+    -0.08,
+    0.51
+   ],
+   "total": [
+    3.97,
+    -0.88,
+    3.27
+   ]
+  },
+  "decomposition_depart_a_contact_(avant,droite,haut)": {
+   "torse_translation": [
+    0.02,
+    -0.0,
+    -0.09
+   ],
+   "torse_rotation": [
+    -0.07,
+    -0.49,
+    0.37
+   ],
+   "membre_rotation": [
+    0.51,
+    0.77,
+    1.05
+   ],
+   "membre_translation": [
+    0.89,
+    0.01,
+    -0.81
+   ],
+   "total": [
+    1.35,
+    0.29,
+    0.51
+   ]
+  },
+  "decomposition_arme_a_depart_(avant,droite,haut)": {
+   "torse_translation": [
+    -0.07,
+    0.0,
+    0.47
+   ],
+   "torse_rotation": [
+    2.39,
+    -0.48,
+    0.34
+   ],
+   "membre_rotation": [
+    0.41,
+    -0.67,
+    0.56
+   ],
+   "membre_translation": [
+    -0.11,
+    -0.02,
+    1.38
+   ],
+   "total": [
+    2.61,
+    -1.17,
+    2.75
+   ]
+  },
+  "resume": {
+   "arme": "hanche 2.86 | buste lacet -44 penché -3 côté -12 | RA torse az +41 el -4 (coup az +86 el +6) poing [-1.16, 1.45, 0.8] | LA torse az -44 el +12 (coup az -1 el +6) poing [2.2, -1.06, -0.12] | épaule D reculée +1.51",
+   "depart": "hanche 3.33 | buste lacet +12 penché -32 côté -6 | RA torse az +143 el -37 (coup az +102 el -54) poing [-0.33, 2.02, -0.95] | LA torse az +18 el -19 (coup az +7 el +14) poing [1.54, -1.09, 1.28] | épaule D reculée -0.29",
+   "contact": "hanche 3.24 | buste lacet +35 penché -42 côté -23 | RA torse az +131 el -42 (coup az +60 el -42) poing [0.74, 2.1, -0.57] | LA torse az +8 el -26 (coup az -20 el +18) poing [0.85, -1.72, 1.17] | épaule D reculée -0.93"
+  }
+ },
+ {
+  "id": "WC1",
+  "anim": "WallComboPlayer",
+  "membre": "LA",
+  "type": "marteau",
+  "avant_vecteur": [
+   0.993,
+   0.0,
+   -0.118
+  ],
+  "avant_az_deg_depuis_-Z_vers_+X": 83.2,
+  "images": {
+   "arme_max_poing_le_plus_recule": 233,
+   "contre_rotation_max_buste": 214,
+   "depart_detente": 238,
+   "pic_vitesse": 242,
+   "contact": 244
+  },
+  "vitesse_pic_studs_s": 62.4,
+  "vitesses_depart_a_contact": [
+   20.2,
+   44.8,
+   46.4,
+   47.4,
+   62.4,
+   61.0,
+   39.5,
+   28.6
+  ],
+  "derive_moyenne_arme_a_depart_studs_s": 19.7,
+  "tenue_images_<4studs/s": [],
+  "durees_images_60": {
+   "arme_a_depart (derive lente)": 5,
+   "tenue": 0,
+   "depart_a_contact": 6,
+   "arme_a_contact": 11
+  },
+  "trajet": {
+   "corde": 5.88,
+   "longueur": 6.67,
+   "rectitude_corde_sur_longueur": 0.88,
+   "ecart_max_a_la_corde": 1.39,
+   "deplacement_poing_(avant,droite,haut)": [
+    3.94,
+    1.85,
+    -3.95
+   ],
+   "az_poing_autour_du_torse_deg": [
+    -122.0,
+    -115.0,
+    -108.0,
+    -99.0,
+    -90.0,
+    -81.0,
+    -63.0,
+    -47.0,
+    -35.0,
+    -24.0,
+    -13.0,
+    0.0
+   ],
+   "delta_lacet_buste": -31.2,
+   "delta_az_bras_torse": 95.5,
+   "delta_el_bras_torse": -16.2,
+   "delta_az_bras_coup": 132.9,
+   "delta_az_depart_contact_torse": 83.4,
+   "delta_lacet_depart_contact": -27.9
+  },
+  "desc_arme": {
+   "hanche": 3.77,
+   "buste": {
+    "lacet": 7.2,
+    "penche_avant": -8.1,
+    "penche_cote": 20.6
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      -39.9,
+      53.7
+     ],
+     "coup": [
+      -20.2,
+      70.6
+     ]
+    },
+    "LA": {
+     "torse": [
+      -98.2,
+      13.5
+     ],
+     "coup": [
+      -111.9,
+      31.9
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     0.69,
+     1.39,
+     2.15
+    ],
+    "LA": [
+     -1.3,
+     -2.11,
+     2.01
+    ]
+   },
+   "pieds": {
+    "RL": [
+     0.07,
+     0.63,
+     -3.08
+    ],
+    "LL": [
+     -0.21,
+     -1.27,
+     -1.53
+    ]
+   },
+   "epaules": {
+    "recul_droite": -0.73
+   },
+   "tete": {
+    "torse": [
+     -32.4,
+     -34.8
+    ],
+    "coup": [
+     -46.7,
+     -16.2
+    ]
+   }
+  },
+  "desc_contre_rotation_max": {
+   "hanche": 3.156,
+   "buste": {
+    "lacet": 68.3,
+    "penche_avant": 24.5,
+    "penche_cote": -7.5
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      11.0,
+      -34.3
+     ],
+     "coup": [
+      -44.7,
+      -55.9
+     ]
+    },
+    "LA": {
+     "torse": [
+      -58.9,
+      -37.1
+     ],
+     "coup": [
+      -149.6,
+      -52.2
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     1.84,
+     -0.81,
+     -1.21
+    ],
+    "LA": [
+     -1.85,
+     -1.0,
+     -1.09
+    ]
+   },
+   "pieds": {
+    "RL": [
+     0.4,
+     0.05,
+     -2.91
+    ],
+    "LL": [
+     -1.06,
+     1.06,
+     -2.75
+    ]
+   },
+   "epaules": {
+    "recul_droite": -1.83
+   },
+   "tete": {
+    "torse": [
+     -21.2,
+     -34.8
+    ],
+    "coup": [
+     -95.2,
+     -59.9
+    ]
+   }
+  },
+  "desc_depart": {
+   "hanche": 3.47,
+   "buste": {
+    "lacet": 3.9,
+    "penche_avant": 6.8,
+    "penche_cote": 26.3
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      -89.6,
+      41.2
+     ],
+     "coup": [
+      -77.4,
+      66.3
+     ]
+    },
+    "LA": {
+     "torse": [
+      -86.1,
+      10.6
+     ],
+     "coup": [
+      -84.2,
+      35.8
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     0.37,
+     1.15,
+     1.91
+    ],
+    "LA": [
+     0.3,
+     -1.95,
+     2.02
+    ]
+   },
+   "pieds": {
+    "RL": [
+     0.02,
+     0.59,
+     -3.12
+    ],
+    "LL": [
+     0.06,
+     -1.64,
+     -1.8
+    ]
+   },
+   "epaules": {
+    "recul_droite": -0.07
+   },
+   "tete": {
+    "torse": [
+     -35.3,
+     -34.6
+    ],
+    "coup": [
+     -50.9,
+     -22.2
+    ]
+   }
+  },
+  "desc_contact": {
+   "hanche": 2.69,
+   "buste": {
+    "lacet": -24.0,
+    "penche_avant": 33.2,
+    "penche_cote": -6.8
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      38.6,
+      10.9
+     ],
+     "coup": [
+      61.2,
+      -12.3
+     ]
+    },
+    "LA": {
+     "torse": [
+      -2.7,
+      -2.7
+     ],
+     "coup": [
+      21.0,
+      -36.1
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     0.12,
+     1.95,
+     0.5
+    ],
+    "LA": [
+     2.45,
+     0.0,
+     -0.86
+    ]
+   },
+   "pieds": {
+    "RL": [
+     -0.12,
+     0.86,
+     -2.76
+    ],
+    "LL": [
+     0.23,
+     -1.56,
+     -2.39
+    ]
+   },
+   "epaules": {
+    "recul_droite": 1.76
+   },
+   "tete": {
+    "torse": [
+     -38.8,
+     -34.3
+    ],
+    "coup": [
+     -42.2,
+     -59.9
+    ]
+   }
+  },
+  "translation_membre_(droite,haut,avant)_axes_torse": {
+   "arme": [
+    -0.55,
+    -0.06,
+    -0.29
+   ],
+   "depart": [
+    -0.24,
+    -0.26,
+    0.22
+   ],
+   "contact": [
+    0.04,
+    -0.32,
+    0.82
+   ]
+  },
+  "translation_autre_bras": {
+   "arme": [
+    0.08,
+    0.45,
+    0.51
+   ],
+   "depart": [
+    0.1,
+    0.49,
+    0.41
+   ],
+   "contact": [
+    -0.42,
+    -0.28,
+    -0.36
+   ]
+  },
+  "decomposition_arme_a_contact_(avant,droite,haut)": {
+   "torse_translation": [
+    0.2,
+    -0.26,
+    -1.08
+   ],
+   "torse_rotation": [
+    2.41,
+    -0.64,
+    -0.84
+   ],
+   "membre_rotation": [
+    0.84,
+    1.86,
+    -1.26
+   ],
+   "membre_translation": [
+    0.5,
+    0.9,
+    -0.78
+   ],
+   "total": [
+    3.94,
+    1.85,
+    -3.95
+   ]
+  },
+  "decomposition_depart_a_contact_(avant,droite,haut)": {
+   "torse_translation": [
+    0.2,
+    -0.26,
+    -0.78
+   ],
+   "torse_rotation": [
+    1.32,
+    -0.31,
+    -1.51
+   ],
+   "membre_rotation": [
+    0.52,
+    1.8,
+    -1.01
+   ],
+   "membre_translation": [
+    0.32,
+    0.46,
+    -0.36
+   ],
+   "total": [
+    2.35,
+    1.69,
+    -3.66
+   ]
+  },
+  "decomposition_arme_a_depart_(avant,droite,haut)": {
+   "torse_translation": [
+    0.0,
+    -0.0,
+    -0.3
+   ],
+   "torse_rotation": [
+    0.71,
+    0.11,
+    0.41
+   ],
+   "membre_rotation": [
+    0.4,
+    -0.11,
+    -0.03
+   ],
+   "membre_translation": [
+    0.49,
+    0.16,
+    -0.37
+   ],
+   "total": [
+    1.6,
+    0.16,
+    -0.29
+   ]
+  },
+  "resume": {
+   "arme": "hanche 3.77 | buste lacet +7 penché -8 côté +21 | RA torse az -40 el +54 (coup az -20 el +71) poing [0.69, 1.39, 2.15] | LA torse az -98 el +14 (coup az -112 el +32) poing [-1.3, -2.11, 2.01] | épaule D reculée -0.73",
+   "depart": "hanche 3.47 | buste lacet +4 penché +7 côté +26 | RA torse az -90 el +41 (coup az -77 el +66) poing [0.37, 1.15, 1.91] | LA torse az -86 el +11 (coup az -84 el +36) poing [0.3, -1.95, 2.02] | épaule D reculée -0.07",
+   "contact": "hanche 2.69 | buste lacet -24 penché +33 côté -7 | RA torse az +39 el +11 (coup az +61 el -12) poing [0.12, 1.95, 0.5] | LA torse az -3 el -3 (coup az +21 el -36) poing [2.45, 0.0, -0.86] | épaule D reculée +1.76"
+  }
+ },
+ {
+  "id": "WC2",
+  "anim": "WallComboPlayer",
+  "membre": "LA",
+  "type": "revers",
+  "avant_vecteur": [
+   0.433,
+   0.0,
+   -0.901
+  ],
+  "avant_az_deg_depuis_-Z_vers_+X": 25.7,
+  "images": {
+   "arme_max_poing_le_plus_recule": 261,
+   "contre_rotation_max_buste": 272,
+   "depart_detente": 272,
+   "pic_vitesse": 274,
+   "contact": 280
+  },
+  "vitesse_pic_studs_s": 38.2,
+  "vitesses_depart_a_contact": [
+   18.3,
+   38.1,
+   38.2,
+   37.9,
+   37.3,
+   36.4,
+   20.0,
+   19.9,
+   19.7,
+   19.6
+  ],
+  "derive_moyenne_arme_a_depart_studs_s": 13.2,
+  "tenue_images_<4studs/s": [],
+  "durees_images_60": {
+   "arme_a_depart (derive lente)": 11,
+   "tenue": 0,
+   "depart_a_contact": 8,
+   "arme_a_contact": 19
+  },
+  "trajet": {
+   "corde": 5.14,
+   "longueur": 6.54,
+   "rectitude_corde_sur_longueur": 0.79,
+   "ecart_max_a_la_corde": 1.47,
+   "deplacement_poing_(avant,droite,haut)": [
+    4.31,
+    -2.35,
+    1.53
+   ],
+   "az_poing_autour_du_torse_deg": [
+    110.0,
+    107.0,
+    103.0,
+    99.0,
+    95.0,
+    91.0,
+    87.0,
+    83.0,
+    78.0,
+    73.0,
+    68.0,
+    64.0,
+    52.0,
+    40.0,
+    30.0,
+    20.0,
+    11.0,
+    8.0,
+    4.0,
+    0.0
+   ],
+   "delta_lacet_buste": 22.1,
+   "delta_az_bras_torse": -115.1,
+   "delta_el_bras_torse": 26.1,
+   "delta_az_bras_coup": -143.4,
+   "delta_az_depart_contact_torse": -67.5,
+   "delta_lacet_depart_contact": 8.4
+  },
+  "desc_arme": {
+   "hanche": 2.652,
+   "buste": {
+    "lacet": -96.2,
+    "penche_avant": 26.9,
+    "penche_cote": -26.2
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      70.6,
+      -18.8
+     ],
+     "coup": [
+      168.1,
+      -4.9
+     ]
+    },
+    "LA": {
+     "torse": [
+      42.6,
+      -23.5
+     ],
+     "coup": [
+      149.3,
+      -24.1
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     -1.91,
+     -0.18,
+     1.04
+    ],
+    "LA": [
+     -0.68,
+     1.86,
+     -0.94
+    ]
+   },
+   "pieds": {
+    "RL": [
+     -1.17,
+     0.46,
+     -2.78
+    ],
+    "LL": [
+     1.36,
+     -0.92,
+     -2.89
+    ]
+   },
+   "epaules": {
+    "recul_droite": 0.85
+   },
+   "tete": {
+    "torse": [
+     -48.6,
+     -33.0
+    ],
+    "coup": [
+     29.7,
+     -67.0
+    ]
+   }
+  },
+  "desc_contre_rotation_max": {
+   "hanche": 2.772,
+   "buste": {
+    "lacet": -82.5,
+    "penche_avant": 5.6,
+    "penche_cote": -18.5
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      67.3,
+      -24.2
+     ],
+     "coup": [
+      152.4,
+      -9.0
+     ]
+    },
+    "LA": {
+     "torse": [
+      -5.0,
+      -1.8
+     ],
+     "coup": [
+      78.2,
+      -8.8
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     -2.04,
+     -0.12,
+     1.02
+    ],
+    "LA": [
+     1.19,
+     2.41,
+     -0.06
+    ]
+   },
+   "pieds": {
+    "RL": [
+     -0.95,
+     0.42,
+     -2.73
+    ],
+    "LL": [
+     1.37,
+     -0.73,
+     -2.96
+    ]
+   },
+   "epaules": {
+    "recul_droite": 1.07
+   },
+   "tete": {
+    "torse": [
+     -54.7,
+     -31.7
+    ],
+    "coup": [
+     32.9,
+     -49.7
+    ]
+   }
+  },
+  "desc_depart": {
+   "hanche": 2.772,
+   "buste": {
+    "lacet": -82.5,
+    "penche_avant": 5.6,
+    "penche_cote": -18.5
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      67.3,
+      -24.2
+     ],
+     "coup": [
+      152.4,
+      -9.0
+     ]
+    },
+    "LA": {
+     "torse": [
+      -5.0,
+      -1.8
+     ],
+     "coup": [
+      78.2,
+      -8.8
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     -2.04,
+     -0.12,
+     1.02
+    ],
+    "LA": [
+     1.19,
+     2.41,
+     -0.06
+    ]
+   },
+   "pieds": {
+    "RL": [
+     -0.95,
+     0.42,
+     -2.73
+    ],
+    "LL": [
+     1.37,
+     -0.73,
+     -2.96
+    ]
+   },
+   "epaules": {
+    "recul_droite": 1.07
+   },
+   "tete": {
+    "torse": [
+     -54.7,
+     -31.7
+    ],
+    "coup": [
+     32.9,
+     -49.7
+    ]
+   }
+  },
+  "desc_contact": {
+   "hanche": 2.937,
+   "buste": {
+    "lacet": -74.1,
+    "penche_avant": -20.2,
+    "penche_cote": -19.1
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      28.2,
+      -31.2
+     ],
+     "coup": [
+      107.2,
+      -4.8
+     ]
+    },
+    "LA": {
+     "torse": [
+      -72.5,
+      2.6
+     ],
+     "coup": [
+      5.9,
+      -7.7
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     -1.63,
+     0.7,
+     0.72
+    ],
+    "LA": [
+     3.31,
+     0.0,
+     0.3
+    ]
+   },
+   "pieds": {
+    "RL": [
+     -1.13,
+     0.59,
+     -2.79
+    ],
+    "LL": [
+     1.15,
+     -0.12,
+     -3.0
+    ]
+   },
+   "epaules": {
+    "recul_droite": 2.38
+   },
+   "tete": {
+    "torse": [
+     -62.8,
+     -30.2
+    ],
+    "coup": [
+     31.1,
+     -32.4
+    ]
+   }
+  },
+  "translation_membre_(droite,haut,avant)_axes_torse": {
+   "arme": [
+    0.44,
+    -0.52,
+    0.93
+   ],
+   "depart": [
+    0.38,
+    -0.51,
+    1.03
+   ],
+   "contact": [
+    -0.64,
+    -0.11,
+    0.51
+   ]
+  },
+  "translation_autre_bras": {
+   "arme": [
+    -0.42,
+    -0.09,
+    -0.5
+   ],
+   "depart": [
+    -0.29,
+    0.27,
+    -0.59
+   ],
+   "contact": [
+    -0.17,
+    0.36,
+    -0.4
+   ]
+  },
+  "decomposition_arme_a_contact_(avant,droite,haut)": {
+   "torse_translation": [
+    0.31,
+    -0.49,
+    0.29
+   ],
+   "torse_rotation": [
+    0.77,
+    0.21,
+    1.66
+   ],
+   "membre_rotation": [
+    2.23,
+    -1.35,
+    -0.33
+   ],
+   "membre_translation": [
+    0.99,
+    -0.71,
+    -0.09
+   ],
+   "total": [
+    4.31,
+    -2.35,
+    1.53
+   ]
+  },
+  "decomposition_depart_a_contact_(avant,droite,haut)": {
+   "torse_translation": [
+    0.27,
+    -0.41,
+    0.16
+   ],
+   "torse_rotation": [
+    0.27,
+    -0.42,
+    1.12
+   ],
+   "membre_rotation": [
+    0.95,
+    -1.2,
+    -0.63
+   ],
+   "membre_translation": [
+    0.9,
+    -0.79,
+    -0.12
+   ],
+   "total": [
+    2.4,
+    -2.82,
+    0.53
+   ]
+  },
+  "decomposition_arme_a_depart_(avant,droite,haut)": {
+   "torse_translation": [
+    0.05,
+    -0.09,
+    0.12
+   ],
+   "torse_rotation": [
+    0.49,
+    0.31,
+    0.72
+   ],
+   "membre_rotation": [
+    1.3,
+    0.15,
+    0.18
+   ],
+   "membre_translation": [
+    0.07,
+    0.09,
+    -0.02
+   ],
+   "total": [
+    1.91,
+    0.47,
+    1.0
+   ]
+  },
+  "resume": {
+   "arme": "hanche 2.65 | buste lacet -96 penché +27 côté -26 | RA torse az +71 el -19 (coup az +168 el -5) poing [-1.91, -0.18, 1.04] | LA torse az +43 el -24 (coup az +149 el -24) poing [-0.68, 1.86, -0.94] | épaule D reculée +0.85",
+   "depart": "hanche 2.77 | buste lacet -82 penché +6 côté -18 | RA torse az +67 el -24 (coup az +152 el -9) poing [-2.04, -0.12, 1.02] | LA torse az -5 el -2 (coup az +78 el -9) poing [1.19, 2.41, -0.06] | épaule D reculée +1.07",
+   "contact": "hanche 2.94 | buste lacet -74 penché -20 côté -19 | RA torse az +28 el -31 (coup az +107 el -5) poing [-1.63, 0.7, 0.72] | LA torse az -72 el +3 (coup az +6 el -8) poing [3.31, 0.0, 0.3] | épaule D reculée +2.38"
+  }
+ },
+ {
+  "id": "WC3",
+  "anim": "WallComboPlayer",
+  "membre": "RA",
+  "type": "balayage",
+  "avant_vecteur": [
+   -0.951,
+   0.0,
+   0.308
+  ],
+  "avant_az_deg_depuis_-Z_vers_+X": -108.0,
+  "images": {
+   "arme_max_poing_le_plus_recule": 343,
+   "contre_rotation_max_buste": 320,
+   "depart_detente": 352,
+   "pic_vitesse": 354,
+   "contact": 356
+  },
+  "vitesse_pic_studs_s": 79.5,
+  "vitesses_depart_a_contact": [
+   16.2,
+   77.7,
+   79.5,
+   79.4,
+   77.9,
+   32.5
+  ],
+  "derive_moyenne_arme_a_depart_studs_s": 26.2,
+  "tenue_images_<4studs/s": [],
+  "durees_images_60": {
+   "arme_a_depart (derive lente)": 9,
+   "tenue": 0,
+   "depart_a_contact": 4,
+   "arme_a_contact": 13
+  },
+  "trajet": {
+   "corde": 6.14,
+   "longueur": 9.18,
+   "rectitude_corde_sur_longueur": 0.67,
+   "ecart_max_a_la_corde": 2.79,
+   "deplacement_poing_(avant,droite,haut)": [
+    5.78,
+    1.03,
+    -1.81
+   ],
+   "az_poing_autour_du_torse_deg": [
+    -166.0,
+    -179.0,
+    167.0,
+    153.0,
+    140.0,
+    134.0,
+    128.0,
+    122.0,
+    116.0,
+    111.0,
+    82.0,
+    54.0,
+    26.0,
+    0.0
+   ],
+   "delta_lacet_buste": 75.6,
+   "delta_az_bras_torse": -135.2,
+   "delta_el_bras_torse": 72.8,
+   "delta_az_bras_coup": 137.3,
+   "delta_az_depart_contact_torse": -113.0,
+   "delta_lacet_depart_contact": 20.4
+  },
+  "desc_arme": {
+   "hanche": 2.829,
+   "buste": {
+    "lacet": -90.9,
+    "penche_avant": 25.2,
+    "penche_cote": -22.5
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      110.1,
+      -12.8
+     ],
+     "coup": [
+      -163.8,
+      14.2
+     ]
+    },
+    "LA": {
+     "torse": [
+      -117.1,
+      -2.9
+     ],
+     "coup": [
+      -33.8,
+      -7.6
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     -2.58,
+     -0.65,
+     1.31
+    ],
+    "LA": [
+     2.31,
+     -1.26,
+     0.35
+    ]
+   },
+   "pieds": {
+    "RL": [
+     -0.37,
+     -2.13,
+     -1.77
+    ],
+    "LL": [
+     0.17,
+     0.58,
+     -2.73
+    ]
+   },
+   "epaules": {
+    "recul_droite": 1.38
+   },
+   "tete": {
+    "torse": [
+     -4.0,
+     -3.4
+    ],
+    "coup": [
+     88.1,
+     -29.7
+    ]
+   }
+  },
+  "desc_contre_rotation_max": {
+   "hanche": 2.86,
+   "buste": {
+    "lacet": -177.9,
+    "penche_avant": -15.1,
+    "penche_cote": -15.7
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      123.5,
+      12.3
+     ],
+     "coup": [
+      -51.4,
+      15.3
+     ]
+    },
+    "LA": {
+     "torse": [
+      -85.3,
+      3.5
+     ],
+     "coup": [
+      95.6,
+      -9.9
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     1.65,
+     -2.15,
+     1.29
+    ],
+    "LA": [
+     -0.04,
+     3.13,
+     -0.09
+    ]
+   },
+   "pieds": {
+    "RL": [
+     0.62,
+     -1.46,
+     -2.93
+    ],
+    "LL": [
+     -0.78,
+     0.93,
+     -2.81
+    ]
+   },
+   "epaules": {
+    "recul_droite": -0.3
+   },
+   "tete": {
+    "torse": [
+     -65.8,
+     -35.6
+    ],
+    "coup": [
+     130.5,
+     -40.0
+    ]
+   }
+  },
+  "desc_depart": {
+   "hanche": 2.747,
+   "buste": {
+    "lacet": -35.7,
+    "penche_avant": 47.5,
+    "penche_cote": -32.5
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      87.9,
+      -11.9
+     ],
+     "coup": [
+      115.9,
+      6.2
+     ]
+    },
+    "LA": {
+     "torse": [
+      -118.2,
+      -5.6
+     ],
+     "coup": [
+      -94.2,
+      2.9
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     -0.93,
+     2.47,
+     0.89
+    ],
+    "LA": [
+     0.05,
+     -2.34,
+     0.93
+    ]
+   },
+   "pieds": {
+    "RL": [
+     -2.52,
+     -1.02,
+     -0.98
+    ],
+    "LL": [
+     0.33,
+     0.44,
+     -2.56
+    ]
+   },
+   "epaules": {
+    "recul_droite": 0.26
+   },
+   "tete": {
+    "torse": [
+     26.8,
+     -3.9
+    ],
+    "coup": [
+     68.3,
+     -35.3
+    ]
+   }
+  },
+  "desc_contact": {
+   "hanche": 2.281,
+   "buste": {
+    "lacet": -15.3,
+    "penche_avant": 60.8,
+    "penche_cote": -54.4
+   },
+   "bras": {
+    "RA": {
+     "torse": [
+      -25.1,
+      60.0
+     ],
+     "coup": [
+      -26.5,
+      -5.9
+     ]
+    },
+    "LA": {
+     "torse": [
+      -125.6,
+      0.1
+     ],
+     "coup": [
+      -120.2,
+      16.6
+     ]
+    }
+   },
+   "poing": {
+    "RA": [
+     2.91,
+     0.0,
+     0.05
+    ],
+    "LA": [
+     -0.89,
+     -1.87,
+     1.32
+    ]
+   },
+   "pieds": {
+    "RL": [
+     -2.38,
+     0.47,
+     -1.82
+    ],
+    "LL": [
+     0.83,
+     0.03,
+     -2.29
+    ]
+   },
+   "epaules": {
+    "recul_droite": -1.05
+   },
+   "tete": {
+    "torse": [
+     22.1,
+     8.2
+    ],
+    "coup": [
+     32.5,
+     -39.8
+    ]
+   }
+  },
+  "translation_membre_(droite,haut,avant)_axes_torse": {
+   "arme": [
+    0.55,
+    -0.19,
+    -0.13
+   ],
+   "depart": [
+    0.34,
+    0.03,
+    0.21
+   ],
+   "contact": [
+    -0.36,
+    0.49,
+    0.8
+   ]
+  },
+  "translation_autre_bras": {
+   "arme": [
+    0.03,
+    -0.29,
+    -0.44
+   ],
+   "depart": [
+    0.33,
+    -0.34,
+    -0.64
+   ],
+   "contact": [
+    0.4,
+    -0.39,
+    -0.63
+   ]
+  },
+  "decomposition_arme_a_contact_(avant,droite,haut)": {
+   "torse_translation": [
+    0.29,
+    0.38,
+    -0.55
+   ],
+   "torse_rotation": [
+    2.73,
+    3.07,
+    0.39
+   ],
+   "membre_rotation": [
+    1.98,
+    -1.45,
+    -0.86
+   ],
+   "membre_translation": [
+    0.77,
+    -0.97,
+    -0.8
+   ],
+   "total": [
+    5.78,
+    1.03,
+    -1.81
+   ]
+  },
+  "decomposition_depart_a_contact_(avant,droite,haut)": {
+   "torse_translation": [
+    -0.15,
+    0.47,
+    -0.47
+   ],
+   "torse_rotation": [
+    1.56,
+    0.07,
+    0.05
+   ],
+   "membre_rotation": [
+    1.79,
+    -1.81,
+    -0.37
+   ],
+   "membre_translation": [
+    0.49,
+    -0.74,
+    -0.53
+   ],
+   "total": [
+    3.68,
+    -2.01,
+    -1.31
+   ]
+  },
+  "decomposition_arme_a_depart_(avant,droite,haut)": {
+   "torse_translation": [
+    0.44,
+    -0.08,
+    -0.08
+   ],
+   "torse_rotation": [
+    1.12,
+    2.73,
+    0.22
+   ],
+   "membre_rotation": [
+    0.11,
+    0.43,
+    -0.46
+   ],
+   "membre_translation": [
+    0.42,
+    -0.04,
+    -0.18
+   ],
+   "total": [
+    2.09,
+    3.03,
+    -0.5
+   ]
+  },
+  "resume": {
+   "arme": "hanche 2.83 | buste lacet -91 penché +25 côté -22 | RA torse az +110 el -13 (coup az -164 el +14) poing [-2.58, -0.65, 1.31] | LA torse az -117 el -3 (coup az -34 el -8) poing [2.31, -1.26, 0.35] | épaule D reculée +1.38",
+   "depart": "hanche 2.75 | buste lacet -36 penché +48 côté -32 | RA torse az +88 el -12 (coup az +116 el +6) poing [-0.93, 2.47, 0.89] | LA torse az -118 el -6 (coup az -94 el +3) poing [0.05, -2.34, 0.93] | épaule D reculée +0.26",
+   "contact": "hanche 2.28 | buste lacet -15 penché +61 côté -54 | RA torse az -25 el +60 (coup az -26 el -6) poing [2.91, 0.0, 0.05] | LA torse az -126 el +0 (coup az -120 el +17) poing [-0.89, -1.87, 1.32] | épaule D reculée -1.05"
+  }
+ }
+]

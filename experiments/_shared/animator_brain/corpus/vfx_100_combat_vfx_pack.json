@@ -1,0 +1,681 @@
+{
+ "source": "100_Combat_VFX_Pack.rbxm",
+ "note": "mesures derivees ; le pack source n'est pas versionne (licence)",
+ "classes": {
+  "Beam": 27,
+  "Highlight": 2,
+  "ParticleEmitter": 2073,
+  "PointLight": 1,
+  "Trail": 11
+ },
+ "trigger_convention": {
+  "n_particle_emitters": 2073,
+  "disabled_fraction": 0.9782923299565847,
+  "attribute_frequency": [
+   [
+    "EmitCount",
+    2018
+   ],
+   [
+    "EmitDelay",
+    1700
+   ],
+   [
+    "EmitDuration",
+    1076
+   ],
+   [
+    "TimeScale_Duration",
+    609
+   ],
+   [
+    "TimeScale_End",
+    501
+   ],
+   [
+    "TimeScale_Start",
+    501
+   ],
+   [
+    "_lemonadeUniqueId",
+    217
+   ],
+   [
+    "Color",
+    43
+   ],
+   [
+    "EmitType",
+    41
+   ],
+   [
+    "BaseEmitCount",
+    32
+   ],
+   [
+    "customColor",
+    32
+   ],
+   [
+    "BaseRate",
+    30
+   ]
+  ],
+  "attribute_common_values": {
+   "EmitCount": [
+    [
+     1.0,
+     618
+    ],
+    [
+     2.0,
+     364
+    ],
+    [
+     5.0,
+     210
+    ],
+    [
+     3.0,
+     192
+    ],
+    [
+     4.0,
+     143
+    ],
+    [
+     6.0,
+     85
+    ]
+   ],
+   "EmitDelay": [
+    [
+     0.0,
+     1642
+    ],
+    [
+     0.1,
+     15
+    ],
+    [
+     0.2,
+     12
+    ],
+    [
+     0.3,
+     9
+    ],
+    [
+     0.04,
+     4
+    ],
+    [
+     0.07,
+     4
+    ]
+   ],
+   "EmitDuration": [
+    [
+     0.0,
+     858
+    ],
+    [
+     0.05,
+     40
+    ],
+    [
+     1.0,
+     39
+    ],
+    [
+     2.0,
+     31
+    ],
+    [
+     0.3,
+     30
+    ],
+    [
+     0.5,
+     29
+    ]
+   ],
+   "TimeScale_Duration": [
+    [
+     0.1,
+     596
+    ],
+    [
+     0.0628398791540786,
+     7
+    ],
+    [
+     0.10572566652818836,
+     2
+    ],
+    [
+     0.0,
+     2
+    ],
+    [
+     0.05,
+     1
+    ],
+    [
+     0.05000000000000001,
+     1
+    ]
+   ],
+   "TimeScale_End": [
+    [
+     1.0,
+     452
+    ],
+    [
+     0.800000011920929,
+     14
+    ],
+    [
+     0.8500000238418579,
+     13
+    ],
+    [
+     0.949999988079071,
+     12
+    ],
+    [
+     0.550000011920929,
+     3
+    ],
+    [
+     0.5,
+     3
+    ]
+   ],
+   "TimeScale_Start": [
+    [
+     1.0,
+     452
+    ],
+    [
+     0.800000011920929,
+     14
+    ],
+    [
+     0.8500000238418579,
+     13
+    ],
+    [
+     0.949999988079071,
+     12
+    ],
+    [
+     0.550000011920929,
+     3
+    ],
+    [
+     0.5,
+     3
+    ]
+   ],
+   "_lemonadeUniqueId": [],
+   "Color": []
+  },
+  "orientation": {
+   "VelocityPerpendicular": 951,
+   "FacingCamera": 541,
+   "VelocityParallel": 557,
+   "FacingCameraWorldUp": 24
+  }
+ },
+ "effects": {
+  "n_effects": 104,
+  "emitters_per_effect": {
+   "n": 104,
+   "p10": 5,
+   "median": 14,
+   "p90": 44
+  },
+  "roles_per_effect": {
+   "n": 104,
+   "p10": 1,
+   "median": 4,
+   "p90": 6
+  },
+  "effect_duration_s": {
+   "n": 104,
+   "p10": 0.5,
+   "median": 1.2000000476837158,
+   "p90": 3.0
+  },
+  "delayed_emitter_fraction": {
+   "n": 104,
+   "p10": 0.0,
+   "median": 0.0,
+   "p90": 0.07407407407407407
+  },
+  "top_role_combos": [
+   [
+    "onde",
+    15
+   ],
+   [
+    "etincelle + flash + forme + fumee + onde",
+    13
+   ],
+   [
+    "debris + etincelle + flash + forme + fumee + onde",
+    11
+   ],
+   [
+    "debris + eclat + etincelle + flash + forme + fumee + onde",
+    7
+   ],
+   [
+    "forme + fumee + onde",
+    4
+   ],
+   [
+    "debris + etincelle + onde",
+    4
+   ],
+   [
+    "etincelle + flash + fumee",
+    4
+   ],
+   [
+    "flash + forme + fumee + onde",
+    3
+   ],
+   [
+    "flash + forme + onde",
+    3
+   ],
+   [
+    "etincelle",
+    3
+   ],
+   [
+    "eclat + etincelle + forme + fumee + onde",
+    3
+   ],
+   [
+    "etincelle + flash + forme + onde",
+    2
+   ]
+  ]
+ },
+ "roles": {
+  "onde": {
+   "n": 744,
+   "lifetime_max_s": {
+    "n": 744,
+    "p10": 0.10000000149011612,
+    "median": 0.4000000059604645,
+    "p90": 1.4844040870666504
+   },
+   "speed_max_studs_s": {
+    "n": 744,
+    "p10": 0.0005624999757856131,
+    "median": 0.004134581424295902,
+    "p90": 0.4964201748371124
+   },
+   "size_max_studs": {
+    "n": 744,
+    "p10": 5.0,
+    "median": 11.91695499420166,
+    "p90": 32.61601638793945
+   },
+   "emit_count": {
+    "n": 744,
+    "p10": 1.0,
+    "median": 2.0,
+    "p90": 5.0
+   },
+   "light_emission": {
+    "n": 744,
+    "p10": -0.5,
+    "median": 0.0,
+    "p90": 1.0
+   },
+   "brightness": {
+    "n": 744,
+    "p10": 0.0,
+    "median": 3.0,
+    "p90": 35.0
+   },
+   "drag": {
+    "n": 744,
+    "p10": 0.0,
+    "median": 0.0,
+    "p90": 0.0
+   },
+   "size_curve_keys": {
+    "n": 744,
+    "p10": 2,
+    "median": 11,
+    "p90": 12
+   },
+   "flipbook_fraction": 0.5094086021505376,
+   "timescale_ramp_fraction": 0.1922043010752688
+  },
+  "fumee": {
+   "n": 411,
+   "lifetime_max_s": {
+    "n": 411,
+    "p10": 0.26499998569488525,
+    "median": 1.0,
+    "p90": 2.25
+   },
+   "speed_max_studs_s": {
+    "n": 411,
+    "p10": 3.3000001907348633,
+    "median": 62.73531723022461,
+    "p90": 213.16273498535156
+   },
+   "size_max_studs": {
+    "n": 411,
+    "p10": 1.4534884691238403,
+    "median": 6.353992462158203,
+    "p90": 26.942344665527344
+   },
+   "emit_count": {
+    "n": 411,
+    "p10": 1.0,
+    "median": 5.0,
+    "p90": 20.0
+   },
+   "light_emission": {
+    "n": 411,
+    "p10": -2.0,
+    "median": 0.0,
+    "p90": 1.0
+   },
+   "brightness": {
+    "n": 411,
+    "p10": 0.32499998807907104,
+    "median": 3.0,
+    "p90": 18.0
+   },
+   "drag": {
+    "n": 411,
+    "p10": 2.5,
+    "median": 5.400000095367432,
+    "p90": 15.0
+   },
+   "size_curve_keys": {
+    "n": 411,
+    "p10": 2,
+    "median": 6,
+    "p90": 12
+   },
+   "flipbook_fraction": 0.5693430656934306,
+   "timescale_ramp_fraction": 0.3284671532846715
+  },
+  "etincelle": {
+   "n": 370,
+   "lifetime_max_s": {
+    "n": 370,
+    "p10": 0.11500000208616257,
+    "median": 0.3722238540649414,
+    "p90": 1.1543574333190918
+   },
+   "speed_max_studs_s": {
+    "n": 370,
+    "p10": 22.398359298706055,
+    "median": 75.0,
+    "p90": 298.7655334472656
+   },
+   "size_max_studs": {
+    "n": 370,
+    "p10": 0.5532315373420715,
+    "median": 4.498937606811523,
+    "p90": 13.861396789550781
+   },
+   "emit_count": {
+    "n": 370,
+    "p10": 1.0,
+    "median": 5.0,
+    "p90": 18.0
+   },
+   "light_emission": {
+    "n": 370,
+    "p10": -5.0,
+    "median": 0.0,
+    "p90": 0.800000011920929
+   },
+   "brightness": {
+    "n": 370,
+    "p10": 0.15000000596046448,
+    "median": 11.0,
+    "p90": 36.0
+   },
+   "drag": {
+    "n": 370,
+    "p10": 0.0,
+    "median": 5.10821008682251,
+    "p90": 40.0
+   },
+   "size_curve_keys": {
+    "n": 370,
+    "p10": 2,
+    "median": 3,
+    "p90": 12
+   },
+   "flipbook_fraction": 0.4594594594594595,
+   "timescale_ramp_fraction": 0.47297297297297297
+  },
+  "forme": {
+   "n": 222,
+   "lifetime_max_s": {
+    "n": 222,
+    "p10": 0.14300000667572021,
+    "median": 0.3003733456134796,
+    "p90": 0.800000011920929
+   },
+   "speed_max_studs_s": {
+    "n": 222,
+    "p10": 0.0,
+    "median": 0.009664671495556831,
+    "p90": 5.402306079864502
+   },
+   "size_max_studs": {
+    "n": 222,
+    "p10": 2.540792942047119,
+    "median": 10.0,
+    "p90": 33.303306579589844
+   },
+   "emit_count": {
+    "n": 222,
+    "p10": 1.0,
+    "median": 2.0,
+    "p90": 5.0
+   },
+   "light_emission": {
+    "n": 222,
+    "p10": -2.0,
+    "median": 0.30000001192092896,
+    "p90": 1.0
+   },
+   "brightness": {
+    "n": 222,
+    "p10": 0.07999999821186066,
+    "median": 4.0,
+    "p90": 16.0
+   },
+   "drag": {
+    "n": 222,
+    "p10": 0.0,
+    "median": 0.0,
+    "p90": 0.0
+   },
+   "size_curve_keys": {
+    "n": 222,
+    "p10": 2,
+    "median": 10,
+    "p90": 12
+   },
+   "flipbook_fraction": 0.42792792792792794,
+   "timescale_ramp_fraction": 0.32882882882882886
+  },
+  "flash": {
+   "n": 217,
+   "lifetime_max_s": {
+    "n": 217,
+    "p10": 0.05000000074505806,
+    "median": 0.10000000149011612,
+    "p90": 0.125
+   },
+   "speed_max_studs_s": {
+    "n": 217,
+    "p10": 0.0,
+    "median": 0.0029850907158106565,
+    "p90": 0.051870424300432205
+   },
+   "size_max_studs": {
+    "n": 217,
+    "p10": 3.875,
+    "median": 11.29613208770752,
+    "p90": 33.199546813964844
+   },
+   "emit_count": {
+    "n": 217,
+    "p10": 1.0,
+    "median": 2.0,
+    "p90": 4.0
+   },
+   "light_emission": {
+    "n": 217,
+    "p10": -0.10000000149011612,
+    "median": 0.75,
+    "p90": 1.0
+   },
+   "brightness": {
+    "n": 217,
+    "p10": 1.0,
+    "median": 10.0,
+    "p90": 100.0
+   },
+   "drag": {
+    "n": 217,
+    "p10": 0.0,
+    "median": 0.0,
+    "p90": 6.0
+   },
+   "size_curve_keys": {
+    "n": 217,
+    "p10": 2,
+    "median": 6,
+    "p90": 12
+   },
+   "flipbook_fraction": 0.20276497695852536,
+   "timescale_ramp_fraction": 0.25806451612903225
+  },
+  "debris": {
+   "n": 70,
+   "lifetime_max_s": {
+    "n": 70,
+    "p10": 0.5942459106445312,
+    "median": 1.2833565473556519,
+    "p90": 2.957568645477295
+   },
+   "speed_max_studs_s": {
+    "n": 70,
+    "p10": 21.21925926208496,
+    "median": 52.0,
+    "p90": 198.63449096679688
+   },
+   "size_max_studs": {
+    "n": 70,
+    "p10": 0.30000001192092896,
+    "median": 1.9570101499557495,
+    "p90": 9.595438957214355
+   },
+   "emit_count": {
+    "n": 70,
+    "p10": 3.0,
+    "median": 10.0,
+    "p90": 16.0
+   },
+   "light_emission": {
+    "n": 70,
+    "p10": -0.5,
+    "median": 0.0,
+    "p90": 1.0
+   },
+   "brightness": {
+    "n": 70,
+    "p10": 0.10000000149011612,
+    "median": 1.0,
+    "p90": 20.0
+   },
+   "drag": {
+    "n": 70,
+    "p10": 1.5,
+    "median": 6.0,
+    "p90": 10.0
+   },
+   "size_curve_keys": {
+    "n": 70,
+    "p10": 2,
+    "median": 4,
+    "p90": 12
+   },
+   "flipbook_fraction": 0.5857142857142857,
+   "timescale_ramp_fraction": 0.32857142857142857
+  },
+  "eclat": {
+   "n": 39,
+   "lifetime_max_s": {
+    "n": 39,
+    "p10": 0.09709122776985168,
+    "median": 0.29411765933036804,
+    "p90": 1.0
+   },
+   "speed_max_studs_s": {
+    "n": 39,
+    "p10": 15.37508487701416,
+    "median": 46.875,
+    "p90": 130.0
+   },
+   "size_max_studs": {
+    "n": 39,
+    "p10": 3.6635308265686035,
+    "median": 11.53587532043457,
+    "p90": 54.511077880859375
+   },
+   "emit_count": {
+    "n": 39,
+    "p10": 1.0,
+    "median": 2.0,
+    "p90": 6.0
+   },
+   "light_emission": {
+    "n": 39,
+    "p10": -1.0,
+    "median": 0.10000000149011612,
+    "p90": 1.0
+   },
+   "brightness": {
+    "n": 39,
+    "p10": 0.28999999165534973,
+    "median": 5.0,
+    "p90": 20.0
+   },
+   "drag": {
+    "n": 39,
+    "p10": 0.0,
+    "median": 0.0,
+    "p90": 0.0
+   },
+   "size_curve_keys": {
+    "n": 39,
+    "p10": 2,
+    "median": 7,
+    "p90": 12
+   },
+   "flipbook_fraction": 0.5641025641025641,
+   "timescale_ramp_fraction": 0.05128205128205128
+  }
+ }
+}

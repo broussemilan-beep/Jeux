@@ -1,0 +1,1290 @@
+{
+ "_doc": "Cerveau v2 (CERVEAU_V2.md) : des HYPOTHESES, pas des regles. confiance_principe = a quel point c'est vrai en animation (sources). poids_note = a quel point ca fait bouger la note de Milan (appris par critic.reflect, jamais tape a la main). Les paroles de Milan entrent comme des pistes, avec leur source. poids_a_priori = point de depart ; reflect REJOUE tout l'historique depuis lui (idempotent : relancer ne fait pas deriver les poids).",
+ "hypotheses": [
+  {
+   "id": "posture_droite",
+   "enonce": "Pendant des coups legers, le corps reste debout ; on ne s'accroupit que pour armer un coup lourd ou atterrir.",
+   "portee": [
+    "coup_leger"
+   ],
+   "confiance_principe": 0.7,
+   "poids_note": 0.582,
+   "sources": [
+    "Milan v1 : il est accroupi",
+    "corpus frappe_legere (affaissement)"
+   ],
+   "mesure": "regles:posture droite pendant les coups legers",
+   "etalon_style": "tsb_m1",
+   "poids_a_priori": 0.5
+  },
+  {
+   "id": "escalade",
+   "enonce": "Une rafale monte en intensite (hitstop, recul, secousse, taille des effets).",
+   "portee": [
+    "rafale"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.582,
+   "sources": [
+    "Milan v1 : l'enchainement",
+    "Black Flash 15/10/7/7/10 f"
+   ],
+   "mesure": "regles:escalade : hitstop",
+   "etalon_style": "universel",
+   "poids_a_priori": 0.5
+  },
+  {
+   "id": "impact_visible",
+   "enonce": "Le plus gros impact reste a l'ecran avant tout effet plein ecran.",
+   "portee": [
+    "finisher"
+   ],
+   "confiance_principe": 0.7,
+   "poids_note": 0.582,
+   "sources": [
+    "auto-critique v1 validee par Milan",
+    "Serious Punch 24 f dans la fumee"
+   ],
+   "mesure": "regles:impact final visible avant les effets plein ecran",
+   "etalon_style": "universel",
+   "poids_a_priori": 0.5
+  },
+  {
+   "id": "variete_coups",
+   "enonce": "Une rafale varie les formes de coups (jab, direct, crochet, marteau, toupie).",
+   "portee": [
+    "rafale"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.5,
+   "sources": [
+    "5 exemples de Milan (combo R6)",
+    "IMPACT HAVEN"
+   ],
+   "mesure": "perception:variete (distance entre formes de coups vs M1 pro)",
+   "etalon_style": "tsb_m1",
+   "poids_a_priori": 0.5
+  },
+  {
+   "id": "epaules_basses",
+   "enonce": "Les epaules ne se haussent pas pendant les coups legers.",
+   "portee": [
+    "coup_leger"
+   ],
+   "confiance_principe": 0.5,
+   "poids_note": 0.395,
+   "sources": [
+    "Milan v2 : bras trop hauts (interpretation)",
+    "corpus M1"
+   ],
+   "mesure": "regles:epaules jamais haussees",
+   "etalon_style": "tsb_m1",
+   "poids_a_priori": 0.5
+  },
+  {
+   "id": "bras_horizontal",
+   "enonce": "Au contact d'un coup droit, le bras est quasi horizontal ; pour frapper bas, le corps descend.",
+   "portee": [
+    "coup_droit"
+   ],
+   "confiance_principe": 0.8,
+   "poids_note": 0.395,
+   "sources": [
+    "Milan v3 : coups vers le bas",
+    "ref Pro 17-52-55",
+    "corpus M1 mediane -3 deg"
+   ],
+   "mesure": "regles:bras quasi horizontal au contact",
+   "etalon_style": "tsb_m1",
+   "poids_a_priori": 0.5
+  },
+  {
+   "id": "poing_a_plat",
+   "enonce": "Un coup droit arme a hauteur d'epaule et voyage a plat (pas d'uppercut deguise).",
+   "portee": [
+    "coup_droit"
+   ],
+   "confiance_principe": 0.8,
+   "poids_note": 0.5,
+   "sources": [
+    "Milan v3b : les coups partent du bas",
+    "5 exemples de Milan",
+    "corpus : M1 montee <= 0,22, Uppercut 1,45"
+   ],
+   "mesure": "regles:coup droit : le poing voyage a plat (pas d'uppercut)",
+   "etalon_style": "tsb_m1",
+   "poids_a_priori": 0.5
+  },
+  {
+   "id": "transfert_poids",
+   "enonce": "Le torse passe au-dessus du pied avant entre l'armement et le contact.",
+   "portee": [
+    "coup_droit"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.395,
+   "sources": [
+    "Milan v2 : pas en transfert de poids",
+    "corpus frappe_lourde"
+   ],
+   "mesure": "regles:transfert de poids sur les coups de puissance",
+   "etalon_style": "tsb_m1",
+   "poids_a_priori": 0.5
+  },
+  {
+   "id": "tenue_avant_choc",
+   "enonce": "Le mouvement freine juste AVANT le choc, puis explose juste apres (le flash cache le saut de pose). C'est l'inverse d'un hitstop qui gele apres.",
+   "portee": [
+    "impact"
+   ],
+   "confiance_principe": 0.25,
+   "poids_note": 0.5,
+   "sources": [
+    "IMPACT HAVEN (mesure)",
+    "coup chapeau LeftRight2601 (mesure)",
+    "Milan v1 : manque de puissance (piste)",
+    "fiches des refs (2026-09-24) : 3 refs sur 9 avec cartes d'impact le montrent (coup chapeau, serious punch 2, IMPACT HAVEN) ; Black Flash, Rewind Clock, Serious Punch TSB non -> depend du style, pas universel",
+    "sakugabooru (2026-09-24, fighting impact_frames, 1ers clips) : 0 sur 4 clips avec impacts (Nakamura, OPM, MHA, One Piece) -> 3 refs sur 13 au total : effet de style, pas principe",
+    "synthese 2026-09-24 (21 clips sakuga) : 1/19 clips avec impacts ; l'inverse domine : explosion apres le choc 8/19 (nous 0/4)",
+    "synthese finale 2026-09-24 : sakuga 2/32, danbooru 2/10, refs de Milan 3/9"
+   ],
+   "mesure": "fiche:impacts.profil_autour.tenue_avant_choc",
+   "etalon_style": "manga_ultime",
+   "poids_a_priori": 0.5
+  },
+  {
+   "id": "coup_charge",
+   "enonce": "Un coup final se CHARGE : buste enroule, corps ramasse, tenue immobile sous tension, puis depart en 2-3 f et extension tenue.",
+   "portee": [
+    "finisher"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.395,
+   "sources": [
+    "Milan v4 : je verrais plus le coup de Saitama (piste)",
+    "Serious Punch : garde tenue 32 f",
+    "Mii smash : extension tenue",
+    "v7 (2026-09-24) : MESURE FAUSSE pour la v7 (tenue 4 f, depart 7 f) alors qu'a l'ecran la charge est tenue (poing a 0-4 stud/s f130-144) puis part a pleine vitesse en 1 image (f145 : 116 stud/s) et file en palier. Conflit de definitions : la tenue exige un torse FIGE (contredit tenue_vivante) et le 'depart' compte tout le palier. Essai d'assouplir la tenue (main seule) : ecarte, il declarait 'coup charge' les v1-v4 que Milan jugeait sans vraie charge. Mesure a refaire : a trancher avec la note de Milan sur la v7."
+   ],
+   "mesure": "perception:charge_final (tenue, depart, buste)",
+   "etalon_style": "manga_ultime",
+   "poids_a_priori": 0.5
+  },
+  {
+   "id": "arcs",
+   "enonce": "Les membres voyagent en arcs (rotation autour des articulations), jamais en ligne droite mecanique.",
+   "portee": [
+    "tout"
+   ],
+   "confiance_principe": 0.8,
+   "poids_note": 0.395,
+   "sources": [
+    "12 principes de l'animation (arcs)",
+    "auto-critique v4 : controle IK interpole en ligne droite"
+   ],
+   "mesure": "perception:arcs (deviation des traits vs M1 pro)",
+   "etalon_style": "universel",
+   "poids_a_priori": 0.5
+  },
+  {
+   "id": "contraste_de_temps",
+   "enonce": "Contraste de vitesse : actions en 2-3 f contre mouvements lents qui continuent ; les vraies tenues sont rares et courtes en combat (reservees a l'anticipation d'un coup charge).",
+   "portee": [
+    "tout"
+   ],
+   "confiance_principe": 0.7,
+   "poids_note": 0.5,
+   "sources": [
+    "REFERENCES_VIDEO principe 1",
+    "pro vs noob",
+    "synthese 2026-09-24 : en combat sakuga, le contraste vient de la VITESSE (contraste d'energie 4,3, comme nous 4,8), pas de tenues longues (2 % du temps) -> « tenue longue » ne vaut pas pour une rafale"
+   ],
+   "mesure": "fiche:energie.contraste_p95_sur_mediane",
+   "etalon_style": "universel",
+   "poids_a_priori": 0.5
+  },
+  {
+   "id": "silhouette_lisible",
+   "enonce": "Chaque pose cle se lit en silhouette (ligne d'action claire, membres detaches du corps).",
+   "portee": [
+    "tout"
+   ],
+   "confiance_principe": 0.8,
+   "poids_note": 0.645,
+   "sources": [
+    "IMPACT HAVEN : cartes silhouette",
+    "test de silhouette v2 (manga)",
+    "corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : tous les bons clips separent les silhouettes ; noob vs pro (epee) ; NOUS : rafale et coup final se chevauchent en plan moyen (bras cache contre la victime, poing arme cache derriere le corps)",
+    "lot 2 : la rotation du torse et la separation des persos dependent de l'ANGLE de camera ; les pros verifient sous deux vues (cote + dessus)",
+    "fiche DEMI-DIEU (Milan) : « si on enleve toute la couleur, le coup doit rester impressionnant » ; silhouettes de profil -- a completer de DOS (camera du joueur)",
+    "v6 (planche v5 contre v6) : la lisibilite depend du COTE de la camera, pas du bras qui frappe : de +x les coups des deux bras se lisent (le bras part devant le torse), de -x ou de dos le torse de l'attaquant cache le poing ; ne pas traverser l'axe a chaque coup"
+   ],
+   "mesure": "jugement visuel",
+   "etalon_style": "universel",
+   "poids_a_priori": 0.5
+  },
+  {
+   "id": "fluidite",
+   "enonce": "Le mouvement enchaine : un membre ne s'arrete pas a chaque pose cle (chevauchement, suivi), il repart avant d'etre a l'arret.",
+   "portee": [
+    "tout"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.5,
+   "etalon_style": "universel",
+   "sources": [
+    "12 principes de l'animation (follow-through, overlapping action)",
+    "perception 2026-09-24 : M1 pro 4,2-5,7 traits/s ; notre aerien (aime par Milan) 3,5-4,2 ; notre rafale 8,8-11,9 (comme une reaction a un coup)",
+    "auto-critique : cles IK avec ralenti a chaque cle -> arret a chaque cle",
+    "synthese 2026-09-24 : temps fige (images immobiles >= 150 ms) sakuga 2 % [1-5], refs de Milan 14 %, nos versions 37 %",
+    "synthese finale 2026-09-24 : temps fige sakuga (plans de combat TV) 2 %, danbooru (animations de fans, boucles) 22 %, refs de Milan 14 %, nous 37 % -- au-dessus de tout",
+    "CORRECTION 2026-09-24 (v5) : la mesure « traits par seconde » est confondue avec le TEMPO (notre rafale : un coup toutes les 0,43 s, un M1 pro : 0,65 s) ; en 3D notre rafale n'est JAMAIS figee (0 % de temps immobile, M1 pro 28-51 %) ; les 37 % de temps fige de la video viennent de la structure (hitstops, temps suspendu, longue revelation). Mesure retiree du jugement (ANGLES_MORTS.md 7) ; le principe reste, a mesurer autrement (arrets par coup, a tempo egal)."
+   ],
+   "mesure": null,
+   "poids_a_priori": 0.5
+  },
+  {
+   "id": "explosion_apres",
+   "enonce": "Juste apres le choc, l'image explose (debris, onde, recul violent) au lieu de geler.",
+   "portee": [
+    "impact"
+   ],
+   "confiance_principe": 0.5,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "manga_ultime",
+   "sources": [
+    "synthese 2026-09-24 : 8/19 clips sakuga avec impacts, refs de Milan 2/9, nous 0/4 (notre hitstop gele apres)",
+    "synthese finale 2026-09-24 : sakuga 12/32, danbooru 4/10, refs de Milan 2/9, nous 0/4"
+   ],
+   "mesure": "fiche:impacts.profil_autour.explosion_apres"
+  },
+  {
+   "id": "cartes_impact",
+   "enonce": "Au choc, l'image 3D est remplacee par 2-8 cartes graphiques de 2-4 f (silhouette inversee, encre hachuree, negatif, posterise, couleur plate, cible/croix).",
+   "portee": [
+    "impact",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.85,
+   "poids_note": 0.645,
+   "poids_a_priori": 0.5,
+   "etalon_style": "manga_ultime",
+   "sources": [
+    "corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~22 clips",
+    "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)",
+    "v6 : deux sequences de cartes dans une technique (f150, f298) -> chacune son vocabulaire ; le X repete effacait la signature du final (vu sur la video v6 a 60 i/s)",
+    "vidéos tutos envoyées par Milan (zips 2026-09-24, étude visuelle image par image ; corpus/tutos/rapport_video_*.md) : techniques anime : 1 image d'éclatement (Deku/Nakamura), 8 images silhouette rouge/blanc, jusqu'à ~55 images à palettes alternées (Chansard) ; coup au chapeau : poing tenu au contact ~0,8 s → ~0,6 s d'impact frames en négatif → ~0,8 s d'après-coup ; Nakamura 'Speed/Scale Contrast' : 2-4 images noir/blanc à rayons",
+    "vidéos tutos envoyées par Milan (zips 2026-09-24) : vlog DeHapy, critique de l'animateur Xoaterz (planche ✗/✓ lisible, 2023 ; corpus/tutos/rapport_video_critique_poses.md) : impact frames faites DANS Roblox : ColorCorrection IF1/IF2/IF3 + Highlight + FOV caméra (Moon Animator), 1-3 images en silhouette inversée"
+   ],
+   "mesure": "fiche:cartes d'impact + jugement visuel",
+   "categorie": "mise_en_scene",
+   "quand": "le 1-2 plus gros impacts d'une technique (ultime, coup final)",
+   "contre_indication": "sur chaque coup d'une rafale : l'effet s'use et plus rien n'est fort ; dans les refs, les coups legers n'en ont pas ; reutiliser la meme carte sur deux temps forts d'une meme technique (le final perd sa signature)"
+  },
+  {
+   "id": "silence_noir",
+   "enonce": "Juste avant/apres l'explosion : ecran NOIR 2-10 f (souvent une petite etoile) -- le silence avant le boum.",
+   "portee": [
+    "impact",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.8,
+   "poids_note": 0.508,
+   "poids_a_priori": 0.5,
+   "etalon_style": "manga_ultime",
+   "sources": [
+    "corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~14 clips",
+    "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)"
+   ],
+   "mesure": "fiche:cartes noir + jugement visuel",
+   "categorie": "mise_en_scene",
+   "quand": "juste avant LE boum principal, une fois",
+   "contre_indication": "repete a chaque coup il devient un clignotement ; sans explosion derriere il ne veut rien dire"
+  },
+  {
+   "id": "blanc_total",
+   "enonce": "Blanc total 2-15 f au pic (souvent en alternance blanc/noir de 4 f, ou blanc qui se dissout en fumee).",
+   "portee": [
+    "impact",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.75,
+   "poids_note": 0.645,
+   "poids_a_priori": 0.5,
+   "etalon_style": "manga_ultime",
+   "sources": [
+    "corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~12 clips",
+    "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)"
+   ],
+   "mesure": "fiche:cartes blanc + jugement visuel",
+   "categorie": "mise_en_scene",
+   "quand": "au pic de la technique, pour cacher un saut de pose ou un changement de lieu",
+   "contre_indication": "trop long il ecrase tout ; en alternance rapide seulement sur les impacts majeurs"
+  },
+  {
+   "id": "regard_intention",
+   "enonce": "Avant que le coup parte : tres gros plan visage/yeux tenu 16-30 f (l'intention ; la charge se lit dans le regard).",
+   "portee": [
+    "impact",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.75,
+   "poids_note": 0.535,
+   "poids_a_priori": 0.5,
+   "etalon_style": "manga_ultime",
+   "sources": [
+    "corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~10 clips",
+    "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)",
+    "essais v6 vus a l'ecran (captures/verification/2026-09-24-poing-dragon-v6-essais-camera-rejetes.png) : le gros plan de face d'une tete R6 montre un sourire fixe -> comique, zero tension ; le regard s'est lu par l'ORIENTATION de la tete en plan rapproche de profil, la cible au bout du regard"
+   ],
+   "mesure": "jugement visuel",
+   "categorie": "mise_en_scene",
+   "quand": "avant un coup qui compte (charge, finisher), quand le spectateur doit sentir la decision",
+   "contre_indication": "dans une rafale rapide : casse le rythme ; visage sans expression (tete R6 par defaut) : jamais de face en tres gros plan, lire le regard par l'orientation de la tete (profil, cible dans le cadre)"
+  },
+  {
+   "id": "poing_gros_plan",
+   "enonce": "Le poing/bras remplit l'ecran (raccourci, souvent vers la camera) 12-16 f ; pendant la charge, camera collee au bras.",
+   "portee": [
+    "impact",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.8,
+   "poids_note": 0.508,
+   "poids_a_priori": 0.5,
+   "etalon_style": "manga_ultime",
+   "sources": [
+    "corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~9 clips",
+    "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)",
+    "image de Milan 8965d689 (planche OPM) : LE coup de Saitama = poing vers le lecteur, plus gros que la tete ; Umamusume 3D : meme principe en temps reel",
+    "essais v6 vus a l'ecran (captures/verification/2026-09-24-poing-dragon-v6-essais-camera-rejetes.png) : 'poing vers la camera' dans l'axe du coup -> le corps de la victime est TOUJOURS entre l'objectif et le poing (contrechamp par-dessus son epaule : son dos remplit 60 % du cadre) ; le principe vit dans la carte d'impact (silhouette du poing), pas dans la camera 3D",
+    "v6 : applique en 3e CARTE (poing et avant-bras x3,2 qui percent le cadre) apres echec en camera 3D ; au passage, le grand X prevu la faisait doublon avec les planches de l'aerien -> une carte ne se reutilise pas entre deux temps forts d'une meme technique",
+    "vidéos tutos envoyées par Milan (zips 2026-09-24, étude visuelle image par image ; corpus/tutos/rapport_video_*.md) : obari punch : armé tenu 0,9-1,8 s puis le poing fonce vers la caméra en perspective forcée et remplit l'écran en ~8 images ; Nakamura : le poing grossit jusqu'à remplir le cadre, avant-bras en raccourci, entre deux plans très larges (contraste d'échelle)"
+   ],
+   "mesure": "jugement visuel",
+   "categorie": "mise_en_scene",
+   "quand": "charge ou impact du coup principal",
+   "contre_indication": "sur des coups secondaires : dilue ; en 3D quand le coup touche une cible pleine face : l'axe du coup est bouche par la victime -> le mettre dans une carte 2D ou filmer le poing PENDANT la charge, pas au contact"
+  },
+  {
+   "id": "contraste_echelle",
+   "enonce": "Coupes entre perso minuscule (plan tres large) et tres gros plan ; contact en gros plan puis consequence en plan tres lointain.",
+   "portee": [
+    "impact",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.7,
+   "poids_note": 0.645,
+   "poids_a_priori": 0.5,
+   "etalon_style": "manga_ultime",
+   "sources": [
+    "corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~9 clips",
+    "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)",
+    "lot 3 : aafdc91d (victime envoyee en point minuscule dans le ciel, camera de jeu), boxeur (tunnel, le mannequin part au loin)"
+   ],
+   "mesure": "jugement visuel",
+   "categorie": "mise_en_scene",
+   "quand": "pour faire sentir la consequence (le coup envoie loin, detruit)",
+   "contre_indication": "si rien ne se passe a grande echelle, le plan large est vide"
+  },
+  {
+   "id": "fond_remplace",
+   "enonce": "A l'impact, le decor est remplace par des lignes de vitesse, une couleur plate ou un fond flou.",
+   "portee": [
+    "impact",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.508,
+   "poids_a_priori": 0.5,
+   "etalon_style": "manga_ultime",
+   "sources": [
+    "corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~6 clips",
+    "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)",
+    "v6 : a h4, lignes de concentration a la peripherie + voile sombre (le centre reste lisible) ; approximation : le decor n'est pas vraiment remplace derriere les corps (limite ScreenGui Roblox)"
+   ],
+   "mesure": "jugement visuel",
+   "categorie": "mise_en_scene",
+   "quand": "impacts forts de la rafale ou du final, pour isoler le choc",
+   "contre_indication": "en permanence : on perd l'espace"
+  },
+  {
+   "id": "camera_vivante",
+   "enonce": "La camera participe : fouet vers le ciel, rotation/cadre penche, zoom eclair, poussee jusque dans le corps.",
+   "portee": [
+    "impact",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.65,
+   "poids_note": 0.645,
+   "poids_a_priori": 0.5,
+   "etalon_style": "manga_ultime",
+   "sources": [
+    "corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~7 clips",
+    "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)"
+   ],
+   "mesure": "jugement visuel",
+   "categorie": "mise_en_scene",
+   "quand": "quand elle raconte (fouet = envol, penche = desequilibre)",
+   "contre_indication": "bouger sans raison fatigue et brouille la lecture"
+  },
+  {
+   "id": "torsion_tronc",
+   "enonce": "La puissance vient du TRONC qui s'enroule puis se deroule (vu de dos/trois-quarts, 120-150 deg), poses extremes ; garde basse et large normale.",
+   "portee": [
+    "impact",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.65,
+   "poids_note": 0.535,
+   "poids_a_priori": 0.5,
+   "etalon_style": "manga_ultime",
+   "sources": [
+    "corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~7 clips",
+    "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)",
+    "lot 2 : pro vs noob Blender (BACK -> FRONT, ~180 deg), cross punch (dos a la camera a l'armement), tuto firytwig « surtout les hanches » ; MESURE : nous 98-137 deg sur les coups de puissance, M1 pro 109-162 -> la rotation existe, c'est la CAMERA de cote qui l'ecrase (la vue de dessus du 6a0095ed la montre)"
+   ],
+   "mesure": "jugement visuel",
+   "categorie": "mise_en_scene",
+   "quand": "coups de puissance ; la garde reste basse et large",
+   "contre_indication": "coups legers (jab) : rotation courte, sinon tout pese pareil"
+  },
+  {
+   "id": "smear_graphique",
+   "enonce": "Une trainee/smear porte la vitesse ; la trajectoire du coup reste dessinee a l'ecran quelques frames.",
+   "portee": [
+    "impact",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.55,
+   "poids_note": 0.64,
+   "poids_a_priori": 0.5,
+   "etalon_style": "manga_ultime",
+   "sources": [
+    "corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~5 clips",
+    "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)"
+   ],
+   "mesure": "jugement visuel",
+   "categorie": "mise_en_scene",
+   "quand": "vitesse extreme sur 1-4 f",
+   "contre_indication": "trop long ou trop frequent : bouillie"
+  },
+  {
+   "id": "victime_deformee",
+   "enonce": "La victime reagit fort : se plie autour du poing, joue ecrasee, tete qui part.",
+   "portee": [
+    "impact",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.5,
+   "poids_note": 0.64,
+   "poids_a_priori": 0.5,
+   "etalon_style": "manga_ultime",
+   "sources": [
+    "corpus/ETUDE_VISUELLE.md (68 planches regardees image par image, 2026-09-24) : ~4 clips",
+    "refs Roblox de Milan (TSB, Black Flash, IMPACT HAVEN...)"
+   ],
+   "mesure": "jugement visuel",
+   "categorie": "mise_en_scene",
+   "quand": "gros impacts",
+   "contre_indication": "sur tout : plus d'escalade possible"
+  },
+  {
+   "id": "ellipse_impact",
+   "enonce": "On n'a pas besoin de montrer le coup : les cartes, le blanc ou une coupe racontent l'impact, et on revient sur le visage ou la consequence.",
+   "portee": [
+    "impact",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.64,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "sources": [
+    "First time fighting a dummy (lot 2), Serious Punch TSB, OPM (le coup final = un trait dans le noir)"
+   ],
+   "mesure": "jugement visuel",
+   "categorie": "mise_en_scene",
+   "quand": "finisher, coup le plus fort",
+   "contre_indication": "sur les coups ou le spectateur doit comprendre le geste (rafale lisible)"
+  },
+  {
+   "id": "hierarchie_effets",
+   "enonce": "L'effet est proportionnel au coup : petits coups = petites lignes de vitesse 2-3 f ; gros coup = couches successives (etoile au contact 1 f -> anneaux le long du bras 2 f -> croissant de souffle 2-3 f).",
+   "portee": [
+    "impact",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.85,
+   "poids_note": 0.645,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "sources": [
+    "punch practice (lot 2), cross punch (lot 2), refs Black Flash / TSB",
+    "lot 3 : M1 de nuit (449345ad : eclat 1 f + anneau, un peu plus gros sur les coups 3-4), aafdc91d (coup 1 petit, coup 2 gros + rouge + anneaux)",
+    "v6 : tier 1 (eclat 2 f + anneau blanc) lisible en camera cinema, INVISIBLE en camera de jeu de dos : la hierarchie doit etre jugee dans la camera ou le coup sera vu"
+   ],
+   "mesure": "jugement visuel",
+   "categorie": "mise_en_scene",
+   "quand": "toujours : c'est l'escalade",
+   "contre_indication": "jamais le meme effet sur tous les coups"
+  },
+  {
+   "id": "armement_frappe_retour",
+   "enonce": "Chaque coup = armement (intervalles serres pres de l'armement), frappe sans amorti vers la pose, overshoot ou tenue du membre, retour.",
+   "portee": [
+    "impact",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.8,
+   "poids_note": 0.43,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "sources": [
+    "tuto firytwig (lot 2) ; MESURE : nos coups y sont deja (armement->contact 5-10 f, 10-90 % en 2-5 f, extension tenue 8-10 f)"
+   ],
+   "mesure": "perception (a brancher)",
+   "categorie": "animation",
+   "quand": "tous les coups",
+   "contre_indication": "-"
+  },
+  {
+   "id": "mouvement_secondaire",
+   "enonce": "Ce qui pend suit en retard et se stabilise apres (queue, oreilles, cheveux, vetements) : ca vend le poids et la vitesse.",
+   "portee": [
+    "impact",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "sources": [
+    "cross punch (queue/oreilles), First time fighting a dummy (cheveux), Umamusume/Castlevania"
+   ],
+   "mesure": "jugement visuel",
+   "categorie": "animation",
+   "quand": "le perso a des elements souples",
+   "contre_indication": "R6 nu sans accessoire : rien a faire suivre"
+  },
+  {
+   "id": "camera_jeu_vs_cinematique",
+   "enonce": "En jeu, M1 et competences se jouent dans la camera du JOUEUR (souvent de dos) et doivent s'y lire ; seul l'ultime coupe en cinematique (cartes, gros plans, angles) puis REVIENT a la camera de jeu.",
+   "portee": [
+    "impact",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.8,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "sources": [
+    "lot 3 : boxeur (jeu de dos -> blanc -> cinematique -> retour de dos), gatling, M1 de nuit, Mythra (camera fixe) ; Serious Punch TSB",
+    "mode Jeu du lecteur v6, shift-lock Roblox (decalage 1,75 stud a droite, FOV 70) : la victime est CACHEE derriere l'attaquant pendant presque toute la rafale ; l'eclat de base (tier 1) est masque par son corps. Question ouverte : en camera de jeu, la lecture d'un M1 vient d'effets qui DEBORDENT la silhouette et d'une reaction qui SORT du masque (captures/verification/2026-09-24-poing-dragon-v6-camera-de-jeu-shift-lock.png)",
+    "note v6 (7/10) : Milan trouve que la technique « rend assez bien en camera jeu » ; la cinematique v6 « peut-etre un peu trop abusee, mais leger »"
+   ],
+   "mesure": "jugement visuel",
+   "categorie": "mise_en_scene",
+   "quand": "decision Milan (v6) : au cas par cas selon la technique, jeu, cinematique ou un melange des deux ; a choisir technique par technique",
+   "contre_indication": "donner une cinematique a un coup ordinaire ; animer un coup qui ne se lit que de profil"
+  },
+  {
+   "id": "rafale_en_masse",
+   "enonce": "Une rafale tres rapide se montre comme une MASSE de poings-smears continue (on lit le rythme et le volume), pas coup par coup.",
+   "portee": [
+    "impact",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "sources": [
+    "lot 3 : gatling (a0341700), boxeur (series de coups en trainees), refs One Piece Gear 5"
+   ],
+   "mesure": "jugement visuel",
+   "categorie": "mise_en_scene",
+   "quand": "rafale « ultime » tres rapide (> 6 coups/s)",
+   "contre_indication": "rafale courte de coups distincts (jab, direct, crochet) : la on doit lire chaque forme"
+  },
+  {
+   "id": "trace_persistante",
+   "enonce": "L'impact laisse une trace qui reste : tache ou cratere au sol, anneau qui se dissipe, fumee ; et on TIENT sur la consequence (~1 s).",
+   "portee": [
+    "impact",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.7,
+   "poids_note": 0.64,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "sources": [
+    "lot 3 : Mythra (tache au sol, tenue 1,1 s), boxeur (anneau qui se dissipe), aafdc91d ; notre aerien (cratere, fumee) le fait deja"
+   ],
+   "mesure": "jugement visuel",
+   "categorie": "mise_en_scene",
+   "quand": "coups qui touchent le sol, finisher",
+   "contre_indication": "coups legers : rien ne doit rester"
+  },
+  {
+   "id": "contact_prolonge",
+   "enonce": "Une saisie ou une projection garde les corps en contact (on soulève, on retourne, on plaque) : la victime est manipulee, pas seulement frappee.",
+   "portee": [
+    "impact",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.5,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "sources": [
+    "lot 3 : Mythra (saisie -> soulevement -> lutte -> projection)"
+   ],
+   "mesure": "jugement visuel",
+   "categorie": "mise_en_scene",
+   "quand": "prises, projections",
+   "contre_indication": "coups de poing a distance"
+  },
+  {
+   "id": "structure_en_actes",
+   "enonce": "Un ultime se construit en actes : jeu (petits effets) -> signature visuelle de la technique -> cinematique (cartes, blanc, monde qui disparait) -> consequence TENUE (souvent au ralenti) -> retour au calme / a la camera de jeu.",
+   "portee": [
+    "finisher",
+    "impact"
+   ],
+   "confiance_principe": 0.75,
+   "poids_note": 0.64,
+   "poids_a_priori": 0.5,
+   "etalon_style": "manga_ultime",
+   "sources": [
+    "lot 4 revu en entier : Black Flash (jeu 2,2 s -> cinematique 2,6 s -> ralenti 1,4 s), Rewind Clock (signature horloge 1 s, monde blanc 2 s, radios 1,2 s, retour), Black Hole (calme -> anticipation -> geste -> trou noir 3 s -> noir 1 s -> calme)"
+   ],
+   "mesure": "jugement visuel",
+   "categorie": "mise_en_scene",
+   "quand": "ultimes / techniques completes",
+   "contre_indication": "coups isoles (M1, S1) : un seul acte"
+  },
+  {
+   "id": "signature_visuelle",
+   "enonce": "Chaque technique a un motif qui lui appartient (horloge, trou noir, eclair rouge) montre AVANT ou pendant : on sait ce qui arrive et on la reconnait.",
+   "portee": [
+    "finisher",
+    "impact"
+   ],
+   "confiance_principe": 0.65,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "manga_ultime",
+   "sources": [
+    "Rewind Clock (anneau d'horloge tenu 1 s), Black Hole (disque dore), Black Flash (eclairs rouges/noirs)"
+   ],
+   "mesure": "jugement visuel",
+   "categorie": "mise_en_scene",
+   "quand": "ultimes, competences signees",
+   "contre_indication": "effets generiques qui pourraient appartenir a n'importe quelle technique"
+  },
+  {
+   "id": "ralenti_consequence",
+   "enonce": "Apres le pic, on tient la consequence au ralenti ou en plan fixe (1-2 s) : c'est la derniere note.",
+   "portee": [
+    "finisher",
+    "impact"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.64,
+   "poids_a_priori": 0.5,
+   "etalon_style": "manga_ultime",
+   "sources": [
+    "Black Flash (ralenti 1,4 s sur la victime), Mythra (1,1 s), Stagnant Rage (fumee 2,5 s)"
+   ],
+   "mesure": "jugement visuel",
+   "categorie": "mise_en_scene",
+   "quand": "finisher",
+   "contre_indication": "coups de rafale : casserait le rythme"
+  },
+  {
+   "id": "ligne_epaules",
+   "enonce": "Coup droit : a l'extension, le bras qui frappe PROLONGE la ligne des epaules (torse tourne presque de profil) ; pied arriere, torse et bras forment une seule droite. C'est « l'epaule dans le coup ».",
+   "portee": [
+    "coup_droit",
+    "finisher"
+   ],
+   "confiance_principe": 0.55,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "pack_m1",
+   "categorie": "pose",
+   "mesure": "perception: pose_impact (bras_epaules_deg, torse_detourne_deg) contre M1 pro",
+   "sources": [
+    "corpus/TUTOS_ANIMATION.md (recherche 2026-09-24 : DevForum Roblox, 31 sources ; ArcSys GGXrd 4Gamer, Cartwright GDC 2014, Mattesi FORCE ; extraits sakugabooru mesures)",
+    "pack pro battleground (4 M1) : bras/epaules 18-28 deg, torse detourne 67-75 deg au contact ; NOUS v6 : 46-72 et 32-48 (captures/verification/2026-09-24-cerveau-ligne-epaules-pro-vs-nous.png)",
+    "Motomura (ArcSys) : mettre ou non l'epaule dans le coup change « j'ai mis de la force » / « j'ai frappe leger »",
+    "Mattesi FORCE : extension = une seule droite du pied arriere au poing",
+    "DevForum Shift4D : tourner le torse encore plus",
+    "animations TSB officielles (fichier fourni par Milan, 13 animations ; mesures derivees dans corpus/perception_tsb.json) : les M1 TSB NE le font PAS (bras/epaules 61-78 deg, torse detourne 23-62 deg, bras libre 0,26-0,79) -- plus proches de nous que du pack. Regle ramenee a une hypothese de style « pack », pas une regle TSB.",
+    "vidéos tutos envoyées par Milan (zips 2026-09-24, étude visuelle image par image ; corpus/tutos/rapport_video_*.md) : tuto punch Blender : au contact le torse a pivoté ~180° depuis la charge (on voit son dos), penché ~45°, bras de frappe horizontal dans l'axe de l'épaule ET translaté vers l'avant (décollé), bras libre replié contre la tête, jambe arrière tendue presque couchée ; coup de boxe (smears, vidéo techniques anime) : épaule entièrement rentrée, tête qui plonge"
+   ],
+   "quand": "coup chargé, compétence, finisher (le coup qui compte)",
+   "contre_indication": "M1 : les vrais M1 TSB ne la suivent pas (bras/épaules 61-78°, ETUDE_TSB.md) ; la réserver aux coups qui pèsent"
+  },
+  {
+   "id": "bras_libre_ramene",
+   "enonce": "Au contact, le bras qui ne frappe pas est RAMENE (contre la poitrine ou tire en arriere, en opposition), jamais tendu vers l'avant avec l'autre.",
+   "portee": [
+    "coup_droit",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.4,
+   "poids_note": 0.535,
+   "poids_a_priori": 0.5,
+   "etalon_style": "pack_m1",
+   "categorie": "pose",
+   "mesure": "perception: pose_impact (bras_libre) contre M1 pro",
+   "sources": [
+    "corpus/TUTOS_ANIMATION.md (recherche 2026-09-24 : DevForum Roblox, 31 sources ; ArcSys GGXrd 4Gamer, Cartwright GDC 2014, Mattesi FORCE ; extraits sakugabooru mesures)",
+    "pack pro (4 M1) : produit scalaire des deux bras -0,1 a 0,3 ; NOUS v6 : 0,9 (les deux bras tendus vers l'avant)",
+    "anime (Deku, MHA) : bras opposes sur une meme ligne au contact",
+    "DevForum TrulySmoosh : le bras libre garde la tete ou charge le coup suivant",
+    "animations TSB officielles (fichier fourni par Milan, 13 animations ; mesures derivees dans corpus/perception_tsb.json) : les M1 TSB NE le font PAS (bras/epaules 61-78 deg, torse detourne 23-62 deg, bras libre 0,26-0,79) -- plus proches de nous que du pack. Regle ramenee a une hypothese de style « pack », pas une regle TSB."
+   ],
+   "quand": "toute pose de contact",
+   "contre_indication": "coup a deux mains ; garde volontairement ouverte (provocation) ; M1 style TSB (la cible de Milan) : non observe dans les vrais M1 TSB"
+  },
+  {
+   "id": "bras_avant_bras",
+   "enonce": "Le bras R6 entier joue l'AVANT-BRAS humain : on le translate (on accepte de decoller l'epaule du torse) pour que le poing suive le trajet d'un vrai poing.",
+   "portee": [
+    "coup_droit",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.7,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "categorie": "pose",
+   "mesure": "perception: pose_impact (translation_bras) contre M1 pro",
+   "sources": [
+    "corpus/TUTOS_ANIMATION.md (recherche 2026-09-24 : DevForum Roblox, 31 sources ; ArcSys GGXrd 4Gamer, Cartwright GDC 2014, Mattesi FORCE ; extraits sakugabooru mesures)",
+    "DevForum fungi3432 (fil S2) : « move the whole arm according to the position of a real person's forearm… accept disconnecting the shoulder »",
+    "pack pro : translation d'epaule AU CONTACT 0,58-0,92 stud (NOUS 0,96 : pas d'ecart au contact) ; mediane sur tout le clip 1,25-1,6 car la GARDE pro tient les bras translates devant (Block Idle 1,15) -- l'ecart eventuel est dans la garde et l'armement, pas au contact",
+    "ArcSys : le scale d'os est impossible en R6, la translation est le substitut"
+   ],
+   "quand": "poses ou la reference a un coude plie (garde, crochet, armement) et extension d'un coup droit",
+   "contre_indication": "poses TENUES vues en jeu : un membre loin du torse parait tombe -> l'orienter vers l'epaule (DevForum AvailableFunds, catlinn64)"
+  },
+  {
+   "id": "compression_extension",
+   "enonce": "Anticipation = COMPRESSION en C (corps enroule et bas, tete rentree derriere l'epaule, poing arme derriere le plan du corps) ; extension = une droite hors d'equilibre. Le coup anime montre deux poses extremes, le trajet passe en 1-2 f. Nuance (tutos R6) : sur un bloc R6, la compression se lit surtout par la TORSION du torse détourné de la cible, plus que par un dos rond.",
+   "portee": [
+    "coup_droit",
+    "finisher"
+   ],
+   "confiance_principe": 0.7,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "manga_ultime",
+   "categorie": "pose",
+   "mesure": "jugement visuel",
+   "sources": [
+    "corpus/TUTOS_ANIMATION.md (recherche 2026-09-24 : DevForum Roblox, 31 sources ; ArcSys GGXrd 4Gamer, Cartwright GDC 2014, Mattesi FORCE ; extraits sakugabooru mesures)",
+    "JJK #19 (sakugabooru, mesure image par image) : poing arme a la hanche puis corps ramasse, tete rentree, en 3",
+    "Cartwright : anticipation, smear, pose principale, retour ; meme 1 image d'anticipation suffit",
+    "vidéos tutos envoyées par Milan (zips 2026-09-24, étude visuelle image par image ; corpus/tutos/rapport_video_*.md) : tuto punch Blender (rig R6) : la charge est comprimée et ASYMÉTRIQUE, mais le moteur est la TORSION du torse (~90° à l'opposé de la cible, bras avant tendu, bras arrière armé haut, grand écart), pas un dos rond visible ; uppercut Moon Animator : départ accroupi, torse de profil",
+    "vidéos tutos envoyées par Milan (zips 2026-09-24) : vlog DeHapy, critique de l'animateur Xoaterz (planche ✗/✓ lisible, 2023 ; corpus/tutos/rapport_video_critique_poses.md) : ✗ « perma crouched position / disjointed legs » (accroupi tenu, genoux écartés) : la compression doit être brève et asymétrique, pas un accroupi tenu"
+   ],
+   "quand": "coup qui compte (charge, finisher, fin de combo)",
+   "contre_indication": "M1 rapides en jeu (la compression longue ralentit le gameplay)"
+  },
+  {
+   "id": "depassement_1f",
+   "enonce": "Une image de DEPASSEMENT au-dela de la pose d'extension (ou du corps hors de sa pose finale dans le sens du coup), puis retour : l'arret n'est jamais mort.",
+   "portee": [
+    "coup_droit",
+    "finisher",
+    "rafale"
+   ],
+   "confiance_principe": 0.7,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "categorie": "animation",
+   "mesure": "jugement visuel",
+   "sources": [
+    "corpus/TUTOS_ANIMATION.md (recherche 2026-09-24 : DevForum Roblox, 31 sources ; ArcSys GGXrd 4Gamer, Cartwright GDC 2014, Mattesi FORCE ; extraits sakugabooru mesures)",
+    "Cartwright GDC 2014 : « one frame of an attack overshooting its final key frame helps give it impact »",
+    "DevForum vipkute0057 : une frame hors de la position finale dans le sens du mouvement",
+    "DevForum Bovious, LucensCat : mains qui s'arretent comme si elles perdaient leur elan = robotique"
+   ],
+   "quand": "extension de chaque coup",
+   "contre_indication": "pose tenue sous hitstop (le depassement vient apres le gel)"
+  },
+  {
+   "id": "recuperation_effort",
+   "enonce": "Apres un gros coup, la recuperation montre l'EFFORT (recul, reprise d'appui, poids) ; le retour a la garde est lent et ne ressemble pas a un second coup.",
+   "portee": [
+    "finisher",
+    "coup_droit"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "categorie": "animation",
+   "mesure": "jugement visuel",
+   "sources": [
+    "corpus/TUTOS_ANIMATION.md (recherche 2026-09-24 : DevForum Roblox, 31 sources ; ArcSys GGXrd 4Gamer, Cartwright GDC 2014, Mattesi FORCE ; extraits sakugabooru mesures)",
+    "DevForum realknife : il recupere comme s'il avait utilise le moins de force possible",
+    "DevForum Dyzody : retour a la garde qui ressemble a un deuxieme coup"
+   ],
+   "quand": "apres un coup lourd ou un finisher",
+   "contre_indication": "entre deux M1 enchaines (le temps mort casse le combo)"
+  },
+  {
+   "id": "poses_tenues_limitees",
+   "enonce": "Animation LIMITEE : sur les attaques, poses tenues de durees irregulieres (1 a 5 f a 60 i/s) sans interpolation ; seules les trajectoires (saut, vol, dash) restent lisses.",
+   "portee": [
+    "impact",
+    "finisher"
+   ],
+   "confiance_principe": 0.5,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "manga_ultime",
+   "categorie": "animation",
+   "mesure": "jugement visuel",
+   "sources": [
+    "corpus/TUTOS_ANIMATION.md (recherche 2026-09-24 : DevForum Roblox, 31 sources ; ArcSys GGXrd 4Gamer, Cartwright GDC 2014, Mattesi FORCE ; extraits sakugabooru mesures)",
+    "ArcSys GGXrd (4Gamer) : « we don't rely on interpolation », durees par pose « 2F, 3F, 5F, 1F… » ; lisser puis sauter des images = « 3D qui rame »",
+    "Roblox : easing Constant par pose (Enum.PoseEasingStyle.Constant = 1)",
+    "vidéos tutos envoyées par Milan (zips 2026-09-24, étude visuelle image par image ; corpus/tutos/rapport_video_*.md) : uppercut Moon Animator : la tenue n'est JAMAIS figée (wiggle en petits cercles qui ralentissent, ~0,7 s) ; techniques anime : timing 'en 4' = 3-5 images par dessin pendant l'action, 8-10+ sur les poses clés"
+   ],
+   "quand": "a essayer en A/B sur un temps fort, jamais partout d'emblee",
+   "contre_indication": "Milan juge le rythme bon (v6) : ne pas casser ce qui marche sans A/B ; jamais sur la locomotion ni les trajectoires ; tenue longue en jeu : une pose figée lit comme un bug sur R6, la faire vivre (voir tenue_vivante)"
+  },
+  {
+   "id": "frappe_lineaire",
+   "enonce": "Le poing PASSE a pleine vitesse en 1 image et file en palier (vitesse constante 2-3 images) jusqu'au contact : cles eparses (~15/s) en Linear. Pas de rampe d'acceleration lissee en triangle.",
+   "portee": [
+    "coup_leger",
+    "coup_droit",
+    "finisher"
+   ],
+   "confiance_principe": 0.55,
+   "poids_note": 0.535,
+   "poids_a_priori": 0.5,
+   "etalon_style": "tsb_m1",
+   "categorie": "animation",
+   "mesure": "perception: profil_frappe (plateau) contre TSB M1-M4",
+   "sources": [
+    "animations TSB officielles (fichier fourni par Milan, 13 animations ; mesures derivees dans corpus/perception_tsb.json) : 3 425 poses sur 3 492 en Linear, 12-18 cles/s sur toutes les animations faites a la main (une pose ~toutes les 4 f a 60 i/s) ; M1 : 8 cles en 0,43 s ; plateau de vitesse du poing 0,92-1,0 (NOUS v1-v6 : 0,51-0,77 : rampe en triangle sur 2-3 images, pointe unique) ; captures/verification/2026-09-24-cerveau-profil-frappe-tsb-vs-nous.png",
+    "GGXrd (ArcSys) : 15 poses/s ; « lisser a 60 i/s puis sauter des images = 3D qui rame » ; l'oeil repere la 3D a la fluidite uniforme des courbes",
+    "DevForum GolgiToad : moins de cles, laisser le moteur aller de A a B, rapprocher les cles, c'est un coup",
+    "A/B sur notre coup charge (2026-09-24) : cles eparses -> plateau 0,51->0,79 mais difference PRESQUE INVISIBLE a l'ecran (nos cles de depart deja a 2 f d'ecart) ; la mesure decrit TSB, elle ne suffit pas a elle seule a changer la lecture : le levier est la pose",
+    "vidéos tutos envoyées par Milan (zips 2026-09-24, étude visuelle image par image ; corpus/tutos/rapport_video_*.md) : uppercut Moon Animator : Linear, clés toutes les 5 f à 60 i/s, la clé du milieu rapprochée à 2-3 f pour le 'snap' (intervalles 5,5,2,3,5…) ; toutes les pistes ont leurs clés AUX MÊMES images (l'overlap est dans les poses, pas dans un décalage de clés) ; tuto punch Blender : frappe en 2 images (60→62) avec une clé intermédiaire sur le seul bras qui frappe ; espacements très irréguliers (20,10,30,1,1,1,3,24), pas un ~4 uniforme"
+   ],
+   "quand": "coups (M1, competences) : poses cles choisies a la main, ~toutes les 3-5 f, Linear entre elles",
+   "contre_indication": "trajectoires du corps entier (saut, vol, dash) qui restent lisses ; nos exports cuits image par image depuis des courbes Bezier produisent la cloche -> il faut exporter les poses cles, pas le bake"
+  },
+  {
+   "id": "bascule_competence",
+   "enonce": "Sur une competence ou un finisher, le corps entier BASCULE fort (torse penche 45-100 deg : plongeon, vrille, fente couchee) ; seuls les M1 et l'ultime cinematique restent droits.",
+   "portee": [
+    "finisher",
+    "impact"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "tsb_m1",
+   "categorie": "pose",
+   "mesure": "perception: bascule du torse p90 autour du coup final contre competences TSB",
+   "sources": [
+    "animations TSB officielles (fichier fourni par Milan, 13 animations ; mesures derivees dans corpus/perception_tsb.json) : bascule du torse p90 Collateral Ruin 70, Swift Sweep 97, WallCombo 50, Swift Sweep (Fail) 44, M4 32, Stoic Bomb 32 (max 158, plongeon) ; Ultimate1 7 (sobre, la mise en scene fait le travail) ; NOUS : rafale 17, charge + coup 35, aerien 69",
+    "vidéos tutos envoyées par Milan (zips 2026-09-24) : vlog DeHapy, critique de l'animateur Xoaterz (planche ✗/✓ lisible, 2023 ; corpus/tutos/rapport_video_critique_poses.md) : repose en direct : torse basculé ~40-60° et tourné, bras en diagonale avant/arrière, jambe d'appui tendue + genou levé ou fente large ; ✓ planche « akin to The Serious Punch (TSB) »"
+   ],
+   "quand": "competences et finishers au sol",
+   "contre_indication": "M1 (rester lisible et enchainable) ; ultime cinematique ou la camera et les VFX portent (Ultimate1 TSB : 7 deg) ; ne pas confondre avec s'accroupir (retour Milan v1-v2)"
+  },
+  {
+   "id": "tenue_vivante",
+   "enonce": "Une pose tenue (fin de coup, pic, retour) n'est jamais figée : micro-mouvement en petits cercles d'amplitude et de vitesse décroissantes (l'énergie s'amortit), clés aux mêmes images que le reste.",
+   "portee": [
+    "finisher",
+    "coup_droit"
+   ],
+   "confiance_principe": 0.55,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "roblox_smooth",
+   "categorie": "animation",
+   "mesure": "jugement visuel",
+   "sources": [
+    "vidéos tutos envoyées par Milan (zips 2026-09-24, étude visuelle image par image ; corpus/tutos/rapport_video_*.md) : uppercut Moon Animator ('wiggle' : 'SMALL circles', 'keep getting slower' ; ~0,2 s d'action puis ~0,7 s de tenue vivante)",
+    "techniques anime : pic tenu animé en 2-3 avec tremblement (JJK, OPM, MHA, déjà dans TUTOS_ANIMATION §4)",
+    "v7 : appliquee a la charge (f126-144, oscillations du poing qui s'amortissent) ; entre en conflit avec la mesure de coup_charge (tenue = torse fige)"
+   ],
+   "quand": "tenue de fin de coup ou de pose de pic en caméra de jeu",
+   "contre_indication": "hitstop (AdjustSpeed(0)) et images d'impact : là, le gel EST le signal ; ne pas en faire un tremblement uniforme perpétuel"
+  },
+  {
+   "id": "torsion_charge_contact",
+   "enonce": "Sur un coup qui compte, le torse fait une TRÈS grande rotation entre la charge et le contact (90 à 180° de lacet) : détourné de la cible à la charge, engagé au-delà du face-à-face au contact.",
+   "portee": [
+    "coup_droit",
+    "finisher"
+   ],
+   "confiance_principe": 0.5,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "roblox_smooth",
+   "categorie": "pose",
+   "mesure": "perception.torsion (lacet du torse charge -> contact), seuil 90° (tutos R6, principe)",
+   "sources": [
+    "vidéos tutos envoyées par Milan (zips 2026-09-24, étude visuelle image par image ; corpus/tutos/rapport_video_*.md) : tuto punch Blender (~90° détourné à la charge, ~180° de pivot au contact) ; uppercut Moon Animator (torse de profil ~90° au départ) ; boxe (smears) : épaule rentrée",
+    "NOUS v6 MESURÉ (perception.torsion) : 130° de la charge (lacet -85°) au contact (+45°) -> déjà vrai ; mon jugement à l'œil disait faux. Ce qui manque au contact v6 est ailleurs : bascule 20° (compétences TSB >= 44) et bras libre tendu vers l'avant avec l'autre (écart entre les bras 28°)"
+   ],
+   "quand": "coup chargé, compétence, finisher",
+   "contre_indication": "M1 enchaînés (lisibilité et vitesse d'enchaînement) ; ne pas tourner la face du personnage hors caméra au moment où le visage doit se lire"
+  },
+  {
+   "id": "arme_tenu_long",
+   "enonce": "L'armé d'un gros coup est TENU (0,9-1,8 s en anime) puis relâché d'un coup (hold and release) : plus la tenue est longue, plus le lâcher paraît rapide.",
+   "portee": [
+    "finisher"
+   ],
+   "confiance_principe": 0.55,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "manga_ultime",
+   "categorie": "rythme",
+   "mesure": "fiche : durée de la tenue avant la frappe",
+   "sources": [
+    "vidéos tutos envoyées par Milan (zips 2026-09-24, étude visuelle image par image ; corpus/tutos/rapport_video_*.md) : techniques anime (obari : armé tenu 0,9-1,8 s ; script à l'écran : 'emphasize on the hold and release') ; tuto punch Blender : charge tenue en mouvement 30→60 f puis frappe en 2 f",
+    "vidéos tutos envoyées par Milan (zips 2026-09-24) : vlog DeHapy, critique de l'animateur Xoaterz (planche ✗/✓ lisible, 2023 ; corpus/tutos/rapport_video_critique_poses.md) : extraits de pros : pose tenue ~8-10 images puis coup en 3-4 images à 30 i/s (Thundey)"
+   ],
+   "quand": "finisher, coup chargé, ultime",
+   "contre_indication": "M1 et rafale (le rythme doit rester serré) ; Milan juge notre rythme bon : ne pas rallonger sans A/B"
+  },
+  {
+   "id": "silhouette_non_croix",
+   "enonce": "Une pose forte n'est JAMAIS une croix de face (torse vertical et face caméra, deux bras à l'horizontale de chaque côté) : ça « ressemble à un bonhomme bâton ». La bonne pose se distingue par la ROTATION du torse (3/4 ou profil), un bras armé derrière l'épaule et l'autre en diagonale, un genou levé ou une fente, une silhouette compacte.",
+   "portee": [
+    "coup_droit",
+    "finisher",
+    "impact"
+   ],
+   "confiance_principe": 0.4,
+   "poids_note": 0.535,
+   "poids_a_priori": 0.5,
+   "etalon_style": "roblox_smooth",
+   "categorie": "pose",
+   "mesure": "perception.silhouette (croix = torse < 10° + deux bras horizontaux < 0,35 + écartés > 0,5) sur la charge du coup final ; étalon TSB attaquant : 0 % des images (max 0,2 %)",
+   "sources": [
+    "vidéos tutos envoyées par Milan (zips 2026-09-24) : vlog DeHapy, critique de l'animateur Xoaterz (planche ✗/✓ lisible, 2023 ; corpus/tutos/rapport_video_critique_poses.md) : ✗ « boring sameside posing / looks like a stickman » = bras tendus à l'horizontale, torse vertical de face ; ✓ « is interesting / doesn't look like a stickman / akin to The Serious Punch » = torse 3/4 penché, bras armé derrière, genou levé",
+    "NOUS v6 MESURÉ : 93 % des images de la charge (f118-146) en croix ; TSB attaquant 0 % sur 13 animations (Stoic Bomb : bras CROISÉS devant, pas une croix, faux positif corrigé) ; la charge v6 est la croix ✗ (experiments/r6_poing_dragon/FICHE_V7.md, captures/verification/2026-09-24-croquis-v7-charge-contact-vs-v6.png)",
+    "tuto punch Blender : charge asymétrique torse détourné ~90°",
+    "étude COMPLÈTE des 4 vidéos longues (2026-09-25, vidéos entières à 1 img/s, tous textes lus ; corpus/tutos/etude_complete_*.md) : CONTRE-EXEMPLE : obari punch de Sakura : l'armé d'un coup chargé EST une croix de face bras écartés, et ça marche, parce qu'il est tenu, sur fond radial, caméra qui avance, puis poing dans l'objectif. La planche de Xoaterz vise une pose posée seule en plan moyen."
+   ],
+   "quand": "toute pose clé tenue ou lue (charge, pic, pose de fin)",
+   "contre_indication": "pose volontairement frontale et symétrique de mise en scène (garde du boss face caméra, ultime 'aura'), assumée comme telle et brève ; armé d'un coup chargé mis en scène (tenue + fond radial + caméra qui avance + poing vers l'objectif ensuite) : la croix y fonctionne (obari punch)"
+  },
+  {
+   "id": "ligne_equilibre",
+   "enonce": "Sur une pose hors d'équilibre, la tête reste au-dessus du pied d'appui (ligne verticale tête → pied) : le corps peut basculer fort sans avoir l'air de tomber, et la pose paraît lourde.",
+   "portee": [
+    "coup_droit",
+    "finisher"
+   ],
+   "confiance_principe": 0.5,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "roblox_smooth",
+   "categorie": "pose",
+   "mesure": "mesurable : écart horizontal tête / pied d'appui sur les poses tenues",
+   "sources": [
+    "vidéos tutos envoyées par Milan (zips 2026-09-24) : vlog DeHapy, critique de l'animateur Xoaterz (planche ✗/✓ lisible, 2023 ; corpus/tutos/rapport_video_critique_poses.md) : schéma tête → pied d'appui tracé en rouge sur une pose coup de pied (515-519 s, texte partiel « …ke something look heavy »)"
+   ],
+   "quand": "poses tenues ou lues au sol (charge, contact tenu, fin)",
+   "contre_indication": "image de passage de 1-2 f (extension jetée, plongeon) où le déséquilibre EST le message ; poses aériennes"
+  },
+  {
+   "id": "corps_avant_bras",
+   "enonce": "Ordre de travail : le TORSE porte tout le mouvement (anticipation, drag, milieu, exagération, amorti) et doit se lire SEUL, avant qu'un bras bouge ; puis bras libre, bras qui frappe, tête, jambes en dernier (pieds plantés).",
+   "portee": [
+    "coup_droit",
+    "finisher",
+    "coup_leger"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "roblox_smooth",
+   "categorie": "methode",
+   "mesure": "jugement : rejouer le torse seul (bras et jambes figés) ; lit-il le coup ?",
+   "sources": [
+    "étude COMPLÈTE des 4 vidéos longues (2026-09-25, vidéos entières à 1 img/s, tous textes lus ; corpus/tutos/etude_complete_*.md) : tuto uppercut 256-301 s (« If you followed the steps your animation should look like this » : résultat SANS bras, puis « Now lets animate the arms ») ; NOUS : dragon_clip part de la cible du POING (IK, fitp) et place le corps après : le corps n'a pas sa propre courbe",
+    "reproduction des tutos avec outils/moon.py (repro/README.md, 2026-09-25) : la passe torse seul de l'uppercut reproduit se lit déjà comme le coup"
+   ],
+   "quand": "tout coup qui doit avoir du poids",
+   "contre_indication": "gestes de bras isolés (garde qui respire, signe de main)"
+  },
+  {
+   "id": "pose_apres_tenue",
+   "enonce": "La pose d'APRÈS le coup est la plus extrême et la plus longue : corps plié / couché dans le sens du coup, très bas, tenue 0,4-1 s (vivante). L'extension elle-même ne dure qu'1-2 images : l'œil lit charge tenue → pose d'après tenue.",
+   "portee": [
+    "coup_droit",
+    "finisher"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "roblox_smooth",
+   "categorie": "pose",
+   "mesure": "durée de la pose d'après (poing hors du contact, corps encore plié) ; bascule du torse dans cette pose",
+   "sources": [
+    "étude COMPLÈTE des 4 vidéos longues (2026-09-25, vidéos entières à 1 img/s, tous textes lus ; corpus/tutos/etude_complete_*.md) : tuto punch Blender (extension 1 image vidéo, pose d'après pliée tenue 0,43 s) ; tuto uppercut (action 0,17 s, pose finale très basse/large tenue ~1 s) ; Xoaterz (pose d'après pliée ~70-90°, tenue 0,6 s en plan serré)",
+    "NOUS v7 : l'extension f150 est tenue 0,43 s (hitstop + cartes) et la pose d'après dure 0,13 s avant l'envol : l'inverse"
+   ],
+   "quand": "coup chargé, finisher, coup qui ferme une rafale",
+   "contre_indication": "M1 enchaînés ; coup aérien qui s'enchaîne directement"
+  },
+  {
+   "id": "cadrage_serre",
+   "enonce": "Placement : pendant un temps fort, le perso REMPLIT le cadre (plan poitrine/taille, 60-80 % de la hauteur), caméra basse, souvent inclinée (dutch) ; le décor n'est qu'un fond. Un changement de pose qui ne couvre que 1/4 de l'image ne se voit pas.",
+   "portee": [
+    "finisher",
+    "impact",
+    "coup_droit"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "roblox_smooth",
+   "categorie": "mise_en_scene",
+   "mesure": "fraction de la hauteur du cadre occupée par l'attaquant au temps fort (capture du lecteur)",
+   "sources": [
+    "étude COMPLÈTE des 4 vidéos longues (2026-09-25, vidéos entières à 1 img/s, tous textes lus ; corpus/tutos/etude_complete_*.md) : extraits pros Xoaterz / CrashMagician / Thundey (DeHapy 180-193 s) ; échelle LEVEL 1/8/99 (DeHapy 845-880 s) : ce qui monte = amplitude + proximité caméra + effet",
+    "Milan sur la v7 : « je vois aucun changement », « placement différent »"
+   ],
+   "quand": "charge, coup chargé, pose d'après",
+   "contre_indication": "plan de conséquence (très large, contraste d'échelle) ; caméra de jeu (distance imposée)"
+  },
+  {
+   "id": "obari_poing_objectif",
+   "enonce": "Coup chargé façon Saitama/obari : 1) armé TENU 1-2 s (léger tremblement, fond uni + lignes radiales, caméra qui avance), 2) le poing traverse VERS l'objectif et remplit 40-60 % du cadre (perspective forcée, grand angle), 3) coupe sur le plan large de la conséquence.",
+   "portee": [
+    "finisher"
+   ],
+   "confiance_principe": 0.65,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "manga_ultime",
+   "categorie": "mise_en_scene",
+   "mesure": "fiche : durée de tenue, part du cadre couverte par le poing, coupe vers plan large",
+   "sources": [
+    "étude COMPLÈTE des 4 vidéos longues (2026-09-25, vidéos entières à 1 img/s, tous textes lus ; corpus/tutos/etude_complete_*.md) : obari punch (Sakura : armé en croix tenu 0,7 s, poing 40 % du cadre à 1,5 s, coupe plan large ; Iczer : armé tenu ~2 s, poing plus gros que le buste, puis vers la caméra 50 % du cadre)",
+    "images de Milan (2026-09-25) : Deku poing vers le lecteur ; poing géant au 1er plan, perso petit derrière ; « c'est vraiment le coup chargé de Saitama »",
+    "reproduction des tutos avec outils/moon.py (repro/README.md, 2026-09-25) : essai Saitama : poing à 0,86 stud, ~55 % du cadre, par la seule perspective (corps qui plonge + bras déboîté + FOV 85°)"
+   ],
+   "quand": "LE coup final d'une technique (un seul par technique)",
+   "contre_indication": "rafale, M1 ; coup où la victime serait entre l'objectif et le poing (au sol v6) : se placer du point de vue de la victime"
+  },
+  {
+   "id": "pose_pour_sa_camera",
+   "enonce": "Une pose se conçoit et se juge DEPUIS la caméra du plan où elle apparaît ; un membre pointé vers l'objectif cache la silhouette (sauf celui qui porte le coup). Si deux plans ont des besoins opposés (charge lisible / poing vers l'objectif), on COUPE entre deux caméras.",
+   "portee": [
+    "finisher",
+    "impact",
+    "coup_droit"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "categorie": "mise_en_scene",
+   "mesure": "jugement : rendu de la pose depuis la caméra du plan, à la taille du plan",
+   "sources": [
+    "reproduction des tutos avec outils/moon.py (repro/README.md, 2026-09-25) : charge Saitama illisible depuis le point de vue du coup (tas de blocs, genou vers l'objectif), lisible depuis une caméra 3/4 basse ; obari punch : coupe charge → poing",
+    "v7 : pose vérifiée sur planche 3 vues, jamais dans le cadrage réel → « je vois aucun changement »"
+   ],
+   "quand": "toute pose clé tenue",
+   "contre_indication": "caméra de jeu (le joueur ne choisit pas l'angle : la pose doit alors se lire de dos-épaule)"
+  },
+  {
+   "id": "reglage_double",
+   "enonce": "Correction de jugement : mes réglages d'amplitude « à l'œil » sont systématiquement ~2x trop sages par rapport aux références (enroulement, hauteur du corps, écart des pieds). Avant de valider une pose, la pousser jusqu'à ce qu'elle paraisse trop, puis comparer à la ref au même angle.",
+   "portee": [
+    "tout"
+   ],
+   "confiance_principe": 0.55,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "categorie": "methode",
+   "mesure": "écart de mes 1res valeurs aux valeurs finales recalées sur la vidéo",
+   "sources": [
+    "reproduction des tutos avec outils/moon.py (repro/README.md, 2026-09-25) : uppercut : enroulement 55→95°, corps -0,3 à -0,5 stud, pieds 1,2→2,5 studs ; punch : corps -0,4 à -0,45 stud",
+    "Milan v7 : « je vois aucun changement »"
+   ],
+   "quand": "toute pose de temps fort",
+   "contre_indication": "garde/idle (planche ✓ Xoaterz : droite et détendue)"
+  },
+  {
+   "id": "pose_vue_nette",
+   "enonce": "Ce qu'on veut montrer doit être NET à l'écran assez longtemps pour être retenu (pose et caméra quasi immobiles ensemble ~0,1 s ou plus) ; le mouvement rapide passe en flou d'1-2 vignettes entre deux moments nets.",
+   "portee": [
+    "tout"
+   ],
+   "confiance_principe": 0.55,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "categorie": "lecture",
+   "mesure": "outils/regard.py : part du temps où l'image est « vue » (écart image / persistance ~90 ms < 4) ; refs de Milan médiane 0,87 (0,32-1,0 sur 25 clips, les GIF à faible cadence gonflent la valeur) ; tuto punch 0,90 ; NOUS v7 ciné 0,43, jeu 0,60",
+   "sources": [
+    "regard à vitesse réelle, 2026-09-25 (RETOURS.md) : le contact v7 passe dans un flou puis est recouvert par les cartes ; la charge v7 est floue (wiggle + caméra qui avance cumulés)"
+   ],
+   "quand": "tout moment clé (charge, contact, pose d'après)",
+   "contre_indication": "indicateur, pas une cible : des refs très bonnes sont à 0,32-0,43 (caméra à l'épaule en continu) ; ne jamais figer une scène pour « monter le chiffre »"
+  },
+  {
+   "id": "vfx_couverture_pic",
+   "enonce": "Au pic d'un gros impact ou d'un ultime, l'effet COUVRE une grande part de l'image (refs Roblox 49-77 % des pixels, anime 99 %) : il ne décore pas un coin du cadre, il EST l'image un instant.",
+   "portee": [
+    "impact",
+    "finisher"
+   ],
+   "confiance_principe": 0.6,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "categorie": "vfx",
+   "mesure": "durees.py effet_max : Stagnant Rage 0,49, IMPACT HAVEN 0,58, Black Flash 0,77, Goku 7a2b4ae8 0,99 ; NOUS v12 0,33",
+   "sources": [
+    "outils/durees.py, corpus/clips/durees_effets_2026-09-25.json (audit du 2026-09-25 après la v12 notée VFX 2-4)",
+    "GIF 7a2b4ae8 : blanc puis tourbillon de feu plein cadre 2,3 s"
+   ],
+   "quand": "gros impact, ultime, signature",
+   "contre_indication": "mesure grossière (interface, ciel clair comptés) ; les coups légers doivent rester petits (hierarchie_effets)"
+  },
+  {
+   "id": "signature_tenue",
+   "enonce": "L'effet-SIGNATURE d'un ultime (le dragon, l'horloge, le trou noir) reste à l'écran assez longtemps pour être REGARDÉ : de l'ordre de 1,5-2,5 s, pas une apparition.",
+   "portee": [
+    "finisher"
+   ],
+   "confiance_principe": 0.65,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "universel",
+   "categorie": "vfx",
+   "mesure": "durees.py + vidéo à vitesse réelle : invocation Goku f254bee5 tenue 2,0 s ; dragon qui sort du tourbillon 7a2b4ae8 ~1,5 s plein cadre ; NOUS v12 : dragon de l'invocation 0,57 s (entier ~0,27 s)",
+   "sources": [
+    "outils/durees.py, corpus/clips/durees_effets_2026-09-25.json (audit du 2026-09-25 après la v12 notée VFX 2-4)",
+    "Milan v12 : « le dragon apparaît 0,5 seconde »"
+   ],
+   "quand": "ultime à signature",
+   "contre_indication": "les effets de coups normaux, eux, sont des bouffées de 0,07-0,3 s (refs Roblox)"
+  },
+  {
+   "id": "signature_vers_objectif",
+   "enonce": "La signature d'un ultime vient VERS la caméra et grossit jusqu'au très gros plan (le dragon sort du tourbillon, gueule vers nous) ; elle est le coup, pas un décor qui tourne à côté.",
+   "portee": [
+    "finisher"
+   ],
+   "confiance_principe": 0.5,
+   "poids_note": 0.5,
+   "poids_a_priori": 0.5,
+   "etalon_style": "anime",
+   "categorie": "vfx",
+   "mesure": "lecture image par image de 7a2b4ae8 (bande durees.py) ; NOUS v12 : dragon en plan moyen, bas, autour du cratère",
+   "sources": [
+    "outils/durees.py, corpus/clips/durees_effets_2026-09-25.json (audit du 2026-09-25 après la v12 notée VFX 2-4)",
+    "Milan v12 : « pas au bon endroit » (hypothèse à confirmer avec lui)"
+   ],
+   "quand": "moment signature",
+   "contre_indication": "à confirmer avec Milan ; en caméra de jeu, la signature doit rester lisible sans cacher le joueur"
+  }
+ ],
+ "_styles": {
+  "tsb_m1": "etalonne sur le pack battleground (M1 realistes)",
+  "manga_ultime": "refs anime / ultimes TSB (exagere)",
+  "universel": "principe d'animation",
+  "roblox_smooth": "tutos d'animateurs Roblox R6 (Moon Animator / Blender) montrant un coup 'smooth' fini",
+  "pack_m1": "etalonne sur le pack battleground pro (4 M1) ; contredit en partie par les M1 TSB officiels"
+ },
+ "_regle_d_usage": "Retour de Milan (2026-09-24) : ce qu'on decouvre doit etre bien utilise, pas applique n'importe comment. Une hypothese vraie en animation n'est pas une case a cocher : chacune porte QUAND elle sert et QUAND elle nuit. Le critique juge l'usage au bon moment (hierarchie des temps forts, escalade, contraste), jamais la simple presence.",
+ "_biais_prediction": {
+  "technique": {
+   "biais": 0.33,
+   "n": 4,
+   "paires": [
+    [
+     "v5",
+     7.2,
+     6.8
+    ],
+    [
+     "v6",
+     7.8,
+     7.0
+    ],
+    [
+     "v8",
+     7.4,
+     7.5
+    ],
+    [
+     "v9",
+     7.9,
+     7.7
+    ]
+   ]
+  },
+  "vfx": {
+   "biais": 3.0,
+   "n": 2,
+   "paires": [
+    [
+     "v11_aura_dragon",
+     7.0,
+     4.0
+    ],
+    [
+     "v12_dragon_premium_pose_goku_izuku",
+     6.0,
+     3.0
+    ]
+   ]
+  },
+  "doc": "moi - Milan, par axe ; a soustraire de mes predictions"
+ },
+ "_calibration": {
+  "a": 0.969,
+  "b": 7.023,
+  "n_notes": 7,
+  "doc": "note = b + a * score ; reapprise a chaque reflexion"
+ }
+}

@@ -1,0 +1,19 @@
+{
+ "perimetre": "U1 (pose de garde lente), U2 (revers gauche), CR (vrille a deux mains) ; SB (bras en X) a part ; SS exclu (jambes)",
+ "lacet_arme_deg": {"un_bras_sur_place": [-25, -16], "deux_mains_en_vrille": [-153, -141], "SB": -6},
+ "lacet_contact_deg": {"U1": 60, "U2_pic": 31, "U2_passage_devant": 5, "CR": 47, "SB": -29},
+ "delta_lacet_deg": {"U2": 46, "U1": 86, "CR": 188},
+ "penche_avant_arme_deg": [2, 34], "penche_avant_contact_deg": [-8, 40],
+ "bras_frappeur_torse_arme_az_el": {"U1": [12, -19], "U2": [49, 2], "CR_RA": [81, -12], "CR_LA_f60": [138, -5], "SB": [[-87, 12], [79, 21]]},
+ "bras_frappeur_torse_contact_az_el": {"U1": [30, 13], "U2": [-49, -19], "CR": [50, 5]},
+ "poing_arme_repere_coup_av_dr_ht": {"U1": [0.11, 1.87, -0.45], "U2": [1.78, 1.05, 0.74], "CR_f48": [-1.75, -1.87, 0.68], "CR_f60": [-2.0, -1.32, 1.01], "SB": [1.43, -0.89, 0.47]},
+ "poing_arme_axes_torse_dr_ht_av": {"U1": [1.63, -0.47, 0.91], "U2": [0.57, 0.97, 1.89], "CR_f60": [2.54, 0.34, -0.42], "SB": [-1.03, 0.51, 1.31]},
+ "haut_du_bras_axes_torse_av": {"U1": -0.94, "CR": [-0.53, -0.33], "U2": 0.58, "SB": [0.92, 1.2]},
+ "pivot_epaule_decale_norme_studs": {"U1": [0.29, 0.66], "U2_LA": 0.97, "CR_LA": [2.2, 2.35], "SB": [1.1, 1.24]},
+ "epaules_recul_droite": {"arme": {"U1": 1.75, "U2": 1.24, "CR": -0.73, "SB": -0.09}, "contact": {"U1": -1.88, "U2": -1.35, "CR": 0.18, "SB": 0.63}},
+ "hanche": {"arme": [2.52, 2.99], "contact": [2.6, 2.76], "creux_pendant_detente": {"U1": 2.49, "U2": 2.75}},
+ "ecart_entre_poings_arme": {"CR": 0.21, "SB": 1.82, "U2": 3.17, "U1": 3.4, "v5": 5.17},
+ "images_60fps": {"construction_arme": {"U2": 21, "U1": 32, "CR": 34}, "tenue": {"U2": 3, "CR": 13, "U1": 142, "SB": 193}, "depart_a_contact": {"U2": 14, "CR": 16, "U1": 62, "SB": 9}, "claquage_CR": 4},
+ "vitesse_max_poing_rel_studs_s": {"U1": 12.6, "U2": 42.0, "CR": 110.6},
+ "trajet": {"rectitude": {"U1": 0.55, "U2": 0.83, "CR": 0.53}, "balayage_horizontal_deg": {"U1": -87, "U2": -126, "CR": -227}, "delta_az_bras_torse_deg": {"U1": 18, "U2": -98, "CR": -30}}
+}

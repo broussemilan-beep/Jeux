@@ -1,0 +1,134 @@
+{
+ "clip": "danbooru_danbooru_8783450",
+ "sha1_16": "7a39cd2d919d4a8c",
+ "duree_s": 15.03,
+ "resolution": [
+  960,
+  720
+ ],
+ "zone_analysee": [
+  0,
+  0,
+  160,
+  120
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 16.7,
+  "lecture": "en 1 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 4,
+  "part_du_temps": 0.194,
+  "plus_longue_ms": 1283
+ },
+ "energie": {
+  "mediane": 13.83,
+  "pic_p95": 42.75,
+  "contraste_p95_sur_mediane": 3.09,
+  "part_rapide": 0.108
+ },
+ "impacts": {
+  "nombre": 3,
+  "par_seconde": 0.2,
+  "ecart_median_s": 2.241,
+  "cartes": [
+   {
+    "t_s": 10.4,
+    "type": "blanc",
+    "duree_ms": 17
+   },
+   {
+    "t_s": 12.3,
+    "type": "silhouette",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 14.883,
+    "type": "noir",
+    "duree_ms": 150
+   }
+  ],
+  "profil_autour": {
+   "approche": 16.09,
+   "0,1 s avant": 9.95,
+   "0,1 s apres": 2.2,
+   "tenue_avant_choc": false,
+   "explosion_apres": false
+  }
+ },
+ "coupes": {
+  "nombre": 10,
+  "t_s": [
+   5.717,
+   6.8,
+   8.033,
+   9.0,
+   10.417,
+   11.633,
+   11.833,
+   11.933,
+   12.167,
+   12.217
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.39,
+  "decalage_p95_pct": 4.99
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 10.13,
+  "secondes_de_mouvement": 7.8,
+  "vitesse_sujet_p90": 5.716,
+  "pics": 126,
+  "part_des_pics_qui_montent": 0.41,
+  "deviation_trajectoire_mediane": 0.752,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#5d644d",
+   "part": 0.205
+  },
+  {
+   "hex": "#f0e3ca",
+   "part": 0.19
+  },
+  {
+   "hex": "#987d6c",
+   "part": 0.171
+  },
+  {
+   "hex": "#a2aeae",
+   "part": 0.17
+  },
+  {
+   "hex": "#3f2829",
+   "part": 0.156
+  },
+  {
+   "hex": "#ebcdaf",
+   "part": 0.107
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 46,
+  "termes": {
+   "contraste_de_temps": 0.45,
+   "tenues_presentes": 0.65,
+   "impacts_rythmes": 0.13
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/danbooru_danbooru_8783450.png",
+ "source": {
+  "nom": "danbooru",
+  "id": 8783450,
+  "tags": "1boy 1girl 3d animated artist_name audible_music audible_speech black_necktie black_pants blender_(medium) blue_sky bow bowtie brown_hair building chainsaw chainsaw_man chainsaw_man_(character) city cloud commentary demon_girl demon_horns denji_(chainsaw_man) english_audio english_commentary hammer holding holding_hammer horns impact_frames jacket low_poly meme motion_lines necktie nice_balls_bro_(meme) on_rooftop open_clothes open_jacket outdoors pants power_(chainsaw_man) sharp_teeth shirt sky skyscraper snowtenkey_(snow118) sound sound_effects teeth video white_shirt yellow_eyes",
+  "score": 42,
+  "source_oeuvre": "chainsaw_man",
+  "artiste": "snowtenkey_(snow118)",
+  "url": "https://danbooru.donmai.us/posts/8783450",
+  "requete": "impact_frames",
+  "pourquoi": "cartes d'impact"
+ }
+}

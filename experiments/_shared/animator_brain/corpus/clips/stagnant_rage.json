@@ -1,0 +1,93 @@
+{
+ "clip": "stagnant_rage",
+ "sha1_16": "ad251c412c91996a",
+ "duree_s": 9.82,
+ "resolution": [
+  888,
+  1920
+ ],
+ "zone_analysee": [
+  12,
+  0,
+  148,
+  346
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 16.7,
+  "lecture": "en 1 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 2,
+  "part_du_temps": 0.173,
+  "plus_longue_ms": 1550
+ },
+ "energie": {
+  "mediane": 7.26,
+  "pic_p95": 24.17,
+  "contraste_p95_sur_mediane": 3.33,
+  "part_rapide": 0.063
+ },
+ "impacts": {
+  "nombre": 0,
+  "par_seconde": 0.0,
+  "ecart_median_s": null,
+  "cartes": [],
+  "profil_autour": null
+ },
+ "coupes": {
+  "nombre": 2,
+  "t_s": [
+   0.083,
+   5.25
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.16,
+  "decalage_p95_pct": 0.57
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 8.44,
+  "secondes_de_mouvement": 5.57,
+  "vitesse_sujet_p90": 8.561,
+  "pics": 84,
+  "part_des_pics_qui_montent": 0.33,
+  "deviation_trajectoire_mediane": 0.54,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#8c8b90",
+   "part": 0.236
+  },
+  {
+   "hex": "#202d31",
+   "part": 0.227
+  },
+  {
+   "hex": "#88878b",
+   "part": 0.204
+  },
+  {
+   "hex": "#807a7c",
+   "part": 0.134
+  },
+  {
+   "hex": "#725f5e",
+   "part": 0.118
+  },
+  {
+   "hex": "#bbac97",
+   "part": 0.081
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 44,
+  "termes": {
+   "contraste_de_temps": 0.52,
+   "tenues_presentes": 0.58,
+   "impacts_rythmes": 0.0
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/sheets/stagnant_rage.png"
+}

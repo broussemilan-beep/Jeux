@@ -1,0 +1,607 @@
+{
+ "_doc": "outils/durees.py (2026-09-25) : part de l'image couverte par des pixels d'effet (très clairs ou clairs saturés), épisodes, tenues ; 30 i/s en temps réel. Données DÉRIVÉES seulement (aucune image des refs). Mesure grossière : les enregistrements d'écran incluent l'interface et le ciel clair.",
+ "refs": {
+  "f254bee5 (Goku, invocation, GIF)": {
+   "duree_s": 2.0,
+   "fps_analyse": 30,
+   "seuil_effet": 0.163,
+   "effet_max": 0.327,
+   "episodes_effet": [
+    {
+     "debut_s": 0.0,
+     "duree_s": 2.0,
+     "pic": 0.327,
+     "montee_s": 0.37
+    }
+   ],
+   "episodes_effet_faible": [
+    {
+     "debut_s": 0.0,
+     "duree_s": 2.0,
+     "pic": 0.327,
+     "montee_s": 0.37
+    }
+   ],
+   "tenues": [
+    {
+     "debut_s": 0.13,
+     "duree_s": 0.13
+    },
+    {
+     "debut_s": 0.3,
+     "duree_s": 0.1
+    },
+    {
+     "debut_s": 0.43,
+     "duree_s": 0.13
+    },
+    {
+     "debut_s": 0.6,
+     "duree_s": 0.1
+    },
+    {
+     "debut_s": 0.73,
+     "duree_s": 0.13
+    },
+    {
+     "debut_s": 0.9,
+     "duree_s": 0.1
+    },
+    {
+     "debut_s": 1.03,
+     "duree_s": 0.13
+    },
+    {
+     "debut_s": 1.2,
+     "duree_s": 0.1
+    },
+    {
+     "debut_s": 1.33,
+     "duree_s": 0.13
+    },
+    {
+     "debut_s": 1.5,
+     "duree_s": 0.1
+    },
+    {
+     "debut_s": 1.63,
+     "duree_s": 0.13
+    }
+   ],
+   "temps_avec_effet_s": 2.0
+  },
+  "7a2b4ae8 (Goku, Poing du Dragon, GIF)": {
+   "duree_s": 3.0,
+   "fps_analyse": 30,
+   "seuil_effet": 0.495,
+   "effet_max": 0.99,
+   "episodes_effet": [
+    {
+     "debut_s": 0.6,
+     "duree_s": 0.8,
+     "pic": 0.99,
+     "montee_s": 0.1
+    },
+    {
+     "debut_s": 1.5,
+     "duree_s": 1.5,
+     "pic": 0.984,
+     "montee_s": 0.1
+    }
+   ],
+   "episodes_effet_faible": [
+    {
+     "debut_s": 0.0,
+     "duree_s": 3.0,
+     "pic": 0.99,
+     "montee_s": 0.7
+    }
+   ],
+   "tenues": [
+    {
+     "debut_s": 0.63,
+     "duree_s": 0.17
+    }
+   ],
+   "temps_avec_effet_s": 3.0
+  },
+  "4fb4f776 (Stagnant Rage, Roblox)": {
+   "duree_s": 9.83,
+   "fps_analyse": 30,
+   "seuil_effet": 0.244,
+   "effet_max": 0.488,
+   "episodes_effet": [
+    {
+     "debut_s": 0.1,
+     "duree_s": 0.07,
+     "pic": 0.334,
+     "montee_s": 0.0
+    },
+    {
+     "debut_s": 5.27,
+     "duree_s": 0.23,
+     "pic": 0.488,
+     "montee_s": 0.0
+    }
+   ],
+   "episodes_effet_faible": [
+    {
+     "debut_s": 0.1,
+     "duree_s": 0.1,
+     "pic": 0.334,
+     "montee_s": 0.0
+    },
+    {
+     "debut_s": 5.27,
+     "duree_s": 0.8,
+     "pic": 0.488,
+     "montee_s": 0.0
+    },
+    {
+     "debut_s": 8.37,
+     "duree_s": 0.13,
+     "pic": 0.257,
+     "montee_s": 0.0
+    }
+   ],
+   "tenues": [
+    {
+     "debut_s": 1.67,
+     "duree_s": 0.13
+    },
+    {
+     "debut_s": 2.13,
+     "duree_s": 0.13
+    },
+    {
+     "debut_s": 2.63,
+     "duree_s": 1.67
+    },
+    {
+     "debut_s": 4.33,
+     "duree_s": 0.33
+    },
+    {
+     "debut_s": 6.2,
+     "duree_s": 0.53
+    },
+    {
+     "debut_s": 6.8,
+     "duree_s": 0.13
+    },
+    {
+     "debut_s": 7.0,
+     "duree_s": 0.1
+    },
+    {
+     "debut_s": 7.23,
+     "duree_s": 0.43
+    },
+    {
+     "debut_s": 9.13,
+     "duree_s": 0.33
+    }
+   ],
+   "temps_avec_effet_s": 1.03
+  },
+  "12e7dae5 (Black Flash, Roblox)": {
+   "duree_s": 6.37,
+   "fps_analyse": 30,
+   "seuil_effet": 0.384,
+   "effet_max": 0.768,
+   "episodes_effet": [
+    {
+     "debut_s": 2.37,
+     "duree_s": 0.1,
+     "pic": 0.768,
+     "montee_s": 0.03
+    },
+    {
+     "debut_s": 2.5,
+     "duree_s": 0.07,
+     "pic": 0.478,
+     "montee_s": 0.0
+    },
+    {
+     "debut_s": 3.17,
+     "duree_s": 0.2,
+     "pic": 0.477,
+     "montee_s": 0.1
+    },
+    {
+     "debut_s": 3.53,
+     "duree_s": 0.07,
+     "pic": 0.637,
+     "montee_s": 0.03
+    },
+    {
+     "debut_s": 4.2,
+     "duree_s": 0.13,
+     "pic": 0.744,
+     "montee_s": 0.1
+    },
+    {
+     "debut_s": 4.37,
+     "duree_s": 0.3,
+     "pic": 0.699,
+     "montee_s": 0.1
+    }
+   ],
+   "episodes_effet_faible": [
+    {
+     "debut_s": 2.37,
+     "duree_s": 1.23,
+     "pic": 0.768,
+     "montee_s": 0.03
+    },
+    {
+     "debut_s": 3.63,
+     "duree_s": 0.1,
+     "pic": 0.714,
+     "montee_s": 0.0
+    },
+    {
+     "debut_s": 3.83,
+     "duree_s": 0.3,
+     "pic": 0.369,
+     "montee_s": 0.1
+    },
+    {
+     "debut_s": 4.17,
+     "duree_s": 0.5,
+     "pic": 0.744,
+     "montee_s": 0.13
+    },
+    {
+     "debut_s": 4.73,
+     "duree_s": 0.07,
+     "pic": 0.198,
+     "montee_s": 0.0
+    }
+   ],
+   "tenues": [
+    {
+     "debut_s": 2.2,
+     "duree_s": 0.1
+    }
+   ],
+   "temps_avec_effet_s": 2.2
+  },
+  "eba5ed69 (IMPACT HAVEN, Roblox)": {
+   "duree_s": 11.37,
+   "fps_analyse": 30,
+   "seuil_effet": 0.291,
+   "effet_max": 0.581,
+   "episodes_effet": [
+    {
+     "debut_s": 1.87,
+     "duree_s": 0.13,
+     "pic": 0.581,
+     "montee_s": 0.03
+    },
+    {
+     "debut_s": 3.47,
+     "duree_s": 0.07,
+     "pic": 0.58,
+     "montee_s": 0.03
+    },
+    {
+     "debut_s": 9.87,
+     "duree_s": 0.17,
+     "pic": 0.581,
+     "montee_s": 0.07
+    }
+   ],
+   "episodes_effet_faible": [
+    {
+     "debut_s": 0.0,
+     "duree_s": 1.5,
+     "pic": 0.205,
+     "montee_s": 0.37
+    },
+    {
+     "debut_s": 1.7,
+     "duree_s": 0.07,
+     "pic": 0.149,
+     "montee_s": 0.03
+    },
+    {
+     "debut_s": 1.87,
+     "duree_s": 0.53,
+     "pic": 0.581,
+     "montee_s": 0.03
+    },
+    {
+     "debut_s": 2.43,
+     "duree_s": 0.43,
+     "pic": 0.579,
+     "montee_s": 0.0
+    },
+    {
+     "debut_s": 2.9,
+     "duree_s": 0.27,
+     "pic": 0.58,
+     "montee_s": 0.0
+    },
+    {
+     "debut_s": 3.2,
+     "duree_s": 0.67,
+     "pic": 0.58,
+     "montee_s": 0.3
+    },
+    {
+     "debut_s": 3.9,
+     "duree_s": 0.47,
+     "pic": 0.581,
+     "montee_s": 0.0
+    },
+    {
+     "debut_s": 4.4,
+     "duree_s": 0.47,
+     "pic": 0.581,
+     "montee_s": 0.0
+    },
+    {
+     "debut_s": 4.9,
+     "duree_s": 0.3,
+     "pic": 0.58,
+     "montee_s": 0.0
+    },
+    {
+     "debut_s": 5.23,
+     "duree_s": 0.33,
+     "pic": 0.58,
+     "montee_s": 0.0
+    },
+    {
+     "debut_s": 5.6,
+     "duree_s": 0.23,
+     "pic": 0.58,
+     "montee_s": 0.0
+    },
+    {
+     "debut_s": 5.87,
+     "duree_s": 0.5,
+     "pic": 0.581,
+     "montee_s": 0.0
+    },
+    {
+     "debut_s": 6.4,
+     "duree_s": 0.47,
+     "pic": 0.581,
+     "montee_s": 0.0
+    },
+    {
+     "debut_s": 6.9,
+     "duree_s": 0.3,
+     "pic": 0.58,
+     "montee_s": 0.0
+    },
+    {
+     "debut_s": 7.23,
+     "duree_s": 0.3,
+     "pic": 0.58,
+     "montee_s": 0.0
+    },
+    {
+     "debut_s": 7.57,
+     "duree_s": 0.27,
+     "pic": 0.58,
+     "montee_s": 0.0
+    },
+    {
+     "debut_s": 7.87,
+     "duree_s": 0.47,
+     "pic": 0.581,
+     "montee_s": 0.0
+    },
+    {
+     "debut_s": 8.37,
+     "duree_s": 0.47,
+     "pic": 0.58,
+     "montee_s": 0.0
+    },
+    {
+     "debut_s": 8.87,
+     "duree_s": 0.3,
+     "pic": 0.579,
+     "montee_s": 0.0
+    },
+    {
+     "debut_s": 9.2,
+     "duree_s": 0.3,
+     "pic": 0.204,
+     "montee_s": 0.0
+    },
+    {
+     "debut_s": 9.87,
+     "duree_s": 0.17,
+     "pic": 0.581,
+     "montee_s": 0.07
+    }
+   ],
+   "tenues": [
+    {
+     "debut_s": 0.03,
+     "duree_s": 0.27
+    },
+    {
+     "debut_s": 0.57,
+     "duree_s": 0.57
+    },
+    {
+     "debut_s": 1.17,
+     "duree_s": 0.17
+    },
+    {
+     "debut_s": 2.23,
+     "duree_s": 0.17
+    },
+    {
+     "debut_s": 2.6,
+     "duree_s": 0.23
+    },
+    {
+     "debut_s": 3.33,
+     "duree_s": 0.13
+    },
+    {
+     "debut_s": 3.73,
+     "duree_s": 0.13
+    },
+    {
+     "debut_s": 4.2,
+     "duree_s": 0.13
+    },
+    {
+     "debut_s": 4.63,
+     "duree_s": 0.23
+    },
+    {
+     "debut_s": 5.07,
+     "duree_s": 0.13
+    },
+    {
+     "debut_s": 5.43,
+     "duree_s": 0.13
+    },
+    {
+     "debut_s": 5.7,
+     "duree_s": 0.13
+    },
+    {
+     "debut_s": 6.0,
+     "duree_s": 0.13
+    },
+    {
+     "debut_s": 6.17,
+     "duree_s": 0.2
+    },
+    {
+     "debut_s": 6.53,
+     "duree_s": 0.33
+    },
+    {
+     "debut_s": 7.03,
+     "duree_s": 0.17
+    },
+    {
+     "debut_s": 7.4,
+     "duree_s": 0.13
+    },
+    {
+     "debut_s": 8.0,
+     "duree_s": 0.33
+    },
+    {
+     "debut_s": 8.5,
+     "duree_s": 0.33
+    },
+    {
+     "debut_s": 9.07,
+     "duree_s": 0.1
+    },
+    {
+     "debut_s": 9.33,
+     "duree_s": 0.17
+    },
+    {
+     "debut_s": 9.9,
+     "duree_s": 0.13
+    },
+    {
+     "debut_s": 10.13,
+     "duree_s": 0.57
+    },
+    {
+     "debut_s": 11.03,
+     "duree_s": 0.33
+    }
+   ],
+   "temps_avec_effet_s": 8.82
+  }
+ },
+ "nous": {
+  "Poing du Dragon v12, f196-470 cinéma": {
+   "duree_s": 4.83,
+   "fps_analyse": 30,
+   "seuil_effet": 0.165,
+   "effet_max": 0.329,
+   "episodes_effet": [
+    {
+     "debut_s": 1.37,
+     "duree_s": 0.07,
+     "pic": 0.329,
+     "montee_s": 0.0
+    },
+    {
+     "debut_s": 1.67,
+     "duree_s": 0.07,
+     "pic": 0.215,
+     "montee_s": 0.0
+    },
+    {
+     "debut_s": 1.8,
+     "duree_s": 0.13,
+     "pic": 0.274,
+     "montee_s": 0.03
+    },
+    {
+     "debut_s": 2.1,
+     "duree_s": 0.23,
+     "pic": 0.327,
+     "montee_s": 0.0
+    }
+   ],
+   "episodes_effet_faible": [
+    {
+     "debut_s": 1.37,
+     "duree_s": 0.07,
+     "pic": 0.329,
+     "montee_s": 0.0
+    },
+    {
+     "debut_s": 1.63,
+     "duree_s": 0.73,
+     "pic": 0.327,
+     "montee_s": 0.47
+    },
+    {
+     "debut_s": 4.17,
+     "duree_s": 0.37,
+     "pic": 0.087,
+     "montee_s": 0.2
+    },
+    {
+     "debut_s": 4.67,
+     "duree_s": 0.17,
+     "pic": 0.093,
+     "montee_s": 0.1
+    }
+   ],
+   "tenues": [
+    {
+     "debut_s": 0.23,
+     "duree_s": 0.23
+    },
+    {
+     "debut_s": 0.57,
+     "duree_s": 0.43
+    },
+    {
+     "debut_s": 2.13,
+     "duree_s": 0.17
+    },
+    {
+     "debut_s": 3.27,
+     "duree_s": 0.47
+    },
+    {
+     "debut_s": 3.83,
+     "duree_s": 0.1
+    }
+   ],
+   "temps_avec_effet_s": 1.34
+  }
+ }
+}

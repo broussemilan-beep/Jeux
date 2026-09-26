@@ -1,0 +1,137 @@
+{
+ "clip": "rewind_clock",
+ "sha1_16": "e99b8a2ab26f6765",
+ "duree_s": 9.93,
+ "resolution": [
+  888,
+  1920
+ ],
+ "zone_analysee": [
+  11,
+  0,
+  150,
+  346
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 16.7,
+  "lecture": "en 1 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 2,
+  "part_du_temps": 0.035,
+  "plus_longue_ms": 183
+ },
+ "energie": {
+  "mediane": 11.21,
+  "pic_p95": 74.06,
+  "contraste_p95_sur_mediane": 6.6,
+  "part_rapide": 0.035
+ },
+ "impacts": {
+  "nombre": 5,
+  "par_seconde": 0.5,
+  "ecart_median_s": 0.692,
+  "cartes": [
+   {
+    "t_s": 4.333,
+    "type": "blanc",
+    "duree_ms": 17
+   },
+   {
+    "t_s": 4.783,
+    "type": "blanc",
+    "duree_ms": 200
+   },
+   {
+    "t_s": 7.217,
+    "type": "silhouette",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 7.5,
+    "type": "silhouette",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 8.433,
+    "type": "silhouette",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 8.6,
+    "type": "silhouette",
+    "duree_ms": 17
+   }
+  ],
+  "profil_autour": {
+   "approche": 21.01,
+   "0,1 s avant": 18.93,
+   "0,1 s apres": 14.03,
+   "tenue_avant_choc": false,
+   "explosion_apres": false
+  }
+ },
+ "coupes": {
+  "nombre": 9,
+  "t_s": [
+   0.55,
+   7.117,
+   7.167,
+   7.267,
+   7.283,
+   7.617,
+   7.783,
+   8.517,
+   8.55
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.14,
+  "decalage_p95_pct": 0.76
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 6.96,
+  "secondes_de_mouvement": 5.32,
+  "vitesse_sujet_p90": 18.235,
+  "pics": 72,
+  "part_des_pics_qui_montent": 0.42,
+  "deviation_trajectoire_mediane": 0.668,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#111113",
+   "part": 0.263
+  },
+  {
+   "hex": "#828487",
+   "part": 0.231
+  },
+  {
+   "hex": "#f7f2f0",
+   "part": 0.209
+  },
+  {
+   "hex": "#625556",
+   "part": 0.143
+  },
+  {
+   "hex": "#9e9998",
+   "part": 0.107
+  },
+  {
+   "hex": "#d9d2cd",
+   "part": 0.047
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 56,
+  "termes": {
+   "contraste_de_temps": 1.0,
+   "tenues_presentes": 0.12,
+   "impacts_rythmes": 0.34
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/sheets/rewind_clock.png"
+}

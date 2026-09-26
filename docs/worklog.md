@@ -5807,3 +5807,30 @@ lui-même) :
 
 Fichiers modifiés : `assets/processed/sprites/cendre/cendre_frames.tres`,
 `assets/manifests/hero_combo_{1,2,3}.json`.
+
+## 2026-09-26 — Piste animation / VFX / cinématiques (expériences R6) : point d'entrée
+
+Cette piste (cerveau d'animation `experiments/_shared/animator_brain/`,
+studio VFX `experiments/_shared/vfx_studio/`, productions `experiments/r6_*`)
+n'avait jamais été signalée dans ce worklog : une session qui démarrait
+par le mandat puis le worklog ne pouvait pas savoir où elle en était
+(trouvé à l'audit mémoire demandé par Milan). Son état, l'ordre de lecture,
+la carte du cerveau et les commandes sont désormais dans
+**`experiments/_shared/animator_brain/ETAT.md`** (à tenir à jour à chaque
+livraison ; CLAUDE.md y renvoie).
+
+Où on en est : Poing du Dragon v13e noté 8/10 par Milan (« pas premium
+mais mid haut ») ; analyse « notre studio comme frein / passage sur Roblox
+Studio » : `corpus/recherche/STUDIO_FREIN_2026-09-26.md` ; 3 propositions
+de cinématique : `PROPOSITIONS_CINEMATIQUE_2026-09-26.md` (choix de Milan
+attendu).
+
+## 2026-09-26 — Cinématique « Un seul coup » (Serious Punch R6)
+
+Choisie par Milan (« Vazy 1 »). Point d'entrée inchangé :
+`experiments/_shared/animator_brain/ETAT.md`. Fiche
+`corpus/fiches/UN_SEUL_COUP.md` (refs relues à 0,1 s), production
+`experiments/r6_un_seul_coup/` (anim 2 rigs V2.22, lecteur, package Roblox
+`UnSeulCoup.rbxmx` + module Luau, test de sens SENS OK). Preuves :
+`captures/verification/2026-09-26-un-seul-coup-*`. Prédiction 7,8, en
+attente de la note de Milan.

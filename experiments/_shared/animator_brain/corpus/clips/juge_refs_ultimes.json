@@ -1,0 +1,55 @@
+{
+ "note": "Mesures DÉRIVÉES (outils/juge.py mesurer, 30 i/s, effet lissé 0,1 s, plein écran = effet >= 60 %) des ultimes de référence ; les vidéos ne sont pas versionnées. clip_coupe = extrait trop court pour mesurer la conséquence.",
+ "date": "2026-09-25",
+ "refs": [
+  {
+   "duree_s": 13.7,
+   "effet_pic": 0.828,
+   "plein_ecran_s": 0.93,
+   "plein_ecran_plus_long_s": 0.47,
+   "consequence_s": 4.43,
+   "nom": "Last Breath v1 (TSB, 4e0sX6p8-30 118,3-132 s)"
+  },
+  {
+   "duree_s": 3.0,
+   "effet_pic": 0.99,
+   "plein_ecran_s": 2.1,
+   "plein_ecran_plus_long_s": 1.3,
+   "consequence_s": 0.0,
+   "nom": "Poing du Dragon Goku (GIF d514ee70)",
+   "clip_coupe": true
+  },
+  {
+   "duree_s": 16.37,
+   "effet_pic": 0.59,
+   "plein_ecran_s": 0.0,
+   "plein_ecran_plus_long_s": 0.0,
+   "consequence_s": 0.0,
+   "nom": "Serious Punch recréé (lvB-wTylH3Y)"
+  },
+  {
+   "duree_s": 9.5,
+   "effet_pic": 0.996,
+   "plein_ecran_s": 1.27,
+   "plein_ecran_plus_long_s": 1.27,
+   "consequence_s": 4.17,
+   "nom": "Stoic Bomb TSB (BpDlTrnlIUk)"
+  },
+  {
+   "duree_s": 24.2,
+   "effet_pic": 0.814,
+   "plein_ecran_s": 0.73,
+   "plein_ecran_plus_long_s": 0.73,
+   "consequence_s": 21.83,
+   "nom": "Sunrise Finisher (RhsY24ct-vQ)"
+  },
+  {
+   "duree_s": 10.0,
+   "effet_pic": 0.934,
+   "plein_ecran_s": 0.2,
+   "plein_ecran_plus_long_s": 0.2,
+   "consequence_s": 3.6,
+   "nom": "Serious Punch TSB (GIF 48244687)"
+  }
+ ]
+}

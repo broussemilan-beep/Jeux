@@ -1,0 +1,104 @@
+{
+ "clip": "danbooru_danbooru_10719411",
+ "sha1_16": "b4724c1d3ba0f9bf",
+ "duree_s": 7.83,
+ "resolution": [
+  560,
+  420
+ ],
+ "zone_analysee": [
+  0,
+  0,
+  154,
+  120
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 4,
+  "part_du_temps": 0.291,
+  "plus_longue_ms": 667
+ },
+ "energie": {
+  "mediane": 5.42,
+  "pic_p95": 64.62,
+  "contraste_p95_sur_mediane": 11.92,
+  "part_rapide": 0.119
+ },
+ "impacts": {
+  "nombre": 0,
+  "par_seconde": 0.0,
+  "ecart_median_s": null,
+  "cartes": [],
+  "profil_autour": null
+ },
+ "coupes": {
+  "nombre": 2,
+  "t_s": [
+   2.033,
+   6.25
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.15,
+  "decalage_p95_pct": 15.24
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 14.9,
+  "secondes_de_mouvement": 2.48,
+  "vitesse_sujet_p90": 2.159,
+  "pics": 36,
+  "part_des_pics_qui_montent": 0.39,
+  "deviation_trajectoire_mediane": 1.408,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#3f3946",
+   "part": 0.27
+  },
+  {
+   "hex": "#eeeef0",
+   "part": 0.248
+  },
+  {
+   "hex": "#9a99a5",
+   "part": 0.188
+  },
+  {
+   "hex": "#dfe4e8",
+   "part": 0.162
+  },
+  {
+   "hex": "#f1f5f7",
+   "part": 0.082
+  },
+  {
+   "hex": "#f0e9ed",
+   "part": 0.051
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 79,
+  "termes": {
+   "contraste_de_temps": 1.0,
+   "tenues_presentes": 0.97,
+   "impacts_rythmes": 0.0
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/danbooru_danbooru_10719411.png",
+ "source": {
+  "nom": "danbooru",
+  "id": 10719411,
+  "tags": "1boy 2girls animated aqua_halo aris_(blue_archive) attacking_viewer black_hair black_hairband blue_archive commentary_request dro_(eveveb_414) face_punch hair_between_eyes hairband halo in_the_face jujutsu_kaisen kei_(blue_archive) kei_(student)_(blue_archive) long_hair long_hair_between_eyes long_sleeves meme multiple_girls naoya_hitting_choso_without_looking_(meme) one_side_up parody pink_eyes pink_halo punching punching_viewer rapid_punches rectangular_halo ringed_eyes siblings sisters smear_frame twins very_long_hair video white_hair",
+  "score": 78,
+  "source_oeuvre": "blue_archive jujutsu_kaisen",
+  "artiste": "dro_(eveveb_414)",
+  "url": "https://danbooru.donmai.us/posts/10719411",
+  "requete": "punching",
+  "pourquoi": "coups de poing animes"
+ }
+}

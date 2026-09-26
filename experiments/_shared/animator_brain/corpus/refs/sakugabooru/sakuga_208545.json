@@ -1,0 +1,222 @@
+{
+ "clip": "sakugabooru_sakuga_208545",
+ "sha1_16": "1153e2810ccc799b",
+ "duree_s": 27.12,
+ "resolution": [
+  852,
+  480
+ ],
+ "zone_analysee": [
+  20,
+  0,
+  154,
+  75
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 1,
+  "part_du_temps": 0.006,
+  "plus_longue_ms": 167
+ },
+ "energie": {
+  "mediane": 14.54,
+  "pic_p95": 68.91,
+  "contraste_p95_sur_mediane": 4.74,
+  "part_rapide": 0.06
+ },
+ "impacts": {
+  "nombre": 14,
+  "par_seconde": 0.52,
+  "ecart_median_s": 0.95,
+  "cartes": [
+   {
+    "t_s": 5.667,
+    "type": "blanc",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 6.75,
+    "type": "noir",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 7.3,
+    "type": "blanc",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 7.417,
+    "type": "noir",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 8.55,
+    "type": "blanc",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 12.183,
+    "type": "blanc",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 12.267,
+    "type": "noir",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 12.467,
+    "type": "blanc",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 12.633,
+    "type": "silhouette",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 12.883,
+    "type": "silhouette",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 14.633,
+    "type": "silhouette",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 14.967,
+    "type": "silhouette",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 15.183,
+    "type": "silhouette",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 15.3,
+    "type": "blanc",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 16.133,
+    "type": "silhouette",
+    "duree_ms": 167
+   },
+   {
+    "t_s": 18.9,
+    "type": "noir",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 21.517,
+    "type": "blanc",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 21.9,
+    "type": "noir",
+    "duree_ms": 33
+   }
+  ],
+  "profil_autour": {
+   "approche": 4.65,
+   "0,1 s avant": 8.46,
+   "0,1 s apres": 6.21,
+   "tenue_avant_choc": false,
+   "explosion_apres": false
+  }
+ },
+ "coupes": {
+  "nombre": 24,
+  "t_s": [
+   5.583,
+   5.633,
+   5.717,
+   7.333,
+   7.467,
+   7.55,
+   8.0,
+   8.467,
+   9.017,
+   12.683,
+   12.8,
+   14.55,
+   15.267,
+   15.383,
+   18.983,
+   20.317,
+   20.483,
+   20.6,
+   21.567,
+   25.117,
+   25.783,
+   26.567,
+   26.7,
+   26.733
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.78,
+  "decalage_p95_pct": 19.62
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 5.04,
+  "secondes_de_mouvement": 12.7,
+  "vitesse_sujet_p90": 5.985,
+  "pics": 112,
+  "part_des_pics_qui_montent": 0.27,
+  "deviation_trajectoire_mediane": 0.704,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#06090f",
+   "part": 0.221
+  },
+  {
+   "hex": "#6d666d",
+   "part": 0.193
+  },
+  {
+   "hex": "#212943",
+   "part": 0.172
+  },
+  {
+   "hex": "#433845",
+   "part": 0.15
+  },
+  {
+   "hex": "#eeeac6",
+   "part": 0.134
+  },
+  {
+   "hex": "#95b3b5",
+   "part": 0.13
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 49,
+  "termes": {
+   "contraste_de_temps": 0.93,
+   "tenues_presentes": 0.02,
+   "impacts_rythmes": 0.34
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_208545.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 208545,
+  "tags": "animated character_acting effects explosions fabric fighting hair impact_frames lightning my_hero_academia my_hero_academia_series smears smoke yutaka_nakamura",
+  "score": 3737,
+  "source_oeuvre": "#061 (S3 #23) (BD) ",
+  "url": "https://www.sakugabooru.com/post/show/208545",
+  "requete": "fighting impact_frames",
+  "pourquoi": "impacts de combat (cartes d'impact, tenue avant le choc)"
+ }
+}

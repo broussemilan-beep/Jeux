@@ -1,0 +1,309 @@
+{
+ "clip": "danbooru_danbooru_8561129",
+ "sha1_16": "c7399997f49cbe76",
+ "duree_s": 92.27,
+ "resolution": [
+  1280,
+  720
+ ],
+ "zone_analysee": [
+  12,
+  18,
+  160,
+  90
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 33.3,
+  "lecture": "en 2 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 28,
+  "part_du_temps": 0.104,
+  "plus_longue_ms": 1400
+ },
+ "energie": {
+  "mediane": 28.02,
+  "pic_p95": 72.24,
+  "contraste_p95_sur_mediane": 2.58,
+  "part_rapide": 0.105
+ },
+ "impacts": {
+  "nombre": 17,
+  "par_seconde": 0.18,
+  "ecart_median_s": 3.417,
+  "cartes": [
+   {
+    "t_s": 0.0,
+    "type": "noir",
+    "duree_ms": 2400
+   },
+   {
+    "t_s": 31.2,
+    "type": "silhouette",
+    "duree_ms": 133
+   },
+   {
+    "t_s": 38.4,
+    "type": "noir",
+    "duree_ms": 267
+   },
+   {
+    "t_s": 40.9,
+    "type": "silhouette",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 41.0,
+    "type": "silhouette",
+    "duree_ms": 500
+   },
+   {
+    "t_s": 41.533,
+    "type": "silhouette",
+    "duree_ms": 100
+   },
+   {
+    "t_s": 44.033,
+    "type": "silhouette",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 44.133,
+    "type": "silhouette",
+    "duree_ms": 167
+   },
+   {
+    "t_s": 44.333,
+    "type": "silhouette",
+    "duree_ms": 367
+   },
+   {
+    "t_s": 44.733,
+    "type": "silhouette",
+    "duree_ms": 100
+   },
+   {
+    "t_s": 47.233,
+    "type": "silhouette",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 47.333,
+    "type": "silhouette",
+    "duree_ms": 167
+   },
+   {
+    "t_s": 47.533,
+    "type": "silhouette",
+    "duree_ms": 367
+   },
+   {
+    "t_s": 47.933,
+    "type": "silhouette",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 49.567,
+    "type": "noir",
+    "duree_ms": 333
+   },
+   {
+    "t_s": 50.4,
+    "type": "silhouette",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 50.5,
+    "type": "silhouette",
+    "duree_ms": 167
+   },
+   {
+    "t_s": 50.7,
+    "type": "silhouette",
+    "duree_ms": 367
+   },
+   {
+    "t_s": 51.1,
+    "type": "silhouette",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 60.333,
+    "type": "silhouette",
+    "duree_ms": 100
+   },
+   {
+    "t_s": 60.467,
+    "type": "silhouette",
+    "duree_ms": 167
+   },
+   {
+    "t_s": 60.667,
+    "type": "silhouette",
+    "duree_ms": 133
+   },
+   {
+    "t_s": 63.967,
+    "type": "noir",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 71.867,
+    "type": "blanc",
+    "duree_ms": 2533
+   },
+   {
+    "t_s": 76.0,
+    "type": "noir",
+    "duree_ms": 100
+   },
+   {
+    "t_s": 76.833,
+    "type": "silhouette",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 84.0,
+    "type": "silhouette",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 84.1,
+    "type": "silhouette",
+    "duree_ms": 133
+   },
+   {
+    "t_s": 84.267,
+    "type": "silhouette",
+    "duree_ms": 100
+   },
+   {
+    "t_s": 89.567,
+    "type": "blanc",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 89.833,
+    "type": "blanc",
+    "duree_ms": 367
+   },
+   {
+    "t_s": 91.733,
+    "type": "noir",
+    "duree_ms": 533
+   }
+  ],
+  "profil_autour": {
+   "approche": 4.05,
+   "0,1 s avant": 9.91,
+   "0,1 s apres": 4.82,
+   "tenue_avant_choc": false,
+   "explosion_apres": false
+  }
+ },
+ "coupes": {
+  "nombre": 85,
+  "t_s": [
+   8.0,
+   8.833,
+   11.9,
+   21.567,
+   22.267,
+   28.0,
+   32.8,
+   33.1,
+   33.6,
+   33.767,
+   34.067,
+   34.4,
+   35.1,
+   36.833,
+   37.6,
+   38.0,
+   38.667,
+   39.2,
+   40.867,
+   41.633,
+   42.1,
+   44.833,
+   47.2,
+   48.0,
+   48.767,
+   49.9,
+   53.467,
+   53.567,
+   53.967,
+   55.167,
+   55.967,
+   57.567,
+   58.167,
+   58.333,
+   60.3,
+   60.8,
+   61.233,
+   63.2,
+   63.267,
+   63.433
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.93,
+  "decalage_p95_pct": 24.58
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 3.5,
+  "secondes_de_mouvement": 55.37,
+  "vitesse_sujet_p90": 2.499,
+  "pics": 455,
+  "part_des_pics_qui_montent": 0.23,
+  "deviation_trajectoire_mediane": 0.691,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#000101",
+   "part": 0.27
+  },
+  {
+   "hex": "#7f8d53",
+   "part": 0.22
+  },
+  {
+   "hex": "#92b476",
+   "part": 0.15
+  },
+  {
+   "hex": "#f3e8ce",
+   "part": 0.144
+  },
+  {
+   "hex": "#243427",
+   "part": 0.117
+  },
+  {
+   "hex": "#754733",
+   "part": 0.098
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 29,
+  "termes": {
+   "contraste_de_temps": 0.31,
+   "tenues_presentes": 0.35,
+   "impacts_rythmes": 0.12
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/danbooru_danbooru_8561129.png",
+ "source": {
+  "nom": "danbooru",
+  "id": 8561129,
+  "tags": "6+girls aki_minoriko animal_ears animated audible_music beret bird black_hair black_jacket black_shoes blazer blonde_hair blue_boots blue_hair blue_hat blue_shirt blue_skirt blunt_bangs boots bow breath_weapon breathing_fire brown_boots brown_hair cat_ears cat_girl cat_tail chen cirno closed_eyes closed_mouth collared_shirt colored_skin commentary_request constricted_pupils cpr cross daikon dancing dragonlady_(nankumo) dress electric_fan english_text ex-keine expressionless fire flamingo fork frown fujiwara_no_mokou full_body green_hair green_hat green_vest grey_hair hair_bow hakurei_reimu hat hat_ornament holding holding_fork holding_spoon hong_meiling horn_bow horn_ornament horns houraisan_kaguya ibuki_suika inaba_tewi instrument jacket kamishirasawa_keine kawashiro_nitori keyboard_(instrument) kirisame_marisa kochiya_sanae konpaku_youmu long_hair long_sleeves looking_at_viewer lyrica_prismriver megaphone merlin_prismriver mob_cap multiple_girls music_video mystia_lorelei mystia_lorelei_(bird) namanatto newsboy_cap nurse_cap object_head oni open_mouth orange_hair patchouli_knowledge pink_hair pink_shirt pink_skirt plate pleated_skirt pocket punching purple_bow purple_hair purple_skirt rabbit_ears rabbit_girl radish red_bow red_hat red_skirt red_vest reisen_udongein_inaba rubber_boots saigyouji_yuyuko sanpaku shameimaru_aya shirt shoes short_hair skirt skirt_set smile socks sound spoon star_(symbol) star_hat_ornament sunglasses tail third-party_source tokin_hat touhou triangle_mouth two_side_up very_long_hair vest video what white_dress white_hair white_shirt white_skin white_socks yagokoro_eirin yukkuri_shiteitte_ne",
+  "score": 55,
+  "source_oeuvre": "dragonlady_(nankumo) touhou",
+  "artiste": "namanatto",
+  "url": "https://danbooru.donmai.us/posts/8561129",
+  "requete": "punching",
+  "pourquoi": "coups de poing animes"
+ }
+}

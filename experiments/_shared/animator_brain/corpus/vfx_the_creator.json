@@ -1,0 +1,190 @@
+{
+ "source": "The_Creator_VFX.rbxm",
+ "note": "mesures derivees ; le pack source n'est pas versionne (licence)",
+ "classes": {
+  "ParticleEmitter": 111,
+  "PointLight": 7
+ },
+ "trigger_convention": {
+  "n_particle_emitters": 111,
+  "disabled_fraction": 0.0,
+  "attribute_frequency": [
+   [
+    "EmitDelay",
+    89
+   ],
+   [
+    "EmitCount",
+    77
+   ]
+  ],
+  "attribute_common_values": {
+   "EmitDelay": [
+    [
+     0.0,
+     89
+    ]
+   ],
+   "EmitCount": [
+    [
+     0.0,
+     71
+    ],
+    [
+     5.0,
+     6
+    ]
+   ]
+  },
+  "orientation": {
+   "FacingCamera": 95,
+   "VelocityParallel": 13,
+   "VelocityPerpendicular": 3
+  }
+ },
+ "effects": {
+  "n_effects": 14,
+  "emitters_per_effect": {
+   "n": 14,
+   "p10": 5,
+   "median": 10,
+   "p90": 11
+  },
+  "roles_per_effect": {
+   "n": 14,
+   "p10": 1,
+   "median": 1,
+   "p90": 1
+  },
+  "effect_duration_s": {
+   "n": 14,
+   "p10": 0.75,
+   "median": 1.0,
+   "p90": 1.0
+  },
+  "delayed_emitter_fraction": {
+   "n": 14,
+   "p10": 0.0,
+   "median": 0.0,
+   "p90": 0.0
+  },
+  "top_role_combos": [
+   [
+    "continu",
+    13
+   ],
+   [
+    "forme",
+    1
+   ]
+  ]
+ },
+ "roles": {
+  "continu": {
+   "n": 105,
+   "lifetime_max_s": {
+    "n": 105,
+    "p10": 0.30000001192092896,
+    "median": 0.6000000238418579,
+    "p90": 1.0
+   },
+   "speed_max_studs_s": {
+    "n": 105,
+    "p10": 0.0,
+    "median": 0.0010000000474974513,
+    "p90": 4.0
+   },
+   "size_max_studs": {
+    "n": 105,
+    "p10": 0.307692289352417,
+    "median": 0.5,
+    "p90": 3.0
+   },
+   "emit_count": {
+    "n": 105,
+    "p10": 0.0,
+    "median": 0.0,
+    "p90": 0
+   },
+   "light_emission": {
+    "n": 105,
+    "p10": -0.10000000149011612,
+    "median": 0.20000000298023224,
+    "p90": 10.0
+   },
+   "brightness": {
+    "n": 105,
+    "p10": 1.0,
+    "median": 5.0,
+    "p90": 10.0
+   },
+   "drag": {
+    "n": 105,
+    "p10": 0.0,
+    "median": 0.0,
+    "p90": 1.100000023841858
+   },
+   "size_curve_keys": {
+    "n": 105,
+    "p10": 2,
+    "median": 3,
+    "p90": 3
+   },
+   "flipbook_fraction": 0.1523809523809524,
+   "timescale_ramp_fraction": 0.0
+  },
+  "forme": {
+   "n": 6,
+   "lifetime_max_s": {
+    "n": 6,
+    "p10": 0.20000000298023224,
+    "median": 0.20000000298023224,
+    "p90": 0.20000000298023224
+   },
+   "speed_max_studs_s": {
+    "n": 6,
+    "p10": 5.0,
+    "median": 5.0,
+    "p90": 5.0
+   },
+   "size_max_studs": {
+    "n": 6,
+    "p10": 4.0,
+    "median": 4.0,
+    "p90": 4.0
+   },
+   "emit_count": {
+    "n": 6,
+    "p10": 5.0,
+    "median": 5.0,
+    "p90": 5.0
+   },
+   "light_emission": {
+    "n": 6,
+    "p10": 0.0,
+    "median": 0.0,
+    "p90": 0.0
+   },
+   "brightness": {
+    "n": 6,
+    "p10": 1.0,
+    "median": 1.0,
+    "p90": 1.0
+   },
+   "drag": {
+    "n": 6,
+    "p10": 0.0,
+    "median": 0.0,
+    "p90": 0.0
+   },
+   "size_curve_keys": {
+    "n": 6,
+    "p10": 2,
+    "median": 2,
+    "p90": 2
+   },
+   "flipbook_fraction": 1.0,
+   "timescale_ramp_fraction": 0.0
+  }
+ }
+}

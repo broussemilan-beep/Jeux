@@ -1,0 +1,348 @@
+{
+ "clip": "sakugabooru_sakuga_252420",
+ "sha1_16": "90b30acf66f6f368",
+ "duree_s": 125.5,
+ "resolution": [
+  854,
+  480
+ ],
+ "zone_analysee": [
+  8,
+  7,
+  141,
+  90
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 44,
+  "part_du_temps": 0.133,
+  "plus_longue_ms": 4917
+ },
+ "energie": {
+  "mediane": 7.49,
+  "pic_p95": 54.6,
+  "contraste_p95_sur_mediane": 7.29,
+  "part_rapide": 0.006
+ },
+ "impacts": {
+  "nombre": 32,
+  "par_seconde": 0.25,
+  "ecart_median_s": 1.3,
+  "cartes": [
+   {
+    "t_s": 0.0,
+    "type": "noir",
+    "duree_ms": 167
+   },
+   {
+    "t_s": 0.75,
+    "type": "noir",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 1.0,
+    "type": "noir",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 1.717,
+    "type": "noir",
+    "duree_ms": 1783
+   },
+   {
+    "t_s": 7.05,
+    "type": "noir",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 7.3,
+    "type": "noir",
+    "duree_ms": 750
+   },
+   {
+    "t_s": 12.767,
+    "type": "noir",
+    "duree_ms": 950
+   },
+   {
+    "t_s": 13.767,
+    "type": "noir",
+    "duree_ms": 250
+   },
+   {
+    "t_s": 14.55,
+    "type": "blanc",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 15.933,
+    "type": "blanc",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 16.767,
+    "type": "noir",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 16.85,
+    "type": "noir",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 16.933,
+    "type": "noir",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 25.033,
+    "type": "noir",
+    "duree_ms": 750
+   },
+   {
+    "t_s": 26.533,
+    "type": "noir",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 26.7,
+    "type": "noir",
+    "duree_ms": 250
+   },
+   {
+    "t_s": 31.283,
+    "type": "noir",
+    "duree_ms": 167
+   },
+   {
+    "t_s": 31.617,
+    "type": "noir",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 31.9,
+    "type": "blanc",
+    "duree_ms": 167
+   },
+   {
+    "t_s": 32.117,
+    "type": "silhouette",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 38.367,
+    "type": "noir",
+    "duree_ms": 383
+   },
+   {
+    "t_s": 42.967,
+    "type": "noir",
+    "duree_ms": 3167
+   },
+   {
+    "t_s": 80.033,
+    "type": "noir",
+    "duree_ms": 1550
+   },
+   {
+    "t_s": 88.583,
+    "type": "noir",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 89.883,
+    "type": "blanc",
+    "duree_ms": 167
+   },
+   {
+    "t_s": 98.3,
+    "type": "noir",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 103.517,
+    "type": "noir",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 104.067,
+    "type": "noir",
+    "duree_ms": 783
+   },
+   {
+    "t_s": 104.9,
+    "type": "noir",
+    "duree_ms": 1117
+   },
+   {
+    "t_s": 106.1,
+    "type": "noir",
+    "duree_ms": 2083
+   },
+   {
+    "t_s": 109.7,
+    "type": "noir",
+    "duree_ms": 5250
+   },
+   {
+    "t_s": 118.617,
+    "type": "noir",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 118.7,
+    "type": "noir",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 119.75,
+    "type": "noir",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 120.033,
+    "type": "noir",
+    "duree_ms": 167
+   },
+   {
+    "t_s": 120.45,
+    "type": "noir",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 121.7,
+    "type": "noir",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 122.117,
+    "type": "noir",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 122.367,
+    "type": "noir",
+    "duree_ms": 167
+   },
+   {
+    "t_s": 122.75,
+    "type": "noir",
+    "duree_ms": 117
+   }
+  ],
+  "profil_autour": {
+   "approche": 0.77,
+   "0,1 s avant": 2.97,
+   "0,1 s apres": 1.89,
+   "tenue_avant_choc": false,
+   "explosion_apres": false
+  }
+ },
+ "coupes": {
+  "nombre": 69,
+  "t_s": [
+   0.417,
+   3.75,
+   14.35,
+   14.517,
+   14.6,
+   14.767,
+   14.883,
+   14.933,
+   14.967,
+   15.017,
+   15.183,
+   15.217,
+   15.267,
+   15.3,
+   15.433,
+   15.467,
+   15.6,
+   15.683,
+   15.717,
+   16.017,
+   16.05,
+   16.1,
+   16.183,
+   16.3,
+   16.433,
+   16.467,
+   16.517,
+   19.9,
+   26.117,
+   26.2,
+   27.033,
+   27.067,
+   30.533,
+   31.233,
+   31.817,
+   32.067,
+   32.15,
+   32.2,
+   36.117,
+   36.167
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.57,
+  "decalage_p95_pct": 8.59
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 8.63,
+  "secondes_de_mouvement": 41.93,
+  "vitesse_sujet_p90": 3.32,
+  "pics": 450,
+  "part_des_pics_qui_montent": 0.36,
+  "deviation_trajectoire_mediane": 0.751,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#090d12",
+   "part": 0.287
+  },
+  {
+   "hex": "#271a16",
+   "part": 0.173
+  },
+  {
+   "hex": "#222c32",
+   "part": 0.171
+  },
+  {
+   "hex": "#e38a41",
+   "part": 0.171
+  },
+  {
+   "hex": "#f4d655",
+   "part": 0.11
+  },
+  {
+   "hex": "#9d4319",
+   "part": 0.088
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 64,
+  "termes": {
+   "contraste_de_temps": 1.0,
+   "tenues_presentes": 0.44,
+   "impacts_rythmes": 0.17
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_252420.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 252420,
+  "tags": "animated background_animation beams creatures debris effects explosions fabric fighting fire impact_frames jujutsu_kaisen_season_2 jujutsu_kaisen_series lightning liquid morphing running smears smoke sou_miyazaki sparks vehicle walk_cycle wind",
+  "score": 3382,
+  "source_oeuvre": "#40 (S2 #16) (BD) (CAD: Souta Yamazaki)",
+  "url": "https://www.sakugabooru.com/post/show/252420",
+  "requete": "animated order:score",
+  "pourquoi": "curiosite : le meilleur de l'animation, toutes categories"
+ }
+}

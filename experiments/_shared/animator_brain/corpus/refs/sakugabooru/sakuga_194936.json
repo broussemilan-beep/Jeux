@@ -1,0 +1,247 @@
+{
+ "clip": "sakugabooru_sakuga_194936",
+ "sha1_16": "06d4d9d463eee6ca",
+ "duree_s": 45.17,
+ "resolution": [
+  852,
+  480
+ ],
+ "zone_analysee": [
+  0,
+  0,
+  160,
+  90
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 1,
+  "part_du_temps": 0.023,
+  "plus_longue_ms": 1050
+ },
+ "energie": {
+  "mediane": 13.78,
+  "pic_p95": 71.17,
+  "contraste_p95_sur_mediane": 5.16,
+  "part_rapide": 0.024
+ },
+ "impacts": {
+  "nombre": 17,
+  "par_seconde": 0.38,
+  "ecart_median_s": 1.983,
+  "cartes": [
+   {
+    "t_s": 3.5,
+    "type": "noir",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 5.467,
+    "type": "noir",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 10.267,
+    "type": "silhouette",
+    "duree_ms": 200
+   },
+   {
+    "t_s": 10.517,
+    "type": "silhouette",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 11.433,
+    "type": "noir",
+    "duree_ms": 117
+   },
+   {
+    "t_s": 19.317,
+    "type": "blanc",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 19.9,
+    "type": "blanc",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 21.233,
+    "type": "noir",
+    "duree_ms": 117
+   },
+   {
+    "t_s": 24.4,
+    "type": "silhouette",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 24.517,
+    "type": "silhouette",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 27.817,
+    "type": "blanc",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 28.817,
+    "type": "blanc",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 29.4,
+    "type": "noir",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 30.2,
+    "type": "blanc",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 32.817,
+    "type": "blanc",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 36.083,
+    "type": "blanc",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 36.283,
+    "type": "noir",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 38.083,
+    "type": "noir",
+    "duree_ms": 167
+   },
+   {
+    "t_s": 41.717,
+    "type": "blanc",
+    "duree_ms": 200
+   },
+   {
+    "t_s": 42.083,
+    "type": "blanc",
+    "duree_ms": 500
+   },
+   {
+    "t_s": 42.633,
+    "type": "noir",
+    "duree_ms": 117
+   }
+  ],
+  "profil_autour": {
+   "approche": 4.31,
+   "0,1 s avant": 4.86,
+   "0,1 s apres": 5.99,
+   "tenue_avant_choc": false,
+   "explosion_apres": false
+  }
+ },
+ "coupes": {
+  "nombre": 34,
+  "t_s": [
+   0.05,
+   0.083,
+   0.133,
+   0.467,
+   0.583,
+   1.917,
+   5.5,
+   6.0,
+   9.767,
+   9.967,
+   10.05,
+   10.6,
+   10.683,
+   10.717,
+   11.85,
+   17.767,
+   19.4,
+   19.433,
+   19.483,
+   19.683,
+   19.767,
+   20.1,
+   21.6,
+   22.35,
+   22.4,
+   29.45,
+   30.95,
+   30.983,
+   36.167,
+   36.333,
+   36.367,
+   36.417,
+   36.45,
+   36.5
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.62,
+  "decalage_p95_pct": 24.05
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 7.55,
+  "secondes_de_mouvement": 20.4,
+  "vitesse_sujet_p90": 3.977,
+  "pics": 223,
+  "part_des_pics_qui_montent": 0.28,
+  "deviation_trajectoire_mediane": 0.726,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#1b1619",
+   "part": 0.231
+  },
+  {
+   "hex": "#a6b0ad",
+   "part": 0.174
+  },
+  {
+   "hex": "#fcfdf9",
+   "part": 0.16
+  },
+  {
+   "hex": "#303b40",
+   "part": 0.159
+  },
+  {
+   "hex": "#cdf0ec",
+   "part": 0.149
+  },
+  {
+   "hex": "#625c58",
+   "part": 0.127
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 53,
+  "termes": {
+   "contraste_de_temps": 1.0,
+   "tenues_presentes": 0.08,
+   "impacts_rythmes": 0.25
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_194936.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 194936,
+  "tags": "animated background_animation beams creatures debris effects explosions fighting impact_frames kanada_light_flare one-punch_man one-punch_man_series rotation smears smoke wind yoshimichi_kameda",
+  "score": 3536,
+  "source_oeuvre": "#01 (BD)",
+  "url": "https://www.sakugabooru.com/post/show/194936",
+  "requete": "fighting impact_frames",
+  "pourquoi": "impacts de combat (cartes d'impact, tenue avant le choc)"
+ }
+}

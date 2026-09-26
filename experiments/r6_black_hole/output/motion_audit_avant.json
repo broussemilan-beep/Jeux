@@ -1,0 +1,419 @@
+{
+  "duration_s": 8.233,
+  "sample_hz": 60.0,
+  "overlap": {
+    "Torso <- root": {
+      "n": 3,
+      "median_frames": 1.0,
+      "mean_abs_frames": 1.17,
+      "sync_fraction": 0.333
+    },
+    "Head <- Torso": {
+      "n": 5,
+      "median_frames": -0.5,
+      "mean_abs_frames": 1.0,
+      "sync_fraction": 0.6
+    },
+    "Left Arm <- Torso": {
+      "n": 5,
+      "median_frames": 0.5,
+      "mean_abs_frames": 0.8,
+      "sync_fraction": 0.6
+    },
+    "Left Leg <- Torso": {
+      "n": 3,
+      "median_frames": -2.5,
+      "mean_abs_frames": 8.33,
+      "sync_fraction": 0.0
+    },
+    "Right Arm <- Torso": {
+      "n": 5,
+      "median_frames": 0.5,
+      "mean_abs_frames": 0.8,
+      "sync_fraction": 0.6
+    },
+    "Right Leg <- Torso": {
+      "n": 3,
+      "median_frames": -2.5,
+      "mean_abs_frames": 8.33,
+      "sync_fraction": 0.0
+    }
+  },
+  "stop_clusters": {
+    "stops": 20,
+    "clustered": 7,
+    "clustered_fraction": 0.35
+  },
+  "symmetry": {
+    "Right Arm/Left Arm": {
+      "mirror_dist_mean_studs": 0.065,
+      "mirror_near_fraction": 0.844,
+      "speed_corr": 0.993,
+      "peak_lag_LR": {
+        "n": 5,
+        "median_frames": 0.0,
+        "mean_abs_frames": 0.0,
+        "sync_fraction": 1.0
+      }
+    },
+    "Right Leg/Left Leg": {
+      "mirror_dist_mean_studs": 0.0,
+      "mirror_near_fraction": 1.0,
+      "speed_corr": 1.0,
+      "peak_lag_LR": {
+        "n": 1,
+        "median_frames": 0.0,
+        "mean_abs_frames": 0.0,
+        "sync_fraction": 1.0
+      }
+    }
+  },
+  "planarity": {
+    "Torso": {
+      "dominant_axis_share": 0.998,
+      "dominant_axis": [
+        -1.0,
+        0.0,
+        0.0
+      ]
+    },
+    "Head": {
+      "dominant_axis_share": 1.0,
+      "dominant_axis": [
+        1.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "loops": {
+    "idle": {
+      "root_y": {
+        "peaks": 1,
+        "dominant_cycles_in_window": 1,
+        "note": "fenetre < 3 cycles : purete non applicable"
+      },
+      "Right Arm speed": {
+        "note": "plat"
+      },
+      "Left Arm speed": {
+        "note": "plat"
+      }
+    },
+    "hover": {
+      "root_y": {
+        "peaks": 3,
+        "interval_cv": 0.009,
+        "amplitude_cv": 0.055,
+        "dominant_cycles_in_window": 3,
+        "dominant_freq_share": 0.985
+      },
+      "Right Arm speed": {
+        "peaks": 2,
+        "dominant_cycles_in_window": 1,
+        "note": "fenetre < 3 cycles : purete non applicable"
+      },
+      "Left Arm speed": {
+        "peaks": 2,
+        "dominant_cycles_in_window": 1,
+        "note": "fenetre < 3 cycles : purete non applicable"
+      }
+    },
+    "idle_out": {
+      "root_y": {
+        "peaks": 1,
+        "dominant_cycles_in_window": 1,
+        "note": "fenetre < 3 cycles : purete non applicable"
+      },
+      "Right Arm speed": {
+        "peaks": 2,
+        "dominant_cycles_in_window": 1,
+        "note": "fenetre < 3 cycles : purete non applicable"
+      },
+      "Left Arm speed": {
+        "peaks": 2,
+        "dominant_cycles_in_window": 1,
+        "note": "fenetre < 3 cycles : purete non applicable"
+      }
+    }
+  },
+  "contacts": {
+    "Right Leg": {
+      "contacts": 3,
+      "worst_skate_studs": 0.751,
+      "min_height_studs": -0.661,
+      "runs": [
+        {
+          "t0": 0.0,
+          "t1": 1.0,
+          "skate_max_studs": 0.071
+        },
+        {
+          "t0": 1.5,
+          "t1": 1.783,
+          "skate_max_studs": 0.0
+        },
+        {
+          "t0": 7.033,
+          "t1": 8.233,
+          "skate_max_studs": 0.751
+        }
+      ]
+    },
+    "Left Leg": {
+      "contacts": 3,
+      "worst_skate_studs": 0.754,
+      "min_height_studs": -0.661,
+      "runs": [
+        {
+          "t0": 0.0,
+          "t1": 1.0,
+          "skate_max_studs": 0.071
+        },
+        {
+          "t0": 1.5,
+          "t1": 1.783,
+          "skate_max_studs": 0.0
+        },
+        {
+          "t0": 7.033,
+          "t1": 8.233,
+          "skate_max_studs": 0.754
+        }
+      ]
+    }
+  },
+  "balance": {
+    "grounded_samples": 188,
+    "outside_fraction": 0.277,
+    "worst_outside_studs": 2.129
+  },
+  "pops": {
+    "root (lin.)": {
+      "pops": [],
+      "fast_moves": [
+        [
+          1.833,
+          117
+        ],
+        [
+          2.133,
+          117
+        ],
+        [
+          6.417,
+          83
+        ]
+      ],
+      "worst_ratio": 5.71
+    },
+    "Torso": {
+      "pops": [],
+      "fast_moves": [],
+      "worst_ratio": 3.93
+    },
+    "Head": {
+      "pops": [],
+      "fast_moves": [
+        [
+          2.2,
+          117
+        ]
+      ],
+      "worst_ratio": 5.04
+    },
+    "Left Arm": {
+      "pops": [],
+      "fast_moves": [
+        [
+          2.233,
+          133
+        ]
+      ],
+      "worst_ratio": 4.31
+    },
+    "Left Leg": {
+      "pops": [],
+      "fast_moves": [],
+      "worst_ratio": 3.11
+    },
+    "Right Arm": {
+      "pops": [],
+      "fast_moves": [
+        [
+          2.233,
+          133
+        ]
+      ],
+      "worst_ratio": 4.28
+    },
+    "Right Leg": {
+      "pops": [],
+      "fast_moves": [],
+      "worst_ratio": 3.11
+    }
+  },
+  "frozen_fraction": 0.051,
+  "intended_snaps": [
+    [
+      1.7666666666666666,
+      2.1666666666666665
+    ]
+  ],
+  "verdict": [
+    {
+      "metric": "overlap sync Torso <- root",
+      "value": 0.333,
+      "target": "<= 0.35",
+      "ok": true
+    },
+    {
+      "metric": "overlap sync Head <- Torso",
+      "value": 0.6,
+      "target": "<= 0.35",
+      "ok": false
+    },
+    {
+      "metric": "overlap retard median Head <- Torso",
+      "value": -0.5,
+      "target": "[1.0, 4.0] frames",
+      "ok": false
+    },
+    {
+      "metric": "overlap sync Left Arm <- Torso",
+      "value": 0.6,
+      "target": "<= 0.35",
+      "ok": false
+    },
+    {
+      "metric": "overlap retard median Left Arm <- Torso",
+      "value": 0.5,
+      "target": "[1.0, 6.0] frames",
+      "ok": false
+    },
+    {
+      "metric": "overlap sync Left Leg <- Torso",
+      "value": 0.0,
+      "target": "<= 0.35",
+      "ok": true
+    },
+    {
+      "metric": "overlap retard median Left Leg <- Torso",
+      "value": -2.5,
+      "target": "[1.0, 6.0] frames",
+      "ok": false
+    },
+    {
+      "metric": "overlap sync Right Arm <- Torso",
+      "value": 0.6,
+      "target": "<= 0.35",
+      "ok": false
+    },
+    {
+      "metric": "overlap retard median Right Arm <- Torso",
+      "value": 0.5,
+      "target": "[1.0, 6.0] frames",
+      "ok": false
+    },
+    {
+      "metric": "overlap sync Right Leg <- Torso",
+      "value": 0.0,
+      "target": "<= 0.35",
+      "ok": true
+    },
+    {
+      "metric": "overlap retard median Right Leg <- Torso",
+      "value": -2.5,
+      "target": "[1.0, 6.0] frames",
+      "ok": false
+    },
+    {
+      "metric": "arrets simultanes",
+      "value": 0.35,
+      "target": "<= 0.3",
+      "ok": false
+    },
+    {
+      "metric": "miroir quasi exact Right Arm/Left Arm",
+      "value": 0.844,
+      "target": "<= 0.5",
+      "ok": false
+    },
+    {
+      "metric": "correlation vitesses G/D Right Arm/Left Arm",
+      "value": 0.993,
+      "target": "<= 0.9",
+      "ok": false
+    },
+    {
+      "metric": "miroir quasi exact Right Leg/Left Leg",
+      "value": 1.0,
+      "target": "<= 0.5",
+      "ok": false
+    },
+    {
+      "metric": "correlation vitesses G/D Right Leg/Left Leg",
+      "value": 1.0,
+      "target": "<= 0.9",
+      "ok": false
+    },
+    {
+      "metric": "planarite Torso",
+      "value": 0.998,
+      "target": "<= 0.85",
+      "ok": false
+    },
+    {
+      "metric": "planarite Head",
+      "value": 1.0,
+      "target": "<= 0.85",
+      "ok": false
+    },
+    {
+      "metric": "boucle hover root_y purete freq",
+      "value": 0.985,
+      "target": "<= 0.8",
+      "ok": false
+    },
+    {
+      "metric": "boucle hover root_y CV intervalles",
+      "value": 0.009,
+      "target": ">= 0.06",
+      "ok": false
+    },
+    {
+      "metric": "glissement pied Right Leg",
+      "value": 0.751,
+      "target": "<= 0.1",
+      "ok": false
+    },
+    {
+      "metric": "glissement pied Left Leg",
+      "value": 0.754,
+      "target": "<= 0.1",
+      "ok": false
+    },
+    {
+      "metric": "discontinuites de vitesse hors snaps declares",
+      "value": 0,
+      "target": "== 0",
+      "ok": true
+    },
+    {
+      "metric": "desequilibre (CdM hors appui)",
+      "value": 0.277,
+      "target": "<= 0.1",
+      "ok": false
+    },
+    {
+      "metric": "holds morts",
+      "value": 0.051,
+      "target": "<= 0.05",
+      "ok": false
+    }
+  ],
+  "score": {
+    "ok": 4,
+    "total": 25
+  }
+}

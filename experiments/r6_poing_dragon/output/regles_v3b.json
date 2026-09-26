@@ -1,0 +1,165 @@
+{
+ "ok": 11,
+ "total": 12,
+ "regles": [
+  {
+   "regle": "posture droite pendant les coups legers",
+   "ok": true,
+   "valeur": {
+    "max": 0.159,
+    "median": 0.051
+   },
+   "seuil": {
+    "max": 0.24,
+    "median": 0.123
+   },
+   "source": "corpus frappe_legere (affaissement_torse_studs) ; retour Milan 2026-09-24"
+  },
+  {
+   "regle": "posture droite pendant les coups legers (fente du coup final, standard coup lourd)",
+   "ok": true,
+   "valeur": {
+    "max": 0.678,
+    "median": 0.386
+   },
+   "seuil": {
+    "max": 1.445,
+    "median": 0.834
+   },
+   "source": "corpus frappe_lourde (affaissement_torse_studs) ; retour Milan 2026-09-24"
+  },
+  {
+   "regle": "escalade : hitstop",
+   "ok": true,
+   "valeur": [
+    0.03,
+    0.045,
+    0.06,
+    0.085
+   ],
+   "seuil": "dernier tiers >= 1.15 x premier tiers, aucune baisse > 10 %",
+   "source": "refs Black Flash / Serious Punch ; retour Milan 2026-09-24"
+  },
+  {
+   "regle": "escalade : recul de la victime (studs)",
+   "ok": true,
+   "valeur": [
+    0.283,
+    0.39,
+    0.571,
+    1.346
+   ],
+   "seuil": "dernier tiers >= 1.15 x premier tiers, aucune baisse > 10 %",
+   "source": "refs Black Flash / Serious Punch ; retour Milan 2026-09-24"
+  },
+  {
+   "regle": "escalade : secousse camera",
+   "ok": true,
+   "valeur": [
+    0.14,
+    0.22,
+    0.3,
+    0.42
+   ],
+   "seuil": "dernier tiers >= 1.15 x premier tiers, aucune baisse > 10 %",
+   "source": "refs Black Flash / Serious Punch ; retour Milan 2026-09-24"
+  },
+  {
+   "regle": "rafale : changement d'angle au moins toutes les 2 frappes",
+   "ok": true,
+   "valeur": 2,
+   "seuil": "<= 2 frappes par plan",
+   "source": "refs Black Flash ; LECONS.md 2"
+  },
+  {
+   "regle": "impact final visible avant les effets plein ecran",
+   "ok": true,
+   "valeur": 10,
+   "seuil": ">= 6 f a 60 i/s",
+   "source": "REFERENCES_VIDEO.md (Serious Punch) ; LECONS.md 3"
+  },
+  {
+   "regle": "plongee lisible (plan sans coupe)",
+   "ok": true,
+   "valeur": 30,
+   "seuil": ">= 20 f",
+   "source": "LECONS.md 3"
+  },
+  {
+   "regle": "epaules jamais haussees",
+   "ok": true,
+   "valeur": {
+    "max": -0.018,
+    "median": -0.618
+   },
+   "seuil": {
+    "max": 0.088,
+    "median": -0.539
+   },
+   "source": "corpus frappe_legere (decalage_epaule_vertical_studs) ; retour Milan 2026-09-24 (v2)"
+  },
+  {
+   "regle": "bras quasi horizontal au contact",
+   "ok": true,
+   "valeur": {
+    "elevation_deg": [
+     -6.5,
+     -5.3,
+     -6.8,
+     -5.1
+    ],
+    "mediane_deg": -5.9,
+    "poing_hauteur": [
+     3.32,
+     3.22,
+     3.22,
+     2.69
+    ]
+   },
+   "seuil": {
+    "elevation_deg": [
+     -24.7,
+     5.1
+    ],
+    "mediane_deg": "-3.3 +- 10.0",
+    "poing_hauteur": 3.69
+   },
+   "source": "corpus frappe_legere (mecanique_frappe) ; retours Milan v2 (trop haut) et v3 (vers le bas)"
+  },
+  {
+   "regle": "coup droit : le poing voyage a plat (pas d'uppercut)",
+   "ok": false,
+   "valeur": {
+    "montee_0_1s": [
+     1.66,
+     1.57,
+     1.57,
+     1.13
+    ],
+    "hauteur_vs_epaule": [
+     -0.73,
+     -0.7,
+     -0.7,
+     -0.58
+    ]
+   },
+   "seuil": {
+    "montee_0_1s": "<= 0.32",
+    "hauteur_vs_epaule": ">= -0.48"
+   },
+   "source": "corpus frappe_legere (mecanique_frappe.poing_*) ; retour Milan v3b ; 5 exemples de Milan"
+  },
+  {
+   "regle": "transfert de poids sur les coups de puissance",
+   "ok": true,
+   "valeur": [
+    0.6,
+    0.61,
+    0.59,
+    0.84
+   ],
+   "seuil": ">= 0.33 stud sur les 4 derniers",
+   "source": "corpus frappe_lourde (mecanique_frappe.transfert_poids_studs) ; retour Milan 2026-09-24 (v2)"
+  }
+ ]
+}

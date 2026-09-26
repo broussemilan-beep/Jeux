@@ -1,0 +1,169 @@
+{
+ "source": "TSB (animations officielles, fichier de Milan)",
+ "clips": {
+  "Collateral Ruin": {
+   "cles": 37,
+   "duree_s": 2.13,
+   "cles_par_s": 17.3,
+   "ecart_median_f": 3.3,
+   "bascule_torse_p90": 70.3,
+   "croix_frac": 0.0
+  },
+  "M1": {
+   "cles": 8,
+   "duree_s": 0.43,
+   "cles_par_s": 18.5,
+   "ecart_median_f": 4.0,
+   "bascule_torse_p90": 18.8,
+   "croix_frac": 0.0,
+   "contact_f": 9,
+   "main": "Left Arm",
+   "profil_frappe": {
+    "plateau": 0.92,
+    "arrivee": 1.0,
+    "phase_rapide_f": 3,
+    "pointe": 72.6,
+    "contact_f": 9
+   },
+   "pose_impact": {
+    "bras_epaules_deg": 74.4,
+    "torse_detourne_deg": 43.8,
+    "bras_libre": 0.45,
+    "translation_bras": 0.85
+   }
+  },
+  "M2": {
+   "cles": 8,
+   "duree_s": 0.47,
+   "cles_par_s": 17.1,
+   "ecart_median_f": 4.0,
+   "bascule_torse_p90": 35.8,
+   "croix_frac": 0.0,
+   "contact_f": 12,
+   "main": "Right Arm",
+   "profil_frappe": {
+    "plateau": 0.97,
+    "arrivee": 0.19,
+    "phase_rapide_f": 4,
+    "pointe": 80.4,
+    "contact_f": 11
+   },
+   "pose_impact": {
+    "bras_epaules_deg": 75.8,
+    "torse_detourne_deg": 23.4,
+    "bras_libre": 0.72,
+    "translation_bras": 1.2
+   }
+  },
+  "M3": {
+   "cles": 8,
+   "duree_s": 0.44,
+   "cles_par_s": 18.0,
+   "ecart_median_f": 4.0,
+   "bascule_torse_p90": 21.5,
+   "croix_frac": 0.0,
+   "contact_f": 8,
+   "main": "Left Arm",
+   "profil_frappe": {
+    "plateau": 0.93,
+    "arrivee": 0.93,
+    "phase_rapide_f": 2,
+    "pointe": 70.5,
+    "contact_f": 8
+   },
+   "pose_impact": {
+    "bras_epaules_deg": 61.5,
+    "torse_detourne_deg": 61.6,
+    "bras_libre": 0.79,
+    "translation_bras": 0.15
+   }
+  },
+  "M4": {
+   "cles": 22,
+   "duree_s": 0.69,
+   "cles_par_s": 31.9,
+   "ecart_median_f": 2.0,
+   "bascule_torse_p90": 31.5,
+   "croix_frac": 0.0,
+   "contact_f": 23,
+   "main": "Right Arm",
+   "profil_frappe": {
+    "plateau": 1.0,
+    "arrivee": 0.18,
+    "phase_rapide_f": 2,
+    "pointe": 153.2,
+    "contact_f": 23
+   },
+   "pose_impact": {
+    "bras_epaules_deg": 77.7,
+    "torse_detourne_deg": 45.0,
+    "bras_libre": 0.26,
+    "translation_bras": 0.81
+   }
+  },
+  "Stoic Bomb": {
+   "cles": 57,
+   "duree_s": 4.72,
+   "cles_par_s": 12.1,
+   "ecart_median_f": 2.4,
+   "bascule_torse_p90": 32.4,
+   "croix_frac": 0.0
+  },
+  "Swift Sweep": {
+   "cles": 24,
+   "duree_s": 1.6,
+   "cles_par_s": 15.0,
+   "ecart_median_f": 5.0,
+   "bascule_torse_p90": 97.1,
+   "croix_frac": 0.0
+  },
+  "Swift Sweep (Fail)": {
+   "cles": 17,
+   "duree_s": 0.7,
+   "cles_par_s": 24.3,
+   "ecart_median_f": 2.0,
+   "bascule_torse_p90": 43.6,
+   "croix_frac": 0.0
+  },
+  "Swift Sweep (Victim)": {
+   "cles": 9,
+   "duree_s": 0.58,
+   "cles_par_s": 15.4,
+   "ecart_median_f": 4.0,
+   "bascule_torse_p90": 39.4,
+   "croix_frac": 0.0
+  },
+  "Ultimate1": {
+   "cles": 134,
+   "duree_s": 10.02,
+   "cles_par_s": 13.4,
+   "ecart_median_f": 4.0,
+   "bascule_torse_p90": 6.5,
+   "croix_frac": 0.002
+  },
+  "Ultimate2": {
+   "cles": 174,
+   "duree_s": 2.88,
+   "cles_par_s": 60.3,
+   "ecart_median_f": 1.0,
+   "bascule_torse_p90": 14.0,
+   "croix_frac": 0.0
+  },
+  "WallComboPlayer": {
+   "cles": 88,
+   "duree_s": 6.83,
+   "cles_par_s": 12.9,
+   "ecart_median_f": 5.0,
+   "bascule_torse_p90": 50.2,
+   "croix_frac": 0.0
+  },
+  "WallComboVictim": {
+   "cles": 261,
+   "duree_s": 5.97,
+   "cles_par_s": 43.7,
+   "ecart_median_f": 1.0,
+   "bascule_torse_p90": 52.7,
+   "croix_frac": 0.045
+  }
+ }
+}

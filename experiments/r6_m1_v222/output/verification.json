@@ -1,0 +1,398 @@
+{
+ "distance_studs": 3.899,
+ "contact": {
+  "impact_f": 17,
+  "distance_signee_a_l_impact": 0.0,
+  "penetration_max": 0.0352,
+  "frames_en_penetration": []
+ },
+ "translation_tete_max": 0.0,
+ "aller_retour_max_studs": 3.501777277920762e-15,
+ "sens_roblox": {
+  "attaquant_regarde_moins_z": true,
+  "poing_devant_a_l_impact": true,
+  "victime_face_a_l_attaquant": true,
+  "poing_sur_la_face_avant_de_la_victime": true,
+  "tete_victime_projetee_vers_son_dos": true,
+  "armement_bras_droit_en_arriere": true
+ },
+ "attaquant": {
+  "categorie": "frappe_legere",
+  "timing": {
+   "duree_s": 0.65,
+   "n_frames": 40,
+   "boucle": false,
+   "parts_ignorees_poids_nul": [
+    "Right Leg",
+    "Left Leg"
+   ],
+   "energie": {
+    "pic_deg_s": 5245.4,
+    "mediane_deg_s": 1114.1,
+    "contraste_pic_sur_mediane": 4.71,
+    "fraction_quasi_tenue": 0.45,
+    "fraction_rapide": 0.325
+   },
+   "poses_cles_par_s": 4.62,
+   "mouvements": [
+    {
+     "debut_f60": 0.0,
+     "fin_f60": 9.0,
+     "fin_active_f60": 7.0,
+     "main_vers_avant_max_studs_s": 16.7,
+     "pic_energie_rel": 1.0,
+     "main_max_studs_s": 54.1,
+     "ordre_des_pics": [
+      [
+       "Left Arm",
+       2.0
+      ],
+      [
+       "Right Arm",
+       2.0
+      ],
+      [
+       "Head",
+       3.0
+      ],
+      [
+       "Torso",
+       3.0
+      ]
+     ]
+    },
+    {
+     "debut_f60": 9.0,
+     "fin_f60": 39.0,
+     "fin_active_f60": 21.0,
+     "main_vers_avant_max_studs_s": 66.5,
+     "pic_energie_rel": 0.94,
+     "main_max_studs_s": 71.4,
+     "ordre_des_pics": [
+      [
+       "Left Arm",
+       5.0
+      ],
+      [
+       "Head",
+       6.0
+      ],
+      [
+       "Torso",
+       6.0
+      ],
+      [
+       "Right Arm",
+       8.0
+      ]
+     ]
+    }
+   ],
+   "main_qui_frappe": "Right Arm",
+   "phases": {
+    "anticipation_f60": 9.0,
+    "action_f60": 12.0,
+    "recuperation_ou_tenue_f60": 18.0,
+    "fraction_anticipation": 0.231,
+    "fraction_recuperation": 0.462,
+    "qui_mene_l_action": [
+     "Left Arm",
+     "Head",
+     "Torso",
+     "Right Arm"
+    ]
+   },
+   "membres": {
+    "Torso": {
+     "vitesse_max_deg_s": 1407.6,
+     "pic_a_s": 0.25,
+     "amplitude_vs_repos_deg": 98.0,
+     "amplitude_vs_debut_deg": 98.0
+    },
+    "Head": {
+     "vitesse_max_deg_s": 1479.1,
+     "pic_a_s": 0.25,
+     "amplitude_vs_repos_deg": 99.2,
+     "amplitude_vs_debut_deg": 98.8
+    },
+    "Right Arm": {
+     "vitesse_max_deg_s": 1884.6,
+     "pic_a_s": 0.033,
+     "amplitude_vs_repos_deg": 112.8,
+     "amplitude_vs_debut_deg": 112.8
+    },
+    "Left Arm": {
+     "vitesse_max_deg_s": 1018.1,
+     "pic_a_s": 0.233,
+     "amplitude_vs_repos_deg": 85.1,
+     "amplitude_vs_debut_deg": 85.1
+    }
+   },
+   "mains_vitesse_max_studs_s": {
+    "Right Arm": 71.4,
+    "Left Arm": 47.1
+   },
+   "translation_articulation_max_studs": {
+    "Head": 0.0,
+    "Right Arm": 1.326,
+    "Left Arm": 1.445
+   },
+   "deplacement_torse_studs": {
+    "x": 0.25,
+    "y": 0.14,
+    "z": 0.64
+   },
+   "torse_vitesse_max_studs_s": 7.3
+  },
+  "verdict": {
+   "dans_la_plage": 32,
+   "total": 38,
+   "hors_plage": [
+    [
+     "timing.energie.fraction_rapide",
+     0.325,
+     [
+      0.116,
+      0.299,
+      0.237
+     ]
+    ],
+    [
+     "timing.poses_cles_par_s",
+     4.62,
+     [
+      2.552,
+      3.388,
+      3.08
+     ]
+    ],
+    [
+     "timing.membres.Right Arm.pic_a_s",
+     0.033,
+     [
+      0.042,
+      0.225,
+      0.083
+     ]
+    ],
+    [
+     "timing.membres.Left Arm.amplitude_vs_repos_deg",
+     85.1,
+     [
+      124.48,
+      196.12,
+      167.2
+     ]
+    ],
+    [
+     "timing.membres.Left Arm.amplitude_vs_debut_deg",
+     85.1,
+     [
+      85.16,
+      181.34,
+      141.4
+     ]
+    ],
+    [
+     "timing.mains_vitesse_max_studs_s.Left Arm",
+     47.1,
+     [
+      57.885,
+      91.515,
+      67.15
+     ]
+    ]
+   ]
+  }
+ },
+ "victime": {
+  "categorie": "reaction",
+  "timing": {
+   "duree_s": 0.217,
+   "n_frames": 14,
+   "boucle": false,
+   "parts_ignorees_poids_nul": [
+    "Right Leg",
+    "Left Leg"
+   ],
+   "energie": {
+    "pic_deg_s": 2980.0,
+    "mediane_deg_s": 885.0,
+    "contraste_pic_sur_mediane": 3.37,
+    "fraction_quasi_tenue": 0.286,
+    "fraction_rapide": 0.286
+   },
+   "poses_cles_par_s": 0.0,
+   "mouvements": [
+    {
+     "debut_f60": 0.0,
+     "fin_f60": 13.0,
+     "fin_active_f60": 9.0,
+     "main_vers_avant_max_studs_s": 5.6,
+     "pic_energie_rel": 1.0,
+     "main_max_studs_s": 19.5,
+     "ordre_des_pics": [
+      [
+       "Head",
+       1.0
+      ],
+      [
+       "Left Arm",
+       1.0
+      ],
+      [
+       "Right Arm",
+       1.0
+      ],
+      [
+       "Torso",
+       2.0
+      ]
+     ]
+    }
+   ],
+   "main_qui_frappe": "Right Arm",
+   "phases": {
+    "anticipation_f60": 0.0,
+    "action_f60": 9.0,
+    "recuperation_ou_tenue_f60": 4.0,
+    "fraction_anticipation": 0.0,
+    "fraction_recuperation": 0.308,
+    "qui_mene_l_action": [
+     "Head",
+     "Left Arm",
+     "Right Arm",
+     "Torso"
+    ]
+   },
+   "membres": {
+    "Torso": {
+     "vitesse_max_deg_s": 495.8,
+     "pic_a_s": 0.033,
+     "amplitude_vs_repos_deg": 24.8,
+     "amplitude_vs_debut_deg": 24.8
+    },
+    "Head": {
+     "vitesse_max_deg_s": 1064.2,
+     "pic_a_s": 0.017,
+     "amplitude_vs_repos_deg": 35.5,
+     "amplitude_vs_debut_deg": 35.5
+    },
+    "Right Arm": {
+     "vitesse_max_deg_s": 900.0,
+     "pic_a_s": 0.017,
+     "amplitude_vs_repos_deg": 30.0,
+     "amplitude_vs_debut_deg": 30.0
+    },
+    "Left Arm": {
+     "vitesse_max_deg_s": 520.0,
+     "pic_a_s": 0.017,
+     "amplitude_vs_repos_deg": 26.0,
+     "amplitude_vs_debut_deg": 26.0
+    }
+   },
+   "mains_vitesse_max_studs_s": {
+    "Right Arm": 9.1,
+    "Left Arm": 19.5
+   },
+   "translation_articulation_max_studs": {
+    "Head": 0.0,
+    "Right Arm": 0.002,
+    "Left Arm": 0.001
+   },
+   "deplacement_torse_studs": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+   },
+   "torse_vitesse_max_studs_s": 0.1
+  },
+  "verdict": {
+   "dans_la_plage": 29,
+   "total": 38,
+   "hors_plage": [
+    [
+     "timing.energie.pic_deg_s",
+     2980.0,
+     [
+      1281.63,
+      2775.97,
+      1870.7
+     ]
+    ],
+    [
+     "timing.energie.contraste_pic_sur_mediane",
+     3.37,
+     [
+      1.295,
+      2.685,
+      2.35
+     ]
+    ],
+    [
+     "timing.energie.fraction_quasi_tenue",
+     0.286,
+     [
+      0.0,
+      0.071,
+      0.0
+     ]
+    ],
+    [
+     "timing.phases.action_f60",
+     9.0,
+     [
+      9.8,
+      14.2,
+      12.0
+     ]
+    ],
+    [
+     "timing.membres.Torso.vitesse_max_deg_s",
+     495.8,
+     [
+      499.32,
+      785.48,
+      646.8
+     ]
+    ],
+    [
+     "timing.membres.Right Arm.vitesse_max_deg_s",
+     900.0,
+     [
+      338.6,
+      833.9,
+      463.0
+     ]
+    ],
+    [
+     "timing.membres.Left Arm.pic_a_s",
+     0.017,
+     [
+      0.028,
+      0.238,
+      0.05
+     ]
+    ],
+    [
+     "timing.translation_articulation_max_studs.Right Arm",
+     0.002,
+     [
+      0.033,
+      0.041,
+      0.037
+     ]
+    ],
+    [
+     "timing.translation_articulation_max_studs.Left Arm",
+     0.001,
+     [
+      0.034,
+      0.042,
+      0.038
+     ]
+    ]
+   ]
+  }
+ }
+}

@@ -1,0 +1,512 @@
+{
+ "label": "recon:anime",
+ "kind": "recon",
+ "resultat": {
+  "ref": "4 images fixes anime/manga envoyées par Milan : gon_charge.webp (Gon, HxH, la charge), saitama_dos_charge.jpg (Saitama de dos dans le tourbillon), saitama_manga_coup.jpg (manga, coup vers le lecteur), poing_rouge.jpg (poing rouge, anime ép. 12 contre Boros). Reconstructions R6 dans /tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/recon_anime/ (final_*.png, finals_pile.png, planche_v5_vs_gon.png, planche_transpositions.png, final_params_descripteurs.json, rounds/ avec 107 PNG d'itération).",
+  "direction_du_coup": "Les 4 images ne montrent pas le même instant. Gon et Saitama de dos : la charge est filmée de DOS (caméra az 172 à 195). Le coup part vers l'avant, dans la direction opposée à la caméra. Manga et poing rouge : le lâcher et le contact sont filmés du côté de la CIBLE (caméra az -10 à -20). Le poing vient vers la caméra, un peu vers la gauche de l'image, c'est-à-dire la droite du perso. On voit la face carrée du poing, poing à plat. Repère utilisé pour les descripteurs : avant = (0,0,-1), la direction dans laquelle le perso regarde. La direction de frappe de Gon et de Saitama de dos est déduite (vers l'avant) : elle n'est pas visible sur l'image.",
+  "moments": [
+   {
+    "moment": "CHARGE — Gon (gon_charge.webp), poing armé à la hanche",
+    "t": "image fixe",
+    "params": {
+     "hanche": 2.2,
+     "buste": [
+      -20,
+      62,
+      -25
+     ],
+     "tete": [
+      25,
+      20
+     ],
+     "RA": [
+      160,
+      -78,
+      "roulis naturel"
+     ],
+     "LA": [
+      45,
+      0,
+      "roulis naturel"
+     ],
+     "RL": [
+      "pied",
+      [
+       1.6,
+       0,
+       0.85
+      ]
+     ],
+     "LL": [
+      "pied",
+      [
+       -1.6,
+       0,
+       0.85
+      ]
+     ]
+    },
+    "descripteurs": {
+     "resume": "hanche 2.20 | buste lacet -20 penché +62 côté -45 (côté gonflé par le penché, entrée -25) | RA torse az +160 el -78 (coup az +171 el -13) poing [-0.90, 1.64, 0.18] | LA torse az +45 el 0 (coup az +67 el -29) poing [0.70, 0.01, -1.13] | pieds RL [-0.85, 1.6, -2.2] LL [-0.85, -1.6, -2.2]",
+     "v5_tenue_f240_pour_comparaison": "buste lacet -64 penché +28 | RA torse az +11 el -6 (coup az +78 el -34) poing [-0.45, 2.51, -0.01]"
+    },
+    "image_finale": "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/recon_anime/final_gon.png",
+    "lecture": "Pose humaine : accroupi très bas et jambes très écartées (pieds à environ 1,7 fois la largeur du torse, genoux vers l'extérieur). Le buste est penché d'environ 60° vers l'avant, la tête baissée à hauteur des épaules. Le buste est incliné sur sa gauche : l'épaule droite est plus haute, la ceinture monte vers la droite d'environ 10°. Bras droit replié : le coude sort vers l'arrière et vers la droite, le poing est collé à la hanche droite (hikite). Le bras gauche n'est pas visible : il est devant, caché par le torse. Équivalent R6 : le bras droit est collé au flanc, à 12° seulement de l'axe bas du torse (torse az 160, el -78). Le poing est 0,9 derrière le centre du torse et à 1,64 sur le côté, juste à l'extérieur du flanc qui est à 1,0. Il n'est donc pas loin du corps. Comparaison avec v5 à la tenue : bras levé vers l'avant du torse (el -6, soit 84° hors de l'axe du torse) et poing à 2,5 sur le côté. Le torse est penché de 62° : le bras collé au flanc pointe donc vers l'ARRIÈRE presque à l'horizontale dans le monde (coup el -13). Vu de dos, comme sur la réf, il se lit comme une bosse compacte à l'épaule. Vu de profil (planche_v5_vs_gon.png, colonne az 90), c'est une barre horizontale derrière le dos, donc exactement le « bras tendu derrière » refusé par Milan. Compromis R6 : sans coude, le poing ne peut être à la hanche que si le bras est parallèle au dos. Il faut donc un penché modéré (30 à 45°) et un plan de dos (planche_transpositions.png). Jambes : une jambe raide de 2 ne peut pas être à la fois aussi écartée (3,3 entre les pieds) et aussi haute visuellement (2,3). J'ai gardé l'écart (pieds à ±1,6), ce qui fait descendre les hanches à 2,2.",
+    "alternative_testee": "Bras droit, 4 hypothèses rendues depuis la caméra de la réf (rounds/gon_alt_pile.png) : (a) le long du flanc (160,-78) : bloc compact en haut à droite du dos, du niveau de l'épaule à la taille, c'est ce qui correspond le mieux ; (b) tendu derrière, comme v3 (180,-20) : le bloc dépasse AU-DESSUS de l'épaule, alors que la réf n'a rien à cet endroit : rejeté ; (c) coude sur le côté (90,-40) : barre horizontale qui dépasse de 2 studs à droite, alors que le bras de la réf dépasse d'environ 0,5 : rejeté ; (d) devant, comme v5 (20,-10) : avec le torse penché, le bloc pend jusque sous la taille : moins bon que (a). Buste, 3 hypothèses (rounds/gon_r5_pile.png) : lacet -25 avec incliné à gauche, lacet +15, caméra az 200. On ne peut pas trancher nettement. Le côté incliné à gauche explique la tête en haut à gauche et la ligne d'épaules qui monte vers la droite.",
+    "camera": {
+     "az": 172,
+     "el": 10,
+     "dist": 14,
+     "fov": 25,
+     "cible": [
+      0,
+      1.45,
+      0.5
+     ],
+     "note": "de dos, légèrement à sa droite, un peu au-dessus de la hanche, focale longue"
+    },
+    "confiance": {
+     "bras_droit_colle_au_flanc_poing_hanche": 0.75,
+     "buste_penche_55_65": 0.7,
+     "lacet_du_buste": 0.35,
+     "incline_a_gauche": 0.5,
+     "bras_gauche_devant_cache": 0.6,
+     "jambes_ecart_large_accroupi": 0.8,
+     "direction_de_frappe_vers_l_avant": 0.6
+    }
+   },
+   {
+    "moment": "CHARGE — Saitama de dos dans le tourbillon (saitama_dos_charge.jpg)",
+    "t": "image fixe",
+    "params": {
+     "hanche": 2.5,
+     "buste": [
+      15,
+      10,
+      -8
+     ],
+     "tete": [
+      35,
+      30
+     ],
+     "RA": [
+      0,
+      0,
+      "roulis naturel"
+     ],
+     "LA": [
+      25,
+      10,
+      "roulis naturel"
+     ],
+     "RL": [
+      "pied",
+      [
+       0.6,
+       0,
+       -1
+      ]
+     ],
+     "LL": [
+      "pied",
+      [
+       -0.5,
+       0,
+       1.4
+      ]
+     ]
+    },
+    "descripteurs": {
+     "resume": "hanche 2.50 | buste lacet +15 penché +10 côté -8 | RA torse az 0 el 0 (coup az -15 el -10) poing [1.91, 0.95, 0.43] | LA torse az +25 el +10 (coup az +8 el +4) poing [1.34, -1.23, 0.16] | pieds RL [1.0, 0.6, -2.5] LL [-1.4, -0.5, -2.5] | tête tournée à sa gauche et baissée"
+    },
+    "image_finale": "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/recon_anime/final_saitama_dos.png",
+    "lecture": "Caméra au ras du sol derrière le pied arrière, contre-plongée forte. La botte au premier plan est énorme, c'est le pied arrière : fente, pied arrière vers la caméra, sans doute le gauche. Le buste est presque droit (15 à 20° vers l'avant d'après le raccourci), la tête baissée et tournée vers sa gauche. Le gant gauche est visible près du menton, à gauche de la tête. AUCUN bras ne dépasse derrière ni sur le côté droit : il n'y a qu'une petite tache rouge au sommet de l'épaule droite. La silhouette est une colonne compacte, et c'est le tourbillon (effets visuels) qui porte toute la « charge ». Équivalent R6 : bras droit devant, caché par le torse. Vu de dos et d'en bas, il n'apparaît que comme un petit coin vert à l'épaule, ce qui correspond à la tache rouge. Bras gauche devant et levé. Le poing armé ne se lit PAS par le bras : il se lit par la caméra et les effets visuels.",
+    "alternative_testee": "Bras droit (rounds/sd_r6_pile.png) : devant (0,0) = petit coin à l'épaule, correspond le mieux ; croisé (60,-20) = proche ; pendant (0,-90) = bloc vertical le long du flanc droit, absent de la réf ; armé derrière (170,-70) = bloc qui sort vers la caméra à droite, absent de la réf. Buste (rounds/sd_r7_pile.png) : lacet +15 correspond ; lacet -30 (épaule droite reculée) fait apparaître un gros bloc de bras en haut à droite, absent de la réf. Avec cette caméra, on n'observe donc pas un buste tourné épaule droite en arrière.",
+    "camera": {
+     "az": 195,
+     "el": -27,
+     "dist": 3.4,
+     "fov": 85,
+     "cible": [
+      0,
+      2.1,
+      0
+     ],
+     "note": "très basse, derrière le pied arrière, grand angle ; la réf est en plus inclinée (plan « hollandais ») et l'outil n'a pas de roulis caméra"
+    },
+    "confiance": {
+     "camera_de_dos_contre_plongee": 0.8,
+     "aucun_bras_ne_depasse_derriere": 0.7,
+     "bras_droit_devant_ou_cache": 0.4,
+     "lacet_buste": 0.3,
+     "fente_pied_arriere_vers_camera": 0.55
+    }
+   },
+   {
+    "moment": "LÂCHER — manga, coup vers le lecteur (saitama_manga_coup.jpg)",
+    "t": "image fixe (en mouvement : traînée derrière le poing)",
+    "params": {
+     "hanche": 3,
+     "buste": [
+      0,
+      15,
+      0
+     ],
+     "tete": [
+      0,
+      25
+     ],
+     "RA": [
+      -20,
+      0,
+      "roulis naturel"
+     ],
+     "LA": [
+      -150,
+      -60,
+      "roulis naturel"
+     ],
+     "RL": [
+      "pied",
+      [
+       0.8,
+       0,
+       0.8
+      ]
+     ],
+     "LL": [
+      "pied",
+      [
+       -0.8,
+       0,
+       -0.8
+      ]
+     ]
+    },
+    "descripteurs": {
+     "resume": "hanche 3.00 | buste lacet 0 penché +15 | RA torse az -20 el 0 (coup az -21 el -14) poing [1.60, 0.93, -0.09] | LA torse az -150 el -60 (coup az -159 el -46) poing [-0.77, -1.86, -0.49] | tête baissée 25°"
+    },
+    "image_finale": "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/recon_anime/final_manga.png",
+    "lecture": "Gros plan visage et poing. Caméra devant, à sa gauche d'environ 20°, légèrement au-dessus : on voit le haut du crâne. Le visage est en 3/4 et regarde vers le bas à gauche de l'image, vers la cible. Le poing est à hauteur du menton et de l'épaule, à environ 0,7 stud du centre de l'image, sur la ligne d'épaule droite. Il a à peu près la même taille apparente que la tête, donc il est à la même profondeur. L'avant-bras est court (raccourci) et remonte vers le menton. Poing à plat : on voit les doigts pliés sur la face avant. Traînée noire derrière le poing : il est EN MOUVEMENT vers le bas-gauche de l'image et vers le lecteur. Équivalent R6 : bras droit vers la cible, presque vers la caméra (coup az -21, el -14). La face carrée du bout du bras tombe sur le poing de la réf. Buste presque de face, tête baissée vers la cible.",
+    "alternative_testee": "Poing armé : buste lacet -25 (épaule droite reculée) et bras vers l'avant du torse, soit coup az +52 sur le côté (rounds/mg_r4_pile.png, r4C). Depuis CETTE caméra, le poing tombe aussi au bon endroit : la silhouette seule ne tranche pas. Je retiens le lâcher pour deux raisons : la traînée de vitesse derrière le poing, et la poitrine vue de face (fermoir gauche de la cape visible à droite de l'image). La variante bras tendu vers la gauche, buste lacet +25 (r4B), met le bras en travers : rejetée.",
+    "camera": {
+     "az": -20,
+     "el": 12,
+     "dist": 4.3,
+     "fov": 50,
+     "cible": [
+      0.7,
+      3.95,
+      -0.6
+     ]
+    },
+    "confiance": {
+     "poing_hauteur_epaule_menton": 0.75,
+     "bras_vers_cible_camera": 0.55,
+     "instant_lacher_pas_charge": 0.6,
+     "coup_a_plat": 0.6,
+     "buste_presque_de_face": 0.45
+    }
+   },
+   {
+    "moment": "CONTACT — poing rouge (poing_rouge.jpg)",
+    "t": "image fixe",
+    "params": {
+     "hanche": 3,
+     "buste": [
+      25,
+      10,
+      0
+     ],
+     "tete": [
+      -12.5,
+      5
+     ],
+     "RA": [
+      25,
+      0,
+      "roulis naturel"
+     ],
+     "LA": [
+      -160,
+      -60,
+      "roulis naturel"
+     ],
+     "RL": [
+      "pied",
+      [
+       0.8,
+       0,
+       -1.2
+      ]
+     ],
+     "LL": [
+      "pied",
+      [
+       -0.8,
+       0,
+       1
+      ]
+     ]
+    },
+    "descripteurs": {
+     "resume": "hanche 3.00 | buste lacet +25 penché +10 | RA torse az +25 el 0 (coup az 0 el -9) poing [2.02, 1.31, 0.50] | LA torse az -160 el -60 (coup az +171 el -50) poing [-1.46, -1.25, -0.58] | épaule D reculée -0.25 (épaule droite DEVANT)"
+    },
+    "image_finale": "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/recon_anime/final_rouge.png",
+    "lecture": "Image composite : poing géant au premier plan à gauche, Boros petit au milieu, visage de Saitama géant dans l'ombre au bord droit. La géométrie physique n'est pas cohérente. Le poing est vu de FACE : quatre doigts pliés en colonnes verticales côte à côte, rangée de jointures en haut. C'est un poing horizontal, paume vers le bas : poing à plat, qui vient droit vers la caméra. Le poing est à la hauteur des yeux et à gauche de l'image, la tête à droite. Pour une caméra côté cible, c'est bien un poing DROIT. Équivalent R6 : bras droit pointé exactement sur la cible et la caméra (coup az 0) = face carrée du bras vue de face, remplissant la moitié gauche. Buste tourné vers la gauche (+25), épaule droite devant. Bras gauche ramené en arrière. La tête ne peut pas aller jusqu'au bord droit sans casser la taille du poing : c'est une limite du composite.",
+    "alternative_testee": "Buste lacet 0 contre +25 contre +40, bras toujours à coup az 0 (rounds/pr_r5_pile.png). À 0, la face du poing est plus petite et le poing plus près de la tête. À +25 ou +40, le poing plus gros domine la gauche, ce qui est plus proche de la réf, mais la tête reste au centre. Caméras à sa gauche (az -40 à -45, rounds/pr_r4_pile.png) : le bras gauche envahit la droite de l'image : rejetées.",
+    "camera": {
+     "az": -10,
+     "el": -10,
+     "dist": 2.3,
+     "fov": 65,
+     "cible": [
+      0,
+      4.1,
+      -1
+     ],
+     "note": "côté cible, près du poing, légère contre-plongée"
+    },
+    "confiance": {
+     "poing_a_plat_paume_en_bas_face_camera": 0.75,
+     "bras_droit_vers_camera": 0.7,
+     "buste_tourne_epaule_droite_devant": 0.4,
+     "position_tete": 0.2
+    }
+   }
+  ],
+  "mouvement_du_poing": "Déduit en assemblant les 4 images. Ce n'est pas une séquence continue observée, les instants sont assemblés et incertains. (1) CHARGE (Gon) : poing collé à la hanche, bras le long du flanc (torse el -78 à -85, az 160 à 180). Poing à environ 1 stud derrière le centre du torse et à 1,1 à 1,6 sur le côté, c'est-à-dire tout contre le flanc et PAS à 2,5 dehors comme v5. Le « recul » vient du buste : penché, tourné et incliné. Ce n'est pas le bras qui s'éloigne du corps. (2) Plan de dos (Saitama) : aucun bras ne dépasse, la charge se lit par la caméra basse et le tourbillon. (3) LÂCHER (manga) : le poing passe devant l'épaule, à hauteur menton/épaule, en ligne droite vers la cible, buste presque de face. (4) CONTACT (rouge) : bras tendu droit sur la cible (coup az 0, el environ -9), poing à plat, face carrée vers la caméra, buste tourné vers la gauche (lacet +25 à +45). Nos chiffres de contact v5 (f284 : lacet +43, RA coup az 0 el -5) sont déjà cohérents avec la réf. C'est la CHARGE qui diffère : bras à 84° hors de l'axe du torse, poing à 2,5 sur le côté.",
+  "invariants": [
+   "Poing armé : le bras reste COLLÉ au torse. Gon : 12° de l'axe bas du torse, poing à 1,64 sur le côté. v5 tenue : 84° hors de l'axe (torse el -6), poing à 2,51 sur le côté. Les 4 images ne montrent jamais de poing armé qui dépasse loin du corps.",
+   "Dans le repère du torse, le bras armé est « en bas le long du flanc, un peu derrière » (az 160 à 180, el -75 à -85). C'est le penché ou le lacet du buste qui envoie le poing en arrière dans le monde.",
+   "Piège de lecture des chiffres : avec le buste penché de P°, un bras à torse el -90 pointe dans le monde en arrière avec el = -(90-P). Avec un penché de 62°, « collé au flanc » veut dire « horizontal en arrière » dans le monde : il faut toujours regarder les deux repères.",
+   "2 images de charge sur 2 sont filmées de DOS (caméra az 172 à 195). Les 2 images lâcher/contact sont filmées côté cible (az -10 à -20). La charge de v5 était filmée en très gros plan.",
+   "Contact : poing à plat, bras pointé exactement sur la cible (coup az 0), face carrée du bras R6 vers la caméra, épaule droite DEVANT (buste lacet +25 à +45).",
+   "Le bras qui ne frappe pas ne s'écarte pas : devant, caché par le torse, pendant la charge (Gon, Saitama de dos), puis ramené derrière au lâcher et au contact.",
+   "Charge (Gon) : pieds très écartés (±1,6), hanche basse (2,2). Saitama de dos : fente avant/arrière. Il n'y a donc pas une jambe type unique dans les images."
+  ],
+  "doutes": [
+   "BUG / convention de l'outil, vérifié : avec roulis 0 (défaut), geo_pose.pose() place le bloc du bras jusqu'à 1 stud DANS le torse. Exemple : 'RA':(0,-90) donne un centre de bras à x=0,5 au lieu de 1,5 (aim() retourne l'axe X). J'ai utilisé un roulis « naturel » (pivot sans torsion depuis le repos, fonction roll_naturel dans recon_anime/lib.py). Les directions az/el ne changent pas, mais les positions de poing données par pose() sans roulis sont fausses d'environ 0,5 à 1 stud.",
+   "Reconstruire v5 f240 avec G.pose ne redonne ses poings exacts pour AUCUN roulis : écart minimal 0,37 stud pour RA (côté 2,16 au lieu de 2,51) et 0,5 pour LA. Soit les pivots du rig V2.22 diffèrent du R6 classique de moon.py, soit l'export contient une translation d'épaule. Non vérifié : les positions de poing de mes reconstructions sont à ±0,5 près par rapport au rig de production.",
+   "Le descripteur penche_cote gonfle beaucoup quand le penché avant est fort (entrée -25, mesuré -45 avec un penché de 62°) : il se mesure sur la projection du vecteur haut, qui est presque horizontal. Autre différence de convention : la tête dans pose() prend un lacet où + = vers sa gauche, alors que les descripteurs donnent az + = vers sa droite. Le signe s'inverse, ce n'est pas un bug.",
+   "Le lacet du buste de Gon (-20) n'est pas déterminé : lacet -25 avec incliné, lacet +15 ou caméra az 200 donnent des silhouettes proches vues de dos.",
+   "Saitama de dos : image stylisée, plan hollandais, bras presque invisibles. Confiance faible sur les deux bras et sur le lacet. La tache rouge à l'épaule droite pourrait aussi être l'attache de la cape.",
+   "Manga : depuis cette caméra, « bras tendu vers la caméra » et « poing armé, buste tourné à droite » donnent la même silhouette. Le choix du lâcher repose sur la traînée de vitesse et la poitrine vue de face : c'est une interprétation, pas une mesure.",
+   "Poing rouge : image composite (Boros entre les deux, visage démesuré). Seules la lecture du poing à plat vu de face et le bras vers la caméra sont fiables ; la position du corps ne l'est pas.",
+   "Le Gon mesuré, vu de profil (planche_v5_vs_gon.png, az 90), montre un bras R6 horizontal derrière le dos, précisément ce que Milan a refusé en v3 et v4. La transposition proposée (penché 30 à 45°, bras le long du flanc, plan de dos) est une proposition de compromis rendue en planche_transpositions.png. Elle n'est pas validée par une réf ni par Milan.",
+   "La direction de frappe de Gon et de Saitama de dos est supposée (vers l'avant, dos à la caméra). Aucun des deux n'est dans une image où la cible est visible.",
+   "Aucune image ne montre le PASSAGE de la charge au lâcher : la trajectoire du poing entre la hanche et la ligne d'épaule est déduite, pas observée."
+  ]
+ },
+ "verifications": [
+  {
+   "verdict": "corrige",
+   "affirmations": [
+    {
+     "affirmation": "Gon : caméra de dos, bras droit replié contre le flanc, poing vers la hanche. Équivalent R6 : RA torse (160,-78), poing à 1,64 sur le côté.",
+     "statut": "incertain",
+     "preuve": "Re-rendu à la caméra (172,10,14,25), plus 3 variantes du bras (g_bras_pile.png) : RA (145,-70), (175,-85) et (120,-60) donnent des silhouettes presque identiques. La réf contraint donc le bras seulement à « torse az 120-175, el -60/-85 », avec le poing à 1,6-2,1 sur le côté (et non 1,64 ± 0). Le bras sur le côté (90,-40) et le bras tendu derrière restent exclus. Confiance réaliste 0,55, pas 0,75. La direction monde coup az +171 el -13 (bras horizontal vers l'arrière) est confirmée par descripteurs."
+    },
+    {
+     "affirmation": "Gon : buste lacet -20 (tourné à sa droite), penché 62, incliné à gauche -25 ; le recul vient du buste tourné.",
+     "statut": "refute",
+     "preuve": "J'ai calculé les pivots d'épaule (torse local ±1 ; 0,5 ; 0) sur la pose finale de l'agent. Ligne d'épaules en monde : lacet -2°, épaule droite 0,08 DEVANT la gauche. Le -25 de côté annule le -20 de lacet quand le buste est penché à 62°. Le perso final n'a donc AUCUNE épaule droite reculée. Contre-hypothèses (g_lacet_pile1/2.png, g_cam_pile.png) : lacet -20 sans incliné, soit épaule droite reculée de 0,68, pousse la tête à droite de l'image à la caméra 172, ce qui est pire que la réf. Avec la caméra 195, la même pose redevient compatible. Le signe du lacet s'échange avec l'azimut de la caméra : la réf ne le mesure pas. Par ailleurs, descripteurs.epaules.recul_droite donne -1,00 sur cette pose alors que les pivots donnent -0,08 : ce descripteur mesure le haut du bloc bras, pas le pivot d'épaule."
+    },
+    {
+     "affirmation": "Gon : penché ~62°, hanche basse 2,2, pieds très écartés ±1,6.",
+     "statut": "confirme",
+     "preuve": "Rapport hauteur/largeur du dos dans la réf ≈ 0,75. Avec la caméra el +10, cela donne un penché d'environ 50° (cos(L-10) ≈ 0,75). 50 à 62° est cohérent avec le rendu. L'écart des jambes et l'accroupi se superposent bien sur final_gon.png."
+    },
+    {
+     "affirmation": "Saitama de dos : caméra basse derrière, aucun bras ne dépasse derrière ni sur le côté droit.",
+     "statut": "confirme",
+     "preuve": "Zoom de la tête (z_sd_tete.png) : oreille et profil tourné vers sa gauche, contour droit du dos net. Variante RA armé (140,-30) (sd_bras_pile.png) : un bloc sort à droite, absent de la réf, donc rejeté."
+    },
+    {
+     "affirmation": "Saitama de dos : bras droit DEVANT (0,0), caché ; la tache rouge à l'épaule droite pourrait être la cape.",
+     "statut": "incertain",
+     "preuve": "RA (0,+20), (30,-10) et même (90,0) sur le côté donnent le même petit coin vert à l'épaule (sd_bras_pile.png) : la direction du bras n'est pas mesurable entre az 0 et 90. Au zoom, la tache rouge est un gant partiellement caché DERRIÈRE le contour de l'épaule. C'est donc probablement le poing droit, à hauteur d'épaule, plus loin de la caméra que l'épaule (devant ou à côté du torse). Ce n'est pas la cape : ses fermoirs sont sur la poitrine."
+    },
+    {
+     "affirmation": "Saitama de dos : buste presque droit (penché 10).",
+     "statut": "incertain",
+     "preuve": "Rendus penché 10/35/55/70 à la caméra de l'agent (sd_lean_pile.png) : dès 35°, la tête disparaît derrière la jambe, alors que la réf la montre. À CETTE caméra, le penché doit rester ≤ 20°. Mais le torse de la réf est très court (ceinture presque sous les épaules, dos voûté), et le penché s'échange avec l'élévation de la caméra, qui n'est pas mesurée."
+    },
+    {
+     "affirmation": "Manga : coup vers le lecteur, bras droit presque vers la caméra (coup az -21 avec caméra az -20) ; poing de même taille apparente que la tête.",
+     "statut": "refute",
+     "preuve": "Mesure sur la réf ×2 (z_manga_grille.png) : poing ≈ 140×160 px, tête ≈ 360 px de large, soit un rapport 0,4. Sur un humain, poing/tête ≈ 0,55-0,6. Le poing n'est donc PAS grossi par la perspective : il est à la profondeur de la tête ou plus loin, pas vers la caméra. De plus, le bras sort de DERRIÈRE le menton : l'épaule droite est plus loin que le visage. Enfin, le regard va vers le bas-gauche de l'image, dans l'axe du bras. Contre-hypothèse (m_pile3.png, m6/m7) : caméra à sa gauche-avant (az -40 à -55), bras pointé exactement sur la cible (coup az 0, el -10), buste lacet +15/+30. Le bras sort de derrière la tête vers le bas-gauche, comme sur la réf, avec un recouvrement au moins aussi bon que m0. Lecture retenue : coup de profil 3/4 vers la gauche de l'image, pas vers le lecteur. Les blocs R6 ne tranchent pas nettement (m0 à m7 sont proches)."
+    },
+    {
+     "affirmation": "Manga : instant = lâcher, poing à hauteur menton/épaule.",
+     "statut": "incertain",
+     "preuve": "Hauteur : poing sous le menton, au niveau haut de poitrine/épaule, compatible. Lâcher contre armé : aucun rendu ne tranche, ce que l'agent admet. La version armée (m4, lacet -30, RA 40,-20) se superpose aussi. La traînée soutient le mouvement vers le bas-gauche, pas un sens de frappe précis."
+    },
+    {
+     "affirmation": "Poing rouge : poing à plat, paume en bas, face au spectateur, bras vers la caméra.",
+     "statut": "confirme",
+     "preuve": "4 colonnes de doigts verticales côte à côte, séparées par des traits sombres, poing énorme par rapport à la tête : c'est bien un poing horizontal vu de face, qui vient vers la caméra. MAIS le rendu final_rouge / r0 ne montre PAS la face carrée du bras vers la caméra : on voit ses longues faces, bras vers la gauche de l'image (r_pile.png). La phrase « face carrée remplissant la moitié gauche » ne décrit pas le rendu de l'agent."
+    },
+    {
+     "affirmation": "Poing rouge : buste lacet +25, épaule droite devant.",
+     "statut": "incertain",
+     "preuve": "La contre-hypothèse lacet -20 avec bras vers la caméra (r1) se superpose aussi mal/bien que r0 : image composite, corps non mesurable. Le signe n'est pas vérifiable sur cette réf."
+    },
+    {
+     "affirmation": "geo_pose.pose() avec roulis 0 met le bras dans le torse.",
+     "statut": "confirme",
+     "preuve": "G.pose({'RA':(0,-90)}) : centre du bras x=0,50 (matrice avec X retourné). Avec roll_naturel : x=1,50."
+    },
+    {
+     "affirmation": "Chiffres v5 cités (f240 : lacet -64, RA torse (11,-6), poing côté 2,51 ; f284 : lacet +43, RA coup az 0 el -5).",
+     "statut": "confirme",
+     "preuve": "Lignes 39 et 61 de v5_descripteurs.txt, identiques."
+    },
+    {
+     "affirmation": "Invariant : le recul du poing armé est porté par le buste (penché, tourné, incliné), pas par le bras.",
+     "statut": "refute",
+     "preuve": "« Tourné » n'est mesuré dans aucune des 4 images. Gon : ligne d'épaules monde à -2° dans la pose même de l'agent, et signe non mesurable (échange avec la caméra). Saitama de dos : l'agent trouve lacet +15 (épaule droite devant). Seul le PENCHÉ (Gon) est mesuré. Le bras collé au flanc reste une lecture plausible, mais faiblement contrainte (az 120-175)."
+    }
+   ],
+   "corrections": "Corrections après re-rendu. Scripts et images dans /tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_anime_rendu/ (v1 à v8.py, planches *_pile.png).\n\n1) Gon, le buste :\n- « lacet -20 » ne veut pas dire « épaule droite reculée ». Dans la pose finale de l'agent, la ligne d'épaules en monde fait -2°, épaule droite 0,08 devant (calcul fait sur les pivots d'épaule).\n- Le signe de rotation du buste s'échange avec l'azimut de la caméra. À la caméra 172, lacet -20 sans incliné met la tête à droite de l'image : moins bon. À la caméra 195, il redevient compatible.\n- Conclusion : la réf ne mesure PAS une rotation du buste. Elle mesure un penché de 50-62°, une hanche basse et un écart large.\n- Au passage, descripteurs.epaules.recul_droite mesure le haut du bloc bras (fonction haut()), pas le pivot d'épaule. Sur cette pose, il donne -1,00 alors que les pivots donnent -0,08. Il ne faut pas s'y fier quand les bras ne pendent pas.\n\n2) Gon, le bras droit : seule la fourchette az 120-175 / el -60 à -85 (repère torse) est contrainte, avec le poing à 1,6-2,1 sur le côté. Confiance 0,55 au lieu de 0,75. « Tendu derrière » et « sur le côté » restent exclus.\n\n3) Manga :\n- Le poing fait 0,4 fois la largeur de la tête ; sur un humain on attend 0,55-0,6. Le poing n'est donc pas plus près de la caméra que la tête.\n- Le bras sort de derrière le menton.\n- Meilleure hypothèse : caméra à sa gauche-avant (az -40 à -55), bras droit pointé sur la cible (coup az 0, el -10), buste lacet +15 à +30. Le coup part vers le bas-gauche de l'image, pas vers le lecteur.\n- « Même taille que la tête » est faux.\n- Lâcher contre armé : non tranché.\n\n4) Saitama de dos :\n- La tache rouge à l'épaule droite est plus probablement le gant droit, à hauteur d'épaule, caché par le contour de l'épaule (donc devant ou à côté du torse), que la cape.\n- Direction du bras droit non mesurable entre az 0 et 90.\n- Penché ≤ 20° seulement à la caméra choisie : cette valeur dépend de la caméra.\n\n5) Poing rouge : la lecture poing à plat venant vers la caméra est confirmée. En revanche, le rendu final ne montre pas la face carrée du bras vers la caméra. Le lacet +25 n'est pas mesurable.\n\n6) Invariants à réécrire :\n- Retirer « tourné » de « le recul vient du buste ». Seul le penché est mesuré (Gon).\n- « Bras armé collé au flanc » passe au statut plausible, avec une fourchette large.\n- « Contact : poing à plat, bras sur la cible » reste valable.\n\nNon vérifié par moi : l'écart entre G.pose et le rig V2.22 sur les positions de poing de v5.",
+   "images": [
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_anime_rendu/g_lacet_pile1.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_anime_rendu/g_lacet_pile2.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_anime_rendu/g_cam_pile.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_anime_rendu/g_bras_pile.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_anime_rendu/sd_lean_pile.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_anime_rendu/sd_bras_pile.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_anime_rendu/z_sd_tete.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_anime_rendu/z_manga_grille.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_anime_rendu/m_pile1.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_anime_rendu/m_pile2.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_anime_rendu/m_pile3.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_anime_rendu/r_pile.png"
+   ]
+  },
+  {
+   "verdict": "corrige",
+   "affirmations": [
+    {
+     "affirmation": "Gon est filmé de DOS (caméra az ~172)",
+     "statut": "confirme",
+     "preuve": "Fond du short et creux des genoux visibles. Arrière du crâne sans visage (seule une joue apparaît à gauche). Ceinture et dos de la veste face à la caméra. Zoom : verif_recon_anime_indices/gon_zoom.png"
+    },
+    {
+     "affirmation": "Gon : bras droit replié, coude sorti vers la droite, main/poing à la hanche droite ; équivalent R6 = bras le long du flanc (torse el ~-78)",
+     "statut": "confirme",
+     "preuve": "Le coude sort à droite d'environ 0,5 largeur de torse hors du flanc. La main est au niveau de la ceinture, côté droit. L'axe épaule→main est bien le long du flanc. Réserve : de dos, on ne peut distinguer un poing fermé d'une main posée sur la hanche, et la composante arrière (az 160) n'est pas mesurable."
+    },
+    {
+     "affirmation": "Gon : buste penché de 55 à 65° (retenu : 62°)",
+     "statut": "refute",
+     "preuve": "Deux indices contraires. (1) La tête dépasse nettement au-dessus de la ligne d'épaules et ses pointes de cheveux pointent vers le HAUT. (2) Le dos, du col à la ceinture, fait environ 0,87 fois sa largeur, ce qui donne à peu près 45 à 55° de penché avec la caméra à el 10. Rendu comparatif gon_penche_pile.png (62 / 45 / 35°) : à 62°, la tête R6 est cachée derrière le dos ; à 45°, elle ressort en haut comme sur la réf. Plage plus probable : 40 à 50°. Conséquence : bras collé au flanc = monde el ≈ -30, pas -13."
+    },
+    {
+     "affirmation": "Gon : buste incliné sur sa gauche, épaule droite plus haute",
+     "statut": "confirme",
+     "preuve": "L'épaule droite (droite de l'image) est nettement plus haute que la gauche. La tête est décalée en haut à gauche et la ceinture monte d'environ 5° vers la droite."
+    },
+    {
+     "affirmation": "Gon : jambes très écartées, accroupi, genoux vers l'extérieur",
+     "statut": "confirme",
+     "preuve": "Écart des bottes ≈ 1,6 fois la largeur du torse ; genoux ouverts, creux des genoux visibles."
+    },
+    {
+     "affirmation": "Gon : bras gauche devant, caché par le torse",
+     "statut": "incertain",
+     "preuve": "Rien ne dépasse du côté gauche du torse, ce qui est compatible. Mais sa position réelle (devant, pendant, sur le genou) n'est pas observable."
+    },
+    {
+     "affirmation": "Gon : lacet du buste -20 (épaule droite reculée)",
+     "statut": "incertain",
+     "preuve": "La moitié droite du dos paraît un peu plus large (≈130 px contre 90 px de part et d'autre du pli), ce qui va faiblement dans le sens de -20. Le pli n'est pas forcément la colonne vertébrale : non mesurable."
+    },
+    {
+     "affirmation": "Saitama de dos : caméra derrière, très basse, contre-plongée",
+     "statut": "confirme",
+     "preuve": "Aucun trait du visage, une oreille visible à gauche du crâne, dos et ceinture face à la caméra, botte rouge énorme au premier plan en bas (sd_zoom.png, sd_zoom2.png). Réserve : la cape passe derrière la tête, ce qui est ambigu."
+    },
+    {
+     "affirmation": "Saitama de dos : aucun bras ne dépasse derrière ni à droite",
+     "statut": "confirme",
+     "preuve": "La silhouette est une colonne compacte. Seules deux taches rouges : une sous le côté gauche de la tête, près du menton, et une petite au sommet de l'épaule droite."
+    },
+    {
+     "affirmation": "Saitama de dos : gant gauche près du menton ; la tache de l'épaule droite est le bras droit devant et caché",
+     "statut": "incertain",
+     "preuve": "La tache rouge sous la tête, à gauche de l'image, est bien du côté gauche du perso vu de dos. La tache à l'épaule droite peut être le poing droit levé devant, l'attache de la cape, ou un gant qui dépasse. Rien ne permet de trancher."
+    },
+    {
+     "affirmation": "Saitama de dos : les params R6 (LA levé à 25/10, tête cachée) reproduisent la réf",
+     "statut": "refute",
+     "preuve": "Dans final_saitama_dos.png, le bras gauche R6 forme un gros bloc bleu en haut à gauche, absent de la réf. La tête R6 est cachée, alors que la tête est l'élément le plus lisible de la réf, en haut à gauche. La silhouette ne correspond donc pas."
+    },
+    {
+     "affirmation": "Manga : poing DROIT, caméra devant le perso",
+     "statut": "confirme",
+     "preuve": "Le visage est vu de 3/4 face. Le poing est à gauche de l'image et la tête à droite, donc c'est bien le côté droit du perso."
+    },
+    {
+     "affirmation": "Manga : poing de même taille apparente que la tête, donc à la même profondeur",
+     "statut": "refute",
+     "preuve": "Mesure sur une grille à 25 px (mg_grid.png) : poing ≈ 70 px de large, tête ≈ 180 à 190 px, soit un rapport ≈ 0,38. Le poing n'est pas plus près de la caméra que la tête ; il est à même profondeur, ou plus loin."
+    },
+    {
+     "affirmation": "Manga : la traînée noire derrière le poing prouve le lâcher",
+     "statut": "refute",
+     "preuve": "La bande sombre a la même trame que le poing, avec un reflet clair central, et se termine par un bord net en évasement. C'est très probablement le gant de Saitama, qui monte à mi-avant-bras, pas une traînée (mg_zoom.png). Des hachures de vitesse existent partout sur l'image : elles ne désignent pas le poing."
+    },
+    {
+     "affirmation": "Manga : bras droit presque vers la caméra (coup az -21)",
+     "statut": "incertain",
+     "preuve": "L'avant-bras est visible en longueur (≈2,5 largeurs de poing) et remonte vers le menton : il n'est pas vu en bout. On voit la face des doigts, donc une composante vers la caméra existe, mais l'angle à l'axe de vue semble plutôt de 45 à 70° que de 20°. L'agent reconnaît lui-même que la silhouette ne tranche pas entre lâcher et armé."
+    },
+    {
+     "affirmation": "Manga : instant = lâcher, pas charge",
+     "statut": "incertain",
+     "preuve": "L'argument principal (la traînée) est réfuté. Le poing est à hauteur du menton et le regard va vers la gauche de l'image : compatible avec les deux."
+    },
+    {
+     "affirmation": "Poing rouge : poing à plat, paume en bas, vu de face",
+     "statut": "confirme",
+     "preuve": "On voit 4 doigts repliés, en colonnes verticales côte à côte, arrondies en haut. Un poing vertical montrerait des barres horizontales empilées."
+    },
+    {
+     "affirmation": "Poing rouge : poing droit, bras vers la caméra (côté cible)",
+     "statut": "confirme",
+     "preuve": "Le poing est environ 2,5 fois plus large que le visage, donc bien plus près de la caméra. Il est à gauche de l'image et le visage, en 3/4 vers la gauche, est à droite : c'est le côté droit pour une caméra côté cible. Réserve : l'image est un composite."
+    },
+    {
+     "affirmation": "Poing rouge : buste tourné +25, épaule droite devant",
+     "statut": "refute",
+     "preuve": "Le torse de Saitama n'est pas visible sur l'image : ce lacet n'est tiré d'aucun indice visuel."
+    },
+    {
+     "affirmation": "Invariant : le poing armé reste près du corps et ne dépasse jamais loin (Gon, Saitama de dos)",
+     "statut": "confirme",
+     "preuve": "Gon : main à la hanche, le coude ne sort que d'environ 0,5 largeur de torse. Saitama de dos : rien ne dépasse. Base limitée à 2 images, dont une très stylisée."
+    },
+    {
+     "affirmation": "Invariant : avec le buste penché à 62°, « collé au flanc » veut dire « horizontal derrière » dans le monde",
+     "statut": "refute",
+     "preuve": "Le calcul est juste, mais la prémisse des 62° n'est pas soutenue. À 45° : RA coup el -30 (gon_test.py). Le bras reste orienté vers l'arrière et vers le bas, pas horizontal."
+    },
+    {
+     "affirmation": "Doute outil : pose() avec roulis 0 enfonce le bras dans le torse",
+     "statut": "confirme",
+     "preuve": "G.pose({'RA':(0,-90)}) place le centre du bras à x = 0,5 (poing à [0, 0,5, -1]) contre x = 1,5 sans RA explicite. L'écart de 1 stud est reproduit."
+    }
+   ],
+   "corrections": "Ce qui tient : Gon est filmé de dos, main à la hanche droite avec le coude sorti ; épaule droite plus haute ; jambes très écartées. Saitama de dos : aucun bras ne dépasse. Poing rouge : poing à plat vu de face, bras droit vers la caméra. Bug de roulis de pose() : confirmé.\n\nÀ corriger :\n(1) Gon : penché plutôt 40 à 50° que 62°. La tête est visible au-dessus des épaules et les cheveux pointent vers le haut ; le dos fait 0,87 fois sa largeur. Au rendu, 45° colle mieux. Le bras au flanc donne alors un monde el ≈ -30 : il n'est pas horizontal derrière. L'argument « c'est le bras tendu derrière refusé » doit être revu.\n(2) Manga : le poing fait environ 0,38 fois la largeur de la tête (et non « même taille »). La « traînée » est probablement le gant. Le choix du lâcher et le coup à az -21 restent donc non démontrés ; l'avant-bras est vu en longueur, soit environ 45 à 70° de l'axe de vue.\n(3) Saitama de dos : les params R6 ne reproduisent pas la réf (gros bloc bleu en haut à gauche, tête cachée). Seule la lecture « rien ne dépasse » est valable.\n(4) Poing rouge : le lacet +25 du buste n'a aucun appui visuel.\n\nFichiers : /tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_anime_indices/ (gon_zoom.png, gon_penche_pile.png, gon_test.py, sd_zoom.png, sd_zoom2.png, mg_zoom.png, mg_grid.png).\n\nNote pour la question de Milan (« encore combien de temps ? ») : cette vérification du lot anime est terminée ; il reste les autres étapes du workflow (hors de ma vue).",
+   "images": [
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_anime_indices/gon_zoom.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_anime_indices/gon_penche_pile.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_anime_indices/sd_zoom.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_anime_indices/sd_zoom2.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_anime_indices/mg_zoom.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_anime_indices/mg_grid.png"
+   ]
+  }
+ ]
+}

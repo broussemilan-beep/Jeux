@@ -1,0 +1,488 @@
+{
+ "label": "recon:sp2",
+ "kind": "recon",
+ "resultat": {
+  "ref": "Serious Punch 2 (GIF 772ee6b0, avatar Roblox par défaut, cape blanche ignorée). Images SP2 t_03.60 à t_05.53 (640x360, 1/15 s). Comparé aux images TSB, qui sont en 720x498 (autre format). Constat important : ce n'est PAS un deuxième angle de caméra. C'est la même caméra de cinématique TSB (relative au perso), décalée d'environ +0,60 s : SP2 t correspond à TSB t+0,6 (ex. SP2 4,53 = TSB 5,13 ; SP2 4,80 = TSB 5,40 ; les cartes SP2 5,33-5,53 = TSB 6,00-6,13). Ce que SP2 apporte en plus : des textures qui donnent l'orientation des faces (logo R de la casquette, lettres ROBLOX, TM, triangles du col). Dossier : /tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/recon_sp2/ (scripts fit.py, run_frame.py, man.py ; rendus dans r/).",
+  "direction_du_coup": "Au coup (4,67-4,80), la caméra est DEVANT le torse et basse. On voit la face avant du torse : lettres ROBLOX lisibles, inclinées d'environ 9°, et les deux attaches de cape. Le poing droit est à gauche de l'image (donc à SA droite), bout du bras face à l'objectif avec la fumée. Le coup part donc droit vers la caméra, dans le sens de l'avant du torse. J'ai pris avant = avant horizontal du torse au coup (lacet ≈ 0 ; confiance 0,5). Pour la charge (3,73-4,20), le lacet du buste par rapport à cette direction n'est PAS mesuré. Ces descripteurs sont donc calculés avec avant = avant du torse : buste.lacet = 0 par construction, et les valeurs « coup » valent pour ce repère-là. Ce que j'ai mesuré en plus, sur le fond (l'arche qui passe de x=445 à x=50) : la caméra tourne d'environ +72° vers la droite entre 3,73 et 4,53. Au-delà de 4,53, plus de repère de fond, donc impossible de raccrocher le lacet de la charge au coup.",
+  "moments": [
+   {
+    "moment": "charge 3.7",
+    "t": "03.73",
+    "params": {
+     "hanche": 2.24,
+     "buste": [
+      0,
+      43,
+      0
+     ],
+     "tete": [
+      -48.5,
+      -8
+     ],
+     "RA": [
+      -162.5,
+      5.2
+     ],
+     "LA": [
+      -63,
+      45.4
+     ],
+     "RL": [
+      26,
+      5
+     ],
+     "LL": [
+      -16.5,
+      -20
+     ],
+     "note": "tête non contrainte (orientation inconnue : dans l'image, la visière pointe vers l'avant-gauche)"
+    },
+    "camera": {
+     "az": -134.6,
+     "el": 34,
+     "dist": 7.8,
+     "fov": 70,
+     "decalage_px": [
+      -18.6,
+      20.4
+     ],
+     "cible_camera_orbite": "cible_equiv(x) dans fit.py",
+     "repere": "az relatif à l'avant du torse"
+    },
+    "descripteurs": {
+     "resume": "hanche 2.24 | buste lacet 0 penché +43 côté 0 | RA torse az -162 el +5 (coup az -155 el +46) poing [-0.98, 0.55, 1.11] | LA torse az -63 el +45 (coup az -41 el +18) poing [1.19, -2.31, 0.58] | épaule D reculée -0.53",
+     "pieds": {
+      "RL": [
+       1.08,
+       1.78,
+       -1.47
+      ],
+      "LL": [
+       0.62,
+       -1.53,
+       -2.24
+      ]
+     }
+    },
+    "confiance": {
+     "camera_derriere_gauche": 0.8,
+     "buste_penche_35_50": 0.7,
+     "RA_sort_du_dos_vers_arriere_haut": 0.7,
+     "RA_az_exact_150_200": 0.5,
+     "LA_avant_gauche_monte": 0.65,
+     "jambes": 0.2,
+     "lacet_vs_coup": 0
+    },
+    "image_finale": "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/recon_sp2/r/03.73_final_geo.png",
+    "lecture": "Caméra derrière-gauche et au-dessus (−135°, 34°). Buste penché en avant d'environ 43°. Poing droit DERRIÈRE le haut du dos : environ 1 bloc en arrière du centre du torse, 0,5 à droite, 1,1 au-dessus (au niveau du haut des épaules). Le bras droit sort perpendiculairement au dos : dans les axes du torse il est quasi horizontal vers l'arrière (−162°, +5°). Comme le buste est penché, cela donne dans le monde un bras vers l'arrière qui monte d'environ 46°. Ce n'est donc pas un bras tendu à l'horizontale derrière : c'est un bras dans l'axe de la normale du dos. Deux preuves : le bloc du bras droit passe DEVANT la cape (son bord ne prolonge pas le bord de la cape), et en TSB 4,27-4,53 on voit la face du gant (le bout de la main) tournée vers la caméra. Bras gauche en avant-gauche, qui monte de 45° dans les axes du torse (poing 1,2 devant, 2,3 à gauche, 0,6 plus haut que le centre du torse). Accroupi, hanche vers 2,2. Jambes mal vues (la droite est cachée par la cape).",
+    "alternative_testee": "Hypothèses pour le bras droit, toutes réajustées (score silhouette + points-clés) : bras sur le côté droit (az 80-115) 0,725-0,734 ; bras vers l'arrière (az −160 à −175) 0,729-0,757 ; bras contraint vers l'avant (|az|<70) 0,713, qui colle à la limite ; bras exactement vers l'objectif 0,56-0,58. La silhouette seule ne tranche pas entre « côté » et « arrière ». Ce qui tranche pour l'arrière : l'occlusion (le bras passe devant la cape) et la face du gant visible en TSB. Retenu : vers l'arrière, avec la contrainte « face de la main visible » (meilleur score, 0,757)."
+   },
+   {
+    "moment": "charge 4.2",
+    "t": "04.20",
+    "params": {
+     "hanche": 2.27,
+     "buste": [
+      0,
+      43,
+      0
+     ],
+     "tete": [
+      -32,
+      -10.5
+     ],
+     "RA": [
+      -155,
+      -6.2
+     ],
+     "LA": [
+      -136,
+      37.6
+     ],
+     "RL": [
+      14.2,
+      7.2
+     ],
+     "LL": [
+      -24,
+      -26.2
+     ]
+    },
+    "camera": {
+     "az": -121.9,
+     "el": 26.8,
+     "dist": 5.6,
+     "fov": 70,
+     "decalage_px": [
+      37.2,
+      -4.8
+     ]
+    },
+    "descripteurs": {
+     "resume": "hanche 2.27 | buste lacet 0 penché +43 | RA torse az -155 el -6 (coup az -150 el +32) poing [-1.05, 0.37, 0.77] | LA torse az -136 el +38 poing [0.11, -2.2, 1.37]",
+     "pieds": {
+      "RL": [
+       0.61,
+       1.49,
+       -2.27
+      ],
+      "LL": [
+       0.13,
+       -2.12,
+       -2.26
+      ]
+     }
+    },
+    "confiance": {
+     "RA_inchange_depuis_3.7": 0.6,
+     "camera_plus_proche_et_plus_sur_le_cote": 0.6,
+     "LA": 0.2,
+     "ajustement_global": 0.3
+    },
+    "image_finale": "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/recon_sp2/r/04.20_final_geo.png",
+    "lecture": "Même charge tenue. Le bloc du bras droit (logo R) reste en haut à droite, au niveau de la tête. Dans les axes du torse, le bras droit est toujours vers l'arrière et horizontal (−155°, −6°). Le poing est derrière le dos (1 en arrière, 0,8 au-dessus du centre du torse). La caméra a tourné d'environ 34° (d'après le fond) et s'est rapprochée. Le bras gauche est descendu entre 3,9 et 4,2 : il pointe vers le bas et l'avant-gauche dans l'image (en TSB 4,80-4,87, il descend vers le sol). L'ajustement du bras gauche est mauvais (score 0,49, valeur −136°/+38° douteuse) : non fiable.",
+    "alternative_testee": "Bras gauche testé à (−60,0), (−40,−30), (−20,−60), (−70,−30), (0,−40) et (−100,−20) : scores 0,36-0,49, aucun convaincant. Pose de 3,73 figée avec caméra seule : 0,40. Le masque de la cape (dans l'ombre, non détectée en blanc) fausse sans doute le score."
+   },
+   {
+    "moment": "armé/lâcher 4.53",
+    "t": "04.53",
+    "params": {
+     "non_ajuste": "ajustement automatique dégénéré (la tête géante couvrait toute la zone), aucune pose validée"
+    },
+    "camera": {
+     "estimation": "devant-gauche et au-dessus de la tête ; fond : environ +72° de lacet caméra depuis 3,73, soit si le torse n'a pas tourné une caméra vers −60° dans le repère du torse (non vérifié)"
+    },
+    "descripteurs": {},
+    "confiance": {
+     "tete_face_camera": 0.8,
+     "torse_vu_de_dessus_tres_penche": 0.55,
+     "bras_droit_cache_derriere_tete": 0.5
+    },
+    "image_finale": "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/recon_sp2/zoom_texture.png",
+    "lecture": "Lecture par les textures (image éclaircie). La face avant de la casquette (logo R) et la visière pointent vers l'objectif : la tête regarde la caméra. Sous la tête, un bloc noir large porte TM et les deux triangles rouge-blanc du col, et la sangle blanche de la cape part de ces triangles. C'est donc le haut du torse vu d'en dessus, avec une rangée de marques rouges sur la face qui regarde vers le bas et l'avant. Buste très penché vers la caméra, environ 55-65°. Le bras droit (logo R) n'est plus visible : sans doute derrière la tête et la casquette. En TSB 5,13 (même instant), le bloc noir horizontal est un BRAS (le torse violet est au-dessus). Contradiction entre les deux sources non résolue.",
+    "alternative_testee": "« Plaque » = torse vu de dessus (TM et col dessus, sangle de cape) contre « plaque » = bras gauche couché devant le ventre (TSB 5,13 : bloc noir, torse violet au-dessus). Les deux restent possibles : ma lecture SP2 penche pour le torse (0,55), TSB pour le bras."
+   },
+   {
+    "moment": "armé/lâcher 4.6",
+    "t": "04.60",
+    "params": {
+     "hanche": 2.2,
+     "buste": [
+      0,
+      60,
+      0
+     ],
+     "tete": [
+      0,
+      0
+     ],
+     "RA": [
+      -165,
+      5
+     ],
+     "LA": [
+      -90,
+      -30
+     ],
+     "RL": [
+      20,
+      -40
+     ],
+     "LL": [
+      -20,
+      -30
+     ],
+     "note": "pose ILLUSTRATIVE, pas validée"
+    },
+    "camera": {
+     "az": -40,
+     "el": 45,
+     "dist": 4.5,
+     "fov": 70,
+     "decalage_px": [
+      40,
+      60
+     ]
+    },
+    "descripteurs": {
+     "resume": "hanche 2.20 | buste penché +60 | RA torse az -165 el +5 (coup az -148 el +61) poing [-0.63, 0.61, 1.36] | LA torse az -90 el -30 poing [-0.59, -2.05, -0.34]"
+    },
+    "confiance": {
+     "ajustement": 0.2,
+     "tete_face_camera": 0.8,
+     "coup_pas_encore_parti": 0.6
+    },
+    "image_final": "",
+    "image_finale": "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/recon_sp2/r/04.60_final_geo.png",
+    "lecture": "Même lecture qu'à 4,53, en plus proche. Le poing droit n'est toujours pas visible. En 4,67, il apparaît en haut à gauche, déjà vers l'objectif. Le lâcher se fait donc entre 4,60 et 4,67, en 1/15 s au plus. Le rendu (5 candidats sur 2 tours) ne superpose pas bien : image dominée par la casquette, cape mal modélisée.",
+    "alternative_testee": "Caméra −60 à −10°, buste penché 45-80°, bras gauche (−60…−120, −20…−60) : aucun rendu ne recouvre bien la plaque. Retenu à titre indicatif : −40° / 45° / penché 60°."
+   },
+   {
+    "moment": "coup 4.8",
+    "t": "04.80",
+    "params": {
+     "hanche": 2.2,
+     "buste": [
+      0,
+      20,
+      0
+     ],
+     "tete": [
+      0,
+      0
+     ],
+     "RA": [
+      0,
+      0
+     ],
+     "LA": [
+      -120,
+      -40
+     ],
+     "RL": [
+      20,
+      -40
+     ],
+     "LL": [
+      -20,
+      -30
+     ]
+    },
+    "camera": {
+     "az": 0,
+     "el": 5,
+     "dist": 4,
+     "fov": 70,
+     "decalage_px": [
+      40,
+      -40
+     ]
+    },
+    "descripteurs": {
+     "resume": "hanche 2.20 | buste lacet 0 penché +20 | RA torse az 0 el 0 (coup az 0 el -20) poing [1.75, 1.0, 0.43] | LA torse az -120 el -40 (coup az -131 el -28) poing [-0.82, -1.65, -0.58]"
+    },
+    "confiance": {
+     "camera_devant_basse": 0.8,
+     "RA_vers_avant_camera": 0.7,
+     "penche_20": 0.35,
+     "LA_bas_arriere": 0.35
+    },
+    "image_finale": "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/recon_sp2/r/04.80_final_geo.png",
+    "lecture": "Caméra devant et basse, avec la face avant du torse vers elle. Le poing DROIT est devant l'épaule droite, à hauteur d'épaule, le bras vers l'avant et vers la caméra : on voit le bout du bras entouré de fumée. Le poing est à environ 1,75 devant et 0,4 au-dessus du centre du torse. Le buste reste penché d'environ 20°. Bras gauche en bas et en arrière du côté gauche (bloc noir en bas à droite) : incertain.",
+    "alternative_testee": "Bras droit à (10,5), (−10,0), (0,10), (20,0) : tous proches. Bras gauche à (−140,−30), (−100,−50), (−150,−20), (−90,−60) : même ordre de grandeur. Retenu : bras droit droit devant (0,0)."
+   },
+   {
+    "moment": "coup 5.07",
+    "t": "05.07",
+    "params": {
+     "hanche": 2.2,
+     "buste": [
+      0,
+      25,
+      0
+     ],
+     "RA": [
+      -5,
+      0
+     ],
+     "LA": [
+      -120,
+      -40
+     ],
+     "note": "NON superposé : l'image est de la fumée, le rendu ne colle pas"
+    },
+    "camera": {
+     "az": -5,
+     "el": 0,
+     "dist": 3,
+     "fov": 70
+    },
+    "descripteurs": {
+     "resume": "RA torse az -5 el 0 poing [1.78, 0.87, 0.27] (hypothèse)"
+    },
+    "confiance": {
+     "bras_vers_camera": 0.6,
+     "ajustement": 0.1
+    },
+    "image_finale": "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/recon_sp2/r/05.07_final_geo.png",
+    "lecture": "Travelling avant sur le coup déjà tendu. Le bloc du bras, avec le logo R vu de biais, part du haut à gauche vers le centre, DEVANT le torse. Le bras est donc tendu vers l'objectif, quasi dans l'axe de vue. Mon rendu met le bras sur le côté : raté, la superposition ne vaut rien. Seule la lecture qualitative tient : bras droit tendu vers la cible, tête au-dessus.",
+    "alternative_testee": "Aucune (1 seul tour, faute de temps) : à refaire."
+   }
+  ],
+  "mouvement_du_poing": "De 3,6 à 4,5, le poing droit reste DERRIÈRE le haut du dos : environ 1 bloc en arrière du centre du torse, 0,4-0,5 à droite, 0,8-1,1 au-dessus. Le bras reste dans l'axe de la normale du dos (axes du torse : az −155 à −165, el −6 à +5), et comme le buste est penché d'environ 43°, cela donne dans le monde un bras vers l'arrière qui monte de 32 à 46°. Pendant ce temps, le bras gauche passe de « avant-gauche qui monte » (3,7) à « vers le bas » (4,2). Aux images 4,53 et 4,60, le poing droit est caché derrière la tête ; la tête regarde la caméra et le buste est vu de dessus (très penché). En 4,67, le poing est déjà devant l'épaule droite, à hauteur d'épaule, dirigé vers la cible, avec la fumée ; 4,80 à 5,07 montrent ce coup tendu pendant que la caméra se rapproche. L'aller arrière → avant se fait en 1/15 s au plus. La trajectoire entre les deux n'est pas vue (probablement par-dessus l'épaule, non vérifié). Entre la charge et le coup, le buste se redresse d'environ 43° à environ 20° (valeur au coup peu fiable). Sa rotation (lacet) n'est pas mesurée.",
+  "invariants": [
+   "Même caméra de cinématique que TSB, décalage d'environ 0,60 s (SP2 t = TSB t+0,6) : aucun angle supplémentaire.",
+   "Charge tenue de 3,6 à 4,5 : direction du bras droit quasi constante dans les axes du torse (normale du dos, az −155 à −165, el −6 à +5), buste penché d'environ 43°.",
+   "Pendant la charge, le poing droit passe DEVANT la cape vue de derrière et la face du gant regarde la caméra (TSB 4,27-4,53) : le bras sort du dos, il n'est pas sur le côté.",
+   "Au coup : le bras droit est droit devant, à hauteur d'épaule, dans l'axe caméra-cible, et la face avant du torse regarde la cible.",
+   "Le lâcher prend 1 image GIF (≤ 1/15 s) : aucune pose intermédiaire visible."
+  ],
+  "doutes": [
+   "Le lacet du buste par rapport à la direction du coup, pendant la charge, n'est PAS mesuré. Tous les descripteurs de charge sont en repère « avant du torse » (lacet 0 imposé). Le fond donne +72° de rotation caméra entre 3,73 et 4,53, mais rien au-delà : impossible de relier au coup.",
+   "« Le bras droit sort du dos » contredit Milan (« dans AUCUNE ref le bras n'est tendu derrière »). La silhouette seule ne sépare pas « bras sur le côté » (az 90-115, score 0,73) et « bras en arrière » (0,73-0,76). La décision repose sur l'occlusion par la cape et sur la face du gant visible en TSB. Ma lecture : pas un bras tendu à l'horizontale, mais un bras qui prolonge la normale du dos d'un buste penché. À faire vérifier par Milan.",
+   "Le logo R sur le bras SP2 est sur une face latérale près du bout de la main (vu de biais en 5,07), pas forcément sur le bout lui-même : il ne donne pas le sens du bras à lui seul.",
+   "4,53 et 4,60 : ajustement automatique dégénéré, rendu manuel non superposable. La « plaque » est-elle le torse vu de dessus (textures TM, col, sangle) ou un bras devant le ventre (TSB 5,13 : bloc noir, torse violet au-dessus) ? Non résolu.",
+   "4,20 : bras gauche non fiable (score 0,49). Cape dans l'ombre non détectée par le masque.",
+   "5,07 : superposition ratée (fumée), seule la lecture qualitative tient.",
+   "Jambes et pieds non contraints (cachés par la cape de dos, hors cadre ou noirs sur noir de face) : leurs nombres ne valent rien.",
+   "Champ de vision supposé à 70° (vertical) sauf aux gros plans ; roulis caméra supposé nul (troncs d'arbres verticaux).",
+   "Tête : orientation non ajustée (seule sa position l'est), les valeurs « tete » sont à ignorer."
+  ]
+ },
+ "verifications": [
+  {
+   "verdict": "corrige",
+   "affirmations": [
+    {
+     "affirmation": "SP2 n'est pas un deuxième angle : c'est la même caméra de cinématique que TSB, avec environ +0,60 s de décalage (SP2 t = TSB t+0,6).",
+     "statut": "confirme",
+     "preuve": "Paires vérifiées à l'œil. SP2 3,73 / TSB 4,33 : bloc horizontal à gauche, petit bloc en haut à droite, cape. SP2 4,20 / TSB 4,80 : même chose. SP2 4,53 / TSB 5,13 : grosse tête, bloc horizontal dessous. SP2 4,80 / TSB 5,40 : face du torse, poing enfumé à gauche de l'image. Cartes SP2 5,33-5,53 = TSB 6,00-6,13. Le décalage exact (±1 image) n'est pas mesuré."
+    },
+    {
+     "affirmation": "3,73 : caméra derrière-gauche et au-dessus (az ≈ −135°, él ≈ 34°).",
+     "statut": "confirme",
+     "preuve": "Raisonnement géométrique. La cape (au dos) est visible de face, donc le dos regarde la caméra. La cape pend vers le bas-droite : les hanches sont en bas à droite et l'avant du buste pointe vers la GAUCHE de l'image. Avant = gauche de l'image + loin de la caméra, donc la caméra est à SA gauche et derrière. Réajustements libres : az −127 à −143 selon les essais."
+    },
+    {
+     "affirmation": "3,73 : buste penché en avant d'environ 43°.",
+     "statut": "confirme",
+     "preuve": "Lean imposé puis tout le reste réajusté (v4.py, 03.73_alt_pen.png). Scores : penché 15° = 0,488 ; 30° = 0,512 ; 43° = 0,811 ; 60° = 0,779. La vraie valeur est dans la plage 43-60°, 15-30° est exclu."
+    },
+    {
+     "affirmation": "3,73-4,20 : le bras droit sort du dos, dans l'axe de la normale du dos (axes du torse az −155 à −165, él ≈ 0).",
+     "statut": "incertain",
+     "preuve": "Même après réajustement complet, la silhouette ne tranche pas : dos (−162,5 ; 5) = 0,812 contre côté (95 ; 0) = 0,795, soit un écart de 0,017 ; (110 ; 20) = 0,761 ; avant (30 ; 30) = 0,755. Les deux preuves avancées par l'agent sont faibles. (1) L'occlusion de la cape dépend de notre modèle de cape (2 × 3,6, charnière à 0,56) : une cape plus étroite ne masquerait pas le bras « côté ». (2) En TSB 4,47-4,53, la « face du gant » porte des motifs en crochet qu'on retrouve aussi sur les faces LONGUES des bras (TSB 4,93-5,07) : ce n'est pas un repère de l'extrémité main. Un indice va dans le sens de l'agent : le logo R. On le voit sur la face tournée vers la caméra en 4,20-4,40, et sur la face côté objectif quand le bras pointe vers la caméra (5,00-5,07). Il serait donc au bout de la main, mais ce n'est pas démontré. Sur 3,60-4,00 (pose figée, caméra seule réajustée, puis réajustement libre), le bras reste à −156/−162, él +3/+8 : la tenue constante est confirmée."
+    },
+    {
+     "affirmation": "« Poing droit DERRIÈRE le haut du dos » : lecture valable par rapport au coup.",
+     "statut": "refute",
+     "preuve": "Ce n'est vrai que dans le repère du torse. Le lacet du buste par rapport au coup n'est pas mesuré, et la position du poing « par rapport au coup » en dépend entièrement. Calculs G.descripteurs (même pose, penché 43°) : bras dos avec lacet 0 → coup az −155 (derrière) ; lacet −60 (buste tourné à sa droite) → coup az −95 (poing du côté GAUCHE, incohérent) ; lacet +30 → az +175. Contre-hypothèse : bras côté (95 ; 0) avec buste tourné à sa droite de 90° → coup az −176, él +3, épaule droite reculée +1,63. La silhouette ne départage pas les deux. On ne peut donc rien conclure sur « derrière / à côté » par rapport à la cible."
+    },
+    {
+     "affirmation": "3,73 : bras gauche en avant-gauche, qui monte d'environ 45° (axes du torse −63 ; +45).",
+     "statut": "incertain",
+     "preuve": "Une fois réajusté, il part vers (−45 ; +42), et vers −27 dans l'hypothèse bras droit sur le côté. Sur les images voisines, sa direction varie de −85 (3,60) à −3 (4,00). La direction générale « avant-gauche qui monte » tient, l'azimut exact non (±30°)."
+    },
+    {
+     "affirmation": "4,20 : ajustement global (bras droit inchangé, caméra plus proche).",
+     "statut": "refute",
+     "preuve": "Rendu 04.20_final_geo.png relu. Le bloc vert (bras droit) tombe environ un bloc plus bas et plus à droite que le bloc au logo R de la réf, qui est au niveau de la tête. Le bras gauche (bleu) pointe vers l'objectif, alors que la réf montre un long bloc en diagonale vers le bas-gauche. L'agent l'avait lui-même noté (0,3). La pose de 4,20 n'est pas utilisable."
+    },
+    {
+     "affirmation": "4,53-4,60 : la « plaque » est le torse vu de dessus, ou bien un bras (non résolu).",
+     "statut": "incertain",
+     "preuve": "TSB 4,93 → 5,13 → 5,27 penche pour le bras GAUCHE. En 5,07, le bras gauche descend en diagonale devant le corps. En 5,13-5,20, un bloc noir horizontal barre le bas du torse violet. En 5,27, un bloc horizontal est en bas à droite pendant que le poing droit apparaît en haut à gauche. Côté SP2, la plaque porte la même rangée de 5 points rouges que le bras de 3,73. Et en 4,67-4,80, le bloc marqué TM et triangles est DISTINCT du torse (qui porte les lettres), à droite de l'image, donc à SA gauche. Ma lecture : la plaque est le bras gauche plus probablement que le torse (≈0,65), non prouvé."
+    },
+    {
+     "affirmation": "4,80 : caméra devant et basse, torse face à la caméra, bras droit droit devant vers l'objectif, à hauteur d'épaule.",
+     "statut": "confirme",
+     "preuve": "Lettres ROBLOX lisibles avec TM à droite, donc face avant non inversée. Le poing enfumé est à gauche de l'image (sa droite), grossi par la perspective. Avec la caméra forcée de face (|az| ≤ 20°), l'optimiseur place le bras droit entre (−21 ; +14) et (+15 ; +22) : devant, légèrement montant. Scores faibles (0,29-0,33) à cause du très gros plan et de la fumée : la direction est fiable, les angles exacts ne le sont pas."
+    },
+    {
+     "affirmation": "4,80 : bras gauche en bas et en arrière du côté gauche (−120 ; −40).",
+     "statut": "refute",
+     "preuve": "Dans le rendu de l'agent, le bras bleu est caché derrière le torse. Or la réf montre un gros bloc (TM) bien visible à droite du torse. Hypothèses testées avec caméra de face : (−120 ; −40) = 0,292 ; latéral (−90/−110 ; 0) = 0,324-0,325 ; avant-bas = 0,290. Le bras gauche latéral, quasi horizontal, colle mieux (écart faible, confiance 0,4)."
+    },
+    {
+     "affirmation": "Lâcher en ≤ 1/15 s entre 4,60 et 4,67 ; buste qui se redresse de ~43° à ~20°.",
+     "statut": "incertain",
+     "preuve": "L'apparition du poing entre 4,60 et 4,67 est confirmée à l'œil (TSB 5,20 → 5,27 aussi). Mais la caméra bouge fortement : on passe du dos en TSB 5,07 à la face en 5,27, avec un fond similaire. Il n'est donc pas établi que la pose change en une seule image, ni que le buste tourne ou se redresse de la valeur annoncée. Le penché de 20° au coup reste un choix de départ non contraint : les réajustements donnent 9-23°."
+    }
+   ],
+   "corrections": "Ce qui tient : même caméra que TSB avec environ +0,6 s de décalage. À 3,73, caméra derrière-gauche (az ≈ −135°, él ≈ 35°). Buste penché de 43 à 60° : 15-30° est exclu, avec des scores de 0,49-0,51 contre 0,81. Bras droit tenu presque sans bouger de 3,60 à 4,20 dans les axes du torse. Au coup (4,80) : torse face à la caméra, bras droit devant, à hauteur d'épaule, vers l'objectif.\n\nCorrections :\n1) « Le bras droit sort du dos » n'est pas tranché. La silhouette donne 0,812 pour le dos contre 0,795 pour le côté (95 ; 0), après réajustement complet. Les deux preuves de l'agent sont faibles. L'occlusion de la cape dépend de notre modèle de cape. Quant à la « face du gant » en TSB, les mêmes motifs se voient sur les faces longues. Le seul indice qui va dans ce sens est le logo R, probablement au bout de la main, qu'on voit tourné vers la caméra de 4,20 à 4,40 : environ 0,55.\n2) Surtout, « poing DERRIÈRE le dos » ne vaut que dans le repère du torse. Par rapport au coup, tout dépend du lacet du buste, qui n'est pas mesuré.\n   - Bras dos + buste tourné à sa droite de 60° : le poing passe du côté gauche (coup az −95), ce qui est incohérent.\n   - Bras côté + buste tourné à sa droite de 90° : poing derrière l'épaule dans l'axe du coup (coup az −176, épaule droite reculée +1,63).\n   Il ne faut donc PAS conclure « bras tendu derrière » contre Milan. La contre-hypothèse (bras sur le côté + torse tourné à droite) est aussi compatible avec l'image.\n3) 4,20 : pose inutilisable. Le bras droit est rendu environ 1 bloc trop bas et le bras gauche pointe vers l'objectif au lieu d'aller en diagonale vers le bas-gauche.\n4) 4,53-4,60 : la « plaque » est plus probablement le bras GAUCHE couché devant le ventre (TSB 5,07-5,27, même rangée de points que le bras en 3,73, bloc TM distinct du torse en 4,67-4,80) que le torse vu de dessus. Environ 0,65, non prouvé.\n5) 4,80 : le bras gauche est plutôt latéral et quasi horizontal (−90 à −110 ; 0), pas en bas-arrière (−120 ; −40). Le penché de 20° n'est pas contraint (9-23° selon les ajustements).\n\nRien n'est mesuré sur le lacet du buste charge → coup. Idée à tester : mesurer le lacet caméra entre 4,53 et 4,80 d'après les lignes du dallage, puis le comparer à la rotation caméra/torse.\n\nScripts et images dans /tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_sp2_rendu/ : v1.py à v5.py, et les images listées ci-dessous.",
+   "images": [
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_sp2_rendu/03.73_alt_RA.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_sp2_rendu/03.73_alt_RA_reopt.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_sp2_rendu/03.73_alt_pen.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_sp2_rendu/03.60_voisin_reopt.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_sp2_rendu/03.87_voisin_reopt.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_sp2_rendu/04.00_voisin_reopt.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_sp2_rendu/zoomRA_seq.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_sp2_rendu/rlogo_et_tsb.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_sp2_rendu/tsb_493_527.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_sp2_rendu/seq_460_480.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_sp2_rendu/04.80_alt.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_sp2_rendu/04.80_reopt.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_sp2_rendu/04.80_LA_front.png"
+   ]
+  },
+  {
+   "verdict": "corrige",
+   "affirmations": [
+    {
+     "affirmation": "SP2 n'est pas un 2e angle : même caméra de cinématique que TSB, décalée d'environ +0,60 s (SP2 t = TSB t+0,6).",
+     "statut": "confirme",
+     "preuve": "4 paires comparées à l'œil : SP2 3,73/TSB 4,33, 4,20/4,80, 4,53/5,13, 4,80/5,40. Cadrage, silhouette et fond identiques (planches + tsb_04.33.png, tsb_04.80.png)."
+    },
+    {
+     "affirmation": "Charge 3,73 : caméra derrière-gauche et au-dessus (az ≈ −135°, el ≈ 34°).",
+     "statut": "confirme",
+     "preuve": "TSB 4,33 (tsb_04.33.png) : le torse violet montre une face étroite (≈1×2, donc une face latérale) à GAUCHE de la cape, dont on voit la face extérieure : on voit donc le flanc gauche et le dos. Pas de visage sur la tête (on voit l'arrière). SP2 3,60 : le logo R de la casquette est vu de biais à gauche, visière vers la gauche en s'éloignant. Les valeurs d'angle exactes ne sont pas vérifiées."
+    },
+    {
+     "affirmation": "Charge 3,73-4,20 : le bras droit sort du DOS, vers l'arrière (axes du torse : az −155 à −165, el ≈ 0). L'argument décisif est que le bras passe devant la cape.",
+     "statut": "incertain",
+     "preuve": "L'argument d'occlusion ne tient pas. Avec LEUR caméra et LEUR pose, bras droit remplacé par (100°, 0°) = bras sur le côté droit : même carré vert en haut à droite, lui aussi DEVANT la cape (hypRA_03.73.png, cases H0 et H5 quasi identiques). Le carré vu en bout prouve seulement que le bras est proche de l'axe de visée, mais n'indique pas s'il vient vers la caméra ou s'en éloigne. À 4,20, la réf montre un bloc allongé verticalement (≈60×105 px, face du dessus visible). Leur rendu donne un petit carré (04.20_final_geo.png) : ça ne colle pas. Un bras vertical (H4, soit 180°/+50° dans les axes du torse) ressemble plus. Seul indice en faveur de « l'arrière » : caméra avant-gauche type SP2 4,47 et lacet du buste supposé fixe → seul H0 laisse voir le bras à droite de la tête, comme dans la réf (hyp_0447.png). C'est faible, car ce lacet n'est pas mesuré. Quant à la face du gant visible en TSB 4,27-4,53 : les marques en L sur ce bloc existent aussi sur les faces LONGUES du bras gauche et des jambes. Elles ne prouvent donc pas qu'on voit le bout de la main."
+    },
+    {
+     "affirmation": "Charge 3,73 : le bras gauche part en avant-gauche et monte (axes du torse : −63°, +45°).",
+     "statut": "confirme",
+     "preuve": "Le bloc noir à points rouges pointe vers la gauche de l'image, sa grande face est visible (perpendiculaire à la vue), et il passe DEVANT la face latérale violette (TSB 4,33). C'est donc le bras côté caméra, le gauche. Avec la caméra derrière-gauche, « gauche de l'image » = avant-gauche. Le rendu H0 superpose bien ce bloc. L'élévation exacte n'est pas vérifiée."
+    },
+    {
+     "affirmation": "Charge 4,20 : bras gauche à (−136°, +38°), soit en arrière et vers le haut (valeur déjà signalée douteuse par l'agent).",
+     "statut": "refute",
+     "preuve": "SP2 4,20 (z_04.20.png) et TSB 4,80 : le bloc à points part de l'épaule et DESCEND vers le bas-gauche de l'image jusqu'à mi-hauteur. Le rendu met à la place un gros cube bleu près de la caméra (04.20_final_geo.png). Le bras gauche pointe vers le bas / l'avant-bas."
+    },
+    {
+     "affirmation": "4,53-4,60 : la « plaque » serait le TORSE vu d'en dessus (lecture SP2, 0,55), donc un buste très penché, 55-65°.",
+     "statut": "refute",
+     "preuve": "En TSB 5,13 et 5,20 (même instant), un bloc NOIR horizontal (un bras) est couché devant le ventre, bien séparé du torse VIOLET visible au-dessus et derrière. La tête est posée droite sur le torse, et en 5,20 le visage regarde la caméra (tsb_0513_0520.png). La rangée de points rouges sur la face avant de la plaque est la même texture que sur le bras gauche en 3,73, 4,20 et 4,40-4,47. En TSB, ce bras-là est noir et distinct du torse violet. TM, triangles du col et lettres « OB » sont sur la face avant du torse, juste au-dessus du bras. Plaque = bras gauche en travers du ventre. L'inclinaison de 55-65° n'est pas soutenue."
+    },
+    {
+     "affirmation": "4,53 : tête face caméra, bras droit caché derrière la tête.",
+     "statut": "confirme",
+     "preuve": "SP2 4,53 : on voit de face le logo R et la visière de la casquette. TSB 5,13 : un bloc noir dépasse en haut à droite de la tête (le bras droit derrière la tête). TSB 5,20 : visage visible."
+    },
+    {
+     "affirmation": "Lâcher entre 4,60 et 4,67 (1 image GIF au plus). En 4,67, le poing droit est déjà devant l'épaule droite, tourné vers la caméra et la cible.",
+     "statut": "confirme",
+     "preuve": "bras_0467.png. En SP2 4,67 comme en TSB 5,27, un bloc carré (le bout du bras) est collé à l'épaule droite, face à l'objectif, avec la fumée. Rien de visible en 4,60. En plus : une ligne de traînée courbe passe AU-DESSUS du bras, de la droite vers la gauche. C'est un indice (non prouvé) que le poing arrive par-dessus l'épaule, ce que l'agent avait noté « non vérifié »."
+    },
+    {
+     "affirmation": "Au coup (4,80) : caméra devant et basse, face avant du torse vers la caméra et la cible, bras droit droit devant à hauteur d'épaule.",
+     "statut": "confirme",
+     "preuve": "SP2 4,80 : lettres ROBLOX et TM de face, sangles de cape sur les épaules. Le bloc enfumé est à gauche du torse (donc à SA droite) entre les sangles et la poitrine, avec sa face carrée vers l'objectif. Même chose en TSB 5,40 (visage visible). Par contre, « 1,75 devant, 0,4 au-dessus » et l'inclinaison de 20° ne se mesurent pas en profondeur sur ces images : non vérifiés."
+    },
+    {
+     "affirmation": "Au coup : le « bloc noir en bas à droite » serait le bras gauche, en bas et en arrière (−120°, −40°).",
+     "statut": "refute",
+     "preuve": "Ce bloc part du BAS du torse (hanche gauche) et passe devant le bas-ventre. C'est la jambe gauche avancée vers la caméra. En TSB 5,40 (tsb_0527_0540.png), le bras gauche est un AUTRE bloc, collé au flanc droit de l'image au niveau de l'épaule, qui descend. La valeur « bas-arrière » est donc peut-être juste, mais elle repose sur le mauvais bloc."
+    },
+    {
+     "affirmation": "La caméra tourne d'environ +72° entre 3,73 et 4,53 (repère : l'arche du fond).",
+     "statut": "incertain",
+     "preuve": "Recalcul : l'arche passe de x = 445 à x = 50, focale 257 px (champ vertical 70°) → atan(0,486) + atan(1,05) = 25,9° + 46,4° ≈ 72°. Le calcul se reproduit, mais seulement si le champ reste fixe. Or le plan zoome fortement entre 3,73 et 4,53, et un changement de champ fausse ce chiffre."
+    },
+    {
+     "affirmation": "Charge : buste penché d'environ 43°, hanche vers 2,2 (accroupi).",
+     "statut": "incertain",
+     "preuve": "Pas de repère indépendant : les jambes sont cachées par la cape et noir sur noir. Le recouvrement de la tête dans leur rendu 3,73 est correct, mais d'autres combinaisons inclinaison + caméra n'ont pas été exclues."
+    }
+   ],
+   "corrections": "(Pour Milan, qui demandait « encore combien de temps » : cette vérification est une étape de la reconstruction géométrique. Elle ne donne pas de délai.)\n\nCorrections à reporter dans la reconstruction SP2 :\n\n1) Bras droit pendant la charge (3,73-4,20) : passer de « sort du dos, confiance 0,7 » à « non tranché ». L'argument de la cape est faux : un bras sur le côté droit (100°, 0°) donne la même image à 3,73, lui aussi devant la cape (hypRA_03.73.png). La face du gant n'est pas prouvée non plus : les marques en L couvrent aussi les faces longues. À 4,20, le bloc de la réf est allongé verticalement et on voit sa face du dessus ; leur pose (−155°, −6°) donne un petit carré, donc elle ne colle pas. Un bras plus vertical ressemble plus : H4, soit 180°/+50° dans les axes du torse, ce qui donne à peu près un bras vertical dans le monde avec le buste penché de 43°. Seul indice pour « l'arrière » : H0 est la seule hypothèse qui laisse voir le bras à droite de la tête avec une caméra avant-gauche (4,47), mais seulement si le lacet du buste ne change pas, ce qui n'est pas mesuré. Il faut refaire l'ajustement en optimisant la caméra ET le lacet du buste sur 3,73, 4,20 et 4,47 ensemble.\n\n2) 4,53-4,60 : la plaque est le BRAS GAUCHE couché en travers du ventre, pas le torse vu de dessus. Preuves : TSB 5,13 et 5,20, où le bras noir est séparé du torse violet, et la texture à points identique à celle du bras gauche. Il faut supprimer « buste très penché 55-65° » ; en TSB 5,13-5,20 le torse paraît assez droit, avec la tête au-dessus et le visage vers la caméra.\n\n3) Bras gauche à 4,20 : il pointe vers le bas / l'avant-bas, pas à (−136°, +38°).\n\n4) Coup à 4,80 : le bloc en bas à droite est la jambe gauche avancée. Le bras gauche est le bloc le long du flanc gauche au niveau de l'épaule (TSB 5,40), il descend.\n\n5) À ajouter : en 4,67, une traînée courbe passe au-dessus du bras droit, de la droite vers la gauche. C'est un indice que le poing arrive par-dessus l'épaule (non prouvé).\n\n6) La rotation de +72° n'est valable que si le champ reste fixe ; or le plan zoome, à marquer incertain.\n\nCe qui tient : même caméra que TSB avec +0,6 s, caméra derrière-gauche à 3,73, bras gauche avant-gauche à 3,73, tête face caméra et bras droit derrière la tête à 4,53, lâcher en ≤ 1/15 s, et au coup un bras droit tendu vers la caméra et la cible depuis l'épaule, torse de face.",
+   "images": [
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_sp2_indices/hypRA_03.73.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_sp2_indices/hypRA_04.20.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_sp2_indices/hyp_0447.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_sp2_indices/tsb_04.33.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_sp2_indices/tsb_04.80.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_sp2_indices/tsb_0513_0520.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_sp2_indices/tsb_0527_0540.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_sp2_indices/bras_0467.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_sp2_indices/cmp_0440_0447_tsb.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_sp2_indices/z_04.20.png"
+   ]
+  }
+ ]
+}

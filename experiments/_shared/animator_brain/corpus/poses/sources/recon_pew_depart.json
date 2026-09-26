@@ -1,0 +1,446 @@
+{
+ "label": "recon:pew-depart",
+ "kind": "recon",
+ "resultat": {
+  "ref": "Pew « SERIOUS PUNCH | Roblox VFX » (lvB-wTylH3Y), 4,5 à 5,1 s. Images 30 i/s dans /tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/recon_pew_c/f30/. Tout le travail est dans /tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/recon_pew_c/ (planche de synthèse : planche_finale_pew_c.png).",
+  "direction_du_coup": "À 4,9-5,0 s, le poing arrive droit sur la caméra : la face noire du bout du bras grossit jusqu'à 240 px (environ 2 studs de l'objectif). Repère retenu : avant = direction horizontale du bras droit ajusté à 4,9 s, soit (0,884, 0, -0,468) dans le repère de la grille du sol. La caméra est calée sur la grille (2 points de fuite par image). Son cap tourne vers sa gauche : L = 18,5° à 4,6, 24,6° à 4,7, 38,5° à 4,8, 60,8° à 4,9, et environ 92,8° à 5,0 (la lecture à 5,0 est ambiguë modulo 90° ; je retiens 92,8 par continuité). Autrement dit, la caméra tourne d'environ 75° autour du perso pendant la détente. Elle est sur le côté de l'axe du coup pendant la tenue (environ -90° à 4,6) et se retrouve dans l'axe au contact (environ -5° à 5,0).",
+  "moments": [
+   {
+    "moment": "fin de tenue / départ de la détente",
+    "t": "4.6",
+    "params": {
+     "hanche": 2.4,
+     "buste": [
+      217.2,
+      -13.1,
+      -9.2
+     ],
+     "RA": [
+      38.6,
+      -9.6
+     ],
+     "LA": [
+      -34.8,
+      -25.6
+     ],
+     "RL": [
+      0,
+      -60
+     ],
+     "LL": [
+      0,
+      -90
+     ],
+     "note": "buste en lacet MONDE (grille). Jambes non ajustées : valeurs par défaut."
+    },
+    "camera": {
+     "L_cap_deg": 18.5,
+     "pitch_bas_deg": 15.6,
+     "roll_deg": 1.1,
+     "fov": 60,
+     "d_horiz": 5.74,
+     "beta": 7.7,
+     "h_oeil": 4.11,
+     "calage": "grille : fov 58-61, tangage 15,6, roulis 1,1 (calib.py)"
+    },
+    "descripteurs": {
+     "avant": [
+      0.884,
+      0,
+      -0.468
+     ],
+     "buste": {
+      "lacet": -81,
+      "penche_avant": -13,
+      "penche_cote": -10
+     },
+     "RA_torse": [
+      39,
+      -10
+     ],
+     "RA_coup": [
+      120,
+      6
+     ],
+     "poing_RA_av_dr_haut": [
+      -1.6,
+      1.39,
+      0.32
+     ],
+     "LA_torse": [
+      -35,
+      -26
+     ],
+     "LA_coup": [
+      53,
+      -19
+     ],
+     "poing_LA": [
+      1.53,
+      1.02,
+      -0.49
+     ],
+     "epaule_D_reculee": 0.99,
+     "IoU_parties_blanches": 0.654
+    },
+    "confiance": {
+     "poing droit du côté droit, un peu en arrière du torse le long du coup": 0.6,
+     "bras droit DEVANT le torse (az torse +40), pas derrière": 0.65,
+     "buste tourné à sa droite de 64 à 81° par rapport au coup": 0.5,
+     "penché arrière -13 (une autre ajustée, torse seul, donne +34 avant)": 0.25,
+     "bras gauche sur son côté gauche, vers le bas": 0.55,
+     "jambes": 0.1
+    },
+    "image_finale": "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/recon_pew_c/final_460_sup.png",
+    "lecture": "Poing droit à hauteur d'épaule ou juste dessous, sur le côté droit, 1,4 stud à droite et 1,6 stud EN ARRIÈRE du centre du torse le long du coup. Dans les axes du torse, le bras droit pointe devant-droite (az +39, el -10), pas derrière. Le « en arrière » vient donc du buste, tourné à sa droite de 64 à 81° (épaule droite reculée de 1,0), pas du bras. Bras gauche ouvert sur son côté gauche et vers le bas (az torse -35, el -26), avec le poing devant-gauche. Les deux faces noires des bouts de bras sont visibles, donc les deux bras vont vers la caméra, qui est sur le côté de l'axe du coup. Jambes (lecture à l'œil, non mesurée) : une jambe descend vers la caméra, pied avant loin devant ; hanche basse probable.",
+    "alternative_testee": "Carte de coût exhaustive du bras droit (carte_RA_460.png) : un minimum « bras derrière et bas » existe dans les axes du torse (az +137 à +140, el -33 à -45). Rendu : rounds/r13_460_A.png et r21_460_sup.png. Il est rejeté : la face noire du bout y devient invisible alors qu'elle est nette de 3,9 à 4,6 s. L'IoU des parties blanches tombe aussi à 0,46 contre 0,65. Autre essai, bras droit sur le côté (az +90, el -12, r10_460) : IoU 0,62, erreurs de 17 à 28 px sur le poing. Retenu : bras devant-droite (az ≈ +40)."
+   },
+   {
+    "moment": "détente, milieu",
+    "t": "4.8",
+    "params": {
+     "hanche": 2.4,
+     "buste": [
+      278.1,
+      32.5,
+      8.1
+     ],
+     "RA": [
+      100.7,
+      48.1
+     ],
+     "LA": [
+      -60,
+      -40
+     ],
+     "note": "LA non visible, valeur par défaut"
+    },
+    "camera": {
+     "L_cap_deg": 38.5,
+     "pitch_bas_deg": 12.1,
+     "roll_deg": -4.8,
+     "fov": 60,
+     "d_horiz": 5.47,
+     "beta": -0.8,
+     "h_oeil": 3.65
+    },
+    "descripteurs": {
+     "buste": {
+      "lacet": -20,
+      "penche_avant": 32,
+      "penche_cote": 10
+     },
+     "RA_torse": [
+      101,
+      48
+     ],
+     "RA_coup": [
+      92,
+      38
+     ],
+     "poing_RA": [
+      -0.52,
+      2.49,
+      0.89
+     ],
+     "epaule_D_reculee": 0.65,
+     "angle_bras_vs_camera_deg": 25.5
+    },
+    "confiance": {
+     "buste a déjà dévissé d'environ 60° (de -81 à -20)": 0.45,
+     "bras droit pointé presque droit sur la caméra (face du bout frontale de 148 px)": 0.7,
+     "valeurs az/el du bras": 0.3
+    },
+    "image_finale": "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/recon_pew_c/final_480_sup.png",
+    "lecture": "Le poing a quitté le côté droit. Il vient au centre de l'image et vers l'objectif (face du bout de 100 px à 4,6, puis 148 px ici). Le buste a tourné d'environ 60° vers sa gauche, l'épaule droite revenant vers l'avant, et il penche vers l'avant (environ +32). Le bras droit monte (el torse +48) et pointe dans l'axe de la caméra, à 25° près. Le bras gauche est caché.",
+    "alternative_testee": "Deux lectures de la face blanche collée à la face noire. (A) C'est le flanc droit du torse et le bras est pile dans l'axe caméra. (B) C'est le flanc du bras, à environ 16-25° de l'axe caméra. L'optimiseur choisit (B) même en forçant l'angle bras-caméra à 25° au plus. L'arête commune fait 154 px, soit la taille de la face du bout, et le côté opposé se rétrécit à 133 px : c'est cohérent avec (B), le flanc court du bras. (A) reste possible. Dans les deux cas, le bras pointe presque sur la caméra."
+   },
+   {
+    "moment": "détente, poing presque au contact",
+    "t": "4.9",
+    "params": {
+     "hanche": 2.4,
+     "buste": [
+      268.2,
+      14.2,
+      -38.8
+     ],
+     "RA": [
+      -18.3,
+      26
+     ],
+     "LA": [
+      -60,
+      -40
+     ]
+    },
+    "camera": {
+     "L_cap_deg": 60.8,
+     "pitch_bas_deg": 3.6,
+     "roll_deg": -7,
+     "fov": 60,
+     "d_horiz": 3.5,
+     "beta": 13.8,
+     "h_oeil": 3.78
+    },
+    "descripteurs": {
+     "buste": {
+      "lacet": -30,
+      "penche_avant": 14,
+      "penche_cote": -40
+     },
+     "RA_torse": [
+      -18,
+      26
+     ],
+     "RA_coup": [
+      0,
+      -3
+     ],
+     "poing_RA": [
+      1.51,
+      0.72,
+      1.37
+     ],
+     "epaule_D_reculee": 0.63
+    },
+    "confiance": {
+     "bras droit horizontal pointé sur la caméra (définit l'axe du coup)": 0.6,
+     "orientation du torse": 0.25,
+     "penche_cote -40": 0.15
+    },
+    "image_finale": "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/recon_pew_c/final_490_sup.png",
+    "lecture": "Face noire du bout de 240 px : le poing est à environ 2 studs de l'objectif. La manche blanche part vers la gauche de l'image, jusqu'à l'épaule. Le bras est presque horizontal (el -3 dans le repère du coup), légèrement devant-gauche du torse (az torse -18, el torse +26 parce que le buste penche). Le poing est devant le torse (+1,5), 0,7 à droite, haut (+1,4, hauteur d'épaule). Le buste est encore tourné d'environ 30° à sa droite ; je n'en mesure pas la fin de rotation avec confiance. Le rendu montre un torse trop gros : distance caméra probablement sous-estimée.",
+    "alternative_testee": "Premier ajustement sans repère d'épaule (fit_490.json, r17) : bras az +28, el +57 dans le torse, erreur plus faible mais manche beaucoup trop longue à l'image. Remplacé par l'ajustement avec le repère d'épaule (RA_top), qui place mieux la manche."
+   },
+   {
+    "moment": "contact / suivi",
+    "t": "5.0",
+    "params": {
+     "hanche": 2.4,
+     "buste": [
+      309.6,
+      1,
+      -60.1
+     ],
+     "RA": [
+      -15.8,
+      12.3
+     ],
+     "LA": [
+      -60,
+      -40
+     ]
+    },
+    "camera": {
+     "L_cap_deg": 92.8,
+     "pitch_bas_deg": -11.1,
+     "roll_deg": -6.2,
+     "fov": 60,
+     "d_horiz": 3.12,
+     "beta": 20.3,
+     "h_oeil": 2.92,
+     "note": "caméra basse qui regarde vers le HAUT (11°) ; cap ambigu modulo 90° (92,8 retenu par continuité)"
+    },
+    "descripteurs": {
+     "buste": {
+      "lacet": 12,
+      "penche_avant": 1,
+      "penche_cote": -60
+     },
+     "RA_torse": [
+      -16,
+      12
+     ],
+     "RA_coup": [
+      -30,
+      -8
+     ],
+     "poing_RA": [
+      1.12,
+      -1.08,
+      1.15
+     ],
+     "epaule_D_reculee": 0.28
+    },
+    "confiance": {
+     "bras droit tendu vers la caméra, à hauteur d'épaule": 0.55,
+     "buste revenu face au coup (lacet autour de 0 à +12)": 0.35,
+     "penche_cote -60": 0.1
+    },
+    "image_finale": "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/recon_pew_c/final_500_sup.png",
+    "lecture": "Le bras droit est tendu à hauteur d'épaule (poing +1,15 au-dessus du centre du torse), vu en 3/4. La manche blanche va de la gauche de l'image jusqu'à la face noire du bout, à droite. Le buste est revenu à peu près face au coup (lacet +12) et l'épaule droite n'est presque plus reculée (0,28). La caméra, très basse, regarde vers le haut. Cette pose est la moins fiable : le torse est mal placé dans le rendu (trop proche). Sur 5,03-5,1 s, en plan plus large (lu à l'œil, non ajusté) : les deux bras sont presque à l'horizontale, le droit vers la droite de l'image, bout noir au bout, le gauche vers la gauche et flou.",
+    "alternative_testee": "fit_500.json (r18) avec contrainte « bras à 60° au plus de l'axe caméra » : le bras couvre la moitié de l'image, rejeté. Retenu : fit_500b, avec le repère d'épaule."
+   }
+  ],
+  "mouvement_du_poing": "Tenue à 4,3-4,6 : le poing droit est sur le côté droit, à hauteur d'épaule ou juste dessous, environ 1,4 stud à droite et 1,6 stud en arrière du centre du torse le long du coup. Le bras pointe devant le torse (az torse +39, el -10), pas derrière. C'est le buste, tourné à sa droite de 64 à 81° (épaule droite reculée de 1,0), qui met le poing en arrière.\n\nDétente à 4,6-5,0 (0,4 s ; le poing commence à bouger vers 4,65-4,7 avec la fumée) : l'essentiel de la rotation est dans le buste. Il dévisse vers sa gauche d'environ 60° dès 4,8, puis revient face au coup (lacet autour de 0 à +12) à 5,0. L'épaule droite repasse devant : son recul tombe de 1,0 à 0,3. Pendant ce temps, le bras bouge moins par rapport au torse : il passe de devant-droite (az +39, el -10) à devant, légèrement vers l'intérieur (az -16 à -18), et remonte à l'horizontale, hauteur d'épaule (el torse +12 à +26, el coup -3 à -8).\n\nTrajet du poing dans le repère du coup : il part d'environ (-1,6 arrière ; +1,4 droite ; +0,3 haut) et arrive à environ (+1,1 à +1,5 avant ; +0,7 à -1 ; +1,2 haut). C'est un arc horizontal de l'extérieur droit vers l'axe, qui monte d'environ 0,9 stud. Aucun passage par l'arrière dans les axes du torse. À l'image, le poing glisse du bord gauche vers le centre et grossit : face du bout de 100 px, puis 148, puis 240. La caméra tourne en même temps d'environ 75° pour se mettre dans l'axe.\n\nÉcart avec notre v5 (tenue 226-260) : v5 a le buste à -60/-66 et le bras droit à az torse +5 à +20 (bras sur le côté, poing à [-0,5 ; 2,5 ; -0,1]). Chez Pew, le buste est plus tourné (-64 à -81), le bras plus devant le torse (+39) et le poing plus près du corps latéralement (1,4 contre 2,5), plus en arrière (-1,6 contre -0,5) et plus haut (+0,3 contre -0,1). Ce chiffrage est incertain, voir doutes.",
+  "invariants": [
+   "Le bras qui frappe ne pointe jamais derrière le torse dans les axes du torse (az torse de +39 à -18 sur toute la détente). Le « recul » du poing vient du lacet du buste, pas du bras : cela confirme par la mesure la phrase de Milan.",
+   "Le lacet du buste change d'environ 80 à 90° pendant la détente (de -64/-81 à 0/+12), alors que le bras ne change que d'environ 55° d'az dans le torse : la rotation du buste domine.",
+   "Le poing finit à hauteur d'épaule, bras à l'horizontale (el coup de -3 à -8) : ni vers le bas, ni en uppercut.",
+   "La face noire du bout du poing reste visible et grossit de 100 à 240 px en 0,3 s : le poing vient vers la caméra, qui est la cible à l'écran.",
+   "La caméra tourne d'environ 75° (cap de 18,5 à environ 93°) et descend (tangage de 15,6° vers le bas à 11° vers le haut) pendant la détente, pour finir dans l'axe du coup, basse, en contre-plongée.",
+   "Bras gauche pendant la tenue : ouvert sur son côté gauche et vers le bas (az torse -35, el -26), pas replié sur la poitrine."
+  ],
+  "doutes": [
+   "Aucune jambe n'est ajustée : les valeurs RL/LL et « pieds » des descripteurs sont celles par défaut, sans signification. À l'œil (non mesuré), à 4,6 une jambe descend vers la caméra, pied avant loin devant.",
+   "La hauteur de hanche est fixée à 2,4 dans tous les ajustements : seule la hauteur caméra-torse est mesurée, pas la profondeur de l'accroupi.",
+   "Le penché du buste à 4,6 n'est pas fiable : l'ajustement complet donne -13 (en arrière), l'ajustement du torse seul par les bretelles donne +34 (en avant). Le lacet diffère de 17° entre les deux (-64 contre -81 dans le repère du coup).",
+   "Repère du coup = bras droit ajusté à 4,9 : une erreur sur ce bras décale tous les lacets « coup » d'autant (±20° plausible).",
+   "Caméra à 5,0 : le cap par la grille est ambigu modulo 90° (92,8 ou 2,8). J'ai retenu 92,8 par continuité (18,5, 24,6, 38,5, 60,8), non vérifié autrement.",
+   "4,9 et 5,0 : le torse du rendu est trop gros et mal placé, car le bloc blanc sous le bras est peu lisible. Pour ces deux images, le lacet et le penché de côté (-40, -60) sont à prendre comme non vérifiés.",
+   "4,8 : deux lectures géométriquement possibles de la face blanche (flanc du torse ou flanc du bras). La conclusion « bras presque dans l'axe caméra » tient dans les deux cas, pas les az/el précis.",
+   "Hypothèse de lecture : le bout noir est UNE face (main/peau noire), pas un gant sur un tiers du bras. Elle est déduite de 5,1 s (bout noir étroit vu de biais) ; la forme exacte de la texture n'est pas vérifiée.",
+   "Face avant du torse identifiée par bretelles + cravate (comme à t = 0) ; l'anse de la théière sur le côté gauche est cohérente avec cette lecture. Si c'était le dos, les côtés droit et gauche seraient inversés.",
+   "FOV supposé fixe à 60 (calibré entre 58 et 64 selon l'image) ; un zoom de caméra pendant le coup n'est pas exclu.",
+   "Outils écrits pour ce travail, dans mon dossier seulement : rendu.py (rendu avec roulis et bout noir), calib.py (points de fuite de la grille), fit.py et fit_gen.py (ajustement Nelder-Mead maison : ni scipy ni matplotlib dans ce bac à sable), bras_grille.py (carte de coût du bras). Le dépôt n'a pas été modifié."
+  ]
+ },
+ "verifications": [
+  {
+   "verdict": "corrige",
+   "affirmations": [
+    {
+     "affirmation": "Cap caméra (grille) 18,5 / 38,5 / 60,8 / 92,8° à 4,6 / 4,8 / 4,9 / 5,0 s, rotation d'environ 75° ; 92,8 retenu par continuité",
+     "statut": "confirme",
+     "preuve": "J'ai recalibré image par image avec calib.py de l'agent (cap_continuite.py). En déroulant modulo 90 : 19,6 / 18,2 / 19,9 / 20,6 / 22,2 / 24,2 / 28,6 / 32,6 / 37,1 / (f17 raté) / 50,9 / 59,9 / 68,3 / 79,7 / 92,6. Les pas font 8 à 13° par image à la fin : la lecture 92,8 est continue, 2,8 ne l'est pas. Fov de 60-62, sauf 68 à 5,0 (léger zoom possible)."
+    },
+    {
+     "affirmation": "4,6 : bras droit DEVANT le torse (az torse +39, el -10), pas derrière",
+     "statut": "confirme",
+     "preuve": "Rendu de la pose sur f07, f10 et f13 (4,5 / 4,6 / 4,7) : la face noire du bout reste visible et le bras colle au blanc. Le torse fait face à la caméra (bretelles + cravate, 11° de la caméra) et le bout du bras est visible, donc le bras va vers l'avant du torse. En refaisant l'ajustement avec le penché fixé à -13, +10 et +30, l'az torse du bras droit vaut +44, +45 et +10 : toujours devant. Les valeurs précises (+39 / -10) ne sont PAS robustes : el de -8 à +31 selon le penché."
+    },
+    {
+     "affirmation": "4,6 : poing droit à environ (-1,6 arrière ; +1,4 droite ; +0,3 haut) dans le repère du coup",
+     "statut": "confirme",
+     "preuve": "Trois réajustements (penché -13, +10, +30) donnent (-1,56 ; 1,52 ; 0,42), (-1,67 ; 1,60 ; 0,24) et (-1,78 ; 1,47 ; 0,70). C'est stable à ±0,2 près en avant/droite et ±0,3 en hauteur, À CONDITION que l'axe du coup soit juste (voir plus bas)."
+    },
+    {
+     "affirmation": "4,6 : buste penché EN ARRIÈRE de -13",
+     "statut": "refute",
+     "preuve": "Dans la ref f10, la théière recouvre environ la moitié haute de la face avant du torse : on ne voit les bretelles que sur environ 1 stud. La face avant est aussi aplatie (rapport h/l ≈ 0,75 contre 1,0 au rendu -13). Un buste penché en arrière enverrait la tête plus haut et ne peut pas produire ce recouvrement. Rendu -13 (h_fit_lean-13) : tête nettement au-dessus du torse, ne colle pas. Rendu +30 (h_fit_lean30) : tête qui mord le haut du torse comme la ref, coût 2037 contre 2060. Penché avant probable (+10 à +30), valeur non fixée."
+    },
+    {
+     "affirmation": "4,6 : buste tourné à sa droite de 64 à 81° par rapport au coup",
+     "statut": "incertain",
+     "preuve": "Le signe est bon : le torse fait face à la caméra, qui est sur le côté gauche de l'axe du coup. L'amplitude dépend du penché (-73 à -105 selon mes réajustements) et de l'axe du coup, qui est pris sur le bras de 4,9. À 5,0, ce même bras est déjà 30° plus à gauche ; l'erreur sur l'axe est donc d'au moins ±30°. Retenir « tourné nettement à sa droite, environ 70 à 100° », pas -81."
+    },
+    {
+     "affirmation": "4,6 : bras gauche ouvert sur son côté gauche, vers le bas (az torse -35, el -26)",
+     "statut": "incertain",
+     "preuve": "Avec un penché de +30, l'ajustement donne LA az -110 (arrière-gauche) au lieu de -35. La silhouette colle dans les deux cas. Seul le fait « ouvert sur le côté gauche, bout visible » tient."
+    },
+    {
+     "affirmation": "Le poing arrive « droit sur la caméra » à 4,9-5,0",
+     "statut": "refute",
+     "preuve": "C'est contredit par les propres chiffres de l'agent (synthese.py relancé) : à 4,9, la caméra est à -43° de l'axe du bras. À 5,0, le bras est à -30° de l'axe (RA coup az -30) alors que la caméra est à -5°. Le poing vient VERS la caméra et en biais, à 25-45° de l'axe. Il n'arrive pas dans l'axe."
+    },
+    {
+     "affirmation": "4,8 : bras droit pointé presque dans l'axe caméra, buste déjà dévissé d'environ 60°",
+     "statut": "incertain",
+     "preuve": "Rendu de la pose 4,8 sur f13, f16 et f19 : la grande face noire colle à f16. Sur f17 (4,833), on voit encore les bretelles sur une face très oblique à droite du bras : le torse est en train de tourner, cohérent sur le sens. Le chiffre de 60° n'est pas vérifiable par rendu."
+    },
+    {
+     "affirmation": "4,9-5,0 : buste revenu face au coup (lacet -30 puis +12), épaule droite presque plus reculée (0,28)",
+     "statut": "refute",
+     "preuve": "Le rendu des poses 4,9 et 5,0 sur f16, f19, f22 et f25 montre une grande face avant de torse À BRETELLES en bas à gauche. Dans la ref (f18 à f22), sous le bras, il n'y a AUCUNE bretelle : on voit un bloc blanc d'environ 1 stud de large, avec une seule couture verticale et du noir (jambe) dessous. C'est plutôt le FLANC du torse, ce que confirme la théière de profil (bec à droite de l'image). Ma contre-hypothèse « flanc droit vers la caméra » (lacet coup ≈ +90) s'est mal ajustée (coût 1836-2036 contre 1208, bout du bras invisible) : elle n'est pas prouvée non plus. L'orientation du torse au contact est donc NON MESURÉE, et « face au coup » est contredit par la texture."
+    },
+    {
+     "affirmation": "Invariant : la rotation du buste (80-90°) domine celle du bras (55°) pendant la détente",
+     "statut": "incertain",
+     "preuve": "Cela repose sur le lacet à 5,0, qui est réfuté ci-dessus. Si le torse montre son flanc au contact, la rotation totale peut atteindre 150-170°. Si le torse est de face, environ 90°. Aucune des deux n'est vérifiée."
+    },
+    {
+     "affirmation": "Invariant : le bras qui frappe ne passe jamais derrière le torse (az torse de +39 à -18)",
+     "statut": "confirme",
+     "preuve": "Vérifié à 4,5-4,7 (bout visible, torse de face) et à 4,8 (bras vers la caméra). À 4,9-5,0, l'az torse dépend du torse, qui n'est pas mesuré. Mais le bout noir reste face à la caméra pendant tout le trajet, donc aucune image ne montre le bras derrière."
+    },
+    {
+     "affirmation": "Poing final à hauteur d'épaule, bras presque horizontal",
+     "statut": "incertain",
+     "preuve": "Sur f22-f25, le bras est à peu près à l'horizontale dans l'image, mais la caméra est en contre-plongée et roulée de -6°. El coup -3 à -8 : plausible, sans validation indépendante du torse."
+    }
+   ],
+   "corrections": "Ce qui tient :\n- Le cap caméra (recalibré image par image, continuité confirmée jusqu'à 92,6°).\n- Le bras droit à 4,5-4,7 : il va DEVANT le torse, pas derrière. Le « en arrière » vient bien du buste tourné à sa droite. C'est la conclusion utile pour Milan, et elle est robuste.\n- La position du poing à la tenue dans le repère du coup : environ (-1,7 ; +1,5 ; +0,2 à +0,7).\n\nÀ corriger :\n1. Penché du buste à 4,6 : EN AVANT (+10 à +30, probablement vers +25), pas -13. La théière recouvre le haut du torse dans la ref, ce qui est impossible avec un buste penché en arrière.\n2. Du coup, l'az et l'el du bras en axes torse à 4,6 ne sont pas fiables : RA az de +10 à +45, el de -8 à +31 ; LA az de -35 à -110. Ne garder que « devant-droite, bout vers la caméra ».\n3. Le lacet du buste à 4,6 est de -70 à -105 selon le penché, avec en plus au moins ±30° d'incertitude sur l'axe du coup, qui est pris sur le bras de 4,9 (ce bras se décale encore de 30° à 5,0).\n4. « Poing droit sur la caméra » est faux d'après les chiffres de l'agent lui-même : le bras est à 25-45° de l'axe caméra à 4,9-5,0.\n5. Le torse à 4,9-5,0 n'est pas mesuré. Le rendu de l'agent montre la face à bretelles, que la ref ne montre pas : on y voit un bloc étroit à une couture, probablement le flanc droit. « Buste revenu face au coup (+12) » est donc rejeté. Les lacets et penchés de côté (-40, -60) à 4,9 et 5,0 sont à jeter. La rotation totale du buste pendant la détente est inconnue : entre 90 et 170°.\n\nNote : en relançant fit_gen.py s500b.json, j'ai réécrit recon_pew_c/fit_500b.json avec des valeurs identiques. Rien d'autre n'a été modifié hors de mon dossier ; le dépôt n'a pas été touché.\n\nScripts : cap_continuite.py, voisins.py, fit_penche.py, rendre_hyp.py, flanc500.py, tous dans /tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_pew_depart_rendu/\n\nSur « encore combien de temps » : cette vérification (piste Pew, détente) est terminée. Il reste à relancer les mesures des autres pistes du workflow avant v6, sans estimation chiffrée de ma part.",
+   "images": [
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_pew_depart_rendu/planche_voisins_a.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_pew_depart_rendu/planche_voisins_b.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_pew_depart_rendu/cmp_penche_460.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_pew_depart_rendu/cmp_500_flanc_face.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_pew_depart_rendu/zoom_f17_21.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_pew_depart_rendu/f10_grille.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_pew_depart_rendu/sheet_a.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_pew_depart_rendu/sheet_b.png"
+   ]
+  },
+  {
+   "verdict": "corrige",
+   "affirmations": [
+    {
+     "affirmation": "Tenue 3,9-4,6 s : le bras droit pointe DEVANT le torse (az torse ≈ +40, el ≈ -10), pas derrière ; le bras gauche aussi devant-gauche, un peu vers le bas",
+     "statut": "confirme",
+     "preuve": "Planche 3,9-4,45 et t_4.60 : le torse montre sa face avant (bretelles + cravate, face ≈ carrée, donc vue de face à ~10° près). Les deux bouts de bras montrent leur face noire carrée (~110 px) tournée vers la caméra, avec la face du dessus blanche entre le bout et l'épaule. Un bras derrière le torse cacherait sa face noire. La lecture est stable sur 5 images. L'az exact (+20 à +60) n'est pas contraint à mieux que ±20°."
+    },
+    {
+     "affirmation": "La caméra tourne d'environ 75° vers sa gauche entre 4,6 et 5,0 s et passe d'une plongée à une contre-plongée",
+     "statut": "confirme",
+     "preuve": "J'ai refait le calage grille (calib.py) sur 21 images à 30 i/s (verif…/f/g_01-21, cal.py). Cap modulo 90, déroulé : -19,8 (4,6) ; -36,8 (4,8) ; -59,4 (4,9) ; -92,6 (5,0), soit 72,8°. Pas par image : 1 à 13°, toujours sous 45°, donc aucune ambiguïté modulo 90. Sens vérifié : le point de fuite v2 va de x=-831 à x=+503, la caméra tourne donc vers sa gauche. Tangage : 16,7° vers le bas, puis 9° vers le haut à 5,0."
+    },
+    {
+     "affirmation": "Axe du coup = bras droit ajusté à 4,9 s, et le poing y arrive « droit sur la caméra »",
+     "statut": "refute",
+     "preuve": "Contradiction interne. Dans fit_490b, l'angle 3D entre le bras et le rayon poing→œil vaut 58,4° (5,0 s : 63,3°) : l'ajustement ne pointe pas le bras vers la caméra. Leur propre synthese.json donne d'ailleurs caméra à -43° de l'axe du coup à 4,9. Dans la ref, la face noire fait ~240×250 px et la manche ~110-140 px : bras presque dans l'axe de vue, pas à 58°. Le rendu final_490 le montre : manche verte de x=100 à 500 contre x≈260 à 400 dans la ref. Une variante « bras à 20° du rayon » (cmp490_vers_camera_sup.png) ne colle pas non plus, car caméra et torse sont mal ajustés à 4,9. L'axe du coup n'est donc pas mesuré."
+    },
+    {
+     "affirmation": "Tenue 4,6 : buste tourné à sa droite de 64 à 81° par rapport au coup ; poing 1,6 stud EN ARRIÈRE du centre du torse ; épaule droite reculée de 1,0",
+     "statut": "refute",
+     "preuve": "Tout dépend de l'axe du coup, non établi (voir ci-dessus). J'ai recalculé G.descripteurs sur la même pose 4,6 (fit_460d), avec 4 axes plausibles (alt_avant.py). Bras 4,9 de l'agent : lacet -81, poing avant -1,6, épaule 0,99. Rayon poing→œil 4,9 : lacet -22, poing +0,34 (DEVANT), 2,1 à droite, épaule 0,38. Rayon poing→œil 5,0 : lacet -47, poing -0,55. Bras 5,0 : lacet -111. La marge « ±20° » annoncée est sous-estimée : le lacet va de -22 à -111. Estimation brute sans ajustement : le cap caméra tourne de 42° de 4,6 à 4,9 et le torse fait face à la caméra à 4,6, donc lacet plutôt -35 ±15. Seule la lecture dans les axes du torse est sûre."
+    },
+    {
+     "affirmation": "Invariant : le bras qui frappe ne pointe jamais derrière le torse (az torse de +39 à -18 sur toute la détente)",
+     "statut": "refute",
+     "preuve": "Leur propre valeur à 4,8 est RA torse = (100,7 ; 48,1), et az > 90 veut dire derrière le plan latéral. L'invariant l'omet. Pour la tenue (3,9-4,6), la lecture « bras devant » est confirmée à l'image. Pour 4,8, le lacet du torse est trop incertain pour trancher."
+    },
+    {
+     "affirmation": "Le buste dévisse d'environ 60° dès 4,8, puis revient face au coup (lacet 0 à +12) à 5,0 ; la rotation du buste domine (80-90°)",
+     "statut": "incertain",
+     "preuve": "Lacet monde du torse : 217 → 278 → 268 → 310. Torse par rapport à la caméra : 11 → 60 → 14 → 16°. La série n'est pas monotone : ~60° de rotation, puis 10° de retour, puis 42°. C'est un bruit d'ajustement d'au moins ±20-30°. L'agent juge lui-même le torse à 4,9 et 5,0 mal placé. Le sens de rotation (vers sa gauche, comme la caméra) est plausible : la face avant rayée reste visible à 4,8. L'amplitude ne l'est pas."
+    },
+    {
+     "affirmation": "Bras gauche caché / non visible à 4,8-5,0 (valeur par défaut -60,-40)",
+     "statut": "incertain",
+     "preuve": "De 4,87 à 5,0 (g12-g16, zoom_490_507.png), un bloc blanc sous le poing se termine par un bout noir. Il porte la même fine ligne verticale que la manche droite. Les jambes sont sombres (4,6, 4,8). Ce bloc est donc probablement le bras GAUCHE, qui descend, et non le flanc du torse comme l'agent l'a supposé. Non ajusté, donc non tranché, mais « caché » est probablement faux."
+    },
+    {
+     "affirmation": "Le bout noir est UNE face (main), pas un gant sur un tiers du bras",
+     "statut": "confirme",
+     "preuve": "À 5,07 s (w_5.07.png, plan large), le bras droit montre une manche blanche et seulement une étroite bande noire au bout, vue de biais. Même lecture à 4,3-4,6 : face noire carrée d'environ 1 stud."
+    },
+    {
+     "affirmation": "Détente : la face noire grossit (100 → 148 → 240 px), le poing glisse du bord gauche vers le centre et passe devant la tête",
+     "statut": "confirme",
+     "preuve": "Planche g10-g18 : à 4,8, le carré noir est à gauche de la tête. Il glisse ensuite sous la théière et masque la tête à 4,87-5,0. La continuité exclut la lecture « carré noir = tête ». Tailles cohérentes à ±15 %."
+    },
+    {
+     "affirmation": "Poing final à hauteur d'épaule, bras à l'horizontale (el coup -3 à -8)",
+     "statut": "incertain",
+     "preuve": "L'élévation ne dépend pas de l'axe horizontal. Plausible : poing au niveau de l'œil caméra à 4,9 (tangage 3°) et bras horizontal à 5,07 en plan large. Mais l'ajustement à 4,9-5,0 est mauvais (manche trop longue, torse faux), donc la valeur chiffrée n'est pas vérifiée."
+    },
+    {
+     "affirmation": "Caméra sur le côté de l'axe du coup pendant la tenue (-90° à 4,6), dans l'axe au contact (-5° à 5,0)",
+     "statut": "refute",
+     "preuve": "Deux problèmes. (1) Ces angles dépendent de l'axe du coup, non établi. (2) Le signe ne suit pas la convention de G.camera_orbite : synthese.py fait cross(av,toc).y, donc -92 = côté DROIT du perso, soit +92 dans la convention G. Seul le fait visible est sûr : la caméra tourne de ~73° en suivant la rotation du torse et reste face à lui (torse/caméra : 11, 14, 16° à 4,6, 4,9, 5,0)."
+    }
+   ],
+   "corrections": "Ce qui tient, vérifié à l'image :\n- Pendant la tenue (3,9-4,6 s), le torse fait face à la caméra.\n- Les DEUX bras pointent devant le torse, écartés, vers le bas-devant ; on voit leurs faces noires de bout.\n- Pendant la détente, la caméra tourne d'environ 73° vers sa gauche (vérifié image par image à 30 i/s, sans ambiguïté modulo 90) et passe d'une plongée de 17° à une contre-plongée de 9°.\n- Le poing droit glisse de la gauche de l'image vers le centre, passe devant la tête et grossit vers l'objectif.\n- Le bout noir est une seule face.\n\nCe qui est faux ou non établi :\n- L'axe du coup vient du bras ajusté à 4,9, mais cet ajustement met le bras à 58° du rayon poing→œil. Or la ref montre le poing presque dans l'axe : face noire de ~240 px, manche courte. Le rendu final_490 a une manche 2 à 3 fois trop longue.\n- Tous les chiffres « dans le repère du coup » en dépendent : lacet -64/-81 à 4,6, poing 1,6 en arrière, épaule reculée de 1,0, RA_coup +120, caméra à -92/-5. En changeant l'axe pour d'autres lectures plausibles, la même pose 4,6 donne un lacet de -22 à -111 et un poing de +0,34 à -2,1 le long du coup.\n- Les phrases « poing en arrière » et « buste tourné de 64-81° » ne sont donc PAS mesurées. Estimation brute : lacet -35 ±15, poing sur le côté plutôt que derrière.\n- L'invariant « jamais derrière » est contredit par leur propre valeur à 4,8 (az torse 101).\n- Le dévissage du buste est bruité : lacet 217 → 278 → 268 → 310, non monotone.\n- Le bras gauche n'est probablement pas caché à 4,87-5,0 : c'est probablement le bloc blanc à bout noir sous le poing.\n- Convention de signe : la caméra « à -92 » de synthese.py correspond à +92 dans G.camera_orbite.\n\nÀ refaire :\n- Définir l'axe du coup autrement, par exemple par la direction du poing entre 4,9 et 5,07, et par le plan large de 5,07 où le bras est vu de profil.\n- Réajuster 4,9 et 5,0 en lisant le bloc inférieur comme le bras gauche.\n\nFichiers : /tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_pew_depart_indices/ (cal.py et sa sortie, alt_avant.py, alt490.py, cmp490_agent_sup.png, cmp490_vers_camera_sup.png, planche_g10_g18.png, planche_debut.png, zoom_490_507.png).",
+   "images": [
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_pew_depart_indices/planche_g10_g18.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_pew_depart_indices/zoom_490_507.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_pew_depart_indices/cmp490_agent_sup.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_pew_depart_indices/cmp490_vers_camera_sup.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_pew_depart_indices/planche_debut.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_recon_pew_depart_indices/t_4.60.png"
+   ]
+  }
+ ]
+}

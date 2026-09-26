@@ -1,0 +1,144 @@
+{
+ "clip": "black_flash_jjk",
+ "sha1_16": "347e82b2b689555b",
+ "duree_s": 6.37,
+ "resolution": [
+  888,
+  1920
+ ],
+ "zone_analysee": [
+  13,
+  0,
+  150,
+  346
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 16.7,
+  "lecture": "en 1 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 0,
+  "part_du_temps": 0.0,
+  "plus_longue_ms": 0
+ },
+ "energie": {
+  "mediane": 11.46,
+  "pic_p95": 95.03,
+  "contraste_p95_sur_mediane": 8.29,
+  "part_rapide": 0.037
+ },
+ "impacts": {
+  "nombre": 4,
+  "par_seconde": 0.63,
+  "ecart_median_s": 0.333,
+  "cartes": [
+   {
+    "t_s": 2.417,
+    "type": "silhouette",
+    "duree_ms": 17
+   },
+   {
+    "t_s": 3.4,
+    "type": "silhouette",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 3.717,
+    "type": "noir",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 3.8,
+    "type": "silhouette",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 4.05,
+    "type": "silhouette",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 4.15,
+    "type": "silhouette",
+    "duree_ms": 50
+   }
+  ],
+  "profil_autour": {
+   "approche": 10.58,
+   "0,1 s avant": 22.6,
+   "0,1 s apres": 22.84,
+   "tenue_avant_choc": false,
+   "explosion_apres": false
+  }
+ },
+ "coupes": {
+  "nombre": 16,
+  "t_s": [
+   2.367,
+   3.383,
+   3.45,
+   3.567,
+   3.6,
+   3.617,
+   3.667,
+   3.683,
+   3.767,
+   4.2,
+   4.317,
+   4.35,
+   4.567,
+   4.667,
+   4.717,
+   4.733
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.2,
+  "decalage_p95_pct": 0.86
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 10.04,
+  "secondes_de_mouvement": 3.88,
+  "vitesse_sujet_p90": 16.582,
+  "pics": 53,
+  "part_des_pics_qui_montent": 0.45,
+  "deviation_trajectoire_mediane": 0.4,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#858990",
+   "part": 0.353
+  },
+  {
+   "hex": "#05070a",
+   "part": 0.25
+  },
+  {
+   "hex": "#e8ccca",
+   "part": 0.126
+  },
+  {
+   "hex": "#542d33",
+   "part": 0.114
+  },
+  {
+   "hex": "#70696d",
+   "part": 0.097
+  },
+  {
+   "hex": "#9c9080",
+   "part": 0.06
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 53,
+  "termes": {
+   "contraste_de_temps": 1.0,
+   "tenues_presentes": 0.0,
+   "impacts_rythmes": 0.42
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/sheets/black_flash_jjk.png"
+}

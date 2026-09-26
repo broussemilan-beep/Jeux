@@ -1,0 +1,3646 @@
+{
+  "base_cycle": 9,
+  "sample_hz": 120,
+  "results": [
+    {
+      "variant": "cycle9_raw",
+      "k": 0.0,
+      "sigma": null,
+      "alpha": 0.0,
+      "score": {
+        "exaggeration_in_band": 0.8,
+        "mean_followthrough_pct": 0.0,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 35.4,
+        "structural": 100.0,
+        "total": 65.5
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 0.0,
+          "followthrough_deg": 0.0,
+          "followthrough_pct": 0.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 0.0
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 0.0,
+          "followthrough_deg": 0.0,
+          "followthrough_pct": 0.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 0.0
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 0.0,
+          "followthrough_deg": 0.0,
+          "followthrough_pct": 0.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 0.0
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 0.0,
+          "followthrough_deg": 0.0,
+          "followthrough_pct": 0.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 0.0
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 0.0,
+          "followthrough_deg": 0.0,
+          "followthrough_pct": 0.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 0.0
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 0.0,
+          "followthrough_deg": 0.0,
+          "followthrough_pct": 0.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 0.0
+        }
+      }
+    },
+    {
+      "variant": "k0.0015_sig0.035_a0.0",
+      "k": 0.0015,
+      "sigma": 0.035,
+      "alpha": 0.0,
+      "score": {
+        "exaggeration_in_band": 93.0,
+        "mean_followthrough_pct": 24.7,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 43.3,
+        "structural": 100.0,
+        "total": 89.7
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 22.3,
+          "followthrough_deg": 24.15,
+          "followthrough_pct": 14.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 75.98
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 11.78,
+          "followthrough_deg": 11.91,
+          "followthrough_pct": 34.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 33.26
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 8.42,
+          "followthrough_deg": 7.3,
+          "followthrough_pct": 28.2,
+          "ringing_lobes": 0,
+          "max_delta_deg": 45.37
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 11.06,
+          "followthrough_deg": 12.17,
+          "followthrough_pct": 28.2,
+          "ringing_lobes": 0,
+          "max_delta_deg": 44.25
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 11.2,
+          "followthrough_deg": 9.98,
+          "followthrough_pct": 22.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 26.26
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 11.68,
+          "followthrough_deg": 10.33,
+          "followthrough_pct": 19.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 52.46
+        }
+      }
+    },
+    {
+      "variant": "k0.0015_sig0.035_a0.5",
+      "k": 0.0015,
+      "sigma": 0.035,
+      "alpha": 0.5,
+      "score": {
+        "exaggeration_in_band": 81.1,
+        "mean_followthrough_pct": 26.6,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 50.4,
+        "structural": 100.0,
+        "total": 87.8
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 23.88,
+          "followthrough_deg": 25.76,
+          "followthrough_pct": 15.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 83.18
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 13.05,
+          "followthrough_deg": 12.62,
+          "followthrough_pct": 36.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 36.58
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 9.83,
+          "followthrough_deg": 8.09,
+          "followthrough_pct": 31.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 52.01
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 11.78,
+          "followthrough_deg": 12.25,
+          "followthrough_pct": 28.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 46.37
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 12.4,
+          "followthrough_deg": 10.93,
+          "followthrough_pct": 25.2,
+          "ringing_lobes": 0,
+          "max_delta_deg": 28.28
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 13.71,
+          "followthrough_deg": 10.78,
+          "followthrough_pct": 21.2,
+          "ringing_lobes": 0,
+          "max_delta_deg": 57.35
+        }
+      }
+    },
+    {
+      "variant": "k0.0015_sig0.035_a1.0",
+      "k": 0.0015,
+      "sigma": 0.035,
+      "alpha": 1.0,
+      "score": {
+        "exaggeration_in_band": 57.3,
+        "mean_followthrough_pct": 29.5,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 56.6,
+        "structural": 100.0,
+        "total": 82.8
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 26.86,
+          "followthrough_deg": 29.61,
+          "followthrough_pct": 18.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 101.25
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 14.68,
+          "followthrough_deg": 13.98,
+          "followthrough_pct": 40.5,
+          "ringing_lobes": 0,
+          "max_delta_deg": 42.42
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 11.54,
+          "followthrough_deg": 9.28,
+          "followthrough_pct": 36.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 59.11
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 12.98,
+          "followthrough_deg": 13.03,
+          "followthrough_pct": 30.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 51.19
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 13.83,
+          "followthrough_deg": 12.21,
+          "followthrough_pct": 28.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 34.63
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 16.26,
+          "followthrough_deg": 11.78,
+          "followthrough_pct": 22.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 63.68
+        }
+      }
+    },
+    {
+      "variant": "k0.0015_sig0.06_a0.0",
+      "k": 0.0015,
+      "sigma": 0.06,
+      "alpha": 0.0,
+      "score": {
+        "exaggeration_in_band": 37.2,
+        "mean_followthrough_pct": 12.1,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 40.3,
+        "structural": 100.0,
+        "total": 75.3
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 14.26,
+          "followthrough_deg": 13.21,
+          "followthrough_pct": 7.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 42.17
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 4.98,
+          "followthrough_deg": 5.59,
+          "followthrough_pct": 16.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 14.44
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 3.73,
+          "followthrough_deg": 3.49,
+          "followthrough_pct": 12.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 21.87
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 5.21,
+          "followthrough_deg": 6.82,
+          "followthrough_pct": 16.5,
+          "ringing_lobes": 0,
+          "max_delta_deg": 19.45
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 6.08,
+          "followthrough_deg": 5.25,
+          "followthrough_pct": 10.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 16.14
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 5.61,
+          "followthrough_deg": 4.88,
+          "followthrough_pct": 8.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 20.33
+        }
+      }
+    },
+    {
+      "variant": "k0.0015_sig0.06_a0.5",
+      "k": 0.0015,
+      "sigma": 0.06,
+      "alpha": 0.5,
+      "score": {
+        "exaggeration_in_band": 51.2,
+        "mean_followthrough_pct": 13.8,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 49.8,
+        "structural": 100.0,
+        "total": 80.3
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 14.7,
+          "followthrough_deg": 13.61,
+          "followthrough_pct": 8.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 41.87
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 5.95,
+          "followthrough_deg": 6.32,
+          "followthrough_pct": 18.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 17.68
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 4.64,
+          "followthrough_deg": 4.17,
+          "followthrough_pct": 15.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 21.88
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 6.1,
+          "followthrough_deg": 7.34,
+          "followthrough_pct": 17.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 23.05
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 7.25,
+          "followthrough_deg": 6.12,
+          "followthrough_pct": 13.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 17.05
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 7.48,
+          "followthrough_deg": 5.98,
+          "followthrough_pct": 10.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 26.22
+        }
+      }
+    },
+    {
+      "variant": "k0.0015_sig0.06_a1.0",
+      "k": 0.0015,
+      "sigma": 0.06,
+      "alpha": 1.0,
+      "score": {
+        "exaggeration_in_band": 75.2,
+        "mean_followthrough_pct": 16.7,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 58.9,
+        "structural": 100.0,
+        "total": 87.6
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 16.08,
+          "followthrough_deg": 15.92,
+          "followthrough_pct": 10.2,
+          "ringing_lobes": 0,
+          "max_delta_deg": 52.34
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 7.16,
+          "followthrough_deg": 7.5,
+          "followthrough_pct": 21.2,
+          "ringing_lobes": 0,
+          "max_delta_deg": 21.96
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 6.15,
+          "followthrough_deg": 5.11,
+          "followthrough_pct": 19.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 22.07
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 7.17,
+          "followthrough_deg": 8.55,
+          "followthrough_pct": 20.2,
+          "ringing_lobes": 0,
+          "max_delta_deg": 28.03
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 8.65,
+          "followthrough_deg": 7.46,
+          "followthrough_pct": 16.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 18.51
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 9.93,
+          "followthrough_deg": 7.36,
+          "followthrough_pct": 12.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 32.7
+        }
+      }
+    },
+    {
+      "variant": "k0.0015_sig0.09_a0.0",
+      "k": 0.0015,
+      "sigma": 0.09,
+      "alpha": 0.0,
+      "score": {
+        "exaggeration_in_band": 7.6,
+        "mean_followthrough_pct": 6.0,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 38.2,
+        "structural": 100.0,
+        "total": 67.6
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 8.38,
+          "followthrough_deg": 8.43,
+          "followthrough_pct": 7.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 26.02
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 2.16,
+          "followthrough_deg": 2.51,
+          "followthrough_pct": 7.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 6.13
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 1.74,
+          "followthrough_deg": 1.38,
+          "followthrough_pct": 4.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 12.28
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 2.24,
+          "followthrough_deg": 3.37,
+          "followthrough_pct": 8.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 8.54
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 3.03,
+          "followthrough_deg": 2.21,
+          "followthrough_pct": 4.2,
+          "ringing_lobes": 0,
+          "max_delta_deg": 8.07
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 2.99,
+          "followthrough_deg": 2.61,
+          "followthrough_pct": 4.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 8.21
+        }
+      }
+    },
+    {
+      "variant": "k0.0015_sig0.09_a0.5",
+      "k": 0.0015,
+      "sigma": 0.09,
+      "alpha": 0.5,
+      "score": {
+        "exaggeration_in_band": 13.9,
+        "mean_followthrough_pct": 8.0,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 48.9,
+        "structural": 100.0,
+        "total": 70.8
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 9.07,
+          "followthrough_deg": 9.38,
+          "followthrough_pct": 8.2,
+          "ringing_lobes": 0,
+          "max_delta_deg": 27.6
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 3.4,
+          "followthrough_deg": 3.38,
+          "followthrough_pct": 9.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 10.05
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 2.7,
+          "followthrough_deg": 2.02,
+          "followthrough_pct": 7.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 9.21
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 3.1,
+          "followthrough_deg": 4.26,
+          "followthrough_pct": 10.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 13.11
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 4.42,
+          "followthrough_deg": 3.31,
+          "followthrough_pct": 6.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 10.18
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 5.1,
+          "followthrough_deg": 3.87,
+          "followthrough_pct": 6.2,
+          "ringing_lobes": 0,
+          "max_delta_deg": 11.99
+        }
+      }
+    },
+    {
+      "variant": "k0.0015_sig0.09_a1.0",
+      "k": 0.0015,
+      "sigma": 0.09,
+      "alpha": 1.0,
+      "score": {
+        "exaggeration_in_band": 28.2,
+        "mean_followthrough_pct": 10.8,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 59.1,
+        "structural": 100.0,
+        "total": 75.9
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 12.0,
+          "followthrough_deg": 12.82,
+          "followthrough_pct": 10.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 43.58
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 4.75,
+          "followthrough_deg": 4.5,
+          "followthrough_pct": 12.5,
+          "ringing_lobes": 0,
+          "max_delta_deg": 14.4
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 4.41,
+          "followthrough_deg": 2.99,
+          "followthrough_pct": 10.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 15.97
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 4.23,
+          "followthrough_deg": 5.56,
+          "followthrough_pct": 13.2,
+          "ringing_lobes": 0,
+          "max_delta_deg": 18.42
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 6.16,
+          "followthrough_deg": 4.72,
+          "followthrough_pct": 9.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 14.5
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 7.59,
+          "followthrough_deg": 5.25,
+          "followthrough_pct": 8.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 22.45
+        }
+      }
+    },
+    {
+      "variant": "k0.003_sig0.035_a0.0",
+      "k": 0.003,
+      "sigma": 0.035,
+      "alpha": 0.0,
+      "score": {
+        "exaggeration_in_band": 0.1,
+        "mean_followthrough_pct": 49.3,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 47.6,
+        "structural": 83.3,
+        "total": 61.3
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 44.61,
+          "followthrough_deg": 48.31,
+          "followthrough_pct": 29.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 151.95
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 23.56,
+          "followthrough_deg": 23.82,
+          "followthrough_pct": 69.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 66.52
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 16.85,
+          "followthrough_deg": 14.59,
+          "followthrough_pct": 56.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 90.74
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 22.13,
+          "followthrough_deg": 24.34,
+          "followthrough_pct": 56.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 88.49
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 22.4,
+          "followthrough_deg": 19.96,
+          "followthrough_pct": 45.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 52.51
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 23.37,
+          "followthrough_deg": 20.65,
+          "followthrough_pct": 39.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 104.92
+        }
+      }
+    },
+    {
+      "variant": "k0.003_sig0.035_a0.5",
+      "k": 0.003,
+      "sigma": 0.035,
+      "alpha": 0.5,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 51.9,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 52.5,
+        "structural": 83.3,
+        "total": 62.0
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 46.61,
+          "followthrough_deg": 49.94,
+          "followthrough_pct": 30.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 159.81
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 25.19,
+          "followthrough_deg": 24.71,
+          "followthrough_pct": 72.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 69.7
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 18.59,
+          "followthrough_deg": 15.62,
+          "followthrough_pct": 61.2,
+          "ringing_lobes": 0,
+          "max_delta_deg": 98.71
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 22.96,
+          "followthrough_deg": 24.42,
+          "followthrough_pct": 57.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 90.7
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 23.88,
+          "followthrough_deg": 21.04,
+          "followthrough_pct": 48.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 52.41
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 25.88,
+          "followthrough_deg": 21.32,
+          "followthrough_pct": 41.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 112.13
+        }
+      }
+    },
+    {
+      "variant": "k0.003_sig0.035_a1.0",
+      "k": 0.003,
+      "sigma": 0.035,
+      "alpha": 1.0,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 55.3,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 57.0,
+        "structural": 83.3,
+        "total": 62.7
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 49.55,
+          "followthrough_deg": 53.71,
+          "followthrough_pct": 33.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 175.65
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 27.24,
+          "followthrough_deg": 26.11,
+          "followthrough_pct": 76.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 76.73
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 20.68,
+          "followthrough_deg": 17.06,
+          "followthrough_pct": 67.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 107.6
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 24.12,
+          "followthrough_deg": 24.77,
+          "followthrough_pct": 58.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 94.32
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 25.44,
+          "followthrough_deg": 22.5,
+          "followthrough_pct": 52.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 60.07
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 28.6,
+          "followthrough_deg": 22.31,
+          "followthrough_pct": 43.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 119.68
+        }
+      }
+    },
+    {
+      "variant": "k0.003_sig0.06_a0.0",
+      "k": 0.003,
+      "sigma": 0.06,
+      "alpha": 0.0,
+      "score": {
+        "exaggeration_in_band": 95.6,
+        "mean_followthrough_pct": 24.1,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 45.3,
+        "structural": 100.0,
+        "total": 90.7
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 28.52,
+          "followthrough_deg": 26.41,
+          "followthrough_pct": 15.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 84.34
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 9.96,
+          "followthrough_deg": 11.17,
+          "followthrough_pct": 32.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 28.88
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 7.46,
+          "followthrough_deg": 6.99,
+          "followthrough_pct": 25.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 43.74
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 10.41,
+          "followthrough_deg": 13.65,
+          "followthrough_pct": 33.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 38.91
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 12.16,
+          "followthrough_deg": 10.5,
+          "followthrough_pct": 21.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 32.28
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 11.21,
+          "followthrough_deg": 9.77,
+          "followthrough_pct": 15.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 40.66
+        }
+      }
+    },
+    {
+      "variant": "k0.003_sig0.06_a0.5",
+      "k": 0.003,
+      "sigma": 0.06,
+      "alpha": 0.5,
+      "score": {
+        "exaggeration_in_band": 86.3,
+        "mean_followthrough_pct": 25.8,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 51.8,
+        "structural": 100.0,
+        "total": 89.3
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 29.05,
+          "followthrough_deg": 26.3,
+          "followthrough_pct": 16.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 84.35
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 10.88,
+          "followthrough_deg": 11.78,
+          "followthrough_pct": 34.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 31.74
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 8.35,
+          "followthrough_deg": 7.67,
+          "followthrough_pct": 28.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 38.45
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 11.3,
+          "followthrough_deg": 14.1,
+          "followthrough_pct": 34.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 42.75
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 13.36,
+          "followthrough_deg": 11.2,
+          "followthrough_pct": 23.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 33.32
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 13.03,
+          "followthrough_deg": 10.76,
+          "followthrough_pct": 18.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 47.27
+        }
+      }
+    },
+    {
+      "variant": "k0.003_sig0.06_a1.0",
+      "k": 0.003,
+      "sigma": 0.06,
+      "alpha": 1.0,
+      "score": {
+        "exaggeration_in_band": 66.1,
+        "mean_followthrough_pct": 28.4,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 59.4,
+        "structural": 100.0,
+        "total": 85.4
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 29.61,
+          "followthrough_deg": 27.41,
+          "followthrough_pct": 17.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 84.27
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 12.02,
+          "followthrough_deg": 12.81,
+          "followthrough_pct": 36.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 35.81
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 9.66,
+          "followthrough_deg": 8.62,
+          "followthrough_pct": 33.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 34.91
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 12.32,
+          "followthrough_deg": 14.84,
+          "followthrough_pct": 35.5,
+          "ringing_lobes": 0,
+          "max_delta_deg": 46.58
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 14.79,
+          "followthrough_deg": 12.5,
+          "followthrough_pct": 26.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 34.47
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 15.45,
+          "followthrough_deg": 12.31,
+          "followthrough_pct": 20.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 55.06
+        }
+      }
+    },
+    {
+      "variant": "k0.003_sig0.09_a0.0",
+      "k": 0.003,
+      "sigma": 0.09,
+      "alpha": 0.0,
+      "score": {
+        "exaggeration_in_band": 36.8,
+        "mean_followthrough_pct": 12.0,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 42.5,
+        "structural": 100.0,
+        "total": 75.6
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 16.76,
+          "followthrough_deg": 16.85,
+          "followthrough_pct": 14.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 52.04
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 4.33,
+          "followthrough_deg": 5.03,
+          "followthrough_pct": 14.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 12.27
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 3.49,
+          "followthrough_deg": 2.76,
+          "followthrough_pct": 8.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 24.56
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 4.47,
+          "followthrough_deg": 6.73,
+          "followthrough_pct": 16.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 17.07
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 6.05,
+          "followthrough_deg": 4.41,
+          "followthrough_pct": 8.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 16.13
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 5.99,
+          "followthrough_deg": 5.22,
+          "followthrough_pct": 8.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 16.42
+        }
+      }
+    },
+    {
+      "variant": "k0.003_sig0.09_a0.5",
+      "k": 0.003,
+      "sigma": 0.09,
+      "alpha": 0.5,
+      "score": {
+        "exaggeration_in_band": 50.4,
+        "mean_followthrough_pct": 13.7,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 50.0,
+        "structural": 100.0,
+        "total": 80.1
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 17.12,
+          "followthrough_deg": 17.21,
+          "followthrough_pct": 15.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 52.86
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 5.54,
+          "followthrough_deg": 5.87,
+          "followthrough_pct": 17.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 16.05
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 4.26,
+          "followthrough_deg": 3.35,
+          "followthrough_pct": 11.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 13.81
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 5.21,
+          "followthrough_deg": 7.36,
+          "followthrough_pct": 17.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 20.95
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 7.38,
+          "followthrough_deg": 5.4,
+          "followthrough_pct": 10.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 17.87
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 7.99,
+          "followthrough_deg": 6.5,
+          "followthrough_pct": 10.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 18.81
+        }
+      }
+    },
+    {
+      "variant": "k0.003_sig0.09_a1.0",
+      "k": 0.003,
+      "sigma": 0.09,
+      "alpha": 1.0,
+      "score": {
+        "exaggeration_in_band": 71.2,
+        "mean_followthrough_pct": 16.2,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 60.0,
+        "structural": 100.0,
+        "total": 86.8
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 18.21,
+          "followthrough_deg": 18.82,
+          "followthrough_pct": 16.5,
+          "ringing_lobes": 0,
+          "max_delta_deg": 55.41
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 6.84,
+          "followthrough_deg": 6.8,
+          "followthrough_pct": 19.5,
+          "ringing_lobes": 0,
+          "max_delta_deg": 20.21
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 6.3,
+          "followthrough_deg": 4.18,
+          "followthrough_pct": 14.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 20.9
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 6.21,
+          "followthrough_deg": 8.56,
+          "followthrough_pct": 20.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 26.31
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 8.95,
+          "followthrough_deg": 6.69,
+          "followthrough_pct": 13.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 20.46
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 10.56,
+          "followthrough_deg": 7.97,
+          "followthrough_pct": 13.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 27.37
+        }
+      }
+    },
+    {
+      "variant": "k0.006_sig0.035_a0.0",
+      "k": 0.006,
+      "sigma": 0.035,
+      "alpha": 0.0,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 98.7,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 50.7,
+        "structural": 83.3,
+        "total": 61.8
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 89.21,
+          "followthrough_deg": 96.62,
+          "followthrough_pct": 58.2,
+          "ringing_lobes": 0,
+          "max_delta_deg": 303.91
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 47.11,
+          "followthrough_deg": 47.64,
+          "followthrough_pct": 139.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 133.05
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 33.69,
+          "followthrough_deg": 29.18,
+          "followthrough_pct": 112.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 181.48
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 44.26,
+          "followthrough_deg": 48.67,
+          "followthrough_pct": 112.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 176.98
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 44.81,
+          "followthrough_deg": 39.92,
+          "followthrough_pct": 90.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 105.02
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 46.74,
+          "followthrough_deg": 41.31,
+          "followthrough_pct": 78.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 209.84
+        }
+      }
+    },
+    {
+      "variant": "k0.006_sig0.035_a0.5",
+      "k": 0.006,
+      "sigma": 0.035,
+      "alpha": 0.5,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 103.3,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 54.0,
+        "structural": 83.3,
+        "total": 62.3
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 92.88,
+          "followthrough_deg": 100.18,
+          "followthrough_pct": 61.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 318.96
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 49.94,
+          "followthrough_deg": 49.44,
+          "followthrough_pct": 144.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 139.6
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 36.42,
+          "followthrough_deg": 30.97,
+          "followthrough_pct": 120.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 192.1
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 45.69,
+          "followthrough_deg": 49.09,
+          "followthrough_pct": 114.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 181.46
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 46.94,
+          "followthrough_deg": 41.6,
+          "followthrough_pct": 95.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 104.3
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 50.41,
+          "followthrough_deg": 42.77,
+          "followthrough_pct": 82.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 221.69
+        }
+      }
+    },
+    {
+      "variant": "k0.006_sig0.035_a1.0",
+      "k": 0.006,
+      "sigma": 0.035,
+      "alpha": 1.0,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 108.1,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 56.8,
+        "structural": 83.3,
+        "total": 62.7
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 96.47,
+          "followthrough_deg": 103.66,
+          "followthrough_pct": 64.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 333.54
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 52.7,
+          "followthrough_deg": 51.3,
+          "followthrough_pct": 149.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 146.45
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 39.28,
+          "followthrough_deg": 32.93,
+          "followthrough_pct": 129.5,
+          "ringing_lobes": 0,
+          "max_delta_deg": 204.58
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 47.24,
+          "followthrough_deg": 49.57,
+          "followthrough_pct": 117.5,
+          "ringing_lobes": 0,
+          "max_delta_deg": 185.93
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 49.1,
+          "followthrough_deg": 43.43,
+          "followthrough_pct": 101.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 110.95
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 54.25,
+          "followthrough_deg": 44.29,
+          "followthrough_pct": 86.5,
+          "ringing_lobes": 0,
+          "max_delta_deg": 233.8
+        }
+      }
+    },
+    {
+      "variant": "k0.006_sig0.06_a0.0",
+      "k": 0.006,
+      "sigma": 0.06,
+      "alpha": 0.0,
+      "score": {
+        "exaggeration_in_band": 0.1,
+        "mean_followthrough_pct": 48.2,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 51.4,
+        "structural": 83.3,
+        "total": 61.9
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 57.04,
+          "followthrough_deg": 52.83,
+          "followthrough_pct": 31.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 168.69
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 19.92,
+          "followthrough_deg": 22.35,
+          "followthrough_pct": 65.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 57.76
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 14.91,
+          "followthrough_deg": 13.97,
+          "followthrough_pct": 50.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 87.48
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 20.83,
+          "followthrough_deg": 27.3,
+          "followthrough_pct": 66.2,
+          "ringing_lobes": 0,
+          "max_delta_deg": 77.82
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 24.32,
+          "followthrough_deg": 21.0,
+          "followthrough_pct": 43.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 64.55
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 22.43,
+          "followthrough_deg": 19.54,
+          "followthrough_pct": 31.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 81.32
+        }
+      }
+    },
+    {
+      "variant": "k0.006_sig0.06_a0.5",
+      "k": 0.006,
+      "sigma": 0.06,
+      "alpha": 0.5,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 50.3,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 55.5,
+        "structural": 83.3,
+        "total": 62.5
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 57.77,
+          "followthrough_deg": 52.6,
+          "followthrough_pct": 32.2,
+          "ringing_lobes": 0,
+          "max_delta_deg": 169.32
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 20.88,
+          "followthrough_deg": 22.94,
+          "followthrough_pct": 66.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 60.59
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 16.0,
+          "followthrough_deg": 14.79,
+          "followthrough_pct": 54.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 71.58
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 21.78,
+          "followthrough_deg": 27.66,
+          "followthrough_pct": 67.5,
+          "ringing_lobes": 0,
+          "max_delta_deg": 82.13
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 25.75,
+          "followthrough_deg": 21.78,
+          "followthrough_pct": 46.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 66.07
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 24.51,
+          "followthrough_deg": 20.62,
+          "followthrough_pct": 34.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 89.37
+        }
+      }
+    },
+    {
+      "variant": "k0.006_sig0.06_a1.0",
+      "k": 0.006,
+      "sigma": 0.06,
+      "alpha": 1.0,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 53.2,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 60.2,
+        "structural": 83.3,
+        "total": 63.2
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 58.5,
+          "followthrough_deg": 52.99,
+          "followthrough_pct": 33.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 169.77
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 22.01,
+          "followthrough_deg": 23.85,
+          "followthrough_pct": 69.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 64.47
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 17.24,
+          "followthrough_deg": 15.89,
+          "followthrough_pct": 60.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 60.59
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 22.87,
+          "followthrough_deg": 28.49,
+          "followthrough_pct": 69.5,
+          "ringing_lobes": 0,
+          "max_delta_deg": 86.44
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 27.32,
+          "followthrough_deg": 22.93,
+          "followthrough_pct": 48.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 67.56
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 26.93,
+          "followthrough_deg": 22.3,
+          "followthrough_pct": 38.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 99.77
+        }
+      }
+    },
+    {
+      "variant": "k0.006_sig0.09_a0.0",
+      "k": 0.006,
+      "sigma": 0.09,
+      "alpha": 0.0,
+      "score": {
+        "exaggeration_in_band": 96.3,
+        "mean_followthrough_pct": 23.9,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 49.1,
+        "structural": 100.0,
+        "total": 91.4
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 33.53,
+          "followthrough_deg": 33.71,
+          "followthrough_pct": 29.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 104.09
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 8.66,
+          "followthrough_deg": 10.05,
+          "followthrough_pct": 29.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 24.53
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 6.98,
+          "followthrough_deg": 5.51,
+          "followthrough_pct": 17.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 49.13
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 8.95,
+          "followthrough_deg": 13.46,
+          "followthrough_pct": 32.5,
+          "ringing_lobes": 0,
+          "max_delta_deg": 34.15
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 12.11,
+          "followthrough_deg": 8.83,
+          "followthrough_pct": 16.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 32.26
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 11.97,
+          "followthrough_deg": 10.45,
+          "followthrough_pct": 17.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 32.84
+        }
+      }
+    },
+    {
+      "variant": "k0.006_sig0.09_a0.5",
+      "k": 0.006,
+      "sigma": 0.09,
+      "alpha": 0.5,
+      "score": {
+        "exaggeration_in_band": 88.2,
+        "mean_followthrough_pct": 25.6,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 52.1,
+        "structural": 100.0,
+        "total": 89.8
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 33.83,
+          "followthrough_deg": 33.53,
+          "followthrough_pct": 30.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 105.15
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 9.81,
+          "followthrough_deg": 10.87,
+          "followthrough_pct": 31.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 28.04
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 7.78,
+          "followthrough_deg": 6.06,
+          "followthrough_pct": 20.5,
+          "ringing_lobes": 0,
+          "max_delta_deg": 23.01
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 9.65,
+          "followthrough_deg": 13.85,
+          "followthrough_pct": 33.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 37.77
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 13.44,
+          "followthrough_deg": 9.65,
+          "followthrough_pct": 18.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 33.42
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 14.23,
+          "followthrough_deg": 11.78,
+          "followthrough_pct": 19.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 32.45
+        }
+      }
+    },
+    {
+      "variant": "k0.006_sig0.09_a1.0",
+      "k": 0.006,
+      "sigma": 0.09,
+      "alpha": 1.0,
+      "score": {
+        "exaggeration_in_band": 69.9,
+        "mean_followthrough_pct": 28.0,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 61.6,
+        "structural": 100.0,
+        "total": 86.7
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 34.39,
+          "followthrough_deg": 34.56,
+          "followthrough_pct": 31.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 106.19
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 11.14,
+          "followthrough_deg": 11.83,
+          "followthrough_pct": 34.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 32.31
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 10.93,
+          "followthrough_deg": 6.94,
+          "followthrough_pct": 24.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 34.68
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 10.44,
+          "followthrough_deg": 14.8,
+          "followthrough_pct": 35.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 42.1
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 14.99,
+          "followthrough_deg": 10.95,
+          "followthrough_pct": 20.2,
+          "ringing_lobes": 0,
+          "max_delta_deg": 35.95
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 16.68,
+          "followthrough_deg": 13.47,
+          "followthrough_pct": 22.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 41.01
+        }
+      }
+    },
+    {
+      "variant": "k0.01_sig0.035_a0.0",
+      "k": 0.01,
+      "sigma": 0.035,
+      "alpha": 0.0,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 164.5,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 52.1,
+        "structural": 83.3,
+        "total": 62.0
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 148.69,
+          "followthrough_deg": 161.03,
+          "followthrough_pct": 97.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 506.51
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 78.52,
+          "followthrough_deg": 79.39,
+          "followthrough_pct": 232.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 221.75
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 56.15,
+          "followthrough_deg": 48.64,
+          "followthrough_pct": 187.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 302.47
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 73.76,
+          "followthrough_deg": 81.12,
+          "followthrough_pct": 187.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 294.97
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 74.68,
+          "followthrough_deg": 66.53,
+          "followthrough_pct": 151.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 175.04
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 77.9,
+          "followthrough_deg": 68.84,
+          "followthrough_pct": 130.5,
+          "ringing_lobes": 0,
+          "max_delta_deg": 349.73
+        }
+      }
+    },
+    {
+      "variant": "k0.01_sig0.035_a0.5",
+      "k": 0.01,
+      "sigma": 0.035,
+      "alpha": 0.5,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 171.9,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 54.3,
+        "structural": 83.3,
+        "total": 62.3
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 154.6,
+          "followthrough_deg": 167.19,
+          "followthrough_pct": 101.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 531.17
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 82.96,
+          "followthrough_deg": 82.41,
+          "followthrough_pct": 241.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 232.8
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 60.22,
+          "followthrough_deg": 51.45,
+          "followthrough_pct": 200.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 317.26
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 76.05,
+          "followthrough_deg": 82.04,
+          "followthrough_pct": 192.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 302.47
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 77.76,
+          "followthrough_deg": 69.12,
+          "followthrough_pct": 158.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 173.84
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 83.12,
+          "followthrough_deg": 71.37,
+          "followthrough_pct": 137.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 367.77
+        }
+      }
+    },
+    {
+      "variant": "k0.01_sig0.035_a1.0",
+      "k": 0.01,
+      "sigma": 0.035,
+      "alpha": 1.0,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 179.5,
+        "clean_lobes": 80.0,
+        "ringing_total": 1,
+        "velocity_continuity": 56.0,
+        "structural": 83.3,
+        "total": 57.6
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 160.33,
+          "followthrough_deg": 172.93,
+          "followthrough_pct": 106.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 555.04
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 87.28,
+          "followthrough_deg": 85.52,
+          "followthrough_pct": 250.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 244.35
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 64.35,
+          "followthrough_deg": 54.37,
+          "followthrough_pct": 212.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 333.88
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 78.47,
+          "followthrough_deg": 82.97,
+          "followthrough_pct": 196.5,
+          "ringing_lobes": 0,
+          "max_delta_deg": 309.97
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 80.8,
+          "followthrough_deg": 71.68,
+          "followthrough_pct": 166.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 181.75
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 88.76,
+          "followthrough_deg": 73.97,
+          "followthrough_pct": 143.9,
+          "ringing_lobes": 1,
+          "max_delta_deg": 386.63
+        }
+      }
+    },
+    {
+      "variant": "k0.01_sig0.06_a0.0",
+      "k": 0.01,
+      "sigma": 0.06,
+      "alpha": 0.0,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 80.4,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 55.5,
+        "structural": 83.3,
+        "total": 62.5
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 95.06,
+          "followthrough_deg": 88.05,
+          "followthrough_pct": 52.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 281.14
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 33.21,
+          "followthrough_deg": 37.25,
+          "followthrough_pct": 108.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 96.26
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 24.85,
+          "followthrough_deg": 23.29,
+          "followthrough_pct": 84.5,
+          "ringing_lobes": 0,
+          "max_delta_deg": 145.81
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 34.72,
+          "followthrough_deg": 45.49,
+          "followthrough_pct": 110.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 129.7
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 40.53,
+          "followthrough_deg": 35.01,
+          "followthrough_pct": 72.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 107.59
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 37.38,
+          "followthrough_deg": 32.56,
+          "followthrough_pct": 53.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 135.54
+        }
+      }
+    },
+    {
+      "variant": "k0.01_sig0.06_a0.5",
+      "k": 0.01,
+      "sigma": 0.06,
+      "alpha": 0.5,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 83.3,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 58.5,
+        "structural": 83.3,
+        "total": 62.9
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 96.09,
+          "followthrough_deg": 88.16,
+          "followthrough_pct": 53.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 282.62
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 34.26,
+          "followthrough_deg": 37.87,
+          "followthrough_pct": 110.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 99.07
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 26.26,
+          "followthrough_deg": 24.45,
+          "followthrough_pct": 90.5,
+          "ringing_lobes": 0,
+          "max_delta_deg": 115.76
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 35.87,
+          "followthrough_deg": 46.02,
+          "followthrough_pct": 112.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 134.65
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 42.39,
+          "followthrough_deg": 36.15,
+          "followthrough_pct": 76.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 109.73
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 39.83,
+          "followthrough_deg": 33.97,
+          "followthrough_pct": 56.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 145.5
+        }
+      }
+    },
+    {
+      "variant": "k0.01_sig0.06_a1.0",
+      "k": 0.01,
+      "sigma": 0.06,
+      "alpha": 1.0,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 86.9,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 62.0,
+        "structural": 83.3,
+        "total": 63.5
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 97.05,
+          "followthrough_deg": 88.15,
+          "followthrough_pct": 54.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 283.78
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 35.53,
+          "followthrough_deg": 38.86,
+          "followthrough_pct": 113.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 103.6
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 27.79,
+          "followthrough_deg": 25.72,
+          "followthrough_pct": 97.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 94.82
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 36.96,
+          "followthrough_deg": 46.71,
+          "followthrough_pct": 115.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 139.58
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 44.24,
+          "followthrough_deg": 37.31,
+          "followthrough_pct": 79.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 111.84
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 42.77,
+          "followthrough_deg": 35.89,
+          "followthrough_pct": 61.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 159.39
+        }
+      }
+    },
+    {
+      "variant": "k0.01_sig0.09_a0.0",
+      "k": 0.01,
+      "sigma": 0.09,
+      "alpha": 0.0,
+      "score": {
+        "exaggeration_in_band": 4.0,
+        "mean_followthrough_pct": 39.9,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 55.3,
+        "structural": 83.3,
+        "total": 63.5
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 55.88,
+          "followthrough_deg": 56.18,
+          "followthrough_pct": 49.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 173.48
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 14.43,
+          "followthrough_deg": 16.75,
+          "followthrough_pct": 49.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 40.89
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 11.63,
+          "followthrough_deg": 9.19,
+          "followthrough_pct": 29.5,
+          "ringing_lobes": 0,
+          "max_delta_deg": 81.88
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 14.91,
+          "followthrough_deg": 22.43,
+          "followthrough_pct": 54.2,
+          "ringing_lobes": 0,
+          "max_delta_deg": 56.91
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 20.18,
+          "followthrough_deg": 14.71,
+          "followthrough_pct": 28.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 53.77
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 19.95,
+          "followthrough_deg": 17.42,
+          "followthrough_pct": 28.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 54.73
+        }
+      }
+    },
+    {
+      "variant": "k0.01_sig0.09_a0.5",
+      "k": 0.01,
+      "sigma": 0.09,
+      "alpha": 0.5,
+      "score": {
+        "exaggeration_in_band": 2.1,
+        "mean_followthrough_pct": 41.6,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 54.3,
+        "structural": 83.3,
+        "total": 62.8
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 56.19,
+          "followthrough_deg": 55.86,
+          "followthrough_pct": 49.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 174.87
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 15.51,
+          "followthrough_deg": 17.55,
+          "followthrough_pct": 51.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 44.03
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 12.5,
+          "followthrough_deg": 9.73,
+          "followthrough_pct": 32.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 35.27
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 15.62,
+          "followthrough_deg": 22.78,
+          "followthrough_pct": 55.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 60.71
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 21.61,
+          "followthrough_deg": 15.4,
+          "followthrough_pct": 28.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 55.12
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 22.68,
+          "followthrough_deg": 18.87,
+          "followthrough_pct": 32.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 50.64
+        }
+      }
+    },
+    {
+      "variant": "k0.01_sig0.09_a1.0",
+      "k": 0.01,
+      "sigma": 0.09,
+      "alpha": 1.0,
+      "score": {
+        "exaggeration_in_band": 0.8,
+        "mean_followthrough_pct": 44.1,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 63.3,
+        "structural": 83.3,
+        "total": 63.9
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 56.78,
+          "followthrough_deg": 56.25,
+          "followthrough_pct": 50.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 176.21
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 16.89,
+          "followthrough_deg": 18.55,
+          "followthrough_pct": 54.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 48.43
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 17.48,
+          "followthrough_deg": 10.66,
+          "followthrough_pct": 36.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 56.33
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 16.36,
+          "followthrough_deg": 23.4,
+          "followthrough_pct": 56.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 64.49
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 23.19,
+          "followthrough_deg": 16.68,
+          "followthrough_pct": 30.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 56.6
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 25.36,
+          "followthrough_deg": 20.84,
+          "followthrough_pct": 35.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 61.46
+        }
+      }
+    },
+    {
+      "variant": "k0.015_sig0.035_a0.0",
+      "k": 0.015,
+      "sigma": 0.035,
+      "alpha": 0.0,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 246.8,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 53.0,
+        "structural": 83.3,
+        "total": 62.1
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 223.03,
+          "followthrough_deg": 241.54,
+          "followthrough_pct": 145.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 759.76
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 117.78,
+          "followthrough_deg": 119.09,
+          "followthrough_pct": 349.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 332.62
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 84.23,
+          "followthrough_deg": 72.96,
+          "followthrough_pct": 281.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 453.71
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 110.64,
+          "followthrough_deg": 121.69,
+          "followthrough_pct": 281.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 442.45
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 112.01,
+          "followthrough_deg": 99.8,
+          "followthrough_pct": 226.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 262.56
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 116.85,
+          "followthrough_deg": 103.27,
+          "followthrough_pct": 195.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 524.6
+        }
+      }
+    },
+    {
+      "variant": "k0.015_sig0.035_a0.5",
+      "k": 0.015,
+      "sigma": 0.035,
+      "alpha": 0.5,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 257.8,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 54.4,
+        "structural": 83.3,
+        "total": 62.3
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 231.81,
+          "followthrough_deg": 251.01,
+          "followthrough_pct": 152.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 796.44
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 124.24,
+          "followthrough_deg": 123.62,
+          "followthrough_pct": 362.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 349.31
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 89.98,
+          "followthrough_deg": 77.04,
+          "followthrough_pct": 299.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 476.22
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 114.0,
+          "followthrough_deg": 123.22,
+          "followthrough_pct": 288.5,
+          "ringing_lobes": 0,
+          "max_delta_deg": 453.74
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 116.3,
+          "followthrough_deg": 103.52,
+          "followthrough_pct": 238.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 260.76
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 124.01,
+          "followthrough_deg": 107.12,
+          "followthrough_pct": 205.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 550.37
+        }
+      }
+    },
+    {
+      "variant": "k0.015_sig0.035_a1.0",
+      "k": 0.015,
+      "sigma": 0.035,
+      "alpha": 1.0,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 268.9,
+        "clean_lobes": 80.0,
+        "ringing_total": 1,
+        "velocity_continuity": 55.6,
+        "structural": 83.3,
+        "total": 57.5
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 240.33,
+          "followthrough_deg": 259.86,
+          "followthrough_pct": 159.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 831.91
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 130.52,
+          "followthrough_deg": 128.29,
+          "followthrough_pct": 375.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 366.73
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 95.72,
+          "followthrough_deg": 81.23,
+          "followthrough_pct": 317.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 498.72
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 117.55,
+          "followthrough_deg": 124.76,
+          "followthrough_pct": 295.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 465.02
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 120.51,
+          "followthrough_deg": 107.2,
+          "followthrough_pct": 249.5,
+          "ringing_lobes": 0,
+          "max_delta_deg": 272.48
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 131.9,
+          "followthrough_deg": 111.07,
+          "followthrough_pct": 215.6,
+          "ringing_lobes": 1,
+          "max_delta_deg": 577.68
+        }
+      }
+    },
+    {
+      "variant": "k0.015_sig0.06_a0.0",
+      "k": 0.015,
+      "sigma": 0.06,
+      "alpha": 0.0,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 120.6,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 58.7,
+        "structural": 83.3,
+        "total": 63.0
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 142.59,
+          "followthrough_deg": 132.07,
+          "followthrough_pct": 79.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 421.72
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 49.81,
+          "followthrough_deg": 55.87,
+          "followthrough_pct": 163.2,
+          "ringing_lobes": 0,
+          "max_delta_deg": 144.39
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 37.28,
+          "followthrough_deg": 34.94,
+          "followthrough_pct": 126.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 218.71
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 52.07,
+          "followthrough_deg": 68.24,
+          "followthrough_pct": 165.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 194.54
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 60.79,
+          "followthrough_deg": 52.51,
+          "followthrough_pct": 109.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 161.38
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 56.07,
+          "followthrough_deg": 48.84,
+          "followthrough_pct": 79.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 203.31
+        }
+      }
+    },
+    {
+      "variant": "k0.015_sig0.06_a0.5",
+      "k": 0.015,
+      "sigma": 0.06,
+      "alpha": 0.5,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 124.7,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 60.8,
+        "structural": 83.3,
+        "total": 63.3
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 144.01,
+          "followthrough_deg": 132.61,
+          "followthrough_pct": 80.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 424.23
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 51.02,
+          "followthrough_deg": 56.57,
+          "followthrough_pct": 165.2,
+          "ringing_lobes": 0,
+          "max_delta_deg": 147.28
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 39.12,
+          "followthrough_deg": 36.54,
+          "followthrough_pct": 135.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 170.99
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 53.48,
+          "followthrough_deg": 69.01,
+          "followthrough_pct": 169.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 200.29
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 63.2,
+          "followthrough_deg": 54.12,
+          "followthrough_pct": 113.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 164.31
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 59.05,
+          "followthrough_deg": 50.74,
+          "followthrough_pct": 84.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 215.86
+        }
+      }
+    },
+    {
+      "variant": "k0.015_sig0.06_a1.0",
+      "k": 0.015,
+      "sigma": 0.06,
+      "alpha": 1.0,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 129.4,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 63.6,
+        "structural": 83.3,
+        "total": 63.7
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 145.3,
+          "followthrough_deg": 132.96,
+          "followthrough_pct": 81.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 426.29
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 52.45,
+          "followthrough_deg": 57.76,
+          "followthrough_pct": 168.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 152.52
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 40.99,
+          "followthrough_deg": 38.18,
+          "followthrough_pct": 144.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 137.62
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 54.82,
+          "followthrough_deg": 69.87,
+          "followthrough_pct": 173.2,
+          "ringing_lobes": 0,
+          "max_delta_deg": 206.01
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 65.52,
+          "followthrough_deg": 55.76,
+          "followthrough_pct": 118.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 167.18
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 62.74,
+          "followthrough_deg": 53.32,
+          "followthrough_pct": 91.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 234.01
+        }
+      }
+    },
+    {
+      "variant": "k0.015_sig0.09_a0.0",
+      "k": 0.015,
+      "sigma": 0.09,
+      "alpha": 0.0,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 59.9,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 58.6,
+        "structural": 83.3,
+        "total": 63.0
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 83.81,
+          "followthrough_deg": 84.27,
+          "followthrough_pct": 74.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 260.22
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 21.64,
+          "followthrough_deg": 25.13,
+          "followthrough_pct": 74.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 61.33
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 17.44,
+          "followthrough_deg": 13.79,
+          "followthrough_pct": 44.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 122.81
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 22.36,
+          "followthrough_deg": 33.65,
+          "followthrough_pct": 81.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 85.37
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 30.27,
+          "followthrough_deg": 22.07,
+          "followthrough_pct": 41.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 80.66
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 29.93,
+          "followthrough_deg": 26.12,
+          "followthrough_pct": 43.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 82.1
+        }
+      }
+    },
+    {
+      "variant": "k0.015_sig0.09_a0.5",
+      "k": 0.015,
+      "sigma": 0.09,
+      "alpha": 0.5,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 61.8,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 56.5,
+        "structural": 83.3,
+        "total": 62.6
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 84.29,
+          "followthrough_deg": 84.08,
+          "followthrough_pct": 74.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 262.01
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 22.65,
+          "followthrough_deg": 25.9,
+          "followthrough_pct": 76.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 64.02
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 18.4,
+          "followthrough_deg": 14.37,
+          "followthrough_pct": 48.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 50.61
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 23.07,
+          "followthrough_deg": 33.94,
+          "followthrough_pct": 82.5,
+          "ringing_lobes": 0,
+          "max_delta_deg": 89.38
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 31.83,
+          "followthrough_deg": 22.78,
+          "followthrough_pct": 41.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 82.25
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 33.25,
+          "followthrough_deg": 27.92,
+          "followthrough_pct": 47.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 73.37
+        }
+      }
+    },
+    {
+      "variant": "k0.015_sig0.09_a1.0",
+      "k": 0.015,
+      "sigma": 0.09,
+      "alpha": 1.0,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 64.6,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 65.1,
+        "structural": 83.3,
+        "total": 63.9
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 84.76,
+          "followthrough_deg": 84.01,
+          "followthrough_pct": 75.5,
+          "ringing_lobes": 0,
+          "max_delta_deg": 263.74
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 24.07,
+          "followthrough_deg": 26.98,
+          "followthrough_pct": 79.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 68.59
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 25.72,
+          "followthrough_deg": 15.41,
+          "followthrough_pct": 53.2,
+          "ringing_lobes": 0,
+          "max_delta_deg": 84.0
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 23.84,
+          "followthrough_deg": 34.62,
+          "followthrough_pct": 84.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 93.38
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 33.58,
+          "followthrough_deg": 23.99,
+          "followthrough_pct": 42.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 83.83
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 36.51,
+          "followthrough_deg": 30.09,
+          "followthrough_pct": 52.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 87.01
+        }
+      }
+    },
+    {
+      "variant": "k0.02_sig0.035_a0.0",
+      "k": 0.02,
+      "sigma": 0.035,
+      "alpha": 0.0,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 329.0,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 53.5,
+        "structural": 83.3,
+        "total": 62.2
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 297.38,
+          "followthrough_deg": 322.05,
+          "followthrough_pct": 194.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 1013.02
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 157.05,
+          "followthrough_deg": 158.79,
+          "followthrough_pct": 465.5,
+          "ringing_lobes": 0,
+          "max_delta_deg": 443.49
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 112.3,
+          "followthrough_deg": 97.28,
+          "followthrough_pct": 375.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 604.94
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 147.52,
+          "followthrough_deg": 162.25,
+          "followthrough_pct": 375.5,
+          "ringing_lobes": 0,
+          "max_delta_deg": 589.93
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 149.35,
+          "followthrough_deg": 133.07,
+          "followthrough_pct": 302.2,
+          "ringing_lobes": 0,
+          "max_delta_deg": 350.08
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 155.79,
+          "followthrough_deg": 137.69,
+          "followthrough_pct": 260.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 699.47
+        }
+      }
+    },
+    {
+      "variant": "k0.02_sig0.035_a0.5",
+      "k": 0.02,
+      "sigma": 0.035,
+      "alpha": 0.5,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 343.6,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 54.5,
+        "structural": 83.3,
+        "total": 62.3
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 309.02,
+          "followthrough_deg": 334.83,
+          "followthrough_pct": 203.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 1061.7
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 165.53,
+          "followthrough_deg": 164.83,
+          "followthrough_pct": 482.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 465.81
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 119.74,
+          "followthrough_deg": 102.64,
+          "followthrough_pct": 399.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 635.17
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 151.95,
+          "followthrough_deg": 164.39,
+          "followthrough_pct": 384.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 605.0
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 154.85,
+          "followthrough_deg": 137.94,
+          "followthrough_pct": 317.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 347.68
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 164.9,
+          "followthrough_deg": 142.88,
+          "followthrough_pct": 274.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 732.96
+        }
+      }
+    },
+    {
+      "variant": "k0.02_sig0.035_a1.0",
+      "k": 0.02,
+      "sigma": 0.035,
+      "alpha": 1.0,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 358.4,
+        "clean_lobes": 80.0,
+        "ringing_total": 1,
+        "velocity_continuity": 55.5,
+        "structural": 83.3,
+        "total": 57.5
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 320.34,
+          "followthrough_deg": 346.78,
+          "followthrough_pct": 213.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 1108.79
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 173.75,
+          "followthrough_deg": 171.06,
+          "followthrough_pct": 500.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 489.11
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 127.13,
+          "followthrough_deg": 108.15,
+          "followthrough_pct": 422.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 665.4
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 156.63,
+          "followthrough_deg": 166.56,
+          "followthrough_pct": 394.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 620.07
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 160.21,
+          "followthrough_deg": 142.72,
+          "followthrough_pct": 332.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 363.21
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 175.04,
+          "followthrough_deg": 148.18,
+          "followthrough_pct": 287.3,
+          "ringing_lobes": 1,
+          "max_delta_deg": 768.72
+        }
+      }
+    },
+    {
+      "variant": "k0.02_sig0.06_a0.0",
+      "k": 0.02,
+      "sigma": 0.06,
+      "alpha": 0.0,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 160.8,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 60.7,
+        "structural": 83.3,
+        "total": 63.3
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 190.12,
+          "followthrough_deg": 176.1,
+          "followthrough_pct": 105.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 562.29
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 66.41,
+          "followthrough_deg": 74.49,
+          "followthrough_pct": 217.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 192.52
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 49.7,
+          "followthrough_deg": 46.58,
+          "followthrough_pct": 169.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 291.61
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 69.43,
+          "followthrough_deg": 90.99,
+          "followthrough_pct": 220.5,
+          "ringing_lobes": 0,
+          "max_delta_deg": 259.39
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 81.06,
+          "followthrough_deg": 70.02,
+          "followthrough_pct": 145.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 215.17
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 74.76,
+          "followthrough_deg": 65.12,
+          "followthrough_pct": 106.2,
+          "ringing_lobes": 0,
+          "max_delta_deg": 271.08
+        }
+      }
+    },
+    {
+      "variant": "k0.02_sig0.06_a0.5",
+      "k": 0.02,
+      "sigma": 0.06,
+      "alpha": 0.5,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 166.2,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 62.2,
+        "structural": 83.3,
+        "total": 63.5
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 191.93,
+          "followthrough_deg": 177.07,
+          "followthrough_pct": 107.2,
+          "ringing_lobes": 0,
+          "max_delta_deg": 565.85
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 67.87,
+          "followthrough_deg": 75.45,
+          "followthrough_pct": 220.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 196.29
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 51.98,
+          "followthrough_deg": 48.63,
+          "followthrough_pct": 179.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 226.21
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 71.09,
+          "followthrough_deg": 92.02,
+          "followthrough_pct": 225.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 265.94
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 84.0,
+          "followthrough_deg": 72.12,
+          "followthrough_pct": 151.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 218.89
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 78.28,
+          "followthrough_deg": 67.52,
+          "followthrough_pct": 112.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 286.22
+        }
+      }
+    },
+    {
+      "variant": "k0.02_sig0.06_a1.0",
+      "k": 0.02,
+      "sigma": 0.06,
+      "alpha": 1.0,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 172.1,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 64.6,
+        "structural": 83.3,
+        "total": 63.9
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 193.56,
+          "followthrough_deg": 177.78,
+          "followthrough_pct": 109.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 568.8
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 69.42,
+          "followthrough_deg": 76.67,
+          "followthrough_pct": 223.7,
+          "ringing_lobes": 0,
+          "max_delta_deg": 201.44
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 54.23,
+          "followthrough_deg": 50.67,
+          "followthrough_pct": 190.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 180.42
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 72.68,
+          "followthrough_deg": 93.08,
+          "followthrough_pct": 231.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 272.44
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 86.83,
+          "followthrough_deg": 74.2,
+          "followthrough_pct": 157.2,
+          "ringing_lobes": 0,
+          "max_delta_deg": 222.52
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 82.8,
+          "followthrough_deg": 70.86,
+          "followthrough_pct": 120.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 308.83
+        }
+      }
+    },
+    {
+      "variant": "k0.02_sig0.09_a0.0",
+      "k": 0.02,
+      "sigma": 0.09,
+      "alpha": 0.0,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 79.8,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 60.7,
+        "structural": 83.3,
+        "total": 63.3
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 111.75,
+          "followthrough_deg": 112.35,
+          "followthrough_pct": 98.6,
+          "ringing_lobes": 0,
+          "max_delta_deg": 346.95
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 28.85,
+          "followthrough_deg": 33.5,
+          "followthrough_pct": 99.2,
+          "ringing_lobes": 0,
+          "max_delta_deg": 81.78
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 23.25,
+          "followthrough_deg": 18.38,
+          "followthrough_pct": 59.0,
+          "ringing_lobes": 0,
+          "max_delta_deg": 163.75
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 29.82,
+          "followthrough_deg": 44.87,
+          "followthrough_pct": 108.3,
+          "ringing_lobes": 0,
+          "max_delta_deg": 113.82
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 40.36,
+          "followthrough_deg": 29.42,
+          "followthrough_pct": 55.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 107.54
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 39.9,
+          "followthrough_deg": 34.83,
+          "followthrough_pct": 57.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 109.47
+        }
+      }
+    },
+    {
+      "variant": "k0.02_sig0.09_a0.5",
+      "k": 0.02,
+      "sigma": 0.09,
+      "alpha": 0.5,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 82.1,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 58.3,
+        "structural": 83.3,
+        "total": 62.9
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 112.39,
+          "followthrough_deg": 112.31,
+          "followthrough_pct": 99.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 349.16
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 29.86,
+          "followthrough_deg": 34.29,
+          "followthrough_pct": 101.2,
+          "ringing_lobes": 0,
+          "max_delta_deg": 84.29
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 24.32,
+          "followthrough_deg": 19.11,
+          "followthrough_pct": 63.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 65.94
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 30.53,
+          "followthrough_deg": 45.13,
+          "followthrough_pct": 109.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 118.05
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 42.08,
+          "followthrough_deg": 30.23,
+          "followthrough_pct": 54.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 109.38
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 43.82,
+          "followthrough_deg": 37.02,
+          "followthrough_pct": 63.1,
+          "ringing_lobes": 0,
+          "max_delta_deg": 96.1
+        }
+      }
+    },
+    {
+      "variant": "k0.02_sig0.09_a1.0",
+      "k": 0.02,
+      "sigma": 0.09,
+      "alpha": 1.0,
+      "score": {
+        "exaggeration_in_band": 0.0,
+        "mean_followthrough_pct": 85.2,
+        "clean_lobes": 100.0,
+        "ringing_total": 0,
+        "velocity_continuity": 66.5,
+        "structural": 83.3,
+        "total": 64.1
+      },
+      "response": {
+        "Torso": {
+          "axis": "y",
+          "anticipation_deg": 112.86,
+          "followthrough_deg": 112.21,
+          "followthrough_pct": 100.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 351.27
+        },
+        "Head": {
+          "axis": "y",
+          "anticipation_deg": 31.25,
+          "followthrough_deg": 35.42,
+          "followthrough_pct": 104.2,
+          "ringing_lobes": 0,
+          "max_delta_deg": 88.75
+        },
+        "Left Arm": {
+          "axis": "x",
+          "anticipation_deg": 33.96,
+          "followthrough_deg": 20.17,
+          "followthrough_pct": 69.5,
+          "ringing_lobes": 0,
+          "max_delta_deg": 111.67
+        },
+        "Left Leg": {
+          "axis": "z",
+          "anticipation_deg": 31.31,
+          "followthrough_deg": 45.85,
+          "followthrough_pct": 112.8,
+          "ringing_lobes": 0,
+          "max_delta_deg": 122.27
+        },
+        "Right Arm": {
+          "axis": "z",
+          "anticipation_deg": 43.98,
+          "followthrough_deg": 31.32,
+          "followthrough_pct": 55.4,
+          "ringing_lobes": 0,
+          "max_delta_deg": 111.19
+        },
+        "Right Leg": {
+          "axis": "x",
+          "anticipation_deg": 47.66,
+          "followthrough_deg": 39.41,
+          "followthrough_pct": 68.9,
+          "ringing_lobes": 0,
+          "max_delta_deg": 112.57
+        }
+      }
+    }
+  ],
+  "best": {
+    "variant": "k0.006_sig0.09_a0.0",
+    "k": 0.006,
+    "sigma": 0.09,
+    "alpha": 0.0,
+    "score": {
+      "exaggeration_in_band": 96.3,
+      "mean_followthrough_pct": 23.9,
+      "clean_lobes": 100.0,
+      "ringing_total": 0,
+      "velocity_continuity": 49.1,
+      "structural": 100.0,
+      "total": 91.4
+    },
+    "response": {
+      "Torso": {
+        "axis": "y",
+        "anticipation_deg": 33.53,
+        "followthrough_deg": 33.71,
+        "followthrough_pct": 29.6,
+        "ringing_lobes": 0,
+        "max_delta_deg": 104.09
+      },
+      "Head": {
+        "axis": "y",
+        "anticipation_deg": 8.66,
+        "followthrough_deg": 10.05,
+        "followthrough_pct": 29.7,
+        "ringing_lobes": 0,
+        "max_delta_deg": 24.53
+      },
+      "Left Arm": {
+        "axis": "x",
+        "anticipation_deg": 6.98,
+        "followthrough_deg": 5.51,
+        "followthrough_pct": 17.7,
+        "ringing_lobes": 0,
+        "max_delta_deg": 49.13
+      },
+      "Left Leg": {
+        "axis": "z",
+        "anticipation_deg": 8.95,
+        "followthrough_deg": 13.46,
+        "followthrough_pct": 32.5,
+        "ringing_lobes": 0,
+        "max_delta_deg": 34.15
+      },
+      "Right Arm": {
+        "axis": "z",
+        "anticipation_deg": 12.11,
+        "followthrough_deg": 8.83,
+        "followthrough_pct": 16.8,
+        "ringing_lobes": 0,
+        "max_delta_deg": 32.26
+      },
+      "Right Leg": {
+        "axis": "x",
+        "anticipation_deg": 11.97,
+        "followthrough_deg": 10.45,
+        "followthrough_pct": 17.3,
+        "ringing_lobes": 0,
+        "max_delta_deg": 32.84
+      }
+    }
+  }
+}

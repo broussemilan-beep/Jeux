@@ -1,0 +1,130 @@
+{
+ "clip": "sakugabooru_sakuga_21581",
+ "sha1_16": "72b18a9bdcbe3f86",
+ "duree_s": 7.33,
+ "resolution": [
+  854,
+  480
+ ],
+ "zone_analysee": [
+  0,
+  7,
+  151,
+  80
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 1,
+  "part_du_temps": 0.068,
+  "plus_longue_ms": 500
+ },
+ "energie": {
+  "mediane": 18.55,
+  "pic_p95": 65.59,
+  "contraste_p95_sur_mediane": 3.54,
+  "part_rapide": 0.066
+ },
+ "impacts": {
+  "nombre": 4,
+  "par_seconde": 0.55,
+  "ecart_median_s": 0.383,
+  "cartes": [
+   {
+    "t_s": 0.667,
+    "type": "noir",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 1.0,
+    "type": "noir",
+    "duree_ms": 167
+   },
+   {
+    "t_s": 1.667,
+    "type": "noir",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 2.05,
+    "type": "noir",
+    "duree_ms": 83
+   }
+  ],
+  "profil_autour": {
+   "approche": 7.14,
+   "0,1 s avant": 4.78,
+   "0,1 s apres": 6.27,
+   "tenue_avant_choc": false,
+   "explosion_apres": false
+  }
+ },
+ "coupes": {
+  "nombre": 2,
+  "t_s": [
+   1.25,
+   4.25
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.37,
+  "decalage_p95_pct": 9.26
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 2.01,
+  "secondes_de_mouvement": 3.48,
+  "vitesse_sujet_p90": 4.816,
+  "pics": 16,
+  "part_des_pics_qui_montent": 0.19,
+  "deviation_trajectoire_mediane": 0.924,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#020303",
+   "part": 0.249
+  },
+  {
+   "hex": "#909395",
+   "part": 0.179
+  },
+  {
+   "hex": "#0e090b",
+   "part": 0.162
+  },
+  {
+   "hex": "#63575d",
+   "part": 0.155
+  },
+  {
+   "hex": "#620710",
+   "part": 0.131
+  },
+  {
+   "hex": "#c7c9ca",
+   "part": 0.125
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 41,
+  "termes": {
+   "contraste_de_temps": 0.58,
+   "tenues_presentes": 0.23,
+   "impacts_rythmes": 0.36
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_21581.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 21581,
+  "tags": "animated cgi effects hajime_no_ippo hajime_no_ippo_rising hidehiko_sawada smears smoke",
+  "score": 399,
+  "source_oeuvre": "OP",
+  "url": "https://www.sakugabooru.com/post/show/21581",
+  "requete": "hajime_no_ippo",
+  "pourquoi": "boxe credible : garde, jab, transfert de poids"
+ }
+}

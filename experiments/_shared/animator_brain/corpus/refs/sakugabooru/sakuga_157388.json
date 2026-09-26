@@ -1,0 +1,100 @@
+{
+ "clip": "sakugabooru_sakuga_157388",
+ "sha1_16": "bc886cb703babfdf",
+ "duree_s": 9.38,
+ "resolution": [
+  640,
+  480
+ ],
+ "zone_analysee": [
+  0,
+  0,
+  160,
+  112
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 0,
+  "part_du_temps": 0.0,
+  "plus_longue_ms": 0
+ },
+ "energie": {
+  "mediane": 15.17,
+  "pic_p95": 31.67,
+  "contraste_p95_sur_mediane": 2.09,
+  "part_rapide": 0.128
+ },
+ "impacts": {
+  "nombre": 0,
+  "par_seconde": 0.0,
+  "ecart_median_s": null,
+  "cartes": [],
+  "profil_autour": null
+ },
+ "coupes": {
+  "nombre": 0,
+  "t_s": []
+ },
+ "camera": {
+  "decalage_median_pct": 0.28,
+  "decalage_p95_pct": 6.12
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 4.21,
+  "secondes_de_mouvement": 8.08,
+  "vitesse_sujet_p90": 3.391,
+  "pics": 62,
+  "part_des_pics_qui_montent": 0.18,
+  "deviation_trajectoire_mediane": 0.606,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#2f2d33",
+   "part": 0.225
+  },
+  {
+   "hex": "#b99f91",
+   "part": 0.22
+  },
+  {
+   "hex": "#66565c",
+   "part": 0.178
+  },
+  {
+   "hex": "#917a72",
+   "part": 0.177
+  },
+  {
+   "hex": "#5a3835",
+   "part": 0.116
+  },
+  {
+   "hex": "#d3cac6",
+   "part": 0.085
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 8,
+  "termes": {
+   "contraste_de_temps": 0.17,
+   "tenues_presentes": 0.0,
+   "impacts_rythmes": 0.0
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_157388.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 157388,
+  "tags": "animated background_animation character_acting fighting hajime_no_ippo hajime_no_ippo:_the_fighting! rotation smears sports takeshi_koike",
+  "score": 636,
+  "source_oeuvre": "NCOP1",
+  "url": "https://www.sakugabooru.com/post/show/157388",
+  "requete": "hajime_no_ippo",
+  "pourquoi": "boxe credible : garde, jab, transfert de poids"
+ }
+}

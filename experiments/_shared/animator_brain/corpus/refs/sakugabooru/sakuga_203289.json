@@ -1,0 +1,123 @@
+{
+ "clip": "sakugabooru_sakuga_203289",
+ "sha1_16": "92943ab2c7d7f4bf",
+ "duree_s": 46.97,
+ "resolution": [
+  854,
+  480
+ ],
+ "zone_analysee": [
+  0,
+  0,
+  129,
+  90
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 9,
+  "part_du_temps": 0.196,
+  "plus_longue_ms": 3250
+ },
+ "energie": {
+  "mediane": 9.34,
+  "pic_p95": 37.46,
+  "contraste_p95_sur_mediane": 4.01,
+  "part_rapide": 0.006
+ },
+ "impacts": {
+  "nombre": 1,
+  "par_seconde": 0.02,
+  "ecart_median_s": null,
+  "cartes": [
+   {
+    "t_s": 3.967,
+    "type": "noir",
+    "duree_ms": 250
+   },
+   {
+    "t_s": 4.3,
+    "type": "silhouette",
+    "duree_ms": 33
+   }
+  ],
+  "profil_autour": {
+   "approche": 10.77,
+   "0,1 s avant": 7.62,
+   "0,1 s apres": 12.84,
+   "tenue_avant_choc": false,
+   "explosion_apres": true
+  }
+ },
+ "coupes": {
+  "nombre": 5,
+  "t_s": [
+   4.217,
+   26.117,
+   27.117,
+   29.067,
+   41.667
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.81,
+  "decalage_p95_pct": 9.39
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 8.43,
+  "secondes_de_mouvement": 24.08,
+  "vitesse_sujet_p90": 2.766,
+  "pics": 248,
+  "part_des_pics_qui_montent": 0.31,
+  "deviation_trajectoire_mediane": 1.058,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#17181a",
+   "part": 0.241
+  },
+  {
+   "hex": "#3c3031",
+   "part": 0.227
+  },
+  {
+   "hex": "#4f4643",
+   "part": 0.151
+  },
+  {
+   "hex": "#7d6657",
+   "part": 0.14
+  },
+  {
+   "hex": "#6b5049",
+   "part": 0.136
+  },
+  {
+   "hex": "#a79772",
+   "part": 0.105
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 55,
+  "termes": {
+   "contraste_de_temps": 0.72,
+   "tenues_presentes": 0.65,
+   "impacts_rythmes": 0.01
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_203289.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 203289,
+  "tags": "animated creatures debris effects fabric fighting smears smoke soul_eater soul_eater_series sparks yutaka_nakamura yutapon_cubes",
+  "score": 3846,
+  "source_oeuvre": "#01 (BD)",
+  "url": "https://www.sakugabooru.com/post/show/203289",
+  "requete": "fighting effects",
+  "pourquoi": "combat + effets (VFX dessines)"
+ }
+}

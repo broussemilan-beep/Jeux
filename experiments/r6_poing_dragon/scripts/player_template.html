@@ -1,0 +1,1054 @@
+<title>Poing du Dragon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    color-scheme: dark;
+    --ground: #121317;
+    --panel: #1b1d24;
+    --line: #2c303b;
+    --text: #e8e6df;
+    --muted: #8f93a0;
+    --gold: #ffc53d;
+    --gold-deep: #ff8a1f;
+    --display: "Chakra Petch", "Segoe UI", system-ui, sans-serif;
+    --body: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  }
+  html, body { margin: 0; background: var(--ground); color: var(--text); }
+  body { font-family: var(--body); font-size: 15px; line-height: 1.5; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 18px 16px 32px; display: grid; gap: 12px; }
+  header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 18px; }
+  h1 { font-family: var(--display); font-weight: 700; font-size: clamp(22px, 3.4vw, 32px); letter-spacing: 0.03em; margin: 0; text-wrap: balance; }
+  h1 span { color: var(--gold); }
+  .sub { color: var(--muted); font-size: 13.5px; margin: 0; }
+  .stage { position: relative; width: 100%; aspect-ratio: 16 / 9; max-height: 72vh; background: #000; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; touch-action: none; }
+  .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  #fx2d { pointer-events: none; }
+  .hud { position: absolute; left: 12px; top: 10px; font-family: var(--mono); font-size: 12.5px; background: rgba(10, 10, 12, 0.66); padding: 6px 9px; border-radius: 6px; pointer-events: none; font-variant-numeric: tabular-nums; z-index: 2; }
+  .hud .beat { font-family: var(--display); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); }
+  .hint { position: absolute; right: 12px; bottom: 10px; font-size: 12px; color: var(--muted); background: rgba(10, 10, 12, 0.6); padding: 3px 8px; border-radius: 5px; pointer-events: none; z-index: 2; }
+  .transport { display: grid; gap: 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+  .group { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .label { font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  button { font-family: var(--body); font-size: 13.5px; color: var(--text); background: #262a33; border: 1px solid var(--line); border-radius: 7px; padding: 6px 11px; cursor: pointer; }
+  button:hover { border-color: #4a5160; }
+  button:focus-visible, input:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  button[aria-pressed="true"] { background: var(--gold); border-color: var(--gold); color: #1a1405; font-weight: 500; }
+  #play { min-width: 92px; font-weight: 500; }
+  .timeline { position: relative; height: 46px; }
+  .bands { position: absolute; inset: 0 0 20px 0; display: flex; border-radius: 5px; overflow: hidden; }
+  .band { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: #d9d6cc; white-space: nowrap; overflow: hidden; border-right: 1px solid rgba(0,0,0,0.35); }
+  .marks { position: absolute; left: 0; right: 0; bottom: 0; height: 20px; }
+  .mark { position: absolute; bottom: 0; transform: translateX(-50%); width: 2px; height: 30px; }
+  .mark::before { content: ""; position: absolute; left: 0; bottom: 14px; width: 1px; height: 30px; background: var(--gold); opacity: 0.8; }
+  .mark span { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); font-family: var(--mono); font-size: 10px; color: var(--muted); white-space: nowrap; }
+  #scrub { position: absolute; inset: 0 0 20px 0; width: 100%; margin: 0; opacity: 0; cursor: pointer; }
+  .head { position: absolute; top: -3px; bottom: 17px; width: 2px; background: #fff; box-shadow: 0 0 6px rgba(255,255,255,0.7); pointer-events: none; }
+  .notes { display: grid; gap: 6px; color: var(--muted); font-size: 13.5px; max-width: 78ch; }
+  .notes p { margin: 0; }
+  .notes b { color: var(--text); font-weight: 500; }
+  @media (max-width: 620px) { .hint { display: none; } .mark span { display: none; } }
+</style>
+<div class="wrap">
+  <header>
+    <h1>Poing du <span>Dragon</span></h1>
+    <p class="sub">Technique ultime · 2 rigs R6 V2.22 · 60 fps · rejouée depuis les fichiers .rbxmx exportés</p>
+  </header>
+
+  <div class="stage" id="stage">
+    <canvas id="view" aria-label="Scène 3D : l'attaquant enchaîne une rafale, lance la victime en l'air et l'écrase au sol"></canvas>
+    <canvas id="fx2d" aria-hidden="true"></canvas>
+    <div class="hud" id="hud"></div>
+    <div class="hint" id="hint">Caméra libre : glisser pour tourner · molette / pincer : zoom</div>
+  </div>
+
+  <div class="transport">
+    <div class="row">
+      <button id="play" type="button">Pause</button>
+      <div class="group">
+        <button id="prev" type="button" aria-label="Frame précédente">◀ 1 f</button>
+        <button id="next" type="button" aria-label="Frame suivante">1 f ▶</button>
+      </div>
+      <div class="group" role="group" aria-label="Vitesse">
+        <span class="label">Vitesse</span>
+        <button type="button" class="speed" data-speed="1" aria-pressed="true">1×</button>
+        <button type="button" class="speed" data-speed="0.5" aria-pressed="false">0,5×</button>
+        <button type="button" class="speed" data-speed="0.25" aria-pressed="false">0,25×</button>
+        <button type="button" class="speed" data-speed="0.1" aria-pressed="false">0,1×</button>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="bands" id="bands"></div>
+      <div class="marks" id="marks"></div>
+      <input id="scrub" type="range" min="0" max="1000" value="0" aria-label="Position dans la technique">
+      <div class="head" id="playhead"></div>
+    </div>
+    <div class="row">
+      <div class="group" role="group" aria-label="Caméra">
+        <span class="label">Caméra</span>
+        <button type="button" class="cam" data-cam="cinema" aria-pressed="true">Cinéma</button>
+        <button type="button" class="cam" data-cam="libre" aria-pressed="false">Libre</button>
+        <button type="button" class="cam" data-cam="profil" aria-pressed="false">Profil</button>
+        <button type="button" class="cam" data-cam="jeu" aria-pressed="false">Jeu</button>
+      </div>
+      <div class="group" role="group" aria-label="Couches">
+        <span class="label">Afficher</span>
+        <button type="button" id="optFx" aria-pressed="true">Effets 3D</button>
+        <button type="button" id="optScreen" aria-pressed="true">Effets écran</button>
+        <button type="button" id="optStop" aria-pressed="true">Hitstops</button>
+        <button type="button" id="optSon" aria-pressed="false" title="Les mêmes WAV que dans Roblox (studio VFX)">Son</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <p><b>Ce que tu vois.</b> Les poses viennent des deux KeyframeSequences exportées (<span id="nkeys"></span>), relues et rejouées par l'équation du moteur Roblox, la victime placée comme le fait le module de jeu. La caméra, les effets, les hitstops et les planches manga suivent <b>staging.json</b>, la même source que le module Luau.</p>
+    <p><b>Caméra libre / Profil</b> pour regarder le mouvement sous tous les angles. Les particules sont une approximation de leur rendu Roblox ; leurs tailles, durées et vitesses viennent des médianes mesurées dans le pack 100 Combat VFX.</p>
+  </div>
+</div>
+
+<!-- three.js EMBARQUÉ (r134, la copie de r6_black_hole/scripts/vendor) :
+     la même version que le labo VFX et que toutes les captures de
+     vérification. (v13 : la page publiée chargeait r128 depuis le CDN ;
+     avant r129 un SkinnedMesh exige material.skinning = true, sans quoi le
+     dragon restait figé dans sa pose de repos, au mauvais endroit ; les
+     captures, faites en r134, ne le montraient pas.) -->
+<script>/*__THREE_JS__*/</script>
+<script>/*__MOTEUR_VFX__*/</script>
+<script>
+(function () {
+  "use strict";
+  const D = /*__DATA__*/null;
+  const FPS = D.fps, END = D.end, NP = D.parts.length;
+  const E = D.events;
+  const PAL = D.palette;
+  const M = D.markers;
+  document.getElementById("nkeys").textContent = D.verif.cles.attaquant + " clés attaquant, " + D.verif.cles.victime + " clés victime";
+
+  // ------------------------------------------------------------ temps
+  // hitstop : l'animation se fige, les effets et la secousse continuent
+  let useStop = true, useFx = true, useScreen = true;
+  const stops = E.filter((e) => e.kind === "impact" && e.hitstop > 0).map((e) => [e.frame, e.hitstop]).sort((a, b) => a[0] - b[0]);
+  function animFrame(tr) {
+    let acc = 0;
+    if (useStop) for (const [f, hs] of stops) {
+      const tf = f / FPS + acc;
+      if (tr < tf) break;
+      if (tr < tf + hs) return f;
+      acc += hs;
+    }
+    return Math.min(END, (tr - acc) * FPS);
+  }
+  function realTimeOf(f) {
+    let acc = 0;
+    if (useStop) for (const [fs, hs] of stops) { if (fs < f) acc += hs; else break; }
+    return f / FPS + acc;
+  }
+  const TAIL = 0.8;
+  const total = () => realTimeOf(END) + (useStop ? stops.filter((s) => s[0] >= END).reduce((a, s) => a + s[1], 0) : 0) + TAIL;
+
+  // ------------------------------------------------------------ rendu
+  const canvas = document.getElementById("view");
+  const fx = document.getElementById("fx2d");
+  const g2 = fx.getContext("2d");
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  const scene = new THREE.Scene();
+  const col = (c) => new THREE.Color(c).convertSRGBToLinear();
+
+  function gradientTex(stops, w = 4, h = 256) {
+    const c = document.createElement("canvas"); c.width = w; c.height = h;
+    const g = c.getContext("2d"), gr = g.createLinearGradient(0, 0, 0, h);
+    for (const [o, s] of stops) gr.addColorStop(o, s);
+    g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; return t;
+  }
+  scene.background = gradientTex([[0, "#1d2a44"], [0.55, "#6e7f98"], [1, "#c9b99a"]]);
+  scene.fog = new THREE.Fog(col("#8d8f93"), 45, 140);
+  const camera = new THREE.PerspectiveCamera(50, 16 / 9, 0.1, 400);
+  scene.add(new THREE.HemisphereLight(col("#dfe6f5"), col("#4a3f35"), 0.7));
+  const sun = new THREE.DirectionalLight(col("#fff1d6"), 1.05);
+  sun.castShadow = true;
+  sun.shadow.mapSize.set(2048, 2048);
+  Object.assign(sun.shadow.camera, { left: -16, right: 16, top: 16, bottom: -16, near: 1, far: 80 });
+  scene.add(sun, sun.target);
+
+  // arene : dalles de pierre
+  (function arena() {
+    const c = document.createElement("canvas"); c.width = c.height = 512;
+    const g = c.getContext("2d");
+    let s = 17; const r = () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646;
+    for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) {
+      const v = 128 + Math.floor(r() * 22);
+      g.fillStyle = `rgb(${v},${v - 4},${v - 10})`; g.fillRect(x * 64, y * 64, 64, 64);
+      g.fillStyle = "rgba(0,0,0,0.18)"; g.fillRect(x * 64, y * 64, 64, 2); g.fillRect(x * 64, y * 64, 2, 64);
+      for (let k = 0; k < 40; k++) { g.fillStyle = `rgba(0,0,0,${r() * 0.06})`; g.fillRect(x * 64 + r() * 64, y * 64 + r() * 64, 2, 2); }
+    }
+    const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding;
+    t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(30, 30); t.anisotropy = 4;
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(240, 240), new THREE.MeshStandardMaterial({ map: t, roughness: 0.95 }));
+    ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+    // murets au loin pour donner l'echelle
+    const wallMat = new THREE.MeshStandardMaterial({ color: col("#6c6a66"), roughness: 1 });
+    for (let i = 0; i < 18; i++) {
+      const a = i / 18 * Math.PI * 2, R = 62;
+      const w = new THREE.Mesh(new THREE.BoxGeometry(20, 5 + (i % 3) * 2, 3), wallMat);
+      w.position.set(Math.cos(a) * R, 2.5, -8 + Math.sin(a) * R); w.rotation.y = -a + Math.PI / 2; w.receiveShadow = true; scene.add(w);
+    }
+  })();
+
+  // ------------------------------------------------------------ personnages
+  function faceTex(skin) {
+    const c = document.createElement("canvas"); c.width = c.height = 128;
+    const g = c.getContext("2d");
+    g.fillStyle = skin; g.fillRect(0, 0, 128, 128);
+    g.fillStyle = "#161616";
+    g.beginPath(); g.ellipse(46, 56, 6, 11, 0, 0, Math.PI * 2); g.fill();
+    g.beginPath(); g.ellipse(82, 56, 6, 11, 0, 0, Math.PI * 2); g.fill();
+    g.lineWidth = 6; g.strokeStyle = "#161616"; g.lineCap = "round";
+    g.beginPath(); g.arc(64, 72, 22, 0.2 * Math.PI, 0.8 * Math.PI); g.stroke();
+    const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; return t;
+  }
+  function rig(colors) {
+    const parts = [], mats = [];
+    D.parts.forEach((p) => {
+      const s = p === "Head" ? [1.25, 1.25, 1.25] : D.sizes[p];
+      const base = new THREE.MeshStandardMaterial({ color: col(colors[p]), roughness: 0.6, metalness: 0.02, emissive: new THREE.Color(0) });
+      mats.push(base);
+      let mat = base;
+      if (p === "Head") {
+        const face = new THREE.MeshStandardMaterial({ map: faceTex(colors.skin), roughness: 0.6, emissive: new THREE.Color(0) });
+        mats.push(face);
+        mat = [base, base, base, base, base, face];     // visage sur -Z (avant Roblox)
+      }
+      const m = new THREE.Mesh(new THREE.BoxGeometry(s[0], s[1], s[2]), mat);
+      m.castShadow = true; scene.add(m); parts.push(m);
+    });
+    return { parts, mats };
+  }
+  const A = rig({ Torso: "#1d1e25", Head: "#e9b88f", "Left Arm": "#e9b88f", "Right Arm": "#e9b88f", "Left Leg": "#23242c", "Right Leg": "#23242c", skin: "#e9b88f" });
+  const Vr = rig({ Torso: "#0d69ac", Head: "#f5cd30", "Left Arm": "#f5cd30", "Right Arm": "#f5cd30", "Left Leg": "#a4bd47", "Right Leg": "#a4bd47", skin: "#f5cd30" });
+  // ceinture doree de l'attaquant
+  const belt = new THREE.Mesh(new THREE.BoxGeometry(2.04, 0.28, 1.04), new THREE.MeshStandardMaterial({ color: col(PAL.gold), roughness: 0.35, metalness: 0.5 }));
+  belt.castShadow = true; scene.add(belt);
+
+  const qa = new THREE.Quaternion(), qb = new THREE.Quaternion();
+  function sample(track, f) {
+    f = Math.max(0, Math.min(END, f));
+    const i = Math.min(END - 1, Math.floor(f)), u = f - i, a = track[i], b = track[i + 1];
+    const out = [];
+    for (let k = 0; k < NP; k++) {
+      const o = k * 7;
+      qa.set(a[o + 3], a[o + 4], a[o + 5], a[o + 6]); qb.set(b[o + 3], b[o + 4], b[o + 5], b[o + 6]);
+      out.push({ pos: new THREE.Vector3(a[o] + (b[o] - a[o]) * u, a[o + 1] + (b[o + 1] - a[o + 1]) * u, a[o + 2] + (b[o + 2] - a[o + 2]) * u), quat: qa.clone().slerp(qb, u) });
+    }
+    return out;
+  }
+  const IDX = Object.fromEntries(D.parts.map((p, i) => [p, i]));
+  const tipOf = (s, part) => new THREE.Vector3(0, -1, 0).applyQuaternion(s[IDX[part]].quat).add(s[IDX[part]].pos);
+  const topOf = (s, part) => new THREE.Vector3(0, 0.8, 0).applyQuaternion(s[IDX[part]].quat).add(s[IDX[part]].pos);
+
+  // ------------------------------------------------------------ textures d'effets (canvas)
+  function spriteTex(draw, size = 128) {
+    const c = document.createElement("canvas"); c.width = c.height = size;
+    draw(c.getContext("2d"), size);
+    const t = new THREE.CanvasTexture(c); return t;
+  }
+  const TX = {
+    soft: spriteTex((g, n) => { const r = g.createRadialGradient(n / 2, n / 2, 0, n / 2, n / 2, n / 2); r.addColorStop(0, "rgba(255,255,255,1)"); r.addColorStop(0.35, "rgba(255,255,255,0.6)"); r.addColorStop(1, "rgba(255,255,255,0)"); g.fillStyle = r; g.fillRect(0, 0, n, n); }),
+    star: spriteTex((g, n) => {
+      const c = n / 2; g.translate(c, c);
+      const r = g.createRadialGradient(0, 0, 0, 0, 0, c * 0.5); r.addColorStop(0, "rgba(255,255,255,1)"); r.addColorStop(1, "rgba(255,255,255,0)"); g.fillStyle = r; g.beginPath(); g.arc(0, 0, c * 0.5, 0, Math.PI * 2); g.fill();
+      g.fillStyle = "#fff";
+      for (let k = 0; k < 4; k++) { g.rotate(Math.PI / 2); g.beginPath(); g.moveTo(-c * 0.07, 0); g.lineTo(0, -c * 0.98); g.lineTo(c * 0.07, 0); g.closePath(); g.fill(); }
+    }, 256),
+    smoke: spriteTex((g, n) => {
+      let s = 5; const r = () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646;
+      for (let k = 0; k < 26; k++) {
+        const x = n / 2 + (r() - 0.5) * n * 0.45, y = n / 2 + (r() - 0.5) * n * 0.45, rad = n * (0.16 + r() * 0.2);
+        const gr = g.createRadialGradient(x, y, 0, x, y, rad); gr.addColorStop(0, "rgba(255,255,255,0.35)"); gr.addColorStop(1, "rgba(255,255,255,0)");
+        g.fillStyle = gr; g.fillRect(0, 0, n, n);
+      }
+    }),
+    ring: spriteTex((g, n) => { const r = g.createRadialGradient(n / 2, n / 2, n * 0.3, n / 2, n / 2, n / 2); r.addColorStop(0, "rgba(255,255,255,0)"); r.addColorStop(0.72, "rgba(255,255,255,1)"); r.addColorStop(0.86, "rgba(255,255,255,0.35)"); r.addColorStop(1, "rgba(255,255,255,0)"); g.fillStyle = r; g.fillRect(0, 0, n, n); }, 256),
+    spikes: spriteTex((g, n) => {
+      const c = n / 2; g.translate(c, c); g.fillStyle = "#fff";
+      let s = 9; const r = () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646;
+      g.beginPath();
+      const K = 14;
+      for (let k = 0; k < K * 2; k++) { const a = k / (K * 2) * Math.PI * 2, rr = (k % 2 ? 0.22 : 0.55 + r() * 0.45) * c; g.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); }
+      g.closePath(); g.fill();
+    }, 256),
+  };
+  const addMat = (tex, color, opacity = 1) => new THREE.MeshBasicMaterial({ map: tex, color: col(color), transparent: true, opacity, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
+  const normMat = (tex, color, opacity = 1) => new THREE.MeshBasicMaterial({ map: tex, color: col(color), transparent: true, opacity, depthWrite: false, side: THREE.DoubleSide });
+  const spriteMat = (tex, color, additive) => new THREE.SpriteMaterial({ map: tex, color: col(color), transparent: true, depthWrite: false, blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending });
+
+  let seed = 1;
+  const rnd = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
+  const fxRoot = new THREE.Group(); scene.add(fxRoot);
+  const updaters = [];      // (tReal, fa, sa, sv) -> void, chacun gere sa visibilite
+  const on = (fn) => updaters.push(fn);
+  const ease = (x) => 1 - Math.pow(1 - Math.min(1, Math.max(0, x)), 3);
+  function basis(dir) {
+    const d = new THREE.Vector3(...dir).normalize();
+    const up = Math.abs(d.y) > 0.9 ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 1, 0);
+    const p1 = new THREE.Vector3().crossVectors(d, up).normalize(), p2 = new THREE.Vector3().crossVectors(d, p1).normalize();
+    return [d, p1, p2];
+  }
+
+  // ---- impact : flash (etoile), etincelles VelocityParallel, onde perpendiculaire, fumee
+  // Dimensions : medianes du corpus VFX (100 Combat VFX) x scale ; coups legers ~bas de plage.
+  function makeImpact(ev) {
+    const t0 = () => realTimeOf(ev.frame);
+    const s = ev.scale, P = new THREE.Vector3(...ev.pos);
+    const [d, p1, p2] = basis(ev.dir);
+    const flash = new THREE.Sprite(spriteMat(TX.star, PAL.white, true)); fxRoot.add(flash);
+    const glow = new THREE.Sprite(spriteMat(TX.soft, ev.color, true)); fxRoot.add(glow);
+    const ring = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), addMat(TX.ring, ev.color, 1)); fxRoot.add(ring);
+    ring.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), d);
+    const ring2 = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), addMat(TX.ring, PAL.white, 1)); fxRoot.add(ring2);
+    ring2.quaternion.copy(ring.quaternion);
+    seed = 1000 + ev.frame;
+    // v6 hierarchie : tier 1 (coup de base) = eclat 2 f + un anneau ; tier 2 = sans fumee ; 3 = complet
+    const tier = ev.tier || 3;
+    const nSp = tier >= 2 ? Math.round(10 + 10 * s) : 0, sparks = [];
+    for (let i = 0; i < nSp; i++) {
+      const th = (ev.dir[1] < -0.9 ? 80 : 42) * Math.PI / 180 * Math.sqrt(rnd()), ph = rnd() * Math.PI * 2;
+      const v = d.clone().multiplyScalar(Math.cos(th)).addScaledVector(p1, Math.sin(th) * Math.cos(ph)).addScaledVector(p2, Math.sin(th) * Math.sin(ph));
+      if (ev.dir[1] < -0.9) v.y = Math.abs(v.y) * 0.35 + 0.1;       // impact au sol : gerbe rasante
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), addMat(TX.soft, rnd() < 0.5 ? PAL.gold : PAL.white, 1));
+      fxRoot.add(m);
+      sparks.push({ m, v: v.normalize(), v0: (45 + 50 * rnd()) * Math.min(1.6, s), life: 0.18 + 0.25 * rnd() });
+    }
+    const puffs = [];
+    for (let i = 0; i < (tier >= 3 ? Math.round(4 + 5 * s) : 0); i++) {
+      const a = rnd() * Math.PI * 2;
+      const v = p1.clone().multiplyScalar(Math.cos(a)).addScaledVector(p2, Math.sin(a)).addScaledVector(d, 0.4 * rnd());
+      const sp = new THREE.Sprite(spriteMat(TX.smoke, "#d9d2c3", false)); fxRoot.add(sp);
+      puffs.push({ sp, v, v0: (6 + 10 * rnd()) * s, life: 0.7 + 0.5 * rnd(), rot: rnd() * 6 });
+    }
+    on((tr, fa, sa, sv, cam) => {
+      const age = tr - t0(), vis = useFx && age >= 0;
+      // flash : 0,1 s (mediane corpus 0,10 s)
+      const fl = age / (tier === 1 ? 2 / 60 : 0.1);
+      flash.visible = vis && fl < 1; glow.visible = flash.visible && tier >= 2;
+      if (flash.visible) {
+        const k = fl < 0.2 ? fl / 0.2 : 1 - (fl - 0.2) / 0.8;
+        flash.scale.setScalar(4.2 * s * (0.6 + 0.4 * k)); flash.material.opacity = k; flash.position.copy(P);
+        flash.material.rotation = ev.frame * 0.37;
+        glow.scale.setScalar(6.5 * s * k); glow.material.opacity = 0.75 * k; glow.position.copy(P);
+      }
+      // onde : 0,4 s, taille max ~12 studs x scale/2
+      for (const [r, dur, max, op] of [[ring, 0.32, 5.5 * s, 0.9], [ring2, 0.2, 3.2 * s, 1.0]]) {
+        const ra = age / dur;
+        r.visible = vis && ra < 1 && (tier >= 2 || r === ring2);
+        if (r.visible) { const e = ease(ra); r.scale.setScalar(0.4 + max * e); r.material.opacity = op * (1 - ra) * (1 - ra); r.position.copy(P).addScaledVector(d, 0.25); }
+      }
+      // etincelles : vitesse ~75 studs/s, drag 5 (freinage exponentiel), etirees le long de la vitesse
+      for (const k of sparks) {
+        const alive = vis && age < k.life;
+        k.m.visible = alive;
+        if (!alive) continue;
+        const drag = 5, dist = k.v0 * (1 - Math.exp(-drag * age)) / drag, vel = k.v0 * Math.exp(-drag * age);
+        k.m.position.copy(P).addScaledVector(k.v, dist); k.m.position.y -= 6 * age * age;
+        const len = Math.max(0.15, vel * 0.03), w = 0.16 * Math.min(1.4, s) * (1 - age / k.life);
+        // quad oriente le long de la vitesse, face a la camera
+        const toCam = new THREE.Vector3().subVectors(cam.position, k.m.position).normalize();
+        const side = new THREE.Vector3().crossVectors(k.v, toCam).normalize();
+        const n = new THREE.Vector3().crossVectors(side, k.v).normalize();
+        k.m.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(side, k.v, n));
+        k.m.scale.set(w, len, 1);
+        k.m.material.opacity = 1 - age / k.life;
+      }
+      // fumee : 1 s, drag 5,4
+      for (const k of puffs) {
+        const alive = vis && age < k.life;
+        k.sp.visible = alive;
+        if (!alive) continue;
+        const u = age / k.life, dist = k.v0 * (1 - Math.exp(-5.4 * age)) / 5.4;
+        k.sp.position.copy(P).addScaledVector(k.v, dist); k.sp.position.y += 0.6 * age;
+        k.sp.scale.setScalar((1.0 + 2.2 * ease(u * 1.5)) * s);
+        k.sp.material.opacity = 0.55 * (1 - u) * Math.min(1, age / 0.04); k.sp.material.rotation = k.rot + u;
+      }
+    });
+    return { t0, ev };
+  }
+
+  function makeGroundBurst(ev) {
+    const t0 = () => realTimeOf(ev.frame), P = new THREE.Vector3(...ev.pos), s = ev.scale;
+    const star = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), addMat(TX.spikes, ev.color, 1));
+    star.rotation.x = -Math.PI / 2; star.position.copy(P).setY(0.06); fxRoot.add(star);
+    const ring = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), addMat(TX.ring, PAL.white, 1));
+    ring.rotation.x = -Math.PI / 2; ring.position.copy(P).setY(0.07); fxRoot.add(ring);
+    seed = 300 + ev.frame;
+    const dust = [];
+    for (let i = 0; i < 12; i++) { const sp = new THREE.Sprite(spriteMat(TX.smoke, "#cfc6b6", false)); fxRoot.add(sp); dust.push({ sp, a: i / 12 * Math.PI * 2 + rnd() * 0.3, v: 5 + 4 * rnd() }); }
+    on((tr) => {
+      const age = tr - t0(), vis = useFx && age >= 0;
+      const sa = age / 0.22;
+      star.visible = vis && sa < 1;
+      if (star.visible) { star.scale.setScalar(4.5 * s * ease(sa * 2)); star.material.opacity = 1 - sa; star.rotation.z = ev.frame; }
+      const ra = age / 0.35;
+      ring.visible = vis && ra < 1;
+      if (ring.visible) { ring.scale.setScalar(1 + 7 * s * ease(ra)); ring.material.opacity = 0.8 * (1 - ra); }
+      for (const k of dust) {
+        const u = age / 0.9, alive = vis && u < 1;
+        k.sp.visible = alive;
+        if (!alive) continue;
+        const r = k.v * (1 - Math.exp(-4 * age)) / 4 * s;
+        k.sp.position.set(P.x + Math.cos(k.a) * r, 0.5 + 0.8 * age, P.z + Math.sin(k.a) * r);
+        k.sp.scale.setScalar(1.4 + 2.2 * u); k.sp.material.opacity = 0.5 * (1 - u);
+      }
+    });
+  }
+
+  // flash du corps entier (teinte plate 1-2 frames, Black Flash / Stagnant Rage)
+  const bodyFlashes = E.filter((e) => e.kind === "body_flash");
+  function applyBodyFlash(tr) {
+    let c = null;
+    if (useFx) for (const e of bodyFlashes) { const age = tr - realTimeOf(e.frame); if (age >= 0 && age < e.frames / 60) c = e.color; }
+    for (const m of A.mats) m.emissive.set(c ? col(c) : 0x000000);
+    belt.material.emissive.set(c ? col(c) : 0x000000);
+  }
+
+  // aura : meches dorees qui montent autour du corps (emetteur continu, LockedToPart)
+  function makeAura(ev) {
+    const n = Math.round(46 * ev.intensity), ks = [];
+    seed = 50 + ev.frame;
+    for (let i = 0; i < n; i++) { const sp = new THREE.Sprite(spriteMat(TX.soft, rnd() < 0.3 ? PAL.white : ev.color, true)); fxRoot.add(sp); ks.push({ sp, ph: rnd(), a: rnd() * Math.PI * 2, r: 0.9 + 0.7 * rnd(), h: rnd() * 2.4 - 1.4 }); }
+    on((tr, fa, sa) => {
+      const span = ev.frames, rel = fa - ev.frame;
+      const act = useFx && rel >= 0 && rel < span + 20;
+      const fade = rel < 6 ? rel / 6 : rel > span ? Math.max(0, 1 - (rel - span) / 20) : 1;
+      const T = sa[IDX.Torso].pos;
+      for (const k of ks) {
+        k.sp.visible = act;
+        if (!act) continue;
+        const life = 0.55, u = ((tr / life) + k.ph) % 1;
+        const a = k.a + tr * 1.6;
+        k.sp.position.set(T.x + Math.cos(a) * k.r * (1 - 0.3 * u), T.y + k.h + u * 3.0, T.z + Math.sin(a) * k.r * (1 - 0.3 * u));
+        k.sp.scale.set(0.35 * (1 - u) + 0.1, (0.9 + 0.6 * ev.intensity) * (1 - u) + 0.1, 1);
+        k.sp.material.opacity = 0.85 * fade * Math.sin(Math.PI * u) * ev.intensity;
+      }
+    });
+  }
+  function makeFistGlow(ev) {
+    const g = new THREE.Sprite(spriteMat(TX.soft, ev.color, true)), core = new THREE.Sprite(spriteMat(TX.star, PAL.white, true));
+    fxRoot.add(g, core);
+    const light = new THREE.PointLight(col(ev.color), 0, 9, 2); scene.add(light);
+    on((tr, fa, sa) => {
+      const rel = fa - ev.frame, act = useFx && rel >= 0 && rel < ev.frames;
+      g.visible = core.visible = act; light.intensity = 0;
+      if (!act) return;
+      const p = tipOf(sa, ev.side === "R" ? "Right Arm" : "Left Arm");
+      const k = Math.min(1, rel / 14) * (0.85 + 0.15 * Math.sin(tr * 40));
+      g.position.copy(p); core.position.copy(p);
+      g.scale.setScalar(2.2 * k + 0.4); core.scale.setScalar(1.6 * k); core.material.rotation = tr * 3;
+      g.material.opacity = 0.8 * k; core.material.opacity = 0.9 * k;
+      light.position.copy(p); light.intensity = 2.5 * k;
+    });
+  }
+  // DRAGON : deux rubans en helice (or + fumee) enroules autour du bras, de
+  // l'epaule a une "tete" au-dela du poing ; tournent de plus en plus vite
+  function makeDragon(ev) {
+    const N = 64;
+    const mk = (color, additive, op) => {
+      const m = new THREE.Mesh(new THREE.BufferGeometry(), additive ? addMat(TX.soft, color, op) : normMat(TX.smoke, color, op));
+      m.frustumCulled = false; fxRoot.add(m); return m;
+    };
+    const ribbons = [mk(ev.color, true, 1), mk(PAL.white, true, 0.8), mk(ev.smoke, false, 0.75)];
+    const pos = new Float32Array(N * 2 * 3), uv = new Float32Array(N * 2 * 2), idx = [];
+    for (let i = 0; i < N - 1; i++) { const a = 2 * i; idx.push(a, a + 1, a + 3, a, a + 3, a + 2); }
+    for (const r of ribbons) {
+      r.geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(N * 6), 3));
+      r.geometry.setAttribute("uv", new THREE.BufferAttribute(new Float32Array(N * 4), 2));
+      r.geometry.setIndex(idx);
+    }
+    const head = new THREE.Sprite(spriteMat(TX.star, ev.color, true)); fxRoot.add(head);
+    on((tr, fa, sa, sv, cam) => {
+      const rel = fa - ev.frame, act = useFx && rel >= 0 && rel < ev.frames;
+      for (const r of ribbons) r.visible = act;
+      head.visible = act;
+      if (!act) return;
+      const S = topOf(sa, "Right Arm"), F = tipOf(sa, "Right Arm");
+      const axis = new THREE.Vector3().subVectors(F, S); const L = axis.length(); axis.normalize();
+      const [, b1, b2] = basis([axis.x, axis.y, axis.z]);
+      const grow = Math.min(1, rel / 16), spin = tr * (9 + 10 * Math.min(1, rel / ev.frames));
+      const ext = 1.4 * grow;
+      ribbons.forEach((r, ri) => {
+        const P = r.geometry.attributes.position, U = r.geometry.attributes.uv;
+        const phase = ri === 1 ? 0.25 : ri === 2 ? Math.PI : 0, width = ri === 2 ? 0.38 : ri === 1 ? 0.08 : 0.2;
+        for (let i = 0; i < N; i++) {
+          const u = i / (N - 1);
+          const along = -0.3 + u * (L + 0.3 + ext) * grow;
+          const rad = (0.85 - 0.6 * u) * (ri === 2 ? 1.25 : 1);
+          const a = spin + phase + u * Math.PI * 2 * 3.2;
+          const c = S.clone().addScaledVector(axis, along).addScaledVector(b1, Math.cos(a) * rad).addScaledVector(b2, Math.sin(a) * rad);
+          const toCam = new THREE.Vector3().subVectors(cam.position, c).normalize();
+          const tan = axis.clone().multiplyScalar(0.4).addScaledVector(b1, -Math.sin(a)).addScaledVector(b2, Math.cos(a)).normalize();
+          const side = new THREE.Vector3().crossVectors(tan, toCam).normalize().multiplyScalar(width * (0.4 + 0.6 * Math.sin(Math.PI * u)));
+          P.setXYZ(2 * i, c.x + side.x, c.y + side.y, c.z + side.z); P.setXYZ(2 * i + 1, c.x - side.x, c.y - side.y, c.z - side.z);
+          U.setXY(2 * i, u, 0.5); U.setXY(2 * i + 1, u, 0.5);
+        }
+        P.needsUpdate = true; U.needsUpdate = true; r.geometry.computeBoundingSphere();
+        r.material.opacity = (ri === 2 ? 0.7 : 1) * Math.min(1, rel / 6) * (rel > ev.frames - 6 ? (ev.frames - rel) / 6 : 1);
+      });
+      head.position.copy(F).addScaledVector(axis, ext); head.scale.setScalar(1.8 + 0.6 * Math.sin(tr * 30)); head.material.rotation = -spin * 0.3;
+      head.material.opacity = grow;
+    });
+  }
+  // CRATERE : pics de pierre qui sortent du sol en 0,12 s, fissure sombre
+  function makeCrater(ev) {
+    const P = new THREE.Vector3(...ev.pos), t0 = () => realTimeOf(ev.frame);
+    const stone = new THREE.MeshStandardMaterial({ color: col("#77706a"), roughness: 1, flatShading: true });
+    const stoneD = new THREE.MeshStandardMaterial({ color: col("#5b5550"), roughness: 1, flatShading: true });
+    const scar = new THREE.Mesh(new THREE.CircleGeometry(ev.radius * 0.72, 40), new THREE.MeshBasicMaterial({ color: col("#1a1715"), transparent: true, opacity: 0.85, depthWrite: false }));
+    scar.rotation.x = -Math.PI / 2; scar.position.copy(P).setY(0.03); fxRoot.add(scar);
+    const glow = new THREE.Mesh(new THREE.CircleGeometry(ev.radius * 0.35, 40), addMat(TX.soft, PAL.gold_deep, 1));
+    glow.rotation.x = -Math.PI / 2; glow.position.copy(P).setY(0.05); fxRoot.add(glow);
+    seed = ev.seed;
+    const spikes = [];
+    for (let i = 0; i < ev.spikes; i++) {
+      const ring = i < ev.spikes * 0.45 ? 0 : 1;
+      const a = rnd() * Math.PI * 2, r = ev.radius * (ring ? 0.75 + 0.35 * rnd() : 0.45 + 0.28 * rnd());
+      const h = (ring ? 1.4 : 2.4) + 1.8 * rnd(), w = 0.6 + 0.7 * rnd();
+      const m = new THREE.Mesh(new THREE.ConeGeometry(w, h, 4 + Math.floor(rnd() * 2)), rnd() < 0.5 ? stone : stoneD);
+      m.castShadow = true; m.receiveShadow = true;
+      const tilt = 0.35 + 0.35 * rnd();
+      m.userData = { base: new THREE.Vector3(P.x + Math.cos(a) * r, 0, P.z + Math.sin(a) * r), h, a, tilt, delay: r / ev.radius * 0.08 };
+      m.rotation.set(0, 0, 0);
+      m.quaternion.setFromEuler(new THREE.Euler(Math.sin(a) * tilt, rnd() * 3, -Math.cos(a) * tilt));
+      fxRoot.add(m); spikes.push(m);
+    }
+    const debris = [];
+    // (v10b : des cubes presque NOIRS sous le bloom, à côté des débris peints
+    // du studio -> teinte de la roche du sol, comme les Parts Slate en jeu)
+    const stoneDeb = new THREE.MeshStandardMaterial({ color: col("#8a7f73"), roughness: 1, flatShading: true });
+    for (let i = 0; i < 26; i++) {
+      const m = new THREE.Mesh(new THREE.BoxGeometry(0.35 + 0.5 * rnd(), 0.3 + 0.4 * rnd(), 0.35 + 0.5 * rnd()), stoneDeb);
+      m.castShadow = true; fxRoot.add(m);
+      const a = rnd() * Math.PI * 2;
+      debris.push({ m, v: new THREE.Vector3(Math.cos(a) * (8 + 12 * rnd()), 14 + 16 * rnd(), Math.sin(a) * (8 + 12 * rnd())), spin: new THREE.Vector3(rnd() * 9, rnd() * 9, rnd() * 9) });
+    }
+    // v13e : BRAISE au fond du cratère (la conséquence était trop sombre) :
+    // lumière chaude qui éclaire la victime et l'attaquant, forte à l'impact
+    // puis stable ; même valeur que DragonFist.luau (PointLight « Braise »)
+    const braise = new THREE.PointLight(col("#ff8a3a"), 0, ev.radius * 3.2, 1.6);
+    braise.position.copy(P).setY(1.6); scene.add(braise);
+    on((tr) => {
+      const age = tr - t0(), vis = age >= 0;
+      braise.intensity = vis ? 1.9 + 2.6 * Math.max(0, 1 - age / 1.2) + 0.15 * Math.sin(age * 9.0) : 0;
+      scar.visible = vis; glow.visible = useFx && vis && age < 2.5;
+      if (glow.visible) glow.material.opacity = 0.9 * Math.max(0, 1 - age / 2.5);
+      for (const m of spikes) {
+        m.visible = vis;
+        if (!vis) continue;
+        const k = ease((age - m.userData.delay) / 0.12);
+        const bb = m.userData.base;
+        m.position.set(bb.x, -m.userData.h / 2 + m.userData.h * 0.62 * k, bb.z);
+      }
+      for (const k of debris) {
+        const alive = vis && age < 3.0;
+        k.m.visible = alive && useFx;
+        if (!alive) continue;
+        let tt = age, y = P.y + 0.5 + k.v.y * tt - 0.5 * 55 * tt * tt;
+        if (y < 0.2) { y = 0.2; }
+        k.m.position.set(P.x + k.v.x * Math.min(tt, 1.1) * 0.9, y, P.z + k.v.z * Math.min(tt, 1.1) * 0.9);
+        k.m.rotation.set(k.spin.x * Math.min(tt, 1.2), k.spin.y * Math.min(tt, 1.2), k.spin.z * Math.min(tt, 1.2));
+      }
+    });
+  }
+  // DOME : onde de choc en demi-sphere + mur de poussiere au ras du sol
+  // (v2 : l'impact final se VOIT avant les planches manga, LECONS.md 3)
+  function makeDome(ev) {
+    const P = new THREE.Vector3(...ev.pos), t0 = () => realTimeOf(ev.frame);
+    const dome = new THREE.Mesh(new THREE.SphereGeometry(1, 40, 20, 0, Math.PI * 2, 0, Math.PI / 2),
+      new THREE.MeshBasicMaterial({ color: col(ev.color), transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }));
+    dome.position.copy(P); fxRoot.add(dome);
+    const shell = new THREE.Mesh(new THREE.SphereGeometry(1, 40, 20, 0, Math.PI * 2, 0, Math.PI / 2),
+      new THREE.MeshBasicMaterial({ color: col(PAL.white), transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.BackSide, wireframe: false }));
+    shell.position.copy(P); fxRoot.add(shell);
+    const ring = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), addMat(TX.ring, PAL.white, 1));
+    ring.rotation.x = -Math.PI / 2; ring.position.copy(P).setY(0.08); fxRoot.add(ring);
+    seed = 404; const wall = [];
+    for (let i = 0; i < 36; i++) { const sp = new THREE.Sprite(spriteMat(TX.smoke, "#bdb3a3", false)); fxRoot.add(sp); wall.push({ sp, a: i / 36 * Math.PI * 2 + rnd() * 0.15, h: 0.6 + rnd() * 1.6, s: 2.2 + rnd() * 2 }); }
+    on((tr) => {
+      const age = tr - t0(), vis = useFx && age >= 0;
+      const u = age / (ev.frames / 60);
+      dome.visible = shell.visible = vis && u < 1;
+      if (dome.visible) {
+        const r = ev.radius * ease(u * 1.3);
+        dome.scale.set(r, r * 0.8, r); shell.scale.set(r * 1.02, r * 0.82, r * 1.02);
+        dome.material.opacity = 0.45 * (1 - u); shell.material.opacity = 0.7 * (1 - u) * (1 - u);
+      }
+      const ru = age / 0.5;
+      ring.visible = vis && ru < 1;
+      if (ring.visible) { ring.scale.setScalar(2 + ev.radius * 2.6 * ease(ru)); ring.material.opacity = 0.9 * (1 - ru); }
+      for (const k of wall) {
+        k.sp.visible = vis && age < 3.5;
+        if (!k.sp.visible) continue;
+        const r = ev.radius * 0.9 * (1 - Math.exp(-3.5 * age));
+        k.sp.position.set(P.x + Math.cos(k.a) * r, k.h * Math.min(1, age * 3), P.z + Math.sin(k.a) * r);
+        k.sp.scale.setScalar(k.s * (0.6 + 0.8 * Math.min(1, age)));
+        k.sp.material.opacity = 0.7 * Math.min(1, age / 0.05) * Math.max(0, 1 - age / 3.5);
+      }
+    });
+  }
+  function makeSmokeCloud(ev) {
+    const P = new THREE.Vector3(...ev.pos), t0 = () => realTimeOf(ev.frame), ks = [];
+    seed = 77;
+    for (let i = 0; i < 46; i++) {
+      const sp = new THREE.Sprite(spriteMat(TX.smoke, ev.color, false)); fxRoot.add(sp);
+      const a = rnd() * Math.PI * 2;
+      ks.push({ sp, a, v: 10 + 16 * rnd(), rise: 0.3 + 1.2 * rnd(), size: 3 + 4 * rnd(), rot: rnd() * 6, y0: 0.5 + 1.5 * rnd() });
+    }
+    on((tr) => {
+      const age = tr - t0(), vis = useFx && age >= 0;
+      for (const k of ks) {
+        k.sp.visible = vis;
+        if (!vis) continue;
+        const r = k.v * (1 - Math.exp(-2.2 * age)) / 2.2 * (ev.radius / 9);
+        k.sp.position.set(P.x + Math.cos(k.a) * r, k.y0 + k.rise * age * 0.8, P.z + Math.sin(k.a) * r);
+        k.sp.scale.setScalar(k.size * (0.6 + 0.6 * ease(age / 1.5)));
+        k.sp.material.opacity = 0.62 * Math.max(0.28, 1 - age / 5) * Math.min(1, age / 0.05);
+        k.sp.material.rotation = k.rot + age * 0.15;
+      }
+    });
+  }
+  function makeEmbers(ev) {
+    const P = new THREE.Vector3(...ev.pos), t0 = () => realTimeOf(ev.frame), ks = [];
+    seed = 91;
+    for (let i = 0; i < 70; i++) { const sp = new THREE.Sprite(spriteMat(TX.soft, rnd() < 0.3 ? PAL.gold : ev.color, true)); fxRoot.add(sp); ks.push({ sp, a: rnd() * 6.28, r: 1 + 7 * rnd(), ph: rnd(), sp0: 0.8 + 1.5 * rnd() }); }
+    on((tr) => {
+      const age = tr - t0(), vis = useFx && age >= 0;
+      for (const k of ks) {
+        k.sp.visible = vis;
+        if (!vis) continue;
+        const u = ((age * 0.35 + k.ph) % 1);
+        k.sp.position.set(P.x + Math.cos(k.a + u * 2) * k.r, 0.3 + u * 6 * k.sp0, P.z + Math.sin(k.a + u * 2) * k.r);
+        k.sp.scale.setScalar(0.22 * (1 - u) + 0.05);
+        k.sp.material.opacity = Math.sin(Math.PI * u) * Math.min(1, age / 0.3);
+      }
+    });
+  }
+  function makeDustTrail(ev) {
+    const ks = [];
+    for (let i = 0; i < 18; i++) { const sp = new THREE.Sprite(spriteMat(TX.smoke, "#cbc2b2", false)); fxRoot.add(sp); ks.push({ sp, f: ev.frame + i * ev.frames / 18, side: i % 2 }); }
+    const trailPos = (f) => { const s = sample(D.att, f); return tipOf(s, ks.length % 2 ? "Left Leg" : "Right Leg"); };
+    ks.forEach((k) => { const s = sample(D.att, k.f); k.p = tipOf(s, k.side ? "Left Leg" : "Right Leg"); });
+    on((tr, fa) => {
+      for (const k of ks) {
+        const age = (fa - k.f) / FPS, alive = useFx && age >= 0 && age < 0.9;
+        k.sp.visible = alive;
+        if (!alive) continue;
+        k.sp.position.set(k.p.x + (k.side ? -0.4 : 0.4) * age, 0.35 + 0.5 * age, k.p.z + 1.2 * age);
+        k.sp.scale.setScalar(0.8 + 2.0 * age); k.sp.material.opacity = 0.55 * (1 - age / 0.9);
+      }
+    });
+  }
+
+  // ---- STUDIO VFX : impacts, air et son joués par les recettes du studio
+  // (vfx_studio/lab/moteur.js), les mêmes que le labo et que le moteur Roblox
+  // VFXStudio.luau. Temps interne = secondes RÉELLES depuis le déclenchement.
+  VFX.loadTextures(D.vfx.textures); VFX.loadMeshes(D.vfx.meshes); VFX.variantes = D.vfx.variantes; VFX.loadModeles(D.vfx.modeles || {});
+  const studios = E.filter((e) => e.kind === "studio").map((ev) => {
+    const eff = VFX.Effet(ev.recette, scene);
+    return { ev, eff, objs: eff.couches.map((c) => c.obj) };
+  });
+  on((tr, fa, sa, sv, cam) => {
+    for (const st of studios) {
+      const age = tr - realTimeOf(st.ev.frame), actif = useFx && age >= 0 && age <= st.eff.duree;
+      for (const o of st.objs) o.visible = actif;
+      if (actif) { cam.updateMatrixWorld(); st.eff.update(age, cam); }
+    }
+  });
+
+  for (const ev of E) {
+    if (ev.kind === "impact") { if (!ev.studio) makeImpact(ev); }
+    else if (ev.kind === "ground_burst") makeGroundBurst(ev);
+    else if (ev.kind === "aura") makeAura(ev);
+    else if (ev.kind === "fist_glow") makeFistGlow(ev);
+    else if (ev.kind === "dragon") makeDragon(ev);
+    else if (ev.kind === "crater") makeCrater(ev);
+    else if (ev.kind === "smoke_cloud") makeSmokeCloud(ev);
+    else if (ev.kind === "dome") makeDome(ev);
+    else if (ev.kind === "embers") makeEmbers(ev);
+    else if (ev.kind === "dust_trail") makeDustTrail(ev);
+  }
+  const impacts = E.filter((e) => e.kind === "impact");
+
+  // ------------------------------------------------------------ camera
+  const CK = D.camera.map(([f, eye, look, fov, mode]) => ({ f, eye: new THREE.Vector3(...eye), look: new THREE.Vector3(...look), fov, mode }));
+  const cr = (p0, p1, p2, p3, u) => {       // Catmull-Rom
+    const u2 = u * u, u3 = u2 * u;
+    return p1.clone().multiplyScalar(2).add(p2.clone().sub(p0).multiplyScalar(u))
+      .add(p0.clone().multiplyScalar(2).sub(p1.clone().multiplyScalar(5)).add(p2.clone().multiplyScalar(4)).sub(p3).multiplyScalar(u2))
+      .add(p1.clone().multiplyScalar(3).sub(p0).sub(p2.clone().multiplyScalar(3)).add(p3).multiplyScalar(u3)).multiplyScalar(0.5);
+  };
+  function cinema(fa) {
+    let i = 0;
+    while (i + 1 < CK.length && CK[i + 1].f <= fa) i++;
+    const k1 = CK[i], k2 = CK[i + 1];
+    if (!k2 || k2.mode === "cut") return { eye: k1.eye.clone(), look: k1.look.clone(), fov: k1.fov };
+    let u = (fa - k1.f) / (k2.f - k1.f);
+    if (k1.f === 196) u = u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;       // whip pan : lent-vif-lent
+    const k0 = (i > 0 && k1.mode !== "cut") ? CK[i - 1] : k1;
+    const k3 = (CK[i + 2] && CK[i + 2].mode !== "cut") ? CK[i + 2] : k2;
+    return { eye: cr(k0.eye, k1.eye, k2.eye, k3.eye, u), look: cr(k0.look, k1.look, k2.look, k3.look, u), fov: k1.fov + (k2.fov - k1.fov) * u };
+  }
+  let camMode = "cinema";
+  const orbit = { r: 16, th: 0.9, ph: 1.15 };
+  function placeCamera(tr, fa, sa, sv) {
+    let eye, look, fov;
+    const mid = sa[IDX.Torso].pos.clone().add(sv[IDX.Torso].pos).multiplyScalar(0.5);
+    if (camMode === "cinema") ({ eye, look, fov } = cinema(fa));
+    else if (camMode === "jeu") {
+      // v6 camera de JEU (battleground) : derriere l'attaquant en verrouillage
+      // d'epaule (shift-lock Roblox : decalage de 1,75 stud a droite), a
+      // distance de joueur, fixe dans le repere du lancement (le joueur ne
+      // tourne pas sa camera pendant une technique), FOV Roblox par defaut 70
+      const a = sa[IDX.Torso].pos, sx = 0.3 * a.x + 1.75;
+      eye = new THREE.Vector3(sx, Math.max(4.5, a.y + 1.8), a.z + 10); look = new THREE.Vector3(sx, a.y + 0.2, a.z - 4); fov = 70;
+      if (M.morsure && fa >= 200) {
+        // v13 : en l'air, le joueur recule et cadre l'attaquant ET la victime
+        // plus bas (1er essai : regard à l'horizontale, victime et dragon hors champ)
+        const v = sv[IDX.Torso].pos;
+        eye = new THREE.Vector3(sx, Math.max(4.5, a.y + 3.5), a.z + 16);
+        look = new THREE.Vector3(sx * 0.5, Math.max(1, (a.y + v.y) / 2 + 2), (a.z + v.z) / 2);
+      }
+    } else {
+      look = fa > 300 ? sa[IDX.Torso].pos.clone().lerp(sv[IDX.Torso].pos, 0.35) : mid;
+      const th = camMode === "profil" ? Math.PI / 2 : orbit.th, ph = camMode === "profil" ? 1.35 : orbit.ph;
+      eye = look.clone().add(new THREE.Vector3(Math.sin(ph) * Math.sin(th), Math.cos(ph), Math.sin(ph) * Math.cos(th)).multiplyScalar(orbit.r));
+      fov = 50;
+    }
+    // punch-in de FOV + secousse (decroissance exponentielle, bruit a 60 Hz)
+    let shake = 0, punch = 0;
+    if (useFx) for (const e of impacts) {
+      const age = tr - realTimeOf(e.frame);
+      if (age < 0 || age > 0.6) continue;
+      shake += e.shake * Math.exp(-age / 0.09);
+      punch += (e.name === "impact" ? 10 : 6) * Math.min(1.2, e.scale) * Math.exp(-age / 0.07);
+    }
+    // v7 : camera cinematique dosee un cran plus bas (retour de Milan sur la v6)
+    const dose = camMode === "cinema" ? (D.cinema_dose || 1) : 1;
+    shake *= dose; punch *= dose;
+    camera.position.copy(eye); camera.lookAt(look);
+    camera.fov = Math.max(18, fov - punch); camera.updateProjectionMatrix();
+    if (shake > 0.001) {
+      const f = Math.floor(tr * 60), h = (k) => { const x = Math.sin(f * 12.9898 + k * 78.233) * 43758.5453; return (x - Math.floor(x)) * 2 - 1; };
+      camera.translateX(h(1) * shake * 0.35); camera.translateY(h(2) * shake * 0.35);
+      camera.rotateZ(h(3) * shake * 0.03);
+    }
+    sun.position.copy(look).add(new THREE.Vector3(10, 22, 8)); sun.target.position.copy(look);
+  }
+
+  // ------------------------------------------------------------ couche ecran (2D)
+  const manga = D.manga.map((src) => { const im = new Image(); im.src = src; return im; });
+  const mangaEv = E.find((e) => e.kind === "manga"), whiteEv = E.find((e) => e.kind === "white");
+  const cartes = (D.cartes || []).map((src) => { const im = new Image(); im.src = src; return im; });
+  const cartesEv = E.find((e) => e.kind === "cartes"), vitesseEv = E.filter((e) => e.kind === "vitesse");
+  const planchesEv = E.find((e) => e.kind === "planches");
+  const flashEv = E.filter((e) => e.kind === "flash_ecran");
+  const PLANCHES = {};
+  for (const [nom, src] of Object.entries(D.planches || {})) { const im = new Image(); im.src = src; PLANCHES[nom] = im; }
+  function seqV(sq, u) {
+    if (u <= sq[0][0]) return sq[0][1];
+    for (let i = 0; i < sq.length - 1; i++) if (u <= sq[i + 1][0]) { const [a, va] = sq[i], [b, vb] = sq[i + 1]; return va + (vb - va) * (b > a ? (u - a) / (b - a) : 1); }
+    return sq[sq.length - 1][1];
+  }
+  function planchePhase(ev, age) {
+    if (age < 0) return null;
+    let t = 0;
+    for (const p of ev.sequence) { if (age < t + p.duree) return { p, u: (age - t) / p.duree }; t += p.duree; }
+    return null;
+  }
+  const cacherEv = E.filter((e) => e.kind === "cacher");
+  // phase de la sequence de cartes a l'age reel `age` (s) ; null hors sequence
+  function cartePhase(ev, age) {
+    if (age < 0) return null;
+    let t = 0, ci = 0;
+    for (const [kind, d] of ev.sequence) {
+      if (age < t + d) return { kind, i: ci, u: (age - t) / d };
+      if (kind === "carte") ci++;
+      t += d;
+    }
+    const hold = ev.tenue_blanc || 0;
+    if (age < t + hold) return { kind: "blanc", i: ci, u: 1 };
+    t += hold;
+    return age < t + ev.fade ? { kind: "fondu", u: (age - t) / ev.fade } : null;
+  }
+  let fistScreen = () => [fx.width / 2, fx.height / 2];
+  function drawScreen(tr, fa, sa) {
+    const W = fx.width, H = fx.height;
+    g2.clearRect(0, 0, W, H);
+    if (!useScreen) return;
+    // barres cinema
+    if (camMode === "cinema") { g2.fillStyle = "#000"; const b = H * 0.07; g2.fillRect(0, 0, W, b); g2.fillRect(0, H - b, W, b); }
+    // teinte doree du temps suspendu + lignes de vitesse
+    const tp = sa[IDX.Torso].pos.clone().project(camera), cx = (tp.x + 1) / 2 * W, cy = (1 - tp.y) / 2 * H;
+    fistScreen = () => { const q = tipOf(sa, "Right Arm").project(camera); return [(q.x + 1) / 2 * W, (1 - q.y) / 2 * H]; };
+    if (fa >= 196 && fa < (M.strike || 278) + 12) {
+      const inS = fa < (M.dive || 256), k = inS ? Math.min(1, (fa - 196) / 12) : 1;
+      g2.fillStyle = `rgba(255, 190, 60, ${0.10 * k})`; g2.fillRect(0, 0, W, H);
+      let s = Math.floor(tr * 20); const r = () => ((s = (s * 16807 + 11) % 2147483647) - 1) / 2147483646;
+      const n = inS ? 40 : 90;
+      g2.save(); g2.globalAlpha = inS ? 0.28 : 0.55; g2.fillStyle = "#fff";
+      for (let i = 0; i < n; i++) {
+        const a = r() * Math.PI * 2, R0 = Math.hypot(W, H) * (inS ? 0.42 : 0.28) * (1 + r() * 0.4), R1 = Math.hypot(W, H) * 0.8, w = 1 + r() * (inS ? 2 : 4);
+        g2.beginPath(); g2.moveTo(cx + Math.cos(a) * R0, cy + Math.sin(a) * R0);
+        g2.lineTo(cx + Math.cos(a + 0.004 * w) * R1, cy + Math.sin(a + 0.004 * w) * R1); g2.lineTo(cx + Math.cos(a - 0.004 * w) * R1, cy + Math.sin(a - 0.004 * w) * R1); g2.fill();
+      }
+      g2.restore();
+    }
+    // whip pan : trainees horizontales
+    if (fa >= 196 && fa < 208) {
+      const k = Math.sin(Math.PI * (fa - 196) / 12);
+      let s = Math.floor(fa * 3); const r = () => ((s = (s * 16807 + 3) % 2147483647) - 1) / 2147483646;
+      g2.save(); g2.globalAlpha = 0.45 * k; g2.fillStyle = "#f2efe8";
+      for (let i = 0; i < 60; i++) g2.fillRect(r() * W - W * 0.2, r() * H, W * (0.3 + r() * 0.6), 1 + r() * 3);
+      g2.restore();
+    }
+    // flash blanc 2 f a la frappe en l'air (v6 : le coup charge a sa propre sequence de cartes)
+    for (const e of impacts) {
+      if (e.name !== "strike") continue;
+      const age = tr - realTimeOf(e.frame);
+      if (age >= 0 && age < 2 / 60) { g2.fillStyle = "rgba(255,248,230,0.75)"; g2.fillRect(0, 0, W, H); }
+    }
+    // v13 flash d'écran bref (masque la victime avalée)
+    for (const e of flashEv) {
+      const age = tr - realTimeOf(e.frame);
+      if (age >= 0 && age < e.duree) { g2.fillStyle = e.couleur || "#fff6dc"; g2.fillRect(0, 0, W, H); }
+    }
+    // v6 fond de vitesse (coup moyen) : lignes de concentration a la peripherie,
+    // le centre (les deux corps) reste lisible
+    for (const e of vitesseEv) {
+      const age = tr - realTimeOf(e.frame);
+      if (age < 0 || age >= e.duration) continue;
+      const k = 1 - age / e.duration;
+      let s = e.frame * 7 + 1; const r = () => ((s = (s * 16807 + 5) % 2147483647) - 1) / 2147483646;
+      g2.save(); g2.fillStyle = `rgba(20,16,10,${0.35 * k})`; g2.fillRect(0, 0, W, H);
+      g2.globalAlpha = 0.85 * k; g2.fillStyle = "#fff8e6";
+      const R1 = Math.hypot(W, H) * 0.75;
+      for (let i = 0; i < 70; i++) {
+        const a = r() * Math.PI * 2, R0 = Math.hypot(W, H) * (0.2 + 0.12 * r()), w = 1.5 + r() * 4;
+        g2.beginPath(); g2.moveTo(cx + Math.cos(a) * R0, cy + Math.sin(a) * R0);
+        g2.lineTo(cx + Math.cos(a + 0.005 * w) * R1, cy + Math.sin(a + 0.005 * w) * R1); g2.lineTo(cx + Math.cos(a - 0.005 * w) * R1, cy + Math.sin(a - 0.005 * w) * R1); g2.fill();
+      }
+      g2.restore();
+    }
+    // v6 impact raconte (f150) : contact 3 f, noir + etoile, 3 cartes, blanc qui se dissout
+    if (cartesEv) {
+      const age = tr - realTimeOf(cartesEv.frame), ph = cartePhase(cartesEv, age);
+      if (ph) {
+        if (ph.kind === "noir") {
+          g2.fillStyle = "#000"; g2.fillRect(0, 0, W, H);
+          const fp = fistScreen(), R = H * (0.1 + 0.16 * ph.u);
+          g2.save(); g2.translate(fp[0], fp[1]); g2.rotate(0.3); g2.fillStyle = "#fff";
+          g2.beginPath();
+          for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4, rr = i % 2 ? R * 0.18 : R; g2.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); }
+          g2.fill(); g2.restore();
+        } else if (ph.kind === "carte") {
+          const im = cartes[ph.i];
+          if (im && im.complete) { const s = Math.max(W / im.width, H / im.height); g2.drawImage(im, (W - im.width * s) / 2, (H - im.height * s) / 2, im.width * s, im.height * s); }
+        } else if (ph.kind === "blanc" || ph.kind === "fondu") {
+          g2.fillStyle = `rgba(255,253,246,${ph.kind === "blanc" ? 1 : 1 - ph.u})`; g2.fillRect(0, 0, W, H);
+        }
+      }
+    }
+    // planches manga : 3 x 2 frames
+    if (mangaEv && fa >= mangaEv.frames[0] && fa < mangaEv.frames[3]) {
+      const i = fa < mangaEv.frames[1] ? 0 : fa < mangaEv.frames[2] ? 1 : 2;
+      const im = manga[i];
+      if (im.complete) { const s = Math.max(W / im.width, H / im.height); g2.drawImage(im, (W - im.width * s) / 2, (H - im.height * s) / 2, im.width * s, im.height * s); }
+    }
+    // ecran blanc puis brouillard qui se dissipe
+    if (whiteEv && fa >= whiteEv.frames[0] && fa < whiteEv.frames[2]) {
+      const [a, b, c] = whiteEv.frames;
+      const k = fa < b ? 1 : 1 - (fa - b) / (c - b);
+      g2.fillStyle = `rgba(255,253,246,${k})`; g2.fillRect(0, 0, W, H);
+      if (fa >= b) {
+        let s = 21; const r = () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646;
+        for (let i = 0; i < 14; i++) {
+          const x = r() * W, y = H * (0.3 + 0.6 * r()), rad = W * (0.15 + 0.2 * r());
+          const gr = g2.createRadialGradient(x, y, 0, x, y, rad); gr.addColorStop(0, `rgba(245,240,230,${0.55 * k})`); gr.addColorStop(1, "rgba(245,240,230,0)");
+          g2.fillStyle = gr; g2.fillRect(0, 0, W, H);
+        }
+      }
+    }
+    // v13 PLANCHES plein écran (carte manga de la gueule, tourbillon de feu,
+    // rouge radial, soleil) : images peintes jouées « en 2 », tournées et
+    // zoomées ; même donnée que DragonFist.luau (ImageLabel)
+    if (planchesEv) {
+      const ph = planchePhase(planchesEv, tr - realTimeOf(planchesEv.frame));
+      if (ph) {
+        const P = ph.p, n = P.images.length;
+        const k = P.cadence ? Math.floor(ph.u * P.duree * P.cadence + 1e-6) % n : 0;
+        const im = PLANCHES[P.images[k]];
+        g2.fillStyle = "#000"; g2.fillRect(0, 0, W, H);
+        if (im && im.complete && im.width) {
+          const rot = P.rotation ? seqV(P.rotation, ph.u) * Math.PI / 180 : 0;
+          const ech = P.echelle ? seqV(P.echelle, ph.u) : 1;
+          const cov = rot ? Math.hypot(W, H) / Math.min(im.width, im.height) : Math.max(W / im.width, H / im.height);
+          const sc = cov * ech;
+          let sx = 0, sy = 0;
+          if (P.secousse) { const a = Math.sin(tr * 97.1) * 43758.5; sx = (a - Math.floor(a) - 0.5) * 2 * P.secousse * H; const b = Math.sin(tr * 71.3) * 24634.6; sy = (b - Math.floor(b) - 0.5) * 2 * P.secousse * H; }
+          g2.save(); g2.translate(W / 2 + sx, H / 2 + sy); g2.rotate(rot);
+          g2.drawImage(im, -im.width * sc / 2, -im.height * sc / 2, im.width * sc, im.height * sc);
+          g2.restore();
+        }
+      }
+    }
+    // vignette
+    const vg = g2.createRadialGradient(W / 2, H / 2, H * 0.35, W / 2, H / 2, H * 0.95);
+    vg.addColorStop(0, "rgba(0,0,0,0)"); vg.addColorStop(1, "rgba(0,0,0,0.42)");
+    g2.fillStyle = vg; g2.fillRect(0, 0, W, H);
+  }
+
+  // ------------------------------------------------------------ interaction camera libre
+  const pointers = new Map(); let pinch0 = 0;
+  const stage = document.getElementById("stage");
+  stage.addEventListener("pointerdown", (e) => { stage.setPointerCapture(e.pointerId); pointers.set(e.pointerId, { x: e.clientX, y: e.clientY }); });
+  const upP = (e) => { pointers.delete(e.pointerId); pinch0 = 0; };
+  stage.addEventListener("pointerup", upP); stage.addEventListener("pointercancel", upP);
+  stage.addEventListener("pointermove", (e) => {
+    if (!pointers.has(e.pointerId)) return;
+    const prev = pointers.get(e.pointerId); pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pointers.size === 1) {
+      if (camMode !== "libre") setCam("libre");
+      orbit.th -= (e.clientX - prev.x) * 0.008; orbit.ph = Math.max(0.2, Math.min(1.55, orbit.ph - (e.clientY - prev.y) * 0.008));
+    } else if (pointers.size === 2) {
+      const [a, b] = [...pointers.values()], d = Math.hypot(a.x - b.x, a.y - b.y);
+      if (pinch0) orbit.r = Math.max(4, Math.min(60, orbit.r * pinch0 / d)); pinch0 = d;
+    }
+  });
+  stage.addEventListener("wheel", (e) => { e.preventDefault(); if (camMode === "cinema") setCam("libre"); orbit.r = Math.max(4, Math.min(60, orbit.r * (1 + Math.sign(e.deltaY) * 0.08))); }, { passive: false });
+  function setCam(m) { camMode = m; document.querySelectorAll(".cam").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.cam === m))); }
+
+  // ------------------------------------------------------------ transport
+  const BEATS = M.morsure ? [["Rafale", 0, 118, "#5b4a2a"], ["Charge", 118, 146, "#6b5326"], ["Coup chargé", 146, 170, "#8a6420"], ["Envol", 170, 200, "#4a4f5e"],
+    ["Invocation", 200, M.dive, "#a17a1f"], ["Le coup", M.dive, M.strike, "#b8861b"], ["Le dragon mange", M.strike, M.manga, "#d9a520"],
+    ["Plein écran", M.manga, M.reveal, "#e0e0e0"], ["Conséquence", M.reveal, 760, "#3a3d47"], ["Retour", 760, END, "#2b2e36"]]
+    : [["Rafale", 0, 118, "#5b4a2a"], ["Charge", 118, 146, "#6b5326"], ["Coup chargé", 146, 170, "#8a6420"], ["Envol", 170, 200, "#4a4f5e"],
+    ["Temps suspendu", 200, 256, "#a17a1f"], ["Plongée", 256, 288, "#b8861b"], ["Impact", 288, 334, "#e0e0e0"], ["Révélation", 334, 490, "#3a3d47"], ["Retour", 490, END, "#2b2e36"]];
+  const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let tr = reduce ? realTimeOf(230) : 0, playing = !reduce, speed = 1, last = performance.now();
+  // ---- SON (WebAudio) : les sons des recettes studio, à leur temps réel
+  let actx = null, tampons = {}, sources = [], sonActif = false;
+  const SONS = [];
+  for (const st of studios) for (const so of st.ev.recette.sons || []) SONS.push({ so, t: () => realTimeOf(st.ev.frame) + so.t0 });
+  async function initSon() {
+    actx = new (window.AudioContext || window.webkitAudioContext)();
+    for (const [nom, uri] of Object.entries(D.vfx.sons || {})) {
+      const bin = Uint8Array.from(atob(uri.split(",")[1]), (c) => c.charCodeAt(0));
+      tampons[nom] = await actx.decodeAudioData(bin.buffer);
+    }
+  }
+  function couperSons() { for (const x of sources) { try { x.stop(); } catch (e) {} } sources = []; }
+  function planifierSons() {
+    couperSons();
+    if (!sonActif || !actx || !playing) return;
+    const now = actx.currentTime;
+    for (const { so, t } of SONS) {
+      const b = tampons[so.son]; if (!b) continue;
+      const h = so.hauteur || 1, t0 = t(), dur = b.duration / h;
+      if (t0 + dur <= tr) continue;
+      const src = actx.createBufferSource(); src.buffer = b; src.playbackRate.value = h * speed;
+      const g = actx.createGain(); g.gain.value = so.volume == null ? 1 : so.volume;
+      src.connect(g).connect(actx.destination);
+      src.start(now + Math.max(0, (t0 - tr) / speed), Math.max(0, (tr - t0) * h));
+      sources.push(src);
+    }
+  }
+  document.getElementById("optSon").addEventListener("click", async (e) => {
+    sonActif = !sonActif; e.currentTarget.setAttribute("aria-pressed", String(sonActif));
+    if (sonActif && !actx) await initSon();
+    if (actx && actx.state === "suspended") await actx.resume();
+    planifierSons();
+  });
+  const hud = document.getElementById("hud"), scrub = document.getElementById("scrub"), head = document.getElementById("playhead"), playBtn = document.getElementById("play");
+  function setPlaying(p) { playing = p; playBtn.textContent = p ? "Pause" : "Lecture"; if (typeof planifierSons === "function") planifierSons(); }
+  setPlaying(playing);
+  playBtn.addEventListener("click", () => setPlaying(!playing));
+  document.getElementById("prev").addEventListener("click", () => { setPlaying(false); tr = realTimeOf(Math.max(0, Math.round(animFrame(tr)) - 1)); });
+  document.getElementById("next").addEventListener("click", () => { setPlaying(false); tr = realTimeOf(Math.min(END, Math.round(animFrame(tr)) + 1)) + 1e-4; });
+  document.querySelectorAll(".speed").forEach((b) => b.addEventListener("click", () => { speed = parseFloat(b.dataset.speed); planifierSons(); document.querySelectorAll(".speed").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); }));
+  document.querySelectorAll(".cam").forEach((b) => b.addEventListener("click", () => setCam(b.dataset.cam)));
+  function toggle(id, fn) { const b = document.getElementById(id); b.addEventListener("click", () => { const v = b.getAttribute("aria-pressed") !== "true"; b.setAttribute("aria-pressed", String(v)); fn(v); }); }
+  toggle("optFx", (v) => { useFx = v; });
+  toggle("optScreen", (v) => { useScreen = v; });
+  toggle("optStop", (v) => { const fa = animFrame(tr); useStop = v; tr = realTimeOf(fa); buildTimeline(); planifierSons(); });
+  scrub.addEventListener("input", () => { setPlaying(false); tr = (scrub.value / 1000) * total(); });
+  function buildTimeline() {
+    const T = total(), bands = document.getElementById("bands"), marks = document.getElementById("marks");
+    bands.innerHTML = ""; marks.innerHTML = "";
+    for (const [name, a, b, c] of BEATS) {
+      const el = document.createElement("div"); el.className = "band";
+      const ta = realTimeOf(a), tb = realTimeOf(b);
+      el.style.width = ((tb - ta) / T * 100) + "%"; el.style.background = c;
+      if (name === "Impact") el.style.color = "#111";
+      el.textContent = (tb - ta) / T > 0.075 ? name : ""; el.title = name + " : " + a + "–" + b + " f";
+      bands.appendChild(el);
+    }
+    const tail = document.createElement("div"); tail.className = "band"; tail.style.flex = "1"; tail.style.background = "#1b1d24"; bands.appendChild(tail);
+    for (const e of impacts) {
+      const el = document.createElement("div"); el.className = "mark"; el.style.left = (realTimeOf(e.frame) / T * 100) + "%";
+      const s = document.createElement("span"); s.textContent = e.name.replace("hit", "") ; el.appendChild(s); marks.appendChild(el);
+    }
+  }
+  buildTimeline();
+  function beatOf(fa) { for (const [n, a, b] of BEATS) if (fa >= a && fa < b) return n; return "Fin"; }
+  // bloom = le BloomEffect de Lighting du jeu (le Neon et les particules
+  // LightEmission y débordent en lueur) ; sans lui, l'aperçu montrait les
+  // effets plus ternes qu'en jeu (auto-évaluation VFX, piste 2)
+  let bloom = null;
+  function resize() {
+    const r = stage.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
+    renderer.setSize(r.width, r.height, false);
+    const db = renderer.getDrawingBufferSize(new THREE.Vector2());
+    bloom = VFX.Bloom(renderer, db.x, db.y, { srgb: true });
+    fx.width = Math.round(r.width * dpr); fx.height = Math.round(r.height * dpr);
+    camera.aspect = r.width / r.height; camera.updateProjectionMatrix();
+  }
+  window.addEventListener("resize", resize);
+  resize();
+
+  function render() {
+    const fa = animFrame(tr);
+    const sa = sample(D.att, fa), sv = sample(D.vic, fa);
+    for (let k = 0; k < NP; k++) { A.parts[k].position.copy(sa[k].pos); A.parts[k].quaternion.copy(sa[k].quat); Vr.parts[k].position.copy(sv[k].pos); Vr.parts[k].quaternion.copy(sv[k].quat); }
+    belt.position.copy(new THREE.Vector3(0, -0.72, 0).applyQuaternion(sa[IDX.Torso].quat).add(sa[IDX.Torso].pos)); belt.quaternion.copy(sa[IDX.Torso].quat);
+    // v13 : la victime est AVALÉE (cachée de la morsure au recrachat)
+    const avalee = cacherEv.some((e) => e.who === "victime" && fa >= e.frames[0] && fa < e.frames[1]);
+    for (const m of Vr.parts) m.visible = !avalee;
+    applyBodyFlash(tr);
+    placeCamera(tr, fa, sa, sv);
+    for (const u of updaters) u(tr, fa, sa, sv, camera);
+    if (useFx && bloom) bloom.render(scene, camera, { intensite: 0.55, seuil: 0.8, taille: 1.4 });
+    else { renderer.setRenderTarget(null); renderer.render(scene, camera); }
+    drawScreen(tr, fa, sa);
+    const T = total();
+    scrub.value = String(Math.round(tr / T * 1000)); head.style.left = (Math.min(1, tr / T) * 100) + "%";
+    const stopped = Math.abs(animFrame(tr + 1e-3) - fa) < 1e-6 && fa < END;
+    hud.innerHTML = '<span class="beat">' + beatOf(fa) + "</span>" + (stopped && useStop ? ' · <span style="color:var(--gold)">hitstop</span>' : "") +
+      "<br>t " + tr.toFixed(2) + " s · f" + String(Math.floor(fa)).padStart(3, "0") + "/" + END;
+    document.getElementById("hint").style.display = camMode === "cinema" ? "none" : "";
+  }
+  function frame(now) {
+    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    if (playing) { tr += dt * speed; if (tr > total()) { tr = 0; planifierSons(); } }
+    render();
+    requestAnimationFrame(frame);
+  }
+  // crochets de verification (captures automatiques)
+  window.__dragon = { sons: () => ({ planifies: sources.length, decodes: Object.keys(tampons).length, total: SONS.length }), seekFrame: (f) => { setPlaying(false); tr = realTimeOf(f) + 1e-4; render(); }, seekReal: (t) => { setPlaying(false); tr = t; render(); }, setCam, realTimeOf, total, orbit };
+  requestAnimationFrame(frame);
+})();
+</script>

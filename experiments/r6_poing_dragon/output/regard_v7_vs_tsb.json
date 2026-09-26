@@ -1,0 +1,150 @@
+{
+ "tsb": {
+  "Collateral Ruin": {
+   "frame": 77,
+   "bras": "Right Arm",
+   "hors_tronc": 0.21,
+   "part_bras_libre": 0.24,
+   "contraste_3d": 5.69,
+   "contraste_ecran": 3.02
+  },
+  "M1": {
+   "frame": 9,
+   "bras": "Left Arm",
+   "hors_tronc": 0.01,
+   "part_bras_libre": 0.41,
+   "contraste_3d": 4.74,
+   "contraste_ecran": 16.98
+  },
+  "M2": {
+   "frame": 12,
+   "bras": "Right Arm",
+   "hors_tronc": 0.12,
+   "part_bras_libre": 0.24,
+   "contraste_3d": 3.7,
+   "contraste_ecran": 2.35
+  },
+  "M3": {
+   "frame": 8,
+   "bras": "Left Arm",
+   "hors_tronc": 0.19,
+   "part_bras_libre": 0.45,
+   "contraste_3d": 3.51,
+   "contraste_ecran": 7.58
+  },
+  "M4": {
+   "frame": 23,
+   "bras": "Right Arm",
+   "hors_tronc": 0.26,
+   "part_bras_libre": 0.24,
+   "contraste_3d": 2.27,
+   "contraste_ecran": 2.41
+  },
+  "Stoic Bomb": {
+   "frame": 275,
+   "bras": "Left Arm",
+   "hors_tronc": 0.05,
+   "part_bras_libre": 0.24,
+   "contraste_3d": 1.37,
+   "contraste_ecran": 1.41
+  },
+  "Swift Sweep": {
+   "frame": 13,
+   "bras": "Right Arm",
+   "hors_tronc": 0.15,
+   "part_bras_libre": 0.46,
+   "contraste_3d": 10.9,
+   "contraste_ecran": 14.55
+  },
+  "Swift Sweep (Fail)": {
+   "frame": 10,
+   "bras": "Left Arm",
+   "hors_tronc": 0.0,
+   "part_bras_libre": 0.53,
+   "contraste_3d": 2.24,
+   "contraste_ecran": 1.55
+  },
+  "Swift Sweep (Victim)": {
+   "frame": 7,
+   "bras": "Left Arm",
+   "hors_tronc": 0.23,
+   "part_bras_libre": 0.22,
+   "contraste_3d": 3.4,
+   "contraste_ecran": 3.08
+  },
+  "Ultimate1": {
+   "frame": 493,
+   "bras": "Right Arm",
+   "hors_tronc": 0.29,
+   "part_bras_libre": 0.43,
+   "contraste_3d": 0.38,
+   "contraste_ecran": 0.41
+  },
+  "Ultimate2": {
+   "frame": 75,
+   "bras": "Left Arm",
+   "hors_tronc": 0.03,
+   "part_bras_libre": 0.29,
+   "contraste_3d": 2.77,
+   "contraste_ecran": 2.88
+  },
+  "WallComboPlayer": {
+   "frame": 319,
+   "bras": "Left Arm",
+   "hors_tronc": 0.04,
+   "part_bras_libre": 0.47,
+   "contraste_3d": 3.22,
+   "contraste_ecran": 3.7
+  },
+  "WallComboVictim": {
+   "frame": 65,
+   "bras": "Right Arm",
+   "hors_tronc": 0.55,
+   "part_bras_libre": 0.22,
+   "contraste_3d": 0.7,
+   "contraste_ecran": 0.77
+  }
+ },
+ "v7": {
+  "h1": {
+   "frame": 14,
+   "bras": "Left Arm",
+   "hors_tronc": 0.0,
+   "part_bras_libre": 0.42,
+   "contraste_3d": 0.71,
+   "contraste_ecran": 0.61
+  },
+  "h2": {
+   "frame": 40,
+   "bras": "Right Arm",
+   "hors_tronc": 0.02,
+   "part_bras_libre": 0.18,
+   "contraste_3d": 1.49,
+   "contraste_ecran": 0.6
+  },
+  "h3": {
+   "frame": 64,
+   "bras": "Left Arm",
+   "hors_tronc": 0.17,
+   "part_bras_libre": 0.27,
+   "contraste_3d": 0.55,
+   "contraste_ecran": 0.43
+  },
+  "h4": {
+   "frame": 90,
+   "bras": "Right Arm",
+   "hors_tronc": 0.09,
+   "part_bras_libre": 0.17,
+   "contraste_3d": 1.26,
+   "contraste_ecran": 0.4
+  },
+  "coup_charge": {
+   "frame": 150,
+   "bras": "Right Arm",
+   "hors_tronc": 0.08,
+   "part_bras_libre": 0.35,
+   "contraste_3d": 30.99,
+   "contraste_ecran": 42.01
+  }
+ }
+}

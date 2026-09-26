@@ -1,0 +1,621 @@
+# Trou noir — accroupissement, décollage en lévitation, disque d'accrétion (R6, Roblox)
+
+Prototype isolé, sans lien avec RANK ZERO ni MyAnimeRPG ni les autres
+prototypes de `experiments/` (voir CLAUDE.md). Réutilise **telle
+quelle** l'infrastructure déjà vérifiée de `r6_solar_smite`
+(`r6_rig.py`, `anim_engine.py` — y compris le solveur de ressort
+analytique exact, `export_kfseq.py`, `export_model.py`,
+`resolve_rbxmx.py`, le rig `RigR6.rbxmx`, `vendor/three.min.js`,
+`textures/stone_ground.png`/`ruin_wall.png`).
+
+Différence structurelle majeure avec tous les prototypes précédents de
+ce dépôt : c'est la première fois qu'un personnage **quitte le sol**
+pendant l'animation (lévitation complète, pas un simple saut). Toute la
+discipline de vérification existante (placement des pieds "mesuré, pas
+deviné") a dû être étendue pour couvrir ce nouveau cas — voir
+"Calibration" ci-dessous.
+
+## Demande
+
+Pas une demande textuelle cette fois : une **vraie capture vidéo**
+envoyée par l'utilisateur (`ScreenRecording_09-23-2026_15-52-25_1.mov`,
+14.16s/60fps/888×1240, titre à l'écran "Black Hole Ability", test en
+Roblox Studio d'une compétence de gravité), accompagnée du message :
+
+> Okk maintenant essaye de faire ça exactement mais que ce soit pour les
+> VFX l'animation etc revérifie si tu as tout tu peux tout faire les
+> bonnes réflexion etc
+
+Instruction explicite de reproduire la vidéo elle-même comme cible
+(pas une description écrite à interpréter), avec latitude complète sur
+la mise en œuvre ("tu peux tout faire les bonnes réflexions").
+
+## Recherche — analyse frame par frame de la référence
+
+Vidéo extraite en frames via `ffmpeg` (`fps=4`, 57 images) puis
+inspectées une à une (Read tool, pas juste un résumé du mouvement) :
+
+- **~0-2s** : personnage R6 en costume, debout normal, bras le long du
+  corps, sur un baseplate Roblox Studio par défaut (grille visible).
+  Overlay TikTok/short-form ("Abonnements"/"En direct"/"4,7 k
+  ❤"/"251 💬"), titre "Black Hole Ability" en incrustation.
+- **~3.25s** : accroupissement marqué, torse plié vers l'avant, tête
+  quasi au niveau des genoux — caméra délibérément TRÈS basse et
+  proche pour dramatiser l'anticipation (pas juste "légèrement plus
+  proche").
+- **~5-6.25s** : relevement EXPLOSIF — bras écartés à l'horizontale en
+  grand (un vrai T-pose latéral façon télékinésie, PAS un lever
+  au-dessus de la tête comme `r6_solar_smite`) — le personnage DÉCOLLE
+  visiblement du sol. Des fragments du sol/décor sont arrachés et
+  flottent déjà autour de lui à cet instant, de petites particules
+  scintillantes visibles.
+- **~7.5s** : plan large — la caméra s'éloigne, le personnage sort
+  quasiment du cadre ; les fragments se sont regroupés en un amas
+  compact qui tourne visiblement sur lui-même au-dessus du sol (pas de
+  simple ligne droite vers un point, une vraie orbite qui se resserre).
+- **~8.75-11.75s** : formation du trou noir — un anneau lumineux
+  jaune/or (disque d'accrétion) apparaît au centre de l'amas, cœur
+  sphérique PUR NOIR en son centre, fond de scène qui s'assombrit
+  fortement (vignette quasi totale — seuls le disque/le cœur et les
+  fragments sombres restent lisibles par contraste), traînées blanches
+  qui SPIRALENT vers l'anneau (pas un burst radial classique, une
+  vraie spirale — angle ET rayon changent tous les deux). C'est le
+  segment le plus long de toute la référence.
+- **~13.5-14s** : la vidéo coupe au NOIR total — pas de résolution
+  filmée (pas de retour au sol visible, pas de fin de l'effet).
+
+Ce dernier point a une conséquence directe sur ce prototype : tout ce
+qui suit l'effondrement du trou noir (atterrissage, sortie de pose) est
+une **décision de mise en scène assumée de cette session**, pas lue
+dans la référence — voir `choreography.py` (docstring de module, point
+R6) pour la citation exacte et la justification.
+
+## Chorégraphie
+
+Un seul personnage (`character_track()`, `choreography.py`), pas de
+cible/mannequin — la référence elle-même n'en montre aucun. Phases :
+
+1. **Garde** (0 → 0.6s) — debout normal, attente vivante courte (la
+   référence ne s'attarde pas dessus).
+2. **Accroupissement** (→ ~1.4s) — torse plié à 58°, jambes fléchies,
+   tête basse, bras resserrés contre le corps (préparation, coil) ;
+   vrai hold au fond (0.3s), pas un simple passage.
+3. **Décollage** (~1.77s) — relevement explosif, torse qui s'arque en
+   arrière, bras écartés à l'horizontale (`rz`≈±86°, l'axe qui contrôle
+   l'écartement latéral sur ce rig — voir la correction de signe
+   documentée dans `r6_solar_smite/README.md`).
+4. **Lévitation soutenue** (→ ~5.17s, la phase la plus longue) — hover
+   vivant (jamais un vol figé) : bras qui oscillent légèrement,
+   personnage qui "respire" en l'air, pendant que les fragments
+   convergent et que le disque se forme (voir VFX ci-dessous).
+5. **Climax** (~5.83s) — pic de tension : bras qui se resserrent, torse
+   qui penche vers l'avant/le centre, comme tiré par la gravitation —
+   pose OPPOSÉE au relâchement grand-ouvert de la lévitation, pour que
+   le pic se LISE comme un pic.
+6. **Effondrement + atterrissage** (~6.03s → 6.5s) — dernier à-coup
+   gravitationnel, puis DESCENTE (décision assumée, voir ci-dessus) :
+   jambes fléchies à l'atterrissage (absorption), puis redressement.
+7. **Retour à l'attente** (→ 7.83s) — attente vivante finale, identique
+   en forme à la phase 1 (boucle lisible).
+
+### Clearance des pieds — mesurée, pas devinée (piège trouvé et corrigé)
+
+Première tentative : `root_pos.y` fixé à une constante ("3.2 studs, ça a
+l'air haut") pour toute la lévitation. Vérification par calcul
+(`grounded_root_y_balanced` appliqué à la pose de décollage) : cette
+constante correspondait à une clearance RÉELLE des pieds de seulement
+**0.18 stud** — le personnage aurait semblé toucher presque le sol,
+pas décoller franchement, malgré un chiffre qui "semblait" élevé. Pire
+au climax : la constante choisie à l'œil donnait une clearance de
+**0.004 stud** (pieds quasiment AU sol) pour une pose censée être
+clairement aérienne.
+
+Cause : `root_pos.y` n'est pas directement la hauteur des pieds au-dessus
+du sol — elle dépend aussi de l'angle des jambes (une jambe pliée vers
+l'avant descend son pied même à `root_pos.y` inchangé).
+`grounded_root_y_balanced(pose)` donne déjà, pour une pose donnée, LA
+valeur de `root_pos.y` qui poserait les pieds pile sur Y=0 — la vraie
+clearance est donc `root_pos.y - grounded_root_y_balanced(pose)`, jamais
+`root_pos.y` seul. Corrigé : chaque pose aérienne calcule sa propre
+clearance explicite au-dessus de cette valeur de référence
+(`RISE_CLEARANCE=2.4`, `CLIMAX_CLEARANCE=1.3`, `RELEASE_CLEARANCE=0.5`,
+décroissant vers 0 à l'atterrissage — le personnage "redescend"
+progressivement, cohérent avec le récit). Revérifié par calcul :
+clearances désormais exactement 2.400 / 1.160 / 0.323 stud aux 3
+instants-clés (voir `calibrate.py`).
+
+## VFX — `black_hole_track.py`
+
+Décor procédural indépendant (pas des os du rig), synchronisé sur
+`choreography.VFX_EVENTS`/`BLACK_HOLE_CENTER` :
+
+- **16 fragments de sol** — dispersés en anneau irrégulier autour du
+  personnage (seed fixe, rayon 2.4-8.0 studs, angle aléatoire — pas un
+  pattern régulier). Trajectoire en 3 temps par fragment, échelonnée
+  (`stagger` individuel, pas tous synchrones) : immobile au sol →
+  lancement vers un point d'orbite (ease-out, "arraché") → orbite en
+  spirale (vitesse angulaire ET rayon qui changent, rayon qui rétrécit
+  vers `CONSUME_RADIUS` puis le fragment disparaît). Vitesse angulaire
+  croissante en approchant le centre (orbite qui se resserre) —
+  vocabulaire visuel neuf pour ce dépôt.
+- **Disque d'accrétion** — rayon qui grossit (ease-out) pendant
+  `disk_form`, plein régime pendant hold/climax avec une légère PULSE
+  d'opacité (pas un plateau plat) autour du climax, s'effondre
+  (ease-in) pendant `collapse`.
+- **Cœur noir** — rayon toujours ≤ celui du disque (vérifié
+  numériquement, jamais l'inverse), couleur quasi-noire pure.
+- **22 traînées radiales** — spiralent VERS le disque (rayon décroît,
+  angle avance), pas un burst classique vers l'extérieur.
+- **Vignette** — assombrit le FOND seulement (jusqu'à 0.75 en
+  fonctionnement normal, pic bref à 1.0 pendant l'effondrement), jamais
+  une opacité plein écran qui cacherait le disque/cœur/personnage —
+  principe direct de `experiments/_shared/vfx_craft_checklist.md`
+  ("l'échelle communique l'enjeu", jamais un voile qui masque
+  l'action).
+
+### Timing VFX — corrigé après un vrai débordement trouvé par `calibrate.py`
+
+Première version : `collapse` durait une constante fixe (0.5s) à partir
+de `RELEASE_T`, indépendamment de la durée réelle de la descente vers
+`LAND_T` (0.467s dans cette chorégraphie). `calibrate.py` a détecté le
+débordement : le VFX finissait 0.033s (1 frame) APRÈS l'atterrissage —
+un fragment/le disque seraient restés visibles alors que le personnage
+avait déjà les pieds au sol. Corrigé : `collapse["t1"]` est maintenant
+borné directement sur `LAND_T` (pas une constante ajoutée à la main),
+donc toujours cohérent même si la chorégraphie est retimée plus tard.
+
+## Calibration — 2 modes de vérification du placement des pieds
+
+`calibrate.py` étend la discipline "mesurer, jamais deviner" déjà
+établie (voir `r6_solar_smite/README.md`) à un cas qu'aucun prototype
+précédent n'avait : un personnage qui quitte réellement le sol.
+
+- **Au sol** (garde, accroupissement, atterrissage, attente finale) :
+  réutilise tel quel le modèle à 3 cas de `r6_solar_smite` (calage
+  jambe seule / compromis équilibré).
+- **Aérien** (`AIRBORNE_WINDOW` = `[RISE_T, LAND_T]`) : vérifie
+  qu'AUCUN pied ne traverse le sol (Y < -TOLERANCE) — pas un check de
+  contact (aucun contact n'est attendu), juste l'absence de clipping.
+
+Résultat final (voir sortie de `calibrate.py`) : aucune anomalie de
+placement au sol non expliquée, aucun clipping pendant la lévitation,
+structure rigide/finie partout, VFX numériquement sain (0 position
+non-finie, cœur jamais plus grand que le disque, les 16 fragments tous
+consommés avant l'atterrissage, timeline VFX/atterrissage cohérente).
+
+## Caméra et lecteur
+
+Voir section "Vérification" pour les captures. Mise en scène calquée
+sur les beats de la référence (voir Recherche) : poussée basse/serrée
+sur l'accroupissement, recul/remontée au décollage, plan large pendant
+que les fragments se regroupent, poussée extrême sur le disque/cœur au
+climax, recul progressif au retour au sol.
+
+## Lecteur — délégué, puis corrigé après vérification indépendante
+
+Le lecteur Three.js (`black_hole_viewer.html`, camera, rendu du disque/
+cœur/débris/vignette) a été construit par un agent en arrière-plan
+(délégation classique pour ce genre de pièce mécanique/large — même
+pratique que `r6_rock_kick`). L'agent a rapporté avoir **vérifié
+lui-même** ses captures ("00-garde/02-liftoff/07-landing/08-recover :
+character clearly legible and well-posed throughout", "05-climax :
+extreme close-up, genuine pure-black core silhouette... not a blown-out
+white screen, not a flat black screen"). **Ce rapport était faux.**
+
+En ouvrant moi-même les 9 captures produites (jamais un rapport d'agent
+pris au mot — discipline établie tout du long de ce dépôt) :
+`00-garde` montrait un bloc torse+tête quasi plein cadre (tête même pas
+visible), `01-crouch` un plan totalement illisible, et surtout
+`05-climax` montrait un DISQUE NOIR PLEIN qui remplissait tout le
+cadre — aucun anneau doré visible, aucun cœur distinguable du reste.
+
+Diagnostic (mesuré, pas supposé) : `CAM_KEYS` (distances caméra)
+avaient été copiées du "sens" des gros plans de `r6_solar_smite`, où un
+gros plan cadre un POING (~1 stud). Ici la caméra doit cadrer soit le
+personnage ENTIER (~5 studs), soit le disque d'accrétion à son diamètre
+maximal (`DISK_RADIUS_MAX×2` = 9.2 studs) — des objets bien plus gros.
+Vérifié numériquement (requête directe de `camera.position`/`fov`/
+`projectionMatrix` dans une page Playwright, comparée à la géométrie
+réelle des meshes) : la caméra ET la géométrie étaient toutes les deux
+correctes, ce n'était PAS un bug de calcul — juste des distances trop
+courtes pour ce qu'elles devaient cadrer (ex. `climax_t` : distance 3.2
+studs pour un disque de 9.2 studs de diamètre, largement plus grand que
+le cadre). Recalculées par la formule `dist = taille / (2 × fraction_
+cadre_visée × tan(FOV_BASE/2))` plutôt que choisies à l'œil — ex.
+climax : disque 9.2 studs, fraction visée 0.85 → distance 12.5 studs
+(au lieu de 3.2). Reconstruit et recapturé : les 9 captures ont
+toutes changé, désormais lisibles (voir ci-dessous).
+
+Ce que l'agent avait néanmoins correctement diagnostiqué et corrigé
+(les 3 points ci-dessous restent en place, non remis en cause par ce
+correctif de distance) : le halo 2D du disque qui lavait le cœur en
+olive au lieu du noir pur, l'éclairage insuffisant du personnage, et
+`tw` qui décrochait du disque pendant l'effondrement.
+
+### Suite : retour direct — « le sens de camera... pas bon », « le perso dans la fluidite » (2026-09-23)
+
+Retour de l'utilisateur après la première livraison du lecteur, sans
+nouvelle référence jointe cette fois : deux griefs distincts, tous les
+deux vérifiés puis corrigés à la source (pas juste retouchés à l'œil).
+
+**Sens de caméra.** Mesuré `camKeyAt(t)` sur toute la timeline (pas
+juste relu le code) : l'azimut ET l'élévation changeaient de sens
+plusieurs fois sans raison de mise en scène — l'azimut balayait vers la
+droite pendant tout le décollage/lévitation/climax (`-15° → +40°`) puis
+REPARTAIT en sens inverse vers `0°` pendant l'effondrement (un
+retournement en plein milieu de l'action) ; l'élévation, elle, montait/
+descendait/remontait/redescendait quatre fois. Corrigé en deux
+mouvements propres au lieu d'un pendule : l'azimut ne change JAMAIS de
+sens après le crouch (balayage continu jusqu'à la fin, `-15° → +52°`,
+vérifié : 0 inversion sur 53 échantillons à 0.15s d'intervalle) ;
+l'élévation ne fait plus qu'un seul arc (creux au crouch, montée
+continue jusqu'au climax, une seule descente finale — 2 inversions,
+le minimum topologique pour cette forme, contre 4 avant). Les
+DISTANCES restent volontairement non monotones (le crouch doit être
+proche, le climax loin pour cadrer le disque à 9.2 studs — voir section
+précédente) : ce n'est pas le même défaut, seul le sens angulaire
+comptait.
+
+**Fluidité du personnage.** Le relevement crouch→lévitation
+(`CROUCH_HOLD_T → RISE_T`, 0.367s) était une simple interpolation Bezier
+cible-à-cible : le ressort de secondary motion ne démarrait qu'à
+`RISE_T`, donc le mouvement le plus spectaculaire de la séquence
+(bascule de -58° à -12° de torse, bras qui giflent de repliés à
+écartés) n'avait aucun dépassement ni poids, juste un "snap" propre.
+Corrigé en démarrant le ressort dès `CROUCH_HOLD_T` (cible encore
+immobile, vitesse nulle à cet instant — aucun saut visible au point de
+départ, même garde-fou que partout ailleurs dans ce dépôt) : vérifié
+numériquement (`anim_engine.sample` avec/sans `secondary_motion`,
+comparés échantillon par échantillon) que le relevement dépasse
+maintenant sa cible de plusieurs degrés avant de s'y stabiliser en
+oscillant (torse : cible atteint -12°, le ressort descend jusqu'à
+-18.3° avant de remonter et se stabiliser — un vrai dépassement/
+rebond mesuré, pas juste espéré). `calibrate.py` revérifié après coup :
+aucune régression (mêmes clearances aériennes, 0 anomalie, VFX sain).
+
+Lecteur reconstruit, 8 des 9 captures recapturées (`01-crouch` identique
+— sa caméra n'a pas changé, vérifié par `git status` avant/après) et
+revues moi-même une à une.
+
+### Suite : retour direct — « pas assez animé, manque d'exagération » et « caméra vue de dos, sensé être de face » (2026-09-23)
+
+Deux nouveaux griefs, sans référence rejointe cette fois — la référence
+déjà analysée a été revue une seconde fois (frames 013/020 de
+`ScreenRecording_09-23-2026_15-52-25_1.mov`) pour recalibrer
+l'amplitude des poses.
+
+**Caméra vue de dos.** Vérifié par calcul, pas juste retourné à l'œil :
+`Right Arm` est positionnée à X MONDE POSITIF (donnée du rig), et ce
+dépôt a déjà établi ailleurs (`r6_solar_smite`, `LUNGE_Z` de plus en
+plus négatif pour avancer vers la cible) que ce rig avance/fait face
+vers **-Z**. Un personnage qui fait face à -Z a, de son propre point de
+vue, la main droite du côté **+X monde** (formule main droite :
+droite = avant × haut = (0,0,-1) × (0,1,0) = (+1,0,0)). `cameraDir(az=0)`
+place la caméra à `target.z + dist`, donc plus loin en **+Z** que le
+personnage — exactement le côté DOS. Confirmé de façon indépendante
+(pas seulement par cohérence de formule) : rendu direct avec le bras
+droit isolé en rouge et le gauche en vert dans une pose asymétrique —
+vu du côté -Z (nouveau réglage), le rouge (bras droit) apparaît à
+GAUCHE de l'écran, exactement le miroir attendu quand on fait face à
+quelqu'un (sa main droite apparaît à votre gauche) ; vu du côté +Z
+(ancien réglage), le rouge apparaît à DROITE — aucun effet miroir,
+confirmé vue de dos. Tous les azimuts de `CAM_KEYS` décalés de +180°
+(même balayage continu, même sens, juste vu de l'autre côté).
+Conséquence en chaîne, elle aussi corrigée : les lumières (`keyLight`,
+`rimLight`, `charFill`) et le mur de fond étaient calés sur l'ancien
+côté caméra — sans correction, le personnage aurait été sous-éclairé/à
+contre-jour vu de face (vérifié par rendu direct avant correction :
+silhouette presque noire sur fond cosmique), et le mur (toujours côté
+-Z, donc maintenant derrière la caméra) aurait disparu du cadre. Biais
+Z des lumières inversé, mur déplacé côté +Z et retourné
+(`rotation.y = PI`, sinon sa face texturée pointerait à l'opposé de la
+caméra).
+
+**Manque d'exagération.** Poses ré-comparées à la référence : le
+crouch réel a le torse quasi à l'horizontale (pas 58°, poussé à 70°) et
+surtout les bras balayés loin en ARRIÈRE et légèrement relevés (façon
+starting-block), pas repliés près du corps comme la version précédente
+— corrigé (`CROUCH_ARMS` : de `(12,-14)` à `(-38,-22)`, signe de `rx`
+inversé = balayé en arrière). Le lever a les bras clairement AU-DESSUS
+de l'horizontale (~30°), pas un T plat — corrigé (`rx` de 6 à 28) ainsi
+que l'arc-en-arrière du torse (-12° → -22°) et l'écartement des jambes
+(9° → 18°). Climax et release poussés dans la même proportion (torse
+16°→26° et 38°→50°, jambes et bras assortis). Le ressort de secondary
+motion lui-même resserré (`damping_ratio` 0.5/0.4 → 0.32/0.28) : plus
+de dépassement, au moins un rebond visible avant stabilisation, plutôt
+qu'un aller simple à peine perceptible. Le bob de la lévitation
+(oscillation bras/altitude pendant le hold) doublé en amplitude
+(`amp_arm` 4.5→8.0, `amp_bob` 0.15→0.35) pour un flottement plus
+vivant. `calibrate.py` revalidé après chaque changement (aucune
+anomalie, clearances aériennes toujours correctes).
+
+Lecteur reconstruit, 9/9 captures recapturées et revues individuellement.
+
+### Suite : retour direct — « ça manque de frame d'un début et d'une fin » (2026-09-23)
+
+Sans texte cette fois, deux vidéos jointes (captures Roblox Studio,
+labels de faces des parts "FRONT"/R/L, comparaison "noob vs pro") —
+confirment indépendamment l'orientation caméra déjà corrigée
+(labels R/L visibles sur le rig, cohérents avec le calcul du round
+précédent) et le niveau de dynamisme attendu des poses. Question posée
+en retour (`AskUserQuestion`) sur ce que "début/fin" signifiait
+précisément est restée sans réponse directe — interprété et exécuté sur
+les 3 pistes proposées, plutôt que redemander une 2e fois :
+
+1. **Plan d'établissement réellement tenu.** Avant : `T0_END`=0.6s,
+   MAIS la caméra n'était jamais figée — elle glissait déjà en douceur
+   (élévation/distance) entre `t=0` et le crouch, aucun instant
+   vraiment immobile pour poser la scène. Corrigé : `T0_END` porté à
+   1.0s ET une clé caméra ajoutée à `t=T0_END` avec les mêmes valeurs
+   qu'à `t=0` (donc interpolation nulle sur toute la garde — vérifié :
+   `camKeyAt(t)` identique à 0.05/0.50/0.95s).
+2. **Pose de clôture distincte**, pas un simple retour à la garde
+   initiale comme si de rien n'était. `RECOVER_TORSO/HEAD/ARMS/LEGS`
+   redessinés : torse encore penché, tête encore basse (essoufflement),
+   bras ASYMÉTRIQUES (droit encore tendu/tendu — écho de la main qui
+   portait le trou noir ; gauche déjà retombé) — communique visuellement
+   "quelque chose vient de se passer" au lieu d'un reset silencieux.
+3. **Vrai fondu au noir de clôture** (`drawEndFade`, 0.9s, ease-in) —
+   la référence coupe au noir en plein pic, sans fin filmée (voir
+   section Recherche) ; ici c'est une clôture DÉLIBÉRÉE sur la pose de
+   repos tenue, même langage visuel (noir = fin) mais un usage différent
+   et assumé (jamais une coupure en pleine action). Nouvelle capture
+   dédiée (`09-fondu-final`) committée comme preuve, pas juste décrite.
+
+`calibrate.py` revalidé (durée totale 7.83s→8.23s, aucune anomalie).
+9 captures existantes recapturées + 1 nouvelle, toutes revues.
+
+### Suite : retour direct — « analyse les refs et re-analyse, trouve pourquoi toujours pas au niveau » (2026-09-23)
+
+Consigne explicite de re-scruter les frames de référence, pas de
+re-décrire les fixes précédents. Extraction ffmpeg fine des frames
+025/030/033 (début/tenue/pré-formation) vs 034 (instant de formation) vs
+035/036 (post-formation) a révélé un écart structurel jamais identifié
+dans les rounds précédents, alors même qu'il sape TOUTES les corrections
+faites jusqu'ici :
+
+- **025/030/033** : ciel bleu clair Roblox ordinaire, plein jour, aucune
+  trace de noirceur cosmique — c'est la scène de mise en place normale,
+  pas une ambiance "trou noir" prématurée.
+- **034** : flash blanc surexposé (silhouette du disque en noir dessus),
+  l'instant exact de la formation — une rupture violente, pas une
+  transition douce.
+- **035/036** : bascule nette vers une scène sombre et lourde — c'est
+  SEULEMENT à partir d'ici que l'ambiance cosmique se justifie.
+
+Ma capture existante `00-garde` (t=0.3s) a été relue directement (pas
+supposée) : déjà violette/cosmique sombre dès la première image. Chaque
+round précédent avait corrigé caméra, poses, timing — sur un fond qui
+contredisait la référence depuis le premier frame, invisibilisant l'effort
+mis dans le reste.
+
+Corrigé dans `black_hole_viewer.html` :
+
+1. **Ciel jour/nuit dynamique** — dôme de ciel à dégradé (horizon/zénith)
+   avec deux jeux de couleurs (jour Roblox bleu clair / nuit cosmique
+   sombre), interpolés par `nightFactor(t)` : 0 pendant toute la garde et
+   la lévitation, montée rapide (`NIGHT_SNAP_DUR`=0.18s, ease-in) au
+   moment de `disk_form.t0`, tenue à 1 jusqu'à l'atterrissage, puis
+   redescente douce (`NIGHT_RECOVER_DUR`=0.6s) vers le jour. `HemisphereLight`
+   de remplissage (fillLight) suit la même interpolation (ciel/sol jour vs
+   nuit) pour que l'éclairage du personnage reste cohérent.
+2. **Flash de formation surexposé** — `drawFormFlash(t)`, overlay 2D blanc
+   cassé (`rgba(255,252,240,a)`), 0.22s, décroissance `pow(1-x, 2.2)`
+   (chute rapide, pas linéaire) déclenché exactement à `disk_form.t0` —
+   reproduit la rupture violente de la frame 034, pas une fondu progressif.
+3. **Retrait du mur** — la référence ne montre aucun mur, seulement le
+   ciel ouvert et le sol ; le `PlaneGeometry` de fond (`wall`, présent
+   depuis le tout premier viewer) a été supprimé entièrement.
+
+Bug rencontré et corrigé avant validation : aliasing sur `THREE.Color`
+(`.set(A).lerp(objA.set(B), f)` sur le MÊME objet Color pour les deux
+opérandes fait que `.set(B)` mute l'objet avant que `.lerp()` ne s'exécute
+dessus — résultat toujours figé sur B quelle que soit `f`). Détecté en
+interrogeant `scene.background.getHexString()` directement via Playwright
+à t=0.3s (attendu : bleu jour, obtenu : sombre) plutôt que de faire
+confiance à la relecture de code. Fixé en donnant un objet `THREE.Color`
+scratch dédié à chaque opérande de chaque lerp (jour ET nuit, jamais
+partagé). Reverifié après fix : `getHexString()` correct à chaque instant
+testé, captures visuelles conformes.
+
+`capture_shots.py` renuméroté (insertion de `04-flash-formation`, preuve
+dédiée du flash, décalant les shots suivants de un cran) ; `calibrate.py`
+non concerné (aucun changement de chorégraphie/trajectoires ce round).
+
+### Suite : retour direct — « la qualité de ton animation n'est pas bonne » (2026-09-23)
+
+Consigne : creuser plus loin, spécifiquement sur la qualité de
+l'ANIMATION (pas le VFX/ciel déjà traité au round précédent). Relecture
+directe (jamais supposée) des captures `01-crouch`/`02-liftoff`/
+`03-hold-debris` existantes : **illisibles**. `01-crouch` ne montrait
+aucune silhouette humanoïde reconnaissable — juste de grands plans
+triangulaires violets/noirs remplissant l'écran bord à bord. `02-liftoff`
+et `03-hold-debris` cadraient si serré que la tête et les pieds sortaient
+du cadre, ne laissant voir qu'un torse tronqué. Le problème n'était donc
+pas la qualité des poses elles-mêmes mais le fait qu'elles étaient
+rendues **impossibles à juger** — ce qui explique le retour, même après
+plusieurs rounds de travail sur l'exagération des poses (#129).
+
+Root cause identifiée par mesure directe (AABB monde réelle du personnage
+à `crouch_hold_t`, calculée depuis `DATA.character_frames`, pas estimée à
+l'œil) :
+
+```
+Torso.p = [0, -0.0865, 0]   Head.p = [0, 0.0845, 1.41]   Left/Right Leg.p = [±0.78, -0.20, -2.01]
+AABB : extent = [4.23, 2.42, 5.24] studs  (X, Y, Z)
+```
+
+Le crouch exagéré (#129) penche le torse tellement vers l'avant que la
+tête se retrouve à z=+1.41 pendant que les jambes restent à z=-2.01 — une
+profondeur de 3.4 studs le long de l'axe caméra, jamais prise en compte
+par un `dist` choisi sur la seule hauteur (~5 studs) d'un personnage
+debout. Requête Playwright directe à `crouch_hold_t` : caméra à
+`(1.29, 0.50, -4.81)`, cible à `(0, 0.06, 0)` — la jambe la plus proche se
+retrouve à ~2.8 studs de la caméra (distorsion perspective sévère : jambe
+énorme, tête minuscule au loin), pas juste un cadrage trop serré. La
+cible elle-même (`charAnchor` = `Torso.p + [0,0.15,0]`, un pivot
+d'articulation, pas le centre visuel réel du corps) aggravait le
+problème.
+
+Corrigé dans `black_hole_viewer.html` — remplacement des `dist`
+choisis à l'œil par un calcul géométrique à partir de l'AABB réelle :
+
+1. `charAABB(pt)` — AABB monde de TOUS les parts (8 coins de chaque
+   boîte, transformés par la pose réelle à cet instant), pas une
+   supposition sur la hauteur du personnage debout.
+2. `charFitDist(pt, frac)` — distance nécessaire pour que la sphère
+   englobante de cette AABB (rayon = demi-diagonale, donc valable quel
+   que soit l'azimut de caméra) tienne dans `frac` du cadre vertical
+   (angle le plus serrant, aspect 1200/900 > 1).
+3. `charAnchor(pt)` — remplacé : centre de l'AABB réelle au lieu du pivot
+   du Torso (qui pouvait être excentré par rapport au corps entier à un
+   crouch fortement penché).
+4. `CAM_KEYS` : les clés centrées sur le personnage (`t=0`, `t0_end`,
+   `crouch_t`, `crouch_hold_t`, `rise_t`, `MID_HOLD_T`, `recover_t`,
+   `idle_out_end`) utilisent maintenant `charFitDist(t, frac)` — chaque
+   `frac` choisi pour préserver l'intention de mise en scène (0.55 pour
+   les plans d'établissement/repos, 0.68 pour le crouch dramatique bas,
+   0.62/0.58 pour décollage/lévitation). Les clés centrées sur le DISQUE
+   (`hold_end_t`, `climax_t`, `collapse.*`, tw≥0.75) gardent leur `dist`
+   choisi à la main sur le diamètre du disque — non concernées par ce
+   bug, non touchées.
+
+Résultat, revérifié directement (jamais supposé) : `01-crouch` montre
+maintenant une silhouette accroupie lisible en contre-plongée ;
+`02-liftoff` montre le corps entier (tête, bras qui s'écartent, jambes,
+pieds au sol avec ombre) ; `03-hold-debris` montre le corps entier sous
+les débris en orbite. `00-garde` légèrement reculé (toujours cadré
+entièrement) ; `06-climax`, `09-recover` revérifiés, inchangés/corrects.
+Aucune régression : `calibrate.py` revalidé (aucun changement de
+chorégraphie/trajectoires ce round, uniquement la caméra) — durée totale
+8.233s, aucune anomalie de placement au sol, aucun clipping en
+lévitation, VFX OK.
+
+10 captures existantes (00, 02, 03, 06, 09 changées visuellement ; 01
+transformée de illisible à lisible) recapturées et revues une par une.
+
+### Refonte : « pourquoi tout a l'air mécanique dans tes rendus ? » → cerveau d'animateur (2026-09-23)
+
+Retour direct, puis : *« go et sois vraiment minutieux dans ta construction,
+le projet derrière c'est un cerveau d'animateur Roblox »*. La réponse a été
+construite comme un outil réutilisable : **`experiments/_shared/animator_brain/`**
+(voir son README : principes → outils → mesures, conventions R6 prouvées,
+leçons des jambes rigides, recette). Ce prototype en est le premier client.
+
+**Diagnostic chiffré de la version précédente** : audit du mouvement, et plus
+seulement des images (`output/motion_audit_avant.*`), **4/25 critères**.
+Quatre défauts de fond qu'aucune capture fixe n'avait montrés :
+
+1. **Poses inversées** (`describe_pose`). Le crouch « plié vers l'avant »
+   penchait **70° en arrière**. Les « bras écartés » croisaient les mains
+   devant la poitrine. Climax, release et atterrissage penchaient en arrière.
+   Cause : la convention `Torso X+ = avant` n'avait jamais été vérifiée.
+   C'est l'inverse, prouvé par FK et par la decal `face` du rig
+   (Face=5 = Front = −Z).
+2. **Pieds qui glissent** : 2,96 studs pendant le crouch (bassin fixe en
+   x/z). `calibrate.py` ne mesurait que la hauteur des pieds.
+3. **Tout le corps clé à la même frame** : graphe « chaîne de pics », toutes
+   les articulations partent à la frame 30 et culminent ensemble.
+4. **Symétrie et métronome** : gauche = miroir exact de droite (84 % du temps
+   pour les bras, 100 % pour les jambes), colonne sur un seul axe (0,998),
+   vol en sinus pur (pureté 0,985).
+
+**Reconstruction** (`choreography.py` réécrit, `pipeline.py`, `audit_motion.py`,
+`export_roblox.py`) :
+
+- **Beats relus dans la référence, frame par frame** (planches 1-57) :
+  armement en torsion (12), accroupissement bras droit haut derrière (13-14),
+  bras lancés l'un **après** l'autre (16-17), vol en V (18-20),
+  **recroquevillement bras croisés** (21-22, absent de la version
+  précédente), **ouverture = flash** (23-25). Le flash du VFX
+  (`disk_form.t0`) est calé **pile** sur l'ouverture du corps (`BURST_T`) :
+  c'est le geste qui déclenche le flash.
+- **Poses au sol en IK** (`_grounded`) : profondeur sous le maximum
+  atteignable, pieds plantés à ~1e-9 stud, **équilibre obligatoire** (le
+  centre de masse doit rester au-dessus des appuis, erreur sinon). La
+  recherche en grille a montré que le crouch R6 équilibré se fait pieds côte
+  à côte, torse plié de 60 à 75° et bassin qui recule.
+- **Pistes par membre + chevauchement par phase** (`OVERLAP_RULES`) : qui
+  mène chaque geste (bassin au sol, bras gauche au lancer, bras à
+  l'ouverture, pieds à l'atterrissage) ; retards de 1 à 4 frames.
+- **Cycles organiques** (garde, vol, T, respiration) au lieu de sinus fixes ;
+  graine et fréquence propres à chaque membre.
+- **Ressorts différenciés** par membre. Torse et jambes en l'air seulement.
+- **Contraintes par échantillon** : `foot_lock_pass` à hauteur de bassin
+  préservée, `look_at_pass` pour le coup d'œil final par-dessus l'épaule
+  gauche.
+- **Climax repensé** : le vortex est DERRIÈRE lui (`BLACK_HOLE_CENTER`
+  z = +1,6, le commentaire d'origine disait « devant », même erreur de
+  repère). Le personnage **lutte** contre l'aspiration, penché en avant,
+  puis l'implosion le projette vers l'avant. La caméra est recalée sur ces
+  beats, avec les mêmes règles (azimut croissant, élévation en un seul arc).
+
+**Ce que la construction a révélé et corrigé**, chaque fois par la mesure,
+jamais à l'œil :
+
+- **Décollage R6** : une jambe rigide ne peut pas pousser jusqu'à
+  l'extension. La hanche décrit un arc, et l'IK près de l'extension devient
+  singulière (le bassin balaie latéralement en quelques frames). → Il **jaillit du crouch** à mi-poussée, et les
+  jambes se déplient en l'air, avec un relâchement progressif de l'angle IK
+  vers la courbe clé. La vitesse verticale du bassin est maintenant
+  **monotone** : 0,4 → 12,2 → 15,3 studs/s, puis décélère jusqu'à l'apogée
+  (mesuré à 60 Hz). Avant cette correction, il y avait une « double pompe » :
+  9,5 → 1 → 29 studs/s.
+- **Ressort démarré en plein mouvement à vitesse nulle** : cassure de
+  vitesse. → Il hérite de la vitesse de la cible (`anim_engine`).
+- **Torse qui traîne au sol** : le bassin faisait un aller-retour de
+  plusieurs dixièmes de stud au redressement. → Ressort du torse en l'air seulement, avec
+  retour progressif.
+- **Atterrissage** : un pied pas encore posé plaçait déjà le bassin (saut de
+  16 studs/s, puis 12,8 après un premier correctif). → Seuls les pieds porteurs placent le bassin, avec un
+  transfert de poids progressif sur 3 frames, et un pied qui arrive ne passe
+  jamais sous le sol.
+- **Regard vers une cible pile derrière** : bascule gauche/droite en un
+  échantillon (49× la vitesse normale de la tête). → Cône borné et hystérésis, cible derrière-gauche.
+
+**Résultat** (même code d'audit, `output/motion_audit_{avant,apres}.*`) :
+**4/25 → 23/23**. Tête +2,5 frames derrière le torse, bras +2,5 / +3,5 ;
+0,6 % du temps en miroir ; planarité du torse 0,83 ; glissement des pieds
+0,002 stud ; 0 % hors équilibre ; 0 discontinuité hors snaps déclarés
+(jaillissement, ouverture). `calibrate.py` (réécrit : **chaque**
+échantillon, hauteur **et** dérive horizontale des appuis) : écart max
+0,0001 stud, aucun clipping, VFX OK.
+
+**Export Roblox** : `output/black_hole_r6.rbxmx` (KeyframeSequence,
+248 clés, 30 Hz). Mouvement d'ensemble replié sur le RootJoint, translation =
+écart au repos (3,000 studs mesurés par FK). L'aller-retour par l'équation
+du moteur avec les C0/C1 réels (`resolve_rbxmx`) retrouve l'aperçu à
+**0,0001 stud** près.
+
+Capture : `capture_shots.py` capture maintenant l'**élément** canvas. Une
+capture de fenêtre 1200×900 coupait le bas du cadre (le personnage paraissait
+rogné au climax alors que le spectateur le voit entier).
+
+## Vérification (captures)
+
+Captures committées dans `captures/verification/`, toutes ouvertes et
+relues une par une. Chaque capture montre le **canvas entier** (élément,
+pas la fenêtre) :
+
+- `2026-09-23-black-hole-00-garde.png` : garde vivante, tête tournée, ciel de jour.
+- `2026-09-23-black-hole-01-armement.png` : torse qui plonge, bras droit qui part derrière (réf. 12).
+- `2026-09-23-black-hole-02-accroupi.png` : torse plié vers l'avant, bras droit haut derrière, pieds plantés (réf. 13-14).
+- `2026-09-23-black-hole-03-jaillissement.png` : il a quitté le sol, jambes qui se déplient, bras gauche qui mène.
+- `2026-09-23-black-hole-04-lancer-bras.png` : bras lancés, corps étiré (réf. 16-17).
+- `2026-09-23-black-hole-05-vol-en-V.png` : bras en V, jambes pendantes, débris qui montent (réf. 18-20).
+- `2026-09-23-black-hole-06-recroqueville.png` : bras croisés devant la poitrine, genoux montés (réf. 21-22).
+- `2026-09-23-black-hole-07-flash-ouverture.png` : le flash sur la silhouette qui s'ouvre (réf. 23).
+- `2026-09-23-black-hole-08-T-disque.png` : bras en T, découpé devant le disque qui naît derrière lui (réf. 24-25).
+- `2026-09-23-black-hole-09-climax-lutte.png` : il résiste, penché en avant, devant le vortex.
+- `2026-09-23-black-hole-10-implosion.png` : projeté vers l'avant par l'implosion.
+- `2026-09-23-black-hole-11-atterrissage.png` : amorti, bassin bas, bras ouverts pour l'équilibre.
+- `2026-09-23-black-hole-12-coup-oeil.png` : redressé, coup d'œil par-dessus l'épaule.
+- `2026-09-23-black-hole-13-fondu-final.png` : fondu au noir de clôture.
+- `2026-09-23-black-hole-cerveau-chaine-pics-avant-apres.png` : **preuve de mouvement**. Vitesse de
+  chaque articulation dans le temps, pics marqués. Avant : tout culmine ensemble. Après : cascade
+  bassin → jambes → torse → tête → bras.
+- `2026-09-23-black-hole-cerveau-profil-avant-apres.png` : **preuve de mouvement**. Profil en
+  pelures d'oignon avec trajectoires. Avant : tête qui part en arrière, mains en ligne droite
+  confondues (jumelles), pieds qui glissent. Après : arcs, mains décalées, pieds plantés.
+
+Publié : https://claude.ai/artifact/RN3Xb145T8ptNBHxSvQQRT

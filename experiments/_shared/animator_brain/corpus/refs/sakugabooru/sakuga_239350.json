@@ -1,0 +1,260 @@
+{
+ "clip": "sakugabooru_sakuga_239350",
+ "sha1_16": "cb89b014362e617e",
+ "duree_s": 40.2,
+ "resolution": [
+  854,
+  480
+ ],
+ "zone_analysee": [
+  9,
+  0,
+  160,
+  90
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 0,
+  "part_du_temps": 0.0,
+  "plus_longue_ms": 0
+ },
+ "energie": {
+  "mediane": 22.97,
+  "pic_p95": 72.13,
+  "contraste_p95_sur_mediane": 3.14,
+  "part_rapide": 0.079
+ },
+ "impacts": {
+  "nombre": 18,
+  "par_seconde": 0.45,
+  "ecart_median_s": 0.467,
+  "cartes": [
+   {
+    "t_s": 0.967,
+    "type": "silhouette",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 5.5,
+    "type": "noir",
+    "duree_ms": 300
+   },
+   {
+    "t_s": 5.833,
+    "type": "silhouette",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 6.75,
+    "type": "noir",
+    "duree_ms": 133
+   },
+   {
+    "t_s": 7.217,
+    "type": "silhouette",
+    "duree_ms": 250
+   },
+   {
+    "t_s": 7.5,
+    "type": "silhouette",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 7.583,
+    "type": "noir",
+    "duree_ms": 633
+   },
+   {
+    "t_s": 22.817,
+    "type": "noir",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 23.1,
+    "type": "noir",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 23.683,
+    "type": "noir",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 23.767,
+    "type": "noir",
+    "duree_ms": 50
+   },
+   {
+    "t_s": 24.017,
+    "type": "noir",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 24.267,
+    "type": "noir",
+    "duree_ms": 167
+   },
+   {
+    "t_s": 24.567,
+    "type": "noir",
+    "duree_ms": 167
+   },
+   {
+    "t_s": 24.85,
+    "type": "noir",
+    "duree_ms": 183
+   },
+   {
+    "t_s": 29.483,
+    "type": "noir",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 29.733,
+    "type": "blanc",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 33.617,
+    "type": "silhouette",
+    "duree_ms": 133
+   },
+   {
+    "t_s": 34.783,
+    "type": "noir",
+    "duree_ms": 133
+   },
+   {
+    "t_s": 35.117,
+    "type": "noir",
+    "duree_ms": 83
+   },
+   {
+    "t_s": 35.333,
+    "type": "noir",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 35.417,
+    "type": "noir",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 35.5,
+    "type": "noir",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 35.667,
+    "type": "blanc",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 37.667,
+    "type": "noir",
+    "duree_ms": 33
+   },
+   {
+    "t_s": 37.75,
+    "type": "noir",
+    "duree_ms": 33
+   }
+  ],
+  "profil_autour": {
+   "approche": 2.75,
+   "0,1 s avant": 3.68,
+   "0,1 s apres": 2.95,
+   "tenue_avant_choc": false,
+   "explosion_apres": false
+  }
+ },
+ "coupes": {
+  "nombre": 22,
+  "t_s": [
+   1.05,
+   2.05,
+   2.133,
+   5.8,
+   8.633,
+   9.633,
+   11.133,
+   13.8,
+   13.883,
+   13.967,
+   16.05,
+   18.983,
+   21.15,
+   21.267,
+   21.35,
+   21.933,
+   28.567,
+   28.65,
+   29.567,
+   29.617,
+   32.2,
+   35.617
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.78,
+  "decalage_p95_pct": 22.17
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 5.87,
+  "secondes_de_mouvement": 27.58,
+  "vitesse_sujet_p90": 4.573,
+  "pics": 281,
+  "part_des_pics_qui_montent": 0.36,
+  "deviation_trajectoire_mediane": 0.89,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#090d22",
+   "part": 0.254
+  },
+  {
+   "hex": "#1c192c",
+   "part": 0.194
+  },
+  {
+   "hex": "#5f5356",
+   "part": 0.158
+  },
+  {
+   "hex": "#f4e6b0",
+   "part": 0.148
+  },
+  {
+   "hex": "#6dbad1",
+   "part": 0.128
+  },
+  {
+   "hex": "#5d1c1c",
+   "part": 0.116
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 27,
+  "termes": {
+   "contraste_de_temps": 0.47,
+   "tenues_presentes": 0.0,
+   "impacts_rythmes": 0.3
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_239350.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 239350,
+  "tags": "animated background_animation black_and_white debris dragon_ball_series dragon_ball_super dragon_ball_super:_broly effects explosions fabric fighting hair impact_frames lightning smears smoke wind yuki_hayashi",
+  "score": 3405,
+  "source_oeuvre": "BD",
+  "url": "https://www.sakugabooru.com/post/show/239350",
+  "requete": "animated order:score",
+  "pourquoi": "curiosite : le meilleur de l'animation, toutes categories"
+ }
+}

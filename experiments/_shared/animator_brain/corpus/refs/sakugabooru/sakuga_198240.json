@@ -1,0 +1,116 @@
+{
+ "clip": "sakugabooru_sakuga_198240",
+ "sha1_16": "79e7055b2bc7a529",
+ "duree_s": 29.23,
+ "resolution": [
+  852,
+  480
+ ],
+ "zone_analysee": [
+  0,
+  0,
+  159,
+  90
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 50.0,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 0,
+  "part_du_temps": 0.0,
+  "plus_longue_ms": 0
+ },
+ "energie": {
+  "mediane": 26.24,
+  "pic_p95": 74.9,
+  "contraste_p95_sur_mediane": 2.85,
+  "part_rapide": 0.036
+ },
+ "impacts": {
+  "nombre": 1,
+  "par_seconde": 0.03,
+  "ecart_median_s": null,
+  "cartes": [
+   {
+    "t_s": 27.9,
+    "type": "silhouette",
+    "duree_ms": 167
+   }
+  ],
+  "profil_autour": {
+   "approche": 17.5,
+   "0,1 s avant": 9.76,
+   "0,1 s apres": 15.37,
+   "tenue_avant_choc": false,
+   "explosion_apres": true
+  }
+ },
+ "coupes": {
+  "nombre": 3,
+  "t_s": [
+   12.517,
+   12.55,
+   22.067
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.77,
+  "decalage_p95_pct": 24.83
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 3.81,
+  "secondes_de_mouvement": 26.5,
+  "vitesse_sujet_p90": 3.121,
+  "pics": 273,
+  "part_des_pics_qui_montent": 0.29,
+  "deviation_trajectoire_mediane": 0.693,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#1a1913",
+   "part": 0.217
+  },
+  {
+   "hex": "#6f6b50",
+   "part": 0.198
+  },
+  {
+   "hex": "#a29c77",
+   "part": 0.159
+  },
+  {
+   "hex": "#454332",
+   "part": 0.158
+  },
+  {
+   "hex": "#322e22",
+   "part": 0.157
+  },
+  {
+   "hex": "#dfd8b3",
+   "part": 0.11
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 18,
+  "termes": {
+   "contraste_de_temps": 0.39,
+   "tenues_presentes": 0.0,
+   "impacts_rythmes": 0.02
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/sakugabooru_sakuga_198240.png",
+ "source": {
+  "nom": "sakugabooru",
+  "id": 198240,
+  "tags": "3d_background animals animated arifumi_imai background_animation cgi creatures debris effects explosions fighting hair liquid megumi_tomita shingeki_no_kyojin shingeki_no_kyojin_series smears smoke sparks wind yuuko_sera",
+  "score": 3567,
+  "source_oeuvre": "#39 (BD) (S3 #02)",
+  "url": "https://www.sakugabooru.com/post/show/198240",
+  "requete": "fighting order:score",
+  "pourquoi": "curiosite : les combats les mieux notes, quel qu'en soit le sujet"
+ }
+}

@@ -1,0 +1,637 @@
+{
+ "textures": [
+  {
+   "nom": "croissant",
+   "fichier": "croissant.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "trace d'un coup, coupe, vent (VelocityPerpendicular ou mesh)"
+  },
+  {
+   "nom": "eclat",
+   "fichier": "eclat.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "étincelle acérée orientée (VelocityParallel)"
+  },
+  {
+   "nom": "etoile4",
+   "fichier": "etoile4.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "étoile à 4 branches (flash cel, scintillement)"
+  },
+  {
+   "nom": "anneau",
+   "fichier": "anneau.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "onde de choc en trait fin"
+  },
+  {
+   "nom": "flash",
+   "fichier": "flash.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "éclat de contact 1-2 images"
+  },
+  {
+   "nom": "ligne_vitesse",
+   "fichier": "ligne_vitesse.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "ligne de vitesse effilée"
+  },
+  {
+   "nom": "bruit_energie",
+   "fichier": "bruit_energie.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "texture qui défile (Beam / mesh), raccord"
+  },
+  {
+   "nom": "arc_vent",
+   "fichier": "arc_vent.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "arc de vent strié (air)"
+  },
+  {
+   "nom": "ruban",
+   "fichier": "ruban.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "Trail / Beam / anneau : cœur brillant, bords doux"
+  },
+  {
+   "nom": "halo",
+   "fichier": "halo.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "lueur douce autour d'un point chaud (accompagne une forme nette)"
+  },
+  {
+   "nom": "dragon_tete",
+   "fichier": "dragon_tete.png",
+   "grille": "Static",
+   "resolution": 1024,
+   "mode": "peint",
+   "role": "tête du dragon de profil (carte), museau à droite"
+  },
+  {
+   "nom": "dragon_tete_miroir",
+   "fichier": "dragon_tete_miroir.png",
+   "grille": "Static",
+   "resolution": 1024,
+   "mode": "peint",
+   "role": "tête du dragon, miroir (face arrière de la carte Roblox)"
+  },
+  {
+   "nom": "dragon_ecailles",
+   "fichier": "dragon_ecailles.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "corps du dragon pour Beam, raccord en U"
+  },
+  {
+   "nom": "eclair",
+   "fichier": "eclair.png",
+   "grille": "Static",
+   "resolution": 256,
+   "mode": "à teinter",
+   "role": "segment d'éclair (Beam), cœur blanc"
+  },
+  {
+   "nom": "trait_e0",
+   "fichier": "trait_e0.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "trait dessiné, érosion 0/7 (mesh)"
+  },
+  {
+   "nom": "trait_e1",
+   "fichier": "trait_e1.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "trait dessiné, érosion 1/7 (mesh)"
+  },
+  {
+   "nom": "trait_e2",
+   "fichier": "trait_e2.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "trait dessiné, érosion 2/7 (mesh)"
+  },
+  {
+   "nom": "trait_e3",
+   "fichier": "trait_e3.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "trait dessiné, érosion 3/7 (mesh)"
+  },
+  {
+   "nom": "trait_e4",
+   "fichier": "trait_e4.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "trait dessiné, érosion 4/7 (mesh)"
+  },
+  {
+   "nom": "trait_e5",
+   "fichier": "trait_e5.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "trait dessiné, érosion 5/7 (mesh)"
+  },
+  {
+   "nom": "trait_e6",
+   "fichier": "trait_e6.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "trait dessiné, érosion 6/7 (mesh)"
+  },
+  {
+   "nom": "trait_e7",
+   "fichier": "trait_e7.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "trait dessiné, érosion 7/7 (mesh)"
+  },
+  {
+   "nom": "lame_e0",
+   "fichier": "lame_e0.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "lame dessiné, érosion 0/7 (mesh)"
+  },
+  {
+   "nom": "lame_e1",
+   "fichier": "lame_e1.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "lame dessiné, érosion 1/7 (mesh)"
+  },
+  {
+   "nom": "lame_e2",
+   "fichier": "lame_e2.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "lame dessiné, érosion 2/7 (mesh)"
+  },
+  {
+   "nom": "lame_e3",
+   "fichier": "lame_e3.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "lame dessiné, érosion 3/7 (mesh)"
+  },
+  {
+   "nom": "lame_e4",
+   "fichier": "lame_e4.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "lame dessiné, érosion 4/7 (mesh)"
+  },
+  {
+   "nom": "lame_e5",
+   "fichier": "lame_e5.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "lame dessiné, érosion 5/7 (mesh)"
+  },
+  {
+   "nom": "lame_e6",
+   "fichier": "lame_e6.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "lame dessiné, érosion 6/7 (mesh)"
+  },
+  {
+   "nom": "lame_e7",
+   "fichier": "lame_e7.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "à teinter",
+   "role": "lame dessiné, érosion 7/7 (mesh)"
+  },
+  {
+   "nom": "trait_feu_e0",
+   "fichier": "trait_feu_e0.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "trait dessiné (feu), érosion 0/7 (mesh)"
+  },
+  {
+   "nom": "trait_feu_e1",
+   "fichier": "trait_feu_e1.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "trait dessiné (feu), érosion 1/7 (mesh)"
+  },
+  {
+   "nom": "trait_feu_e2",
+   "fichier": "trait_feu_e2.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "trait dessiné (feu), érosion 2/7 (mesh)"
+  },
+  {
+   "nom": "trait_feu_e3",
+   "fichier": "trait_feu_e3.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "trait dessiné (feu), érosion 3/7 (mesh)"
+  },
+  {
+   "nom": "trait_feu_e4",
+   "fichier": "trait_feu_e4.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "trait dessiné (feu), érosion 4/7 (mesh)"
+  },
+  {
+   "nom": "trait_feu_e5",
+   "fichier": "trait_feu_e5.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "trait dessiné (feu), érosion 5/7 (mesh)"
+  },
+  {
+   "nom": "trait_feu_e6",
+   "fichier": "trait_feu_e6.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "trait dessiné (feu), érosion 6/7 (mesh)"
+  },
+  {
+   "nom": "trait_feu_e7",
+   "fichier": "trait_feu_e7.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "trait dessiné (feu), érosion 7/7 (mesh)"
+  },
+  {
+   "nom": "trait_bleu_e0",
+   "fichier": "trait_bleu_e0.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "trait dessiné (bleu), érosion 0/7 (mesh)"
+  },
+  {
+   "nom": "trait_bleu_e1",
+   "fichier": "trait_bleu_e1.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "trait dessiné (bleu), érosion 1/7 (mesh)"
+  },
+  {
+   "nom": "trait_bleu_e2",
+   "fichier": "trait_bleu_e2.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "trait dessiné (bleu), érosion 2/7 (mesh)"
+  },
+  {
+   "nom": "trait_bleu_e3",
+   "fichier": "trait_bleu_e3.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "trait dessiné (bleu), érosion 3/7 (mesh)"
+  },
+  {
+   "nom": "trait_bleu_e4",
+   "fichier": "trait_bleu_e4.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "trait dessiné (bleu), érosion 4/7 (mesh)"
+  },
+  {
+   "nom": "trait_bleu_e5",
+   "fichier": "trait_bleu_e5.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "trait dessiné (bleu), érosion 5/7 (mesh)"
+  },
+  {
+   "nom": "trait_bleu_e6",
+   "fichier": "trait_bleu_e6.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "trait dessiné (bleu), érosion 6/7 (mesh)"
+  },
+  {
+   "nom": "trait_bleu_e7",
+   "fichier": "trait_bleu_e7.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "trait dessiné (bleu), érosion 7/7 (mesh)"
+  },
+  {
+   "nom": "lame_feu_e0",
+   "fichier": "lame_feu_e0.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "lame dessiné (feu), érosion 0/7 (mesh)"
+  },
+  {
+   "nom": "lame_feu_e1",
+   "fichier": "lame_feu_e1.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "lame dessiné (feu), érosion 1/7 (mesh)"
+  },
+  {
+   "nom": "lame_feu_e2",
+   "fichier": "lame_feu_e2.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "lame dessiné (feu), érosion 2/7 (mesh)"
+  },
+  {
+   "nom": "lame_feu_e3",
+   "fichier": "lame_feu_e3.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "lame dessiné (feu), érosion 3/7 (mesh)"
+  },
+  {
+   "nom": "lame_feu_e4",
+   "fichier": "lame_feu_e4.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "lame dessiné (feu), érosion 4/7 (mesh)"
+  },
+  {
+   "nom": "lame_feu_e5",
+   "fichier": "lame_feu_e5.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "lame dessiné (feu), érosion 5/7 (mesh)"
+  },
+  {
+   "nom": "lame_feu_e6",
+   "fichier": "lame_feu_e6.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "lame dessiné (feu), érosion 6/7 (mesh)"
+  },
+  {
+   "nom": "lame_feu_e7",
+   "fichier": "lame_feu_e7.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "lame dessiné (feu), érosion 7/7 (mesh)"
+  },
+  {
+   "nom": "lame_bleu_e0",
+   "fichier": "lame_bleu_e0.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "lame dessiné (bleu), érosion 0/7 (mesh)"
+  },
+  {
+   "nom": "lame_bleu_e1",
+   "fichier": "lame_bleu_e1.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "lame dessiné (bleu), érosion 1/7 (mesh)"
+  },
+  {
+   "nom": "lame_bleu_e2",
+   "fichier": "lame_bleu_e2.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "lame dessiné (bleu), érosion 2/7 (mesh)"
+  },
+  {
+   "nom": "lame_bleu_e3",
+   "fichier": "lame_bleu_e3.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "lame dessiné (bleu), érosion 3/7 (mesh)"
+  },
+  {
+   "nom": "lame_bleu_e4",
+   "fichier": "lame_bleu_e4.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "lame dessiné (bleu), érosion 4/7 (mesh)"
+  },
+  {
+   "nom": "lame_bleu_e5",
+   "fichier": "lame_bleu_e5.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "lame dessiné (bleu), érosion 5/7 (mesh)"
+  },
+  {
+   "nom": "lame_bleu_e6",
+   "fichier": "lame_bleu_e6.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "lame dessiné (bleu), érosion 6/7 (mesh)"
+  },
+  {
+   "nom": "lame_bleu_e7",
+   "fichier": "lame_bleu_e7.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "peint",
+   "role": "lame dessiné (bleu), érosion 7/7 (mesh)"
+  },
+  {
+   "nom": "griffure",
+   "fichier": "griffure.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "encre",
+   "role": "griffures d'encre noires (dans l'effet lumineux)"
+  },
+  {
+   "nom": "veines",
+   "fichier": "veines.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "encre",
+   "role": "veines d'encre en étoile (impact sombre, sol)"
+  },
+  {
+   "nom": "bruit_energie_d0",
+   "fichier": "bruit_energie_d0.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "defilement",
+   "variante_de": "bruit_energie",
+   "decalage_u": 0.0,
+   "role": "défilement Roblox : bruit_energie décalée de 0/8 en U"
+  },
+  {
+   "nom": "bruit_energie_d1",
+   "fichier": "bruit_energie_d1.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "defilement",
+   "variante_de": "bruit_energie",
+   "decalage_u": 0.125,
+   "role": "défilement Roblox : bruit_energie décalée de 1/8 en U"
+  },
+  {
+   "nom": "bruit_energie_d2",
+   "fichier": "bruit_energie_d2.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "defilement",
+   "variante_de": "bruit_energie",
+   "decalage_u": 0.25,
+   "role": "défilement Roblox : bruit_energie décalée de 2/8 en U"
+  },
+  {
+   "nom": "bruit_energie_d3",
+   "fichier": "bruit_energie_d3.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "defilement",
+   "variante_de": "bruit_energie",
+   "decalage_u": 0.375,
+   "role": "défilement Roblox : bruit_energie décalée de 3/8 en U"
+  },
+  {
+   "nom": "bruit_energie_d4",
+   "fichier": "bruit_energie_d4.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "defilement",
+   "variante_de": "bruit_energie",
+   "decalage_u": 0.5,
+   "role": "défilement Roblox : bruit_energie décalée de 4/8 en U"
+  },
+  {
+   "nom": "bruit_energie_d5",
+   "fichier": "bruit_energie_d5.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "defilement",
+   "variante_de": "bruit_energie",
+   "decalage_u": 0.625,
+   "role": "défilement Roblox : bruit_energie décalée de 5/8 en U"
+  },
+  {
+   "nom": "bruit_energie_d6",
+   "fichier": "bruit_energie_d6.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "defilement",
+   "variante_de": "bruit_energie",
+   "decalage_u": 0.75,
+   "role": "défilement Roblox : bruit_energie décalée de 6/8 en U"
+  },
+  {
+   "nom": "bruit_energie_d7",
+   "fichier": "bruit_energie_d7.png",
+   "grille": "Static",
+   "resolution": 512,
+   "mode": "defilement",
+   "variante_de": "bruit_energie",
+   "decalage_u": 0.875,
+   "role": "défilement Roblox : bruit_energie décalée de 7/8 en U"
+  },
+  {
+   "nom": "fumee_cel",
+   "fichier": "fumee_cel_4x4.png",
+   "grille": "Grid4x4",
+   "images": 16,
+   "resolution": 1024,
+   "marge_px": 8,
+   "mode": "à teinter",
+   "role": "bouffée de fumée cel 2 tons, OneShot"
+  },
+  {
+   "nom": "feu_cel",
+   "fichier": "feu_cel_4x4.png",
+   "grille": "Grid4x4",
+   "images": 16,
+   "resolution": 1024,
+   "marge_px": 8,
+   "mode": "peint",
+   "role": "feu cel à contour, OneShot"
+  },
+  {
+   "nom": "flamme_aura",
+   "fichier": "flamme_aura_4x4.png",
+   "grille": "Grid4x4",
+   "images": 16,
+   "resolution": 1024,
+   "marge_px": 8,
+   "mode": "à teinter",
+   "role": "flamme d'aura à pointes, Loop"
+  },
+  {
+   "nom": "roches_cel",
+   "fichier": "roches_cel_2x2.png",
+   "grille": "Grid2x2",
+   "images": 4,
+   "resolution": 1024,
+   "marge_px": 8,
+   "mode": "peint",
+   "role": "débris de sol, 4 formes (départ aléatoire, 1 i/s)"
+  }
+ ],
+ "rbxassetid": {}
+}

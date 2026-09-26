@@ -1,0 +1,90 @@
+{
+ "clip": "mii_smash_hitbox",
+ "sha1_16": "7415a052b8f8f06e",
+ "duree_s": 8.72,
+ "resolution": [
+  1033,
+  573
+ ],
+ "zone_analysee": [
+  5,
+  14,
+  142,
+  82
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 133.3,
+  "lecture": "en 4+ a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 3,
+  "part_du_temps": 0.327,
+  "plus_longue_ms": 1300
+ },
+ "energie": {
+  "mediane": 3.23,
+  "pic_p95": 13.68,
+  "contraste_p95_sur_mediane": 4.24,
+  "part_rapide": 0.08
+ },
+ "impacts": {
+  "nombre": 0,
+  "par_seconde": 0.0,
+  "ecart_median_s": null,
+  "cartes": [],
+  "profil_autour": null
+ },
+ "coupes": {
+  "nombre": 0,
+  "t_s": []
+ },
+ "camera": {
+  "decalage_median_pct": 0.31,
+  "decalage_p95_pct": 3.34
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 0.0,
+  "secondes_de_mouvement": 5.2,
+  "vitesse_sujet_p90": 0.501,
+  "pics": 7,
+  "part_des_pics_qui_montent": 0.14,
+  "deviation_trajectoire_mediane": 0.377,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#404040",
+   "part": 0.759
+  },
+  {
+   "hex": "#8e8d8e",
+   "part": 0.188
+  },
+  {
+   "hex": "#414040",
+   "part": 0.025
+  },
+  {
+   "hex": "#3e3e3e",
+   "part": 0.015
+  },
+  {
+   "hex": "#3f403f",
+   "part": 0.007
+  },
+  {
+   "hex": "#40403f",
+   "part": 0.005
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 67,
+  "termes": {
+   "contraste_de_temps": 0.78,
+   "tenues_presentes": 0.91,
+   "impacts_rythmes": 0.0
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/sheets/mii_smash_hitbox.png"
+}

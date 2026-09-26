@@ -1,0 +1,87 @@
+{
+ "label": "nous:v5-mesure",
+ "kind": "nous",
+ "resultat": "**Mesure géométrique de notre v5 (usc_attaquant.rbxmx, images 172-300, 60 i/s, avant = -Z)**\n\nLe poing ne part pas d'une position armée près du corps : le bras est tendu sur le côté. À la détente, le poing ne va pas en ligne droite vers la cible. Il glisse vers l'avant le long du flanc droit, puis balaie vers l'intérieur en 2 images, comme un crochet. Toutes les planches ont été regardées.\n\n**Phases mesurées** (activité = variation max par image, en degrés)\n\n| Images | Phase | Ce qui se passe |\n|---|---|---|\n| 172-173 | arrivée | saut de pose de 26,5° en 1 image |\n| 174-189 | garde | 16 images figées ; buste lacet -10, penché +11 ; bras D (torse) az +18 el -32, bras G az -9 el -28 ; les deux poings devant, en bas ; la hanche monte de 2,37 à 2,46 |\n| 190-208 | arc / armé | 19 images, pic 12,7°/i à 196 ; lacet -10 → -62, penché 11 → 29 |\n| 209-266 | tenue | 58 images (0,97 s), tremblement 0,4 à 1,2°/i ; le lacet dérive de -60 à -70 |\n| 267-271 | compression | quasi figé ; lacet -70 → -71, hanche -0,004 studs. Aucune anticipation lisible. |\n| 272-283 | détente | 12 images (0,2 s) |\n| 284-286 | après contact | le poing remonte de 0,26 studs, puis tout est figé de 287 à 300 |\n\nPendant l'arc, le bras droit ne bouge presque pas dans les axes du torse (az 17,6 → 15,5). Il se relève seulement (el -32 → -9). Le recul du poing vient donc presque entièrement de la rotation du buste. Le bras gauche passe de az -9 à -115 (torse).\n\n**Pose tenue (image 250)**\n- **Hanche** : 2,36 (-0,64 par rapport à debout).\n- **Buste** : lacet -66, penché +28.\n- **Bras D** : torse az +13 el -11, soit, dans le repère du coup, az +82 el -38. Il pointe franchement sur le côté droit et vers le bas.\n- **Poing D** (depuis le centre du torse) : 0,62 studs derrière, 2,46 à droite, 0,19 plus bas. Il est à 2,54 studs du centre du torse, hors du volume du corps (demi-largeur du torse = 1), à hauteur de ceinture (2,17 au sol).\n- **Épaule droite** : reculée de 1,77 studs.\n- **Bras G** : repère du coup az -65 el -20 ; son poing est 1,7 devant et 2,0 à gauche.\n- **Tête** : tournée vers la victime (az -9 dans le repère du coup).\n- **Pieds** : pied G devant (+0,8), pied D derrière (-0,95).\n\n**Silhouettes** (planches noires)\n- **De face (vue de la victime), 200-271** : un X, les deux bras écartés en diagonale vers le bas de chaque côté, jambes écartées. Rien ne lit « poing armé ». Le buste tourné se lit comme un buste penché de côté.\n- **3/4 avant** : bras en ailes.\n- **Profil droit** : une masse compacte ; le bras droit pointe vers la caméra, il est raccourci en carré et ne se lit pas.\n- **Dos-gauche** : les bras en T.\n- **Image 279, de face** : bras droit à l'horizontale sur le côté. C'est l'écart latéral maximal du poing (2,85 studs), juste avant le crochet.\n- **Images 281-290** : colonne de face. De profil, bras horizontal vers l'avant, bras gauche jeté derrière vers le bas, buste droit (penché 7-9°).\n\n**Trajet du poing à la détente (271 → 283)**\n- **Déplacement** : 5,03 studs vers l'avant, 2,77 vers la gauche (vers l'axe du coup), 1,15 vers le haut (hauteur 2,22 → 3,37).\n- **Forme** : chemin de 6,76 studs pour une corde de 5,85 (rectitude 0,87). Écart max à la ligne droite : 1,6 studs.\n- **Vue de dessus** : un L arrondi.\n  - 271-279 : le poing avance d'environ 3,2 studs en restant à 2,8 studs à droite de l'axe du coup.\n  - 279-281 : il balaie 2,1 studs vers l'intérieur en 2 images.\n  - 281-283 : il fait les derniers 0,35 studs vers la cible.\n\n**Vitesse du poing** (studs par image)\n\n| Images | Vitesse | Lecture |\n|---|---|---|\n| 272-275 | 0,56 à 0,58 | départ |\n| 276-279 | 0,21 à 0,31 | le poing ralentit au milieu de la frappe |\n| 280-281 | 1,35 et 1,34 | pic, environ 81 studs/s |\n| 282-283 | 0,36 et 0,39 | fin de course |\n| 284-286 | 0,085 | après contact |\n\nMoyenne 0,56 studs/i (34 studs/s). Le profil n'accélère pas d'un seul tenant : il fait rapide, lent, très rapide, lent.\n\n**Rotation du buste et direction du bras**\n- **Sur 271-283** : lacet -71 → +42 (Δ +113°). Bras D en az torse +5 → +42 (Δ +37°). Bras D en az coup +77 → 0 (Δ -77°).\n- **271-279** : le buste tourne de +79°, mais le bras reste pointé sur le côté (az coup 77 → 69). Relativement au buste, il part vers l'arrière (az torse 5 → 75) : le bras est traîné par le buste.\n- **279-281** : az coup 69 → -2 en 2 images (environ 36°/i), alors que le lacet ne gagne que +20°. Le changement de direction du coup est un balayage horizontal du bras autour de l'épaule.\n- **281-283** : le buste (+14°) et le bras tournent ensemble ; le bras reste sur la cible.\n- **Épaules** : l'épaule droite passe de 1,88 studs en arrière à 1,67 en avant (écart total 3,55 studs).\n\n**D'où vient le déplacement du poing (271-283)**\n\n| Source | Avant | Latéral | Haut |\n|---|---|---|---|\n| Translation du torse | +1,58 | -0,92 | +0,44 |\n| Épaule entraînée par la rotation du buste | +1,83 | -0,28 | -0,28 |\n| Rotation du bras autour de l'épaule | +1,62 | -1,57 | +0,99 |\n\n- **Avance** : environ ⅓ pour chaque source.\n- **Fermeture latérale** : 57 % vient du balayage du bras.\n\n**Au contact (283)**\n- **Hanche et buste** : hanche 2,77, lacet +42 (épaule droite devant), penché 7.\n- **Bras D** : torse az +42 el 0, coup az 0 el -5,5 (vise la cible).\n- **Poing** : au point (15,865 ; 0 ; 3,37), exactement la cible de contact.\n\n**Réserves**\n- Le poing mesuré est le centre du bout du bras ; le point de frappe réel peut différer d'environ 0,5 stud.\n- Les rendus viennent de la boîte de rendu de `geo_pose`, pas du moteur Roblox. L'interpolation linéaire est supposée d'après `verification.json` ; je ne l'ai pas revérifiée dans le moteur.\n- La victime n'a pas été rendue.\n- Aucune comparaison avec les références n'a été faite ici. L'idée qu'un « poing armé » en R6 demande un bras presque vertical près de la hanche reste une hypothèse non vérifiée.\n\nTout est dans `/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/nous_v5/` :\n- Scripts : `mesure_v5.py`, `silhouettes.py`\n- Mesures :\n  - `v5_descripteurs_172_300.json` (chaque image, avec les positions monde)\n  - `v5_table_172_300.txt`\n  - `v5_activite.txt`\n  - `v5_detente.json` (décompositions, vitesses, détail 266-291)\n- Planches par caméra : `planche_cam0_az0_el10.png`, `planche_cam1_az45_el15.png`, `planche_cam2_az90_el5.png`, `planche_cam3_az200_el20.png`\n- Une planche par image clé : `cle_173.png` à `cle_290.png`\n- Silhouettes : `silhouettes_noires.png`\n- Pelures d'oignon de la détente : `onion_detente_dessus.png`, `onion_detente_face.png`, `onion_detente_profil.png`, `onion_detente_dos.png`\n- Trajet du poing : `plan_dessus_poing.png` (vue de dessus), `profil_poing.png` (profil)",
+ "verifications": [
+  {
+   "verdict": "corrige",
+   "affirmations": [
+    {
+     "affirmation": "Phases : garde 174-189 (figée), arc 190-208, tenue 209-266 (58 i, 0,97 s), compression 267-271 quasi figée, détente 272-283 (12 i), après-contact 284-286 puis figé 287-300",
+     "statut": "confirme",
+     "preuve": "Recalcul indépendant (recalc.py). Garde : RA torse (17,6 ; -31,7) et LA (-8,9 ; -28,4) identiques de 174 à 189. Arc : lacet -10,3 → -62,7. Tenue : lacet -62,3 à 209, -60,0 à 214, -70,0 à 266. De 267 à 271 : lacet -70,2 → -71,0, hanche 2,341 → 2,338. Après contact : poing y 3,369 → 3,625 (+0,26), puis immobile. Pic de l'arc de 12,7°/i à 196 : c'est LA az -45,0 → -57,7."
+    },
+    {
+     "affirmation": "Arrivée « 172-173 : saut de pose de 26,5° en 1 image »",
+     "statut": "refute",
+     "preuve": "L'arrivée commence à 171, pas à 172. Le torse avance de 3,70, 3,69 puis 3,68 studs par image sur 171-173 (environ 220 studs/s), soit 3 images de ruée. RA torse az passe de 93,8 (170) à 34,8 (171). Le 26,5° est seulement la variation de LA el entre 172 et 173."
+    },
+    {
+     "affirmation": "Pendant l'arc, le bras D ne bouge presque pas dans les axes du torse (az 17,6 → 15,5) ; le recul du poing vient presque entièrement de la rotation du buste",
+     "statut": "incertain",
+     "preuve": "Le bilan net est juste (18,1 à 190, 14,4 à 208), mais le bras fait un aller-retour : az torse 18 → 41,0 (image 200) → 14, soit +23° d'écart en cours d'arc. La conclusion sur le recul est confirmée par un contrefactuel (bras figé à son orientation torse de 190 + buste de 208) : le poing irait à -1,10 d'avant, contre -0,50 en réalité. La rotation du buste explique donc plus que tout le recul ; le relevé du bras (el -32 → -8) le réduit de 0,6 stud."
+    },
+    {
+     "affirmation": "Pose tenue 250 : hanche 2,36 ; lacet -66 ; penché +28 ; RA torse (13, -11), coup (82, -38) ; poing (-0,62 ; 2,46 ; -0,19), à 2,54 du centre et à 2,17 du sol ; épaule reculée 1,77 ; LA coup (-65, -20) ; tête az -9 ; pied G +0,79, pied D -0,96",
+     "statut": "confirme",
+     "preuve": "Recalcul : RA torse (12,8 ; -10,7), coup (82,1 ; -38,0) ; poing [-0,62 ; 2,46 ; -0,19] ; recul 1,77 ; LA coup (-65,0 ; -20,5), poing [1,72 ; -2,02 ; 0,03] ; tête coup az -8,9 ; pieds RL -0,96, LL +0,79. Nuance omise : dans les axes du torse, le bras pointe presque DEVANT la poitrine (az +13). C'est la torsion de -66° qui le place sur le côté."
+    },
+    {
+     "affirmation": "Trajet 271→283 : Δ avant 5,03, latéral -2,77, haut +1,15 ; chemin 6,76 ; corde 5,85 ; rectitude 0,87 ; écart max à la droite 1,6 ; forme en L arrondi",
+     "statut": "confirme",
+     "preuve": "Poing monde à 271 : (2,766 ; 2,224 ; -10,835). À 283 : (0,000 ; 3,369 ; -15,865). Chemin 6,758, corde 5,853, rapport 0,866, écart max 1,605. Vue de dessus refaite (dessus_poing_recalc.png) : L arrondi identique."
+    },
+    {
+     "affirmation": "271-279 : avance d'environ 3,2 à environ 2,8 à droite de l'axe ; 279-281 : balaie 2,1 vers l'intérieur en 2 images",
+     "statut": "confirme",
+     "preuve": "z -10,84 → -14,06, soit 3,22 d'avance ; écart en x par rapport au contact entre 2,68 et 2,83. De 279 à 281, x passe de 2,83 à 0,69 (2,14), mais le poing avance aussi de 1,50 et monte de 0,53."
+    },
+    {
+     "affirmation": "281-283 : « il fait les derniers 0,35 studs vers la cible » ; le bras reste sur la cible",
+     "statut": "refute",
+     "preuve": "De 281 à 283, le poing parcourt 0,75 stud : 0,69 LATÉRAL (x 0,69 → 0) et seulement 0,30 vers l'avant. La fermeture latérale n'est donc pas finie à 281 : il en reste 25 %. Elle ne vient pas du bras, dont l'az coup passe de -2,4 à 0 : c'est le torse qui GLISSE de 0,49 stud vers sa gauche (x -0,058 → -0,551). Le bras reste bien orienté vers la cible, mais son poing se déplace parallèlement, de côté."
+    },
+    {
+     "affirmation": "Vitesses du poing : 0,56-0,58 (272-275), 0,21-0,31 (276-279), 1,35/1,34 (280-281), 0,36/0,39 (282-283), 0,085 après ; moyenne 0,56 ; profil rapide-lent-très rapide-lent",
+     "statut": "confirme",
+     "preuve": "Recalcul : [0,559 ; 0,569 ; 0,576 ; 0,580 ; 0,215 ; 0,231 ; 0,266 ; 0,311 ; 1,354 ; 1,343 ; 0,362 ; 0,390], moyenne 0,563. Soit 81 studs/s au pic."
+    },
+    {
+     "affirmation": "Lacet -71 → +42 (Δ 113) ; RA az torse 5 → 42 ; az coup 77 → 0 ; sur 271-279, buste +79 et bras coup 77 → 69 ; sur 279-281, az coup 69 → -2 contre +20 de lacet ; épaule D de +1,88 à -1,67",
+     "statut": "confirme",
+     "preuve": "Lacet : -71,0 / 8,0 / 28,0 / 42,0 (images 271, 279, 281, 283). RA coup az : 76,8 / 69,1 / -2,4 / 0,0. RA torse az : 4,7 / 74,8 / 25,2 / 41,8. Recul épaule : 1,88 → -1,67. Petit ajout : à 280, le bras plonge à el -20 puis remonte à -10 à 281."
+    },
+    {
+     "affirmation": "Décomposition 271-283 : translation torse (+1,58 ; -0,92 ; +0,44), épaule par rotation (+1,83 ; -0,28 ; -0,28), bras autour de l'épaule (+1,62 ; -1,57 ; +0,99) ; 57 % de la fermeture latérale vient du bras",
+     "statut": "incertain",
+     "preuve": "La translation du torse est confirmée. Les deux autres termes dépendent du point choisi comme épaule. L'agent a pris le haut-centre du bras (0,1,0 en local bras) : j'obtiens exactement ses chiffres. Ce n'est pas le pivot R6. Avec le vrai Motor6D (C1 = (-0,5 ; 0,5 ; 0) en local bras) : épaule (+1,92 ; -0,62 ; -0,17) et bras (+1,53 ; -1,23 ; +0,88), soit 44 % pour le bras. Avec le point fixe C0 (1 ; 0,5 ; 0) en local torse : 72 %. Le « ≈⅓ chacun » pour l'avance tient dans les trois cas (30-38 %) ; le 57 % n'est pas robuste. Fait omis : l'export contient des clés de TRANSLATION sur l'épaule droite. Le pivot est avancé de 0,42 à 250 et de 0,73 à 283 ; à 279, il est écarté de 0,42 hors du flanc (épaule en axes torse (1,42 ; 0,25 ; -0,37) contre repos (1 ; 0,5 ; 0))."
+    },
+    {
+     "affirmation": "Contact 283 : hanche 2,77 ; lacet +42 ; penché 7 ; RA torse (42, 0), coup (0, -5,5) ; poing exactement sur la cible",
+     "statut": "confirme",
+     "preuve": "Hanche 2,773 ; lacet 42,0 ; penché 7,3 ; RA torse (41,8 ; -0,1), coup (0,0 ; -5,5). Poing monde (0,000 ; 3,369 ; -15,865) ; verification.json : poing_y_contact 3,37, écart de contact 0,05. Je n'ai pas revérifié la géométrie de la victime moi-même. Le triplet « (15,865 ; 0 ; 3,37) » se lit (avant ; droite ; haut), pas (x ; y ; z)."
+    },
+    {
+     "affirmation": "Silhouettes : de face 200-271 un X, bras en diagonale vers le bas, jambes écartées ; 3/4 avant, bras en ailes ; profil droit, masse compacte avec bras en raccourci ; dos-gauche, bras en T ; 279 de face, bras horizontal sur le côté ; 281-290, colonne de face ; de profil, bras horizontal vers l'avant et bras G jeté derrière",
+     "statut": "confirme",
+     "preuve": "Rendus et silhouettes refaits (planche_A/B.png, sil_A.png) : toutes les lectures se retrouvent. Deux réserves. « Jambes écartées » de face : à 214-271, les jambes forment une seule masse en diagonale, avec une simple encoche. « Buste tourné lu comme penché de côté » reste une lecture subjective."
+    },
+    {
+     "affirmation": "Garde 174-189 : « les deux poings devant, en bas »",
+     "statut": "incertain",
+     "preuve": "Poing D [1,39 ; 1,92 ; -0,51] : il est aussi à 1,92 à droite, donc déjà hors du flanc (demi-largeur 1). Poing G [2,06 ; -1,09 ; -0,39]. « Devant » n'est vrai que pour le poing gauche."
+    }
+   ],
+   "corrections": "Les chiffres clés de la v5 sont tous retrouvés au recalcul : phases, pose tenue 250, trajet 271→283, vitesses, lacets, contact. Trois points sont faux ou fragiles.\n\n1) **Images 281-283.** Le poing ne fait pas « les derniers 0,35 stud vers la cible ». Il parcourt 0,75 stud, dont 0,69 de côté et 0,30 vers l'avant. Ce déplacement latéral vient du torse, qui glisse de 0,49 stud vers sa gauche (x -0,06 → -0,55), et non du bras. Il reste donc 25 % de la fermeture latérale après 281. Pendant le balayage (279-281), la translation avant du torse est nulle : z -12,991 → -12,989.\n\n2) **Décomposition du déplacement.** Le « 57 % par le bras » dépend du point d'épaule choisi (haut-centre du bras). Avec le vrai pivot Motor6D R6 (C1 = (-0,5 ; 0,5 ; 0) en local bras), le bras compte pour 44 %. Avec le point C0 fixé au torse, il compte pour 72 %. Fait omis : l'export anime la TRANSLATION de l'épaule droite. Le pivot est avancé de 0,42 à 250 et de 0,73 à 283 ; à 279, il est écarté de 0,42 hors du flanc.\n\n3) **Autres imprécisions.**\n- L'arrivée commence à 171 : 3 images de ruée à environ 3,7 studs par image, pas un saut 172-173.\n- Pendant l'arc, le bras D ne reste pas immobile dans les axes du torse : az +18 → +41 (image 200) → +14. Seul le bilan net est faible.\n- Pose 250 : dans les axes du torse, le bras pointe presque devant la poitrine (az +13). C'est la torsion de -66° du buste qui le met sur le côté.\n- Garde 173 : le poing D est déjà à 1,92 sur le côté, pas seulement devant.\n\nFichiers : /tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_nous_v5_mesure_recalcul/\n- scripts : recalc.py, detente.py, pivot.py, pivot2.py, pivot3.py, rendus.py\n- images : planche_A.png, planche_B.png, sil_A.png, sil_B.png, dessus_poing_recalc.png",
+   "images": [
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_nous_v5_mesure_recalcul/planche_A.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_nous_v5_mesure_recalcul/planche_B.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_nous_v5_mesure_recalcul/sil_A.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_nous_v5_mesure_recalcul/sil_B.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_nous_v5_mesure_recalcul/dessus_poing_recalc.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_nous_v5_mesure_recalcul/planche_recalc.png",
+    "/tmp/claude-0/-home-user-Jeux/4796ac9e-8e41-51f7-91c4-7b92a6a187d0/scratchpad/poing/wf/verif_nous_v5_mesure_recalcul/silhouettes_recalc.png"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,136 @@
+{
+ "clip": "danbooru_danbooru_10220725",
+ "sha1_16": "d034a6fd8122f98d",
+ "duree_s": 7.43,
+ "resolution": [
+  1884,
+  1080
+ ],
+ "zone_analysee": [
+  14,
+  16,
+  141,
+  86
+ ],
+ "cadence": {
+  "image_distincte_mediane_ms": 66.7,
+  "lecture": "en 3 a 60 i/s de lecture"
+ },
+ "tenues": {
+  "nombre": 7,
+  "part_du_temps": 0.247,
+  "plus_longue_ms": 467
+ },
+ "energie": {
+  "mediane": 8.52,
+  "pic_p95": 45.59,
+  "contraste_p95_sur_mediane": 5.35,
+  "part_rapide": 0.022
+ },
+ "impacts": {
+  "nombre": 3,
+  "par_seconde": 0.4,
+  "ecart_median_s": 1.217,
+  "cartes": [
+   {
+    "t_s": 4.933,
+    "type": "noir",
+    "duree_ms": 200
+   },
+   {
+    "t_s": 5.567,
+    "type": "noir",
+    "duree_ms": 133
+   },
+   {
+    "t_s": 5.8,
+    "type": "blanc",
+    "duree_ms": 67
+   },
+   {
+    "t_s": 5.967,
+    "type": "silhouette",
+    "duree_ms": 100
+   },
+   {
+    "t_s": 7.367,
+    "type": "noir",
+    "duree_ms": 67
+   }
+  ],
+  "profil_autour": {
+   "approche": 3.45,
+   "0,1 s avant": 0.13,
+   "0,1 s apres": 3.97,
+   "tenue_avant_choc": true,
+   "explosion_apres": true
+  }
+ },
+ "coupes": {
+  "nombre": 2,
+  "t_s": [
+   5.867,
+   5.933
+  ]
+ },
+ "camera": {
+  "decalage_median_pct": 0.5,
+  "decalage_p95_pct": 11.29
+ },
+ "mouvement": {
+  "arrets_par_s_de_mouvement": 1.27,
+  "secondes_de_mouvement": 3.93,
+  "vitesse_sujet_p90": 2.572,
+  "pics": 17,
+  "part_des_pics_qui_montent": 0.18,
+  "deviation_trajectoire_mediane": 1.218,
+  "avertissement": "2D : camera retiree par flux median ; le point le plus rapide peut sauter d'un membre a l'autre"
+ },
+ "palette": [
+  {
+   "hex": "#120906",
+   "part": 0.235
+  },
+  {
+   "hex": "#401b11",
+   "part": 0.234
+  },
+  {
+   "hex": "#d9593e",
+   "part": 0.161
+  },
+  {
+   "hex": "#643121",
+   "part": 0.153
+  },
+  {
+   "hex": "#a23f29",
+   "part": 0.128
+  },
+  {
+   "hex": "#eeb78d",
+   "part": 0.09
+  }
+ ],
+ "interet_heuristique": {
+  "score_100": 79,
+  "termes": {
+   "contraste_de_temps": 1.0,
+   "tenues_presentes": 0.82,
+   "impacts_rythmes": 0.27
+  },
+  "avertissement": "heuristique non calibree : a comparer aux notes de Milan"
+ },
+ "planche": "/tmp/refs_sheets/danbooru_danbooru_10220725.png",
+ "source": {
+  "nom": "danbooru",
+  "id": 10220725,
+  "tags": "animated bakugou_katsuki blonde_hair boku_no_hero_academia bomb_hybrid_(chainsaw_man) chainsaw_man crossover english_commentary explosion eye_mask gloves grin head_grab highres impact_frames kin_machina mask pointing power_connection punching reze_(chainsaw_man) short_hair smile sound sparks spiked_hair video",
+  "score": 14,
+  "source_oeuvre": "boku_no_hero_academia chainsaw_man",
+  "artiste": "kin_machina",
+  "url": "https://danbooru.donmai.us/posts/10220725",
+  "requete": "impact_frames",
+  "pourquoi": "cartes d'impact"
+ }
+}
