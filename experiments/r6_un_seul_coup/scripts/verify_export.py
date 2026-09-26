@@ -5,8 +5,11 @@ Vérifie et exporte « Un seul coup » (coup_clip.py), en une passe :
 3. tête jamais décalée (règle du corpus pro) ;
 4. export des deux KeyframeSequences à 60 Hz avec les markers, aller-retour
    par l'équation du moteur, écart de la réduction de clés ;
-5. SENS en repère Roblox, relu dans les fichiers (victime placée comme en jeu) ;
-6. interpolation Linear partout.
+5. SENS en repère Roblox, relu dans les fichiers (victime placée comme en jeu) :
+   contrôles TECHNIQUES seulement (orientation, placement, contact devant) ;
+6. interpolation Linear partout ;
+7. mesures de POSE (geo_pose, repère du coup) aux temps forts, sans verdict :
+   à lire à côté des fourchettes des refs, pas des règles.
 Usage : python3 verify_export.py /chemin/Blender_R6.blend
 """
 import json
@@ -25,6 +28,8 @@ sys.path.insert(0, HERE)
 import coup_clip as C  # noqa: E402
 from animator_brain import roblox_export as X  # noqa: E402
 from animator_brain import v222_rig as V  # noqa: E402
+sys.path.insert(0, os.path.join(HERE, "..", "..", "_shared", "animator_brain", "outils"))
+import geo_pose as G  # noqa: E402
 import importlib.util  # noqa: E402
 
 
@@ -86,27 +91,24 @@ def main(blend):
                            "poing_y_contact": round(float(V.limb_tip(wa(C.CONTACT_F), "Right Arm")[1]), 2),
                            "buste_penche_charge": round(penche(wa(C.TENUE_F)), 1),
                            "bras_elev_tenue": [round(elev(wa(f)), 1) for f in range(C.CONTACT_F + 3, C.REDRESSE_F[0], 40)]}
+    # Mesures de POSE, sans verdict (rappel de Milan, 2026-09-26 : « tu
+    # apprends et tu te nourris, tu ne crées pas de règles gravées dans la
+    # roche »). Jusqu'à la v5, des lectures de style (« poing sur le côté pas
+    # derrière », « bras à plat », « buste presque droit »...) étaient ici en
+    # vrai/faux et bloquaient l'export : elles venaient de mes lectures en
+    # mots, en partie fausses. Ce sont maintenant des NOMBRES (geo_pose, repère
+    # du coup) à lire à côté des fourchettes mesurées sur les refs (fiche
+    # UN_SEUL_COUP §11) ; seuls les contrôles techniques restent en vrai/faux.
+    rep["mesures_pose"] = {nom: G.descripteurs(wa(f)) for nom, f in (
+        ("garde", C.ARRIVEE_F), ("charge", C.CHARGE_F), ("tenue", C.TENUE_F), ("detente", C.FRAPPE_F),
+        ("contact", C.CONTACT_F), ("tenue_du_coup", C.CONTACT_F + 6))}
+    # contrôles TECHNIQUES : orientation des rigs, placement de la scène,
+    # contact réellement devant, interpolation exportée
     sens = {
         "attaquant_regarde_moins_z": bool(look(wa(0))[2] < -0.9),
         "victime_face_a_l_attaquant": bool(look(wv(0))[2] > 0.9),
         "attaquant_devant_la_victime_des_la_charge": bool(wa(C.CHARGE_F)["Torso"][1][2] < -9.0),
-        # v2 (retour de Milan : « il frappait vers le bas ») : coup À PLAT,
-        # buste presque droit, poing à hauteur de poitrine
-        "bras_a_plat_au_contact": bool(abs(elev(wa(C.CONTACT_F))) < 12.0),
-        "bras_a_plat_pendant_la_tenue": bool(max(abs(elev(wa(f))) for f in range(C.CONTACT_F + 3, C.REDRESSE_F[0], 10)) < 12.0),
-        "buste_presque_droit_au_contact": bool(penche(wa(C.CONTACT_F)) < 22.0),
-        "poing_a_hauteur_de_poitrine": bool(V.limb_tip(wa(C.CONTACT_F), "Right Arm")[1] > 3.2),
-        # v5 (Milan : « dans aucune ref le bras est tendu derrière ; l'arrière
-        # vient du buste qui tourne ») : poing sur SON CÔTÉ, pas derrière, et
-        # épaule droite reculée par la torsion du buste
-        "poing_sur_le_cote_pas_derriere_pendant_la_charge": bool(
-            V.limb_tip(wa(C.TENUE_F), "Right Arm")[0] > wa(C.TENUE_F)["Torso"][1][0] + 1.2
-            and V.limb_tip(wa(C.TENUE_F), "Right Arm")[2] < wa(C.TENUE_F)["Torso"][1][2] + 0.8),
-        "epaule_droite_reculee_par_le_buste": bool(
-            (wa(C.TENUE_F)["Right Arm"][1] - wa(C.TENUE_F)["Left Arm"][1])[2] > 0.8),
         "poing_devant_au_contact": bool(V.limb_tip(wa(C.CONTACT_F), "Right Arm")[2] < wa(C.CONTACT_F)["Torso"][1][2] - 1.5),
-        "poing_a_hauteur_d_epaule": bool(abs(V.limb_tip(wa(C.CONTACT_F), "Right Arm")[1]
-                                             - wa(C.CONTACT_F)["Right Arm"][1][1]) < 0.9),
         "victime_ejectee_loin_devant": bool(wv(C.END_F)["Torso"][1][2] < -150.0),
         "attaquant_debout_a_la_fin": bool(wa(C.END_F)["Torso"][1][1] > 2.8),
     }
