@@ -11,7 +11,7 @@ Source : fichier `tsb_anim.rbxm` envoyé par Milan le 2026-09-24. Il contient
 Le fichier n'est **pas** versionné (œuvre protégée). Seules les mesures
 dérivées le sont, dans `corpus/perception_tsb.json` (produit par
 `etats.tsb_reference`). La lecture passe par `corpus.resample_linear`, qui
-interpole les clés éparses membre par membre, comme l'Animator.
+interpole les clés éparses membre par membre, comme l'Animator. [CONTREDIT 2026-09-26 : l'EasingStyle n'était pas décodé (Linear partout) : les poses Constant sont dessinées fausses entre les clés ; la correction du code est hors de ce fichier, voir corpus/etude_c4/A3_tsb_ultimes_mur.md §0.3 et corpus/etude_c4/A1_tsb_coups_courts.md (« Oublis importants », point 1)]
 
 C'est la première vraie référence de la cible de Milan. Elle corrige une
 conclusion tirée la veille du pack battleground.
@@ -22,8 +22,8 @@ conclusion tirée la veille du pack battleground.
 |---|---|---|
 | interpolation | **Linear** sur 3 425 des 3 492 poses (67 Constant, dans le combo au mur) | Linear (après correction du bug d'export), mais… |
 | densité de clés | **12 à 18 clés/s** sur les animations faites à la main (une pose toutes les ~4 f à 60 i/s) ; M1 = **8 clés en 0,43 s** | 29,5 clés/s, écart médian **1 f** : cuit image par image depuis des courbes Bézier |
-| cuit image par image | seulement Ultimate2 et WallComboVictim | tout |
-| jambes sur M1-M3 | **aucune piste** : la course se superpose (convention confirmée) | animées |
+| cuit image par image | seulement Ultimate2 et WallComboVictim [CONTREDIT 2026-09-26 : Stoic Bomb a aussi un segment cuit (i0-i11, tête jusqu'à i22) ; WallComboVictim est hybride (cuite dès f132) ; WallComboPlayer a 67 poses Constant ; les 7 coups courts sont 100 % Linear (Enum décodé), voir corpus/etude_c4/A2_tsb_stoic_collateral.md §6 point 5, corpus/etude_c4/A3_tsb_ultimes_mur.md §0.2, corpus/etude_c4/A1_tsb_coups_courts.md V2] | tout |
+| jambes sur M1-M3 | **aucune piste** : la course se superpose (convention confirmée) [CONTREDIT 2026-09-26 : vrai pour M1-M3 seulement : M4 pose les jambes (22 clés, 0,69 s), la convention n'est pas générale chez TSB, voir corpus/etude_c4/A4_pack_battleground.md (vérification adverse, point 8)] | animées |
 
 Recoupement : Guilty Gear Xrd anime à 15 poses/s et dit que « lisser à 60 i/s
 puis sauter des images donne de la 3D qui rame ». TSB est à 12-18 poses/s,
@@ -80,18 +80,18 @@ Ce qu'on voit sur les planches de poses (fil de fer, 3 vues ; scratchpad,
 non versionné) :
 - **Collateral Ruin** : appuis très écartés et asymétriques, torse penché,
   vrille à l'horizontale.
-- **Stoic Bomb** : plongeon corps à l'horizontale, puis **tenue de 2,5 s**,
+- **Stoic Bomb** : plongeon corps à l'horizontale, [CONTREDIT 2026-09-26 : un salto qui part tête en bas (penché +158°) à l'apex, voir corpus/etude_c4/A2_tsb_stoic_collateral.md §6 point 4] puis **tenue de 2,5 s**,
   bras croisés devant la poitrine (la charge, silhouette compacte), puis
   libération.
 - **M1** : le corps entier bascule d'un bloc, car les jambes n'ont pas de
   piste et suivent le torse.
-- **Ultimate1** : 10 s presque debout, un bras qui bouge. La caméra et les
+- **Ultimate1** : 10 s presque debout, un bras qui bouge. [CONTREDIT 2026-09-26 : deux bras, buste jusqu'à 86°, recul de 1,5 stud, un pas ; trois longues tenues mouvantes (≈170, 142, ≈60 images), voir corpus/etude_c4/A3_tsb_ultimes_mur.md §1.5] La caméra et les
   VFX font l'ultime.
 
 ## 4 bis. Vu sur les planches (2e passe) : les jambes et la variété
 
 - **M4, le coup qui ferme le combo, est un COUP DE PIED** : jambe à
-  l'horizontale et torse basculé loin en arrière (f9-f15), puis retour.
+  l'horizontale et torse basculé loin en arrière (f9-f15) [CONTREDIT 2026-09-26 : la jambe monte en diagonale f0-f12, n'est horizontale que f13-f14 après un claquement d'une image, avec un petit saut de +0,48, voir corpus/etude_c4/A1_tsb_coups_courts.md V7], puis retour.
   M1 à M3 sont des poings. TSB change de membre pour fermer le combo ; notre
   rafale enchaîne 4 poings (`variete_coups` est faux depuis la v4).
 - **Swift Sweep** : balayage, vrille, puis un coup de pied **tenu jambe à
@@ -113,7 +113,7 @@ non versionné) :
   C'est **propre à la technique**, pas une règle universelle : une compétence
   « de jambes » les utilise, les autres non.
 - **Tenues** (extrémités à moins de 4 studs/s pendant au moins 6 f) :
-  - TSB : Stoic Bomb 81 f (la charge) ; Ultimate1 58, 35, 21 f ;
+  - TSB : Stoic Bomb 81 f (la charge) ; Ultimate1 58, 35, 21 f ; [CONTREDIT 2026-09-26 : trois longues tenues mouvantes de ≈170, 142 et ≈60 images, voir corpus/etude_c4/A3_tsb_ultimes_mur.md §1.5]
     Collateral Ruin 16 f.
   - Nous : 18 f sur la charge, 58 et 27 f dans l'aérien.
   - Pas d'écart de principe.

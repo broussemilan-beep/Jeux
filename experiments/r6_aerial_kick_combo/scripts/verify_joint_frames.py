@@ -103,9 +103,25 @@ def test_bug_demo():
         print(f"     -> meme angle, axe devie de {dev:.0f} deg")
 
 
-if __name__ == "__main__":
+def _tout():
     test_roundtrip()
     test_rest_pose()
     test_bug_demo()
     print()
     print("tous les tests passent")
+
+
+if __name__ == "__main__":
+    # registre des preuves (2026-09-26) : auto-test de la conversion repère
+    # parent -> repère joint (aller-retour par l'équation du moteur) = contrôle
+    # TECHNIQUE : « passe » s'il va au bout, « echoue » (ligne écrite puis
+    # erreur relancée) si une vérification lève.
+    import os
+    import sys
+    _ici = os.path.dirname(os.path.abspath(__file__))
+    sys.path.insert(0, os.path.join(_ici, "..", "..", "_shared", "animator_brain", "outils"))
+    import preuves
+    preuves.executer_et_enregistrer(
+        "r6_aerial_kick_combo", "technique", "partielle",
+        [os.path.join(_ici, f) for f in ("verify_joint_frames.py", "export_kfseq.py", "r6_rig.py", "anim_engine.py")],
+        _tout, "cd experiments/r6_aerial_kick_combo/scripts && python3 verify_joint_frames.py", statut="passe")

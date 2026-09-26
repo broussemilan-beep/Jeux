@@ -1,11 +1,11 @@
 # Fiche de conception : Poing du Dragon v13, la scène complète
 
-**Demande de Milan (2026-09-25, après la v12 notée 4)** : « Le dragon or,
-le dragon est invoqué dans les airs comme Goku, puis le coup se transforme
-en le dragon qui mange le perso. […] Je veux que tu refasses tout, je veux
-la scène complète niveau 8,5/10 globale : animation à revoir, plus smooth,
-plus abusé, plus en rapport avec nos refs ; VFX de qualité dessin, pas du
-cube ou cartoon. Améliore notre architecture, vérifie le jugement. »
+**Demande de Milan (2026-09-25 18:04, après la v12 notée 4)** : « Le dragon
+or le dragon est invoquer dans les air comme goku puis le coup se transforme
+en le dragon qui mange le perso […] Je veux que tu refasse tout je veux la
+scène complète niveau 8,5 sur 10 globale donc animation à revoir plus smooth
+plus abusé plus en rapport avec nos ref , VFX de qualité dessin limite pas du
+cube ou cartoon . Améliore notre architecture vérifie le jugement »
 
 **Rappel** : `python3 outils/rappel.py "dragon qui mange invocation ultime"`.
 Sources digérées ensemble ici :
@@ -32,6 +32,8 @@ Sources digérées ensemble ici :
 
 ## 2. La scène v13, en secondes (60 i/s)
 
+*Statut : déduit (plan de conception d'après Last Breath et Goku, avant construction) ; ce qui a été construit est au §9.*
+
 Les actes 1-3 (rafale, coup chargé, envol : 0-3,3 s) restent : Milan a noté
 l'animation 7,7 et n'a rien reproché à ces actes. Tout ce qui suit l'apex
 est refait.
@@ -56,6 +58,8 @@ f236 à ~f420 puis dans la conséquence (~5 s au total, contre 0,57 s).
 
 ## 3. Le dragon (acte 5 à 10)
 
+*Statut : déduit (conception) ; essayé en v13 (§9) ; retour de Milan sur les yeux et le cubique (v13 D2).*
+
 - **Or, dessiné** : aplat or, ombre orange franche (deux tons, pas de
   dégradé), trait brun sombre épais autour et sur chaque anneau du ventre,
   écailles en traits (pas sculptées), épines sombres, moustaches et crocs
@@ -74,6 +78,8 @@ f236 à ~f420 puis dans la conséquence (~5 s au total, contre 0,57 s).
 
 ## 4. Caméra (plans)
 
+*Statut : déduit (plan de caméra) ; essayé et corrigé en v13 (§9).*
+
 | frames | plan |
 |---|---|
 | 224-250 | contre-plongée 3/4 face, l'attaquant bas dans le cadre, le ciel au-dessus : le dragon JAILLIT vers le haut du cadre |
@@ -87,6 +93,8 @@ f236 à ~f420 puis dans la conséquence (~5 s au total, contre 0,57 s).
 | 760-820 | dos de l'attaquant, la victime au loin |
 
 ## 5. VFX (tous « dessinés » : mesh + texture peinte à bord net + en 2)
+
+*Statut : déduit (conception) ; essayé en v13 (§9, captures `2026-09-25-v13-*`).*
 
 - rafale : croissant d'impact en `arc_trait` (feu), lames courtes ;
 - jaillissement du dragon hors du poing : `jaillissement_dessine` (feu) au
@@ -104,12 +112,16 @@ la silhouette du dragon et la gueule manga sont tirées de NOTRE modèle.
 
 ## 6. Son
 
+*Statut : non établi : plan de son réglé sur des mesures, sans oreille (CARNET 4b.6) ; seul Milan peut dire si ça sonne.*
+
 Rugissement à la naissance (0,3 s), rugissement long au gros plan, souffle
 coupé avant la sortie de la tête, claquement de mâchoire (grave, sec),
 grondement sous le plein écran, explosion au retour du réel, rugissement
 lointain qui monte, vent.
 
 ## 7. Jugement avant de montrer (porte)
+
+*Statut : mesuré (`outils/durees.py` sur notre vidéo) ; les seuils sont déduits de Last Breath et Goku, posés par moi, pas des règles.*
 
 - durées mesurées avec `outils/durees.py` sur NOTRE vidéo, comparées à
   Last Breath et Goku : invocation ≥ 1,8 s, plein écran ≥ 1,6 s, part
@@ -120,6 +132,8 @@ lointain qui monte, vent.
 
 ## 8. Pièges connus (hérités)
 
+*Statut : essayé (pièges vus sur nos versions v9-v12).*
+
 - tête de dragon entre l'objectif obari et le poing : la cacher (v10) ;
 - images de serpent en temps de RECETTE, pas relatif (v12) ;
 - cou vertical = pilier ; tête piquée = on ne voit que le crâne (v10b) ;
@@ -127,6 +141,8 @@ lointain qui monte, vent.
 - un plan fixe choisi cache la durée (CARNET 4b.12).
 
 ## 9. Ce qui a été fait (tel que construit, 2026-09-25)
+
+*Statut : vu à l'écran (planches rev1-rev5, captures `2026-09-25-v13-*`) ; retours de Milan ensuite : 7,85 puis 8 (v13e).*
 
 Écarts à la conception, tous vus à l'écran (planches `rev1`-`rev5`,
 captures `captures/verification/2026-09-25-v13-*`) :
@@ -154,14 +170,15 @@ captures `captures/verification/2026-09-25-v13-*`) :
   à côté de la colonne de feu ; dernier plan de côté (les deux) ; sons
   jusqu'à la fin. Détail : `../../RETOURS.md` (2026-09-25, revue), CARNET
   4b.26.
-- **v13d (Milan : planches retirées ; « le dragon n'apparaît pas là où il
-  faut, et très peu »)** : bug du lecteur publié (three.js r128 sans
+- **v13d (Milan : planches retirées ; 2026-09-25 21:10 : « il n’apparaît
+  pas là où il faut et très peu »)** : bug du lecteur publié (three.js r128 sans
   `skinning` : dragon figé en pose de repos) corrigé en embarquant r134 ;
   f400-f574 : la victime dans la gueule, rase-mottes, grande boucle dans le
   ciel (sommet f508, 42 studs), retournement, plongeon dans le cratère au
   blanc (f564). Caméra : très large face à la boucle (l'attaquant donne
   l'échelle), contre-plongée au sommet, puis depuis le cratère.
-- **v13e (Milan 7,85 : bugs, polissage, rythme « dans tous les sens »)** :
+- **v13e (Milan 7,85 : bugs, polissage, rythme ; 2026-09-25 22:21 : « le
+  dragon va dans tout les sensé hyper rapidement »)** :
   allure mesurée (`outils/allure.py`) et refaite : lent / tenu sauf
   jaillissement, morsure, plongeon ; WA (invocation) en une courbe lente +
   anticipation ; WB (vol) monte en ralentissant, suspendu au sommet f510-527,

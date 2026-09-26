@@ -959,7 +959,11 @@ def rappel(req, maxi=20, court_=False, exclus=()):
         # d'abord les lectures démenties par Milan (marques dans le cerveau), puis les réfutations des vérificateurs
         cn.sort(key=lambda u: (u.genre != "md", -u.score))
         P("\n== CONTREDIT / réfuté (gardé pour la trace, affiché en dernier) ==")
-        for u in cn[:10]:
+        # 2026-09-26 (nettoyage du cerveau : ~50 marques CONTREDIT posées d'un coup) : 14 marques du
+        # cerveau au plus, PLUS 3 réfutations des vérificateurs réservées (sinon les marques les cachent)
+        cn_md = [u for u in cn if u.genre == "md"]
+        cn = cn_md[:14] + [u for u in cn if u.genre != "md"][:3]
+        for u in cn:
             ln, t = meilleure_ligne(u, Q)
             lieu = ou(u) if u.genre == "json" else (f"{rel_b(u.src)}:{ln}" if u.src.startswith(BRAIN) else f"{rel(u.src)}:{ln}")
             eid = f" ({u.entree.id})" if u.entree and u.genre == "md" else ""

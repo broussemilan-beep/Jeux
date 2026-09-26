@@ -9,7 +9,7 @@ savoir où on en était sans l'historique de conversation.)
 ## 1. Où on en est (mettre à jour à chaque livraison)
 
 - **Dernière production** : Poing du Dragon **v13e**, noté **8/10** par Milan
-  (2026-09-26) : « pas premium mais mid haut ». Dossier
+  (2026-09-26 07:13) : « c pas premium mais c’est mid haut ». Dossier
   `experiments/r6_poing_dragon/` (README, section v13e) ; vidéo
   `captures/verification/2026-09-25-v13e-scene-complete-avec-son.mp4` ;
   lecteur publié https://claude.ai/artifact/WgP5jvhPYePHwnjePvsJ5E.
@@ -29,14 +29,14 @@ savoir où on en était sans l'historique de conversation.)
   `2026-09-26-un-seul-coup-v2-scene-complete-avec-son.mp4`) -> **7/10** :
   départ ultra rapide validé ; le POING CHARGÉ n'est toujours pas le
   mouvement qu'il veut -> clip reçu (Pew + TSB) -> **v3** : le poing chargé
-  en arc tendu (fiche §7, CARNET 2.10 ; vidéo
+  en arc tendu (fiche UN_SEUL_COUP §7, CARNET 2.10 ; vidéo
   `2026-09-26-un-seul-coup-v3-scene-complete-avec-son.mp4`) -> « aucun
   changement » : c'est la POSE de charge -> **v4** : charge RAMASSÉE (buste
-  courbé 57°, tête basse, bras écartés sous le buste ; fiche §8 ; vidéo
+  courbé 57°, tête basse, bras écartés sous le buste ; fiche UN_SEUL_COUP §8 ; vidéo
   `2026-09-26-un-seul-coup-v4-scene-complete-avec-son.mp4`) -> comparaison
-  aux refs (fiche §9) -> « le bras n'est jamais tendu derrière, c'est le buste
+  aux refs (fiche UN_SEUL_COUP §9) -> « le bras n'est jamais tendu derrière, c'est le buste
   qui tourne ; jambes trop abusées » -> **v5** : poings sur les côtés, buste
-  tourné, gros plans (fiche §10 ; vidéo
+  tourné, gros plans (fiche UN_SEUL_COUP §10 ; vidéo
   `2026-09-26-un-seul-coup-v5-scene-complete-avec-son.mp4`). Prédiction 7,8.
 - **Prochaine étape** : le retour de Milan sur « Un seul coup » ; il veut
   encore 1-2 animations ici avant de passer sur Roblox Studio (il dira quand).
@@ -45,7 +45,7 @@ savoir où on en était sans l'historique de conversation.)
 
 Chantiers, dans cet ordre de livraison :
 
-1. **Poing chargé géométrique -> v6 d'« Un seul coup » (LIVRÉE, fiche §11, prédiction 7,9)** : mesures R6
+1. **Poing chargé géométrique -> v6 d'« Un seul coup » (LIVRÉE, fiche UN_SEUL_COUP §11, prédiction 7,9)** : mesures R6
    exactes des anims TSB + pack, reconstruction 3D de chaque ref par
    rendu-comparaison (`outils/geo_pose.py`), notre v5 mesurée, vérification
    adverse ; puis synthèse -> fiche UN_SEUL_COUP §11 -> v6 -> preuves.
@@ -94,6 +94,17 @@ Chantiers, dans cet ordre de livraison :
    Suite : les exercices (refaire TSB M1 de zéro ; prédiction à l'aveugle
    au cadrage de jeu), puis les briques d'yeux retenues (côte à côte à
    vitesse réelle calé sur le contact, questions oui/non à l'aveugle).
+
+**Nettoyage du cerveau (2026-09-26, avant les exercices)** : citations de
+Milan remplacées par ses mots exacts datés (ou marquées comme paraphrase,
+sans guillemets) ; une ligne « Statut : » sur chaque entrée du CARNET et chaque
+section de fiche ; garde-fous annoncés mais absents du code corrigés
+(annoncés, absents du code au 2026-09-26) ; les lectures démenties de
+`corpus/etude_c4/SYNTHESE.md` §2 marquées CONTREDIT sur place ; textes
+COLLÉS de `corpus/milan_verbatim.jsonl` corrigés dans
+`corpus/milan_verbatim_corrections.jsonl` (appliqué par `outils/motifs.py`,
+`outils/lint_cerveau.py`, `outils/amorce.py`). `python3 outils/lint_cerveau.py`
+pour le compte à jour.
 
 Scripts des analyses (hors dépôt, session) : `wf_mesure.js`, `wf_audit.js`,
 `wf_hermes.js` dans le dossier scratchpad `poing/`.

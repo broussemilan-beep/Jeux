@@ -1,8 +1,8 @@
 # Fiche de conception : les VFX de combat (studio VFX)
 
 **Ce qu'est cette fiche.** C'est la digestion de TOUT ce qu'on sait sur les
-VFX avant d'ouvrir le chantier (demande de Milan, 2026-09-25 : « notre
-propre studio de VFX qui viendra combler l'animation »). Ce sont des
+VFX avant d'ouvrir le chantier (demande de Milan, 2026-09-25 13:53 : « notre
+propre studio de VFX qui viendra combler animation »). Ce sont des
 apprentissages, pas des règles. On la lit avant de concevoir un effet.
 
 **Sources digérées.**
@@ -15,6 +15,8 @@ apprentissages, pas des règles. On la lit avant de concevoir un effet.
 ---
 
 ## 1. Ce que Milan a validé, et ce qui est resté théorique
+
+*Statut : retour de Milan pour ce qu'il a validé ; le reste est non établi (théorique).*
 
 - **Validé** :
   - l'impact reste VISIBLE au moins 6 images avant tout effet plein écran
@@ -39,6 +41,8 @@ apprentissages, pas des règles. On la lit avant de concevoir un effet.
     Roblox.
 
 ## 2. Ce qu'un VFX de combat pro contient (sources croisées)
+
+*Statut : mesuré (pack « 100 Combat VFX » : `corpus/vfx_100_combat_vfx_pack.json`) et lu (recherches du 2026-09-25).*
 
 - **Une pile de couches qui naissent au même point** (un effet du pack
   « 100 Combat VFX » en compte en médiane 14 émetteurs pour 4 rôles) :
@@ -71,6 +75,8 @@ apprentissages, pas des règles. On la lit avant de concevoir un effet.
 
 ## 3. Les contraintes Roblox (doc officielle, lue hors ligne)
 
+*Statut : lu (doc officielle Roblox, hors ligne).*
+
 - `Rate` ≤ 400/s par émetteur, et 100/s sur mobile.
 - `Lifetime` ≤ 20 s (Trail : de 0,01 à 20 s).
 - Une `NumberSequence` ou une `ColorSequence` a **au plus 20 points**. Il
@@ -102,11 +108,13 @@ apprentissages, pas des règles. On la lit avant de concevoir un effet.
   - les Parts semi-transparentes ne sont pas regroupées en un seul appel.
   - Aucun seuil officiel n'existe pour l'overdraw : **à mesurer nous-mêmes**.
 - **Marqueurs** : `KeyframeMarker(Name, Value)` sous un `Keyframe`, reçus par
-  `GetMarkerReachedSignal`. Notre exporteur peut les écrire directement.
+  `GetMarkerReachedSignal`. Notre exporteur peut les écrire directement. [CONTREDIT 2026-09-26 : ceci n'était connu que par le web, le chargeur ne lisait pas les KeyframeMarker ; le .rbxm TSB en a 35 réels, souvent sur des clés vides (pas le « hitreg » de M1) ; ceux du pack ne sont pas lus, présence inconnue, voir corpus/etude_c4/A2_tsb_stoic_collateral.md §6 point 1, corpus/etude_c4/A1_tsb_coups_courts.md V5, corpus/etude_c4/A4_pack_battleground.md §0]
 - **Recette officielle d'explosion** : Drag 10, Lifetime 0,2-0,6, Speed
   20-40, Spread 180/180, `Emit(100)`.
 
 ## 4. Ce que les pistes nous donnent (verdicts, détails dans `recherche/`)
+
+*Statut : lu (recherches du 2026-09-25, `recherche/`) ; un seul essai réel (flipbook Blender).*
 
 | à adopter | à s'inspirer | à ignorer |
 |---|---|---|
@@ -128,6 +136,8 @@ apprentissages, pas des règles. On la lit avant de concevoir un effet.
   et les chiffres.
 
 ## 5. Le studio VFX qu'on assemble (proposition)
+
+*Statut : non établi au moment de la fiche (proposition) ; construit ensuite dans `experiments/_shared/vfx_studio/`.*
 
 1. **Recette** : un effet est une donnée (Python / JSON). Valeurs typées
    (constante, intervalle, courbe, dégradé), couches, rôles, chronologie en
@@ -167,6 +177,8 @@ apprentissages, pas des règles. On la lit avant de concevoir un effet.
 
 ## 6. Décisions qui reviennent à Milan
 
+*Statut : non établi (décisions en attente de Milan au 2026-09-25).*
+
 - **Moteur** : notre propre moteur (libre, testable ici, compatible avec la
   convention d'attributs), ou le module VFX Forge (plus riche, mais licence
   VFX-DL, impossible à tester ici). **Recommandé : le nôtre**, qui garde le
@@ -181,6 +193,8 @@ apprentissages, pas des règles. On la lit avant de concevoir un effet.
   caméras, plutôt que tout d'un coup.
 
 ## 7. Contradictions à trancher (relevées par l'inventaire)
+
+*Statut : non établi (contradictions relevées, pas tranchées ici).*
 
 - **Le Serious Punch a 3 versions des cartes** : « 3 planches d'1 image,
   blanc de 6 images » ; « 3 cartes de 4 images, blanc de 0,25 s » ; « 1 carte

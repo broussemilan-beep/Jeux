@@ -14,8 +14,10 @@ trait soleil silhouette tourbillon"`. Sources digérées ensemble :
 - Slap TSB (6sXVqrZ_rYA) : planches manga plein écran 2,5 s ; Serious
   Punch (lvB-wTylH3Y) : carte inversée 2 images ;
 - retour de Milan sur les planches v13 (2026-09-25, `../../RETOURS.md`) :
-  « le tourbillon et le rouge : trop PEINTURE, pas dessiné » ; « le soleil :
-  j'aime l'idée, bonne créativité, mais tu peux faire beaucoup mieux ».
+  sur le tourbillon et le rouge, « je n’aime pas ces 2 plans je les trouve
+  trop peinture , et pas dessiné » ; sur le soleil, « le 3e plan je trouve
+  que tu peux faire bcp mieux mais j’aime l’idée que tu as eu bonne
+  créativité » (2026-09-25 20:24).
 
 ## 1. Peinture contre dessin (ce qui a raté, mesuré sur nos planches)
 
@@ -28,6 +30,8 @@ trait soleil silhouette tourbillon"`. Sources digérées ensemble :
 | image suivante (en 2) | même champ déphasé = ça « coule » | même dessin redessiné : le trait BOUT (tremble), les formes restent |
 
 ## 2. Les trois planches
+
+*Statut : essayé (planches v13, `build_planches.py`) ; retour de Milan : « trop peinture » pour le tourbillon et le rouge, puis les trois retirées (2026-09-25 21:08).*
 
 1. **Tourbillon** (Goku 1,0-2,1 s, joué en 2, tourne) : fond rouge sombre ;
    6-8 LAMES de feu en spirale logarithmique (croissant effilé, pointe vers
@@ -50,6 +54,8 @@ trait soleil silhouette tourbillon"`. Sources digérées ensemble :
 
 ## 3. Pièges
 
+*Statut : déduit de l'essai v13 et du retour de Milan (§1) ; pas re-essayé.*
+
 - ne pas regénérer un champ de bruit « plus net » : c'est la méthode qui
   fait la peinture, pas le nombre de paliers ;
 - garder le NOIR dans l'effet (refs VFX) sans tout salir : les ombres
@@ -59,9 +65,10 @@ trait soleil silhouette tourbillon"`. Sources digérées ensemble :
 
 ## 4. Retiré (2026-09-25, Milan)
 
-Tourbillon, rouge et soleil sont RETIRÉS du Poing du Dragon : « ça ne rend
-pas bien pour du Roblox premium ». Seule la carte manga de la gueule reste
-(0,5 s). Le temps libéré montre le dragon en 3D (fiche POING_DU_DRAGON_V13
-§9, v13d). Les fonctions de dessin restent dans `build_planches.py` pour une
+Tourbillon, rouge et soleil sont RETIRÉS du Poing du Dragon (Milan,
+2026-09-25 21:08 : « je trouve que ça rends pas bien pour du Roblox
+premium »). Seule la carte manga de la gueule reste (0,5 s). Le temps
+libéré montre le dragon en 3D (fiche
+POING_DU_DRAGON_V13 §9, v13d). Les fonctions de dessin restent dans `build_planches.py` pour une
 autre technique, sans être jouées.
 

@@ -11,6 +11,15 @@ des tutos (corpus/tutos/etude_complete_*.md), pas comme notre pipeline IK.
 - `wiggle` : petits cercles qui ralentissent (amorti d'énergie, tuto uppercut).
 - `render` : rendu perspective ombré (caméra libre, FOV), pour juger à l'œil
   et comparer aux vidéos au même angle.
+- `render(..., faces=True)` (2026-09-26) : chaque FACE de chaque bloc colorée
+  selon sa direction LOCALE, avec sa lettre : F rouge (avant), B bleu
+  (arrière), R vert (droite), L jaune (gauche), U cyan (haut), D orange (bas).
+  C'est le rig de contrôle que les animateurs TSB et le tuto Moon utilisent
+  (corpus/etude_c4/C1_tsb_videos.md §4, B1_moon_smooth_r6.md) : la couleur vue
+  dit comment le bloc est tourné (face D visible = on voit le bout du bras,
+  donc il pointe vers la caméra ; un « bras vert » est un bras dont on voit la
+  face droite, pas forcément le bras droit). Ce rendu ne voit pas la lumière
+  ni les matériaux de la vraie scène ; il ne juge rien.
 
 Repère : le perso regarde -Z, +X = sa droite, +Y = haut, sol à y = 0.
 """
@@ -172,13 +181,33 @@ def wiggle(pose, part, t, amp_deg=3.0, period=12.0, decay=20.0):
 COL = {"Torso": (214, 54, 46), "Head": (230, 230, 230), "Right Arm": (80, 200, 110), "Left Arm": (40, 120, 220),
        "Right Leg": (240, 200, 40), "Left Leg": (240, 200, 40)}
 FACES = [(0, 1, 3, 2), (4, 6, 7, 5), (0, 4, 5, 1), (2, 3, 7, 6), (0, 2, 6, 4), (1, 5, 7, 3)]
+# rig de contrôle à faces lettrées (couleurs relevées sur les vidéos TSB, C1
+# §4 : F (228,49,32), R (12,181,125), U (26,197,255), L (213,174,17) ; D y
+# est un orange-ambre très proche de L : pris ici plus orange pour les
+# distinguer sans lire la lettre ; B bleu)
+FACES_DIR = {(0, 0, -1): ("F", (228, 49, 32)), (0, 0, 1): ("B", (40, 80, 230)), (1, 0, 0): ("R", (12, 181, 125)),
+             (-1, 0, 0): ("L", (213, 174, 17)), (0, 1, 0): ("U", (26, 197, 255)), (0, -1, 0): ("D", (245, 120, 20))}
+_POLICES = {}
+
+
+def _police(taille):
+    if taille not in _POLICES:
+        try:
+            from PIL import ImageFont
+            _POLICES[taille] = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", taille)
+        except OSError:
+            _POLICES[taille] = None
+    return _POLICES[taille]
 
 
 def render(worlds, eye, target, fov=50.0, size=(640, 360), title="", extra=None, sky=(170, 190, 210), backdrop=None, ground=True,
-           couleurs=None, ombre=True, contour=(20, 20, 20)):
+           couleurs=None, ombre=True, contour=(20, 20, 20), faces=False):
     """worlds : liste de dicts {part: (R, p)} (plusieurs persos). Caméra perspective.
     couleurs : {part: rgb} à la place de COL (ex. tout noir = silhouette) ; ombre=False
-    et contour=None donnent un aplat pur (test de silhouette des animateurs)."""
+    et contour=None donnent un aplat pur (test de silhouette des animateurs).
+    faces=True : rig de contrôle, chaque face colorée et lettrée selon sa
+    direction locale (FACES_DIR). ground : True (dalles autour de l'origine)
+    ou (xmin, xmax, zmin, zmax) pour étendre le sol (ex. deux persos à 16 studs)."""
     from PIL import Image, ImageDraw
     W, H = size
     eye = np.asarray(eye, float); target = np.asarray(target, float)
@@ -197,14 +226,16 @@ def render(worlds, eye, target, fov=50.0, size=(640, 360), title="", extra=None,
         backdrop(d, proj, W, H)     # fond remplacé (aplat + lignes radiales), dessiné sous tout
     # sol (dalles)
     polys = []
-    for gx in (range(-12, 13, 2) if ground else ()):
-        for gz in range(-12, 13, 2):
+    gx0, gx1, gz0, gz1 = ground if isinstance(ground, (tuple, list)) else (-12, 12, -12, 12)
+    gx0, gz0 = int(gx0) // 2 * 2, int(gz0) // 2 * 2
+    for gx in (range(gx0, int(gx1) + 1, 2) if ground else ()):
+        for gz in range(gz0, int(gz1) + 1, 2):
             c = [(gx, 0, gz), (gx + 2, 0, gz), (gx + 2, 0, gz + 2), (gx, 0, gz + 2)]
             pts = [proj(p) for p in c]
             if min(z for _p, z in pts) <= 0.1:
                 continue
             shade = 120 if (gx + gz) // 2 % 2 == 0 else 110
-            polys.append((1e9, [p for p, _z in pts], (shade, shade + 5, shade + 18), None))
+            polys.append((1e9, [p for p, _z in pts], (shade, shade + 5, shade + 18), None, None))
     light = np.array([0.4, 0.9, 0.3]); light /= np.linalg.norm(light)
     for w in worlds:
         for part, (R, c) in w.items():
@@ -215,17 +246,35 @@ def render(worlds, eye, target, fov=50.0, size=(640, 360), title="", extra=None,
             vs = (R @ cs.T).T + c
             for fc in FACES:
                 q = vs[list(fc)]
+                nloc = tuple(int(x) for x in np.sign(np.round(cs[list(fc)].mean(0) / h, 6)))
                 n = np.cross(q[1] - q[0], q[2] - q[0]); n /= np.linalg.norm(n) + 1e-9
                 if n @ (q.mean(0) - eye) >= 0:
                     continue          # face arrière
                 pts = [proj(p) for p in q]
                 if min(z for _p, z in pts) <= 0.05:
                     continue
-                k = (0.45 + 0.55 * max(0.0, n @ light)) if ombre else 1.0
-                col = tuple(int(min(255, x * k)) for x in (couleurs or COL)[part])
-                polys.append((float(np.mean([z for _p, z in pts])), [p for p, _z in pts], col, contour))
-    for _z, pts, col, ol in sorted(polys, key=lambda x: -x[0]):
+                lettre = None
+                if faces:
+                    lettre, base = FACES_DIR[nloc]
+                    k = (0.78 + 0.22 * max(0.0, n @ light)) if ombre else 1.0
+                else:
+                    base = (couleurs or COL)[part]
+                    k = (0.45 + 0.55 * max(0.0, n @ light)) if ombre else 1.0
+                col = tuple(int(min(255, x * k)) for x in base)
+                polys.append((float(np.mean([z for _p, z in pts])), [p for p, _z in pts], col, contour, lettre))
+    for poly in sorted(polys, key=lambda x: -x[0]):
+        _z, pts, col, ol = poly[:4]
         d.polygon(pts, fill=col, outline=ol)
+        lettre = poly[4] if len(poly) > 4 else None
+        if lettre:
+            xs, ys = [p[0] for p in pts], [p[1] for p in pts]
+            aire = 0.5 * abs(sum(xs[i] * ys[i - 1] - xs[i - 1] * ys[i] for i in range(len(xs))))
+            taille = int(min(40, 0.55 * aire ** 0.5))
+            if taille >= 7:
+                cx, cy = sum(xs) / len(xs), sum(ys) / len(ys)
+                fnt = _police(taille)
+                d.text((cx, cy), lettre, fill=(255, 255, 255), font=fnt, anchor="mm", stroke_width=1,
+                       stroke_fill=(0, 0, 0)) if fnt else d.text((cx - 3, cy - 5), lettre, fill=(255, 255, 255))
     if extra:
         extra(d, proj)
     if title:

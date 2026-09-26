@@ -21,7 +21,7 @@ Légende : **[VU]** = lisible ou visible à l'écran ; **[DÉDUIT]** = mon inter
 
 | Temps | Contenu |
 |---|---|
-| 0–4 s | Démo d'un combat (perso blanc contre un mur, flashs rouges d'impact). « Want to animate like this? » [VU] |
+| 0–4 s | Démo d'un combat (perso blanc contre un mur, flashs rouges d'impact). [CONTREDIT 2026-09-26 : l'intro a deux personnages et trois impacts, voir corpus/etude_c4/B1_moon_smooth_r6.md §4] « Want to animate like this? » [VU] |
 | 4–13 s | « Well Today I will Show you how to make your R6 Animations Smooooooth! » ; « You will need: Moon Animator 2, Phobos Rotation, VoidMonke's Animation Plugin » [VU] |
 | 14–18 s | Rig « IK Adornments » (TemplateR6 marqué FRONT/F/R/L/B) [VU] |
 | 19–28 s | « First, Grab The Timeline and pull it closer until it counts up in 5 » → graduations 0, 5, 10, 15… ; « this is so we can animate in 5s » [VU] |
@@ -80,7 +80,7 @@ Légende : **[VU]** = lisible ou visible à l'écran ; **[DÉDUIT]** = mon inter
 - [DÉDUIT] C'est un amorti qui décroît, fait à la main, en clés linéaires.
 - Limite : l'auteur lui-même a dû le reprendre (« i made my wiggle to rough », « Fixing wiggle... »).
 
-**R8. Tête : garder la direction du regard.**
+**R8. Tête : garder la direction du regard.** [CONTREDIT 2026-09-26 : vrai pour ce tuto, pas universel : l'uppercut du pack ne fait pas cette contre-rotation (la tête suit le lacet, élévation ≤ +7°), voir corpus/etude_c4/A4_pack_battleground.md §4]
 - Utiliser l'onion skin (touche B) de la frame 0 et aligner la ligne blanche sur la rouge (567–574 s). On exagère seulement au « Middle », « depending on the direction of the torso » (597 s) [VU].
 
 **R9. Jambes : pieds plantés.**

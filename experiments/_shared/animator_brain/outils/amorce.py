@@ -32,15 +32,28 @@ def _lire(p):
         return ""
 
 
+def _verbatim():
+    """Messages de Milan, corrections appliquées (corpus/milan_verbatim_corrections.jsonl :
+    un texte COLLÉ ne compte pas comme ses mots). Repli sur le brut, sans échouer."""
+    try:
+        if HERE not in sys.path:
+            sys.path.insert(0, HERE)
+        import moisson_milan
+        return moisson_milan.charger_verbatim()
+    except Exception:
+        out = []
+        for l in _lire(os.path.join(B, "corpus", "milan_verbatim.jsonl")).splitlines():
+            try:
+                out.append(json.loads(l))
+            except json.JSONDecodeError:
+                continue
+        return out
+
+
 def derniers_mots(n=3, plafond=700):
-    lignes = _lire(os.path.join(B, "corpus", "milan_verbatim.jsonl")).splitlines()
     out, total = [], 0
-    for l in reversed(lignes):
-        try:
-            e = json.loads(l)
-        except json.JSONDecodeError:
-            continue
-        t = e.get("texte")
+    for e in reversed(_verbatim()):
+        t = e.get("texte")                 # corrigé en « colle » : seul le début tapé par Milan reste
         if not t:
             continue
         t = " ".join(t.split())

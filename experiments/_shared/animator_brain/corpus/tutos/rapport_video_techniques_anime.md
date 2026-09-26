@@ -95,7 +95,7 @@ Légende R6 : **POSSIBLE** = rotations et translations des 6 blocs (Motor6D), ca
   - Speed multiples : membres multipliés sur place, dans une même image.
 
 **Traduction R6 :**
-- Smear « bras étiré » : **IMPOSSIBLE tel quel.** Un Motor6D ne change pas la taille d'une part.
+- Smear « bras étiré » : **IMPOSSIBLE tel quel.** [CONTREDIT 2026-09-26 : un smear-forme opaque qui remplace le membre (genga 05) est faisable par échange de pièce, voir corpus/etude_c4/B4_techniques_anime.md §4 point 3] Un Motor6D ne change pas la taille d'une part.
   - Substitut **PARTIEL** : pendant 1–2 images, une part fantôme translucide, allongée dans l'axe du mouvement et placée entre la position de départ et celle d'arrivée du bras (le bras « étiré » est donc un objet séparé).
   - Autres substituts : un `Trail` attaché au poing, ou un `Beam` large qui s'estompe.
 - Smear « à franges » : **IMPOSSIBLE** comme déformation. Substitut : un Beam ou une decal de traînée dentelée derrière le membre.

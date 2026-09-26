@@ -37,7 +37,7 @@ termes d'animation, pour réapprendre ».
 | 12e7dae5 (Black Flash) | Plan large, perso minuscule, 0,1 s d'arrêt, coupe sur très gros plan et cartes. Puis **~1,5 s de ralenti sur la victime** : la réaction est la vitrine. |
 | 3ae71567 (Rewind Clock) | Après l'explosion, carte « graphique » tenue 0,6 s : attaquant en silhouette noire, poing dans le visage, sur fond blanc. Puis radios du crâne. |
 | 4fb4f776 (Stagnant Rage) | Variante lointaine : **immobile 1,53 s** en caméra de jeu, puis élan et explosion. |
-| aafdc91d (caméra de jeu, loin) | Action courte, **pause 0,3 s**, action plus grosse, tenue 1,9 s : escalade en deux temps avec un silence entre les deux. |
+| aafdc91d (caméra de jeu, loin) | Action courte, **pause 0,3 s** [CONTREDIT 2026-09-26 : pause de 0,45 s, voir corpus/etude_c4/C3_gifs.md §5], action plus grosse, tenue 1,9 s : escalade en deux temps avec un silence entre les deux. |
 | 58322fc4 (boxeur) | **Pose tenue en déplacement** : 1 s avec la MÊME silhouette (très bas, torse ~45°, gants au visage) pendant que le corps avance. La vitesse se lit par les lignes et la caméra qui suit, pas par les membres. Uppercut en ~2 images, flash. Esquive : il apparaît tout autour de la cible, toujours bas. |
 | f1b5bd4b (pro/noob, coup de poing Blender) | Pro : armé 0,93 s, torse DOS à la caméra (« BACK »), poing armé haut ; frappe « FRONT », ~180°. Noob : droit, bras tendu. |
 | 9e47148b (pro/noob, Moon) | Même chose. Tenues pro de 0,1-0,5 s à chaque pose ; la cible plie vers l'attaquant, tenue 0,53 s. |
@@ -46,7 +46,7 @@ termes d'animation, pour réapprendre ».
 | 8556a37c (cross punch) | Boucle d'alternances, garde basse. **L'extension est tenue 0,13-0,2 s à chaque coup**, smear en éventail derrière le poing. |
 | 6a0095ed (punch practice) | Pose à pose avec micro-tenues de 0,13-0,3 s. La vue de DESSUS montre la rotation du torse. Version « avec adornments » = même anim + points orange. |
 | afaa00eb (tuto dessiné firytwig) | Lu en pleine résolution, voir l'encadré ci-dessous. |
-| 4e337114 (mannequin, coup chargé) | Armé ~1 s, frappe rapide, **extension tenue et prolongée ~2 s** (fente basse, torse presque horizontal), puis retour lent. Suite longue, comme chez Sakurai. |
+| 4e337114 (mannequin, coup chargé) | Armé ~1 s, frappe rapide, **extension tenue et prolongée ~2 s** (fente basse, torse presque horizontal) [CONTREDIT 2026-09-26 : torse plutôt droit ; le trait violet est un élément du visualiseur, pas la trajectoire du coup, voir corpus/etude_c4/C3_gifs.md §7], puis retour lent. Suite longue, comme chez Sakurai. |
 | eba5ed69 (IMPACT HAVEN) | Déjà étudié. En plus : grandes fentes basses, corps retournés en l'air, poses tenues 0,1-0,27 s. |
 | df406483 (First time fighting a dummy) | Après l'action, **~4 s de gros plan sur l'attitude** du perso (respiration, cheveux), en poussée lente. Le paiement est le personnage, pas le coup. |
 | 85e1a98f (Linear easing test) | La même anim aérienne montrée trois fois : sans caméra, sans effets et ralentie. Démontre ce que caméra et effets ajoutent. Perso trop petit pour étudier les poses. |

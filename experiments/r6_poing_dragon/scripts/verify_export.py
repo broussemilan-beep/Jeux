@@ -187,6 +187,23 @@ def main(blend):
         sens["poing_s_arrete_avant_la_victime"] = bool(3.5 < g < 7.0)
         sens["attaquant_pose_au_sol_a_la_fin"] = bool(abs(lowest(wa(M.END_F))) < 0.15)
     rep["sens_roblox"] = sens
+    # registre des preuves (2026-09-26, comme r6_un_seul_coup) : une ligne
+    # « technique » écrite par ce script, AVANT l'éventuel arrêt, avec
+    # l'empreinte des fichiers dont elle dépend (périmée s'ils changent).
+    # passe = sens Roblox + interpolation (le contrôle bloquant du script)
+    # ET aller-retour moteur < 0,001 stud ; contacts et sol : valeurs à lire.
+    sys.path.insert(0, os.path.join(HERE, "..", "..", "_shared", "animator_brain", "outils"))
+    import preuves as PR  # noqa: E402
+    tech_ok = all(sens.values()) and rep["aller_retour_max"] < 1e-3
+    PR.enregistrer_preuve(
+        "r6_poing_dragon", "technique", "scene", "passe" if tech_ok else "echoue",
+        [pa, pv, os.path.join(HERE, "dragon_clip.py"), X.__file__],
+        json.dumps({"sens_roblox": sens, "aller_retour_max": rep["aller_retour_max"],
+                    "ecart_max_reduction_studs": rep["ecart_max_reduction_studs"], "sol": rep["sol"],
+                    "translation_tete_max": rep["translation_tete_max"], "cles": rep["cles"],
+                    "marqueurs": [n for _t, n, _v in X.read_markers(pa)],
+                    "contacts": rep["contacts"]}, ensure_ascii=False, default=float),
+        f"DRAGON_FINAL={M.FINAL} python3 experiments/r6_poing_dragon/scripts/verify_export.py <Blender_R6.blend>")
     if not all(sens.values()):
         raise SystemExit(f"SENS FAUX : {sens}")
     # verdicts par segment

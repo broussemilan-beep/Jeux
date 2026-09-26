@@ -138,19 +138,45 @@ def resample_linear(frames, fps=60, root=(np.eye(3), np.array([0.0, 3.0, 0.0])),
 
 
 def _ease(u, style_dir):
-    """Easing d'une Pose sur son segment sortant. Constant (1) : tenue
-    jusqu'à la clé suivante. Cubic (3) / CubicV2 (5) : cubique (sens :
-    0 In, 1 Out, 2 InOut, convention PoseEasingDirection de Roblox, non
-    vérifiée dans Studio). Elastic / Bounce : approchés par Linear (à
-    signaler, aucun cas dans nos fichiers au 2026-09-26)."""
+    """Easing d'une Pose sur son segment sortant (u de 0 à 1 entre cette clé
+    et la suivante de la même part).
+
+    Valeurs des Enum (doc Roblox, citée via recherche le 2026-09-26, accès
+    direct à create.roblox.com bloqué dans ce bac à sable) :
+      PoseEasingStyle     0 Linear, 1 Constant, 2 Elastic, 3 Cubic,
+                          4 Bounce, 5 CubicV2 ;
+      PoseEasingDirection 0 In, 1 Out, 2 InOut.
+    SENS (corrigé le 2026-09-26) : la doc de PoseEasingDirection dit « for
+    legacy compatibility reasons, the use of In and Out are backwards from
+    how these terms are used by most other animation tools and by
+    TweenService ». Confirmé par le DevForum (« Animation cubic easing
+    direction reversed », 449068, 2020-02-02 : une Pose Cubic « In » se
+    comporte en jeu comme un « Out » ; réponse de Roblox en 2021 : pas de
+    correction possible sans casser les anims existantes). Donc, pour une
+    Pose : In (0) = départ RAPIDE, arrivée lente (Out de TweenService,
+    1-(1-u)^3) ; Out (1) = départ lent, arrivée rapide (u^3) ; InOut (2)
+    symétrique, non concerné. Avant cette date, _ease appliquait le sens
+    TweenService (inversé) : aucun effet sur nos mesures, les fichiers TSB
+    et du pack n'ont AUCUNE Pose Cubic (compté le 2026-09-26 : TSB 3250
+    Linear + 67 Constant ; pack 5056 Linear).
+
+    RESTE À VÉRIFIER DANS STUDIO (quand Milan dira d'y passer) :
+    - CubicV2 (5) : ajouté vers 2024 (courbes de l'éditeur de graphe) ;
+      l'inversion est supposée la même que Cubic (la phrase de la doc porte
+      sur l'Enum de direction, pas sur un style), non vérifié ;
+    - Constant (1) : tenue puis saut à la clé suivante, supposé indépendant
+      de la direction ; un script de contournement du DevForum (449068
+      #70) inverse aussi la direction des Poses Constant : à vérifier ;
+    - Elastic (2) / Bounce (4) : approchés par Linear (aucun cas dans nos
+      fichiers au 2026-09-26)."""
     st, di = style_dir
     if st == 1:
         return 0.0 if u < 1.0 else 1.0
     if st in (3, 5):
-        if di == 0:
-            return u ** 3
-        if di == 1:
+        if di == 0:                     # Pose « In » = Out de TweenService
             return 1 - (1 - u) ** 3
+        if di == 1:                     # Pose « Out » = In de TweenService
+            return u ** 3
         return 4 * u ** 3 if u < 0.5 else 1 - (-2 * u + 2) ** 3 / 2
     return u
 

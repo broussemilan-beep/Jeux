@@ -172,8 +172,8 @@ qui est transposable à du R6 3D.
 
 **Iczer / Masami Obari (728-732 s) :**
 - 0-0,3 s : gros plan sur l'œil, puis perso qui se jette de 3/4.
-- 0,6-2,7 s : **pose d'armé TENUE ~2 s** : bras armé loin derrière, **le poing
-  (gant rouge) est ÉNORME, plus gros que le buste**, perspective forcée ;
+- 0,6-2,7 s : **pose d'armé TENUE ~2 s** [CONTREDIT 2026-09-26 : pose stable ≈1,5-1,6 s (729,17-730,75 s), voir corpus/etude_c4/B4_techniques_anime.md §4 point 4] : bras armé loin derrière, **le poing
+  (gant rouge) est ÉNORME, plus gros que le buste** [CONTREDIT 2026-09-26 : au moins aussi gros que la tête, pas plus gros que le buste, voir corpus/etude_c4/B4_techniques_anime.md §4 point 4], perspective forcée ;
   seul un léger tremblement ; fond bleu uni à lignes radiales.
 - 2,8-3,5 s : le poing traverse l'image VERS la caméra et occupe ~50 % du
   cadre (bouche ouverte du perso derrière, petite).

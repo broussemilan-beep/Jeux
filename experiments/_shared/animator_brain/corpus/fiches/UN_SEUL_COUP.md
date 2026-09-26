@@ -20,6 +20,8 @@ fichiers jamais versionnés, voir `../CATALOGUE_REFS.md`) :
 
 ## 1. Ce que les trois refs font, à 0,1 s
 
+*Statut : vu dans les refs (TSB 48244687, SP2 772ee6b0, Pew, relus à 0,1 s le 2026-09-26) ; des lectures sont CONTREDITES depuis (marques dans le texte, `corpus/etude_c4/C3_gifs.md` §1).*
+
 | temps | TSB (48244687) | SP2 (772ee6b0) | Pew (lvB-wTylH3Y) |
 |---|---|---|---|
 | entrée | 0-0,3 caméra de jeu ; 0,4-1,7 le bras / la cape en TRÈS gros plan traverse l'écran (1,3 s) | 0-1,1 même traversée (manteau) | 0-0,9 caméra de jeu, perso de dos |
@@ -27,9 +29,9 @@ fichiers jamais versionnés, voir `../CATALOGUE_REFS.md`) :
 | départ | 3,0-3,5 il part, la caméra fouette vers le ciel (0,5 s) | 2,4-2,9 idem, ciel (0,5 s) | 2,3-2,6 fouet vers le ciel (0,3 s) |
 | approche | 3,6-4,5 plan large et bas, perso PETIT, fente (1 s) | 3,0-4,0 idem (1 s) | 2,7-3,6 3/4 derrière, il s'accroupit (0,9 s) |
 | armé | 4,6-5,1 plus près, il se relève, bras armé (0,5 s) | 4,0-4,8 très bas, genou haut (0,8 s) | 3,7-4,7 armé TENU face-bas, tremble (1 s) |
-| frappe | 5,2-5,9 poing vers l'objectif dans la fumée (0,8 s) | 4,9-5,3 idem (0,4 s) | 4,8-5,1 poing vers l'objectif, fumée (0,4 s) |
+| frappe | 5,2-5,9 poing vers l'objectif dans la fumée (0,8 s) [CONTREDIT 2026-09-26 : 5,07-5,27 s est la retombée du genou ; le poing voyage lentement 0,6 s dans la fumée, voir corpus/etude_c4/C3_gifs.md §1] | 4,9-5,3 idem (0,4 s) | 4,8-5,1 poing vers l'objectif, fumée (0,4 s) |
 | impact | 6,0-6,1 carte ENCRE (silhouette + hachures radiales) ; 6,2-6,3 BLANC ; 6,4-6,5 le blanc se dissout | 5,4-5,5 2 cartes encre ; 5,6-5,9 blanc qui fond | 5,2-5,3 **2 images INVERSÉES** (la scène en noir sur blanc : perso et roches noirs, ciel blanc) |
-| conséquence | 6,6-9,5 fente basse TENUE, poing en avant ; derrière lui un champ de grandes dalles de roche en pyramide + fumée ; caméra FIXE (3 s) | 6,0-7,1 idem (1,1 s, coupé) | 5,4-5,6 gros plan de 3/4 sur la fente, roches énormes au 1er plan ; **5,7-13,4 plan FIXE de DOS en hauteur d'homme : le perso minuscule au centre, un champ de roches sombres devant lui, fumées blanches qui montent puis s'effacent (5,7-8,2), tout tenu ; les roches s'enfoncent (12,7-13,4) ; plaine vide jusqu'à l'horizon** (7,7 s) |
+| conséquence | 6,6-9,5 fente basse TENUE, poing en avant [CONTREDIT 2026-09-26 : à la fin, bras plié à l'horizontale devant le buste (confiance moyenne), voir corpus/etude_c4/C3_gifs.md §1] ; derrière lui un champ de grandes dalles de roche en pyramide + fumée ; caméra FIXE (3 s) | 6,0-7,1 idem (1,1 s, coupé) | 5,4-5,6 gros plan de 3/4 sur la fente, roches énormes au 1er plan ; **5,7-13,4 plan FIXE de DOS en hauteur d'homme : le perso minuscule au centre, un champ de roches sombres devant lui, fumées blanches qui montent puis s'effacent (5,7-8,2), tout tenu ; les roches s'enfoncent (12,7-13,4) ; plaine vide jusqu'à l'horizon** (7,7 s) |
 | fin | 9,6 caméra de jeu, debout | — | 14,6 fin |
 
 **Mesures (serious_punch_tsb.json)** : 1 impact en 10 s ; 1 seule carte
@@ -59,6 +61,8 @@ fichiers jamais versionnés, voir `../CATALOGUE_REFS.md`) :
 
 ## 3. La scène (60 i/s, ~12,5 s)
 
+*Statut : déduit (conception d'après le §1) ; construit : §5.*
+
 Décor : une grande plaine ouverte (terre et pierre grises), des montagnes
 basses tout autour à l'horizon (~450-600 studs), une couche de nuages
 (~110 studs de haut). Pas d'arène fermée : il faut voir loin.
@@ -86,6 +90,8 @@ conséquence (4b.30 : peu de coupes, des plans qui durent).
 
 ## 4. Pièges (d'après nos propres erreurs)
 
+*Statut : essayé (nos erreurs du Poing du Dragon, retours de Milan).*
+
 - Ne pas recharger l'impact d'effets (v12 : VFX 2-4 ; v13 : « trop
   peinture ») : ici l'impact = 2 images inversées + blanc, point.
 - Le poing vers l'objectif : un membre pointé vers la caméra cache tout sauf
@@ -100,6 +106,8 @@ conséquence (4b.30 : peu de coupes, des plans qui durent).
   (4b.28).
 
 ## 5. Livré (2026-09-26) et prédiction
+
+*Statut : essayé (production livrée, `experiments/r6_un_seul_coup/README.md`) ; prédiction chiffrée, puis retour de Milan.*
 
 Production : `experiments/r6_un_seul_coup/` (README : découpage final,
 vérifications, ce qui a été corrigé en regardant). Écarts à ce plan :
@@ -142,9 +150,11 @@ l'approche.
   cailloux qui se soulèvent autour des pieds, vent autour du poing ;
 - frappe : bassin puis buste puis épaule, coup À PLAT : buste 7°, bras -5°,
   poing à 3,4 studs (poitrine d'une victime debout) ; tenue bras à -3°.
-- Nouveaux contrôles d'export (verify_export.py) : bras à plat au contact et
-  pendant la tenue (< 12°), buste presque droit (< 22°), poing à hauteur de
-  poitrine (> 3,2), poing derrière le buste pendant la charge.
+- Nouveaux contrôles d'export (verify_export.py) à la v1-v4 : bras à plat au
+  contact et pendant la tenue (< 12°), buste presque droit (< 22°), poing à
+  hauteur de poitrine (> 3,2), poing derrière le buste pendant la charge ;
+  annoncé, absent du code au 2026-09-26 : retirés en 6f0539e, ce sont
+  maintenant des mesures de pose sans verdict (`mesures_coup`, `mesures_pose`).
 
 Prédiction v2 : **8,0/10**.
 
@@ -244,16 +254,20 @@ est à sa place) ; (b) remplacé par le point de Milan (le buste recule
 l'épaule, le bras reste sur le côté) ; (c) genou levé ESSAYÉ puis retiré
 (« jambes trop abusées ») ; (d) départ du coup en gros plan (le buste se
 déroule, le bras passe en travers) ; (e) poing de 3/4 avec l'épaule, dans
-un tourbillon qui serre le poing. Contrôle d'export remplacé : « poing sur
-le côté, pas derrière » + « épaule droite reculée par le buste ».
+un tourbillon qui serre le poing. Contrôle d'export remplacé (v5) : « poing sur
+le côté, pas derrière » + « épaule droite reculée par le buste » ; annoncé,
+absent du code au 2026-09-26 (retiré en 6f0539e, devenu mesure de pose sans
+verdict dans `verify_export.py`, `mesures_pose`).
 
 Prédiction v5 : **7,8/10**.
 
 
 ## 11. v6 : le poing chargé MESURÉ sur les refs (après la v5 notée 7,5)
 
+*Statut : mesuré (reconstruction 3D `outils/geo_pose.py`, données R6 exactes TSB et pack) ; retour de Milan sur la v6 au §12.*
+
 Milan, 2026-09-26 09:15 (milan_verbatim 4482e3800f2a0523) : « analyse
-visuellement, géométriquement […] c'est une brique importante qui te
+visuellement géométriquement etc etc . C une brique important qui te
 manque ». Les cinq versions précédentes traduisaient des MOTS en clés. Ici,
 chaque nombre vient d'une mesure : `corpus/poses/sources/*.json`
 (reconstruction 3D R6 des refs par rendu-comparaison avec
@@ -293,18 +307,22 @@ charge, masquée pendant le coup (caméra près d'elle).
   coupée par un redémarrage).
 
 Preuves : `captures/verification/2026-09-26-un-seul-coup-v5-contre-v6-poing-charge.png`
-(v5 / v6 aux mêmes caméras, descripteurs) ; `…-v6-plans-charge-et-coup.png`
-(le lecteur) ; vidéo `…-v6-scene-complete-avec-son.mp4`.
+(v5 / v6 aux mêmes caméras, descripteurs) ;
+`captures/verification/2026-09-26-un-seul-coup-v6-plans-charge-et-coup.png`
+(le lecteur) ; vidéo
+`captures/verification/2026-09-26-un-seul-coup-v6-scene-complete-avec-son.mp4`.
 
 
 ## 12. Retour de Milan sur la v6 (2026-09-26)
+
+*Statut : retour de Milan (2026-09-26, ses mots ci-dessous).*
 
 « c trjs pas bon » (11:33), puis, après la synthèse du chantier 4 : « Ce qui
 était tues pas bon c le placement du bras sur tout mais tes pistes sont
 inteeessant ». Le défaut principal est donc le PLACEMENT DU BRAS (pas la
 tête, pas le montage, qui restent des pistes). Avant toute v7 : relire le
 placement des bras de la v6 (charge, détente, contact) contre ce que les
-pros font vraiment avec les bras en R6 (`corpus/etude_c4/SYNTHESE.md` §0.10,
+pros font vraiment avec les bras en R6 (`corpus/etude_c4/SYNTHESE.md` §0 point 10,
 §1(b) ; A1, A4, B1, B3 : translation des membres, bras qui se retire, 2e bras
 non miroir). Pas de v7 sans son accord : il a demandé d'abord l'état de la
 partie recherche et technique.

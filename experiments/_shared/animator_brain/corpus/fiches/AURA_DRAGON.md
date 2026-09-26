@@ -1,8 +1,10 @@
 # Fiche de conception : l'aura DRAGON du Poing du Dragon (Goku x Izuku)
 
-**Demande de Milan (2026-09-25)** : « l'aura du poing du dragon en forme de
-dragon, je t'enverrai la ref », puis, avec 4 refs du Poing du Dragon de Goku
-SSJ3 (film DBZ 13) : « mélange ça à Izuku pour le poing du dragon ».
+**Demande de Milan (2026-09-25)** : l'aura du poing du dragon en forme de
+dragon, la ref à suivre (paraphrase, pas ses mots : ce message n'est pas
+dans milan_verbatim), puis, avec 4 refs du Poing du Dragon de Goku SSJ3
+(film DBZ 13), 2026-09-25 15:17 : « Mélange ça a izuku pour le poing du
+dragon ».
 Apprentissages, pas règles. À lire avant de poser la moindre clé d'effet.
 
 **Sources digérées.**
@@ -27,7 +29,7 @@ Apprentissages, pas règles. À lire avant de poser la moindre clé d'effet.
   ce qu'on sait de One For All : ÉCLAIRS VERTS qui crépitent sur tout le
   corps (Full Cowl), pression d'air du Smash.
 - Nos contraintes : style cel, 2-3 couleurs + blanc (CARNET §4b.2), l'air
-  vend la vitesse (§4b.3), rien de réaliste ; rig R6 ; tout jouable dans
+  vend la vitesse (CARNET §4b.3), rien de réaliste ; rig R6 ; tout jouable dans
   Roblox (moteur VFXStudio) ; pas de cape ni d'écharpe (mandat).
 
 ## 0. CORRECTION (retour de Milan sur la v11, VFX 4/10)
@@ -51,7 +53,7 @@ Apprentissages, pas règles. À lire avant de poser la moindre clé d'effet.
 
 - **Invocation = l'affiche** : bras droit tendu vers le ciel en « V » au
   bord de la tête, poing gauche armé à la hanche, jambes qui traînent
-  derrière, regard devant menton levé ; caméra 3/4 face, -6°, corps + poing
+  derrière, regard devant menton levé ; [CONTREDIT 2026-09-26 : les pros regardent de -12 à -31° dans le monde, pas menton levé, voir corpus/etude_c4/C4_images_et_gout.md §2.2] caméra 3/4 face, -6°, corps + poing
   + tête du dragon dans le cadre. Le dragon s'enroule DERRIÈRE le perso, le
   cou monte au-dessus du poing puis la tête se couche à l'horizontale, de
   profil, gueule ouverte. (Essais écartés, captures `2026-09-25-v10a-*`,
@@ -73,6 +75,8 @@ Apprentissages, pas règles. À lire avant de poser la moindre clé d'effet.
 
 ## 0 ter. Après la v12 (VFX 2-4/10) : la ref TSB de Suiryu
 
+*Statut : vu dans les refs (Suiryu, relecture du 2026-09-25) et mesuré (durées : `../clips/durees_effets_2026-09-25.json`) ; retour de Milan (VFX 2-4/10 sur la v12).*
+
 Milan a envoyé le dragon « Dragon's Descent » de Suiryu (TSB) : étude dans
 `../RELECTURE_REFS_SUIRYU_2026-09-25.md`, mesures de durée dans
 `../clips/durees_effets_2026-09-25.json`. Ce qu'elles opposent à la v12 :
@@ -92,8 +96,10 @@ dragon remplace-t-il le coup, vidéo pour le timing).
 
 ## 0 quater. v13 : Milan tranche (or, invoqué dans les airs, il MANGE)
 
-« Le dragon or, invoqué dans les airs comme Goku, puis le coup se
-transforme en le dragon qui mange le perso. » La suite est dans
+*Statut : retour de Milan (2026-09-25 18:04, ses mots ci-dessous).*
+
+Milan, 2026-09-25 18:04 : « Le dragon or le dragon est invoquer dans les
+air comme goku puis le coup se transforme en le dragon qui mange le perso ». La suite est dans
 `POING_DU_DRAGON_V13.md` (scène complète, Last Breath et Goku relus à
 0,1 s) : dragon d'or DESSINÉ (aplats, trait, yeux cyan), mâchoire
 animable, 3 couches (invocation, morsure, remontée du cratère).
@@ -111,6 +117,8 @@ animable, 3 couches (invocation, morsure, remontée du cratère).
 
 ## 2. Le dragon raconte trois temps (calqués sur nos actes v9)
 
+*Statut : déduit (conception d'après nos actes v9 et la ref 6a961186) ; essayé en v10-v12 (VFX notés 2-4/10 par Milan), remplacé par la conception v13 (`POING_DU_DRAGON_V13.md`).*
+
 1. **Armé (226-256)** : l'invocation. Le dragon SORT DU POING et s'enroule
    en spirale autour du bras puis derrière le corps (6a961186), tête
    au-dessus du poing, gueule vers la victime. Éclairs verts sur le corps.
@@ -124,6 +132,8 @@ animable, 3 couches (invocation, morsure, remontée du cratère).
    Serious Punch).
 
 ## 3. Comment le faire dans Roblox (et donc dans l'aperçu)
+
+*Statut : lu (doc Roblox : `Beam.TextureSpeed` natif) et essayé dans l'aperçu (v10-v12) ; non établi dans Roblox Studio (pas encore essayé là-bas).*
 
 - **Corps** = chaîne de Beams entre Attachments placés sur une courbe,
   texture d'écailles qui DÉFILE (Beam.TextureSpeed natif) : le dragon
@@ -143,6 +153,8 @@ animable, 3 couches (invocation, morsure, remontée du cratère).
   vérifier par critique.py.
 
 ## 4. Pièges connus
+
+*Statut : essayé (pièges vus sur nos versions v9-v10) ; pas mesuré.*
 
 - Le ruban FaceCamera vu dans son axe devient un trait : la plongée est
   filmée depuis la victime (obari), dans l'axe ! -> le corps doit onduler

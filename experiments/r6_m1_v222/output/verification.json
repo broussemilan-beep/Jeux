@@ -142,11 +142,28 @@
     "y": 0.14,
     "z": 0.64
    },
-   "torse_vitesse_max_studs_s": 7.3
+   "torse_vitesse_max_studs_s": 7.3,
+   "affaissement_torse_studs": {
+    "max": 0.142,
+    "median": 0.132
+   },
+   "decalage_epaule_vertical_studs": {
+    "haut_max": 1.063,
+    "bas_max": -0.823,
+    "median": 0.352
+   },
+   "mecanique_frappe": {
+    "bras_elevation_deg": -2.2,
+    "portee_studs": 3.12,
+    "transfert_poids_studs": 0.69,
+    "poing_hauteur_studs": 3.36,
+    "poing_montee_finale_studs": 0.0,
+    "poing_hauteur_aller_vs_epaule": 0.07
+   }
   },
   "verdict": {
-   "dans_la_plage": 32,
-   "total": 38,
+   "dans_la_plage": 39,
+   "total": 49,
    "hors_plage": [
     [
      "timing.energie.fraction_rapide",
@@ -200,6 +217,42 @@
       57.885,
       91.515,
       67.15
+     ]
+    ],
+    [
+     "timing.affaissement_torse_studs.median",
+     0.132,
+     [
+      -0.006,
+      0.1,
+      0.06
+     ]
+    ],
+    [
+     "timing.decalage_epaule_vertical_studs.haut_max",
+     1.063,
+     [
+      -0.25,
+      0.055,
+      -0.174
+     ]
+    ],
+    [
+     "timing.decalage_epaule_vertical_studs.bas_max",
+     -0.823,
+     [
+      -1.454,
+      -1.017,
+      -1.283
+     ]
+    ],
+    [
+     "timing.decalage_epaule_vertical_studs.median",
+     0.352,
+     [
+      -1.003,
+      -0.502,
+      -0.872
      ]
     ]
    ]
@@ -305,11 +358,20 @@
     "y": 0.0,
     "z": 0.0
    },
-   "torse_vitesse_max_studs_s": 0.1
+   "torse_vitesse_max_studs_s": 0.1,
+   "affaissement_torse_studs": {
+    "max": 0.001,
+    "median": 0.0
+   },
+   "decalage_epaule_vertical_studs": {
+    "haut_max": 0.001,
+    "bas_max": -0.0,
+    "median": 0.0
+   }
   },
   "verdict": {
-   "dans_la_plage": 29,
-   "total": 38,
+   "dans_la_plage": 31,
+   "total": 43,
    "hors_plage": [
     [
      "timing.energie.pic_deg_s",
@@ -390,6 +452,33 @@
       0.034,
       0.042,
       0.038
+     ]
+    ],
+    [
+     "timing.decalage_epaule_vertical_studs.haut_max",
+     0.001,
+     [
+      0.034,
+      0.042,
+      0.038
+     ]
+    ],
+    [
+     "timing.decalage_epaule_vertical_studs.bas_max",
+     -0.0,
+     [
+      0.026,
+      0.039,
+      0.035
+     ]
+    ],
+    [
+     "timing.decalage_epaule_vertical_studs.median",
+     0.0,
+     [
+      0.032,
+      0.041,
+      0.037
      ]
     ]
    ]

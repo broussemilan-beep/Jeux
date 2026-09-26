@@ -24,6 +24,10 @@ après sa dernière occurrence). Un motif calme peut revenir : les retours
 après un silence (« vers le bas » : 8 versions sans le dire, puis Un seul
 coup v1) sont affichés à côté.
 
+Mots de Milan lus avec les corrections de `corpus/milan_verbatim_corrections.jsonl`
+(2026-09-26 : un brief ou un conseil d'IA COLLÉ, marqué « dit » à la moisson,
+ne compte pas comme ses mots ; `outils/moisson_milan.py`, charger_verbatim).
+
 Données : `corpus/motifs.json` ({"motifs": [...]}, clés lues aussi par
 `outils/amorce.py` : phrase, nombre_de_fois, statut).
 
@@ -83,8 +87,21 @@ def charger():
     return d
 
 
+def verbatim():
+    """Les messages de Milan, corrections de `corpus/milan_verbatim_corrections.jsonl`
+    appliquées (un texte collé ne compte pas comme ses mots : seul `debut_dit`
+    reste dans `texte`). Repli sur le fichier brut si le chargeur manque."""
+    try:
+        if HERE not in sys.path:
+            sys.path.insert(0, HERE)
+        import moisson_milan
+        return moisson_milan.charger_verbatim()
+    except Exception:                    # jamais bloquant : le brut vaut mieux que rien
+        return lire_jsonl(VERBATIM)
+
+
 def verbatim_par_sha():
-    return {e.get("sha1"): e for e in lire_jsonl(VERBATIM)}
+    return {e.get("sha1"): e for e in verbatim()}
 
 
 # ------------------------------------------------------------ statut
@@ -255,7 +272,11 @@ def verifier(d):
                 print(f"[{m['id']}] sha1 {c.get('sha1')} absent de milan_verbatim"); pb += 1
                 continue
             if c.get("extrait") not in (e.get("texte") or ""):
-                print(f"[{m['id']}] extrait PAS mot pour mot dans {c['sha1']} : « {c.get('extrait')} »"); pb += 1
+                if e.get("correction") and c.get("extrait") in (e.get("texte_colle") or ""):
+                    print(f"[{m['id']}] extrait pris dans un texte COLLÉ ({c['sha1']}, corrigé : "
+                          f"{e['correction'][:80]}) : ce ne sont pas les mots de Milan"); pb += 1
+                else:
+                    print(f"[{m['id']}] extrait PAS mot pour mot dans {c['sha1']} : « {c.get('extrait')} »"); pb += 1
             if c.get("date") != e.get("date"):
                 print(f"[{m['id']}] date {c.get('date')} != {e.get('date')} ({c['sha1']})"); pb += 1
             ch = c.get("chronique")
@@ -304,7 +325,7 @@ def candidats(d):
         if not rx:
             continue
         found = []
-        for e in lire_jsonl(VERBATIM):
+        for e in verbatim():
             t = e.get("texte")
             if not t or e.get("mode") == "colle" or (m["id"], e.get("sha1")) in cites:
                 continue

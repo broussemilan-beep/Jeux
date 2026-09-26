@@ -36,6 +36,7 @@ Statut d'une production, par kind (`statut <production>`) :
 
 Usage :
   from preuves import enregistrer_preuve        # depuis un outil
+  from preuves import executer_et_enregistrer   # brancher un vieux script (capture sa sortie)
   python3 preuves.py statut <production> [--json] [--tout]
   python3 preuves.py lancer --production P --kind K --portee S --entrees a,b -- <commande…>
       (lance la commande, enregistre SA sortie ; technique : code 0 = passe)
@@ -56,7 +57,10 @@ BRAIN = os.path.normpath(os.path.join(HERE, ".."))
 ROOT = os.path.normpath(os.path.join(BRAIN, "..", "..", ".."))
 REGISTRE = os.path.join(BRAIN, "corpus", "preuves.jsonl")
 
-KINDS = ("technique", "mesure_pose", "juge_temps", "durees", "capture", "vu_par_milan")
+KINDS = ("technique", "mesure_technique", "mesure_pose", "juge_temps", "durees", "capture", "vu_par_milan")
+# mesure_technique (ajouté le 2026-09-26) : contact, sol, structure MESURÉS
+# sans seuil (les anciens calibrate.py / foot_check.py des prototypes
+# pré-V2.22 impriment des écarts sans dire passe/échoue) : des valeurs à lire.
 PORTEES = ("image", "plan", "scene", "partielle")
 MAX_RESUME = 2000
 
@@ -100,12 +104,16 @@ def _abs(cle):
     return cle if os.path.isabs(cle) else os.path.join(ROOT, cle)
 
 
-def _git(*args):
+def _git(*args, brut=False):
+    """Sortie de git ; brut=True : sans strip() (le format --porcelain commence
+    par un espace significatif : « M chemin » ; le strip() coupait la 1re
+    lettre du 1er chemin, bug vu et corrigé le 2026-09-26)."""
     try:
-        return subprocess.run(["git", "-C", ROOT] + list(args), capture_output=True, text=True,
-                              timeout=30).stdout.strip()
+        out = subprocess.run(["git", "-C", ROOT] + list(args), capture_output=True, text=True,
+                             timeout=30).stdout
     except (OSError, subprocess.SubprocessError):
         return ""
+    return out if brut else out.strip()
 
 
 def resumer(texte, n=MAX_RESUME):
@@ -128,7 +136,7 @@ def enregistrer_preuve(production, kind, portee, statut, entrees, sortie_resumee
     """Ajoute UNE ligne au registre et la renvoie (dict).
 
     production : nom du dossier de la production (ex. « r6_un_seul_coup ») ;
-    kind : technique | mesure_pose | juge_temps | durees | capture | vu_par_milan ;
+    kind : technique | mesure_technique | mesure_pose | juge_temps | durees | capture | vu_par_milan ;
     portee : image | plan | scene | partielle ;
     statut : « passe » / « echoue » pour technique ; pour tout autre kind,
       None ou « valeurs » (un autre statut lève ValueError : une mesure n'est
@@ -154,7 +162,7 @@ def enregistrer_preuve(production, kind, portee, statut, entrees, sortie_resumee
     emp = {_cle(p): empreinte(os.path.abspath(p)) for p in entrees}
     hors = []
     if emp:
-        st = _git("status", "--porcelain", "--", *[_abs(k) for k in emp])
+        st = _git("status", "--porcelain", "--", *[_abs(k) for k in emp], brut=True)
         hors = sorted({ln[3:].strip() for ln in st.splitlines() if ln.strip()})
     if not isinstance(sortie_resumee, str):
         sortie_resumee = json.dumps(sortie_resumee, ensure_ascii=False, default=str)
@@ -169,6 +177,58 @@ def enregistrer_preuve(production, kind, portee, statut, entrees, sortie_resumee
         f.write(json.dumps(ligne, ensure_ascii=False) + "\n")
     return ligne
 
+
+
+class _Tee:
+    """Recopie ce qu'on écrit sur la sortie d'origine ET le garde."""
+
+    def __init__(self, dest):
+        self.dest, self.morceaux = dest, []
+
+    def write(self, x):
+        self.morceaux.append(x)
+        return self.dest.write(x)
+
+    def flush(self):
+        self.dest.flush()
+
+    def texte(self):
+        return "".join(self.morceaux)
+
+
+def executer_et_enregistrer(production, kind, portee, entrees, fonction, commande, statut=None, registre=None):
+    """Branchement minimal d'un script de vérification existant : lance
+    fonction() en laissant sa sortie s'afficher, la capture, puis ajoute UNE
+    ligne au registre avec cette sortie (le script ne change pas de
+    comportement). Renvoie (résultat de fonction, ligne).
+
+    statut : pour kind « technique », « passe » / « echoue » ou une fonction
+    (résultat, sortie) -> « passe » / « echoue » ; ignoré pour les autres
+    kinds (« valeurs »). Si fonction lève une exception (SystemExit
+    compris) : en « technique », une ligne « echoue » est écrite avec la fin de
+    la sortie et l'erreur, puis l'exception remonte ; pour les autres kinds,
+    rien n'est écrit (une mesure qui plante n'est pas une valeur)."""
+    import traceback
+    tee = _Tee(sys.stdout)
+    ancien, sys.stdout = sys.stdout, tee
+    try:
+        res = fonction()
+    except BaseException as ex:
+        sys.stdout = ancien
+        if kind == "technique":
+            err = "".join(traceback.format_exception_only(type(ex), ex)).strip()
+            enregistrer_preuve(production, kind, portee, "echoue", entrees,
+                               tee.texte() + f"\n[erreur] {err}", commande, registre)
+        raise
+    finally:
+        sys.stdout = ancien
+    if kind == "technique":
+        st = statut(res, tee.texte()) if callable(statut) else statut
+    else:
+        st = "valeurs"
+    ligne = enregistrer_preuve(production, kind, portee, st, entrees, tee.texte(), commande, registre)
+    print(f"[preuves] ligne ajoutée : {production} {kind} {ligne['statut']} commit {(ligne['commit'] or '?')[:8]}")
+    return res, ligne
 
 # ------------------------------------------------------------ lire
 def lire(registre=None):

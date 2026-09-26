@@ -182,7 +182,7 @@ Chaque règle suit le même format : énoncé, chiffres, pourquoi, quand l'utili
 - **Pourquoi.** Casser la continuité visuelle au moment du contact. Le cerveau lit un « choc » que le mouvement seul ne peut pas donner.
 - **Quand l'utiliser.** Uniquement le coup fort de la séquence (finisher, coup chargé).
 - **Quand l'éviter.** Sur chaque coup d'un combo : cela sature. Sur les coups légers, rien ou un seul flash.
-- **R6 : dessin IMPOSSIBLE, équivalent POSSIBLE.**
+- **R6 : dessin IMPOSSIBLE, équivalent POSSIBLE.** [CONTREDIT 2026-09-26 : le dessin est possible en 2D par-dessus la 3D, voir corpus/etude_c4/B4_techniques_anime.md §4 point 2]
   - `Highlight` sur les deux personnages (remplissage noir, contour blanc, ou l'inverse) pendant 1 à 3 images.
   - `ColorCorrectionEffect` (contraste et saturation extrêmes, teinte) ou cadre d'interface plein écran noir ou blanc de 1 image.
   - Fond masqué (skybox ou décor temporairement noirs).
@@ -264,8 +264,8 @@ Le timing est déjà jugé bon ; cette règle est courte.
 | Épaule dans le coup | PARTIEL | RootJoint + translation du C0 d'épaule |
 | Coude ou poignet cassés, courbure du bras | IMPOSSIBLE | aucun ; compenser par la perspective et le smear |
 | Déformation faciale | IMPOSSIBLE | échange de decal |
-| Impact frames dessinées | IMPOSSIBLE | Highlight, ColorCorrection, flashes UI |
-| Smears déformés | IMPOSSIBLE | clones fantômes, maillage de smear, trails |
+| Impact frames dessinées | IMPOSSIBLE | [CONTREDIT 2026-09-26 : possibles en 2D par-dessus la 3D, et le projet l'a déjà fait, voir corpus/etude_c4/B4_techniques_anime.md §4 point 2] Highlight, ColorCorrection, flashes UI |
+| Smears déformés | IMPOSSIBLE | [CONTREDIT 2026-09-26 : un smear-forme opaque qui REMPLACE le membre 1-2 images est faisable (échange de pièce), voir corpus/etude_c4/B4_techniques_anime.md §4 point 3] clones fantômes, maillage de smear, trails |
 | Hitstop | POSSIBLE | — |
 | Caméra animée | POSSIBLE | — |
 

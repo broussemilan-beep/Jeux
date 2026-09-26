@@ -1,9 +1,10 @@
 # Carnet d'apprentissage (pas des règles)
 
-Demande de Milan (2026-09-25) : « rajoute encore plus de tutos, le but
-apprendre et nourrir, pas forcément combler des trous… des tricks, des
-pépites utiles, mais ça doit pas devenir des règles, mais de
-l'apprentissage ; le but c'est qu'on soit hyper fort, polyvalent. »
+Demande de Milan (2026-09-25 07:45, milan_verbatim 18c384378ac6f629) :
+« rajoute encor plus de tuto le but apprebdre et nourrir pas forcement
+combler de trou […] reflechir si des trick peuvent des pepites utiles mais
+sa doit pas dveneir des regles mais de l’apprentissage , enfr le but c que
+on sois hyper fort polybalrbt ».
 
 Ce carnet est la **mémoire de ce que j'ai appris et pas encore prouvé
 chez nous**. Il n'est lu par aucun contrôle automatique (`rules.py`,
@@ -16,7 +17,15 @@ que si un essai chez nous et un retour de Milan la confirment.
 - **extrait** : résumé de moteur de recherche, indice seulement ;
 - **mesuré chez nous** : j'ai mesuré la chose sur nos fichiers et sur une
   référence dans les mêmes conditions ;
-- **essayé** : on l'a réellement appliqué, avec le résultat.
+- **essayé** : on l'a réellement appliqué, avec le résultat ;
+- **vu** (dans les refs ou à l'écran) : regardé, pas mesuré ;
+- **retour de Milan** : ses mots (exacts, `corpus/milan_verbatim.jsonl`) ;
+- **déduit** : raisonnement à partir d'autres entrées, rien de regardé ni
+  de mesuré pour ce point précis ;
+- **non établi** : piste, plan ou proposition, pas encore vérifié ;
+- **CONTREDIT** : lecture démentie, gardée pour la trace avec la lecture
+  vérifiée (nettoyage du 2026-09-26 : chaque entrée porte une ligne
+  « Statut : »).
 
 Sources complètes : `corpus/recherche/` (roblox, jugement, anime3d du
 2026-09-25), `corpus/tutos/`, `corpus/TUTOS_ANIMATION.md`.
@@ -173,7 +182,7 @@ slow against the fast ».
   - L'écart réel est donc peut-être plus petit. Il reste que, dans notre
     clip, le ré-armement est le mouvement le plus rapide.
 - **À essayer** (piste, pas règle) : ré-armer plus lentement (ou le cacher
-  dans le recul), frapper en 1-2 images. Juger en regard vitesse réelle
+  dans le recul), frapper en 1-2 images. [CONTREDIT 2026-09-26 : « frapper en 1-2 images » n'est pas universel : TSB M1 étale le coup sur 8 images (i6-i14, buste qui part fort puis freine) ; 2 images valent pour un coup unique après une longue charge (myloe 60→62) : deux régimes, voir corpus/etude_c4/B2_punch_blender_pro_noob.md partie 5 point 3] Juger en regard vitesse réelle
   contre TSB.
 - Contre-indication : une rafale « mitraillette » peut vouloir un flux
   continu (TSB Ultimate1 : 0,38). C'est un choix, pas un oubli.
@@ -275,7 +284,7 @@ d'après.** *Extrait* (Sakurai « Follow-Throughs Make the Impact », Cooper).
   - 0,42-0,48 s debout avant un saut (deux jeux de la même famille) ;
   - 1,53 s immobile en caméra de jeu avant l'élan (Stagnant Rage) ;
   - 1,07 s avant la Black Hole.
-- Silence ENTRE deux actions qui montent : 0,3 s de pause, puis une action
+- Silence ENTRE deux actions qui montent : 0,3 s de pause, [CONTREDIT 2026-09-26 : 0,45 s dans aafdc91d, voir corpus/etude_c4/C3_gifs.md §5] puis une action
   plus grosse (aafdc91d).
 - À essayer : une pause nette entre la rafale et le coup chargé. Chez nous
   la charge s'enchaîne sans silence ; à mesurer avec `planche_ref.py`
@@ -323,11 +332,14 @@ la bascule du buste, pas l'angle du bras** (Milan, « Un seul coup » v1, 2e
 fois après le Poing du Dragon). Bras mesuré « à plat » à -6° par rapport au
 bras, mais buste penché de 40° et poing à 2,5 studs : l'image dit « il plonge
 vers le bas-ventre ». Une pose de l'APPROCHE (fente très basse, torse
-horizontal, TSB) collée au CONTACT. Garde-fou mis dans l'export : buste
-< 22°, bras < 12°, poing au contact > 3,2 studs, victime debout (sa
-poitrine est la cible). Le bas et le penché servent à l'élan et à la charge
+horizontal, TSB) collée au CONTACT. Garde-fou annoncé ici (buste < 22°,
+bras < 12°, poing au contact > 3,2 studs, victime debout) : annoncé, absent
+du code au 2026-09-26 (retiré de `verify_export.py` d'Un seul coup en
+6f0539e : ces grandeurs y sont MESURÉES sans verdict, `mesures_coup` et
+`mesures_pose`). Le bas et le penché servent à l'élan et à la charge
 (Gon), jamais à l'arrivée du coup droit (Saitama manga : à plat, épaule
 devant).
+- Statut : mesuré (pose de la v1 d'Un seul coup : bras -6°, buste 40°, poing à 2,5 studs) et retour de Milan (2026-09-26 08:14 : « autre problème qui revient un peu a quand dans poing du dragon le perso frappait vers le bas ») . Que le bas ne serve jamais à l'arrivée du coup droit est déduit du manga Saitama (lu), pas mesuré sur les refs. Le titre « Il frappe vers le bas » est mon résumé du motif (`outils/motifs.py vers_le_bas`), pas ses mots.
 
 **2.10 Le poing chargé : mesuré sur les refs le 2026-09-26, voir
 `corpus/poses/` et la fiche UN_SEUL_COUP §11** (en attendant la synthèse :
@@ -342,7 +354,7 @@ du buste qui tourne ; aucune ref ne tend le bras derrière).
 - Anciennes lectures (gardées pour la trace, ne plus appliquer) :
   - [CONTREDIT v3 -> « aucun changement », puis v4] « Le poing chargé est un
     ARC QU'ON TEND, pas une pose » (Milan, clip
-Pew + TSB, après 7/10 : « tu ne captes pas le truc du poing chargé »).
+Pew + TSB, après 7/10, 2026-09-26 08:33 : « je pense que tu capte pas le truck de poing chargé »).
 Garde -> il s'enfonce et tourne jusqu'au profil -> les deux bras
 s'alignent tendus sur la ligne des épaules (poing loin derrière, l'autre
 bras vers la cible) -> tenue qui tremble -> tout se déroule à 180°. En R6,
@@ -457,7 +469,7 @@ victime, à côté d'elle.** *Vérifié à l'écran (v9).*
   entière qu'on voit.
 - Même piège pour le regard : une cible de regard droit au-dessus de la
   tête la faisait basculer de 90° (cube couché). Regarder devant, menton
-  levé.
+  levé. [CONTREDIT 2026-09-26 : peut-être l'origine de la tête relevée de la v6 d'Un seul coup ; les pros regardent de -12 à -31° dans le monde, voir corpus/etude_c4/C4_images_et_gout.md §2.2]
 
 ## 4. Hitstop et caméra
 
@@ -482,7 +494,7 @@ vérifié* (slides Eiserloh, GDC 2016) :
 - Monster Hunter : trop, puis pas assez, selon le public.
 - Sakurai : garder l'attaquant légèrement en mouvement pendant le gel,
   secouer la victime (horizontal au sol, vertical en l'air).
-- Chez nous : le gel reste un gel (décision v7). La secousse de la
+- Chez nous : le gel reste un gel (décision v7). [CONTREDIT 2026-09-26 : nuance : les tenues d'anime ont presque toujours une couche qui vit (effet, lumière, caméra) ; le gel total existe aussi (All Might 1,0 s), voir corpus/etude_c4/B4_techniques_anime.md E3 et corpus/etude_c4/B4_techniques_anime.md §4 point 1] La secousse de la
   victime pendant le gel est à essayer.
 
 **4.3 Sakurai, « Too Much is Just Right ».** *Lu par agent*
@@ -504,18 +516,22 @@ refs.*
 
 **4b.2 2-3 couleurs + blanc par technique.** La palette fait la signature
 (Black Flash rouge / noir / blanc, boxeur blanc / rouge / bleu-violet).
+- Statut : vu dans les refs (relecture VFX du 2026-09-25, `RELECTURE_REFS_VFX_2026-09-25.md`) ; palettes non mesurées.
 
 **4b.3 L'air vend la vitesse.** Croissants blancs qui tournent, lignes de
 pression, vague au sol, spirale autour du membre, tourbillon de fumée.
 Presque toutes les refs en ont ; le Poing du Dragon, aucun.
+- Statut : vu dans les refs (relecture VFX du 2026-09-25) ; « presque toutes » n'est pas compté.
 
 **4b.4 Au tier 1, le blanc net suffit** (449, aafdc91d) : étoile de 2 images,
 anneau fin en 3-4 images, petit croissant. Lisible en caméra de jeu, même
 tout petit.
+- Statut : vu dans les refs (449, aafdc91d).
 
 **4b.5 Deux registres qui alternent** : VFX dans le monde 3D (caméra de jeu)
 et cartes plein écran. Notre Dragon est fort sur les cartes, faible dans le
 monde 3D.
+- Statut : vu dans les refs ; « fort sur les cartes, faible dans le monde 3D » est déduit (mon jugement, avant les notes VFX de Milan).
 
 **4b.6 Le son (mesuré, pas écouté : ECOUTE_REFS_SFX_2026-09-25.md).** Un
 impact des refs = trait vertical large bande, surtout du grave (sub ~0,6 des
@@ -530,10 +546,12 @@ cou ou corps qui suivent le bras passent entre l'objectif et l'attaquant.
 Dans ce plan, l'effet doit se retirer (rentrer dans le poing) et revenir
 APRÈS, dans un plan qui le montre (la révélation). C'est d'ailleurs ce que
 fait le film : le dragon sort de l'impact, pas du bras qui frappe.
+- Statut : essayé (aura dragon, plan obari, 2026-09-25) ; ce que fait le film est vu dans la ref (7a2b4ae8).
 
 **4b.8 Une carte peinte doit toujours faire face à la caméra** : orientée
 dans l'axe de ce qu'elle suit, elle disparaît dès qu'on la regarde par la
 tranche. Face caméra, et l'image tournée selon l'axe projeté à l'écran.
+- Statut : essayé (cartes peintes du studio VFX, 2026-09-25), sans capture citée ici.
 
 **4b.9 Un détail de texture n'existe qu'à la distance de la caméra**
 (dragon v12). 70 x 16 écailles de 0,2 stud tracées en 5 px : à 8 studs,
@@ -541,18 +559,21 @@ le corps se lisait comme un tube jaune uni, « du plastique ». Écailles de
 ~0,5 stud peintes en volume (bord libre foncé, reflet) : elles se lisent.
 Et un métal très brillant sans environnement à refléter devient une
 couleur plate.
+- Statut : essayé (dragon v12, vu à 8 studs dans nos captures), corrigé par des écailles de ~0,5 stud.
 
 **4b.10 Un modèle 3D nu se lit comme une statue** (dragon v12). Les refs
 (7a2b4ae8) montrent le dragon ENVELOPPÉ d'énergie : il sort d'un tourbillon
 de feu et en reste nimbé. Le modèle apporte le volume ; le feu qui coule le
 long du corps (et traîne derrière quand il bouge) apporte la vie. Fait en
 DONNÉE (émetteurs sur des chemins = points du corps) : aucun code moteur.
+- Statut : vu dans les refs (7a2b4ae8) et essayé (feu en émetteurs le long du corps, dragon v12).
 
 **4b.11 Une tête qui pique vers sa cible se lit comme un crâne** (armé v12).
 Visée droit sur la victime, qui est EN BAS, la tête du dragon montrait son
 dessus et sa crinière. De profil, horizontale, devant et au-dessus du poing :
 la gueule ouverte se lit (l'affiche e92ac0d7). Et le perso reste DEVANT le
 dragon : les spires qui passaient devant le visage cachaient le héros.
+- Statut : essayé (armé v12, vu à l'écran) ; affiche e92ac0d7 vue dans les refs.
 
 **4b.12 Une planche d'images fixes cache la DURÉE** (v12, Milan : « le
 dragon apparaît 0,5 seconde »). Mes planches montraient un beau dragon ; en
@@ -583,6 +604,7 @@ aucune hypothèse de QUALITÉ d'effet (taille à l'écran, durée, finition),
 seulement de présence. Biais mesuré par `critic.py` : +3,0 points sur les
 VFX (2 notes), +0,3 sur l'animation (4 notes). À soustraire tant qu'il ne
 se résorbe pas, et juger avec `durees.py` contre la ref, pas avec la liste.
+- Statut : mesuré (biais de `critic.py` : +3,0 sur 2 notes VFX, +0,3 sur 4 notes d'animation) ; peu de notes, à relire quand il y en aura plus.
 
 **4b.15 Le « premium » de TSB est dans le DESIGN, pas dans les polygones**
 (dragon de Suiryu, 5 images, `RELECTURE_REFS_SUIRYU_2026-09-25.md`).
@@ -601,6 +623,7 @@ violets (Cursed Dragon). Le seul point de couleur opposée est ce qu'on
 regarde en premier. Et le dragon est au POING ou à la place du perso : il
 EST le coup (projectile qui part du poing, gueule qui avale), jamais un
 décor qui tourne autour.
+- Statut : vu dans les refs (9 dragons) ; « jamais un décor qui tourne autour » est déduit de ces 9 refs, pas une règle.
 
 **4b.17 Le temps d'un ultime se donne à la charge et à la conséquence,
 pas au coup** (archive vidéo n° 1, 4 ultimes mesurés). Charge / tension
@@ -617,6 +640,7 @@ sculpté), énorme au premier plan, tête qui plonge VERS la caméra gueule
 ouverte, puis plein écran de feu ; ou un très long corps qui file au ras
 du sol vers la cible. L'écart avec notre v12 n'est pas l'idée, c'est
 l'exécution : aplat + trait, taille, caméra, et le plein écran qui suit.
+- Statut : vu dans les refs (Last Breath v1-v3, animations abandonnées de TSB).
 
 **4b.19 Du NOIR dans l'effet, et des pointes, pas des taches** (5 effets
 stylisés). Échelle de valeurs : cœur blanc → couleur saturée → bord
@@ -625,10 +649,11 @@ l'effet lumineux : c'est ce qui le fait ressortir. Silhouettes en dents de
 scie, lames, langues pointues ; mouvement dessiné (croissants en spirale,
 traits de vitesse). Nos effets : feu en taches arrondies, pas de noir
 dedans, peu de blanc.
+- Statut : vu dans les refs (5 effets stylisés) ; nos effets comparés à l'œil, pas mesurés.
 
 **4b.20 Un VFX « dessiné » passe par un MESH : forme simple + dessin peint
-+ animé en 2** (idée de Milan, 2026-09-25 : « on dirait c'est dessiné,
-sûrement parce que ça passe par des meshes 3D » ; confirmé par ses refs et
++ animé en 2** (idée de Milan, 2026-09-25 17:51 : « c limite on ditzit et
+sûrement parce que ça passe par des mesh 3d on ditzit c dessiné » ; confirmé par ses refs et
 essayé dans le studio : `vfx_studio/dessins.py`, recettes `dessin_tornade`,
 `dessin_jaillissements`, captures `2026-09-25-vfx-dessines-*`).
 - La FORME vient d'un mesh simple (ruban en spirale, arc, lame) ; le
@@ -643,6 +668,7 @@ essayé dans le studio : `vfx_studio/dessins.py`, recettes `dessin_tornade`,
   quatre spirales identiques = un ressort -> rayons, penchements, vitesses
   et sens différents ; griffures d'encre de 3 studs devant tout = des
   taches -> fines, parmi les lames.
+- Statut : idée de Milan (2026-09-25 17:51), vue dans ses refs, essayée dans le studio (captures `2026-09-25-vfx-dessines-*`).
 
 **4b.21 La morsure se raconte en deux fois, et ce qui DURE, c'est l'avant
 et l'après** (Last Breath v1-v2 relus à 0,1 s,
@@ -651,6 +677,7 @@ et l'après** (Last Breath v1-v2 relus à 0,1 s,
 (0,8 s), le corps qui envahit le cadre (0,5 s), puis 2 s de plein écran et
 2,7-3,4 s de conséquence. Le dragon est plus long que le cadre : on ne le
 voit presque jamais entier.
+- Statut : vu dans les refs (Last Breath v1-v2 relus à 0,1 s, `RELECTURE_LAST_BREATH_GOKU_2026-09-25.md`) ; durées relevées image par image.
 
 **4b.22 Une tête longue ne peut pas sortir d'un poing collé à la cible**
 (v13, vu à l'écran). La tête du modèle fait ~8 studs devant son os à
@@ -673,13 +700,16 @@ fait cartoon, pas le cel lui-même** (v13) : les planches peintes à bord net
 explosions en boules orange cernées de rouge et les nuages gris ronds
 cernés font dessin animé pour enfants. Retirés des impacts du sol et de
 la morsure.
+- Statut : essayé (v13, vu à l'écran, jugé par mon œil) ; non établi chez Milan sur ce point précis.
 
 **4b.24b Un modèle se juge dans son plan le PLUS SERRÉ** (retour de
-Milan sur la v13 : « les yeux cassent le truc, trop cubique »). Un œil rond
+Milan sur la v13, 2026-09-25 19:00 : « tes yeux du dragon sont ausis se qui
+casse le truck ça fais moche […] c trop cubique aussi pas assez travaillée »). Un œil rond
 à pupille lit « jouet » ; un œil étroit, incandescent, sous une arcade lit
 « féroce ». Des sections de loft presque carrées (exposant > 3) lisent
 « planche » ; 2,1-2,4 lisent « sculpté ». Deux pastilles éloignées sur une
 même mèche : le mélange traverse tout l'atlas (rayures).
+- Statut : retour de Milan (2026-09-25 19:00) ; essayé (tête refaite en v13 D2, vue à l'écran) ; les lectures jouet / féroce et les exposants de loft sont déduits de nos essais, pas mesurés sur les refs.
 
 **4b.25 Juger les PROPORTIONS DE TEMPS contre des refs mesurées pareil**
 (`outils/juge.py`, refs `clips/juge_refs_ultimes.json`) : part d'effet au
@@ -688,11 +718,12 @@ pic, temps plein écran, plus longue plage plein écran, conséquence ; seuil
 présenter un ultime qui n'en a pas le temps (v12 : 0,1 s de plein écran).
 Rétro-test : la vidéo v12 échoue aux 4 critères (effet au pic 0,33 contre
 0,70 ; plein écran 0 contre 0,66 s ; conséquence 0 contre 3,4 s), ce qui
-colle au 4/10 de Milan ; le juge l'aurait arrêtée avant de la montrer.
+colle au 4/10 de Milan ; le juge l'aurait arrêtée avant de la montrer. [CONTREDIT 2026-09-26 : un score automatique ne suffit pas à juger : AnimationBench donne 4-5/5 à la v6 rejetée (mieux que TSB M1), et le même changement de temps d'écran a reçu « aucun changement » puis « un peu mieux », voir corpus/recherche/depots_yeux_2026-09-26/SYNTHESE_YEUX.md §0 et corpus/recherche/depots_yeux_2026-09-26/SYNTHESE_YEUX.md §6]
+- Statut : mesuré (`outils/juge.py`, 6 ultimes, rétro-test sur la v12) ; le seuil 0,8 x médiane est posé par moi, et ne vaut pas pour le style sans plein écran (4b.29).
 
 **4b.26 Relire SA scène comme un spectateur, plan par plan, sans Milan**
-(« revois, il y a des problèmes, je veux voir si tu vois sans moi »,
-v13). Le juge (4b.25) passait, les tests passaient : dix défauts restaient,
+(Milan, v13, 2026-09-25 19:43 : « Revoit y’a des problèmes je veux voir si
+tu vois sans moi »). Le juge (4b.25) passait, les tests passaient : dix défauts restaient,
 tous visibles en regardant chaque plan en entier à 0,1 s en se demandant
 « qu'est-ce que le spectateur COMPREND ici ? » :
 - un modèle qu'on déplace par un OS se place par son os ; si le bout qui
@@ -713,6 +744,7 @@ tous visibles en regardant chaque plan en entier à 0,1 s en se demandant
   images la montre : deux des miennes (caméra de l'invocation, tête au
   plan du regard) donnaient des images quasi identiques ; la vraie cause
   était le chemin du dragon (devant lui, côté caméra), pas la caméra.
+- Statut : retour de Milan (2026-09-25 19:43) et vu (relecture plan par plan de la v13 à 0,1 s ; corrections gardées seulement si la planche avant/après les montrait).
 
 **4b.27 « Peint » contre « dessiné », c'est la MÉTHODE, pas le nombre de
 tons** (retour de Milan sur les planches v13). Un champ de bruit lisse
@@ -725,23 +757,27 @@ des lignes de vitesse qui vont quelque part. Et une silhouette « maison »
 aussi comment le lecteur AFFICHE l'image (carré tourné = recadrage x2).
 
 **4b.28 Vérifier dans les conditions du spectateur, pas les miennes**
-(v13, « le dragon n'apparaît pas là où il faut, et très peu »). Toutes mes
+(v13, Milan, 2026-09-25 21:10 : « il n’apparaît pas là où il faut et très peu »). Toutes mes
 captures chargeaient three.js r134 en local ; la page publiée chargeait r128
 depuis le CDN, où le dragon skinné restait figé en pose de repos. Aucune
 vérification ne pouvait le voir parce qu'aucune ne tournait sur ce que
 Milan ouvre. Ce que je vérifie doit être EXACTEMENT ce qui est livré (même
-bibliothèque, embarquée) ; et quand Milan dit « je ne vois pas X », chercher
-d'abord un bug d'affichage chez lui avant d'y lire un avis de goût.
+bibliothèque, embarquée) ; et quand Milan dit qu'il ne voit pas quelque chose
+(paraphrase, pas ses mots ; exemple réel, 2026-09-25 21:08 : « je ne voit
+tjrs pas le dragon comme il faut »), chercher d'abord un bug d'affichage
+chez lui avant d'y lire un avis de goût.
+- Statut : essayé (bug r128 contre r134 trouvé puis corrigé en v13d) et retour de Milan (2026-09-25 21:10).
 
 **4b.29 Roblox premium : le dragon en 3D plutôt que des planches 2D**
-(Milan retire tourbillon, rouge et soleil : « ça ne rend pas bien pour du
-Roblox premium »). Les refs Last Breath en abusent, mais pour ce projet la
+(Milan retire tourbillon, rouge et soleil, 2026-09-25 21:08 : « je trouve
+que ça rends pas bien pour du Roblox premium »). Les refs Last Breath en abusent, mais pour ce projet la
 3D du jeu prime ; le temps d'abstraction sert mieux à MONTRER le dragon
 (grande boucle dans le ciel, sommet, plongeon). Le seuil « plein écran »
 du juge ne vaut donc pas pour ce style.
+- Statut : retour de Milan (2026-09-25 21:08).
 
-**4b.30 Un dragon se MESURE en longueurs de corps par seconde** (Milan, 7,85 :
-« le dragon va dans tous les sens hyper rapidement »). `outils/allure.py`
+**4b.30 Un dragon se MESURE en longueurs de corps par seconde** (Milan, 7,85,
+2026-09-25 22:21 : « le dragon va dans tout les sensé hyper rapidement »). `outils/allure.py`
 sur les données jouées : 2-3 corps/s et 200-900 °/s presque en continu.
 Ce qui marchait chez les refs (Last Breath : il tourne 3 s ; Goku : tenu
 2 s) c'est l'inverse : LENT ou TENU la plupart du temps (< 1,2 corps/s,
@@ -767,6 +803,7 @@ déjà ouverte, donc rien. Calé sur le début de ce plan (+0,1 s), on voit le
 ciel s'ouvrir et le sillon apparaître dedans. Pareil pour le plan « regard
 de la victime » : la caméra prend SA place, donc on la masque (1er essai à
 côté d'elle : son torse bleu couvrait la moitié de l'image).
+- Statut : essayé (Un seul coup, vu à 0,1 s ; nuages recalés sur le plan au-dessus des nuages).
 
 ## 5. Pistes à essayer (classées, aucune n'est décidée)
 
@@ -820,8 +857,11 @@ Méthode pour chacune :
 - **J'anime le membre qui porte le coup et je fige le corps** (récurrent :
   « il manque les épaules » sur r6_directional_punch, « que les bras » sur
   la v9). Je conçois des poses, puis je les relie par des translations
-  rigides. Garde-fou : `outils/corps_bras.py` sur chaque production, et la
-  pelure d'oignon du TORSE (pas seulement du poing) avant de montrer.
+  rigides. Garde-fou annoncé : `outils/corps_bras.py` sur chaque production,
+  et la pelure d'oignon du TORSE (pas seulement du poing) avant de montrer ;
+  annoncé, absent du code au 2026-09-26 (l'outil existe, aucune production
+  ne l'appelle : à lancer à la main, NOYAU « outils de vigilance jamais
+  relancés »).
 - Je traduis les mots de Milan en ma propre étiquette et je perds son sens :
   pour lui, « coup final » = le coup aérien depuis la v7 ; j'avais mélangé
   avec la charge au sol (fiche COUP_CHARGE §4).

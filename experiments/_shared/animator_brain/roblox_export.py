@@ -153,11 +153,32 @@ def _cframe(parent, name, pos, m):
             ET.SubElement(el, f"R{i}{k}").text = repr(float(m[i][k]))
 
 
-def write_kfseq(frames, out_path, name, loop=False, priority=3, markers=(), zero_weight=()):
-    """frames : [(t, world)] ; markers : [(t, "nom", "valeur")] -> KeyframeMarker
-    sous le Keyframe le plus proche (utilises en jeu par GetMarkerReachedSignal).
+MARKER_TOL = 1e-4   # s : un marqueur a moins de 0,1 ms d'une cle de pose va SOUS cette cle
+
+
+def write_kfseq(frames, out_path, name, loop=False, priority=3, markers=(), zero_weight=(), marker_tol=MARKER_TOL):
+    """frames : [(t, world)].
+
+    markers : [(t, "nom", "valeur")] -> un KeyframeMarker (Name = nom, Value =
+    valeur, chaine) enfant d'un Keyframe au temps t ; en jeu,
+    AnimationTrack:GetMarkerReachedSignal("nom") le recoit avec Value en
+    parametre. Si une cle de pose existe a marker_tol pres, le marqueur va
+    dessous ; SINON un Keyframe VIDE (sans Pose) est cree exactement a t, comme
+    dans les fichiers TSB (35 marqueurs lus le 2026-09-26, corpus/etude_c4/A1
+    et A2 : hitreg de M2 a 0,1733 s, StartHitbox de Collateral Ruin a
+    1,2554 s... sur des cles vides hors grille). Avant le 2026-09-26, le
+    marqueur allait sous la cle la PLUS PROCHE, quel que soit l'ecart (d'ou
+    les keep_times forces dans reduce_keyframes). Un Keyframe vide ne change
+    aucune pose (l'Animator interpole chaque part entre SES Poses) ; place
+    apres la derniere cle de pose, il allonge la duree de l'anim (pose tenue).
+    Sans marqueur, ou avec des marqueurs tous sur des cles de pose, la sortie
+    est octet pour octet celle d'avant (tests/export_marqueurs_selftest.py).
+
     zero_weight : parts ecrites avec Weight = 0 (une autre animation les mene
     en jeu -- ex. jambes d'un M1, comme dans le pack pro, corpus/README.md)."""
+    for m in markers:
+        if len(m) != 3 or float(m[0]) < 0 or not str(m[1]):
+            raise ValueError(f"marqueur invalide : {m!r} (attendu (temps >= 0, nom non vide, valeur))")
     ref = [0]
 
     def nref():
@@ -197,12 +218,32 @@ def write_kfseq(frames, out_path, name, loop=False, priority=3, markers=(), zero
             for child in [p for p, par in PARENT.items() if par == part]:
                 pose(it, child)
         pose(kf, "HumanoidRootPart")
+    vides = []                                   # [(t, Keyframe)] crees pour des marqueurs hors cle
     for t, mname, value in markers:
+        t = float(t)
         k = int(np.argmin(np.abs(np.array(times) - t)))
-        it = ET.SubElement(kf_items[k], "Item", {"class": "KeyframeMarker", "referent": nref()})
+        if abs(times[k] - t) <= marker_tol:
+            parent = kf_items[k]
+        else:
+            parent = next((kf for tv, kf in vides if abs(tv - t) <= marker_tol), None)
+            if parent is None:
+                parent = ET.SubElement(seq, "Item", {"class": "Keyframe", "referent": nref()})
+                kp = ET.SubElement(parent, "Properties")
+                ET.SubElement(kp, "string", {"name": "Name"}).text = "Keyframe"   # nom des cles vides TSB
+                ET.SubElement(kp, "float", {"name": "Time"}).text = repr(t)
+                vides.append((t, parent))
+        it = ET.SubElement(parent, "Item", {"class": "KeyframeMarker", "referent": nref()})
         mp = ET.SubElement(it, "Properties")
-        ET.SubElement(mp, "string", {"name": "Name"}).text = mname
+        ET.SubElement(mp, "string", {"name": "Name"}).text = str(mname)
         ET.SubElement(mp, "string", {"name": "Value"}).text = str(value)
+    if vides:
+        # ordre du fichier = ordre des temps (lisible dans l'explorateur de Studio ;
+        # l'Animator trie de lui-meme). Tri stable : les cles de pose gardent leur ordre.
+        kfs = [el for el in seq if el.get("class") == "Keyframe"]
+        for el in kfs:
+            seq.remove(el)
+        kfs.sort(key=lambda el: float(el.find("Properties/float[@name='Time']").text))
+        seq.extend(kfs)
     tree = ET.ElementTree(root)
     ET.indent(tree, space="  ")
     tree.write(out_path, encoding="utf-8", xml_declaration=True)
@@ -210,7 +251,9 @@ def write_kfseq(frames, out_path, name, loop=False, priority=3, markers=(), zero
 
 
 def read_kfseq(path):
-    """[(t, {part: (R, p)})] -- Poses brutes (T) lues dans le fichier."""
+    """[(t, {part: (R, p)})] -- Poses brutes (T) lues dans le fichier. Les
+    Keyframes sans Pose (porteurs de marqueurs) sont ignores : voir
+    read_markers."""
     seq = ET.parse(path).getroot().find("Item")
     out = []
     for kf in seq.findall("Item"):
@@ -229,10 +272,28 @@ def read_kfseq(path):
                              np.array([v["X"], v["Y"], v["Z"]]))
                 walk(p)
         walk(kf)
-        out.append((t, poses))
+        if poses:                        # Keyframe vide (porteur de marqueur) : aucune pose
+            out.append((t, poses))
     out.sort(key=lambda f: f[0])
     return out
 
+
+
+def read_markers(path):
+    """[(t, nom, valeur)] tries par temps : chaque KeyframeMarker du fichier
+    avec le Time de son Keyframe parent (cle de pose ou cle vide)."""
+    seq = ET.parse(path).getroot().find("Item")
+    out = []
+    for kf in seq.findall("Item"):
+        if kf.get("class") != "Keyframe":
+            continue
+        t = float(kf.find("Properties/float[@name='Time']").text)
+        for m in kf.findall("Item"):
+            if m.get("class") == "KeyframeMarker":
+                v = m.find("Properties/string[@name='Value']")
+                out.append((t, m.find("Properties/string[@name='Name']").text or "",
+                            (v.text or "") if v is not None else ""))
+    return sorted(out, key=lambda x: (x[0], x[1]))
 
 def roundtrip_error(path, frames):
     """Relit le fichier, rejoue l'equation du moteur (avec le

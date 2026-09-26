@@ -7,7 +7,7 @@ grille d'hypothèses ; les démos animées sont revues image par image. Tout tex
 ## Déroulé et textes (au fil de l'eau)
 
 - 0-4 s : démo d'intro « Want to animate like this? » : un perso R6 (avatar
-  habillé, pas le mannequin) contre un grand mur gris, dans un coin. [démo à
+  habillé, pas le mannequin) contre un grand mur gris, dans un coin. [CONTREDIT 2026-09-26 : l'intro a deux personnages et trois impacts, pas un perso seul contre le mur, voir corpus/etude_c4/B1_moon_smooth_r6.md §4] [démo à
   revoir image par image]
 - 4-7 s : « Well Today I will Show you how to make your R6 Animations Smooooooth! »
 - 8-12 s : « You will need: Moon Animator 2 ; Phobos Rotation ; VoidMonke's
@@ -164,7 +164,7 @@ grille d'hypothèses ; les démos animées sont revues image par image. Tout tex
 3. **Il juge chaque clé en la rejouant** (« constantly replay ») et
    l'exagère si elle est « bland » (fade). Critère = l'œil, en boucle.
 4. **Le drag assumé** : bras « disloqué » qui traîne derrière le corps.
-5. **Tête** : garde la direction de la 1re image (contre-rotation, regard
+5. **Tête** : garde la direction de la 1re image (contre-rotation, regard [CONTREDIT 2026-09-26 : vrai pour ce tuto, pas universel : l'uppercut du pack ne la fait pas, la tête suit le lacet, voir corpus/etude_c4/A4_pack_battleground.md §4]
    fixe), accentue au milieu, puis suit le torse.
 6. **Pieds** : plantés à leur place de départ (vérifié au fantôme), jambes
    uniquement montées/descendues.

@@ -88,7 +88,7 @@ commentaires, critiques). Notes au fil de l'eau.
   3 poses, dont une sur une jambe, penchée : tant que la tête est au-dessus du
   pied, la pose tient.
 - 520-541 s : il REPOSE en direct le perso de DeHapy dans Moon : torse
-  fortement tourné et penché, un genou levé haut, bras arrière loin derrière,
+  fortement tourné et penché, un genou levé haut, bras arrière loin derrière, [CONTREDIT 2026-09-26 : à lire avec rapport_video_critique_poses.md : les deux études décrivent sans doute des bras différents ; non tranchable sur une image fixe, voir corpus/etude_c4/B3_apprendre_et_critiques.md A4 et corpus/etude_c4/B3_apprendre_et_critiques.md §7 point 1]
   bras avant plié ; il tourne la caméra autour, retouche chaque membre
   (translation + rotation), rejoue.
 - 544 s : « DaY FoOr (of week two) » ; Discord « Animation Ideas » (backflip…).

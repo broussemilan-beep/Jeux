@@ -66,12 +66,12 @@ Paradoxe du texte : la pose ✗ du haut est annotée « asymmetric posing » alo
 
 ---
 
-## 3) Règles concrètes
+## 3) Règles concrètes [CONTREDIT 2026-09-26 : ces R1-R8 sont une méthode de travail à relire comme des questions, pas des règles ; dans la pose ✓, le bras court est en raccourci : « replié » ou « tendu en profondeur » est invérifiable, voir corpus/etude_c4/B3_apprendre_et_critiques.md §7 points 1-2]
 
 | # | Énoncé | Preuve (temps) | Quand | Limite |
 |---|---|---|---|---|
 | R1 | **Jamais de pose en croix plate** : bras écartés dans le plan de l'écran + torse de face = « stickman ». Mettre un bras devant et l'autre derrière le corps (profondeur). | 499–504, ✗ bas gauche « boring sameside posing / looks like a stickman » | Toute pose clé de charge ou de frappe | Critique sur des poses fixes, pas sur un mouvement. |
-| R2 | **Charge = enroulement asymétrique** : torse tourné, bras qui frappe armé *derrière* l'épaule, genou levé ou jambe chargée, silhouette compacte. Référence explicite : Serious Punch de TSB. | 499–504, ✓ bas droit (« Looks akin to… The Serious Punch… The Strongest Battlegrounds ») | Anticipation d'un coup puissant | Une seule image. On ne voit pas la pose de contact qui suit. |
+| R2 | **Charge = enroulement asymétrique** : torse tourné, bras qui frappe armé *derrière* l'épaule, [CONTREDIT 2026-09-26 : « bras armé derrière » contre « tendu devant » (etude_complete_dehapy.md) : chacun décrit sans doute un bras différent ; non tranchable sur une image fixe, voir corpus/etude_c4/B3_apprendre_et_critiques.md A4 et corpus/etude_c4/B3_apprendre_et_critiques.md §7 point 1] genou levé ou jambe chargée, silhouette compacte. Référence explicite : Serious Punch de TSB. | 499–504, ✓ bas droit (« Looks akin to… The Serious Punch… The Strongest Battlegrounds ») | Anticipation d'un coup puissant | Une seule image. On ne voit pas la pose de contact qui suit. |
 | R3 | **Pas d'accroupi permanent** ni de genoux écartés en V : une pose de repos a les jambes droites ; se baisser est un moment, pas un état. | 499–504 (« perma crouched position », « disjointed legs », « isn't 3 inches away from touching the ground ») ; Flip Punch 460.27–460.37, 484–488 | Attente, réception, entre deux coups | L'accroupi reste valable comme pose clé brève de compression (DÉDUIT). |
 | R4 | **Équilibre : la ligne de gravité tombe sur le pied d'appui.** Tracer une verticale de la tête au sol ; elle doit tomber dans la base d'appui, d'autant plus pour « faire lourd ». | 516–519 (ligne rouge tête→sol + barre entre les pieds ; texte Discord partiel « …ke something look heavy. ») | Genou levé, pose sur un pied, coups lourds | Texte coupé : le lien exact avec « heavy » est DÉDUIT. |
 | R5 | **Torse incliné et tourné dans les poses d'action** (≈40–60°), diagonale épaules–bras qui prolonge l'intention. | Reposes de Xoaterz 527–541 ; pros 183.33, 187.40, 189.60 | Coup, élan, contact | Angle estimé à l'œil sur une image 640x360. |

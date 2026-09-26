@@ -1,8 +1,8 @@
 # Catalogue des références de Milan : quel fichier, c'est QUOI, où c'est étudié
 
-**Pourquoi ce fichier existe.** Retour de Milan, 2026-09-25 : « si je
-t'évoque poing chargé puissant, ça devrait faire écho au Serious Punch de
-Saitama, le GIF et l'anime TSB ».
+**Pourquoi ce fichier existe.** Retour de Milan, 2026-09-25 11:19 : « même
+si je t’évoque poing charge puissance ça devrai faire écho à notre gif coup
+sérieux de saitama a la fois le gif et à la fois l’anime tsb ».
 - Pendant la relecture du jour, j'avais étudié le GIF du Serious Punch
   (48244687) sans le reconnaître : je l'ai appelé « perso cape jaune ».
 - La mémoire existait (notes brutes, étude visuelle, fiche v7), mais rien
@@ -20,14 +20,14 @@ Saitama, le GIF et l'anime TSB ».
 
 | fichier(s) | sha1 | ce que c'est | étudié dans |
 |---|---|---|---|
-| **48244687-image.gif = 91f083d4-IMG_3251.gif** | 762fae8e83adb9cc | **Serious Punch (TSB, Saitama), LE coup de ref**. Cape jaune, 10 s. Garde tenue 32 f, poussée caméra jusque dans le dos, saut vers le ciel, charge en très gros plan sur le poing dans la fumée, 3 cartes à l'encre (croquis, éclat, X) de 4 f, blanc 0,25 s qui se dissout en fumée. | `ETUDE_NOTES_BRUTES.md` « Serious Punch TSB », `REFERENCES_VIDEO.md`, `ETUDE_VISUELLE.md` (A, E, H), `RELECTURE_REFS_ANIMATION_2026-09-25.md` (48244687), fiche `clips/serious_punch_tsb.json` |
-| **772ee6b0-image.gif** | 92c11db65569cadf | **« Serious Punch 2 », coup type Serious Punch (TSB)**. Manteau, 7 s. Poing armé près de la tête, accroupi très bas, ~~poing tiré loin derrière~~ [lecture CONTREDITE par Milan le 2026-09-26 ; reconstruction 3D : même anim que TSB 48244687 décalée de 0,6 s, voir `corpus/poses/sources/recon_sp2.json`], coup droit en gros plan vers l'objectif, cartes. | `ETUDE_NOTES_BRUTES.md` « serious punch 2 », `REFERENCES_VIDEO.md` §2, `RELECTURE…` (772ee6b0), `clips/coup_type_serious_punch_2.json` |
+| **48244687-image.gif = 91f083d4-IMG_3251.gif** | 762fae8e83adb9cc | **Serious Punch (TSB, Saitama), LE coup de ref**. Cape jaune, 10 s. Garde tenue 32 f, [CONTREDIT 2026-09-26 : pose NEUTRE, bras tombant, ≈1,07 s, voir corpus/etude_c4/C3_gifs.md §1] poussée caméra jusque dans le dos, saut vers le ciel, charge en très gros plan sur le poing dans la fumée, 3 cartes à l'encre (croquis, éclat, X) de 4 f, blanc 0,25 s qui se dissout en fumée. | `ETUDE_NOTES_BRUTES.md` « Serious Punch TSB », `REFERENCES_VIDEO.md`, `ETUDE_VISUELLE.md` (A, E, H), `RELECTURE_REFS_ANIMATION_2026-09-25.md` (48244687), fiche `clips/serious_punch_tsb.json` |
+| **772ee6b0-image.gif** | 92c11db65569cadf | **« Serious Punch 2 », coup type Serious Punch (TSB)**. Manteau, 7 s. Poing armé près de la tête, accroupi très bas, ~~poing tiré loin derrière~~ [lecture CONTREDITE par Milan le 2026-09-26 ; reconstruction 3D : même anim que TSB 48244687 décalée de 0,6 s, voir `corpus/poses/sources/recon_sp2.json`], coup droit en gros plan vers l'objectif, cartes. | `ETUDE_NOTES_BRUTES.md` « serious punch 2 », `REFERENCES_VIDEO.md` (« Coups de poing », GIF n° 2), `RELECTURE…` (772ee6b0), `clips/coup_type_serious_punch_2.json` |
 | **8965d689-image.webp** | d7e418577e72bc81 | Planche manga One Punch Man : le POING vers le lecteur, énorme en raccourci. | `ETUDE_NOTES_BRUTES.md` « Images fixes », essai `repro/saitama_obari.py` |
-| **0ca551a4-image.webp** | ea7afcc9b89f6fcd | Deku, poing vers le lecteur (coup chargé aérien voulu par Milan, 2026-09-25). | essai obari (`repro/saitama_obari.py`, README repro) |
+| **0ca551a4-image.webp** | ea7afcc9b89f6fcd | Deku, poing vers le lecteur (coup chargé aérien voulu par Milan, 2026-09-25). [CONTREDIT 2026-09-26 : main OUVERTE, bras plié qui traverse, pas un poing tendu, voir corpus/etude_c4/C4_images_et_gout.md §1.5] | essai obari (`repro/saitama_obari.py`, README repro) |
 | ae4823bd-image.webp | 4348edb2ba26a662 | Hunter x Hunter : Gon accroupi, appuis très larges, buste penché et TOURNÉ, poing ramené à la hanche derrière (la charge ; Milan, « Un seul coup » v1, 2026-09-26). | `fiches/UN_SEUL_COUP.md` §6 |
 | b5d718f5-image.jpg | 2a5a532ccca5e290 | One Punch Man (manga) : Saitama, le coup À PLAT vers le lecteur, épaule en avant, lignes de vitesse. | idem |
 | 793721de-image.jpg | 1d95cf63c9296ba2 | One Punch Man : Saitama de dos, appuis larges, buste tordu, dans un tourbillon (la charge vue de dos). | idem |
-| d2fda413-image.jpg | b83359433025e5dd | One Punch Man (anime) : le poing ROUGE qui part droit, traînées, Saitama en ombre, œil qui brille. | idem |
+| d2fda413-image.jpg | b83359433025e5dd | One Punch Man (anime) : le poing ROUGE qui part droit, traînées, Saitama en ombre, [CONTREDIT 2026-09-26 : le visage géant est Saitama ; la petite silhouette n'est pas lui (Boros ou Genos : non tranché), voir corpus/etude_c4/C4_images_et_gout.md §1.7] œil qui brille. | idem |
 | 6c517cb3 / 27f110ee / 9388f709 / 27b0a39e / a54fe910 (.png, captures d'écran) | - | Clip de Milan sur le POING CHARGÉ : Serious Punch de Pew (lvB-wTylH3Y, 2,9-4,5 s : accroupi, tête rentrée ; ~~de profil, bras alignés tendus~~ [lecture CONTREDITE, 2026-09-26 : mesurée en 3D, la tenue a les DEUX bras DEVANT le torse, poings au-dessus des épaules, voir `corpus/poses/sources/recon_pew_tenue.json`]) + Saitama TSB de dos. | `fiches/UN_SEUL_COUP.md` §7, CARNET 2.10 |
 | 33393716-image.jpg | 815c6323115a7435 | Anime style Baki : charge BASSE et LARGE, lumière dorée du sol. | `ETUDE_NOTES_BRUTES.md` « Images fixes » |
 | (sakuga) 162980 | — | OPM #12, Saitama contre Boros, « LA référence Saitama ». | `ETUDE_NOTES_BRUTES.md`, `refs/sakugabooru/` |
@@ -51,7 +51,7 @@ Punch n'existe chez nous qu'en GIF.
 | 73cc1fb0 (.mp4) | 3a87f65bdec67a4a | Vidéo Gemini : invocation d'un soleil (IA). | `clips/gemini_soleil.json` |
 | 58322fc4-image.gif | ac3458e5308aca17 | Boxeur type Ippo, ultime : esquive très basse, pose tenue en déplacement. | `ETUDE_NOTES_BRUTES.md` (58322fc4), `RELECTURE…` |
 | a0341700-image.gif | 07ba7fb68f6e88b9 | Rafale « gatling » (type Luffy), caméra DE DOS : multiples autour de la silhouette. | idem |
-| aafdc91d-image.gif | 96a4c3cd84d4569c | Perso orange, caméra de jeu lointaine : action, silence 0,3 s, action plus grosse. | idem |
+| aafdc91d-image.gif | 96a4c3cd84d4569c | Perso orange, caméra de jeu lointaine : action, silence 0,3 s, action plus grosse. [CONTREDIT 2026-09-26 : silence de 0,45 s, voir corpus/etude_c4/C3_gifs.md §5] | idem |
 | 6d3be6e1-image.gif | 6318e24f388d61fb | Jeu « Mythra » : saisie, projection, tenue sur la conséquence. | idem |
 
 ## Coups de poing, pro contre noob, tutos en boucle (Moon / Blender)
@@ -103,10 +103,11 @@ Rappel : `python3 outils/rappel.py son`.
 
 ## Poing du Dragon de Goku (aura dragon), à mélanger avec Izuku
 
-Envoyées par Milan le 2026-09-25 : « mélange ça à Izuku pour le poing du
-dragon ». Étudiées dans `fiches/AURA_DRAGON.md`.
+Envoyées par Milan le 2026-09-25 15:17 : « Mélange ça a izuku pour le poing
+du dragon ». Étudiées dans `fiches/AURA_DRAGON.md`.
 Plein écran (planches tourbillon / rouge / soleil, Last Breath + Goku + refs VFX
-stylisées + retour de Milan « peint, pas dessiné ») : `fiches/PLEIN_ECRAN.md`.
+stylisées + retour de Milan, 2026-09-25 20:24 : « trop peinture , et pas
+dessiné ») : `fiches/PLEIN_ECRAN.md`.
 
 | fichier | sha1 | ce que c'est |
 |---|---|---|
@@ -152,7 +153,7 @@ Envoyées par Milan sans texte, après les images de Suiryu. Étudiées dans
 | fichier (dans l'archive) | sha1 | ce que c'est |
 |---|---|---|
 | lvB-wTylH3Y (.mp4) | 4ea7509937eace7f | Serious Punch recréé par Pew : 3 s de charge, 2 images de carte inversée, ligne de roches jusqu'à l'horizon tenue 7 s. |
-| BpDlTrnlIUk (.mp4) | ac8fa912d32b66f1 | Stoic Bomb (TSB) : dôme rouge vu de dessus plein cadre 1,6 s, blanc, cratère. |
+| BpDlTrnlIUk (.mp4) | ac8fa912d32b66f1 | Stoic Bomb (TSB) : dôme rouge vu de dessus plein cadre 1,6 s, blanc, cratère. [CONTREDIT 2026-09-26 : dans le repère de l'anim, les pieds descendent de 8,0 à 0,65 stud (i90-i205), contact vers i213 ; flotter ou non n'est pas visible dans la vidéo, voir corpus/etude_c4/A2_tsb_stoic_collateral.md §6 point 2] |
 | 6sXVqrZ_rYA (.mp4) | c7526690f484bb3e | Slap (TSB) : gros plans désaturés 2,7 s puis planches MANGA plein écran 2,5 s (visage déformé). |
 | 2ka3-cCuHXg (.mp4) | 1f2730537200abf0 | Black Flash « sneak » de Gojo (Sorcerers BG) : 6 s de champ/contrechamp, noir à traits cyan, blanc à silhouette qui rapetisse. |
 | RhsY24ct-vQ (.mp4) | 9a8d936b2f59ea60 | Sunrise Finisher (concept TSB) : minuscule / très gros plans, coupe retardée, bulle rayée, explosion « soleil ». |

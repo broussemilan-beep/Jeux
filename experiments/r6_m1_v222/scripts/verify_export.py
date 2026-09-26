@@ -84,6 +84,18 @@ def main(blend):
         "armement_bras_droit_en_arriere": bool(w10["Right Arm"][1][2] > 0.5),
     }
     rep["sens_roblox"] = sens
+    # registre des preuves (2026-09-26, comme r6_un_seul_coup) : une ligne
+    # « technique » avant l'éventuel arrêt ; passe = sens Roblox + aller-retour
+    # moteur < 0,001 stud ; contact et tête : valeurs dans le résumé.
+    sys.path.insert(0, os.path.join(HERE, "..", "..", "_shared", "animator_brain", "outils"))
+    import preuves as PR  # noqa: E402
+    PR.enregistrer_preuve(
+        "r6_m1_v222", "technique", "scene", "passe" if all(sens.values()) and rt < 1e-3 else "echoue",
+        [pa, pv, os.path.join(HERE, "m1_clip.py"), X.__file__],
+        json.dumps({"sens_roblox": sens, "aller_retour_max_studs": rt, "contact": rep["contact"],
+                    "translation_tete_max": rep["translation_tete_max"],
+                    "marqueurs": [n for _t, n, _v in X.read_markers(pa)]}, ensure_ascii=False, default=float),
+        "python3 experiments/r6_m1_v222/scripts/verify_export.py <Blender_R6.blend>")
     if not all(sens.values()):
         raise SystemExit(f"SENS FAUX : {sens}")
     # 4. verdict calibre

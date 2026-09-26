@@ -20,14 +20,27 @@ Pour une KeyframeSequence (.rbxm binaire des pros, ou notre .rbxmx) :
 - un tableau texte (stdout, ou --json) : par clé, parts posées et
   descripteurs geo_pose (buste, bras, poings, pieds, hanche).
 
-Aide pour regarder : aucun seuil, aucun verdict.
+- (2026-09-26) sous chaque rendu, la lisibilité de la profondeur depuis CETTE
+  caméra (`geo_pose.profondeur_ambigue`) : « BD? » = l'ordre devant/derrière
+  le torse du bras droit ne se lit pas de cet angle ; « BD= » = il se lit (un
+  bloc recouvre l'autre à une vraie distance) ; « BD. » = à côté du torse ;
+- `--faces` : rendu « rig de contrôle » des animateurs TSB (chaque face
+  colorée et lettrée selon sa direction locale, `moon.render(faces=True)`).
+
+Ce que la planche NE voit PAS : les deux caméras sont fixes (3/4 face et
+profil), ni la caméra du joueur ni celle du plan (pour elles :
+`outils/cote_a_cote.py`) ; les clés seules, pas le mouvement à vitesse
+réelle ; ni effets, ni coupes, ni son.
+
+Aide pour regarder : aucun seuil de style, aucun verdict.
 
 Usage :
   python3 outils/planche_cles.py --rbxm <fichier.rbxm> --liste
   python3 outils/planche_cles.py --rbxm <fichier.rbxm> --nom M1 --sortie m1.png [--json m1.json]
   python3 outils/planche_cles.py --rbxmx <export.rbxmx> --sortie nous.png
   options : --avant x,z (direction du coup ; défaut 0,-1 = -Z) ;
-            --max 24 (nombre max de clés dessinées ; les autres sont listées)
+            --max 24 (nombre max de clés dessinées ; les autres sont listées) ;
+            --faces (faces colorées et lettrées F/B/R/L/U/D)
 """
 import argparse
 import json
@@ -122,7 +135,7 @@ def _cam(mondes, az, el, avant, dist_min=7.0):
     return G.camera_orbite(c, az, el, max(dist_min, 9.0 + 1.3 * ext), 40.0, avant)
 
 
-def planche(seq, sortie, avant=(0.0, 0.0, -1.0), maxi=24):
+def planche(seq, sortie, avant=(0.0, 0.0, -1.0), maxi=24, faces=False):
     mondes, cles = analyser(seq, avant)
     montre = cles if len(cles) <= maxi else [cles[int(round(i * (len(cles) - 1) / (maxi - 1)))] for i in range(maxi)]
     cams = [("3/4 face", _cam(mondes, 35, 12, avant)), ("profil", _cam(mondes, 90, 5, avant))]
@@ -150,7 +163,10 @@ def planche(seq, sortie, avant=(0.0, 0.0, -1.0), maxi=24):
         d.text((700, 8), f"jamais posées ici : {' '.join(jamais)} (laissées à l'anim du dessous ; rendues au repos, "
                "attachées au torse comme dans Roblox)", fill=(255, 150, 150))
     d.text((8, 22), "chaque case : image60 (+écart depuis la clé précédente) / parts posées à cette clé ; "
-           "haut = 3/4 face, bas = profil (caméras fixes) ; bras DROIT vert, bras GAUCHE bleu, torse rouge ; flèche rose au sol = « avant » (--avant)", fill=(170, 170, 180))
+           + ("haut = 3/4 face, bas = profil (caméras fixes) ; faces : F rouge avant, B bleu arrière, R vert droite, L jaune gauche, U cyan haut, D orange bas"
+              if faces else "haut = 3/4 face, bas = profil (caméras fixes) ; bras DROIT vert, bras GAUCHE bleu, torse rouge")
+           + " ; flèche rose au sol = « avant » (--avant) ; en bas de chaque rendu, profondeur depuis cette caméra : ? ambigu, = lisible, . à côté",
+           fill=(170, 170, 180))
     y0 = 40
     for k, c in enumerate(montre):
         x, y = (k % col) * tw, y0 + (k // col) * (2 * th + 30)
@@ -165,7 +181,13 @@ def planche(seq, sortie, avant=(0.0, 0.0, -1.0), maxi=24):
                 b, _ = proj((tp[0] + 1.6 * fa[0], 0.02, tp[2] + 1.6 * fa[2]))
                 dr.line([a, b], fill=(255, 60, 200), width=3)
                 dr.ellipse([b[0] - 4, b[1] - 4, b[0] + 4, b[1] + 4], fill=(255, 60, 200))
-            r = MO.render([w], cam[0], cam[1], cam[2], (tw - 4, th - 4), sky=(200, 205, 215), extra=fleche)
+            r = MO.render([w], cam[0], cam[1], cam[2], (tw - 4, th - 4), sky=(200, 205, 215), extra=fleche, faces=faces)
+            pr = G.profondeur_ambigue(w, cam)
+            c.setdefault("profondeur", {})[_n] = {k: v["lecture"] for k, v in pr.items() if not k.startswith("_")}
+            dr = ImageDraw.Draw(r)
+            txt = G.resume_profondeur(pr, court=True)
+            dr.rectangle([0, r.height - 15, 8 + 6 * len(txt), r.height], fill=(0, 0, 0))
+            dr.text((3, r.height - 14), txt, fill=(255, 210, 120))
             im.paste(r, (x + 2, y + 2 + j * th))
         e = "" if c["ecart_images"] is None else f" (+{c['ecart_images']})"
         d.text((x + 4, y + 2 * th + 2), f"i{c['image60']}{e}", fill=(255, 255, 255))
@@ -231,6 +253,7 @@ def main():
     ap.add_argument("--json")
     ap.add_argument("--avant", default="0,-1")
     ap.add_argument("--max", type=int, default=24)
+    ap.add_argument("--faces", action="store_true", help="faces colorées et lettrées par direction locale")
     a = ap.parse_args()
     ax, az = (float(v) for v in a.avant.split(","))
     avant = (ax, 0.0, az)
@@ -241,7 +264,7 @@ def main():
                   f"loop={s['loop']} priorité={s['priority']}")
         return
     seq = cles_rbxm(a.rbxm, a.nom) if a.rbxm else cles_rbxmx(a.rbxmx)
-    _im, cles = planche(seq, a.sortie, avant, a.max)
+    _im, cles = planche(seq, a.sortie, avant, a.max, faces=a.faces)
     for tm, nm, v in seq.get("markers", []):
         print(f"marqueur i{int(round(tm * FPS)):4d} {nm} {v}")
     if a.json:

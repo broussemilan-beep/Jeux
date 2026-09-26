@@ -123,7 +123,7 @@ supposée.
    (poids plein) placent le bassin. Un pied qui arrive ne fait que ramener sa
    jambe, et la solution du bassin passe de « appui simple » à « double
    appui » au rythme de son poids (15,6 studs/s de saut mesuré sans cette
-   règle). Un pied qui arrive ne passe jamais sous le sol.
+   règle). Un pied qui arrive ne passe jamais sous le sol. [CONTREDIT 2026-09-26 : les pros laissent les pieds passer sous le sol à l'impact ; le contrôle de sol reste un contrôle technique, sa tolérance est à revoir, voir corpus/etude_c4/A2_tsb_stoic_collateral.md (« Oublis importants », point 2)]
 8. **Pas de cheville** : quand une jambe est inclinée, c'est le **centre**
    de la semelle qui reste planté, et l'**arête** s'enfonce de
    ½·largeur·sin(inclinaison). C'est une limite connue du R6 (visible sur les

@@ -23,7 +23,7 @@
 
 ## IMPACT HAVEN (Roblox, TikTok)
 - Poses EXTREMES : corps inverses (tete en bas, jambes au-dessus), etirements en diagonale, jambes grandes ouvertes. Aucune pose "sage".
-- Cartes blanches/noires de 2 f entre deux poses : la pose SAUTE derriere le flash (coupe dans l'action). Silhouette blanche sur noir avec lignes de vitesse.
+- Cartes blanches/noires de 2 f entre deux poses : [CONTREDIT 2026-09-26 : 1 image noire (silhouette) + 1 blanche dans 17 cas sur 19 ; exceptions à 3,467 et 9,167 s, voir corpus/etude_c4/C2_clips_jeux.md §5] la pose SAUTE derriere le flash (coupe dans l'action). Silhouette blanche sur noir avec lignes de vitesse.
 - Camera fixe plan moyen au ras du sol ; la victime traverse le cadre en diagonale avec une trainee.
 
 ## exemple blender combat
@@ -227,10 +227,10 @@
 ## 58322fc4 (boxeur type Ippo contre mannequin, ultime, 11 s)
 - 0-1,2 s : camera de JEU, de dos ; etincelles blanches sur le corps (charge).
 - 1,4 s : BLANC plein ecran -> la camera PASSE EN CINEMATIQUE : plans proches, bas, de cote, un nouvel angle toutes les ~0,6 s.
-- Esquives en « 8 » (roulis de Dempsey) lues par des TRAINEES BLEUES ; chaque serie de coups = anneaux blancs + gerbe ROUGE ; BLANC total a 1,4 / 5,0 / 5,8 / 8,4 s (4 fois, de plus en plus gros).
+- Esquives en « 8 » (roulis de Dempsey) lues par des TRAINEES BLEUES ; chaque serie de coups = anneaux blancs + gerbe ROUGE ; BLANC total a 1,4 / 5,0 / 5,8 / 8,4 s (4 fois, de plus en plus gros). [CONTREDIT 2026-09-26 : au moins 11 blancs ; le blanc est un voile posé sur une pose de passage, voir corpus/etude_c4/C3_gifs.md §3]
 - Final : lignes de vitesse horizontales (camera qui suit, 7,2-8,2 s) -> blanc + rouge -> tunnel de lignes radiales, le mannequin part au loin -> retour a la camera de jeu de dos (9,6 s), anneau qui se dissipe, le boxeur debout.
 ## a0341700 (perso rose type Luffy, rafale « gatling », camera de dos)
-- La rafale n'est PAS une suite de coups lisibles : c'est une MASSE blanche de poings-smears devant le perso, continue pendant ~3,3 s (0,7-4,0 s), puis des anneaux de fumee (4,1-4,4 s) et retour a la garde.
+- La rafale n'est PAS une suite de coups lisibles : c'est une MASSE blanche de poings-smears devant le perso, continue pendant ~3,3 s (0,7-4,0 s), puis des anneaux de fumee (4,1-4,4 s) et retour a la garde. [CONTREDIT 2026-09-26 : pas de retour à la garde : pose de fin tenue ≥ 2,2 s (le GIF est coupé), la victime part ~1,4 s après, voir corpus/etude_c4/C3_gifs.md §4]
 - Camera de jeu fixe de dos : la rafale se lit a la masse et au rythme, pas au geste.
 ## aafdc91d (perso orange, camera de jeu tres lointaine)
 - Coup 1 : petit eclat blanc + fumee. Coup 2 (1,2 s) : gros eclat blanc a eclats + gerbe rouge + anneaux qui s'elargissent.
@@ -241,15 +241,15 @@
 ## Black Flash (6,2 s) -- structure complete
 - 0-2,2 s : combat en CAMERA DE JEU large ; chaque coup = petites etincelles rouges ; deja une carte N/B isolee a 0,6 s, des smears noirs a 1,2-1,4 s.
 - 2,4 s : eclair blanc/rouge -> CINEMATIQUE : camera collee sur la victime (jaune), smear rouge (2,6-3,2 s) -> cartes (3,4-3,6 : inversee N/B, croix dessinee) -> tres gros plan penche (3,8-4,0) -> cartes blanches a taches d'encre noire (4,2-4,6).
-- 4,8-6,2 s : RALENTI en gros plan sur la victime ensanglantee, camera qui pousse lentement, TENU 1,4 s. La consequence est la note finale.
+- 4,8-6,2 s : RALENTI en gros plan sur la victime ensanglantee, [CONTREDIT 2026-09-26 : c'est le bras tendu de l'attaquant au premier plan, la victime minuscule au fond, voir corpus/etude_c4/C2_clips_jeux.md §1] camera qui pousse lentement, TENU 1,4 s. La consequence est la note finale.
 ## Rewind Clock (9,8 s)
 - 0-1,6 s camera de jeu ; 1,8-2,2 grosse explosion ; 2,8-3,8 s : ANNEAU D'HORLOGE dore tenu ~1 s = la SIGNATURE visuelle de la technique (on sait ce qui arrive).
-- 4,4 BLANC -> 5,0-7,0 s : le MONDE DISPARAIT (fond blanc, persos isoles) pendant 2 s de coups ; 7,2-8,4 s : cartes « radio » crane (rouge / negatif / magenta-jaune / vert) ~1,2 s ; 8,6 rayon horizontal ; 8,8-9,8 retour camera de jeu, debris.
+- 4,4 BLANC -> 5,0-7,0 s : le MONDE DISPARAIT (fond blanc, persos isoles) pendant 2 s de coups ; [CONTREDIT 2026-09-26 : un contact figé 2 s : seules la caméra et les lueurs bougent, voir corpus/etude_c4/C2_clips_jeux.md §2] 7,2-8,4 s : cartes « radio » crane (rouge / negatif / magenta-jaune / vert) ~1,2 s ; 8,6 rayon horizontal ; 8,8-9,8 retour camera de jeu, debris.
 ## Stagnant Rage (deux variantes : proche 0-4,2 s, lointaine 4,4-9,8 s)
 - Aucune cinematique : tout en camera de jeu. Proche : explosion immediate, dome, puis ~2,5 s de fumee avec le perso minuscule. Lointaine : ruee, explosion plein ecran, champ de feu ~2 s, 2e explosion, braises.
 - Une meme technique a DEUX variantes selon la distance (logique de jeu).
 ## Black Hole Ability (14 s) -- la ref de notre r6_black_hole
-- 0-2,5 s immobile en camera de jeu ; 2,7-3,4 camera proche, il se ramasse en regardant en haut (anticipation) ; 3,6 camera aux pieds, vent ; saut vu d'en bas ; 4,2 carte blanche a silhouettes noires ; 4,4-5,5 en l'air bras ouverts, debris qui montent, puis MAINS JOINTES (le geste) ; 5,67 carte inversee a etoiles ; 6,3-8,0 panoramique vers le ciel, debris minuscules qui tournent ; 8,2-8,4 sombre + carte ; 8,6-11,5 trou noir (disque dore) qui aspire ~3 s ; 11,7-12,6 FONDU AU NOIR 1 s (silence) ; 12,8-13,4 retour camera de jeu : il est debout, calme.
+- 0-2,5 s immobile en camera de jeu ; 2,7-3,4 camera proche, il se ramasse en regardant en haut (anticipation) ; [CONTREDIT 2026-09-26 : la tête plonge pendant l'enroulement (confiance moyenne), puis contre-anticipation des bras, pas un tremblement, voir corpus/etude_c4/C2_clips_jeux.md §4] 3,6 camera aux pieds, vent ; saut vu d'en bas ; 4,2 carte blanche a silhouettes noires ; 4,4-5,5 en l'air bras ouverts, debris qui montent, puis MAINS JOINTES (le geste) ; 5,67 carte inversee a etoiles ; 6,3-8,0 panoramique vers le ciel, debris minuscules qui tournent ; 8,2-8,4 sombre + carte ; 8,6-11,5 trou noir (disque dore) qui aspire ~3 s ; 11,7-12,6 FONDU AU NOIR 1 s (silence) ; 12,8-13,4 retour camera de jeu : il est debout, calme.
 - Construction en actes : calme -> anticipation -> envol -> geste -> signature (trou noir) -> silence -> calme.
 
 ## Fiche « DEMI-DIEU -- S1 POING SCINTILLANT » (image, guide de poses)

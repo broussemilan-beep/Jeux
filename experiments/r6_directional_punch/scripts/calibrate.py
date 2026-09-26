@@ -99,4 +99,16 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # registre des preuves (2026-09-26) : la sortie de ce script (mesures de
+    # contact / sol / structure, sans seuil) devient une ligne
+    # « mesure_technique » de corpus/preuves.jsonl, avec l'empreinte des
+    # fichiers mesurés ; le script ne change pas de comportement.
+    import os
+    import sys
+    _ici = os.path.dirname(os.path.abspath(__file__))
+    sys.path.insert(0, os.path.join(_ici, "..", "..", "_shared", "animator_brain", "outils"))
+    import preuves
+    preuves.executer_et_enregistrer(
+        "r6_directional_punch", "mesure_technique", "scene",
+        [os.path.join(_ici, f) for f in ('calibrate.py', 'choreography.py', 'anim_engine.py', 'r6_rig.py')],
+        main, "cd experiments/r6_directional_punch/scripts && python3 calibrate.py")

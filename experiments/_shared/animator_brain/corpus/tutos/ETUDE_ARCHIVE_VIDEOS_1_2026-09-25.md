@@ -26,22 +26,22 @@ saturé ; limite connue de `durees.py`.
 
 ### Serious Punch (Pew) : 3 s de charge, 2 images de carte, 7 s de conséquence
 - 0-3,2 s : la charge, en plan moyen, caméra qui tourne lentement ; un
-  anneau au sol vers 2 s. 3,3-3,5 : caméra fouettée vers le ciel (nuages).
+  anneau au sol vers 2 s. 3,3-3,5 : caméra fouettée vers le ciel (nuages). [CONTREDIT 2026-09-26 : fouetté de 2,27 à 2,60 s, voir corpus/etude_c4/C1_tsb_videos.md partie 3 point 1]
 - 3,6-5,9 : caméra tout près, qui bouge avec le perso ; très gros plan du
   visage à 4,6 s ; bouffées de vapeur au poing à 5,7 s.
-- **6,2-6,3 : UNE carte inversée** (fond blanc, silhouettes noires), 2 images.
+- **6,2-6,3 : UNE carte inversée** (fond blanc, silhouettes noires), 2 images. [CONTREDIT 2026-09-26 : carte de 5,133 à 5,333 s, 7 images, filtre posé sur la 3D, voir corpus/etude_c4/C1_tsb_videos.md partie 3 point 1]
 - 6,4 : un mur de blocs de roche jaillit devant la caméra ; **coupe en
-  plan très large à 6,7 s : une ligne de roches noires fendues jusqu'à
+  plan très large à 6,7 s [CONTREDIT 2026-09-26 : coupe large à 5,70 s, voir corpus/etude_c4/C1_tsb_videos.md partie 3 point 1] : une ligne de roches noires fendues jusqu'à
   l'horizon, qui reste 7 s** (la tenue la plus longue : 7,4 s).
 - Leçon : le coup lui-même ne dure rien ; tout le temps est donné à la
   charge (≈6 s) et à la CONSÉQUENCE (≈7 s), montrée en très large.
 
 ### Stoic Bomb (TSB) : la seule bouffée d'effet plein écran tenue 1,6 s
-- 0-2,2 : saisie en caméra de jeu (plan large). 2,3 : coupe, vue d'en haut,
+- 0-2,2 : saisie en caméra de jeu (plan large). [CONTREDIT 2026-09-26 : aucune saisie visible, le joueur est immobile jusqu'à 2,07 s ; mais le mannequin reste collé au joueur pendant le dôme, voir corpus/etude_c4/A2_tsb_stoic_collateral.md §6 point 3] 2,3 : coupe, vue d'en haut,
   le perso saute et jette la victime.
 - 2,8-3,4 : chute : traits de feu orange et étoiles blanches en diagonale.
 - 3,5-3,6 : carte noire à rayons blancs.
-- **3,7-4,7 : DÔME rouge-orange vu de dessus, plein cadre**, anneaux
+- **3,7-4,7 : DÔME rouge-orange vu de dessus, plein cadre** [CONTREDIT 2026-09-26 : dans le repère de l'anim, les pieds passent de 8,0 (i90) à 0,65 stud (i205), contact vers i213 ; « il flotte » suppose que la HumanoidRootPart reste au sol, ce que la vidéo ne permet pas de voir, voir corpus/etude_c4/A2_tsb_stoic_collateral.md §6 point 2], anneaux
   concentriques qui battent dedans ; 4,7-5,3 : il vire au BLANC, les deux
   silhouettes minuscules dedans.
 - 5,6-5,7 : anneau rouge plat qui s'étend au sol ; 5,8 : débris (blocs) et
@@ -99,12 +99,12 @@ saturé ; limite connue de `durees.py`.
   central = un « flash » coloré sans blanc.
 
 ### TSB, animations et concepts abandonnés (5 min) : la méthode des pros
-- **Rig de travail coloré et lettré** : membres de couleurs différentes
+- **Rig de travail coloré et lettré** : membres de couleurs différentes [CONTREDIT 2026-09-26 : couleur et lettre par FACE et par direction (F/B/L/R/U/D) sur chaque bloc, pas par membre : un outil de lecture d'orientation, voir corpus/etude_c4/C1_tsb_videos.md partie 3 point 3]
   avec F / B / L / R sur les faces et FRONT sur le torse (« Last Breath
   v4 », « Wild psychic m1s », « Crush »). Pour lire l'orientation d'un
   bloc R6 d'un coup d'œil. (Notre `tour.py` colore les membres ; pas les
   lettres.)
-- **Storyboard en bonhommes bâtons** avant d'animer (« Ranged grab (not
+- **Storyboard en bonhommes bâtons** avant d'animer [CONTREDIT 2026-09-26 : ce n'est pas une planche : c'est un animatic minuté, rejoué deux fois, voir corpus/etude_c4/C1_tsb_videos.md partie 3 point 5] (« Ranged grab (not
   lock on) »).
 - **Beaucoup de versions** (v1 à v4) et de concepts jetés : itérer est
   normal, même chez eux.
@@ -133,7 +133,7 @@ saturé ; limite connue de `durees.py`.
 
 Quatre utiles, un moyen, deux trop basiques ; **trois sans parole**
 (Energy Beam HJoVSZfK2Dw, « How to make VFX Part 1 » ITd1yAZs1As, TSB
-scrapped hRzXUe6okOU : seulement la musique) : il faudra leurs VIDÉOS.
+scrapped hRzXUe6okOU : seulement la musique) [CONTREDIT 2026-09-26 : attendre du contenu technique de cette vidéo n'est pas fondé : ses sous-titres ne sont que des paroles de chanson, voir corpus/etude_c4/B4_techniques_anime.md §4 point 7] : il faudra leurs VIDÉOS.
 
 ### Explosion stylisée (J8uIGox3xfU)
 - Flash 0,03-0,05 s, texture PLEINE (sans trous) ; un 2e flash dessous un

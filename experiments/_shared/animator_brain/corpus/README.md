@@ -105,7 +105,7 @@ Sur `r6_directional_punch`, **24 des 35 mesures** sortent de la plage pro de
 la catégorie `frappe_legere`.
 
 - **Le défaut principal est l'amplitude**, surtout celle de la **tête**
-  (3 fois moins que le pro) et du torse.
+  (3 fois moins que le pro) et du torse. [CONTREDIT 2026-09-26 : les degrés de tête du pro sont de la contre-rotation, pour que le regard NE bouge PAS dans le monde ; « amplifier nos têtes » sans cette intention ferait l'inverse du pro, voir corpus/etude_c4/A4_pack_battleground.md §3 point 1 et corpus/etude_c4/A4_pack_battleground.md §4]
 - Nos coups « claquent » en une frame (vitesse angulaire max du bras plus
   élevée que le pro), mais sur un arc trop court.
 - Nos coups passent 76 % du temps quasi immobiles, puis explosent.

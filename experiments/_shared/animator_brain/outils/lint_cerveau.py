@@ -21,11 +21,15 @@ dans la roche ». Un signalement est une question à regarder, pas une faute.
 Ce qu'il signale (type -> ce que ça veut dire) :
 - entree_sans_statut : une entrée du CARNET (ou une section de fiche) sans
   aucun des statuts (mesuré / lu / vu dans les refs / essayé / retour de
-  Milan / CONTREDIT) ;
+  Milan / déduit / non établi / CONTREDIT) ;
 - citation_milan_introuvable : un « … » attribué à Milan qu'on ne retrouve
   pas dans corpus/milan_verbatim.jsonl (tolérance : casse, ponctuation,
   apostrophes ; « … » et [insertions] coupent la citation en morceaux) ;
-  la meilleure correspondance approchée est donnée pour aider ;
+  la meilleure correspondance approchée est donnée pour aider. Les mots de
+  Milan sont lus avec les corrections de corpus/milan_verbatim_corrections.jsonl
+  (un texte COLLÉ, brief ou conseil d'IA, ne compte pas comme ses mots : une
+  citation retrouvée seulement là est signalée). Une citation suivie de
+  « (paraphrase, pas ses mots) » n'est pas cherchée (comptée à part) ;
 - chemin_introuvable / ligne_hors_fichier : un chemin cité (`x/y.py`,
   RETOURS.md:828) qui n'existe pas dans le dépôt, ou une ligne au-delà de
   la fin du fichier ;
@@ -170,6 +174,8 @@ STATUTS = {
     "vu dans les refs": r"\bvu\b|\bvus\b|vue? dans|v[ée]rifi[ée] (à|a) l'[ée]cran",
     "essayé": r"essay|appris en construisant",
     "retour de Milan": r"retour de milan|milan",
+    "déduit": r"d[ée]duit",
+    "non établi": r"non [ée]tabli",
     "CONTREDIT": r"contredit",
 }
 
@@ -229,16 +235,32 @@ _MOTS_EN = set("the a an of to and is it in that you your this for with on as be
                "when would if so can do all one my he his was".split())
 
 
-def charger_verbatim():
+def _entrees_verbatim():
+    """Entrées de milan_verbatim avec les corrections appliquées (outils/moisson_milan.py)."""
+    try:
+        if HERE not in sys.path:
+            sys.path.insert(0, HERE)
+        import moisson_milan
+        return moisson_milan.charger_verbatim()
+    except Exception:                    # consultatif : repli sur le brut
+        out = []
+        if os.path.exists(VERBATIM):
+            for l in open(VERBATIM, encoding="utf-8"):
+                try:
+                    out.append(json.loads(l))
+                except json.JSONDecodeError:
+                    continue
+        return out
+
+
+def charger_verbatim(colles=False):
+    """Les mots de Milan (colles=False) ; ou (colles=True) les textes COLLÉS que la
+    correction a retirés de ses mots, pour dire d'où vient une citation."""
     msgs = []
-    if not os.path.exists(VERBATIM):
-        return msgs
-    for l in open(VERBATIM, encoding="utf-8"):
-        try:
-            e = json.loads(l)
-        except json.JSONDecodeError:
+    for e in _entrees_verbatim():
+        t = (e.get("texte_colle") or "") if colles else (e.get("texte") or e.get("debut") or "")
+        if not t:
             continue
-        t = e.get("texte") or e.get("debut") or ""
         msgs.append({"date": e.get("date"), "sha1": e.get("sha1"), "mode": e.get("mode"), "brut": t,
                      "n": norm_mots(t), "na": norm_mots(t, accents=False)})
     return msgs
@@ -294,13 +316,22 @@ def meilleure_approche(q, msgs):
             "date": m["date"], "sha1": m["sha1"], "mode": m["mode"], "message": extrait}
 
 
-def verifier_citations(doc, msgs, sig, stats):
-    entete_tableau = ""
+RX_PARAPHRASE = re.compile(r"^\s*[,;]?\s*\((?:[^()]{0,40}\b)?paraphrase", re.I)
+
+
+def sans_noms_de_fichier(t):
+    """« milan » dans `moisson_milan.py` ou notes_milan.jsonl n'attribue rien à Milan."""
+    t = re.sub(r"`[^`]*`", " ", t)
+    return re.sub(r"[\w./-]*_milan[\w./-]*|[\w./-]*milan_[\w./-]*", " ", t, flags=re.I)
+
+
+def verifier_citations(doc, msgs, sig, stats, colles=()):
+    entete_tableau, precedent = "", ""
     for texte, carte, tableau in doc.paragraphes():
         if tableau and re.match(r"^\|\s*[-: ]+\|", texte):
+            entete_tableau = precedent.lower()      # l'en-tête est la ligne AVANT |---| (pas n'importe quelle ligne)
             continue
-        if tableau and "---" not in texte and not re.search(r"«", texte):
-            entete_tableau = texte.lower()
+        precedent = texte if tableau else ""
         if not tableau:
             entete_tableau = ""
         for m in re.finditer(r"«\s*(.+?)\s*»", texte):
@@ -311,7 +342,10 @@ def verifier_citations(doc, msgs, sig, stats):
             if sum(w in _MOTS_EN for w in mots) >= 0.3 * len(mots) or not any(w in _MOTS_FR for w in mots) \
                     or norm_mots(q) in _TITRES:
                 continue                         # anglais (Williams, Disney…), titre, nom de ref
-            avant = texte[max(0, m.start() - 250):m.start()]
+            if RX_PARAPHRASE.match(texte[m.end():m.end() + 60]):
+                stats["citations_marquees_paraphrase"] += 1
+                continue                         # marquée « (paraphrase, pas ses mots) » : pas une citation
+            avant = sans_noms_de_fichier(texte[max(0, m.start() - 250):m.start()])
             k = avant.lower().rfind("milan")
             # attribuée si « Milan » précède SANS fin de phrase entre les deux (« Milan : « a » ; « b » » oui ;
             # « (Milan, v1). L'image dit « … » » non : c'est notre phrase)
@@ -325,9 +359,13 @@ def verifier_citations(doc, msgs, sig, stats):
                 continue
             if r["niveau"] == "introuvable":
                 ap = meilleure_approche(q, msgs)
-                sig.append({"type": "citation_milan_introuvable", "fichier": rel(doc.path),
-                            "ligne": ligne_de(carte, m.start()), "citation": q[:240], "approche": ap,
-                            "proche": bool(ap and ap["proximite_caracteres"] >= 0.85)})
+                s_ = {"type": "citation_milan_introuvable", "fichier": rel(doc.path),
+                      "ligne": ligne_de(carte, m.start()), "citation": q[:240], "approche": ap,
+                      "proche": bool(ap and ap["proximite_caracteres"] >= 0.85)}
+                rc = chercher_citation(q, colles) if colles else None
+                if rc and rc["niveau"] != "introuvable":
+                    s_["dans_texte_colle"] = rc.get("sha1") or True
+                sig.append(s_)
             else:
                 stats["citations_milan_retrouvees"] += 1
 
@@ -539,7 +577,7 @@ def verifier_absolus(doc, sig, stats):
 # ------------------------------------------------------------ 6. garde-fous annoncés
 RX_GARDE = re.compile(r"garde[- ]fou|contr[ôo]les?\s+(?:d'export|dans l'export|de l'export|bloquants?)|"
                       r"bloque(?:nt)? l'export|dans (?:le |l')?verify_export|contr[ôo]le d'export", re.I)
-RX_RETIRE = re.compile(r"retir|supprim|n'existe plus|n'a plus|plus de r[èe]gles|abandonn|ancien", re.I)
+RX_RETIRE = re.compile(r"retir|supprim|n'existe plus|n'a plus|plus de r[èe]gles|abandonn|ancien|absent du code", re.I)
 _STOP = set("pour dans avec sans plus moins sous vers comme depuis entre tout tous toute toutes elle elles "
             "leur leurs cette celle ceux dont mais donc être avoir fait faire".split())
 
@@ -626,15 +664,16 @@ def verifier_garde_fous(doc, sig, stats):
 # ------------------------------------------------------------ rapport
 def lint(fichiers):
     msgs = charger_verbatim()
+    colles = charger_verbatim(colles=True)
     sig = []
-    stats = {k: 0 for k in ("citations_milan_vues", "citations_milan_retrouvees", "chemins_vus", "renvois_vus",
-                            "absolus_vus", "garde_fous_vus")}
+    stats = {k: 0 for k in ("citations_milan_vues", "citations_milan_retrouvees", "citations_marquees_paraphrase",
+                            "chemins_vus", "renvois_vus", "absolus_vus", "garde_fous_vus")}
     stats["entrees_vues"] = 0
     for f in fichiers:
         doc = Doc(f)
         stats["entrees_vues"] += sum(1 for e in entrees(doc) if len([x for x in e[2] if x.strip()]) >= 2)
         verifier_statuts(doc, sig)
-        verifier_citations(doc, msgs, sig, stats)
+        verifier_citations(doc, msgs, sig, stats, colles)
         verifier_chemins(doc, sig, stats)
         verifier_renvois(doc, sig, stats)
         verifier_absolus(doc, sig, stats)
@@ -655,7 +694,9 @@ def _ligne(s):
         ap = (f"\n      au plus près ({int(100 * a['part_des_mots_retrouves_dans_l_ordre'])} % des mots dans l'ordre, "
               f"{int(100 * a['proximite_caracteres'])} % des caractères{' : TRÈS PROCHE, orthographe corrigée ?' if s.get('proche') else ''} ; "
               f"{(a.get('date') or '')[:16]}, {a.get('sha1')}) : {a.get('message', '')[:160]!r}") if a else ""
-        return f"{loc} « {s['citation']} »{ap}"
+        col = (f"\n      trouvée seulement dans un texte COLLÉ ({s['dans_texte_colle']}) : pas ses mots"
+               if s.get("dans_texte_colle") else "")
+        return f"{loc} « {s['citation']} »{col}{ap}"
     if t in ("chemin_introuvable",):
         return f"{loc} {s['chemin']} -- {s['extrait']}"
     if t == "ligne_hors_fichier":
@@ -671,7 +712,7 @@ def _ligne(s):
 
 
 SENS = {
-    "entree_sans_statut": "entrées sans statut (mesuré / lu / vu / essayé / retour de Milan / CONTREDIT)",
+    "entree_sans_statut": "entrées sans statut (mesuré / lu / vu / essayé / retour de Milan / déduit / non établi / CONTREDIT)",
     "citation_milan_introuvable": "citations attribuées à Milan introuvables mot pour mot dans milan_verbatim.jsonl",
     "chemin_introuvable": "chemins cités qui n'existent pas dans le dépôt",
     "ligne_hors_fichier": "renvois fichier:ligne au-delà de la fin du fichier",

@@ -1,7 +1,7 @@
 # Fiche de conception : le COUP CHARGÉ (poing puissant, Serious Punch, obari)
 
-**Ce qu'est une fiche de conception.** Retour de Milan (2026-09-25) :
-« le cerveau se nourrit, mais à 30 %, et toi aussi ».
+**Ce qu'est une fiche de conception.** Retour de Milan (2026-09-25 11:22) :
+« j’ai l’impression que le cerveau se nourri mais que à 30% […] Et toi ausis ».
 - Audit de la v8 : elle n'avait puisé que dans 4 sources sur ~15 (le
   carnet, trois tutos, des mesures TSB).
 - Jamais consultés : l'étude visuelle, les notes brutes, les 41 extraits
@@ -22,17 +22,20 @@ moindre clé.
 
 ## 1. Ce que Milan veut (ses mots, dans l'ordre)
 
+Mots exacts, orthographe d'origine, copiés de `corpus/milan_verbatim.jsonl`
+(nettoyage du 2026-09-26 : les versions d'avant étaient des reformulations).
+
 | quand | ses mots |
 |---|---|
-| r6_directional_punch (projet précédent) | « le perso est censé charger son poing » ; « il charge son poing à son arrière droit » ; « tourner son buste vers la droite pour charger son poing droit, plier les jambes légèrement, le 2e bras placé, et boum il envoie » ; « il manque les épaules, on dirait que le coup part du bas alors qu'il doit aller droit » ; « tu n'as pas réussi à donner le sentiment d'un coup de poing… une espèce d'élancement du bras » |
-| Dragon v3b | « le coup final : enchaînement d'uppercuts et coup droit » |
-| Dragon v4 | « au coup final le coup part toujours d'en bas ; je verrais plus le coup de Saitama, **un coup qui se charge avec le buste qui tourne** » |
-| Dragon v5 | « c'est toujours pas bon ; je vois pas trop de différence avec la v4 » |
-| Dragon v6 | « l'animation reste le bémol : il manque un cap par rapport à ce que je veux et nos refs » |
-| Dragon v7 | « je vois aucun changement… trop simple… nos refs, c'est plus exagéré et un placement différent » |
-| Dragon v7 (aérien) | ses 2 images : Deku, **poing vers le lecteur** ; poing géant au premier plan : « c'est vraiment le coup chargé de Saitama » |
-| Dragon v8 | « le coup final, toujours pas bon, normal : pas encore travaillé » |
-| 2026-09-25 | « poing chargé puissant doit faire écho au Serious Punch de Saitama, le GIF et l'anime TSB » |
+| r6_directional_punch (projet précédent) | 2026-09-03 14:32 : « le perso est censé charge son poing » ; 17:19 : « le perso charge son poing à son arrière droit » ; 19:13 : « le peros est cense tourné son buste vers la droit charger sont moins droit plier les jambes le légèrement le 2e bras placé et boum il envoi » ; 20:19 : « Il manque les épaules on dirait que le coup pars du bas alors que il doit allez droit » ; 2026-09-04 19:34 : « tu n’a pas réussi a donné le sentiment d’un coup poing […] Le perso met juste une espèce d’élancement du bras » |
+| Dragon v3b | 2026-09-24 14:24 : « pareil pojr le grans coup final on dirait un enchainement d’uppercute mais en meme temps coup droit » |
+| Dragon v4 | 2026-09-24 15:15 : « au coup final le coup par tjrs d’en bas […] moi sur lz coup de fin je verrai plus comme le coup de saitama **un coup qui se charge avec un le bust qui tourne** » |
+| Dragon v5 | 2026-09-24 17:24 : « C tjrs pas bon je met 6,8 je vois pas trop de dif avec la v4 » |
+| Dragon v6 | 2026-09-24 20:01 : « l’animation reste tjrs le bémols il manque un cap que on a pas par rapport à ce que je veux et nos ref » |
+| Dragon v7 | 2026-09-25 06:22 : « Je vois aucun changement je t’avoue […] c’est trop simple fin revoi les animations de no ref dnas la lecture c plus exagère et un placement différent » |
+| Dragon v7 (aérien) | ses 2 images : Deku, **poing vers le lecteur** [CONTREDIT 2026-09-26 : main OUVERTE, bras plié qui traverse, voir corpus/etude_c4/C4_images_et_gout.md §1.5] ; poing géant au premier plan ; 2026-09-25 06:22 : « dans l’idée c vrmt le coup charge de saitama » |
+| Dragon v8 | 2026-09-25 11:04 : « c tjrs pas bon le coup final ce qui est normal car pas encore travailler » |
+| 2026-09-25 11:19 | « même si je t’évoque poing charge puissance ça devrai faire écho à notre gif coup sérieux de saitama a la fois le gif et à la fois l’anime tsb » |
 
 **Ce qui revient depuis le début** :
 - le BUSTE qui tourne pour charger ;
@@ -44,6 +47,8 @@ moindre clé.
 - et, comme modèle, le Serious Punch de Saitama.
 
 ## 2. La référence : le Serious Punch (TSB), revu image par image
+
+*Statut : vu dans les refs (48244687 et 772ee6b0, revus à 5 i/s le 2026-09-25) ; des lectures sont CONTREDITES depuis (marques dans le texte, `corpus/etude_c4/C3_gifs.md` §1).*
 
 Deux enregistrements du même coup, deux avatars : **48244687 = IMG_3251**
 (Saitama, cape jaune) et **772ee6b0** (« Serious Punch 2 »). Revus le
@@ -59,7 +64,7 @@ les deux :
 | 5. armé | ~0,4 s | la caméra fonce devant lui en contre-plongée ; il se relève en tordant le buste, le poing armé à la hanche / derrière, genou haut | très gros plan bas, de FACE |
 | 6. **frappe** | ~0,4 s | le **POING VIENT VERS L'OBJECTIF** dans un tourbillon de fumée ; on ne voit plus que le torse et le gant qui remplissent le cadre | caméra DEVANT, basse : obari |
 | 7. impact | 1 carte + 0,2-0,4 s | carte à l'encre (silhouette dans des hachures radiales), puis BLANC total qui se dissout en fumée | — |
-| 8. **conséquence** | **~1,2 s et plus** | plan large : cratère, pics de roche, le perso en FENTE BASSE, poing en avant, TENU (de dos ou de 3/4) | large, fixe |
+| 8. **conséquence** | **~1,2 s et plus** | plan large : cratère, pics de roche, le perso en FENTE BASSE, poing en avant, TENU [CONTREDIT 2026-09-26 : dans le GIF 48244687, à la fin, bras plié à l'horizontale devant le buste (confiance moyenne), voir corpus/etude_c4/C3_gifs.md §1] (de dos ou de 3/4) | large, fixe |
 
 **Ce que ça m'apprend** (en le regardant, pas en le mesurant) :
 - **La frappe se voit DE FACE, poing vers la caméra**, pas de profil. C'est
@@ -72,14 +77,16 @@ les deux :
 - **Le calme d'abord** : ~1 s debout, presque rien. Le contraste calme ->
   violence fait la puissance.
   - Rejoint le visage plat de Saitama (sakuga 162980), l'Ultimate1 de TSB
-    presque debout, et le silence avant (§2.5b du carnet).
+    presque debout, [CONTREDIT 2026-09-26 : l'Ultimate1 du .rbxm n'est pas le Serious Punch (poses qui ne collent pas, marqueur « AwakenFinale », modèle racine « KJ ») et n'est pas presque debout (deux bras, buste jusqu'à 86°), voir corpus/etude_c4/C3_gifs.md (annexe), corpus/etude_c4/A3_tsb_ultimes_mur.md §0.1 et corpus/etude_c4/A3_tsb_ultimes_mur.md §1.5] et le silence avant (CARNET §2.5b).
 - **La conséquence tenue** (fente basse dans le cratère, ~1,2 s) est la
-  pose qu'on retient. Rejoint §2.6b et myloe (pose d'après tenue).
+  pose qu'on retient. Rejoint CARNET §2.6b et myloe (pose d'après tenue).
 - **Le corps n'est vraiment montré que deux fois**, et en très gros plan :
   l'armé et la frappe. Le reste, c'est de la caméra, de l'échelle et des
   effets.
 
 ## 3. Ce que disent les autres sources (relues pour cette fiche)
+
+*Statut : lu (nos études relues pour cette fiche le 2026-09-25) ; les refs elles-mêmes n'ont pas toutes été re-regardées.*
 
 **Anime** (`ETUDE_NOTES_BRUTES.md`, sakugabooru) :
 - **OPM #12, Saitama contre Boros** (162980) : on ne montre PAS le bras du
@@ -129,15 +136,17 @@ les deux :
   coup.
 
 **Carnet** :
-- §1.3 cadrage ;
-- §2.2 contact montré ou sauté ;
-- §2.5b silence ;
-- §2.6b suite longue ;
-- §3.1 perspective forcée (GGXrd : avancer le bras vers la caméra plutôt
-  qu'élargir le FOV) ;
-- §1.10 TSB en réf visuelle.
+- CARNET §1.3 cadrage ;
+- CARNET §2.2 contact montré ou sauté ;
+- CARNET §2.5b silence ;
+- CARNET §2.6b suite longue ;
+- CARNET §3.1 perspective forcée (GGXrd : avancer le bras vers la caméra
+  plutôt qu'élargir le FOV) ;
+- CARNET §1.10 TSB en réf visuelle.
 
 ## 4. Ce qu'on a déjà essayé, et pourquoi ça n'a pas marché
+
+*Statut : essayé (r6_directional_punch, Poing du Dragon v3-v9) et retours de Milan (tableau §1).*
 
 **Correction (2026-09-25, en construisant la v9).** Dans le Poing du Dragon, il
 y a DEUX coups chargés : la charge au sol (f121-150, l'ex-uppercut) et le
@@ -171,6 +180,8 @@ Historique de la charge AU SOL :
 
 ## 5. Ce que ça suggère pour la prochaine version (pistes, pas règles)
 
+*Statut : non établi (pistes déduites des §2-4, pas essayées telles quelles).*
+
 - **Structure en actes, comme le Serious Punch** : calme tenu, départ,
   armé en très gros plan, frappe vers l'objectif, carte, blanc, conséquence
   tenue.
@@ -187,9 +198,12 @@ Historique de la charge AU SOL :
   large (cratère déjà présent).
 - **Deux ou trois variantes jugées à l'œil en mouvement** (carnet §1.9).
   Ensuite seulement, comparaison visuelle au GIF Serious Punch, même durée
-  et côte à côte (§1.10), puis mesures en garde-fou.
+  et côte à côte (CARNET §1.10), puis les mesures, lancées à la main (piste :
+  rien dans l'export ne les lance au 2026-09-26).
 
 ## 6. Sources consultées pour cette fiche
+
+*Statut : lu (la liste dit ce qui a été relu et ce qui ne l'a pas été).*
 
 - Relus : Serious Punch TSB et Serious Punch 2 (image par image) ;
   `ETUDE_NOTES_BRUTES.md` (Serious Punch, sakuga Saitama et poing, images
@@ -201,6 +215,8 @@ Historique de la charge AU SOL :
   `corpus/clips/*.json` (mesures d'analyse vidéo).
 
 ## 7. Reprise du coup final aérien (après la v9 : 7,7, « que les bras »)
+
+*Statut : mesuré (`outils/corps_bras.py` sur la v9) et retour de Milan (v9, 7,7) ; les pistes sont non établies.*
 
 Mesuré avec `outils/corps_bras.py`. À faire quand l'animation reprendra :
 - **Calme vivant** : il flotte, avec une dérive lente du bassin et du torse
