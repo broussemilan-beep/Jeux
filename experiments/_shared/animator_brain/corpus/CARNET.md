@@ -318,6 +318,17 @@ nous.*
 - Même piège qu'en §2.1b : transposer la mauvaise référence. Un tuto de
   démonstration n'est pas une M1 de jeu.
 
+**2.9 « Il frappe vers le bas » : c'est la HAUTEUR DU POING AU CONTACT et
+la bascule du buste, pas l'angle du bras** (Milan, « Un seul coup » v1, 2e
+fois après le Poing du Dragon). Bras mesuré « à plat » à -6° par rapport au
+bras, mais buste penché de 40° et poing à 2,5 studs : l'image dit « il plonge
+vers le bas-ventre ». Une pose de l'APPROCHE (fente très basse, torse
+horizontal, TSB) collée au CONTACT. Garde-fou mis dans l'export : buste
+< 22°, bras < 12°, poing au contact > 3,2 studs, victime debout (sa
+poitrine est la cible). Le bas et le penché servent à l'élan et à la charge
+(Gon), jamais à l'arrivée du coup droit (Saitama manga : à plat, épaule
+devant).
+
 ## 3. La 3D qui imite l'anime
 
 **3.1 Perspective forcée : avancer le bras, pas élargir le FOV.** *Texte

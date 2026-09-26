@@ -113,3 +113,38 @@ Serious Punch tenues, destruction lisible jusqu'à l'horizon, nuages qui se
 fendent ; restent : les persos R6 en blocs lisses, l'armé moins lisible que
 le reste, la 1re conséquence tenue 3,3 s sans grand changement, fumées en
 sprites doux plutôt que « dessinées »).
+
+## 6. v2 (retour de Milan sur la v1, 2026-09-26)
+
+Ses mots : « la scène où le perso réduit la distance, je veux que tu la
+changes : ça doit être comme si le perso allait ultra vite, donc tu casses le
+sol de son point de départ, puis la scène apparaît avec le moment où le perso
+charge son poing et frappe la victime ; autre problème qui revient un peu,
+comme dans le Poing du Dragon : le perso frappait vers le bas. Le perso
+charge son poing, il l'arme en le ramenant à l'arrière et en tournant son
+buste. » Refs ajoutées (catalogue) : Gon accroupi poing à la hanche (HxH),
+Saitama manga coup à plat, Saitama de dos buste tordu, poing rouge (OPM).
+
+**Mesuré sur la v1 (pas vu à l'œil avant lui)** : au contact le buste était
+penché de 40°, le poing à 2,5 studs du sol (le bas-ventre d'une victime
+elle-même accroupie en garde), la tête à 3,5 ; pendant l'armé le bras
+pointait à -25°. C'est EXACTEMENT le défaut du Poing du Dragon v3-v7 (« les
+coups partent du bas », COUP_CHARGE §1), revenu par la pose : « fente très
+basse, torse presque horizontal » (TSB) appliquée au contact au lieu de
+l'approche.
+
+**v2** :
+- départ : il se ramasse (plan de profil, en entier), part en 3 images, le
+  sol casse (trou fissuré, dalles soulevées, poussière, sillage jusqu'à la
+  victime) ; 0,27 s sur le trou vide ; coupe ;
+- charge 1,4 s devant la victime : appuis larges, buste presque droit (12°)
+  qui TOURNE jusqu'à -66°, poing ramené derrière, tenue qui tremble,
+  cailloux qui se soulèvent autour des pieds, vent autour du poing ;
+- frappe : bassin puis buste puis épaule, coup À PLAT : buste 7°, bras -5°,
+  poing à 3,4 studs (poitrine d'une victime debout) ; tenue bras à -3°.
+- Nouveaux contrôles d'export (verify_export.py) : bras à plat au contact et
+  pendant la tenue (< 12°), buste presque droit (< 22°), poing à hauteur de
+  poitrine (> 3,2), poing derrière le buste pendant la charge.
+
+Prédiction v2 : **8,0/10**.
+

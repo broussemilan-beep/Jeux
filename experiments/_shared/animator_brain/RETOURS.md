@@ -779,3 +779,16 @@ cerveau, voir la fin de l'entrée.
   `experiments/r6_un_seul_coup/`. Relue à 0,1 s avant de montrer : 7
   défauts trouvés et corrigés (README, « Corrigé en regardant ») ; appris :
   CARNET 4b.31, 4b.32. Prédiction 7,8.
+
+- **2026-09-26, « Un seul coup » v1 (Milan, sans note)** : « la scène où il
+  réduit la distance : il doit aller ultra vite, tu casses le sol de son point
+  de départ, puis la scène apparaît avec la charge et la frappe » ; « le perso
+  frappait vers le bas, comme dans le Poing du Dragon ; il charge son poing,
+  il l'arme en le ramenant à l'arrière et en tournant son buste » (+ 4 refs
+  anime : Gon, Saitama x3).
+  - Mesuré : buste 40°, poing à 2,5 studs au contact, bras -25° à l'armé.
+  - v2 : départ en 3 images + sol cassé + coupe sur la charge (1,4 s, buste
+    qui tourne jusqu'à -66°, poing derrière) ; coup à plat (buste 7°, bras
+    -5°, poing 3,4) ; 5 nouveaux contrôles d'export ; CARNET 2.9.
+  - Avant/après : `captures/verification/2026-09-26-un-seul-coup-v1-contre-v2-depart-charge-coup.png`.
+

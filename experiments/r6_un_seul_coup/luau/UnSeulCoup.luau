@@ -464,8 +464,41 @@ function UnSeulCoup.play(attacker: Model, victim: Model, animations: Folder, dat
 			s:Play()
 		end
 	end
-	handlers.poussiere = function(_, ev)
-		bouffee(fx, UnSeulCoup.toWorld(start, ev.pos), 3, 1.2, 4)
+	-- v2 : le DÉPART casse le sol (cratère, dalles soulevées, poussière)
+	handlers.depart_sol = function(_, ev)
+		local centre = UnSeulCoup.toWorld(start, ev.pos)
+		local trou = Instance.new("Part")
+		trou.Shape = Enum.PartType.Cylinder
+		trou.Anchored, trou.CanCollide, trou.CanQuery, trou.CanTouch = true, false, false, false
+		trou.Material = Enum.Material.Ground
+		trou.Color = cfg.SILLON
+		trou.Size = Vector3.new(0.2, 2 * ev.rayon, 2 * ev.rayon)
+		trou.CFrame = CFrame.new(centre + Vector3.new(0, 0.05, 0)) * CFrame.Angles(0, 0, math.pi / 2)
+		trou.Parent = fx
+		for k = 1, 12 do
+			local ang = k / 12 * math.pi * 2
+			local d = Instance.new("CornerWedgePart")
+			d.Anchored, d.CanCollide, d.CanQuery, d.CanTouch = true, false, false, false
+			d.Material = Enum.Material.Slate
+			d.Color = cfg.ROCHE[(k % 3) + 1]
+			d.Size = Vector3.new(1.1, 0.9, 1.1)
+			local p = centre + (start - start.Position):VectorToWorldSpace(Vector3.new(math.cos(ang), 0, math.sin(ang))) * ev.rayon * 0.85
+			d.CFrame = CFrame.new(p + Vector3.new(0, 0.3, 0)) * CFrame.Angles(math.sin(ang) * 0.6, ang, -math.cos(ang) * 0.6)
+			d.Parent = fx
+		end
+		bouffee(fx, centre + Vector3.new(0, 0.5, 0), 40, 2, 14)
+	end
+	handlers.sillage = function(_, ev)
+		for k = 0, 8 do
+			local u = k / 8
+			local p = { ev.de[1] + (ev.a[1] - ev.de[1]) * u, 0.4, ev.de[2] + (ev.a[2] - ev.de[2]) * u }
+			bouffee(fx, UnSeulCoup.toWorld(start, p), 4, 1.4, 3)
+		end
+	end
+	-- la CHARGE se voit : poussière qui tourne au ras du sol autour de lui
+	handlers.charge_sol = function(_, ev)
+		local p = fumee(fx, UnSeulCoup.toWorld(start, ev.pos), 1.2, 2, (ev.fin - ev.frame) / data.FPS, Color3.fromRGB(214, 204, 189))
+		table.insert(ctx.cleanup, p)
 	end
 	handlers.tourbillon = function(_, ev)
 		local bras = attacker:FindFirstChild("Right Arm") :: BasePart
@@ -534,10 +567,11 @@ function UnSeulCoup.play(attacker: Model, victim: Model, animations: Folder, dat
 			local fc = UnSeulCoup.frameTenue(data, f)
 			local eye, look, fov = UnSeulCoup.cameraAt(data, fc)
 			local cf = CFrame.lookAt(UnSeulCoup.toWorld(start, { eye.X, eye.Y, eye.Z }), UnSeulCoup.toWorld(start, { look.X, look.Y, look.Z }))
-			local S = data.SECOUSSE
-			if f >= S[1] and f < S[2] then
-				local a = S[3] * (1 - (f - S[1]) / (S[2] - S[1])) ^ 2
-				cf *= CFrame.new(a * math.sin(f * 1.9), a * math.sin(f * 2.7 + 1), 0)
+			for _, S in data.SECOUSSES do
+				if f >= S[1] and f < S[2] then
+					local a = S[3] * (1 - (f - S[1]) / (S[2] - S[1])) ^ 2
+					cf *= CFrame.new(a * math.sin(f * 1.9), a * math.sin(f * 2.7 + 1), 0)
+				end
 			end
 			camera.CFrame = cf
 			camera.FieldOfView = fov

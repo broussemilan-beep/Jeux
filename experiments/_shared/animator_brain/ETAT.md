@@ -23,8 +23,11 @@ savoir où on en était sans l'historique de conversation.)
   choisie par Milan le 2026-09-26). Fiche `corpus/fiches/UN_SEUL_COUP.md` ;
   production `experiments/r6_un_seul_coup/` (README) ; vidéo
   `captures/verification/2026-09-26-un-seul-coup-scene-complete-avec-son.mp4` ;
-  lecteur https://claude.ai/artifact/NhbCvzUSuGwqc4BSvcEYpE. Prédiction 7,8,
-  en attente de la note de Milan.
+  lecteur https://claude.ai/artifact/NhbCvzUSuGwqc4BSvcEYpE. v1 : retour
+  de Milan (départ trop lent, « frappait vers le bas ») -> **v2** (départ en
+  3 images, sol cassé, charge buste qui tourne, coup à plat ; vidéo
+  `2026-09-26-un-seul-coup-v2-scene-complete-avec-son.mp4`). Prédiction 8,0,
+  en attente de sa note.
 - **Prochaine étape** : le retour de Milan sur « Un seul coup » ; il veut
   encore 1-2 animations ici avant de passer sur Roblox Studio (il dira quand).
 

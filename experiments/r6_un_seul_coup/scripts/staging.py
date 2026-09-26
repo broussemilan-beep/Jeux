@@ -80,27 +80,29 @@ def camera_keys(aw, vw):
     add(M["calme"], [0.25, 3.6, 0.95], [0.0, 3.6, -12.0], 56)
     # 2. CALME : plan moyen de FACE, fixe, un peu en contre-plongée
     add(M["calme"] + 1, [1.3, 2.3, -7.6], [0.0, 3.7, 0.0], 38, "cut")
-    add(M["depart"], [1.2, 2.35, -7.1], [0.0, 3.7, 0.0], 38)
-    add(168, [1.2, 2.35, -7.0], A(168) + [0, 0.6, 0], 40)
-    # 3. DÉPART : il part vers l'objectif, la caméra FOUETTE vers le ciel
-    add(172, [1.2, 2.4, -7.0], [0.0, 5.0, -3.0], 46)
-    add(178, [1.2, 2.6, -7.2], [2.0, 30.0, -12.0], 64)
-    # 4. APPROCHE : large et BAS, il est petit ; la caméra accompagne à peine
-    add(M["approche"], [24.0, 0.9, -5.5], [0.0, 1.8, -8.0], 34, "cut")
-    add(M["arme"], [22.5, 0.9, -8.5], [0.0, 1.8, -11.5], 34)
-    # 5. ARMÉ : très gros plan de FACE en contre-plongée, qui recule devant lui
-    a = A(M["arme"] + 6)
-    add(M["arme"] + 1, a + [2.7, -1.5, -2.6], a + [0.3, 0.7, 0.0], 58, "cut")
-    add(M["frappe"], a + [3.0, -1.6, -3.3], a + [0.3, 0.7, 0.0], 56)
-    # 6. FRAPPE : la caméra est CHEZ LA VICTIME, à côté d'elle, basse ; le
-    #    poing vient vers l'objectif (obari) ; la visée suit poing et tête
-    # (la victime est masquée dans ce plan : c'est SON regard ; 1er essai à
-    # côté d'elle : son torse bleu remplissait la moitié de l'image)
-    vt = vw[CF]["Head"][1]
-    eye = vt + np.array([-0.35, -0.2, 0.1])
-    for f in (M["frappe"] + 1, 268, 274, 279, CF - 1):
+    add(M["depart"] - 1, [1.2, 2.35, -7.1], [0.0, 3.7, 0.0], 38)
+    # 3. DÉPART (v2, retour de Milan : « il va ultra vite, tu casses le sol de
+    #    son point de départ ») : plan serré et bas sur ses jambes ; il se
+    #    ramasse, le sol CASSE, il n'est plus là ; on reste sur le trou
+    #    (1er essai à 4,6 studs : on ne voyait que ses jambes, puis la
+    #    poussière remplissait l'écran) ; cadré de profil, en entier, la
+    #    destination hors champ à gauche (le sillage y file)
+    add(M["depart"], [8.4, 1.8, 0.9], [0.0, 2.4, 0.9], 46, "cut")
+    add(M["charge"] - 1, [9.0, 2.0, 1.2], [0.0, 2.0, 0.9], 48)
+    # 4. LA CHARGE : il est déjà devant la victime ; profil côté poing armé,
+    #    un peu derrière : on voit le buste TOURNER et le poing partir en
+    #    arrière ; poussée lente (1,4 s)
+    a = A(M["charge"] + 36)
+    #    (1er essai à 5 studs : le poing sortait du cadre, la pose ne se lisait pas en entier)
+    add(M["charge"], a + [7.6, -0.2, 3.2], a + [0.0, 0.3, -1.4], 44, "cut")
+    add(M["frappe"], a + [6.2, -0.3, 2.5], a + [0.0, 0.4, -1.2], 42)
+    # 6. FRAPPE : REGARD DE LA VICTIME (elle est masquée) ; la caméra est à
+    #    hauteur du point touché : le poing arrive À PLAT dans l'objectif
+    tg = np.asarray(SCENE["contact_tgt"], float)
+    eye = tg + np.array([-0.25, 0.2, -0.6])
+    for f in (M["frappe"] + 1, 276, 279, CF - 1):
         fist = tip(aw[f], "Right Arm")
-        add(f, eye, fist * 0.6 + Hd(f) * 0.4, 72, "cut" if f == M["frappe"] + 1 else "smooth")
+        add(f, eye, fist * 0.6 + Hd(f) * 0.4, 70, "cut" if f == M["frappe"] + 1 else "smooth")
     # 7. images inversées : 1re = la fente de 3/4 au contact (le plan
     #    « poing vers l'objectif » donnait une image noire aux 2/3) ;
     #    2e = plan large, la ligne vers l'horizon
@@ -196,24 +198,25 @@ def decor(aw):
 def events(aw, vw):
     E = []
     ev = lambda f, kind, **kw: E.append(dict(frame=f, kind=kind, **kw))  # noqa: E731
-    # poussière soulevée par la glissade (les pieds)
-    pas = []
-    for f in range(172, M["arme"] + 4, 3):
-        for leg in ("Left Leg", "Right Leg"):
-            p = tip(aw[f], leg)
-            if p[1] < 0.5:
-                pas.append([f, round(float(p[0]), 2), round(float(p[2]), 2)])
-    ev(172, "poussiere_pas", points=pas)
-    # tourbillon de fumée autour du poing (armé -> contact)
-    ev(M["arme"] + 8, "tourbillon", fin=CF + 3, bras="Right Arm")
+    # DÉPART : le sol casse sous lui (cratère, dalles soulevées, poussière),
+    # et un sillage de poussière file jusqu'à la victime (il est passé là)
+    lf = M["lance"]
+    arr = aw[lf + 4]["Torso"][1]
+    ev(lf, "depart_sol", pos=[0.0, 0.0, 0.3], rayon=2.6)
+    ev(lf + 1, "sillage", de=[0.0, 0.3], a=[round(float(arr[0]), 2), round(float(arr[2]) + 1.2, 2)])
+    # la CHARGE se voit : cailloux qui se soulèvent autour de ses pieds, vent
+    # qui tourne autour du poing
+    ev(M["charge"], "charge_sol", pos=v3([arr[0], 0.05, aw[M["charge"]]["Torso"][1][2]]), fin=CF)
+    ev(M["charge"] + 4, "tourbillon", fin=CF + 3, bras="Right Arm")
     # impact : 2 images inversées, blanc, dissolution
     i0, i1 = SCENE["inverse"]
     b0, b1 = SCENE["blanc"]
     ev(i0, "inverse", fin=i1)
     ev(b0, "blanc", plein=b0 + 12, fin=b1)
+    ev(lf, "secousse", fin=lf + 22, amp=0.3)
     ev(CF, "secousse", fin=CF + 150, amp=0.45)
     ev(CF, "souffle_sol", pos=v3([tip(aw[CF], "Right Arm")[0], 0.05, tip(aw[CF], "Right Arm")[2]]))
-    ev(M["arme"] + 8, "cacher_victime", debut=470, pov=[M["frappe"] + 1, CF])
+    ev(M["charge"], "cacher_victime", debut=470, pov=[M["frappe"] + 1, CF])
     ev(END - 20, "fondu_noir", fin=END)
     return E
 
@@ -222,10 +225,11 @@ def sons():
     """(temps réel s, son, volume, hauteur) -- sons du studio (vfx_studio/sons)."""
     t = T_CONTACT
     S = [(0.0, "vent_ambiant", 0.45, 1.0), (3.2, "vent_ambiant", 0.3, 0.9),
-         (2.78, "fouet_m1", 0.8, 0.55), (2.84, "vent_arc", 0.7, 0.8),
-         (3.15, "frappe_m1", 0.3, 0.5), (3.42, "frappe_m1", 0.3, 0.48), (3.7, "frappe_m1", 0.35, 0.46),
-         (3.9, "frappe_m1", 0.5, 0.4),
-         (4.02, "aspiration", 0.9, 0.8),
+         # départ : le sol casse (grave), le vent de son passage
+         (2.833, "impact_lourd", 0.75, 0.5), (2.853, "vent_arc", 0.8, 0.7), (2.883, "grondement", 0.45, 0.8),
+         # la charge : un grondement sourd qui monte, puis l'aspiration
+         (3.35, "grondement", 0.22, 0.4), (3.95, "grondement", 0.28, 0.45),
+         (4.05, "aspiration", 0.9, 0.7),
          (t - 0.46, "souffle_projectile", 0.7, 0.85),
          (t, "impact_lourd", 1.0, 0.75), (t + 0.08, "grondement", 0.9, 0.7),
          (t + 0.6, "grondement", 0.75, 0.55), (t + 1.2, "vent_ambiant", 0.8, 1.0),
@@ -239,8 +243,8 @@ def main():
     aw, vw = tracks()
     data = {"fps": FPS, "end_f": END, "distance": DV, "markers": SCENE["markers"], "contact_f": CF,
             "camera": camera_keys(aw, vw), "events": events(aw, vw), "decor": decor(aw), "sons": sons(),
-            "beats": [["Entrée", 0, M["calme"]], ["Calme", M["calme"], M["depart"]], ["Départ", M["depart"], M["approche"]],
-                      ["Approche", M["approche"], M["arme"]], ["Armé", M["arme"], M["frappe"]], ["Frappe", M["frappe"], CF],
+            "beats": [["Entrée", 0, M["calme"]], ["Calme", M["calme"], M["depart"]], ["Départ", M["depart"], M["charge"]],
+                      ["Charge", M["charge"], M["frappe"]], ["Frappe", M["frappe"], CF],
                       ["Impact", CF, SCENE["consequence"][0]], ["Conséquence", SCENE["consequence"][0], SCENE["redresse"][0]],
                       ["Il se redresse", SCENE["redresse"][0], END + 1]]}
     json.dump(data, open(os.path.join(OUT, "staging.json"), "w"), indent=1)

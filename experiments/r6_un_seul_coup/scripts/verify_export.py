@@ -80,10 +80,23 @@ def main(blend):
     wa = lambda f: X.solve(resample(fa, f / C.FPS), root=ha)  # noqa: E731
     wv = lambda f: X.solve(resample(fv, f / C.FPS), root=hv)  # noqa: E731
     look = lambda w, p="Torso": -w[p][0][:, 2]  # noqa: E731
+    elev = lambda w: float(np.degrees(np.arcsin((w["Right Arm"][0] @ np.array([0.0, -1.0, 0.0]))[1])))  # noqa: E731
+    penche = lambda w: float(np.degrees(np.arccos((w["Torso"][0] @ np.array([0.0, 1.0, 0.0]))[1])))  # noqa: E731
+    rep["mesures_coup"] = {"bras_elev_contact": round(elev(wa(C.CONTACT_F)), 1), "buste_penche_contact": round(penche(wa(C.CONTACT_F)), 1),
+                           "poing_y_contact": round(float(V.limb_tip(wa(C.CONTACT_F), "Right Arm")[1]), 2),
+                           "buste_penche_charge": round(penche(wa(C.TENUE_F)), 1),
+                           "bras_elev_tenue": [round(elev(wa(f)), 1) for f in range(C.CONTACT_F + 3, C.REDRESSE_F[0], 40)]}
     sens = {
         "attaquant_regarde_moins_z": bool(look(wa(0))[2] < -0.9),
         "victime_face_a_l_attaquant": bool(look(wv(0))[2] > 0.9),
-        "attaquant_avance_vers_la_victime": bool(wa(C.ARME_F)["Torso"][1][2] < -9.0),
+        "attaquant_devant_la_victime_des_la_charge": bool(wa(C.CHARGE_F)["Torso"][1][2] < -9.0),
+        # v2 (retour de Milan : « il frappait vers le bas ») : coup À PLAT,
+        # buste presque droit, poing à hauteur de poitrine
+        "bras_a_plat_au_contact": bool(abs(elev(wa(C.CONTACT_F))) < 12.0),
+        "bras_a_plat_pendant_la_tenue": bool(max(abs(elev(wa(f))) for f in range(C.CONTACT_F + 3, C.REDRESSE_F[0], 10)) < 12.0),
+        "buste_presque_droit_au_contact": bool(penche(wa(C.CONTACT_F)) < 22.0),
+        "poing_a_hauteur_de_poitrine": bool(V.limb_tip(wa(C.CONTACT_F), "Right Arm")[1] > 3.2),
+        "poing_derriere_pendant_la_charge": bool(V.limb_tip(wa(C.TENUE_F), "Right Arm")[2] > wa(C.TENUE_F)["Torso"][1][2] + 0.6),
         "poing_devant_au_contact": bool(V.limb_tip(wa(C.CONTACT_F), "Right Arm")[2] < wa(C.CONTACT_F)["Torso"][1][2] - 1.5),
         "poing_a_hauteur_d_epaule": bool(abs(V.limb_tip(wa(C.CONTACT_F), "Right Arm")[1]
                                              - wa(C.CONTACT_F)["Right Arm"][1][1]) < 0.9),

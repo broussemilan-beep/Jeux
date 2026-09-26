@@ -278,22 +278,82 @@
     sillon.visible = d > 0.1;
   }
 
+  // ------------------------------------------------------------ le départ : le sol casse
+  const depEv = ev("depart_sol"), silEv = ev("sillage"), chEv = ev("charge_sol");
+  const depT = depEv.frame / FPS;
+  const trou = (function () {
+    const c = document.createElement("canvas"); c.width = c.height = 256;
+    const g = c.getContext("2d"), gr = g.createRadialGradient(128, 128, 10, 128, 128, 128);
+    gr.addColorStop(0, "rgba(58,50,43,1)"); gr.addColorStop(0.55, "rgba(84,74,63,0.95)"); gr.addColorStop(1, "rgba(120,110,98,0)");
+    g.fillStyle = gr; g.fillRect(0, 0, 256, 256);
+    g.strokeStyle = "rgba(35,30,26,0.9)"; g.lineCap = "round";
+    for (let k = 0; k < 11; k++) {        // fissures qui partent du centre
+      let x = 128, y = 128, a = k / 11 * Math.PI * 2 + hash(k) * 0.4;
+      g.lineWidth = 4; g.beginPath(); g.moveTo(x, y);
+      for (let j = 0; j < 7; j++) { a += (hash(k * 7 + j) - 0.5) * 0.7; x += Math.cos(a) * 17; y += Math.sin(a) * 17; g.lineWidth = 4 - j * 0.5; g.lineTo(x, y); }
+      g.stroke();
+    }
+    const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding;
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshStandardMaterial({ map: t, transparent: true, depthWrite: false, roughness: 1, polygonOffset: true, polygonOffsetFactor: -3 }));
+    m.rotation.x = -Math.PI / 2; m.position.set(depEv.pos[0], 0.05, depEv.pos[2]); m.receiveShadow = true; scene.add(m); cachesInverse.push(m);
+    return m;
+  })();
+  const NDA = 16, dalles = new THREE.InstancedMesh(new THREE.DodecahedronGeometry(1, 0), new THREE.MeshStandardMaterial({ color: col("#6a625a"), roughness: 1, flatShading: true }), NDA);
+  dalles.castShadow = true; scene.add(dalles); cachesInverse.push(dalles);
+  const NCA = 22, cailloux = new THREE.InstancedMesh(new THREE.DodecahedronGeometry(1, 0), new THREE.MeshStandardMaterial({ color: col("#7a736a"), roughness: 1, flatShading: true }), NCA);
+  cailloux.castShadow = true; scene.add(cailloux); cachesInverse.push(cailloux);
+  function placerDepart(t, fa) {
+    const a = t - depT, R0 = depEv.rayon;
+    trou.visible = a >= 0; trou.scale.setScalar(2 * R0 * (0.6 + 0.4 * easeOut(a / 0.12)));
+    for (let i = 0; i < NDA; i++) {
+      if (a < 0) { m4.makeScale(0, 0, 0); dalles.setMatrixAt(i, m4); continue; }
+      // dalles du bord soulevées, penchées vers l'extérieur ; les petites volent
+      const ang = i / NDA * Math.PI * 2 + hash(i) * 0.3, rr = R0 * (0.75 + 0.35 * hash(i + 1)), vole = i % 3 === 0;
+      let x = depEv.pos[0] + Math.cos(ang) * rr, z = depEv.pos[2] + Math.sin(ang) * rr, y = 0.15;
+      const sc = vole ? 0.28 : 0.45 + 0.3 * hash(i + 2);
+      if (vole) { const b = Math.min(a, 1.1); x += Math.cos(ang) * 4 * b; z += Math.sin(ang) * 4 * b + 3 * b; y = Math.max(0.2, 9 * b - 14 * b * b); }
+      const up = easeOut(a / 0.1);
+      e3.set(Math.sin(ang) * 0.7 * up + (vole ? a * 6 : 0), ang, -Math.cos(ang) * 0.7 * up); q3.setFromEuler(e3);
+      v3a.set(x, y * up, z); v3b.set(sc * 1.4, sc * up, sc);
+      m4.compose(v3a, q3, v3b); dalles.setMatrixAt(i, m4);
+    }
+    dalles.instanceMatrix.needsUpdate = true;
+    // la CHARGE : les cailloux autour de ses pieds se soulèvent en tremblant,
+    // puis sont soufflés au contact
+    const ch = (fa - chEv.frame) / (chEv.fin - chEv.frame), souffle = (fa - chEv.fin) / FPS;
+    for (let i = 0; i < NCA; i++) {
+      if (ch < 0 || souffle > 1.2) { m4.makeScale(0, 0, 0); cailloux.setMatrixAt(i, m4); continue; }
+      const ang = hash(i + 30) * Math.PI * 2, rr = 1.6 + 2.6 * hash(i + 31), sc = 0.1 + 0.16 * hash(i + 32);
+      let x = chEv.pos[0] + Math.cos(ang) * rr, z = chEv.pos[2] + Math.sin(ang) * rr;
+      let y = 0.1 + (0.2 + 1.3 * hash(i + 33)) * smooth(0.05 + 0.3 * hash(i + 34), 1, ch) + 0.04 * Math.sin(fa * 1.7 + i);
+      if (souffle > 0) { x += Math.cos(ang) * 14 * souffle; z += Math.sin(ang) * 14 * souffle - 6 * souffle; y += 4 * souffle - 10 * souffle * souffle; }
+      e3.set(fa * 0.05 * hash(i), fa * 0.04, 0); q3.setFromEuler(e3);
+      v3a.set(x, Math.max(0.08, y), z); v3b.set(sc, sc, sc);
+      m4.compose(v3a, q3, v3b); cailloux.setMatrixAt(i, m4);
+    }
+    cailloux.instanceMatrix.needsUpdate = true;
+  }
+
   // ------------------------------------------------------------ effets (fumées, poussière)
-  const pasEv = ev("poussiere_pas"), tourEv = ev("tourbillon"), souffleEv = ev("souffle_sol");
+  const tourEv = ev("tourbillon"), souffleEv = ev("souffle_sol");
   function effets(t, fa, sa) {
     poolUsed = 0;
     const vent = (a) => 0.9 * a;          // la fumée dérive vers +x (le vent)
-    // poussière de la glissade
-    for (const [k, p] of pasEv.points.entries()) {
-      const a = t - p[0] / FPS;
-      if (a < 0 || a > 1.5) continue;
-      puff(p[1] + vent(a) * 0.5, 0.3 + a * 0.9, p[2] + 0.4 * a, 1.0 + 2.6 * easeOut(a / 1.5), 0.55 * (1 - a / 1.5), "#d9d0c2", k);
+    // DÉPART : explosion de poussière au point de départ, soufflée vers l'arrière
+    const ad = t - depT;
+    if (ad > 0 && ad < 4) {
+      for (let k = 0; k < 26; k++) {
+        const ang = k / 26 * Math.PI * 2, rr = 1 + 7 * easeOut(ad / 1.1) * (0.6 + 0.5 * hash(k + 60));
+        puff(depEv.pos[0] + Math.cos(ang) * rr, 0.4 + 2.2 * easeOut(ad / 1.4) * hash(k + 61), depEv.pos[2] + Math.sin(ang) * rr * 0.8 + 3 * easeOut(ad),
+          1.4 + 2.6 * easeOut(ad / 1.5), 0.42 * (1 - smooth(0.8, 3, ad)), k % 4 ? "#d6ccbd" : "#f1ede6", k);
+      }
     }
-    // CALME : un voile de poussière passe au ras du sol (le vent ; la scène vit sans que lui bouge)
-    if (fa > 40 && fa < 200) {
-      for (let k = 0; k < 7; k++) {
-        const a = (fa - 40) / FPS, x = -9 + ((a * 2.2 + k * 3.1) % 20);
-        puff(x, 0.5 + 0.4 * hash(k), -4.5 - 2.5 * hash(k + 3), 2.2 + hash(k + 6) * 1.6, 0.22 * smooth(40, 70, fa) * (1 - smooth(170, 200, fa)), "#e4dccd", k);
+    // sillage : la poussière reste là où il est passé
+    const as2 = t - silEv.frame / FPS;
+    if (as2 > 0 && as2 < 3.5) {
+      for (let k = 0; k < 14; k++) {
+        const u = k / 13, x = silEv.de[0] + (silEv.a[0] - silEv.de[0]) * u, z = silEv.de[1] + (silEv.a[1] - silEv.de[1]) * u;
+        puff(x + (hash(k + 80) - 0.5) * 0.8, 0.5 + 0.8 * easeOut(as2), z, 1.4 + 1.8 * easeOut(as2 / 2), 0.5 * (1 - smooth(1, 3.5, as2)), "#dcd3c5", k);
       }
     }
     // tourbillon de fumée autour du poing (armé -> contact)
@@ -350,8 +410,8 @@
       eyeV.set(...k[1]).lerp(new THREE.Vector3(...n[1]), u); lookV.set(...k[2]).lerp(new THREE.Vector3(...n[2]), u);
       camera.fov = k[3] + (n[3] - k[3]) * u;
     } else { eyeV.set(...k[1]); lookV.set(...k[2]); camera.fov = k[3]; }
-    const sc = ev("secousse");
-    if (fa >= sc.frame && fa < sc.fin) {
+    for (const sc of E.filter((e) => e.kind === "secousse")) {
+      if (fa < sc.frame || fa >= sc.fin) continue;
       const a = sc.amp * Math.pow(1 - (fa - sc.frame) / (sc.fin - sc.frame), 2);
       eyeV.x += a * Math.sin(fa * 1.9); eyeV.y += a * Math.sin(fa * 2.7 + 1); lookV.x += a * 0.6 * Math.sin(fa * 2.3 + 2);
     }
@@ -401,7 +461,7 @@
     poser(A, sa); poser(Vr, sv);
     Vr.forEach((m) => { m.visible = fa < cacherEv.debut && !(f0 >= cacherEv.pov[0] && f0 < cacherEv.pov[1]); });
     inverser(inv);
-    placerRoches(tr); placerSillon(tr); placerNuages(t);
+    placerRoches(tr); placerSillon(tr); placerNuages(t); placerDepart(t, fa);
     if (!inv) effets(t, fa, sa);
     placerCamera(fa);
     renderer.render(scene, camera);

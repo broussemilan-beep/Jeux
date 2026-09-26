@@ -8,14 +8,13 @@ Punch 2 et Serious Punch de Pew relus à 0,1 s).
 **Calme, un élan, UN coup. Puis la conséquence qui dure** : le sillon de
 roches file jusqu'à l'horizon, les nuages se fendent, il se redresse.
 
-## La scène (60 i/s, 12,5 s)
+## La scène v1 (60 i/s, 12,5 s ; départ et charge remplacés en v2, ci-dessous)
 
 | s | moment | caméra |
 |---|---|---|
 | 0-1,3 | entrée : de dos, la plaine, la victime au loin | poussée jusque DANS son dos (transition) |
 | 1,3-2,6 | CALME : debout, visage plat ; un voile de poussière passe | plan moyen de face, fixe |
 | 2,6-3,05 | il se ramasse et part | fouet vers le ciel |
-| 3,05-3,9 | glissade en fente très basse, la victime lève sa garde | large et bas, il est petit |
 | 3,9-4,35 | armé : buste tordu, poing à la hanche, genou haut, tenue qui tremble | très gros plan, contre-plongée |
 | 4,35-4,72 | frappe : le poing vient VERS l'objectif, contact sauté | regard de la victime (masquée) |
 | 4,72-5,35 | 2 images inversées (4 i chacune), blanc, dissolution | 3/4 de la fente, puis la ligne vers l'horizon |
@@ -24,6 +23,27 @@ roches file jusqu'à l'horizon, les nuages se fendent, il se redresse.
 | 10,3-12,5 | conséquence 3 : il se redresse, regarde au loin ; fondu au noir | profil bas, la ligne derrière lui |
 
 Seuls moments rapides : l'élan + la glissade (~1 s) et la frappe (0,37 s).
+
+## v2 (retour de Milan sur la v1, 2026-09-26)
+
+« Le perso doit aller ultra vite : tu casses le sol de son point de départ,
+puis la scène apparaît avec la charge et la frappe » ; « il frappait vers le
+bas ; il charge son poing en le ramenant à l'arrière et en tournant son
+buste » (+ 4 refs anime : Gon, Saitama ×3 ; fiche §6).
+
+| s | v2 |
+|---|---|
+| 2,6-2,83 | il se ramasse (profil, en entier) |
+| 2,83-2,88 | il part en 3 images : le sol CASSE (trou fissuré, dalles, poussière), sillage jusqu'à la victime ; 0,27 s sur le trou vide |
+| 3,1-4,52 | coupe : il est devant la victime et CHARGE (1,4 s) : appuis larges, buste qui tourne jusqu'à -66°, poing derrière, tenue qui tremble, cailloux qui se soulèvent, vent autour du poing |
+| 4,52-4,72 | frappe à PLAT, vue par la victime |
+
+Mesuré au contact : v1 buste 40°, poing à 2,5 studs (bas-ventre) ;
+**v2 buste 7°, bras -5°, poing à 3,4 studs (poitrine), bras à -3° pendant
+la tenue**. Nouveaux contrôles dans `verify_export.py` (bras à plat, buste
+droit, poing à hauteur de poitrine, poing derrière pendant la charge).
+Avant/après : `captures/verification/2026-09-26-un-seul-coup-v1-contre-v2-depart-charge-coup.png` ;
+vidéo `2026-09-26-un-seul-coup-v2-scene-complete-avec-son.mp4`.
 
 ## Chaîne (réutilise celle du Poing du Dragon)
 

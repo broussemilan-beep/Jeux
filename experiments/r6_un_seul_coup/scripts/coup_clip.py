@@ -40,19 +40,19 @@ DV = 16.0                   # distance initiale de la victime (studs, le long de
 M.D = DV                    # victim_pose / v_world de dragon_clip lisent ce global
 END_F = 750                 # 12,5 s
 CALME_F = 78
-DEPART_F = 156
-LANCE_F = 168
-APPROCHE_F = 183
-ARME_F = 234
-TENUE_F = 246
-FRAPPE_F = 261
+DEPART_F = 156              # il se ramasse (plan serré sur ses jambes)
+LANCE_F = 170               # il PART : le sol casse sous lui, il est là-bas en 3 images
+ARRIVEE_F = 173
+CHARGE_F = 186              # coupe : il est déjà devant la victime et CHARGE son poing
+TENUE_F = 222               # buste enroulé, poing au plus loin derrière ; tenue qui tremble
+FRAPPE_F = 271              # départ du coup
 CONTACT_F = 283
 INVERSE_F = (283, 291)      # 2 images inversées (2 x 4 i)
 BLANC_F = (291, 321)        # blanc 0,2 s puis dissolution 0,3 s
 CONSEQ_F = (321, 516, 618)  # 3 plans de conséquence
 REDRESSE_F = (630, 705)
-MARKERS = [("activation", 0), ("calme", CALME_F), ("depart", DEPART_F), ("approche", APPROCHE_F),
-           ("arme", ARME_F), ("frappe", FRAPPE_F), ("contact", CONTACT_F), ("blanc", BLANC_F[0]),
+MARKERS = [("activation", 0), ("calme", CALME_F), ("depart", DEPART_F), ("lance", LANCE_F),
+           ("charge", CHARGE_F), ("frappe", FRAPPE_F), ("contact", CONTACT_F), ("blanc", BLANC_F[0]),
            ("consequence", CONSEQ_F[0]), ("redresse", REDRESSE_F[0])]
 
 
@@ -70,17 +70,20 @@ def victim_keys():
     K = []
     add = lambda f, p, i="BEZIER": K.append((f, p, i))  # noqa: E731
     vp = M.victim_pose
-    # garde qui respire (vivante, jamais figée)
-    for f, k in ((0, 0), (46, 1), (96, 0), (146, 1), (196, 0)):
-        add(f, vp(0.0, pelvis=((0, -0.18 - 0.02 * k, 0), (-6 - k, 0, 0)), chest=(0, 0.1, 0), head=(-4 + k, 0, 0),
+    # garde qui respire (vivante, jamais figée) ; DEBOUT : sa poitrine doit
+    # être à hauteur d'épaule de l'attaquant (v1 : garde accroupie -0,2 +
+    # attaquant penché 40° -> le poing tapait le bas-ventre, « vers le bas »)
+    for f, k in ((0, 0), (46, 1), (96, 0), (146, 1), (ARRIVEE_F, 0)):
+        add(f, vp(0.0, pelvis=((0, -0.06 - 0.015 * k, 0), (-4 - k, 0, 0)), chest=(0, 0.08, 0), head=(-3 + k, 0, 0),
                   arms=((GUARD[0][0] - 3 * k, 0, GUARD[0][2]), (GUARD[1][0] - 3 * k, 0, GUARD[1][2]))))
-    # il le voit arriver : sursaut, garde haute, recul du buste
-    add(214, vp(0.1, pelvis=((0, -0.12, 0), (8, 0, 0)), chest=(0, -0.05, 0), head=(10, 0, 0),
-                arms=((-118, 0, -18), (-124, 0, 20))))
-    add(240, vp(0.1, pelvis=((0, -0.2, 0), (4, 0, 0)), chest=(0, 0.0, 0), head=(4, 0, 0),
-                arms=((-110, 0, -12), (-116, 0, 14))))
-    add(CONTACT_F, vp(0.1, pelvis=((0, -0.22, 0), (2, 0, 0)), chest=(0, 0.0, 0), head=(2, 0, 0),
-                      arms=((-108, 0, -10), (-114, 0, 12))), "LINEAR")
+    # il apparaît d'un coup devant elle : sursaut (4 i), puis figée, elle tremble
+    add(ARRIVEE_F + 4, vp(0.25, pelvis=((0, -0.02, 0), (10, 0, 0)), chest=(0, -0.08, 0), head=(12, 0, 0),
+                          arms=((-122, 0, -20), (-128, 0, 22))), "LINEAR")
+    for f, k in ((200, 1), (228, -1), (252, 1), (270, -1)):
+        add(f, vp(0.25, pelvis=((0, -0.04, 0), (7 + 0.6 * k, 0.4 * k, 0)), chest=(0, -0.05, 0), head=(8 + k, 0.8 * k, 0),
+                  arms=((-114 - 2 * k, 0, -14), (-120 + 2 * k, 0, 16))))
+    add(CONTACT_F, vp(0.25, pelvis=((0, -0.04, 0), (6, 0, 0)), chest=(0, -0.05, 0), head=(7, 0, 0),
+                      arms=((-112, 0, -12), (-118, 0, 14))), "LINEAR")
     # le coup : pliée autour du poing, puis ÉJECTÉE le long de -Z (pendant le
     # blanc) ; elle file vers l'horizon en tournant (un point au loin)
     add(CONTACT_F + 2, vp(0.9, y=0.2, rootrot=(-18, 0, 0), head=(-30, 0, 0), pelvis=((0, 0, 0), (-34, 0, 0)),
@@ -108,6 +111,21 @@ HANG = {"R": ("d", ((0.24, -1.0, 0.06), 1.9)), "L": ("d", ((-0.24, -1.0, 0.06), 
 
 
 def attacker_keys(vw, rig):
+    """v2 (retour de Milan sur la v1, 2026-09-26) :
+    - « la scène où le perso réduit la distance : il doit aller ultra vite,
+      tu casses le sol de son point de départ, puis la scène apparaît avec le
+      moment où il charge son poing et frappe » -> plus de glissade : il part
+      en 3 images, le sol casse, coupe sur la CHARGE devant la victime ;
+    - « le perso frappait vers le bas (comme dans le Poing du Dragon) ; il
+      charge son poing, il l'arme en le ramenant à l'arrière et en tournant
+      son buste » (refs : Gon accroupi poing à la hanche, Saitama manga, poing
+      rouge) -> mesuré sur la v1 : buste penché 40°, poing à 2,5 studs du sol
+      (bas-ventre), bras à -25° pendant l'armé. Ici : appuis larges, buste
+      presque droit (12-16°), buste qui TOURNE (épaule droite en arrière,
+      jusqu'à -66°), poing ramené derrière à hauteur de hanche/poitrine, puis
+      coup À PLAT, épaule en avant, poing à hauteur de poitrine (COUP_CHARGE
+      §1 : « tourner son buste vers la droite pour charger son poing droit,
+      plier les jambes, le 2e bras placé, et boum il envoie »)."""
     K = []
     add = lambda f, p, i="BEZIER": K.append((f, p, i))  # noqa: E731
     head = lambda f: tuple(world_parts_head(vw, f))  # noqa: E731
@@ -119,107 +137,98 @@ def attacker_keys(vw, rig):
     # ENTRÉE + CALME : presque rien ; la respiration est lente (1,3 s)
     for f, k in ((0, 0), (39, 1), (78, 0), (117, 1), (DEPART_F, 0)):
         add(f, idle(f, 0.0, k))
-    # DÉPART : il se ramasse (12 i), puis part d'un coup
-    add(LANCE_F, {"root": ((0.0, 0.0, -0.15), (0, 0, 0)), "pelvis": ((0, -0.5, 0), (-20, -6, 0)), "chest": (0, 0.28, 0),
-                  "feet": feet_at(0.0), "look": head(LANCE_F),
-                  "hands": {"R": ("d", ((0.35, -0.85, 0.5), 1.9)), "L": ("d", ((-0.3, -0.9, 0.3), 1.9))}}, "LINEAR")
+    # DÉPART : il se ramasse, TRÈS bas (le sol va casser sous cette poussée)
+    add(LANCE_F, {"root": ((0.0, 0.0, 0.1), (0, 0, 0)), "pelvis": ((0, -0.8, 0), (-26, -8, 0)), "chest": (0, 0.3, 0),
+                  "feet": feet_at(0.0, lx=-0.6, lz=-0.3, rx=0.65, rz=0.45), "look": head(LANCE_F), "auto_low": True,
+                  "hands": {"R": ("d", ((0.35, -0.7, 0.65), 1.9)), "L": ("d", ((-0.35, -0.7, 0.6), 1.9))}}, "LINEAR")
 
-    # APPROCHE : glissade en fente très basse (les pieds glissent dans la poussière)
-    def fente(f, z, low=0.9, lean=-48, yaw=-10, lf=(-0.6, -1.45), rf=(0.65, 1.2)):
-        return {"root": ((0.0, 0.0, z), (0, 0, 0)), "pelvis": ((0, -low, 0), (lean, yaw, 0)), "chest": (0, 0.4, 0),
-                "feet": {"L": ("rg", lf), "R": ("rg", rf)}, "look": head(f), "auto_low": True,
-                "hands": {"R": ("d", ((0.4, -0.45, 0.8), 1.9)), "L": ("d", ((-0.25, -0.55, -0.8), 1.9))}}
-    add(174, {"root": ((0.0, 0.6, -1.4), (0, 0, 0)), "pelvis": ((0, -0.8, 0), (-40, -8, 0)), "chest": (0, 0.38, 0),
-              "feet": {"L": ("d", ((0.0, -0.75, -0.65), 2.0)), "R": ("d", ((0.0, -0.55, 0.85), 2.0))},
-              "look": head(174),
-              "hands": {"R": ("d", ((0.35, -0.4, 0.85), 1.9)), "L": ("d", ((-0.2, -0.5, -0.85), 1.9))}}, "LINEAR")
-    add(APPROCHE_F, fente(APPROCHE_F, -3.0))
-    add(197, fente(197, -5.6, lean=-50))
-    add(211, fente(211, -8.0, lean=-50))
-    add(225, fente(225, -10.1, low=0.95, lean=-52))
-    # dérapage : il freine, le plus bas (le pied avant mord)
-    add(ARME_F, fente(ARME_F, -10.9, low=0.95, lean=-50, lf=(-0.6, -1.3), rf=(0.7, 1.15)))
+    # LA CHARGE, devant la victime. Pose de base : appuis larges (pied gauche
+    # devant, droit derrière), jambes pliées, buste presque droit qui TOURNE.
+    za = -11.3
+    chest_v = lambda f: np.asarray(vw[f]["Torso"][1], float) + np.array([0.0, 0.3, 0.55])  # noqa: E731
+    stance = {"L": ("g", (-0.75, za - 0.95)), "R": ("g", (0.85, za + 1.0))}
 
-    # ARMÉ : il se relève en tordant le buste, poing à la hanche derrière,
-    # genou avant haut, l'autre bras vise ; la tenue TREMBLE et le buste
-    # continue de s'enrouler (COUP_CHARGE §7 : la tension monte, pas de gel)
-    za = -11.2
-    chest_v = lambda f: np.asarray(vw[f]["Torso"][1], float) + np.array([0.0, 0.2, 0.55])  # noqa: E731
-
-    def arme(f, twist, knee_y, wig=(0.0, 0.0), low=0.42, lean=-16):
-        fist = np.array([0.45, -0.3, 1.0]) + np.array([wig[0], wig[1], 0.0]) * 0.04
-        return {"root": ((0.0, 0.0, za), (0, -18, 0)), "pelvis": ((0, -low, 0), (lean, twist, 0)), "chest": (0, 0.32, 0),
-                "feet": {"R": ("g", (0.55, za + 0.35)), "L": ("d", ((-0.05, -1.0 + knee_y, -0.95), 2.0))},
-                "hands": {"R": ("d", (tuple(fist), 1.95)), "L": ("t", (tuple(chest_v(f)), 2.0))},
+    def charge(f, twist, fist_back, low=0.48, lean=-9, wig=(0.0, 0.0), i="BEZIER"):
+        # poing ramené DERRIÈRE, à hauteur de hanche / bas de poitrine
+        fist = np.array([0.55, -0.22, fist_back]) + np.array([wig[0], wig[1], 0.0]) * 0.035
+        return {"root": ((0.0, 0.0, za), (0, 0, 0)), "pelvis": ((0, -low, 0), (lean, twist, 0)), "chest": (0, 0.08, 0),
+                "feet": stance, "auto_low": True,
+                "hands": {"R": ("d", (tuple(fist), 1.95)), "L": ("a", (-12, -18, 1.95))},
                 "look": head(f)}
-    add(240, arme(240, -30, 0.8, low=0.55, lean=-24))
-    add(TENUE_F, arme(TENUE_F, -42, 1.15))
-    for f, w, tw in ((250, (3, 2), -43), (254, (-2, 3), -44.5), (258, (2, -2), -46)):
-        add(f, arme(f, tw, 1.18 + 0.01 * (f - 246) / 4, w))
-    add(FRAPPE_F, arme(FRAPPE_F, -47, 1.22), "LINEAR")
+    # arrivée (3 images de voyage : le corps file, les membres traînent)
+    add(ARRIVEE_F, charge(ARRIVEE_F, -18, 0.4, low=0.62, lean=-18), "LINEAR")
+    # le buste s'ENROULE : l'épaule droite part en arrière, le poing avec
+    add(CHARGE_F, charge(CHARGE_F, -32, 0.65, low=0.55, lean=-16))
+    add(200, charge(200, -48, 0.85))
+    add(TENUE_F, charge(TENUE_F, -62, 1.0, low=0.52))
+    # tenue qui TREMBLE, la torsion monte encore un peu (la tension, pas un gel)
+    for f, w, tw in ((232, (3, 2), -63), (242, (-2, 3), -64), (252, (2, -2), -65), (262, (-3, -1), -66)):
+        add(f, charge(f, tw, 1.0, low=0.53, wig=w))
+    add(FRAPPE_F, charge(FRAPPE_F, -66, 1.02, low=0.54), "LINEAR")
 
-    # FRAPPE : le pied avant se plante, le bassin tourne, le buste plonge,
-    # le poing traîne derrière (fouet) puis part droit, à plat ; contact exact
+    # FRAPPE : le bassin et le buste tournent d'abord (le poing traîne,
+    # fouet), l'épaule droite passe DEVANT, le bras part à PLAT ; contact
+    # exact sur la POITRINE, à hauteur d'épaule
     s_ = "R"
-    low, lean, yaw = 0.62, -32, 46
-    probe = {"root": ((0.0, 0.0, 0.0), (0, 0, 0)), "pelvis": ((0, -low, 0), (lean, yaw, 0)), "chest": (0, 0.2, 0)}
+    low, lean, yaw = 0.22, -5, 42
+    probe = {"root": ((0.0, 0.0, 0.0), (0, 0, 0)), "pelvis": ((0, -low, 0), (lean, yaw, 0)), "chest": (0, 0.06, 0)}
     M.solve_pose(rig, probe)
     y_sh = float(M.torso_pivot(V.current_parts(rig), s_)[1])
     r, p = vw[CONTACT_F]["Torso"]
-    t = float(np.clip((y_sh - 0.1 - p[1] - r[1, 2] * -0.55) / max(r[1, 1], 0.3), -0.85, 0.85))
+    t = float(np.clip((y_sh + 0.1 - p[1] - r[1, 2] * -0.55) / max(r[1, 1], 0.3), -0.75, 0.75))
     tgt = p + r @ np.array([0.0, t, -0.55])
-    hikite = ("a", (-140, -40, 2.0))
-    contact = {"root": ((0.0, 0.0, 0.0), (0, 0, 0)), "pelvis": ((0, -low, 0), (lean, yaw, 0)), "chest": (0, 0.2, 0),
-               "fitp": (s_, tuple(tgt), 2.25, -6), "look": tuple(tgt + np.array([0.0, 0.3, -2.0])),
+    hikite = ("a", (-150, -30, 2.0))
+    contact = {"root": ((0.0, 0.0, 0.0), (0, 0, 0)), "pelvis": ((0, -low, 0), (lean, yaw, 0)), "chest": (0, 0.06, 0),
+               "fitp": (s_, tuple(tgt), 2.15, -4), "look": tuple(tgt + np.array([0.0, 0.5, -2.0])),
                "hands": {s_: ("w", tuple(tgt)), "L": hikite}}
     c, _res = M.solve_pose(rig, contact)
     croot = np.asarray(c["MasterControl"]["location"], float)
-    lx, lz = M._pivot(-0.65, -0.7, 0.5 * yaw)
-    rx, rz = M._pivot(0.7, 1.55, 0.5 * yaw)
+    lx, lz = M._pivot(-0.75, -0.9, 0.4 * yaw)
+    rx, rz = M._pivot(0.85, 1.25, 0.4 * yaw)
     cfeet = {"L": ("g", (croot[0] + lx, croot[2] + lz)), "R": ("g", (croot[0] + rx, croot[2] + rz))}
     contact["feet"] = cfeet
     contact["auto_low"] = True
-    # le pied avant descend et se plante (stomp), le poing reste à la hanche
-    add(266, {"root": ((0.0, 0.0, 0.5 * (za + croot[2])), (0, -10, 0)), "pelvis": ((0, -0.5, 0), (-22, -28, 0)),
-              "chest": (0, 0.3, 0), "feet": {"L": cfeet["L"], "R": ("g", (0.55, za + 0.35))},
-              "hands": {"R": ("d", ((0.45, -0.3, 1.0), 1.95)), "L": ("t", (tuple(chest_v(266)), 2.0))},
-              "look": head(266)}, "LINEAR")
-    # bassin et buste tournent, le poing passe à la hanche (à plat)
-    add(275, {"root": ((0.0, 0.0, croot[2] + 0.5), (0, 0, 0)), "pelvis": ((0, -0.58, 0), (-28, 10, 0)),
-              "chest": (0, 0.25, 0), "feet": cfeet,
-              "hands": {"R": ("a", (95, -12, 2.05)), "L": ("a", (-120, -35, 2.0))},
-              "look": tuple(tgt)}, "LINEAR")
-    add(279, {"root": ((0.0, 0.0, croot[2] + 0.2), (0, 0, 0)), "pelvis": ((0, -0.6, 0), (-31, 36, 0)),
-              "chest": (0, 0.22, 0), "feet": cfeet, "hands": {"R": ("d", ((-0.08, -0.18, -1.0), 2.05)), "L": hikite},
-              "look": tuple(tgt)}, "LINEAR")
+    # le bassin part, le poing reste derrière
+    add(275, {"root": ((0.0, 0.0, 0.5 * (za + croot[2])), (0, 0, 0)), "pelvis": ((0, -0.44, 0), (-9, -40, 0)),
+              "chest": (0, 0.08, 0), "feet": cfeet, "auto_low": True,
+              "hands": {"R": ("d", ((0.6, -0.2, 0.9), 1.95)), "L": ("a", (-40, -25, 1.95))},
+              "look": head(275)}, "LINEAR")
+    # buste de face, le poing passe à la hanche (à plat)
+    add(279, {"root": ((0.0, 0.0, croot[2] + 0.15), (0, 0, 0)), "pelvis": ((0, -0.38, 0), (-8, 5, 0)),
+              "chest": (0, 0.08, 0), "feet": cfeet, "auto_low": True,
+              "hands": {"R": ("a", (70, -8, 2.05)), "L": ("a", (-120, -30, 2.0))}, "look": tuple(tgt)}, "LINEAR")
+    add(281, {"root": ((0.0, 0.0, croot[2] + 0.05), (0, 0, 0)), "pelvis": ((0, -0.33, 0), (-6, 28, 0)),
+              "chest": (0, 0.07, 0), "feet": cfeet, "auto_low": True,
+              "hands": {"R": ("d", ((-0.05, 0.0, -1.0), 2.05)), "L": hikite}, "look": tuple(tgt)}, "LINEAR")
     add(CONTACT_F, contact, "LINEAR")
-    # suite : le corps passe 2 images devant (dépassement), puis la fente
-    # descend encore et se TIENT ; le poing reste tendu (la victime est partie)
-    fwd = np.array([0.0, 0.0, -1.0])
-    ext = tgt + 0.18 * fwd
+    # suite : l'épaule passe encore un peu devant, puis l'EXTENSION est TENUE,
+    # bras à plat vers l'horizon (la victime est partie)
+    ext = tgt + np.array([0.0, 0.0, -0.15])
 
-    def tenue(f, lowk, k=0.0):
+    def tenue(f, k=0.0, lowk=0.0):
         p_ = dict(contact)
-        p_["root"] = ((float(croot[0]), float(croot[1]), float(croot[2]) - 0.1), (0, 0, 0))
+        p_["root"] = ((float(croot[0]), float(croot[1]), float(croot[2]) - 0.08), (0, 0, 0))
         p_.pop("fitp", None)
-        p_["pelvis"] = ((0, -(low + lowk) + 0.012 * k, 0), (lean - 3 + 0.5 * k, yaw + 3, 0))
-        p_["hands"] = {s_: ("w", tuple(ext + np.array([0.0, -0.08 * lowk + 0.01 * k, 0.0]))), "L": ("a", (-146, -42, 2.0))}
-        p_["look"] = tuple(tgt + np.array([0.0, 0.2, -30.0]))
+        p_["pelvis"] = ((0, -(low + lowk) + 0.012 * k, 0), (lean - 2 + 0.5 * k, yaw + 4, 0))
+        # bras À PLAT vers l'horizon (direction, pas point : le corps se
+        # tasse un peu, un point fixe devenait hors d'atteinte de 0,4 stud)
+        p_["hands"] = {s_: ("d", ((-0.03, 0.2 + 0.004 * k, -1.0), 2.05)), "L": ("a", (-152, -32, 2.0))}
+        p_["look"] = tuple(tgt + np.array([0.0, 0.3, -30.0]))
         return p_
-    add(CONTACT_F + 3, tenue(CONTACT_F + 3, 0.08))
-    add(300, tenue(300, 0.16))
+    add(CONTACT_F + 3, tenue(CONTACT_F + 3, 0, 0.04))
+    add(300, tenue(300, 0, 0.06))
     for f, k in ((380, 1), (460, -1), (540, 1), (REDRESSE_F[0], 0)):
-        add(f, tenue(f, 0.16, k))
-    # REDRESSEMENT : lent ; le bras tendu retombe, pas de rapprochement du pied
-    # arrière, main à la hanche (« dans la poche »), il regarde au loin
-    zr = float(croot[2]) - 0.1
+        add(f, tenue(f, k, 0.06))
+    # REDRESSEMENT : lent ; le bras tendu retombe, pied arrière ramené,
+    # main à la hanche (« dans la poche »), il regarde au loin
+    zr = float(croot[2]) - 0.08
     far = (0.0, 3.4, zr - 250.0)
-    add(660, {"root": ((float(croot[0]), 0.0, zr), (0, 0, 0)), "pelvis": ((0, -0.4, 0), (-16, 26, 0)), "chest": (0, 0.14, 0),
+    add(660, {"root": ((float(croot[0]), 0.0, zr), (0, 0, 0)), "pelvis": ((0, -0.3, 0), (-8, 24, 0)), "chest": (0, 0.1, 0),
               "feet": cfeet, "auto_low": True, "look": far,
               "hands": {"R": ("d", ((0.1, -0.55, -0.85), 1.95)), "L": ("d", ((-0.3, -0.9, 0.3), 1.9))}})
     zf = zr + 0.9
-    feet_f = {"L": ("g", (float(croot[0]) + lx, float(croot[2]) + lz)), "R": ("g", (float(croot[0]) + 0.55, zf + 0.35))}
-    add(684, {"root": ((float(croot[0]) - 0.1, 0.0, zf - 0.2), (0, 8, 0)), "pelvis": ((0, -0.2, 0), (-6, 14, 0)),
+    feet_f = {"L": ("g", (float(croot[0]) - 0.6, zf - 0.55)), "R": ("g", (float(croot[0]) + 0.55, zf + 0.35))}
+    add(684, {"root": ((float(croot[0]) - 0.1, 0.0, zf - 0.2), (0, 8, 0)), "pelvis": ((0, -0.2, 0), (-4, 14, 0)),
               "chest": (0, 0.08, 0), "look": far,
               "feet": {"L": feet_f["L"], "R": ("w", (float(croot[0]) + 0.6, 0.45, zf + 0.6))},
               "hands": {"R": ("d", ((0.2, -1.0, 0.25), 1.9)), "L": ("d", ((-0.25, -1.0, 0.1), 1.9))}})

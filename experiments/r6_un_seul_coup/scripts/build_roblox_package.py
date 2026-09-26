@@ -70,8 +70,10 @@ def final_positions():
 def evenements():
     E = []
     ev = {e["kind"]: e for e in STAGING["events"]}
-    for f, x, z in ev["poussiere_pas"]["points"][::2]:
-        E.append({"frame": f, "kind": "poussiere", "pos": [x, 0.3, z]})
+    d, si, ch = ev["depart_sol"], ev["sillage"], ev["charge_sol"]
+    E.append({"frame": d["frame"], "kind": "depart_sol", "pos": d["pos"], "rayon": d["rayon"]})
+    E.append({"frame": si["frame"], "kind": "sillage", "de": si["de"], "a": si["a"]})
+    E.append({"frame": ch["frame"], "kind": "charge_sol", "pos": ch["pos"], "fin": ch["fin"]})
     E.append({"frame": ev["tourbillon"]["frame"], "kind": "tourbillon", "fin": ev["tourbillon"]["fin"]})
     E.append({"frame": ev["souffle_sol"]["frame"], "kind": "souffle_sol", "pos": ev["souffle_sol"]["pos"]})
     E.append({"frame": STAGING["contact_f"], "kind": "destruction"})
@@ -102,7 +104,7 @@ def write_data_module():
         f"\tINVERSE = {{ {ev['inverse']['frame']}, {ev['inverse']['fin']} }},\n"
         f"\tBLANC = {{ {b['frame']}, {b['plein']}, {b['fin']} }},\n"
         f"\tFONDU_NOIR = {{ {ev['fondu_noir']['frame']}, {ev['fondu_noir']['fin']} }},\n"
-        f"\tSECOUSSE = {{ {ev['secousse']['frame']}, {ev['secousse']['fin']}, {ev['secousse']['amp']} }},\n"
+        f"\tSECOUSSES = {lua([[e['frame'], e['fin'], e['amp']] for e in STAGING['events'] if e['kind'] == 'secousse'], 1)},\n"
         f"\tVICTIME = {{ cachee = {ev['cacher_victime']['debut']}, pov = {lua(ev['cacher_victime']['pov'])} }},\n"
         f"\tFINAL = {{ attacker = {lua(fa)}, victim = {lua(fv)} }},\n"
         f"\tCAMERA = {lua(cam, 1)},\n"

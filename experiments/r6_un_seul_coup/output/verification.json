@@ -1,26 +1,48 @@
 {
  "contact": 0.05,
  "sol": {
-  "plus_bas_attaquant": -0.078,
-  "plus_bas_victime": -0.009,
+  "plus_bas_attaquant": -0.088,
+  "plus_bas_victime": -0.011,
   "images_attaquant_sous_0.1": []
  },
  "translation_tete_max": 0.00012,
  "aller_retour_max": 5.685902922862834e-14,
  "cles": {
-  "attaquant": 128,
-  "victime": 58,
+  "attaquant": 93,
+  "victime": 59,
   "frames": 751
  },
- "ecart_max_reduction_studs": 0.0151,
+ "ecart_max_reduction_studs": 0.0177,
  "taille_fichiers_ko": [
-  821,
-  374
+  597,
+  380
  ],
+ "mesures_coup": {
+  "bras_elev_contact": -5.5,
+  "buste_penche_contact": 7.3,
+  "poing_y_contact": 3.37,
+  "buste_penche_charge": 12.0,
+  "bras_elev_tenue": [
+   -3.2,
+   -3.2,
+   -3.1,
+   -3.1,
+   -3.4,
+   -3.3,
+   -3.1,
+   -3.0,
+   -3.0
+  ]
+ },
  "sens_roblox": {
   "attaquant_regarde_moins_z": true,
   "victime_face_a_l_attaquant": true,
-  "attaquant_avance_vers_la_victime": true,
+  "attaquant_devant_la_victime_des_la_charge": true,
+  "bras_a_plat_au_contact": true,
+  "bras_a_plat_pendant_la_tenue": true,
+  "buste_presque_droit_au_contact": true,
+  "poing_a_hauteur_de_poitrine": true,
+  "poing_derriere_pendant_la_charge": true,
   "poing_devant_au_contact": true,
   "poing_a_hauteur_d_epaule": true,
   "victime_ejectee_loin_devant": true,

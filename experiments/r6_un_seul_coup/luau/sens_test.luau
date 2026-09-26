@@ -92,6 +92,18 @@ end
 check(impactSon, "son d'impact lourd exactement au contact")
 check(silence, "rien ne démarre dans les 4 images avant l'impact (le vide avant)")
 
+-- 5b. v2 : le départ casse le sol AU point de départ, puis il est devant la victime
+for _, e in DATA.EVENTS do
+	if e.kind == "depart_sol" then
+		local p = UnSeulCoup.toWorld(att2, e.pos)
+		check((p - (att2.Position - v3(0, 3, 0))).Magnitude < 1, "départ : le sol casse SOUS l'attaquant (point de départ)")
+	end
+	if e.kind == "sillage" then
+		local a = UnSeulCoup.toWorld(att2, { e.a[1], 0, e.a[2] })
+		check(dot(a - att2.Position, att2.LookVector) > 8, "sillage : il file VERS la victime")
+	end
+end
+
 -- 6. ordonnanceur : chaque événement une fois, dans l'ordre
 local state = { next = 1 }
 local fired, last, ordered = 0, -1, true
