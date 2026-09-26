@@ -845,3 +845,17 @@ cerveau, voir la fin de l'entrée.
     même caméra) ; analyse complète en cours (données R6 exactes des
     animations TSB + pack, reconstruction de chaque ref, vérification
     adverse). Suite : fiche UN_SEUL_COUP §11.
+
+- **2026-09-26, rappel de Milan (pendant l'analyse du poing chargé)** :
+  « encore une fois, une règle importante : tu apprends et tu te nourris, tu
+  ne crées pas de règles gravées dans la roche. »
+  - Ce que ça touche tout de suite : `experiments/r6_un_seul_coup/scripts/verify_export.py`
+    contient des contrôles de STYLE en vrai/faux écrits d'après mes propres
+    lectures (« poing sur le côté, pas derrière », « épaule droite reculée »,
+    « bras à plat », « buste presque droit »). Ce sont des règles, et en
+    partie fausses (elles venaient de lectures en mots). À la v6 : ils
+    deviennent des MESURES affichées (descripteurs `geo_pose` à côté des
+    fourchettes lues sur les refs), sans verdict ; seuls restent en vrai/faux
+    les contrôles techniques (sol, contact, aller-retour moteur, sens Roblox).
+  - `geo_pose.py` et la comparaison à caméra identique sont des aides pour
+    regarder, pas des portes obligatoires.
