@@ -68,7 +68,7 @@ TYPES = ("entree_sans_statut", "citation_milan_introuvable", "chemin_introuvable
 
 def defaut_fichiers():
     c = os.path.join(BRAIN, "corpus")
-    return ([os.path.join(c, "CARNET.md")] + sorted(glob.glob(os.path.join(c, "fiches", "*.md")))
+    return ([os.path.join(c, "CARNET.md")] + sorted(f for f in glob.glob(os.path.join(c, "fiches", "*.md")) if not os.path.basename(f).startswith("_"))
             + [os.path.join(c, "CATALOGUE_REFS.md"), os.path.join(BRAIN, "ETAT.md")]
             + [p for p in [os.path.join(BRAIN, "NOYAU.md")] if os.path.exists(p)])
 

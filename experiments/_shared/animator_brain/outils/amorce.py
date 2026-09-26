@@ -76,7 +76,7 @@ def main(source=""):
         print("\n".join(mots))
     mt = motifs()
     if mt:
-        print("\n## Motifs actifs (corpus/motifs.json)")
+        print("\n## Motifs actifs (mes résumés, pas ses mots ; ses mots exacts : outils/motifs.py)")
         print("\n".join(mt))
     prop = _lire(os.path.join(B, "PROPOSITIONS.md")).strip()
     if prop:

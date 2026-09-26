@@ -1,0 +1,943 @@
+{
+ "_doc": "Défauts que Milan a signalés plusieurs fois, avec SES MOTS EXACTS (extraits copiés de corpus/milan_verbatim.jsonl, repérés par date + sha1 ; jamais paraphrasés). De l'information, pas des règles : une mesure liée s'affiche à côté, sans verdict. Vérifier / recompter : python3 outils/motifs.py --verifier ; chercher de nouveaux messages : --candidats. Sources de la construction (2026-09-26) : milan_verbatim.jsonl, RETOURS.md, notes_milan.jsonl, corpus/recherche/AUDIT_CERVEAU_2026-09-26.md §4.",
+ "motifs": [
+  {
+   "id": "vers_le_bas",
+   "phrase": "le coup part d'en bas / il frappe vers le bas",
+   "citations": [
+    {
+     "date": "2026-09-03T20:19:18.314Z",
+     "sha1": "314842a7f2bc32c2",
+     "production": "r6_directional_punch",
+     "version": "",
+     "extrait": "on dirait que le coup pars du bas alors que il doit allez droit"
+    },
+    {
+     "date": "2026-09-04T21:06:25.315Z",
+     "sha1": "bf0504ae5d846934",
+     "production": "r6_directional_punch",
+     "version": "",
+     "extrait": "tu fais partir le coup d’en bas pour le monter en haut",
+     "note": "pendant la CHARGE (le poing monte du bas vers le haut)"
+    },
+    {
+     "date": "2026-09-24T13:43:11.682Z",
+     "sha1": "d79a8f287a29745d",
+     "production": "poing_du_dragon",
+     "version": "v3",
+     "extrait": "tu donnz dzs coup vers le bas",
+     "chronique": "RETOURS.md:110"
+    },
+    {
+     "date": "2026-09-24T14:24:42.309Z",
+     "sha1": "4296e0e2d6e21e17",
+     "production": "poing_du_dragon",
+     "version": "v3b",
+     "extrait": "les coup parte tjrs du bas",
+     "chronique": "RETOURS.md:133"
+    },
+    {
+     "date": "2026-09-24T15:15:02.401Z",
+     "sha1": "dd807cffecb62e5b",
+     "production": "poing_du_dragon",
+     "version": "v4",
+     "extrait": "au coup final le coup par tjrs d’en bas"
+    },
+    {
+     "date": "2026-09-25T06:22:33.973Z",
+     "sha1": "356a3960c1c3eb0e",
+     "production": "poing_du_dragon",
+     "version": "v7",
+     "extrait": "qui est tjrs un coup qui part de en bas"
+    },
+    {
+     "date": "2026-09-26T08:14:34.317Z",
+     "sha1": "2c8d5a6a64c1853c",
+     "production": "un_seul_coup",
+     "version": "v1",
+     "extrait": "autre problème qui revient un peu a quand dans poing du dragon le perso frappait vers le bas",
+     "chronique": "RETOURS.md:783"
+    }
+   ],
+   "mesure": {
+    "quoi": "ce que l'œil lit (CARNET 2.9) : la hauteur du poing au contact et la bascule du buste, pas l'angle du bras",
+    "outil": "outils/geo_pose.py descripteurs() ; experiments/r6_un_seul_coup/scripts/verify_export.py",
+    "grandeurs": [
+     {
+      "nom": "poing droit au contact, hauteur (repère du coup, depuis le centre du torse, studs)",
+      "fichier": "experiments/r6_un_seul_coup/output/verification.json",
+      "cle": [
+       "mesures_pose",
+       "contact",
+       "poing",
+       "RA",
+       2
+      ],
+      "refs": [
+       {
+        "source": "experiments/_shared/animator_brain/corpus/poses/sources/pro_tsb_m1_m4.json",
+        "cle": [
+         "resultat",
+         "fourchettes",
+         "poing_contact_(avant,haut)",
+         "haut"
+        ],
+        "statut": "exact R6 (M1-M3 TSB, coups légers)"
+       },
+       {
+        "source": "experiments/_shared/animator_brain/corpus/poses/sources/pro_pack_battleground.json",
+        "cle": [
+         "resultat",
+         "fourchettes",
+         "poing_contact",
+         "haut"
+        ],
+        "statut": "exact R6 (pack battleground)"
+       }
+      ]
+     },
+     {
+      "nom": "buste penché vers l'avant au contact (degrés, geo_pose buste.penche_avant)",
+      "fichier": "experiments/r6_un_seul_coup/output/verification.json",
+      "cle": [
+       "mesures_pose",
+       "contact",
+       "buste",
+       "penche_avant"
+      ],
+      "refs": [
+       {
+        "source": "experiments/_shared/animator_brain/corpus/poses/sources/pro_tsb_m1_m4.json",
+        "cle": [
+         "resultat",
+         "fourchettes",
+         "penche_avant_contact_deg"
+        ],
+        "statut": "exact R6 (M1-M3 TSB)"
+       },
+       {
+        "source": "experiments/_shared/animator_brain/corpus/poses/sources/pro_pack_battleground.json",
+        "cle": [
+         "resultat",
+         "fourchettes",
+         "penche_avant_contact"
+        ],
+        "statut": "exact R6 (pack)"
+       }
+      ]
+     },
+     {
+      "nom": "poing au contact, hauteur MONDE (studs, sol = 0 ; autre repère que les refs ci-dessus)",
+      "fichier": "experiments/r6_un_seul_coup/output/verification.json",
+      "cle": [
+       "mesures_coup",
+       "poing_y_contact"
+      ],
+      "refs": []
+     }
+    ],
+    "historique": [
+     {
+      "version": "un_seul_coup v1",
+      "valeurs": "buste 40°, poing à 2,5 studs au contact (Milan : « frappait vers le bas »)",
+      "source": "RETOURS.md:789"
+     },
+     {
+      "version": "un_seul_coup v2",
+      "valeurs": "buste 7°, bras -5°, poing 3,4 (Milan ne l'a plus dit)",
+      "source": "RETOURS.md:791"
+     }
+    ],
+    "manque": "la hauteur du poing face à la POITRINE de la victime n'est écrite par aucun outil (plan de réorganisation §3) ; les fourchettes des refs viennent de coups LÉGERS (M1) et du pack, pas d'un coup chargé"
+   },
+   "liens": [
+    "corpus/CARNET.md 2.9",
+    "corpus/fiches/UN_SEUL_COUP.md §6",
+    "LECONS.md §10-11 (HISTORIQUE)"
+   ],
+   "reperes": [
+    "vers le bas",
+    "d.?en bas",
+    "du bas",
+    "de en bas",
+    "part.{0,12}\\bbas\\b"
+   ],
+   "nombre_de_fois": 7,
+   "productions": [
+    "r6_directional_punch",
+    "poing_du_dragon v3",
+    "poing_du_dragon v3b",
+    "poing_du_dragon v4",
+    "poing_du_dragon v7",
+    "un_seul_coup v1"
+   ],
+   "statut": "actif"
+  },
+  {
+   "id": "que_les_bras",
+   "phrase": "tu n'animes que les bras ; le corps ne porte pas le coup",
+   "citations": [
+    {
+     "date": "2026-09-03T18:17:12.336Z",
+     "sha1": "a7dd4d1ffa1c4177",
+     "production": "r6_directional_punch",
+     "version": "",
+     "extrait": "tu utilise pas le corps dj peros"
+    },
+    {
+     "date": "2026-09-04T19:34:39.049Z",
+     "sha1": "04d685580df4a5c2",
+     "production": "r6_directional_punch",
+     "version": "",
+     "extrait": "Le perso met juste une espèce d’élancement du bras dans tes rendue"
+    },
+    {
+     "date": "2026-09-04T21:06:25.315Z",
+     "sha1": "bf0504ae5d846934",
+     "production": "r6_directional_punch",
+     "version": "",
+     "extrait": "il faut que le bust tourne la jambe se plie et que le bras pas que le « poignet » parte du bas"
+    },
+    {
+     "date": "2026-09-25T13:59:23.858Z",
+     "sha1": "1c60a5dfd0630733",
+     "production": "poing_du_dragon",
+     "version": "v9",
+     "extrait": "tu as a anime que les bras encore une fois j’ai l’impression",
+     "chronique": "RETOURS.md:529"
+    },
+    {
+     "date": "2026-09-26T09:04:51.325Z",
+     "sha1": "bbef1dc35f95e2c0",
+     "production": "un_seul_coup",
+     "version": "v4",
+     "extrait": "arrière qui est engager par le juste tourne",
+     "note": "« juste » = « buste » (dictée) : l'arrière vient du buste qui tourne, pas du bras"
+    }
+   ],
+   "mesure": {
+    "quoi": "qui porte le mouvement, par phase : images où le torse est quasi figé (< 0,3°/image) pendant que les bras bougent",
+    "outil": "python3 outils/corps_bras.py <attaquant.rbxmx> nom:f0:f1 ...",
+    "grandeurs": [],
+    "historique": [
+     {
+      "version": "poing_du_dragon v9",
+      "valeurs": "torse figé 15/22 images pendant la frappe, 16/32 pendant l'armé",
+      "source": "outils/corps_bras.py (docstring)"
+     }
+    ],
+    "manque": "jamais relancé sur Un seul coup (audit 2026-09-26 §4)"
+   },
+   "liens": [
+    "COUP_CHARGE.md §7",
+    "CARNET 2.1d"
+   ],
+   "reperes": [
+    "que les bras",
+    "pas le corps",
+    "elancement du bras",
+    "que le .?poignet"
+   ],
+   "nombre_de_fois": 5,
+   "productions": [
+    "r6_directional_punch",
+    "poing_du_dragon v9",
+    "un_seul_coup v4"
+   ],
+   "statut": "actif"
+  },
+  {
+   "id": "aucun_changement",
+   "phrase": "je vois aucun changement (entre deux versions)",
+   "citations": [
+    {
+     "date": "2026-09-24T17:24:32.116Z",
+     "sha1": "6d3aecf97fca9bb8",
+     "production": "poing_du_dragon",
+     "version": "v5",
+     "extrait": "je vois pas trop de dif avec la v4"
+    },
+    {
+     "date": "2026-09-25T06:22:33.973Z",
+     "sha1": "356a3960c1c3eb0e",
+     "production": "poing_du_dragon",
+     "version": "v7",
+     "extrait": "Je vois aucun changement je t’avoue",
+     "chronique": "RETOURS.md:278"
+    },
+    {
+     "date": "2026-09-25T11:04:42.211Z",
+     "sha1": "9dee96b94f1c4166",
+     "production": "poing_du_dragon",
+     "version": "v8",
+     "extrait": "y’a pas de gros changement"
+    },
+    {
+     "date": "2026-09-26T08:46:16.462Z",
+     "sha1": "d02679fb1213aa4e",
+     "production": "un_seul_coup",
+     "version": "v3",
+     "extrait": "Je vois aucun changement je ne sais si c un bug ou si on ne sait tjrs pas compris",
+     "chronique": "RETOURS.md:813"
+    }
+   ],
+   "mesure": {
+    "quoi": "écart v(n-1) -> v(n) depuis la caméra du plan, à vitesse réelle, à côté de la ref",
+    "outil": "outils/regard.py ; outils/planche_ref.py (aucun outil n'écrit l'écart automatiquement)",
+    "grandeurs": [],
+    "historique": [
+     {
+      "version": "un_seul_coup v3",
+      "valeurs": "images v2 / v3 à 3,9 s : écart moyen 42/255 (ce n'était pas un bug)",
+      "source": "RETOURS.md:815"
+     }
+    ],
+    "manque": "pas de mesure automatique de l'écart entre versions"
+   },
+   "liens": [
+    "CARNET 1.4",
+    "RETOURS.md:314"
+   ],
+   "reperes": [
+    "aucun changement",
+    "pas (trop )?de dif",
+    "pas de gros changement",
+    "meme chose"
+   ],
+   "nombre_de_fois": 4,
+   "productions": [
+    "poing_du_dragon v5",
+    "poing_du_dragon v7",
+    "poing_du_dragon v8",
+    "un_seul_coup v3"
+   ],
+   "statut": "actif"
+  },
+  {
+   "id": "poing_charge",
+   "phrase": "le poing chargé ne se lit pas comme chargé",
+   "citations": [
+    {
+     "date": "2026-09-03T14:32:35.373Z",
+     "sha1": "c0fd5c928592a114",
+     "production": "r6_directional_punch",
+     "version": "",
+     "extrait": "le perso est censé charge son poing"
+    },
+    {
+     "date": "2026-09-04T20:11:07.051Z",
+     "sha1": "fe52222a372389e9",
+     "production": "r6_directional_punch",
+     "version": "",
+     "extrait": "il donne pas le give d’un coup chargé"
+    },
+    {
+     "date": "2026-09-24T15:15:02.401Z",
+     "sha1": "dd807cffecb62e5b",
+     "production": "poing_du_dragon",
+     "version": "v4",
+     "extrait": "je verrai plus comme le coup de saitama un coup qui se charge avec un le bust qui tourne"
+    },
+    {
+     "date": "2026-09-25T11:19:37.654Z",
+     "sha1": "f8f8ab19c4da26bc",
+     "production": "poing_du_dragon",
+     "version": "v8",
+     "extrait": "même si je t’évoque poing charge puissance ça devrai faire écho à notre gif coup sérieux de saitama"
+    },
+    {
+     "date": "2026-09-26T08:33:26.433Z",
+     "sha1": "050d7400884354ff",
+     "production": "un_seul_coup",
+     "version": "v2",
+     "extrait": "mais tjrs pas pour le poing chargé je pense que tu capte pas le truck de poing chargé"
+    },
+    {
+     "date": "2026-09-26T09:04:51.325Z",
+     "sha1": "bbef1dc35f95e2c0",
+     "production": "un_seul_coup",
+     "version": "v4",
+     "extrait": "dans aucune le bras est tendu derrière"
+    }
+   ],
+   "mesure": {
+    "quoi": "pose de la tenue de la charge : lacet et penché du buste, position des poings (geo_pose), à côté des poses MESURÉES des refs",
+    "outil": "outils/geo_pose.py ; corpus/poses/sources/",
+    "grandeurs": [
+     {
+      "nom": "buste, lacet pendant la tenue (degrés ; - = épaule droite qui recule)",
+      "fichier": "experiments/r6_un_seul_coup/output/verification.json",
+      "cle": [
+       "mesures_pose",
+       "tenue",
+       "buste",
+       "lacet"
+      ],
+      "refs": []
+     },
+     {
+      "nom": "buste, penché avant pendant la tenue (degrés)",
+      "fichier": "experiments/r6_un_seul_coup/output/verification.json",
+      "cle": [
+       "mesures_pose",
+       "tenue",
+       "buste",
+       "penche_avant"
+      ],
+      "refs": []
+     },
+     {
+      "nom": "poing droit pendant la tenue (avant, droite, haut) depuis le centre du torse",
+      "fichier": "experiments/r6_un_seul_coup/output/verification.json",
+      "cle": [
+       "mesures_pose",
+       "tenue",
+       "poing",
+       "RA"
+      ],
+      "refs": []
+     }
+    ],
+    "historique": [],
+    "manque": "fourchettes de la charge pas encore rassemblées (B2 du plan) : lire corpus/poses/sources/recon_pew_tenue.json, recon_tsb_depart.json, recon_anime.json (invariants + vérifications) et pro_tsb_ultimes.json"
+   },
+   "liens": [
+    "corpus/CARNET.md 2.10",
+    "corpus/fiches/UN_SEUL_COUP.md §7-10",
+    "corpus/fiches/COUP_CHARGE.md"
+   ],
+   "reperes": [
+    "poing charg",
+    "coup charg",
+    "charge son poing",
+    "poing charge"
+   ],
+   "nombre_de_fois": 6,
+   "productions": [
+    "r6_directional_punch",
+    "poing_du_dragon v4",
+    "poing_du_dragon v8",
+    "un_seul_coup v2",
+    "un_seul_coup v4"
+   ],
+   "statut": "actif"
+  },
+  {
+   "id": "pas_compris",
+   "phrase": "tu n'as pas compris ce que je dis (mauvaise lecture de ses mots ou des refs)",
+   "citations": [
+    {
+     "date": "2026-09-04T21:06:25.315Z",
+     "sha1": "bf0504ae5d846934",
+     "production": "r6_directional_punch",
+     "version": "",
+     "extrait": "je comprend tu as pas compris le côté irréaliste d’un coup"
+    },
+    {
+     "date": "2026-09-04T23:32:01.368Z",
+     "sha1": "a36cc9af793b0bc5",
+     "production": "r6_directional_punch",
+     "version": "",
+     "extrait": "Tjrs pas compris , inverse"
+    },
+    {
+     "date": "2026-09-25T15:39:28.285Z",
+     "sha1": "844f1c953f622056",
+     "production": "poing_du_dragon",
+     "version": "v11",
+     "extrait": "Non en gros je voulais pas que ça se mélange au éclairé de izuku"
+    },
+    {
+     "date": "2026-09-25T21:10:03.940Z",
+     "sha1": "e17c91a8d7c54913",
+     "production": "poing_du_dragon",
+     "version": "v13",
+     "extrait": "Non tu n’a pas compris ne gros dans la scène que tu as créé y’a un problème avec le dragon"
+    },
+    {
+     "date": "2026-09-26T08:33:26.433Z",
+     "sha1": "050d7400884354ff",
+     "production": "un_seul_coup",
+     "version": "v2",
+     "extrait": "je pense que tu capte pas le truck de poing chargé"
+    },
+    {
+     "date": "2026-09-26T08:46:16.462Z",
+     "sha1": "d02679fb1213aa4e",
+     "production": "un_seul_coup",
+     "version": "v3",
+     "extrait": "si on ne sait tjrs pas compris"
+    }
+   ],
+   "mesure": {
+    "quoi": "rien ne mesure le sens d'un mot : mesurer la ref (poses/) avant de traduire un mot en clé",
+    "outil": "outils/geo_pose.py (reconstruire la pose de la ref) ; poser une question à Milan",
+    "grandeurs": [],
+    "historique": [],
+    "manque": "aucune mesure ; ANGLES_MORTS.md §1"
+   },
+   "liens": [
+    "corpus/recherche/AUDIT_CERVEAU_2026-09-26.md §4"
+   ],
+   "reperes": [
+    "pas compris",
+    "capte pas",
+    "tu n.?a pas compris",
+    "je voulais pas"
+   ],
+   "nombre_de_fois": 6,
+   "productions": [
+    "r6_directional_punch",
+    "poing_du_dragon v11",
+    "poing_du_dragon v13",
+    "un_seul_coup v2",
+    "un_seul_coup v3"
+   ],
+   "statut": "actif"
+  },
+  {
+   "id": "exageration",
+   "phrase": "le dosage de l'exagération : pas assez, puis trop (pendule)",
+   "citations": [
+    {
+     "date": "2026-09-01T11:25:03.805Z",
+     "sha1": "d3bee50ea99fcdb7",
+     "production": "r6_aerial_kick_combo",
+     "version": "",
+     "extrait": "tu abuse pas assez le mouvement style manga",
+     "sens": "pas assez"
+    },
+    {
+     "date": "2026-09-03T15:49:05.555Z",
+     "sha1": "6c4037f7e13f2f6b",
+     "production": "r6_directional_punch",
+     "version": "",
+     "extrait": "ça manque d’exagération",
+     "sens": "pas assez"
+    },
+    {
+     "date": "2026-09-23T15:28:20.533Z",
+     "sha1": "ca3b9e20bdb98f53",
+     "production": "r6_black_hole",
+     "version": "",
+     "extrait": "ça manque d’exagération revois la ref",
+     "sens": "pas assez"
+    },
+    {
+     "date": "2026-09-24T20:01:39.580Z",
+     "sha1": "02a79cfd2ea5f715",
+     "production": "poing_du_dragon",
+     "version": "v6",
+     "extrait": "en cinéma peut être un peu trop abusé mais léger",
+     "sens": "trop"
+    },
+    {
+     "date": "2026-09-25T06:22:33.973Z",
+     "sha1": "356a3960c1c3eb0e",
+     "production": "poing_du_dragon",
+     "version": "v7",
+     "extrait": "c plus exagère et un placement différent",
+     "sens": "pas assez"
+    },
+    {
+     "date": "2026-09-26T09:04:51.325Z",
+     "sha1": "bbef1dc35f95e2c0",
+     "production": "un_seul_coup",
+     "version": "v4",
+     "extrait": "le pose des jambe est un peu  trop abusé",
+     "sens": "trop"
+    }
+   ],
+   "mesure": {
+    "quoi": "amplitude d'une pose à côté de la même grandeur mesurée dans les refs (pas un multiplicateur sans cible)",
+    "outil": "outils/geo_pose.py ; corpus/poses/sources/",
+    "grandeurs": [],
+    "historique": [],
+    "manque": "aucune variante x1 / x1,5 / x2 montrée côte à côte (audit §4)"
+   },
+   "liens": [
+    "CARNET 2.7",
+    "CARNET 2.8"
+   ],
+   "reperes": [
+    "abus",
+    "exag"
+   ],
+   "nombre_de_fois": 6,
+   "productions": [
+    "r6_aerial_kick_combo",
+    "r6_directional_punch",
+    "r6_black_hole",
+    "poing_du_dragon v6",
+    "poing_du_dragon v7",
+    "un_seul_coup v4"
+   ],
+   "statut": "actif"
+  },
+  {
+   "id": "jambes",
+   "phrase": "les jambes et les appuis ne suivent pas le coup",
+   "citations": [
+    {
+     "date": "2026-09-03T19:13:13.395Z",
+     "sha1": "caeb61cda775f344",
+     "production": "r6_directional_punch",
+     "version": "",
+     "extrait": "Tu oublies de utiles les jambes"
+    },
+    {
+     "date": "2026-09-05T06:33:34.971Z",
+     "sha1": "12ffbf6090e6e8f2",
+     "production": "r6_hit_combo",
+     "version": "",
+     "extrait": "le jeux du coup et des jambe c trop statique"
+    },
+    {
+     "date": "2026-09-05T07:14:55.046Z",
+     "sha1": "4a41eaf60d6d5cdf",
+     "production": "r6_hit_combo",
+     "version": "",
+     "extrait": "retravaille les jambes le placement et le jeux de jambes n’est pas bon"
+    },
+    {
+     "date": "2026-09-05T07:42:31.382Z",
+     "sha1": "5695c2c458c56e88",
+     "production": "r6_hit_combo",
+     "version": "",
+     "extrait": "quand tu met des coup les axes des jambes change"
+    },
+    {
+     "date": "2026-09-05T09:30:20.415Z",
+     "sha1": "1a80aee0fd35c8fa",
+     "production": "r6_battle_throne",
+     "version": "",
+     "extrait": "les pieds tjrs trop encré dans le sol"
+    },
+    {
+     "date": "2026-09-26T09:04:51.325Z",
+     "sha1": "bbef1dc35f95e2c0",
+     "production": "un_seul_coup",
+     "version": "v4",
+     "extrait": "le pose des jambe est un peu  trop abusé"
+    }
+   ],
+   "mesure": {
+    "quoi": "pieds et hauteur de hanche par phase (geo_pose pieds.RL / pieds.LL, hanche)",
+    "outil": "outils/geo_pose.py descripteurs()",
+    "grandeurs": [
+     {
+      "nom": "hauteur de hanche au contact (debout : 3,0)",
+      "fichier": "experiments/r6_un_seul_coup/output/verification.json",
+      "cle": [
+       "mesures_pose",
+       "contact",
+       "hanche"
+      ],
+      "refs": []
+     },
+     {
+      "nom": "pied droit au contact (avant, droite, y)",
+      "fichier": "experiments/r6_un_seul_coup/output/verification.json",
+      "cle": [
+       "mesures_pose",
+       "contact",
+       "pieds",
+       "RL"
+      ],
+      "refs": []
+     },
+     {
+      "nom": "pied gauche au contact (avant, droite, y)",
+      "fichier": "experiments/r6_un_seul_coup/output/verification.json",
+      "cle": [
+       "mesures_pose",
+       "contact",
+       "pieds",
+       "LL"
+      ],
+      "refs": []
+     }
+    ],
+    "historique": [],
+    "manque": "les jambes des reconstructions de refs ne sont pas ajustées (recon_pew_depart : « Aucune jambe n'est ajustée »)"
+   },
+   "liens": [],
+   "reperes": [
+    "jambe",
+    "appui",
+    "pieds"
+   ],
+   "nombre_de_fois": 6,
+   "productions": [
+    "r6_directional_punch",
+    "r6_hit_combo",
+    "r6_battle_throne",
+    "un_seul_coup v4"
+   ],
+   "statut": "actif"
+  },
+  {
+   "id": "mecanique",
+   "phrase": "c'est mécanique, pas fluide (smooth)",
+   "citations": [
+    {
+     "date": "2026-09-05T06:43:32.939Z",
+     "sha1": "28fab375457c4fcd",
+     "production": "r6_hit_combo",
+     "version": "",
+     "extrait": "c tjrs pas smooth"
+    },
+    {
+     "date": "2026-09-05T09:30:20.415Z",
+     "sha1": "1a80aee0fd35c8fa",
+     "production": "r6_battle_throne",
+     "version": "",
+     "extrait": "ça manque de fluidité"
+    },
+    {
+     "date": "2026-09-23T18:55:26.264Z",
+     "sha1": "2cba2eeeacb56e1e",
+     "production": "r6_black_hole",
+     "version": "",
+     "extrait": "pq tout à l’aire mécanique dans tes rendues"
+    },
+    {
+     "date": "2026-09-24T20:09:17.677Z",
+     "sha1": "e039f56602b2cf38",
+     "production": "poing_du_dragon",
+     "version": "v6",
+     "extrait": "c’est très pas 100% robotic mais sa manque d’une touche comparé à nos ref"
+    },
+    {
+     "date": "2026-09-25T13:59:23.858Z",
+     "sha1": "1c60a5dfd0630733",
+     "production": "poing_du_dragon",
+     "version": "v9",
+     "extrait": "c’est très léger en terme de smooth et enchaînement"
+    }
+   ],
+   "mesure": {
+    "quoi": "chevauchement, holds morts, décalage des membres (audit.py, tracks.offset_tracks)",
+    "outil": "audit.py ; tracks.py (en veille depuis la v9 sur le rig V2.22, audit §3.B)",
+    "grandeurs": [],
+    "historique": [],
+    "manque": "outils muets sur le rig V2.22 (plan de réorganisation §1.3)"
+   },
+   "liens": [],
+   "reperes": [
+    "smooth",
+    "fluid",
+    "mecanique",
+    "robotic",
+    "saccad"
+   ],
+   "nombre_de_fois": 5,
+   "productions": [
+    "r6_hit_combo",
+    "r6_battle_throne",
+    "r6_black_hole",
+    "poing_du_dragon v6",
+    "poing_du_dragon v9"
+   ],
+   "statut": "pas revenu depuis poing_du_dragon v11"
+  },
+  {
+   "id": "regles_gravees",
+   "phrase": "tu graves des règles au lieu d'apprendre",
+   "citations": [
+    {
+     "date": "2026-09-24T15:15:02.401Z",
+     "sha1": "dd807cffecb62e5b",
+     "production": "poing_du_dragon",
+     "version": "v4",
+     "extrait": "nz prends pas mes parole pour de regle mais comme des piste"
+    },
+    {
+     "date": "2026-09-24T20:59:56.195Z",
+     "sha1": "7cbb302f438f4f25",
+     "production": "poing_du_dragon",
+     "version": "v6",
+     "extrait": "ne t’enferme pas dans des règles universelle"
+    },
+    {
+     "date": "2026-09-25T07:45:13.229Z",
+     "sha1": "18c384378ac6f629",
+     "production": "poing_du_dragon",
+     "version": "v7",
+     "extrait": "sa doit pas dveneir des regles mais de l’apprentissage"
+    },
+    {
+     "date": "2026-09-25T11:04:42.211Z",
+     "sha1": "9dee96b94f1c4166",
+     "production": "poing_du_dragon",
+     "version": "v8",
+     "extrait": "es que tu ne t’es pas trop enfermé en chiffre et stats au lieux de devlopper ton jugement"
+    },
+    {
+     "date": "2026-09-26T09:50:01.333Z",
+     "sha1": "da9118440623436e",
+     "production": "un_seul_coup",
+     "version": "v5",
+     "extrait": "tu crée pas de règles grave dans la roche"
+    }
+   ],
+   "mesure": {
+    "quoi": "contrôles de STYLE en vrai/faux dans le code, phrases en « jamais / toujours » sans source",
+    "outil": "outils/lint_cerveau.py (consultatif, s'il est présent)",
+    "grandeurs": [],
+    "historique": [
+     {
+      "version": "un_seul_coup v5",
+      "valeurs": "verify_export.py contenait des contrôles de style vrai/faux (« poing sur le côté, pas derrière »…)",
+      "source": "RETOURS.md:852"
+     }
+    ],
+    "manque": ""
+   },
+   "liens": [
+    "NOYAU.md « Ce que Milan veut »"
+   ],
+   "reperes": [
+    "regle",
+    "enferme"
+   ],
+   "nombre_de_fois": 5,
+   "productions": [
+    "poing_du_dragon v4",
+    "poing_du_dragon v6",
+    "poing_du_dragon v7",
+    "poing_du_dragon v8",
+    "un_seul_coup v5"
+   ],
+   "statut": "actif"
+  },
+  {
+   "id": "oubli",
+   "phrase": "le cerveau oublie, ou n'apprend qu'à moitié",
+   "citations": [
+    {
+     "date": "2026-09-25T11:19:37.654Z",
+     "sha1": "f8f8ab19c4da26bc",
+     "production": "poing_du_dragon",
+     "version": "v8",
+     "extrait": "je suis étonné que tu t’en souvienne pas"
+    },
+    {
+     "date": "2026-09-25T11:22:40.832Z",
+     "sha1": "0cd7c2ab47fee9e8",
+     "production": "poing_du_dragon",
+     "version": "v8",
+     "extrait": "le cerveau se nourri mais que à 30%"
+    },
+    {
+     "date": "2026-09-26T09:48:15.684Z",
+     "sha1": "7acabd8adb908819",
+     "production": "un_seul_coup",
+     "version": "v5",
+     "extrait": "tu as vraiment appris de nos ref ,tuto , image , manga etc etc ou à moitié ?"
+    },
+    {
+     "date": "2026-09-26T09:53:40.445Z",
+     "sha1": "3f823c7de9a8687c",
+     "production": "un_seul_coup",
+     "version": "v5",
+     "extrait": "il y’a bcp d’oublie et j’espère pas d’hallucination"
+    }
+   ],
+   "mesure": {
+    "quoi": "le rappel retrouve-t-il ce qu'on sait ? cas connus rejoués",
+    "outil": "python3 tests/rappel_selftest.py ; python3 outils/rappel.py \"<concept>\"",
+    "grandeurs": [],
+    "historique": [],
+    "manque": ""
+   },
+   "liens": [
+    "corpus/recherche/PLAN_REORGANISATION_2026-09-26.md §1"
+   ],
+   "reperes": [
+    "oubli",
+    "souvien",
+    "a moitie",
+    "30 ?%"
+   ],
+   "nombre_de_fois": 4,
+   "productions": [
+    "poing_du_dragon v8",
+    "un_seul_coup v5"
+   ],
+   "statut": "actif"
+  },
+  {
+   "id": "comprendre_avant",
+   "phrase": "tu te lances avant d'avoir compris",
+   "citations": [
+    {
+     "date": "2026-09-24T14:24:42.309Z",
+     "sha1": "4296e0e2d6e21e17",
+     "production": "poing_du_dragon",
+     "version": "v3b",
+     "extrait": "etudie comprends avanr de te lancer",
+     "chronique": "RETOURS.md:133"
+    },
+    {
+     "date": "2026-09-24T15:15:02.401Z",
+     "sha1": "dd807cffecb62e5b",
+     "production": "poing_du_dragon",
+     "version": "v4",
+     "extrait": "qu’es que tu en pensds avanr de agir"
+    },
+    {
+     "date": "2026-09-25T06:57:34.989Z",
+     "sha1": "ff967c3930efc97b",
+     "production": "poing_du_dragon",
+     "version": "v7",
+     "extrait": "je veux avant que tu comprenne"
+    },
+    {
+     "date": "2026-09-26T08:14:34.317Z",
+     "sha1": "2c8d5a6a64c1853c",
+     "production": "un_seul_coup",
+     "version": "v1",
+     "extrait": "Essaye de comprendre ce que je te dis"
+    },
+    {
+     "date": "2026-09-26T09:15:19.679Z",
+     "sha1": "4482e3800f2a0523",
+     "production": "un_seul_coup",
+     "version": "v5",
+     "extrait": "je te met en ultra juste le temps que tu comprenne analyse visuellement géométriquement"
+    }
+   ],
+   "mesure": {
+    "quoi": "temps entre un retour et la version suivante ; comparaison aux refs faite AVANT ou APRÈS le commit",
+    "outil": "git log (dates des commits) ; fiche du moment écrite avant la première clé",
+    "grandeurs": [],
+    "historique": [
+     {
+      "version": "un_seul_coup v1-v5",
+      "valeurs": "5 versions en 66 min ; comparaison aux refs 2 min APRÈS le commit v4",
+      "source": "corpus/recherche/AUDIT_CERVEAU_2026-09-26.md §4"
+     }
+    ],
+    "manque": ""
+   },
+   "liens": [
+    "CARNET 1.6"
+   ],
+   "reperes": [
+    "compren.{0,20}avant",
+    "avan.{0,3} de (te lancer|agir)",
+    "le temps que tu compren"
+   ],
+   "nombre_de_fois": 5,
+   "productions": [
+    "poing_du_dragon v3b",
+    "poing_du_dragon v4",
+    "poing_du_dragon v7",
+    "un_seul_coup v1",
+    "un_seul_coup v5"
+   ],
+   "statut": "actif"
+  }
+ ]
+}

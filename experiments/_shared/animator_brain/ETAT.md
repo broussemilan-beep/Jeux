@@ -58,6 +58,15 @@ Chantiers, dans cet ordre de livraison :
    MIT ; cloné en lecture dans `/home/user/nousresearch/hermes-agent`) :
    mémoire bornée, compétences qui s'améliorent, curateur, preuves,
    rappel -> plan proposé à Milan, puis appliqué.
+   Fait (2026-09-26) : A0 NOYAU + budget ; A1 amorce (hook SessionStart,
+   accord de Milan) ; A2 moisson de ses mots exacts ; A3 marques CONTREDIT ;
+   A4 rappel réparé (26 cas connus, `tests/rappel_selftest.py`) ; A5 fiches
+   au modèle ; A6 motifs (`outils/motifs.py`, extraits vérifiés mot pour mot,
+   statut calculé sur les versions qu'il a VUES) ; A7 lint consultatif ;
+   A8-A9 registre de preuves, branché dans `verify_export.py` d'Un seul
+   coup ; A10 rapport de regard, revue après retour, déplacer.
+   Reste : brancher le registre dans les autres productions (au fil de
+   l'eau), puis le chantier 4.
 
 4. **Se renourrir réellement de TOUT le contenu envoyé** (demande de Milan,
    à faire une fois 1-3 finis, avec la nouvelle organisation) : toutes ses

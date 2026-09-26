@@ -859,3 +859,18 @@ cerveau, voir la fin de l'entrée.
     les contrôles techniques (sol, contact, aller-retour moteur, sens Roblox).
   - `geo_pose.py` et la comparaison à caméra identique sont des aides pour
     regarder, pas des portes obligatoires.
+
+- **2026-09-26, livraison de la v6 d'« Un seul coup » (pas encore de retour
+  de Milan)** : poing chargé refait d'après les poses MESURÉES des refs
+  (`corpus/poses/`, fiche UN_SEUL_COUP §11) : tenue les deux bras devant la
+  poitrine, poings à hauteur de menton, écartés à la largeur des épaules
+  (comparé à Pew 9388 depuis la même caméra) ; le recul vient du buste qui
+  tourne (~60°) ; détente qui déroule le buste avec un vrai pas ; plans de
+  caméra refaits (plan large haut, tenue en pied, gros plan du poing).
+  - Prédiction **7,9** (brut 8,2 moins le biais mesuré de +0,3).
+  - Incertitude déclarée : TSB (Saitama) arme le poing HAUT derrière
+    l'épaule, buste penché ~43° (confiance 0,5-0,7). Si Milan trouve la v6
+    trop « devant », c'est la piste suivante.
+  - Preuves : `captures/verification/2026-09-26-un-seul-coup-v5-contre-v6-poing-charge.png`,
+    `...-v6-plans-charge-et-coup.png`, `...-v6-scene-complete-avec-son.mp4` ;
+    registre `corpus/preuves.jsonl` (technique : passe ; mesures de pose).

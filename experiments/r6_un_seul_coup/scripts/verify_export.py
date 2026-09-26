@@ -118,6 +118,16 @@ def main(blend):
     rep["sens_roblox"] = sens
     json.dump(rep, open(os.path.join(C.OUT, "verification.json"), "w"), indent=1, ensure_ascii=False, default=float)
     print(json.dumps(rep, ensure_ascii=False, default=float))
+    # registre des preuves (brique A9) : chaque passage laisse une ligne datée
+    # avec l'empreinte de ses entrées ; une preuve dont une entrée change
+    # devient « périmée » (outils/preuves.py --etat)
+    import preuves as PR  # noqa: E402
+    PR.enregistrer_preuve("r6_un_seul_coup", "technique", "scene", "passe" if all(sens.values()) else "echoue",
+                          [pa, pv, os.path.join(HERE, "coup_clip.py")],
+                          json.dumps({"sens_roblox": sens}, ensure_ascii=False, default=float),
+                          "python3 experiments/r6_un_seul_coup/scripts/verify_export.py <Blender_R6.blend>")
+    PR.enregistrer_preuve("r6_un_seul_coup", "mesure_pose", "scene", "valeurs", [pa], rep["mesures_pose"],
+                          "verify_export.py (mesures_pose, sans verdict)")
     if not all(sens.values()):
         raise SystemExit(f"SENS FAUX : {sens}")
     return rep, a, b, aw, vw
